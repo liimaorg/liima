@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:composite="http://java.sun.com/jsf/composite"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<composite:interface />
+
+<composite:implementation>
+	<h:panelGroup layout="block" id="contextTreeComp"
+		rendered="#{securityDataProvider.hasPermission('ENV_PANEL_LIST')}">
+		<aside> <nav class="primary">
+		<ul>
+			<li
+				class="${sessionContext.isCurrentContext(null) eq true ? 'current' : ''}" id="${sessionContext.globalContextId}_link">
+				<h:link value="Global" onclick="confirmLeave(event);" includeViewParams="true"  >
+					<f:param name="ctx" value="${sessionContext.globalContextId}" />
+				</h:link>
+			</li>
+			<ui:repeat var="context"
+				value="${sessionContext.getChildrenForContext(null)}">
+				<li
+					class="${sessionContext.isCurrentContext(context.id) eq true ? 'current' : ''} level2" id="${context.id}_link">
+					<h:link value="${context.name}" onclick="confirmLeave(event);" includeViewParams="true" >
+						<f:param name="ctx" value="${context.id}" />
+					</h:link>
+
+				</li>
+				<ui:repeat var="context2"
+					value="${sessionContext.getChildrenForContext(context.id)}">
+					<li
+						class="${sessionContext.isCurrentContext(context2.id) eq true ? 'current' : ''} level3" id="${context2.id}_link">
+						<h:link value="${context2.name}" onclick="confirmLeave(event);" includeViewParams="true" >
+							<f:param name="ctx" value="${context2.id}" />
+						</h:link>
+					</li>
+				</ui:repeat>
+			</ui:repeat>
+		</ul>
+		</nav> </aside>
+	<h:outputScript>$('#${sessionContext.contextId}_link').each(function(index,el){el.scrollIntoView(false)});</h:outputScript>
+	</h:panelGroup>
+</composite:implementation>
+
+</html>
+
+

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:mobi="http://java.sun.com/jsf/composite/mobi"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:amw="http://ch.puzzle.itc.mobiliar.facelets"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+<composite:interface>
+</composite:interface>
+
+<composite:implementation>
+    <h:panelGroup id="relatedResourcesGroup" rendered="${!resourceRelationModel.node}">
+        <div class="well withHeight">
+            <div>
+                <h2>${editResourceView.editResource ? 'Related Resources' : 'Related Resource types'}</h2>
+                <mobi:addRelation/>
+            </div>
+            <h:outputScript>
+                function confirmAddRelation(){
+                return !${editResourceView.hasNewerRelease()} || window.confirm('A newer release for this resource exists. Are you sure, that you want to add the resource to the release ${editResourceView.resource.release.name}?');
+                }
+            </h:outputScript>
+            <hr/>
+
+            <!--  EDIT RELATED RESOURCES -->
+            <h:panelGroup id="relatedResource" layout="block"
+                          styleClass="relatedResource tabbable tabs-left ">
+
+                <ul id="relatedResourceMenu" class="nav nav-tabs relResourceNav max_70vh ajaxScroll">
+                    <!-- RUNTIME -->
+                    <h:panelGroup
+                            rendered="#{resourceRelationModel.runtimeRelations ne null and !resourceRelationModel.runtimeRelations.isEmpty()}">
+                        <li><h3>Runtime</h3>
+                            <ul>
+                                <ui:repeat
+                                        value="#{resourceRelationModel.runtimeRelations}"
+                                        var="runtime">
+                                    <li
+                                            class="#{resourceRelationModel.isActiveRelation(runtime) ? 'active' : ''}">
+
+                                        <h:link outcome="editResourceView" includeViewParams="true"
+                                                styleClass="ellipsisLeft resourcename-link"
+                                                value="${runtime.displayName}" title="${runtime.displayName}">
+
+                                            <f:param name="rel" value="#{runtime.resRelId}"/>
+                                        </h:link>
+
+                                        <a4j:outputPanel ajaxRendered="true">
+                                            <mobi:foreignableOwnerTooltip foreignableAttributes="#{runtime.relationForeignableAttributes}"/>
+                                        </a4j:outputPanel>
+                                    </li>
+                                </ui:repeat>
+                            </ul>
+                        </li>
+                    </h:panelGroup>
+
+                    <!-- UNRESOLVED -->
+                    <h:panelGroup
+                            rendered="#{resourceRelationModel.unresolvedRelations ne null and !resourceRelationModel.unresolvedRelations.isEmpty() and !resourceRelationModel.defaultResourceType}">
+                        <li><h3>Unresolved</h3></li>
+                        <ui:repeat value="#{resourceRelationModel.unresolvedHeaders}"
+                                   var="key">
+                            <li class="ellipsisRight" title="#{key}">#{key}
+                                <ul>
+                                    <ui:repeat
+                                            value="#{resourceRelationModel.getUnresolvedRelations(key)}"
+                                            var="unresolved">
+                                        <li>
+
+
+                                            <h:commandLink styleClass="ellipsisLeft resourcename-link" value="${unresolved}"
+                                                           title="${unresolved}"
+                                                           rendered="#{sessionContext.isGlobal and resourceRelationModel.allowedToAddRelations}"
+                                                           onclick="showLoader();return confirmSubChangeLeave(event);">
+                                                <a4j:ajax execute="@this" render="addRelationPopup"
+                                                          onclick="storeScrollPositions();"
+                                                          oncomplete="if(confirmAddRelation()){#{rich:component('addRelationPopup')}.show();} hideLoader(); refreshSubChanges();"
+                                                          listener="#{relationDataProvider.loadResourceGroupsForType(key, unresolved)}"/>
+                                            </h:commandLink>
+                                            <h:outputText value="#{unresolved}" rendered="#{!sessionContext.isGlobal or !resourceRelationModel.allowedToAddRelations}"/>
+                                        </li>
+                                    </ui:repeat>
+
+                                </ul>
+                            </li>
+                        </ui:repeat>
+                    </h:panelGroup>
+
+                    <!-- CONSUMED -->
+                    <h:panelGroup
+                            rendered="${resourceRelationModel.consumedRelations ne null and !resourceRelationModel.consumedRelations.isEmpty()}">
+                        <li><h3>Consumed resources</h3></li>
+                    </h:panelGroup>
+                    <h:panelGroup
+                            rendered="#{resourceRelationModel.allowedToListConsumedRelations}">
+                        <ui:repeat
+                                value="#{amw:mapToList(resourceRelationModel.consumedRelations)}"
+                                var="entry">
+                            <li><h:outputText value="#{entry.key}"/>
+                                <ul>
+                                    <ui:repeat value="#{entry.value}" var="item">
+                                        <li class="#{resourceRelationModel.isActiveRelation(item) ? 'active' : ''}">
+                                            <div class="inOneLine">
+                                                <a4j:outputPanel ajaxRendered="true">
+                                                    <mobi:suspectRelationTooltip sourceForeignableAttributes="#{item.sourceForeignableAttributes}"
+                                                                                 relationForeignableAttributes="#{item.relationForeignableAttributes}"
+                                                                                 targetForeignableAttributes="#{item.targetForeignableAttributes}"/>
+                                                    <mobi:foreignableOwnerTooltip foreignableAttributes="#{item.relationForeignableAttributes}"/>
+                                                </a4j:outputPanel>
+
+                                                <h:link outcome="editResourceView" includeViewParams="true"
+                                                        styleClass="ellipsisLeft resourcename-link ${!resourceRelationModel.isSuspectRelation(item.sourceForeignableAttributes,item.relationForeignableAttributes,item.targetForeignableAttributes) ? '' : 'italic'}"
+                                                        value="${item.displayName}" title="${item.displayName}">
+
+                                                    <f:param name="rel" value="#{item.resRelId}"/>
+                                                </h:link>
+                                            </div>
+                                        </li>
+                                    </ui:repeat>
+                                </ul>
+                            </li>
+                        </ui:repeat>
+                    </h:panelGroup>
+
+                    <!-- PROVIDED -->
+                    <h:panelGroup
+                            rendered="${resourceRelationModel.providedRelations ne null and !resourceRelationModel.providedRelations.isEmpty()}">
+                        <li><h3>Provided resources</h3></li>
+                    </h:panelGroup>
+                    <h:panelGroup
+                            rendered="#{resourceRelationModel.allowedToListProvidedRelations}">
+                        <ui:repeat
+                                value="#{amw:mapToList(resourceRelationModel.providedRelations)}"
+                                var="entry">
+                            <li><h:outputText value="#{entry.key}"/>
+                                <ul>
+                                    <ui:repeat value="#{entry.value.toArray()}" var="item">
+                                        <li class="#{resourceRelationModel.isActiveRelation(item) ? 'active' : ''}">
+                                            <div class="inOneLine">
+                                                <a4j:outputPanel ajaxRendered="true">
+                                                    <mobi:suspectRelationTooltip sourceForeignableAttributes="#{item.sourceForeignableAttributes}"
+                                                                                 relationForeignableAttributes="#{item.relationForeignableAttributes}"
+                                                                                 targetForeignableAttributes="#{item.targetForeignableAttributes}"/>
+                                                    <mobi:foreignableOwnerTooltip foreignableAttributes="#{item.relationForeignableAttributes}"/>
+                                                </a4j:outputPanel>
+                                                <h:link outcome="editResourceView" includeViewParams="true"
+                                                        styleClass="ellipsisLeft resourcename-link ${!resourceRelationModel.isSuspectRelation(item.sourceForeignableAttributes,item.relationForeignableAttributes,item.targetForeignableAttributes) ? '' : 'italic'}"
+                                                        value="${item.displayName}" title="${item.displayName}">
+                                                    <f:param name="rel" value="#{item.resRelId}"/>
+                                                </h:link>
+                                            </div>
+                                        </li>
+                                    </ui:repeat>
+                                </ul>
+                            </li>
+                        </ui:repeat>
+                    </h:panelGroup>
+
+                    <!-- RESOURCE TYPES -->
+                    <h:panelGroup rendered="#{resourceRelationModel.allowedToListResourceTypeRelations}">
+                        <ui:repeat
+                                value="#{amw:mapToList(resourceRelationModel.resourceTypeRelations)}"
+                                var="entry">
+                            <ui:repeat value="#{entry.value.toArray()}" var="item">
+                                <li class="#{resourceRelationModel.isActiveRelation(item) ? 'active' : ''}">
+
+                                    <h:link outcome="editResourceView" includeViewParams="true"
+                                            styleClass="ellipsisLeft resourcename-link"
+
+                                            value="${item.displayName}" title="${item.displayName}">
+                                        <f:param name="rel" value="#{item.resRelTypeId}"/>
+                                    </h:link>
+
+                                </li>
+                            </ui:repeat>
+                        </ui:repeat>
+                    </h:panelGroup>
+
+                    <!-- Softlink Relations -->
+                    <h:panelGroup rendered="#{resourceRelationModel.canShowSoftlinkRelations}">
+                        <li><h3>Softlink Relation</h3></li>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{resourceRelationModel.canShowSoftlinkRelations}">
+                        <li class="active">
+                            <ul>
+                                <h:commandLink value="#{resourceRelationModel.getSoftlinkRelation().softlinkRelationEntity.softlinkRef}"
+                                               title="#{resourceRelationModel.getSoftlinkRelation().softlinkRelationEntity.softlinkRef}"
+                                               styleClass="ellipsisLeft resourcename-link"
+                                               onclick="storeScrollPositions();showLoader();return confirmSubChangeLeave(event);">
+                                    <a4j:ajax render="relatedResourcesGroup" execute="@form"
+                                              listener="#{resourceRelationModel.selectSoftlinkResourceRelation()}"
+                                              oncomplete="updateElements(); hideLoader(); refreshSubChanges();"/>
+                                </h:commandLink>
+                                <a4j:outputPanel ajaxRendered="true">
+                                    <mobi:foreignableOwnerTooltip foreignableAttributes="#{resourceRelationModel.getSoftlinkRelation().foreignableAttributes}"/>
+                                </a4j:outputPanel>
+                            </ul>
+                        </li>
+                    </h:panelGroup>
+
+
+                </ul>
+
+                <section id="relatedPropertiesSection" class="tab-content max_70vh ajaxScroll">
+                    <h:panelGroup rendered="#{!resourceRelationModel.isSoftlinkRelationSelected()}">
+                        <h:panelGroup>
+                            <h2 class="maxWidth45">
+                                <h:outputText value="${resourceRelationModel.currentResourceRelation.slaveTypeName}"
+                                              rendered="${!editResourceView.editResource}"/>
+                                <h:link
+                                        rendered="${resourceRelationModel.allowedToJumpToRelatedResourceEditScreen}"
+                                        value="${resourceRelationModel.resourceRelation.slaveName}"
+                                        title="${resourceRelationModel.resourceRelation.slaveName}"
+                                        outcome="editResourceView" styleClass="ellipsisLeft resourcename-link"
+                                        onclick="showLoader();">
+                                    <f:param name="id"
+                                             value="#{resourceRelationModel.currentResourceRelation.slaveId}"/>
+                                    <f:param name="ctx"
+                                             value="#{contextDataProvider.globalContextId}"/>
+                                </h:link>
+                                <h:outputText
+                                        rendered="${!resourceRelationModel.allowedToJumpToRelatedResourceEditScreen}"
+                                        value="${resourceRelationModel.resourceRelation.slaveName}"
+                                        title="${resourceRelationModel.resourceRelation.slaveName}"/>
+                            </h2>
+
+                            <h:selectOneMenu styleClass="switchRelease"
+                                             style="margin-left:20px; " id="resRelSelection"
+                                             value="${resourceRelationModel.currentResourceRelationId}"
+                                             rendered="${resourceRelationModel.currentResourceRelationId!=null}"
+                                             onchange="if(!confirmSubChangeLeave(event)){this.value=${resourceRelationModel.currentResourceRelationId}; return false;} else {changeRelease($(this).val())}">
+                                <f:selectItems itemValue="${relResRelease.resRelId}"
+                                               itemLabel="${relResRelease.slaveReleaseName}"
+                                               value="${resourceRelationModel.availableReleaseRelations}"
+                                               var="relResRelease">
+
+                                </f:selectItems>
+
+                            </h:selectOneMenu>
+                            <a4j:outputPanel ajaxRendered="true">
+                                <mobi:foreignableOwnerTooltip foreignableAttributes="#{resourceRelationModel.resourceRelation.targetForeignableAttributes}"/>
+                            </a4j:outputPanel>
+                            <!-- There are some issues with JSF executing AJAX from select boxes - therefore, we extract the release-switch functionality to this javascript function -->
+                            <a4j:jsFunction name="changeRelease" onbegin="showLoader();" render="relatedResource, contextTreeComp"
+                                            oncomplete="updateElements(); hideLoader(); refreshSubChanges();">
+                                <a4j:param name="resourceRelationIdFunctionArgument" assignTo="#{resourceRelationModel.currentResourceRelationId}"/>
+                            </a4j:jsFunction>
+
+                            <h:commandLink
+                                    rendered="#{resourceRelationModel.canDeleteRelation()}"
+                                    styleClass="btn light right" type="button"
+                                    style="margin-bottom: 12px;">
+                                <i class="icon icon-delete"/>Remove Relation${editResourceView.editResource ? '' : ' Type'}
+                                <a4j:ajax
+                                        listener="#{resourceRelationModel.setResourceRelationForRemoval(resourceRelationModel.currentResourceRelation)}"
+                                        oncomplete="#{rich:component('removeRelationPopup')}.show();"
+                                        render="removeRelationPopup"/>
+                            </h:commandLink>
+                        </h:panelGroup>
+                        <br class="clear"/>
+
+                        <article class="tab-pane sixty" style="display:block;">
+                            <h:panelGroup layout="block" rendered="${!resourceRelationModel.defaultResourceType and resourceRelationModel.currentResourceRelation ne null and resourceRelationModel.currentResourceRelation.resourceTypeRelation}">
+                                <label class="control-label">RelationName</label>
+
+                                <div class="controls">
+                                    <h:inputText disabled="#{!propertyEditDataProvider.hasEditRelationNamePermission()}"
+                                                 value="#{propertyEditDataProvider.typeRelationIdentifier}"
+                                                 alt="relationIdentifier" styleClass="propertyInputField ">
+                                    </h:inputText>
+                                </div>
+                                <br/>
+                            </h:panelGroup>
+
+                            <mobi:editPropertiesTable id="editPropertiesTable"
+                                                      rendered="#{editResourceView.resourceType.defaultResourceType}"
+                                                      editProperties="#{propertyEditDataProvider.currentRelationProperties}"
+                                                      isDefinedOnInstanceOrType="false"/>
+                            <mobi:activeApplications
+                                    rendered="#{editResourceView.editResource and resourceRelationModel.appServerToNode}"/>
+                        </article>
+                        <article class="forty omega"><mobi:editTemplate isRelation="true"/>
+                        </article>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{resourceRelationModel.isSoftlinkRelationSelected()}">
+
+                        <h:panelGroup rendered="#{resourceRelationModel.softlinkRelation.hasResolvedSoftlinkRelation()}">
+                            <h2 class="maxWidth45">
+
+                                <h:link
+                                        rendered="#{resourceRelationModel.allowedToJumpToRelatedResourceEditScreen}"
+                                        value="#{resourceRelationModel.softlinkRelation.softlinkResolvingSlaveResource.name}"
+                                        title="#{resourceRelationModel.softlinkRelation.softlinkResolvingSlaveResource.name}"
+                                        outcome="editResourceView" styleClass="ellipsisLeft resourcename-link"
+                                        onclick="showLoader();">
+                                    <f:param name="id"
+                                             value="#{resourceRelationModel.softlinkRelation.softlinkResolvingSlaveResource.id}"/>
+                                    <f:param name="ctx"
+                                             value="#{contextDataProvider.globalContextId}"/>
+                                </h:link>
+                                <h:outputText
+                                        rendered="#{!resourceRelationModel.allowedToJumpToRelatedResourceEditScreen}"
+                                        value="#{resourceRelationModel.softlinkRelation.softlinkResolvingSlaveResource.name}"
+                                        title="#{resourceRelationModel.softlinkRelation.softlinkResolvingSlaveResource.name}"/>
+                            </h2>
+
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{!resourceRelationModel.softlinkRelation.hasResolvedSoftlinkRelation()}">
+                            <h2 class="maxWidth45">
+                                <h:outputText value="Softlink not resolved!"/>
+                            </h2>
+                        </h:panelGroup>
+
+                        <a4j:outputPanel ajaxRendered="true">
+                            <mobi:foreignableOwnerTooltip foreignableAttributes="#{resourceRelationModel.softlinkRelation.foreignableAttributes}"/>
+                        </a4j:outputPanel>
+
+                        <h:commandLink
+                                rendered="#{resourceRelationModel.canEditSoftlinkRelation}"
+                                styleClass="btn light right" type="button"
+                                style="margin-bottom: 12px;">
+                            <i class="icon icon-delete"/>Remove Softlink Relation
+                            <a4j:ajax
+                                    listener="#{resourceRelationModel.setResourceRelationForRemoval(resourceRelationModel.currentResourceRelation)}"
+                                    oncomplete="#{rich:component('removeRelationPopup')}.show();"
+                                    render="removeRelationPopup"/>
+                        </h:commandLink>
+                        <br class="clear"/>
+
+                        <article class="tab-pane sixty" style="display:block;">
+                            <h:panelGroup layout="block">
+                                <label class="control-label">Softlink Id Reference</label>
+
+                                <div class="controls">
+                                    <h:inputText
+                                            disabled="#{!resourceRelationModel.canEditSoftlinkRelation}"
+                                            value="#{resourceRelationModel.softlinkRelation.softlinkRelationEntity.softlinkRef}"
+                                            alt="relationIdentifier" styleClass="propertyInputField ">
+                                    </h:inputText>
+                                </div>
+                                <br/>
+                            </h:panelGroup>
+
+                        </article>
+
+                    </h:panelGroup>
+
+
+                </section>
+            </h:panelGroup>
+        </div>
+    </h:panelGroup>
+    <ui:include src="removeRelation.xhtml"/>
+</composite:implementation>
+
+</html>

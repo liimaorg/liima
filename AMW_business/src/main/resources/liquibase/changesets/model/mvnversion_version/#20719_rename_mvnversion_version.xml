@@ -1,0 +1,13 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/mvnversion_version/#20719_rename_mvnversion_version.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="#20719_rename_mvnversion_version.xml" >
+        <comment>
+            rename APPLICATIONSWITHMVNVERSION to APPLICATIONSWITHVERSION
+        </comment>
+        <renameColumn newColumnName="APPLICATIONSWITHVERSION" oldColumnName="APPLICATIONSWITHMVNVERSION" tableName="TAMW_DEPLOYMENT"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,64 @@
+// Table
+//----------------------------------------------------------------------
+
+table {
+	width: 100%;
+}
+
+td {
+	vertical-align: top;
+	@include padding-trailer;
+	&.last {
+		width: 20px;
+		padding-left: $padding;
+	}
+}
+
+table.well {
+
+	border: 1px solid $grey6;
+	border-collapse: separate;
+
+	caption {
+		padding: 10px $padding 2px;
+		background: $grey3;
+		color: white;
+		@include border-top-radius($radius); 
+	}
+
+	thead {
+		tr {
+			background-color: $grey6;
+			@include background(linear-gradient(white, $grey6));
+
+			th {
+				border-bottom: 	1px solid $grey5;
+				border-left:  	1px solid white;
+				border-right: 	1px solid $grey5;
+				&:first-child {
+					border-left: none;
+				}
+				&:last-child {
+					border-right: none;
+				}
+			}
+		}
+	}
+
+	th, td {
+		padding: 10px $padding;
+	}
+
+	tbody {
+		td { background-color: $grey7; }
+		@include alternating-rows-and-columns($grey7, white, none);
+	}	
+}
+
+.propertyTable {
+	margin: 0px;
+}
+
+.propertyTable td {
+	padding: 0px;
+}

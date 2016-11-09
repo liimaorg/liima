@@ -1,0 +1,302 @@
+
+.rich-mpnl-header {
+  background-position: left top;
+  background-repeat: repeat-x;
+  border-style: solid;
+  border-width: 1px;
+  padding: 2px;
+  font-size: 15px;
+}
+
+.rich-tab-active {
+  background-color: white;
+  background-image: none;
+  font-size: 13px;
+  line-height: 21px;
+  font-weight: bold;
+}
+
+.rich-tab-inactive {
+  background-color: #CCCCCC;
+  background-image: none;
+  font-size: 13px;
+  line-height: 19px;
+  border: none;
+}
+
+.rich-tabpanel-content {
+  background-color: white;
+}
+
+.rich-panel-body {
+  padding-top: 0px;
+  padding-left: 0px;
+}
+
+.panelMenuGroupIcon {
+  width: 10px;
+  height: 10px;
+  margin: 10px;
+}
+
+.rich-pmenu-group-self-icon {
+  
+}
+
+.rich-pmenu-item {
+  line-height: 21px;
+}
+
+.rich-pmenu-item-icon {
+  
+}
+
+.rich-pmenu-selected-element {
+  font-style: normal;
+  font-weight: bold;
+}
+
+.rich-toolbar {
+  background-color: transparent;
+  background-image:
+    url("../images/background/bg_mainnav_inactive.gif");
+  background-repeat: repeat-x;
+  border: none;
+  padding: 0;
+}
+
+.rich-toolbar-item {
+  background-image:
+    url("../images/background/bg_mainnav_inactive.gif");
+  background-repeat: repeat-x;
+  border-left: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF;
+  padding-left: 7px;
+  padding-right: 7px;
+  font-weight: bold;
+  font-size: 30px;
+}
+
+.rich-toolbar-item-selected {
+  background-image:
+    url("../images/background/bg_mainnav_active.gif");
+  background-position: left top;
+  background-repeat: repeat-x;
+  border-left: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF;
+  padding-left: 7px;
+  padding-right: 7px;
+  font-weight: bold;
+}
+
+.rich-pmenu-top-group-div {
+  border: 0px solid;
+  margin-bottom: 0px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.rich-pmenu-top-group {
+  background-color: transparent;
+  background-image:
+    url("../images/background/bg_subnav_l2_inactive.gif")
+    ;
+  color: black;
+  font-size: 11px;
+  line-height: 21px;
+  font-weight: normal;
+}
+
+.rich-panel {
+  background-color: white;
+  border: none;
+}
+
+/* upload */
+.rich-fileupload-toolbar-decor {
+  background-color: #EAEAEA;
+}
+
+.rich-fileupload-button {
+  background-color: #EAEAEA;
+}
+
+/* upload end */ /* calendar */
+.rich-calendar-tool {
+  background-color: #888888;
+  color: #000000;
+}
+
+.rich-calendar-month {
+  background-color: #888888;
+  color: #000000;
+}
+
+.rich-calendar-holly {
+  background-color: #FFE1E1;
+  color: #DA2324;
+}
+
+.rich-calendar-today {
+  background-color: #DA2324;
+}
+
+.rich-calendar-select {
+  background-color: #888888;
+  color: #000000;
+}
+
+.rich-calendar-hover {
+  background-color: #EBEBEB;
+}
+
+.rich-calendar-exterior {
+  border-color: #888888;
+}
+
+.rich-calendar-cell {
+  border-color: #888888;
+}
+
+.rich-calendar-today {
+  color: #FFFFFF;
+}
+
+.rich-calendar-week {
+  border-color: #888888;
+}
+
+.rich-calendar-days {
+  border-bottom-color: #888888;
+  background-color: #EBEBEB;
+}
+
+.rich-calendar-footer {
+  border-top-color: #888888;
+  background-color: #EBEBEB;
+}
+
+.rich-calendar-toolfooter {
+  background-color: #EBEBEB;
+}
+
+.rich-calendar-header {
+  border-color: #888888;
+}
+
+.rich-calendar-boundary-dates {
+  color: #a0a0a0;
+}
+
+.rich-calendar-editor-btn-selected {
+  background-color: #DA2324;
+}
+
+.rich-calendar-editor-btn-over {
+  background-color: #EBEBEB;
+}
+
+.rich-calendar-date-layout-split {
+  border-right-color: #888888;
+}
+
+.rich-calendar-date-layout-ok {
+  border-top-color: #888888;
+  background-color: #EBEBEB;
+}
+
+.rich-calendar-date-layout-cancel {
+  border-top-color: #888888;
+  background-color: #EBEBEB;
+}
+
+.rich-calendar-time-btn {
+  background-color: #EBEBEB;
+}
+
+/* rich:listShuttle */
+.rich-shuttle-source-cell-selected {
+  background-color: #EAEAEA;
+}
+
+.rich-list-shuttle-button-disabled {
+  background-color: #EAEAEA;
+  color: black;
+}
+
+.rich-list-shuttle-button-content {
+  background-color: #EBEBEB;
+}
+
+.rich-fileupload-list-decor {
+  float: left;
+}
+
+.rich-combobox {
+  float: left;
+}
+
+.rich-extdt-subheadercell {
+  background-color: #CCCCCC;
+}
+
+.extdt-subheadercell {
+  padding: 0px;
+  text-align: left;
+  padding-left: 3px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+}
+
+.rich-filter-input {
+  width: 90%;
+}
+
+.rich-fileupload-button-content {
+  background-color: #CCCCCC;
+}
+
+.rich-fileupload-button-border {
+  border: 1px solid #CCCCCC;
+  margin: 0px;
+}
+
+.rich-fileupload-button {
+  border: 0px;
+}
+
+.rich-shuttle-control-disabled {
+  border: none;
+}
+
+.rich-list-shuttle-button-content {
+  background-color: white;
+}
+
+.rich-shuttle-control-copyall {
+  border: none;
+}
+
+.rich-shuttle-source-cell-selected {
+  background-color: #CCCCCC;
+}
+
+.rich-ordering-list-button-content {
+  background-color: white;
+}
+
+.rich-ordering-list-cell-selected {
+  background-color: #CCCCCC;
+}
+
+.rich-extdt-footercell {
+  background-color: white;
+}
+
+.rich-datascr-button {
+  background-color: white;
+}
+
+.extdt-row-selected {
+  background-color: #EAEAEA;
+}

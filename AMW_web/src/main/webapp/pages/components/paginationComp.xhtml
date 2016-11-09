@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<h:panelGroup id="paginationPanel">
+	<a4j:commandLink value="&lt;&lt;" render="${renderItemsList}, @this"
+		onclick="showLoader();" oncomplete="hideLoader();"
+		action="${extendsPagination.firstPage()}"
+		rendered="${extendsPagination.currentPage!=0}" />
+	<a4j:commandLink value="&lt;" render="${renderItemsList}, @this" onclick="showLoader();"
+		oncomplete="hideLoader();"
+		action="${extendsPagination.previousPage()}"
+		rendered="${extendsPagination.currentPage!=0}"
+		styleClass="marginLeft10" />
+
+	<ui:repeat
+		value="${extendsPagination.availablePages().subList(
+				extendsPagination.currentPage-2 > 0 ? extendsPagination.currentPage-2 : 0,
+				extendsPagination.availablePages().size() >= extendsPagination.currentPage+3 ? extendsPagination.currentPage + 3 : extendsPagination.availablePages().size())}"
+		var="page">
+		<a4j:commandLink rendered="${page!=extendsPagination.currentPage}"
+			value="${page+1}" styleClass="marginLeft10" onclick="showLoader();"
+			oncomplete="hideLoader();" render="${renderItemsList}, @this"
+			action="${extendsPagination.goToPage(page)}" />
+		<h:outputText rendered="${page==extendsPagination.currentPage}"
+			styleClass="marginLeft10 boldFont" value="${page+1}" />
+	</ui:repeat>
+
+	<a4j:commandLink value="&gt;" styleClass="marginLeft10"
+		action="${extendsPagination.nextPage()}" onclick="showLoader();"
+		oncomplete="hideLoader();" render="${renderItemsList}, @this"
+		rendered="${!extendsPagination.lastPage}" />
+	<a4j:commandLink value="&gt;&gt;" styleClass="marginLeft10"
+		onclick="showLoader();" oncomplete="hideLoader();"
+		action="${extendsPagination.lastPage()}" render="${renderItemsList}, @this"
+		rendered="${!extendsPagination.lastPage}" />
+	<div class="control-group right">
+		<label class="control-label">Results per page:</label>
+		<div class="controls">
+			<h:selectOneMenu value="#{extendsPagination.pageSize}">
+				<f:selectItem itemLabel="10" itemValue="10" />
+				<f:selectItem itemLabel="20" itemValue="20" />
+				<f:selectItem itemLabel="50" itemValue="50" />
+				<f:selectItem itemLabel="100" itemValue="100" />
+				<a4j:ajax render="${renderItemsList}, @this" />
+			</h:selectOneMenu>
+		</div>
+	</div>
+
+</h:panelGroup>
+
+</html>

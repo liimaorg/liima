@@ -1,0 +1,4 @@
+#! /bin/sh
+
+/bin/cp -f $OPENSHIFT_REPO_DIR/.openshift/config/application-*.properties $OPENSHIFT_JBOSSEAP_DIR/standalone/configuration
+

@@ -1,0 +1,2 @@
+Exemplary test template:
+-cp /opt/jboss-as-7.1.1.Final/modules/com/ibm/db2/main/db2jcc4.jar:./AMW_stp_db-0.0.1-SNAPSHOT.jar ch.puzzle.itc.mobiliar.stp.db.DB_STP jdbc:db2://romai.rz.puzzle.ch:50000/amw db2inst1 pwDB2.inst1

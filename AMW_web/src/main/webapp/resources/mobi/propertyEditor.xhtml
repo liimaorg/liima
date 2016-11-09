@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:mobi="http://java.sun.com/jsf/composite/mobi"
+>
+
+<!-- INTERFACE -->
+<composite:interface>
+    <composite:attribute name="property"/>
+</composite:interface>
+
+<!-- IMPLEMENTATION -->
+<composite:implementation>
+
+    <div class="controls">
+
+        <!-- NOT ENCRYPTED -->
+        <h:panelGroup rendered="${!cc.attrs.property.encrypted}">
+            <h:inputTextarea value="#{cc.attrs.property.propertyValue}" disabled="#{!propertyEditDataProvider.editableProperties and !propertyEditDataProvider.testing}"
+                             onfocus="this.className = 'propertyInputField currentContext ${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'}'"
+                             onblur="setUpperContext(this, '${cc.attrs.property.propertyValue}', '${cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)}'); validateInput(this, '${cc.attrs.property.nullable}', '${cc.attrs.property.optional}', '${cc.attrs.property.validationLogic}', '${cc.attrs.property.propertyDefaultValue}', '${cc.attrs.property.mik}'); decorateInput(this, '${cc.attrs.property.mik}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue)}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue)}');"
+                             styleClass="propertyInputField ${cc.attrs.property.getClassNameForPropertyInputField(propertyEditDataProvider.contextId)} ${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} ${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue) || propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue) ? '' : ' oneLine'}"
+                             autocomplete="off" title="#{cc.attrs.property.propertyDefaultValue}">
+                <f:attribute name="regex" value="#{cc.attrs.property.validationLogic}"/>
+                <f:attribute name="isNullable" value="#{cc.attrs.property.nullable}"/>
+                <f:attribute name="errorMessage"
+                             value="This value must not be empty or does not match the regex #{cc.attrs.property.validationLogic}"/>
+                <rich:placeholder value="#{cc.attrs.property.propertyDefaultValue}  " styleClass="propertyplaceholder">
+                    <!--Bug fix #16408 when displaying default value and then entering default value as new value it will be ignored for whatever reason!
+                    Thus add some blank characters to displayed placeholder default value such that the entered value most likely does not match
+                    the default value with blanks - on top blank characters will be trimmed off from input value-->
+                </rich:placeholder>
+                <a4j:ajax/>
+            </h:inputTextarea>
+
+            <!-- TOOLTIP -->
+            <mobi:propertyTooltip property="#{prop}"/>
+            <mobi:foreignableOwnerTooltip foreignableAttributes="#{propertyEditDataProvider.getForeignableToEdit(cc.attrs.property)}"/>
+
+            <!-- RESET -->
+            <h:panelGroup
+                    rendered="${(cc.attrs.property.propertyValue!=null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and propertyEditDataProvider.editableProperties and (propertyEditDataProvider.hasResetPropertyPermission() or propertyEditDataProvider.testing) }">
+                <h:selectBooleanCheckbox id="resetBox" value="#{cc.attrs.property.reset}" styleClass="${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} resetBox"
+                                         onclick="checkReset(this, '${cc.attrs.property.replacedValue}', '${cc.attrs.property.propertyValue}');"/>
+                <h:outputLabel styleClass="inlineBlock" for="resetBox" value="Reset"/>
+            </h:panelGroup>
+
+        </h:panelGroup>
+
+        <!-- ENCRYPTED -->
+        <h:panelGroup rendered="${cc.attrs.property.encrypted}">
+            <h:inputSecret value="#{cc.attrs.property.propertyValue}" autocomplete="off" disabled="#{!propertyEditDataProvider.editableProperties and !propertyEditDataProvider.testing}"
+                           redisplay="true" immediate="true"
+                           onfocus="if(${cc.attrs.property.decrypted}){$(this.parentNode.getElementsByTagName('input')[0]).hide();$(this.parentNode.getElementsByTagName('input')[1]).show();$(this.parentNode.getElementsByTagName('input')[1]).focus();} else if(this.value=='${cc.attrs.property.propertyValue}'){this.value='';}"
+                           onblur="if(${cc.attrs.property.decrypted}){setUpperContext(this, '${cc.attrs.property.propertyValue}', '${cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)}'); validateInput(this, '${cc.attrs.property.nullable}', '${cc.attrs.property.optional}', '${cc.attrs.property.validationLogic}', '${cc.attrs.property.propertyDefaultValue}', '${cc.attrs.property.mik}'); decorateInput(this, '${cc.attrs.property.mik}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue)}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue)}');} else if(this.value==''){this.value='${cc.attrs.property.propertyValue}'}"
+                           styleClass="propertyInputField ${cc.attrs.property.getClassNameForPropertyInputField(propertyEditDataProvider.contextId)} ${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'}">
+                <f:attribute name="regex" value="#{cc.attrs.property.validationLogic}"/>
+                <f:attribute name="isNullable" value="#{cc.attrs.property.nullable}"/>
+                <f:attribute name="errorMessage"
+                             value="This value must not be empty or does not match the regex #{cc.attrs.property.validationLogic}"/>
+            </h:inputSecret>
+            <h:inputText rendered="${cc.attrs.property.decrypted}" value="${cc.attrs.property.decryptedPropertyValue}" autocomplete="off"
+                         disabled="#{!propertyEditDataProvider.editableProperties and !propertyEditDataProvider.testing}"
+                         redisplay="true"
+                         onchange="this.parentNode.getElementsByTagName('input')[0].value=this.value;"
+                         onfocus="this.className = 'propertyInputField currentContext';"
+                         onblur="setUpperContext(this, '${cc.attrs.property.decryptedPropertyValue}', '${cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)}'); validateInput(this, '${cc.attrs.property.nullable}', '${cc.attrs.property.optional}', '${cc.attrs.property.validationLogic}', '${cc.attrs.property.propertyDefaultValue}', '${cc.attrs.property.mik}'); decorateInput(this, '${cc.attrs.property.mik}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue)}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue)}'); $(this).hide();$(this.parentNode.getElementsByTagName('input')[0]).show();"
+                         styleClass="propertyInputField ${cc.attrs.property.getClassNameForPropertyInputField(propertyEditDataProvider.contextId)}" style="display: none;">
+                <f:attribute name="regex" value="#{cc.attrs.property.validationLogic}"/>
+                <f:attribute name="isNullable" value="#{cc.attrs.property.nullable}"/>
+                <f:attribute name="errorMessage"
+                             value="This value must not be empty or does not match the regex #{cc.attrs.property.validationLogic}"/>
+            </h:inputText>
+
+
+            <!-- TOOLTIP -->
+            <mobi:propertyTooltip property="#{prop}"/>
+            <mobi:foreignableOwnerTooltip foreignableAttributes="#{propertyEditDataProvider.getForeignableToEdit(cc.attrs.property)}"/>
+
+            <!-- RESET -->
+            <h:panelGroup
+                    rendered="${(cc.attrs.property.propertyValue!=null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and propertyEditDataProvider.editableProperties and (propertyEditDataProvider.hasResetPropertyPermission() or propertyEditDataProvider.testing)}">
+                <h:selectBooleanCheckbox value="#{cc.attrs.property.reset}" styleClass="${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} resetBox"
+                                         onclick="checkReset(this, '${cc.attrs.property.replacedValue}', '${cc.attrs.property.propertyValue}');"/>
+                <h:outputText value="Reset"/>
+            </h:panelGroup>
+        </h:panelGroup>
+    </div>
+
+</composite:implementation>
+
+
+</html>

@@ -1,0 +1,70 @@
+// Fonts & Vertical Rythm
+//----------------------------------------------------------------------
+
+@include establish-baseline($base-font-size);
+
+body {	
+	font-family: $base-font-family;
+	color:$grey1;
+}
+
+h1, h2, h3 {
+	@include inline-block;
+}
+
+h1 {
+	@include adjust-font-size-to(24px);
+}
+h2 {
+	@include adjust-font-size-to(18px, 1.5);
+	font-weight: bold;
+}
+
+article > h2 {
+	@include trailer;
+}
+
+h3 {
+	@include adjust-font-size-to(14px);
+	font-weight: bold;
+	@include trailer;
+}
+
+p, ul, th, td, label, input, textarea, select {
+	@include adjust-font-size-to(14px);
+}
+
+a {
+	text-decoration:none;
+	color:$blue1;
+
+	p &, td & {
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+#content p, #content table {
+	@include trailer;
+}
+
+ul.bullet {
+	@include adjust-font-size-to(14px);
+	list-style: disc;
+	padding: 0;
+	margin: 0 0 0 18px;
+	@include trailer;
+}
+
+strong { font-weight:bold; }
+small { @include adjust-font-size-to(12px); }
+
+hr {
+	border:none;
+	border-top: 1px solid $grey6;
+	margin: 8px (- $padding);
+	color: white;
+	background-color: white;
+	height: 1px;
+}

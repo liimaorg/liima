@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+<composite:interface>
+</composite:interface>
+
+<composite:implementation>
+    <h:panelGroup id="functionPanelGroup">
+        <div class="well">
+            <nav class="actionbar">
+                <ul>
+                    <li>
+                        <div style="display: inline-block; float: right;">
+                            <h:link
+                                    rendered="${editFunction.canAdd }"
+                                    outcome="editFunctionView" type="button" styleClass="btn light right}" includeViewParams="true">
+
+                                <f:param name="resid" value="#{editFunction.resourceId}"/>
+                                <f:param name="resTypId" value="${editFunction.resourceTypeId}"/>
+                                <f:param name="functionId" value="${editFunction.functionId}"/>
+                                <i class="icon icon-add"/>New Function<h:outputText/>
+                            </h:link>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+
+            <h2>
+                <h:outputText value="Functions"/>
+            </h2>
+            <hr/>
+            <div id="function_list" class="max_70vh ajaxScroll">
+                <h:panelGroup id="instanceFunctions">
+                    <h:panelGroup
+                            rendered="${!editFunction.resourceOrTypeInstanceFunctions.isEmpty() and editFunction.canShowInstanceFunctions}">
+                        <h3>
+                            <h:outputText
+                                    value="${editFunction.instanceTitle}"/>
+                        </h3>
+                        <h:dataTable var="instanceFunction"
+                                     value="${editFunction.resourceOrTypeInstanceFunctions}"
+                                     columnClasses="paddingRight10 ,last,last">
+                                <h:column>
+                                    <span class="ellipsisRight inlineBlock width100" title="#{instanceFunction.name}">#{instanceFunction.name} #{editFunction.getOverwritingInfo(instanceFunction)}</span>
+                                    <span class="meta ellipsisRight inlineBlock width100" title="#{instanceFunction.getCommaseparatedMikNames()}">#{instanceFunction.getCommaseparatedMikNames()} </span>
+                                </h:column>
+                                <h:column rendered="#{editFunction.canEdit or editFunction.canShowInstanceFunctions}">
+                                    <h:link outcome="editFunctionView" includeViewParams="true">
+                                        <f:param name="rel" value="#{editFunction.relationId}"/>
+                                        <f:param name="resid" value="#{editFunction.resourceId}"/>
+                                        <f:param name="resTypId" value="${editFunction.resourceTypeId}"/>
+                                        <f:param name="functionId" value="${instanceFunction.id}"/>
+                                        Edit
+                                    </h:link>
+                                </h:column>
+                                <h:column rendered="#{editFunction.canDelete}">
+                                    <h:commandLink value="Delete"
+                                                   onclick="deleteFunction(${instanceFunction.id});">
+                                        <f:ajax execute="@this"></f:ajax>
+                                    </h:commandLink>
+                                </h:column>
+                        </h:dataTable>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </div>
+
+
+            <div id="type_function_list" class="max_70vh ajaxScroll">
+                <h:panelGroup id="typeFunctions">
+                    <h:panelGroup
+                            rendered="${!editFunction.superTypeFunctions.isEmpty() and !editFunction.rootResourceType and editFunction.canShowSuperTypeFunctions}">
+                        <h3>
+                            <h:outputText
+                                    value="${editFunction.resourceTypeTitle}"/>
+                        </h3>
+                        <h:dataTable var="typeFunction"
+                                     value="${editFunction.superTypeFunctions}"
+                                     columnClasses="paddingRight10 ,last,last">
+                            <h:column>
+                                <span class="ellipsisRight inlineBlock width100" title="#{typeFunction.name}">#{typeFunction.name} #{editFunction.getFunctionOriginTypeInfo(typeFunction)}</span>
+                                <span class="meta ellipsisRight inlineBlock width100" title="#{typeFunction.getCommaseparatedMikNames()}">#{typeFunction.getCommaseparatedMikNames()} </span>
+                            </h:column>
+
+                            <h:column rendered="#{editFunction.canOverwrite}">
+                                <h:link outcome="editFunctionView" includeViewParams="true">
+                                    <f:param name="rel" value="#{editFunction.relationId}"/>
+                                    <f:param name="resid" value="#{editFunction.resourceId}"/>
+                                    <f:param name="resTypId" value="${editFunction.resourceTypeId}"/>
+                                    <f:param name="functionId" value="${typeFunction.id}"/>
+                                    Overwrite
+                                </h:link>
+                            </h:column>
+                            <h:column rendered="#{editFunction.canOverwrite }"/>
+
+                        </h:dataTable>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </div>
+
+        </div>
+    </h:panelGroup>
+
+
+    <a4j:jsFunction name="deleteFunction"
+                    execute="@this"
+                    oncomplete="${rich:component('removeFunctionPopup')}.show();"
+                    render="removeFunctionPopup">
+        <a4j:param name="currentId" assignTo="#{editFunction.selectedFunctionIdToBeRemoved}"/>
+
+    </a4j:jsFunction>
+
+    <rich:popupPanel id="removeFunctionPopup"
+                     moveable="true" width="800" autosized="true">
+        <f:facet name="header">
+            <h2>
+                <h:outputText value="Delete Function"/>
+            </h2>
+        </f:facet>
+        <f:facet name="controls">
+            <h:outputLink value="#"
+                          styleClass="close icon icon-close icon-replace"
+                          onclick="#{rich:component('removeFunctionPopup')}.hide(); return false;">
+                x
+            </h:outputLink>
+        </f:facet>
+        <h:panelGrid style="margin-bottom:10px;">Are you sure you want to delete the selected function?</h:panelGrid>
+        <h:commandLink styleClass="btn primary right" value="Delete"
+                       onclick="showLoader();">
+            <a4j:ajax listener="#{editFunction.deleteFunction()}"
+                      execute="@this"
+                      oncomplete="#{rich:component('removeFunctionPopup')}.hide(); hideLoader();"
+                      render="functionPanelGroup"/>
+        </h:commandLink>
+    </rich:popupPanel>
+
+</composite:implementation>
+</html>

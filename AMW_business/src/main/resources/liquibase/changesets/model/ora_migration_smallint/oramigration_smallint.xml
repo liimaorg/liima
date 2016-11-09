@@ -1,0 +1,142 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/ora_migration_smallint/oramigration_smallint.xml" 
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	
+	<changeSet author="tphilipona" id="oramig_change_smallint_no_number"  dbms="oracle">
+		<comment>
+			in the db2 to ora mig the boolean fields were migrated from SMALLINT to NUMBER(38,0), this changeset modifies the datatype back to Number(1,0)
+		</comment>
+		<!-- Deployment Entity -->
+		<!-- deploymentStarted -->
+		<addColumn tableName="TAMW_DEPLOYMENT"><column name="deploymentStarted_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_DEPLOYMENT set deploymentStarted_tmp = deploymentStarted</sql>
+		<dropColumn tableName="TAMW_DEPLOYMENT" columnName="deploymentStarted" />
+		<renameColumn newColumnName="deploymentStarted" oldColumnName="deploymentStarted_tmp" tableName="TAMW_DEPLOYMENT"/>
+		
+		<!-- deploymentExecuted -->
+		<addColumn tableName="TAMW_DEPLOYMENT"><column name="deploymentExecuted_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_DEPLOYMENT set deploymentExecuted_tmp = deploymentExecuted</sql>
+		<dropColumn tableName="TAMW_DEPLOYMENT" columnName="deploymentExecuted" />
+		<renameColumn newColumnName="deploymentExecuted" oldColumnName="deploymentExecuted_tmp" tableName="TAMW_DEPLOYMENT"/>
+		
+		<!-- buildSuccess -->
+		<addColumn tableName="TAMW_DEPLOYMENT"><column name="buildSuccess_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_DEPLOYMENT set buildSuccess_tmp = buildSuccess</sql>
+		<dropColumn tableName="TAMW_DEPLOYMENT" columnName="buildSuccess" />
+		<renameColumn newColumnName="buildSuccess" oldColumnName="buildSuccess_tmp" tableName="TAMW_DEPLOYMENT"/>
+		
+		<!-- simulating -->
+		<addColumn tableName="TAMW_DEPLOYMENT"><column name="simulating_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_DEPLOYMENT set simulating_tmp = simulating</sql>
+		<dropColumn tableName="TAMW_DEPLOYMENT" columnName="simulating" />
+		<renameColumn newColumnName="simulating" oldColumnName="simulating_tmp" tableName="TAMW_DEPLOYMENT"/>
+		
+		<!-- sendEmail -->
+		<addColumn tableName="TAMW_DEPLOYMENT"><column name="sendEmail_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_DEPLOYMENT set sendEmail_tmp = sendEmail</sql>
+		<dropColumn tableName="TAMW_DEPLOYMENT" columnName="sendEmail" />
+		<renameColumn newColumnName="sendEmail" oldColumnName="sendEmail_tmp" tableName="TAMW_DEPLOYMENT"/>
+		
+		<!-- sendEmailConfirmation -->
+		<addColumn tableName="TAMW_DEPLOYMENT"><column name="sendEmailConfirmation_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_DEPLOYMENT set sendEmailConfirmation_tmp = sendEmailConfirmation</sql>
+		<dropColumn tableName="TAMW_DEPLOYMENT" columnName="sendEmailConfirmation" />
+		<renameColumn newColumnName="sendEmailConfirmation" oldColumnName="sendEmailConfirmation_tmp" tableName="TAMW_DEPLOYMENT"/>
+		
+		<!-- createTestAfterDeployment -->
+		<addColumn tableName="TAMW_DEPLOYMENT"><column name="createTestAfterDeployment_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_DEPLOYMENT set createTestAfterDeployment_tmp = createTestAfterDeployment</sql>
+		<dropColumn tableName="TAMW_DEPLOYMENT" columnName="createTestAfterDeployment" />
+		<renameColumn newColumnName="createTestAfterDeployment" oldColumnName="createTestAfterDeployment_tmp" tableName="TAMW_DEPLOYMENT"/>
+		
+		<!-- neighborhoodTest -->
+		<addColumn tableName="TAMW_DEPLOYMENT"><column name="neighborhoodTest_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_DEPLOYMENT set neighborhoodTest_tmp = neighborhoodTest</sql>
+		<dropColumn tableName="TAMW_DEPLOYMENT" columnName="neighborhoodTest" />
+		<renameColumn newColumnName="neighborhoodTest" oldColumnName="neighborhoodTest_tmp" tableName="TAMW_DEPLOYMENT"/>
+		
+		<!-- deploymentConfirmed -->
+		<addColumn tableName="TAMW_DEPLOYMENT"><column name="deploymentConfirmed_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_DEPLOYMENT set deploymentConfirmed_tmp = deploymentConfirmed</sql>
+		<dropColumn tableName="TAMW_DEPLOYMENT" columnName="deploymentConfirmed" />
+		<renameColumn newColumnName="deploymentConfirmed" oldColumnName="deploymentConfirmed_tmp" tableName="TAMW_DEPLOYMENT"/>
+
+		<!-- TAMW_FAVORITERESOURCE -->
+		<!-- email -->
+		<addColumn tableName="TAMW_FAVORITERESOURCE"><column name="email_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_FAVORITERESOURCE set email_tmp = email</sql>
+		<dropColumn tableName="TAMW_FAVORITERESOURCE" columnName="email" />
+		<renameColumn newColumnName="email" oldColumnName="email_tmp" tableName="TAMW_FAVORITERESOURCE"/>
+		
+		<!-- TAMW_PROPERTYDESCRIPTOR -->
+		<!-- encrypt -->
+		<addColumn tableName="TAMW_PROPERTYDESCRIPTOR"><column name="encrypt_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_PROPERTYDESCRIPTOR set encrypt_tmp = encrypt</sql>
+		<dropColumn tableName="TAMW_PROPERTYDESCRIPTOR" columnName="encrypt" />
+		<renameColumn newColumnName="encrypt" oldColumnName="encrypt_tmp" tableName="TAMW_PROPERTYDESCRIPTOR"/>
+		
+		<!-- nullable -->
+		<addColumn tableName="TAMW_PROPERTYDESCRIPTOR"><column name="nullable_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_PROPERTYDESCRIPTOR set nullable_tmp = nullable</sql>
+		<dropColumn tableName="TAMW_PROPERTYDESCRIPTOR" columnName="nullable" />
+		<renameColumn newColumnName="nullable" oldColumnName="nullable_tmp" tableName="TAMW_PROPERTYDESCRIPTOR"/>
+		
+		<!-- readOnly -->
+		<addColumn tableName="TAMW_PROPERTYDESCRIPTOR"><column name="readOnly_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_PROPERTYDESCRIPTOR set readOnly_tmp = readOnly</sql>
+		<dropColumn tableName="TAMW_PROPERTYDESCRIPTOR" columnName="readOnly" />
+		<renameColumn newColumnName="readOnly" oldColumnName="readOnly_tmp" tableName="TAMW_PROPERTYDESCRIPTOR"/>
+		
+		<!-- testing -->
+		<addColumn tableName="TAMW_PROPERTYDESCRIPTOR"><column name="testing_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_PROPERTYDESCRIPTOR set testing_tmp = testing</sql>
+		<dropColumn tableName="TAMW_PROPERTYDESCRIPTOR" columnName="testing" />
+		<renameColumn newColumnName="testing" oldColumnName="testing_tmp" tableName="TAMW_PROPERTYDESCRIPTOR"/>
+
+		<!-- TAMW_RESOURCE -->
+		<!-- deletable -->
+		<addColumn tableName="TAMW_RESOURCE"><column name="deletable_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_RESOURCE set deletable_tmp = deletable</sql>
+		<dropColumn tableName="TAMW_RESOURCE" columnName="deletable" />
+		<renameColumn newColumnName="deletable" oldColumnName="deletable_tmp" tableName="TAMW_RESOURCE"/>
+		
+		<!-- TAMW_SHAKEDOWNTEST -->
+		<!-- isExecuted -->
+		<addColumn tableName="TAMW_SHAKEDOWNTEST"><column name="isExecuted_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_SHAKEDOWNTEST set isExecuted_tmp = isExecuted</sql>
+		<dropColumn tableName="TAMW_SHAKEDOWNTEST" columnName="isExecuted" />
+		<renameColumn newColumnName="isExecuted" oldColumnName="isExecuted_tmp" tableName="TAMW_SHAKEDOWNTEST"/>
+		
+		
+		<!-- TAMW_TEMPLATEDESCRIPTOR -->
+		<!-- testing -->
+		<addColumn tableName="TAMW_TEMPLATEDESCRIPTOR"><column name="testing_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_TEMPLATEDESCRIPTOR set testing_tmp = testing</sql>
+		<dropColumn tableName="TAMW_TEMPLATEDESCRIPTOR" columnName="testing" />
+		<renameColumn newColumnName="testing" oldColumnName="testing_tmp" tableName="TAMW_TEMPLATEDESCRIPTOR"/>
+		
+		
+		<!-- TAMW_USERSETTINGS -->
+		<!-- myAmwEnabled -->
+		<addColumn tableName="TAMW_USERSETTINGS"><column name="myAmwEnabled_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_USERSETTINGS set myAmwEnabled_tmp = myAmwEnabled</sql>
+		<dropColumn tableName="TAMW_USERSETTINGS" columnName="myAmwEnabled" />
+		<renameColumn newColumnName="myAmwEnabled" oldColumnName="myAmwEnabled_tmp" tableName="TAMW_USERSETTINGS"/>
+		
+		<!-- TAMW_ROLE -->
+		<!-- deployable -->
+		<addColumn tableName="TAMW_ROLE"><column name="deployable_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_ROLE set deployable_tmp = deployable</sql>
+		<dropColumn tableName="TAMW_ROLE" columnName="deployable" />
+		<renameColumn newColumnName="deployable" oldColumnName="deployable_tmp" tableName="TAMW_ROLE"/>
+		
+		<!-- deletable -->
+		<addColumn tableName="TAMW_ROLE"><column name="deletable_tmp" type="NUMBER(1,0)"/></addColumn>
+		<sql>update TAMW_ROLE set deletable_tmp = deletable</sql>
+		<dropColumn tableName="TAMW_ROLE" columnName="deletable" />
+		<renameColumn newColumnName="deletable" oldColumnName="deletable_tmp" tableName="TAMW_ROLE"/>
+		
+	</changeSet>
+</databaseChangeLog>

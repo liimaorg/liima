@@ -1,0 +1,22 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaPropertyChanges/#12304_propertyTagSequenceFix.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet author="bschwaller" id="#12304_propertyTagSequenceFix">
+
+        <!-- Remove wrong sequence entry-->
+        <delete tableName="SAMW_SEQUENCES">
+            <where>SEQ_NAME='propertyTagid'</where>
+        </delete>
+
+        <!-- Set sequence next value corresponding to existing tag entries-->
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT CASE WHEN COUNT(*)=0 THEN 1 ELSE MAX(ID)+1 END FROM TAMW_PROPERTYTAG)"/>
+            <where>SEQ_NAME='propertyTagId'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

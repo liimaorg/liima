@@ -1,0 +1,1934 @@
+﻿/* In diesem Stylesheet sollen alle manuellen Änderungen gemacht werden. Das Screen.css Stylesheet wird generiert, dh gehen dort gemachte Anpassungen verlohren.  */
+#content > .container {
+    overflow-x: auto;
+}
+
+/* Fix for ugly double height buttons in firefox */
+.btn {
+    white-space: normal;
+}
+
+/* Fix for wrong linear-gradient in generated screen.css */
+.btn.back:after, .back.rf-cal-time-btn:after {
+    background: linear-gradient(to bottom right, #f8f8f8, #d6d6d6);
+}
+
+/* Fix for missing transform in generated screen.css */
+.btn.back:after, .back.rf-cal-time-btn:after {
+    transform: rotate(45deg);
+}
+
+.btn.light.disable:hover {
+    border-color: #eaeaea;
+}
+
+/* Fix for missing transform in generated screen.css */
+aside nav > ul li.current > a:after {
+    transform: rotate(45deg);
+}
+
+#main aside nav.fixed.primary {
+    min-height: 135px;
+}
+
+#main aside nav.fixed.center {
+    min-height: 40px;
+}
+
+.togglePanel {
+    display: inline-block;
+    width: 99%;
+}
+
+.toggleHeader, .togglePanel {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+}
+
+.toggleHeader .rf-cp-ico {
+    padding-right: 10px;
+}
+
+.inexistant {
+    color: grey;
+    font-style: italic;
+}
+
+.descriptionGap {
+    text-align: center;
+    border: 0px;
+}
+
+.generatorTest .statusImage {
+    margin-right: 1em;
+}
+
+div.templateDiff, div.templateDiff .descriptionGap {
+    background-color: lightgrey
+}
+
+#content .togglePanel .toggleHeader table, #content .togglePanel .toggleHeader td {
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+.label {
+    display: block;
+    font-size: 14px;
+    line-height: 18px;
+}
+
+/* customized for cssCleanup (remove inlines)  */
+#assignRemoveButtonPanel {
+    width: 140px;
+    text-align: center;
+    padding-top: 10px;
+    background: white
+}
+
+.redbg {
+    background: red;
+}
+
+.switchReleaseDropdown {
+    width: auto;
+    margin-left: 20px;
+    float: left;
+    margin-top: 8px;
+}
+
+.valignTop {
+    vertical-align: top;
+}
+
+.valignMiddle {
+    vertical-align: middle;
+}
+
+.vtop {
+    valign: top;
+}
+
+.grey {
+    color: grey;
+}
+
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}
+
+.black {
+    color: black;
+}
+
+.height20 {
+    height: 20px;
+}
+
+.boldFont {
+    font-weight: bold;
+}
+
+.smallFont {
+    font-size: small;
+}
+
+.fontsize10 {
+    font-size: 10px;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.autoWidth {
+    width: auto;
+}
+
+.autoHeight {
+    height: auto;
+}
+
+.inlineBlockMiddle {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.displayBlock {
+    display: block
+}
+
+.inlineBlock {
+    display: inline-block;
+}
+
+.textRight {
+    text-align: right;
+}
+
+.textLeft {
+    text-align: left;
+}
+
+.textCenter {
+    text-align: center;
+}
+
+.marginLeft20 {
+    margin-left: 20px;
+}
+
+.marginLeft10 {
+    margin-left: 10px;
+}
+
+.margin0 {
+    margin: 0px;
+}
+
+.padding0 {
+    padding: 0px;
+}
+
+.paddingTop10 {
+    padding-top: 10px;
+}
+
+.marginTop6 {
+    margin-top: 6px;
+}
+
+.marginRight10 {
+    margin-right: 10px;
+}
+
+.marginRight15 {
+    margin-right: 15px;
+}
+
+.marginRight20 {
+    margin-right: 20px;
+}
+
+.alignCentered {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.paddingLeft20 {
+    padding-left: 20px;
+}
+
+.paddingRight10 {
+    padding-Right: 10px;
+}
+
+.paddingBottom0 {
+    padding-bottom: 0px;
+}
+
+.noneResize {
+    resize: none;
+}
+
+.marginBottom10 {
+    margin-bottom: 10px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.marginTop5 {
+    margin-top: 5px;
+}
+
+.marginLeft5 {
+    margin-left: 5px;
+}
+
+.marginLeft50 {
+    margin-left: 50px;
+}
+
+.border0 {
+    border-left: 0px;
+    border-bottom: 0px;
+    border-right: 0px;
+    border-top: 0px;
+}
+
+.max_70vh {
+    max-height: 85vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: inline-block;
+    padding: 5px;
+    width: 100%;
+}
+
+.editResourceTitleName {
+    max-width: 30vw;
+    display: inline-block;
+}
+
+.width100 {
+    width: 100%;
+}
+
+.width35 {
+    width: 35%;
+}
+
+.width40 {
+    width: 40%;
+}
+
+.width15 {
+    width: 15%;
+}
+
+.width90 {
+    width: 90%;
+}
+
+.maxWidth50 {
+    max-width: 50%;
+}
+
+.maxWidth45 {
+    max-width: 45%;
+}
+
+.width90px {
+    width: 90px;
+}
+
+.height90 {
+    height: 90%;
+}
+
+.width100 {
+    width: 100%;
+}
+
+.width700px {
+    width: 700px;
+}
+
+.width50 {
+    width: 50%;
+}
+
+.width46 {
+    width: 46%;
+}
+
+.width20 {
+    width: 20%;
+}
+
+.width5 {
+    width: 5%;
+}
+
+.width300px {
+    width: 300px;
+}
+
+.width150px {
+    width: 150px;
+}
+
+.width120 {
+    width: 120px;
+}
+
+.width430 {
+    width: 430px;
+}
+
+.width1024px {
+    min-width: 1024px;
+}
+
+.minWidth90px {
+    min-width: 90px;
+}
+
+.minWidth400px {
+    min-width: 400px;
+}
+
+.minWidth350px {
+    min-width: 350px;
+}
+
+.maxWidth1024px {
+    max-width: 1024px;
+}
+
+.width850px {
+    width: 850px;
+}
+
+.width1000px {
+    width: 1000px;
+}
+
+.width500px {
+    width: 500px;
+}
+
+.height700px {
+    max-height: 700px;
+}
+
+.height320px {
+    height: 320px;
+}
+
+.height220px {
+    height: 220px;
+}
+
+.height300px {
+    height: 300px;
+}
+
+.maxWidth700px {
+    max-width: 700px;
+}
+
+.height600px {
+    max-height: 600px;
+}
+
+.width600px {
+    width: 600px;
+}
+
+.width80px {
+    width: 80px;
+}
+
+.maxHeight400px {
+    max-height: 400px;
+}
+
+.width400px {
+    width: 400px;
+}
+
+.height400px {
+    height: 400px;
+}
+
+.height85px {
+    height: 85px;
+}
+
+.height453px {
+    height: 453px;
+}
+
+.maxHeight500px {
+    max-height: 500px;
+}
+
+.maxHeight768px {
+    max-height: 768px;
+}
+
+.height768px {
+    height: 768px;
+}
+
+.width1600px {
+    width: 1600px;
+}
+
+.height16 {
+    height: 16px;
+}
+
+.width16 {
+    width: 16px;
+}
+
+.autoOverflow {
+    overflow: auto;
+}
+
+.iconPosition {
+    float: left;
+    margin-right: 0.5em;
+}
+
+.withHeight {
+    min-height: 320px;
+}
+
+.topBorder {
+    border-left: 0px;
+    border-bottom: 0px;
+    border-right: 0px;
+    border-top: 1px solid;
+}
+
+.left {
+    float: left;
+}
+
+.lineHeight30px {
+    line-height: 30px;
+}
+
+.popupContent {
+    display: inline-block;
+    max-height: 500px;
+    overflow: auto;
+    width: 100%;
+}
+
+/* line 6, ../sass/_calendar.scss */
+.rf-cal-popup {
+    position: absolute !important;
+    background: white !important;
+    cursor: default !important;
+    width: 500px !important;
+    -webkit-box-shadow: 1px 1px 6px #6b6b6a !important;
+    -moz-box-shadow: 1px 1px 6px #6b6b6a !important;
+    box-shadow: 1px 1px 6px #6b6b6a !important;
+}
+
+/* line 15, ../sass/_calendar.scss */
+.rf-cal-hdr {
+    border-right: 0px solid !important;
+    background: #282827 !important;
+    color: white !important;
+    padding: 0 4px !important;
+}
+
+/* line 20, ../sass/_calendar.scss */
+.rf-cal-hdr .rf-cal-tl-btn-hov {
+    background: #434343 !important;
+}
+
+.rf-cal-hdr table {
+    margin: 0px !important;
+}
+
+/* line 24, ../sass/_calendar.scss */
+.rf-cal-tl {
+    vertical-align: middle !important;
+    text-align: center !important;
+    width: 20px !important;
+    height: 30px !important;
+    background: #282827 !important;
+    padding: 0px !important;
+}
+
+/* line 30, ../sass/_calendar.scss */
+.rf-cal-hdr-month {
+    vertical-align: middle !important;
+    text-align: center !important;
+    height: 30px !important;
+    white-space: nowrap !important;
+    background: #282827 !important;
+    padding: 0px !important;
+}
+
+/* line 39, ../sass/_calendar.scss */
+.rf-cal-edtr-cntr {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+}
+
+/* line 44, ../sass/_calendar.scss */
+.rf-cal-edtr-layout-shdw {
+    display: none !important;
+}
+
+/* line 50, ../sass/_calendar.scss */
+.rf-cal-monthpicker-cnt, .rf-cal-timepicker-cnt {
+    background: white !important;
+    position: relative !important;
+    -webkit-box-shadow: 1px 1px 6px #6b6b6a !important;
+    -moz-box-shadow: 1px 1px 6px #6b6b6a !important;
+    box-shadow: 1px 1px 6px #6b6b6a !important;
+}
+
+/* line 55, ../sass/_calendar.scss */
+td.rf-cal-monthpicker-ok, td.rf-cal-timepicker-ok {
+    padding: 10px 5px 10px 10px !important;
+    border-top: 1px solid #eaeaea !important;
+}
+
+/* line 60, ../sass/_calendar.scss */
+td.rf-cal-monthpicker-cancel, td.rf-cal-timepicker-cancel {
+    padding: 10px 10px 10px 5px !important;
+    border-top: 1px solid #eaeaea !important;
+}
+
+/* line 66, ../sass/_calendar.scss */
+.rf-cal-monthpicker-split {
+    border-right: 1px solid #eaeaea !important;
+}
+
+/* line 71, ../sass/_calendar.scss */
+.rf-cal-timepicker-inp {
+    padding: 7px 7px 5px 7px !important;
+    white-space: nowrap !important;
+}
+
+/* line 78, ../sass/_calendar.scss */
+.rf-cal-btn, .rf-cal-tl-btn {
+    cursor: pointer !important;
+}
+
+/* line 81, ../sass/_calendar.scss */
+.rf-cal-time-btn {
+    text-align: center !important;
+}
+
+/* line 85, ../sass/_calendar.scss */
+.rf-cal-time-btn-press {
+    border: 1px solid !important;
+}
+
+/* line 90, ../sass/_calendar.scss */
+.rf-cal-sp-inp-ctnr {
+    padding-left: 8px !important;
+    width: 45px !important;
+}
+
+/* line 94, ../sass/_calendar.scss */
+.rf-cal-sp-up, .rf-cal-sp-down {
+    background: url("../images/plus-minus.png") #2060a0 no-repeat !important;
+    height: 16px !important;
+    width: 16px !important;
+    margin: 0 1px 1px 0 !important;
+    cursor: pointer !important;
+}
+
+/* line 101, ../sass/_calendar.scss */
+.rf-cal-sp-up {
+    background-position: top center !important;
+}
+
+/* line 104, ../sass/_calendar.scss */
+.rf-cal-sp-down {
+    background-position: bottom center !important;
+}
+
+/* line 107, ../sass/_calendar.scss */
+.rf-cal-sp-press {
+    background-color: #05366e !important;
+    margin: 1px 0 0 1px !important;
+}
+
+/* line 113, ../sass/_calendar.scss */
+.rf-cal-c-cnt-overflow {
+    width: 25px !important;
+    height: 22px !important;
+}
+
+/* line 117, ../sass/_calendar.scss */
+.rf-cal-c-cnt {
+    overflow: hidden !important;
+}
+
+/* line 120, ../sass/_calendar.scss */
+.rf-cal-c {
+    border-bottom: 1px solid #d6d6d6 !important;
+    border-right: 1px solid #d6d6d6 !important;
+    padding: 0px !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+}
+
+/* line 127, ../sass/_calendar.scss */
+.rf-cal-day-lbl {
+    background: #eaeaea !important;
+    color: #434343 !important;
+    text-transform: uppercase !important;
+    font-size: 12px !important;
+    border-bottom: 1px solid #d6d6d6 !important;
+    border-right: 0px solid !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    height: 22px !important;
+    padding: 0px !important;
+}
+
+/* line 140, ../sass/_calendar.scss */
+.rf-cal-week {
+    border-bottom: 1px solid #434343 !important;
+    border-right: 1px solid #434343 !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    width: 15px !important;
+    background: #6b6b6a !important;
+    color: #eaeaea !important;
+    padding: 0px !important;
+}
+
+/* line 149, ../sass/_calendar.scss */
+.rf-cal-right-c {
+    border-right: 0px !important;
+}
+
+/* line 154, ../sass/_calendar.scss */
+.rf-cal-tl-ftr {
+    height: 22px !important;
+    padding: 1px 2px 1px 1px !important;
+    background-repeat: no-repeat !important;
+    background-position: right center !important;
+}
+
+/* line 160, ../sass/_calendar.scss */
+.rf-cal-ftr {
+    border-top: 1px solid !important;
+    border-right: 0px solid !important;
+    padding: 0px !important;
+}
+
+.rf-cal-ftr table {
+    margin: 0px !important;
+}
+
+.rf-cal-edtr-cntr, .rf-cal-edtr-cntr table, .rf-cal-edtr-cntr tr, .rf-cal-edtr-cntr td {
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
+.rf-cal-edtr-cntr {
+    width: auto !important;
+}
+
+/* line 166, ../sass/_calendar.scss */
+.rf-cal-boundary-day {
+    color: #a1a1a1 !important;
+}
+
+/* line 169, ../sass/_calendar.scss */
+.rf-cal-today {
+    background: #05366e !important;
+    color: white !important;
+}
+
+/* line 173, ../sass/_calendar.scss */
+.rf-cal-tl-btn {
+    cursor: pointer !important;
+    padding: 2px 3px 2px 3px !important;
+    white-space: nowrap !important;
+}
+
+/* line 185, ../sass/_calendar.scss */
+.rf-cal-ftr-optnl {
+    border-top: 1px solid !important;
+    border-right: 0px solid !important;
+    padding: 7px !important;
+    height: 22px !important;
+    font-weight: bold !important;
+    background: red !important;
+}
+
+/* line 193, ../sass/_calendar.scss */
+.rf-cal-sp-inp {
+    border: 0px !important;
+    padding: 0px 0px 0px 3px !important;
+    background: none transparent scroll repeat 0% 0% !important;
+    width: 18px !important;
+}
+
+/* line 199, ../sass/_calendar.scss */
+.rf-cal-sp-inp-cntr {
+    background-position: left top !important;
+    background-repeat: repeat-x !important;
+    border: 1px solid !important;
+}
+
+/* line 204, ../sass/_calendar.scss */
+.rf-cal-tl-btn-dis {
+    cursor: pointer !important;
+    padding: 2px 3px 2px 3px !important;
+}
+
+/* line 208, ../sass/_calendar.scss */
+.rf-cal-tl-btn-hov {
+    color: white !important;
+    background: #05366e !important;
+}
+
+/* line 213, ../sass/_calendar.scss */
+.rf-cal-time-inp {
+    width: 22px !important;
+    margin: 0px 2px !important;
+}
+
+/* line 218, ../sass/_calendar.scss */
+.rf-cal-edtr-btn {
+    width: 36px !important;
+    padding: 2px !important;
+    margin: 2px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+}
+
+/* line 225, ../sass/_calendar.scss */
+/* line 235, ../sass/_calendar.scss */
+/* line 239, ../sass/_calendar.scss */
+.rf-cal-edtr-btn-over,
+.rf-cal-edtr-tl-over,
+.rf-cal-edtr-tl-press {
+    padding: 1px !important;
+    border: 1px solid !important;
+}
+
+/* line 229, ../sass/_calendar.scss */
+.rf-cal-edtr-btn-sel {
+    padding: 2px !important;
+    border: 0px !important;
+    font-weight: bold !important;
+    cursor: default !important;
+}
+
+/* line 243, ../sass/_calendar.scss */
+input.rf-cal-dflt-lbl {
+    color: #b3b3b3 !important;
+}
+
+/* ------------------------------------------------ */
+.radioButtonList {
+    width: auto;
+}
+
+table.radioButtonList tbody tr td {
+    padding: 0px 20px;
+    background-color: transparent !important;
+}
+
+.state {
+    padding: 5px 30px;
+    border-width: 2px;
+    border-style: solid;
+    font-weight: bold;
+    width: 90px;
+}
+
+.state.requested {
+    border-color: grey;
+    background: url('../images/icons/requested.png') no-repeat 10px center;
+}
+
+.state.success {
+    border-color: green;
+    background: url('../images/icons/success.png') no-repeat 10px center;
+    background-color: green;
+    color: white;
+}
+
+.state.failed {
+    border-color: red;
+    background: url('../images/icons/failed.png') no-repeat 10px center;
+    background-color: red;
+    color: white;
+}
+
+.state.canceled {
+    border-color: red;
+    background: url('../images/icons/canceled.png') no-repeat 10px center;
+}
+
+.state.scheduled, .state.readyfordeployment {
+    border-color: green;
+    background: url('../images/icons/scheduled.png') no-repeat 10px center;
+}
+
+.state.readyfordeployment {
+    font-size: 95%;
+}
+
+.state.simulating {
+    border-color: green;
+    background: url('../images/icons/scheduled.png') no-repeat 10px center;
+}
+
+.state.rejected {
+    border-color: red;
+    background: url('../images/icons/rejected.png') no-repeat 10px center;
+}
+
+.state.inprogress, .state.predeployment {
+    border-color: blue;
+    /* background:url('../images/icons/inprogress.png') no-repeat 10px 5px; */
+    background: url('../images/simulation.gif') no-repeat 10px center;
+    /* background-color:yellow; */
+}
+
+.state.warning {
+    border-color: yellow;
+    background: url('../images/icons/build-failed.png') no-repeat 10px center;
+    background-color: yellow;
+}
+
+/* .icon.icon-requested{
+  background:url('../images/icons/requested.png') no-repeat;
+  padding-left:25px;
+} */
+.icon.icon-success {
+    background: url('../images/icons/success.png') no-repeat;
+    padding-left: 25px;
+}
+
+.icon.icon-failed {
+    background: url('../images/icons/failed.png') no-repeat;
+    padding-left: 25px;
+}
+
+.icon.icon-canceled {
+    background: url('../images/icons/canceled.png') no-repeat;
+    padding-left: 25px;
+}
+
+.icon.icon-scheduled {
+    background: url('../images/icons/scheduled.png') no-repeat;
+    padding-left: 25px;
+}
+
+.icon.icon-open_logfile {
+    background: url('../images/icons/open_logfile.png') no-repeat;
+    padding-left: 25px;
+}
+
+.icon.icon-build-failed {
+    background: url('../images/icons/build-failed.png') no-repeat;
+    margin-left: 5px;
+}
+
+.icon.icon-owner {
+    background: url('../images/icons/owner.png') no-repeat;
+    height: 16px;
+    width: 16px;
+}
+
+.deployment-delayed {
+    background: url('../images/icons/scheduled.png') no-repeat;
+    padding-left: 25px;
+    color: red;
+}
+
+.icon.icon-rejected {
+    background: url('../images/icons/rejected.png') no-repeat;
+    padding-left: 25px;
+}
+
+.icon.icon-redeploy {
+    background: url('../images/icons/deploy.png') no-repeat;
+    padding-left: 25px;
+}
+
+.icon.icon-redeploy-fixedsize {
+    background: url('../images/icons/deploy.png') no-repeat;
+    height: 16px;
+    width: 16px;
+    -webkit-transition: background-color 0.4s;
+    -moz-transition: background-color 0.4s;
+    -o-transition: background-color 0.4s;
+    transition: background-color 0.4s;
+}
+
+.stateSuccessful {
+    border-width: 1px;
+    border-style: solid;
+    border-color: blue;
+}
+
+.icon.icon-sortnone {
+    background: url('../images/sortnone.png') no-repeat;
+    width: 30px;
+    height: 10px;
+}
+
+.icon.icon-sortasc {
+    background: url('../images/sortasc.png') no-repeat;
+    width: 30px;
+    height: 10px;
+}
+
+.icon.icon-sortdesc {
+    background: url('../images/sortdesc.png') no-repeat;
+    width: 30px;
+    height: 10px;
+}
+
+.control-group.filter {
+    margin-top: 0px;
+}
+
+.actionbar.filter {
+    float: none;
+}
+
+.filterCol {
+    vertical-align: baseline;
+}
+
+.width_20 {
+    width: 20px;
+}
+
+.width_80 {
+    width: 80px;
+}
+
+.width_160 {
+    width: 160px;
+}
+
+.width_180 {
+    width: 180px;
+}
+
+.width_200 {
+    width: 200px;
+}
+
+.width_240px {
+    width: 240px;
+}
+
+.width_500 {
+    width: 500px;
+}
+
+.width_1100 {
+    width: 1100px;
+}
+
+.filterTable input {
+    width: auto
+}
+
+.simpleInfo:hover .icon {
+    background-color: #2060a0;
+}
+
+.icon.icon-csv {
+    background: url('../images/icons/csv.png') no-repeat;
+    background-color: transparent;
+    height: 16px;
+    width: 16px;
+}
+
+.icon.icon-reload {
+    background: url('../images/icons/reload.png') no-repeat;
+    background-color: transparent;
+    height: 16px;
+    width: 16px;
+}
+
+.icon.icon-addTo {
+    background: url('../images/icons/addTo.png') no-repeat;
+    background-color: transparent;
+    height: 16px;
+    width: 16px;
+}
+
+.icon.icon-addToWhite {
+    background: url('../images/icons/addToWhite.png') no-repeat;
+    background-color: transparent;
+    height: 16px;
+    width: 16px;
+}
+
+.icon.icon-addWhite {
+    background: url('../images/icons/addWhite.png') no-repeat;
+    background-color: transparent;
+    height: 16px;
+    width: 16px;
+}
+
+.icon.icon-infoWhite {
+    background: url('../images/icons/infoWhite.png') no-repeat;
+    background-color: transparent;
+    height: 16px;
+    width: 16px;
+}
+
+.icon.icon-addGrey {
+    background: url('../images/icons/addGrey.png') no-repeat;
+    background-color: transparent;
+    height: 16px;
+    width: 16px;
+}
+
+.icon.icon-closeGrey {
+    background: url('../images/icons/closeGrey.png') no-repeat;
+    background-color: transparent;
+    height: 16px;
+    width: 16px;
+}
+
+.icon.icon-editWhite {
+    background: url('../images/icons/editWhite.png') no-repeat;
+    background-color: transparent;
+    height: 16px;
+    width: 16px;
+}
+
+.icon.icon-removeTo {
+    background: url('../images/icons/removeTo.png') no-repeat;
+    background-color: transparent;
+    height: 16px;
+    width: 16px;
+}
+
+.icon.icon-removeToWhite {
+    background: url('../images/icons/removeToWhite.png') no-repeat;
+    background-color: transparent;
+    height: 16px;
+    width: 16px;
+}
+
+a.permission:hover {
+    color: red;
+}
+
+a.selectedPermission {
+    font-weight: bold;
+}
+
+td div a:hover span {
+    text-decoration: underline;
+}
+
+#content table.checkboxList {
+    width: auto;
+    margin-bottom: 0px;
+    margin-top: 0.25em;
+}
+
+table.checkboxList tr td {
+    padding: 0px 5px;
+}
+
+.compareTag {
+    font-weight: bold;
+    font-size: 15px;
+    text-align: left;
+    padding-top: 0px;
+    margin-bottom: 5px;
+}
+
+.compareText {
+    font-size: 14px;
+    font-style: italic;
+}
+
+#loader {
+    display: none;
+    z-index: 1000;
+    /* 	background:url('../images/ajax-loader.gif') no-repeat center center; */
+    background-color: #000000;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    filter: alpha(opacity=40); /* internet explorer */
+    -khtml-opacity: 0.4; /* khtml, old safari */
+    -moz-opacity: 0.4; /* mozilla, netscape */
+    opacity: 0.4; /* fx, safari, opera */
+    text-align: center;
+}
+
+#loader img {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    top: 50%;
+    left: 50%;
+}
+
+table.permissionAssigned {
+    height: 200px;
+    overflow: auto;
+    background: black;
+}
+
+.testing, .testing * {
+    background-color: #434343 !important;
+    color: #D6D6D6 !important;
+    -webkit-transition: background-color 0.4s;
+    -moz-transition: background-color 0.4s;
+    -ms-transition: background-color 0.4s;
+    -o-transition: background-color 0.4s;
+    transition: background-color 0.4s;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    -ms-border-radius: 6px;
+    -o-border-radius: 6px;
+    border-radius: 6px;
+}
+
+.testing .tooltip {
+    color: #282827;
+}
+
+.control-group {
+    padding-bottom: 0px;
+    margin-bottom: 12px;
+}
+
+.alert-error {
+    float: right;
+}
+
+.alert-block {
+    float: right;
+    clear: right;
+}
+
+.alert {
+    padding: 10px 60px 10px 60px;
+    -webkit-box-shadow: 1px 1px 6px #d6d6d6;
+    -moz-box-shadow: 1px 1px 6px #d6d6d6;
+    box-shadow: 1px 1px 6px #d6d6d6;
+    background-color: white;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    -ms-border-radius: 6px;
+    -o-border-radius: 6px;
+    border-radius: 6px;
+    position: relative;
+    margin: 0px 0px 10px 20px;
+    overflow: hidden;
+}
+
+.testStatus {
+    font-weight: bold;
+}
+
+.testErrorMsg {
+    font-style: italic;
+    color: red;
+}
+
+.italic,
+.testMsg {
+    font-style: italic;
+}
+
+div.well {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.tooltip {
+    -moz-border-radius: 6px !important;
+    -webkit-border-radius: 6px !important;
+    border-radius: 6px;
+    max-width: 700px;
+}
+
+/* line 18, ../sass/_tooltip.scss */
+.tooltip:before {
+    display: none !important;
+}
+
+/* line 29, ../sass/_tooltip.scss */
+.tooltip:after {
+    display: none !important;
+}
+
+/* line 47, ../sass/_table.scss */
+table.well th, table.rf-p th, table.well td, table.rf-p td {
+    padding: 10px 10px;
+}
+
+table.deploy th, table.rf-p th, table.deploy td, table.rf-p td {
+    padding: 5px 5px;
+}
+
+table.well .addRes tbody tr td {
+    background-color: transparent;
+    border: none;
+}
+
+/* ie 8 does not support CSS 3 selectors */
+.well .odd-row td {
+    background-color: white;
+    border-bottom: 1px solid rgb(226, 226, 226);
+}
+
+.well .even-row td {
+    background-color: rgb(233, 233, 233);
+    border-bottom: 1px solid rgb(226, 226, 226);
+}
+
+/*fixes small layout bugs in top menu of apps screen*/
+header nav ul li:first-child, header nav ul li.first {
+    padding-left: 20px;
+}
+
+#content table .radioButtonList {
+    margin-bottom: 0px;
+}
+
+/* line 184, ../sass/_nav.scss */
+.nav-tabs {
+    min-width: 180px;
+    border-bottom-left-radius: 6px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+.tabs-left > .nav-tabs .active > a, .tabs-left > .nav-tabs .active > a:hover {
+    background: none repeat scroll 0% 0% rgb(226, 226, 226);
+    border-right: medium none;
+    border-bottom: 0px none;
+}
+
+/* on resourceList.jsf make sub ressrouce type look like top ressource type
+/* line 78, ../sass/_nav.scss */
+/* line 62, ../sass/_nav.scss */
+/* line 62, ../sass/_nav.scss */
+aside nav > ul > li ul li > a:hover {
+    background: #282827;
+}
+
+aside nav > ul > li ul li.current > a {
+    background: #282827;
+    color: white;
+    font-weight: bold;
+    border-bottom: 1px solid #515151;
+    position: relative;
+}
+
+/* line 98, ../sass/_base.scss */
+aside nav ul li.current > a:after {
+    content: "";
+    width: 24px;
+    height: 24px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+    -moz-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    display: block;
+    position: absolute;
+}
+
+/* line 72, ../sass/_nav.scss */
+aside nav ul li.current > a:after {
+    background: #282827;
+    top: 4px;
+    right: -11px;
+}
+
+select {
+    width: auto
+}
+
+.relatedResource ul.nav-tabs li {
+    border-bottom: 1px solid #eaeaea;
+    margin-left: 1em;
+}
+
+.relatedResource ul.nav-tabs ul {
+    border-top: 1px solid #eaeaea;
+}
+
+.rf-pp-hdr {
+    background: none;
+}
+
+/* Cal Header Text */
+.rf-cal-hdr-month {
+    color: white;
+}
+
+.rf-cal-tl {
+    color: white;
+}
+
+.rf-cal-tr {
+    color: white;
+}
+
+/* cal editor zentrieren */
+.rf-cal-edtr-cntr {
+    width: 100% !important;
+    text-align: center;
+    position: relative !important;
+    vertical-align: middle;
+}
+
+.rf-cal-time-btn {
+    font-size: 11px;
+    font-weight: normal;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+/* for ie 8 that does not support css 3 gradients */
+.rf-cal-timepicker-ok div {
+    background: #2060a0;
+}
+
+td.rf-cal-timepicker-ok .rf-cal-time-btn {
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-bottom: 1px;
+    padding-top: 1px;
+}
+
+td.rf-cal-timepicker-ok {
+    border-top-width: 0px !important;
+    padding-bottom: 7px !important;;
+}
+
+td.rf-cal-timepicker-cancel {
+    border-top-width: 0px !important;
+    padding-bottom: 7px !important;;
+}
+
+.rf-cal-sel {
+    background: rgb(234, 234, 234);
+}
+
+.rf-cal-hov {
+    background: rgb(245, 245, 245);
+}
+
+.rf-cal-tl-ftr {
+    background: rgb(234, 234, 234);
+}
+
+.rf-cal-popup {
+    width: 300px !important;
+}
+
+.rf-cal-timepicker-cnt input {
+    font-size: 14px;
+}
+
+.rf-cal-sp-inp-ctnr {
+    width: 30px !important;
+}
+
+td.rf-cal-timepicker-inp {
+    padding: 7px 7px 5px 7px !important;
+}
+
+.rf-cal-timepicker-inp td {
+    vertical-align: middle;
+}
+
+.rf-cal-sp-btn {
+    background-color: white;
+    border-color: rgb(234, 234, 234);
+    background-image: none;
+}
+
+.relationPopup li {
+    padding: 1em;
+}
+
+.relationPopup li.selected, .relations tr.dirty {
+    border: 1px solid red;
+}
+
+/* stop long template names from overlapping the edit an delete links */
+article.forty.omega table {
+    table-layout: fixed;
+}
+
+article.forty.omega td {
+    padding-bottom: 9px;
+}
+
+article.forty.omega td.last {
+    width: 45px;
+    padding-left: 5px;
+}
+
+.formGrid label {
+    margin-right: 10px
+}
+
+.switchRelease {
+    width: 100px !important;
+}
+
+td.release {
+    width: 100px !important;
+    padding-left: 20px;
+}
+
+ul.generatorTest {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+    margin-bottom: 25px;
+}
+
+ul.generatorTest li {
+    padding-left: 14px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+ul.generatorTest li ul li {
+    padding-left: 30px;
+}
+
+h4.generatorTest {
+    margin-bottom: 10px;
+}
+
+.rf-pp-cntr {
+    overflow: visible;
+}
+
+.rf-pp-cntr table {
+    margin-bottom: 18px;
+}
+
+.rf-pp-cntr .well caption h2 {
+    white-space: nowrap;
+}
+
+.stateMessage {
+    font-size: 12px;
+}
+
+.stateMessage li {
+    font-size: 10px;
+    padding-left: 14px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+/*DROPDOWN*/
+
+.navbar-nav {
+    display: inline-block;
+    float: right;
+}
+
+.dropup,
+.dropdown {
+    position: relative;
+    display: inline-block;
+    float: right;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.dropdown-toggle {
+    *margin-bottom: -3px;
+}
+
+.dropdown-toggle:active,
+.open .dropdown-toggle {
+    outline: 0;
+}
+
+.caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    vertical-align: top;
+    border-top: 4px solid #000000;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    content: "";
+    opacity: 0.3;
+    filter: alpha(opacity=30);
+}
+
+.dropdown .caret {
+    margin-top: 8px;
+    margin-left: 2px;
+}
+
+.dropdown:hover .caret,
+.open .caret {
+    opacity: 1;
+    filter: alpha(opacity=100);
+
+}
+
+.dropdown.open .dropdown-toggle {
+    border-color: #a1a1a1;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    list-style: none;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    *border-right-width: 2px;
+    *border-bottom-width: 2px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+}
+
+.dropdown-menu.pull-right {
+    right: 0;
+    left: auto;
+}
+
+.dropdown-menu .divider {
+    *width: 100%;
+    height: 1px;
+    margin: 8px 1px;
+    *margin: -5px 0 5px;
+    overflow: hidden;
+    background-color: #e5e5e5;
+    border-bottom: 1px solid #ffffff;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 3px 15px;
+    clear: both;
+    font-weight: normal;
+    line-height: 18px;
+    color: #333333;
+    white-space: nowrap;
+}
+
+.open {
+    *z-index: 1000;
+}
+
+.open > .dropdown-menu {
+    display: block;
+}
+
+.pull-right > .dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+.dropup .caret {
+    border-top: 0;
+    border-bottom: 4px solid #000000;
+    content: "\2191";
+}
+
+.dropup .dropdown-menu {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: 1px;
+}
+
+.nav-collapse.collapse {
+    height: auto;
+}
+
+.ellipsisLeft {
+    overflow: hidden !important;
+    white-space: nowrap !important;
+}
+
+h1.ellipsisLeft {
+    float: left !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+}
+
+h2.ellipsisLeft {
+    float: left !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+}
+
+.resourcename-link {
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    display: inline-block !important;
+    width: 100% !important;
+}
+
+.titleTooltip {
+    padding: 5px;
+    font-size: small;
+    z-index: 1000;
+    background-color: #ffffe0;
+}
+
+.titleTooltip.hidden {
+    display: none !important;
+}
+
+.outer-scrollable {
+    overflow-y: hidden;
+}
+
+.inner-scrollable {
+    padding-top: 10px;
+    overflow-y: auto;
+    display: block;
+    height: 100%;
+}
+
+.inlineBlock {
+    display: inline-block;
+}
+
+.maxWidth200px {
+    max-width: 200px;
+}
+
+.relResourceNav {
+    min-width: 20%;
+    max-width: 20%;
+}
+
+.ellipsisRight {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* line 126, ../sass/_nav.scss */
+.nav-tabs > li > h3 {
+    padding-right: 0px !important;
+    border-right-style: none !important;
+}
+
+aside nav > ul > li a {
+    padding-bottom: 7px;
+    padding-top: 7px;
+}
+
+li.active {
+    background: rgb(233, 233, 233);
+    font-weight: bold;
+}
+
+a.expandable:before {
+    content: "+";
+    float: left;
+    width: 1em;
+    margin-left: -1em;
+}
+
+.current a.expandable:before, .currentChild a.expandable:before {
+    content: "";
+    float: left;
+    width: 0px;
+    margin-left: 0px;
+}
+
+.errorPage .alert-error {
+    float: none;
+}
+
+.propertyplaceholder {
+    color: #8b8b8a !important;
+}
+
+.btn.primary.red {
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ff0000), color-stop(100%, #770000));
+    background: -webkit-linear-gradient(#ff0000, #770000);
+    background: -moz-linear-gradient(#ff0000, #770000);
+    background: -o-linear-gradient(#ff0000, #770000);
+    background: linear-gradient(#ff0000, #770000);
+    text-shadow: 0 -1px 0px #05366e;
+    color: white;
+    border: none;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.btn.primary.red:hover {
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #770000), color-stop(100%, #660000));
+    background: -webkit-linear-gradient(#770000, #660000);
+    background: -moz-linear-gradient(#770000, #660000);
+    background: -o-linear-gradient(#770000, #660000);
+    background: linear-gradient(#770000, #660000);
+}
+
+.oneLine {
+    height: 19px;
+}
+
+.inOneLine {
+    white-space: nowrap;
+}
+
+.inOneLine a {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 2px;
+    white-space: normal;
+}
+
+.dynaProp {
+    border-color: orange !important;
+}
+
+/* tokenfield overrides */
+.tokenfield.form-control {
+    padding: 5px 10px;
+}
+
+.tokenfield, .tokenfield.focus {
+    font-family: Helvetica, Arial, sans-serif;
+    color: #434343;
+    background-color: white;
+    border: 1px solid #d6d6d6;
+    -webkit-box-shadow: inset 0 1px 2px 0 #eaeaea;
+    -moz-box-shadow: inset 0 1px 2px 0 #eaeaea;
+    box-shadow: inset 0 1px 2px 0 #eaeaea;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-transition: border-color linear 0.2s, background linear 0.2s;
+    -moz-transition: border-color linear 0.2s, background linear 0.2s;
+    -o-transition: border-color linear 0.2s, background linear 0.2s;
+    transition: border-color linear 0.2s, background linear 0.2s;
+    min-height: 47px;
+}
+
+.token-input {
+    min-width: 70px;
+    float: left;
+}
+
+#ui-id-1 {
+    position: relative;
+    width: 20% !important;
+}
+
+.ui-menu .ui-menu-item {
+    font-size: 14px;
+}
+
+.table-placeholder {
+
+}
+
+.table-placeholder {
+    border: 1px solid #C9C9C9;
+    color: #8B8B8A;
+    text-align: center;
+    margin: 4em 15em 2em;
+    padding: 1em;
+}
+
+/* for autocomplete on server list view*/
+.rf-au {
+    border-width: 0px;
+    background-image: none;
+    width: 100%;
+}
+
+input.rf-au-inp {
+    width: 70%;
+}
+
+.rf-au-lst-scrl {
+    width: 100%
+}
+
+a.deployment-action {
+    display: block;
+    white-space: nowrap;
+    margin-right: 10px;
+}
+
+/* line 42, ../sass/_typo.scss */
+div a:hover {
+    text-decoration: underline;
+}
+
+/* createDeploymentForm */
+.createDeploymentForm select {
+    width: 240px;
+}
+
+.createDeploymentForm .rf-cal-inp {
+    width: 220px;
+}
+
+.createDeploymentForm .control-group {
+    margin-top: 0px;
+    margin-bottom: 16px;
+}
+
+.createDeploymentForm .control-label {
+    padding-top: 0px;
+}
+
+#content .createDeploymentForm table {
+    margin-bottom: 0px;
+}
+
+.createDeploymentForm .versionInput {
+    width: 200px;
+}
+
+.createDeploymentForm .versionInput input {
+    width: inherit;
+}
+
+.deploy-param-controls ul {
+    padding-bottom: 4px;
+}
+
+.deploy-param-controls li {
+    white-space: nowrap;
+    display: inline;
+    padding-right: 4px;
+}
+
+.deploy-environment {
+    padding-right: 12px;
+}
+
+.deploy-environment:hover {
+    background: #eaeaea;
+}
+
+.deploy-environment span:first-of-type {
+    display: none;
+}
+
+.hidden {
+    visibility: hidden;
+}

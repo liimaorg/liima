@@ -1,0 +1,1948 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="diff-script" id="initial-model-1">
+        <createTable  tableName="SAMW_SEQUENCES">
+            <column name="SEQ_NAME" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NEXT_VAL" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-4">
+        <createTable  tableName="TAMW_APPSERVERRELHIERARCHY">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PARENTRELATION_ID" type="int"/>
+            <column name="CONSREL_ID" type="int"/>
+            <column name="RESTYPEREL_ID" type="int"/>
+            <column name="SLAVERES_ID" type="int"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-5">
+        <createTable  tableName="TAMW_APPSERVERRELHIERARCHY_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PARENTRELATION_ID" type="int"/>
+            <column name="CONSREL_ID" type="int"/>
+            <column name="RESTYPEREL_ID" type="int"/>
+            <column name="SLAVERES_ID" type="int"/>
+            <column name="V" type="bigint"/>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-6">
+        <createTable  tableName="TAMW_CONSUMEDRESREL">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IDENTIFIER" type="varchar(255)"/>
+            <column name="RESOURCESTATUS" type="varchar(255)"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RELATIONSTRATEGY" type="varchar(255)"/>
+            <column name="MASTERRESOURCE_ID" type="int"/>
+            <column name="RESOURCERELATIONTYPE_ID" type="int"/>
+            <column name="SLAVERESOURCE_ID" type="int"/>
+            <column name="FIXEDNODE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-7">
+        <createTable  tableName="TAMW_CONSUMEDRESREL_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="IDENTIFIER" type="varchar(255)"/>
+            <column name="RESOURCESTATUS" type="varchar(255)"/>
+            <column name="RELATIONSTRATEGY" type="varchar(255)"/>
+            <column name="MASTERRESOURCE_ID" type="int"/>
+            <column name="RESOURCERELATIONTYPE_ID" type="int"/>
+            <column name="SLAVERESOURCE_ID" type="int"/>
+            <column name="FIXEDNODE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-8">
+        <createTable  tableName="TAMW_CONTEXT">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="CONTEXTTYPE_ID" type="int"/>
+            <column name="PARENT_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-9">
+        <createTable  tableName="TAMW_CONTEXTTYPE">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-10">
+        <createTable  tableName="TAMW_CONTEXTTYPE_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="NAME" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-11">
+        <createTable  tableName="TAMW_CONTEXTTYPE_PROP">
+            <column name="TAMW_CONTEXTTYPE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-12">
+        <createTable  tableName="TAMW_CONTEXTTYPE_PROPDESC">
+            <column name="TAMW_CONTEXTTYPE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-13">
+        <createTable  tableName="TAMW_CONTEXTTYPE_PROPDESC_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_CONTEXTTYPE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-14">
+        <createTable  tableName="TAMW_CONTEXTTYPE_PROP_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_CONTEXTTYPE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-15">
+        <createTable  tableName="TAMW_CONTEXTTYPE_TMPLDESC">
+            <column name="TAMW_CONTEXTTYPE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-16">
+        <createTable  tableName="TAMW_CONTEXTTYPE_TMPLDESC_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_CONTEXTTYPE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-17">
+        <createTable  tableName="TAMW_CONTEXT_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="CONTEXTTYPE_ID" type="int"/>
+            <column name="PARENT_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-18">
+        <createTable  tableName="TAMW_CONTEXT_PROP">
+            <column name="TAMW_CONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-19">
+        <createTable  tableName="TAMW_CONTEXT_PROPDESC">
+            <column name="TAMW_CONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-20">
+        <createTable  tableName="TAMW_CONTEXT_PROPDESC_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_CONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-21">
+        <createTable  tableName="TAMW_CONTEXT_PROP_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_CONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-22">
+        <createTable  tableName="TAMW_CONTEXT_TMPLDESC">
+            <column name="TAMW_CONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-23">
+        <createTable  tableName="TAMW_CONTEXT_TMPLDESC_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_CONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-24">
+        <createTable  tableName="TAMW_DEPLOYMENT">
+            <column name="DEPLOYMENTSTARTED" type="boolean"/>
+            <column name="DEPLOYMENTEXECUTED" type="boolean"/>
+            <column name="BUILDSUCCESS" type="boolean"/>
+            <column name="SIMULATING" type="boolean"/>
+            <column name="SENDEMAIL" type="boolean"/>
+            <column name="SENDEMAILCONFIRMATION" type="boolean"/>
+            <column name="CREATETESTAFTERDEPLOYMENT" type="boolean"/>
+            <column name="NEIGHBORHOODTEST" type="boolean"/>
+            <column name="DEPLOYMENTCONFIRMED" type="boolean"/>
+            <column name="RUNTIME_RESOURCE_ID" type="int"/>
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="APPLICATIONSWITHMVNVERSION" type="clob"/>
+            <column name="DEPLOYMENTCANCELDATE" type="datetime"/>
+            <column name="DEPLOYMENTCANCELUSER" type="varchar(255)"/>
+            <column name="DEPLOYMENTCONFIRMATIONDATE" type="datetime"/>
+            <column name="DEPLOYMENTCONFIRMATIONUSER" type="varchar(255)"/>
+            <column name="DEPLOYMENTDATE" type="datetime"/>
+            <column name="DEPLOYMENTJOBCREATIONDATE" type="datetime"/>
+            <column name="DEPLOYMENTREQUESTUSER" type="varchar(255)"/>
+            <column name="DEPLOYMENTSTATE" type="varchar(255)"/>
+            <column name="STATEMESSAGE" type="clob"/>
+            <column name="STATETODEPLOY" type="datetime"/>
+            <column name="TRACKINGID" type="int"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTEXT_ID" type="int"/>
+            <column name="RESOURCE_ID" type="int"/>
+            <column name="RELEASE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RESOURCEGROUP_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-25">
+        <createTable  tableName="TAMW_FAVORITERESOURCE">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_ID" type="int"/>
+            <column name="RESOURCEGROUP_ID" type="int"/>
+            <column name="EMAIL" type="boolean"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-26">
+        <createTable  tableName="TAMW_PERMISSION">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE" type="varchar(255)"/>
+            <column name="CONTEXT_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-27">
+        <createTable  tableName="TAMW_PROPERTY">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYCOMMENT" type="clob"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE" type="varchar(255)"/>
+            <column name="DESCRIPTOR_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-28">
+        <createTable  tableName="TAMW_PROPERTYDESCRIPTOR">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CARDINALITYPROPERTY" type="int"/>
+            <column name="NULLABLE" type="boolean"/>
+            <column name="READONLY" type="boolean"/>
+            <column name="PROPERTYCOMMENT" type="clob"/>
+            <column name="PROPERTYNAME" type="varchar(255)"/>
+            <column name="TESTING" type="boolean"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALIDATIONLOGIC" type="varchar(255)"/>
+            <column name="PROPERTYTYPEENTITY_ID" type="int"/>
+            <column name="ENCRYPT" type="boolean"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-29">
+        <createTable  tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="CARDINALITYPROPERTY" type="int"/>
+            <column name="ENCRYPT" type="bigint"/>
+            <column name="NULLABLE" type="bigint"/>
+            <column name="PROPERTYCOMMENT" type="clob"/>
+            <column name="PROPERTYNAME" type="varchar(255)"/>
+            <column name="READONLY" type="bigint"/>
+            <column name="TESTING" type="bigint"/>
+            <column name="VALIDATIONLOGIC" type="varchar(255)"/>
+            <column name="PROPERTYTYPEENTITY_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-30">
+        <createTable  tableName="TAMW_PROPERTYTYPE">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYTYPENAME" type="varchar(255)"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALIDATIONREGEX" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-31">
+        <createTable  tableName="TAMW_PROPERTYTYPE_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="PROPERTYTYPENAME" type="varchar(255)"/>
+            <column name="VALIDATIONREGEX" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-32">
+        <createTable  tableName="TAMW_PROPERTY_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="PROPERTYCOMMENT" type="clob"/>
+            <column name="VALUE" type="varchar(255)"/>
+            <column name="DESCRIPTOR_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-33">
+        <createTable  tableName="TAMW_PROVIDEDRESREL">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IDENTIFIER" type="varchar(255)"/>
+            <column name="RESOURCESTATUS" type="varchar(255)"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MASTERRESOURCE_ID" type="int"/>
+            <column name="RESOURCERELATIONTYPE_ID" type="int"/>
+            <column name="SLAVERESOURCE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-34">
+        <createTable  tableName="TAMW_PROVIDEDRESREL_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="IDENTIFIER" type="varchar(255)"/>
+            <column name="RESOURCESTATUS" type="varchar(255)"/>
+            <column name="MASTERRESOURCE_ID" type="int"/>
+            <column name="RESOURCERELATIONTYPE_ID" type="int"/>
+            <column name="SLAVERESOURCE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-35">
+        <createTable  tableName="TAMW_RELEASE">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR2(255)"/>
+            <column name="INSTALLATIONINPRODUCTION" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-36">
+        <createTable  tableName="TAMW_RELEASE_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR2(255)"/>
+            <column name="DESCRIPTION" type="VARCHAR2(255)"/>
+            <column name="INSTALLATIONINPRODUCTION" type="date"/>
+            <column name="V" type="bigint"/>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-37">
+        <createTable  tableName="TAMW_RESOURCE">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IMPORTNAME" type="varchar(255)"/>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="RESOURCESTATUS" type="varchar(255)"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PREVIOUSVERSION_ID" type="int"/>
+            <column name="RESOURCETYPE_ID" type="int"/>
+            <column name="VERSION_ID" type="int"/>
+            <column name="RELEASE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RESOURCEGROUP_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DELETABLE" type="boolean"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-38">
+        <createTable  tableName="TAMW_RESOURCEACTIVATION">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RESRELCTX_ID" type="int"/>
+            <column name="RESGROUP_ID" type="int"/>
+            <column name="ACTIVE" type="boolean"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-39">
+        <createTable  tableName="TAMW_RESOURCEACTIVATION_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RESRELCTX_ID" type="int"/>
+            <column name="RESGROUP_ID" type="int"/>
+            <column name="ACTIVE" type="boolean"/>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="V" type="bigint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-40">
+        <createTable  tableName="TAMW_RESOURCECONTEXT">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTEXT_ID" type="int"/>
+            <column name="RESOURCE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-41">
+        <createTable  tableName="TAMW_RESOURCECONTEXT_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="CONTEXT_ID" type="int"/>
+            <column name="RESOURCE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-42">
+        <createTable  tableName="TAMW_RESOURCECTX_PROP">
+            <column name="TAMW_RESOURCECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-43">
+        <createTable  tableName="TAMW_RESOURCECTX_PROPDESC">
+            <column name="TAMW_RESOURCECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-44">
+        <createTable  tableName="TAMW_RESOURCECTX_PROPDESC_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESOURCECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-45">
+        <createTable  tableName="TAMW_RESOURCECTX_PROP_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESOURCECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-46">
+        <createTable  tableName="TAMW_RESOURCECTX_TMPLDESC">
+            <column name="TAMW_RESOURCECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-47">
+        <createTable  tableName="TAMW_RESOURCECTX_TMPLDESC_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESOURCECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-48">
+        <createTable  tableName="TAMW_RESOURCEGROUP">
+            <column name="RESOURCETYPE_ID" type="int"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OUTOFSERVICERELEASE_ID" type="int"/>
+            <column name="NAME" type="VARCHAR2(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-49">
+        <createTable  tableName="TAMW_RESOURCEGROUP_AUD">
+            <column name="RESOURCETYPE_ID" type="int"/>
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OUTOFSERVICERELEASE_ID" type="int"/>
+            <column name="V" type="bigint"/>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="NAME" type="VARCHAR2(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-50">
+        <createTable  tableName="TAMW_RESOURCERELATIONTYPE">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IDENTIFIER" type="varchar(255)"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RESOURCETYPEA_ID" type="int"/>
+            <column name="RESOURCETYPEB_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-51">
+        <createTable  tableName="TAMW_RESOURCERELATIONTYPE_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="IDENTIFIER" type="varchar(255)"/>
+            <column name="RESOURCETYPEA_ID" type="int"/>
+            <column name="RESOURCETYPEB_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-52">
+        <createTable  tableName="TAMW_RESOURCETAG">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LABEL" type="varchar(255)"/>
+            <column name="TAGDATE" type="datetime"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RESOURCE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-53">
+        <createTable  tableName="TAMW_RESOURCETAG_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="LABEL" type="varchar(255)"/>
+            <column name="TAGDATE" type="datetime"/>
+            <column name="RESOURCE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-54">
+        <createTable  tableName="TAMW_RESOURCETYPE">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PARENTRESOURCETYPE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-55">
+        <createTable  tableName="TAMW_RESOURCETYPECONTEXT">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTEXT_ID" type="int"/>
+            <column name="RESOURCETYPEENTITY_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-56">
+        <createTable  tableName="TAMW_RESOURCETYPECONTEXT_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="CONTEXT_ID" type="int"/>
+            <column name="RESOURCETYPEENTITY_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-57">
+        <createTable  tableName="TAMW_RESOURCETYPE_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="PARENTRESOURCETYPE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-58">
+        <createTable  tableName="TAMW_RESOURCE_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="DELETABLE" type="bigint"/>
+            <column name="IMPORTNAME" type="varchar(255)"/>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="RESOURCESTATUS" type="varchar(255)"/>
+            <column name="PREVIOUSVERSION_ID" type="int"/>
+            <column name="RESOURCETYPE_ID" type="int"/>
+            <column name="VERSION_ID" type="int"/>
+            <column name="RELEASE_ID" type="int"/>
+            <column name="RESOURCEGROUP_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-59">
+        <createTable  tableName="TAMW_RESRELCONTEXT">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTEXT_ID" type="int"/>
+            <column name="CONSUMEDRESOURCERELATION_ID" type="int"/>
+            <column name="PROVIDEDRESOURCERELATION_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-60">
+        <createTable  tableName="TAMW_RESRELCONTEXT_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="CONTEXT_ID" type="int"/>
+            <column name="CONSUMEDRESOURCERELATION_ID" type="int"/>
+            <column name="PROVIDEDRESOURCERELATION_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-61">
+        <createTable  tableName="TAMW_RESRELCTX_PROP">
+            <column name="TAMW_RESRELCONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-62">
+        <createTable  tableName="TAMW_RESRELCTX_PROPDESC">
+            <column name="TAMW_RESRELCONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-63">
+        <createTable  tableName="TAMW_RESRELCTX_PROPDESC_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESRELCONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-64">
+        <createTable  tableName="TAMW_RESRELCTX_PROP_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESRELCONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-65">
+        <createTable  tableName="TAMW_RESRELCTX_TMPLDESC">
+            <column name="TAMW_RESRELCONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-66">
+        <createTable  tableName="TAMW_RESRELCTX_TMPLDESC_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESRELCONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-67">
+        <createTable  tableName="TAMW_RESRELTCTX_PROP">
+            <column name="TAMW_RESRELTYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-68">
+        <createTable  tableName="TAMW_RESRELTCTX_PROPDESC">
+            <column name="TAMW_RESRELTYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-69">
+        <createTable  tableName="TAMW_RESRELTCTX_PROPDESC_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESRELTYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-70">
+        <createTable  tableName="TAMW_RESRELTCTX_PROP_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESRELTYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-71">
+        <createTable  tableName="TAMW_RESRELTCTX_TMPLDESC">
+            <column name="TAMW_RESRELTYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-72">
+        <createTable  tableName="TAMW_RESRELTCTX_TMPLDESC_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESRELTYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-73">
+        <createTable  tableName="TAMW_RESRELTYPECONTEXT">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTEXT_ID" type="int"/>
+            <column name="RESOURCERELATIONTYPE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-74">
+        <createTable  tableName="TAMW_RESRELTYPECONTEXT_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="CONTEXT_ID" type="int"/>
+            <column name="RESOURCERELATIONTYPE_ID" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-75">
+        <createTable  tableName="TAMW_RESTYPECTX_PROP">
+            <column name="TAMW_RESOURCETYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-76">
+        <createTable  tableName="TAMW_RESTYPECTX_PROPDESC">
+            <column name="TAMW_RESOURCETYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-77">
+        <createTable  tableName="TAMW_RESTYPECTX_PROPDESC_AUD">
+            <column name="PROPERTYDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESOURCETYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-78">
+        <createTable  tableName="TAMW_RESTYPECTX_PROP_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESOURCETYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROPERTIES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-79">
+        <createTable  tableName="TAMW_RESTYPECTX_TMPLDESC">
+            <column name="TAMW_RESOURCETYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-80">
+        <createTable  tableName="TAMW_RESTYPECTX_TMPLDESC_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAMW_RESOURCETYPECONTEXT_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-81">
+        <createTable  tableName="TAMW_REVINFO">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TIMESTAMP" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" type="varchar(255)"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-82">
+        <createTable  tableName="TAMW_ROLE">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DELETABLE" type="boolean"/>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEPLOYABLE" type="boolean"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-83">
+        <createTable  tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PERMISSIONS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-84">
+        <createTable  tableName="TAMW_SHAKEDOWNSTP">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="COMASEPERATEDPARAMETERS" type="varchar(255)"/>
+            <column name="STPNAME" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-85">
+        <createTable  tableName="TAMW_SHAKEDOWNSTP_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="COMASEPERATEDPARAMETERS" type="varchar(255)"/>
+            <column name="STPNAME" type="varchar(255)"/>
+            <column name="VERSION" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-86">
+        <createTable  tableName="TAMW_SHAKEDOWNTEST">
+            <column name="ISEXECUTED" type="boolean"/>
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RELEASE_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SHAKEDOWNTESTSTATE" type="varchar(255)"/>
+            <column name="TESTRESULT" type="clob"/>
+            <column name="TRACKINGID" type="int"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="APPLICATIONSERVER_ID" type="int"/>
+            <column name="CONTEXT_ID" type="int"/>
+            <column name="DEPLOYMENT_ID" type="int"/>
+            <column name="APPSFROMAPPSERVER" type="clob"/>
+            <column name="RESOURCEGROUP_ID" type="int"/>
+            <column name="TESTDATE" type="datetime"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-87">
+        <createTable  tableName="TAMW_TEMPLATEDESCRIPTOR">
+            <column name="TESTING" type="boolean"/>
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FILECONTENT" type="clob"/>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="TARGETPATH" type="varchar(255)"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-88">
+        <createTable  tableName="TAMW_TEMPLATEDESCRIPTOR_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="FILECONTENT" type="clob"/>
+            <column name="NAME" type="varchar(255)"/>
+            <column name="TARGETPATH" type="varchar(255)"/>
+            <column name="TESTING" type="bigint"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-89">
+        <createTable  tableName="TAMW_TMPLDESC_TARGETPLAT">
+            <column name="TEMPLATEDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RESGROUP_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-90">
+        <createTable  tableName="TAMW_TMPLDESC_TARGETPLAT_AUD">
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMPLATEDESCRIPTORS_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="RESGROUP_ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-91">
+        <createTable  tableName="TAMW_USERSETTINGS">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USERNAME" type="varchar(255)"/>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MYAMWENABLED" type="boolean"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-92">
+        <createTable  tableName="TAMW_VERSION">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VERSION" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-93">
+        <createTable  tableName="TAMW_VERSION_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="VERSION" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-94">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="APPSERVERRELHIER_AUD_PK" tableName="TAMW_APPSERVERRELHIERARCHY_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-95">
+        <addPrimaryKey  columnNames="ID" constraintName="APPSERVERRELHIER_PK" tableName="TAMW_APPSERVERRELHIERARCHY"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-96">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="RELEASE_AUD_PK" tableName="TAMW_RELEASE_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-97">
+        <addPrimaryKey  columnNames="ID" constraintName="RELEASE_PK" tableName="TAMW_RELEASE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-98">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="RESOURCEACT_AUD_PK" tableName="TAMW_RESOURCEACTIVATION_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-99">
+        <addPrimaryKey  columnNames="ID" constraintName="RESOURCEACT_PK" tableName="TAMW_RESOURCEACTIVATION"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-100">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="RESOURCEGROUP_AUD_PK" tableName="TAMW_RESOURCEGROUP_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-101">
+        <addPrimaryKey  columnNames="ID" constraintName="RESOURCEGROUP_PK" tableName="TAMW_RESOURCEGROUP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-102">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026860" tableName="TAMW_PROPERTYDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-103">
+        <addPrimaryKey  columnNames="REV, TAMW_RESRELTYPECONTEXT_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026861" tableName="TAMW_RESRELTCTX_PROPDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-104">
+        <addPrimaryKey  columnNames="REV, TAMW_RESRELTYPECONTEXT_ID, PROPERTIES_ID" constraintName="SYS_C0026862" tableName="TAMW_RESRELTCTX_PROP_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-105">
+        <addPrimaryKey  columnNames="TAMW_RESRELTYPECONTEXT_ID, TEMPLATES_ID" constraintName="SYS_C0026864" tableName="TAMW_RESRELTCTX_TMPLDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-106">
+        <addPrimaryKey  columnNames="REV, TAMW_RESRELTYPECONTEXT_ID, TEMPLATES_ID" constraintName="SYS_C0026865" tableName="TAMW_RESRELTCTX_TMPLDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-107">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026866" tableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-108">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026867" tableName="TAMW_RESOURCECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-109">
+        <addPrimaryKey  columnNames="REV, TAMW_RESOURCECONTEXT_ID, PROPERTIES_ID" constraintName="SYS_C0026868" tableName="TAMW_RESOURCECTX_PROP_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-110">
+        <addPrimaryKey  columnNames="TAMW_RESOURCECONTEXT_ID, TEMPLATES_ID" constraintName="SYS_C0026870" tableName="TAMW_RESOURCECTX_TMPLDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-111">
+        <addPrimaryKey  columnNames="REV, TAMW_RESOURCECONTEXT_ID, TEMPLATES_ID" constraintName="SYS_C0026871" tableName="TAMW_RESOURCECTX_TMPLDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-112">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026872" tableName="TAMW_RESOURCERELATIONTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-113">
+        <addPrimaryKey  columnNames="TAMW_RESOURCETYPECONTEXT_ID, PROPERTIES_ID" constraintName="SYS_C0026874" tableName="TAMW_RESTYPECTX_PROP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-114">
+        <addPrimaryKey  columnNames="TAMW_RESOURCETYPECONTEXT_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026876" tableName="TAMW_RESTYPECTX_PROPDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-115">
+        <addPrimaryKey  columnNames="REV, TAMW_RESOURCETYPECONTEXT_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026877" tableName="TAMW_RESTYPECTX_PROPDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-116">
+        <addPrimaryKey  columnNames="REV, TAMW_RESOURCETYPECONTEXT_ID, PROPERTIES_ID" constraintName="SYS_C0026878" tableName="TAMW_RESTYPECTX_PROP_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-117">
+        <addPrimaryKey  columnNames="TAMW_RESOURCETYPECONTEXT_ID, TEMPLATES_ID" constraintName="SYS_C0026880" tableName="TAMW_RESTYPECTX_TMPLDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-118">
+        <addPrimaryKey  columnNames="REV, TAMW_RESOURCETYPECONTEXT_ID, TEMPLATES_ID" constraintName="SYS_C0026881" tableName="TAMW_RESTYPECTX_TMPLDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-119">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026882" tableName="TAMW_RESOURCETYPE_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-120">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026883" tableName="TAMW_RESOURCE_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-121">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026884" tableName="TAMW_ROLE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-122">
+        <addPrimaryKey  columnNames="ROLES_ID, PERMISSIONS_ID" constraintName="SYS_C0026885" tableName="TAMW_ROLE_PERMISSION"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-123">
+        <addPrimaryKey  columnNames="TAMW_CONTEXTTYPE_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026887" tableName="TAMW_CONTEXTTYPE_PROPDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-124">
+        <addPrimaryKey  columnNames="REV, TAMW_CONTEXTTYPE_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026888" tableName="TAMW_CONTEXTTYPE_PROPDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-125">
+        <addPrimaryKey  columnNames="REV, TAMW_CONTEXTTYPE_ID, PROPERTIES_ID" constraintName="SYS_C0026889" tableName="TAMW_CONTEXTTYPE_PROP_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-126">
+        <addPrimaryKey  columnNames="TAMW_CONTEXTTYPE_ID, TEMPLATES_ID" constraintName="SYS_C0026891" tableName="TAMW_CONTEXTTYPE_TMPLDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-127">
+        <addPrimaryKey  columnNames="REV, TAMW_CONTEXTTYPE_ID, TEMPLATES_ID" constraintName="SYS_C0026892" tableName="TAMW_CONTEXTTYPE_TMPLDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-128">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026893" tableName="TAMW_CONTEXT_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-129">
+        <addPrimaryKey  columnNames="TAMW_CONTEXT_ID, PROPERTIES_ID" constraintName="SYS_C0026895" tableName="TAMW_CONTEXT_PROP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-130">
+        <addPrimaryKey  columnNames="TAMW_CONTEXT_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026897" tableName="TAMW_CONTEXT_PROPDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-131">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026899" tableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-134">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026902" tableName="TAMW_CONSUMEDRESREL"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-135">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026903" tableName="TAMW_CONSUMEDRESREL_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-136">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026905" tableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-137">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026906" tableName="TAMW_CONTEXTTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-138">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026907" tableName="TAMW_CONTEXTTYPE_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-139">
+        <addPrimaryKey  columnNames="TAMW_CONTEXTTYPE_ID, PROPERTIES_ID" constraintName="SYS_C0026909" tableName="TAMW_CONTEXTTYPE_PROP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-140">
+        <addPrimaryKey  columnNames="REV, TAMW_CONTEXT_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026910" tableName="TAMW_CONTEXT_PROPDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-141">
+        <addPrimaryKey  columnNames="REV, TAMW_CONTEXT_ID, PROPERTIES_ID" constraintName="SYS_C0026911" tableName="TAMW_CONTEXT_PROP_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-142">
+        <addPrimaryKey  columnNames="TAMW_CONTEXT_ID, TEMPLATES_ID" constraintName="SYS_C0026913" tableName="TAMW_CONTEXT_TMPLDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-143">
+        <addPrimaryKey  columnNames="REV, TAMW_CONTEXT_ID, TEMPLATES_ID" constraintName="SYS_C0026914" tableName="TAMW_CONTEXT_TMPLDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-144">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026915" tableName="TAMW_FAVORITERESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-145">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026917" tableName="TAMW_PERMISSION"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-146">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026918" tableName="TAMW_PROPERTYTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-147">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026919" tableName="TAMW_PROPERTYTYPE_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-148">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026920" tableName="TAMW_PROVIDEDRESREL"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-149">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026921" tableName="TAMW_PROVIDEDRESREL_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-150">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026922" tableName="TAMW_RESRELCONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-151">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026923" tableName="TAMW_PROPERTYDESCRIPTOR_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-152">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026924" tableName="TAMW_PROPERTY_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-153">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026925" tableName="TAMW_SHAKEDOWNTEST"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-154">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026926" tableName="TAMW_TEMPLATEDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-155">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026927" tableName="TAMW_TEMPLATEDESCRIPTOR_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-156">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026929" tableName="TAMW_RESRELCONTEXT_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-157">
+        <addPrimaryKey  columnNames="TAMW_RESRELCONTEXT_ID, PROPERTIES_ID" constraintName="SYS_C0026931" tableName="TAMW_RESRELCTX_PROP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-158">
+        <addPrimaryKey  columnNames="TAMW_RESRELCONTEXT_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026933" tableName="TAMW_RESRELCTX_PROPDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-159">
+        <addPrimaryKey  columnNames="REV, TAMW_RESRELCONTEXT_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026934" tableName="TAMW_RESRELCTX_PROPDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-160">
+        <addPrimaryKey  columnNames="REV, TAMW_RESRELCONTEXT_ID, PROPERTIES_ID" constraintName="SYS_C0026935" tableName="TAMW_RESRELCTX_PROP_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-161">
+        <addPrimaryKey  columnNames="TAMW_RESRELCONTEXT_ID, TEMPLATES_ID" constraintName="SYS_C0026937" tableName="TAMW_RESRELCTX_TMPLDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-162">
+        <addPrimaryKey  columnNames="REV, TAMW_RESRELCONTEXT_ID, TEMPLATES_ID" constraintName="SYS_C0026938" tableName="TAMW_RESRELCTX_TMPLDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-163">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026939" tableName="TAMW_RESRELTYPECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-164">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026940" tableName="TAMW_RESRELTYPECONTEXT_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-165">
+        <addPrimaryKey  columnNames="TAMW_RESRELTYPECONTEXT_ID, PROPERTIES_ID" constraintName="SYS_C0026942" tableName="TAMW_RESRELTCTX_PROP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-166">
+        <addPrimaryKey  columnNames="TAMW_RESRELTYPECONTEXT_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026944" tableName="TAMW_RESRELTCTX_PROPDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-167">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026945" tableName="TAMW_RESOURCECONTEXT_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-168">
+        <addPrimaryKey  columnNames="TAMW_RESOURCECONTEXT_ID, PROPERTIES_ID" constraintName="SYS_C0026947" tableName="TAMW_RESOURCECTX_PROP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-169">
+        <addPrimaryKey  columnNames="TAMW_RESOURCECONTEXT_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026949" tableName="TAMW_RESOURCECTX_PROPDESC"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-170">
+        <addPrimaryKey  columnNames="REV, TAMW_RESOURCECONTEXT_ID, PROPERTYDESCRIPTORS_ID" constraintName="SYS_C0026950" tableName="TAMW_RESOURCECTX_PROPDESC_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-171">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026951" tableName="TAMW_RESOURCERELATIONTYPE_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-172">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026952" tableName="TAMW_RESOURCETAG"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-173">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026953" tableName="TAMW_RESOURCETAG_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-174">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026954" tableName="TAMW_RESOURCETYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-175">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026955" tableName="TAMW_RESOURCETYPECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-176">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026956" tableName="TAMW_RESOURCETYPECONTEXT_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-177">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026958" tableName="TAMW_SHAKEDOWNSTP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-178">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026959" tableName="TAMW_SHAKEDOWNSTP_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-179">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026965" tableName="TAMW_USERSETTINGS"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-180">
+        <addPrimaryKey  columnNames="SEQ_NAME" constraintName="SYS_C0026967" tableName="SAMW_SEQUENCES"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-181">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026968" tableName="TAMW_DEPLOYMENT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-182">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026969" tableName="TAMW_PROPERTY"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-183">
+        <addPrimaryKey  columnNames="ID" constraintName="SYS_C0026974" tableName="TAMW_VERSION"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-184">
+        <addPrimaryKey  columnNames="ID, REV" constraintName="SYS_C0026975" tableName="TAMW_VERSION_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-185">
+        <addPrimaryKey  columnNames="TEMPLATEDESCRIPTORS_ID, RESGROUP_ID, REV" constraintName="TMPLDESC_TARGETPLAT_AUD_PK" tableName="TAMW_TMPLDESC_TARGETPLAT_AUD"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-186">
+        <addPrimaryKey  columnNames="TEMPLATEDESCRIPTORS_ID, RESGROUP_ID" constraintName="TMPLDESC_TARGETPLAT_PK" tableName="TAMW_TMPLDESC_TARGETPLAT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-187">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_APPSERVERRELHIERARCHY_AUD" constraintName="APPSERVERRELHIER_AUD_REV_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-193">
+        <addForeignKeyConstraint baseColumnNames="CONSREL_ID"  baseTableName="TAMW_APPSERVERRELHIERARCHY" constraintName="CONSREL_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONSUMEDRESREL"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-194">
+        <addForeignKeyConstraint baseColumnNames="RELEASE_ID"  baseTableName="TAMW_DEPLOYMENT" constraintName="DEPLOYMENT_RELEASE_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RELEASE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-195">
+        <addForeignKeyConstraint baseColumnNames="RESOURCEGROUP_ID"  baseTableName="TAMW_DEPLOYMENT" constraintName="DEPLOYMENT_RESOURCEGROUP_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCEGROUP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-196">
+        <addForeignKeyConstraint baseColumnNames="RUNTIME_RESOURCE_ID"  baseTableName="TAMW_DEPLOYMENT" constraintName="DEPLOYMENT_TO_RUNTIME_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-197">
+        <addForeignKeyConstraint baseColumnNames="RESOURCEGROUP_ID"  baseTableName="TAMW_FAVORITERESOURCE" constraintName="FAVGROUP_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCEGROUP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-198">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_CONTEXT_PROP_AUD" constraintName="FK_1M28DBHQNJEWGWFKQQHPI4WBC" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-199">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_CONTEXTTYPE_PROP_AUD" constraintName="FK_1PIR4F043PWACUVLAOJ5V3R10" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-200">
+        <addForeignKeyConstraint baseColumnNames="TEMPLATES_ID"  baseTableName="TAMW_CONTEXT_TMPLDESC" constraintName="FK_1XC1EDS8Q6LQ2HWYB8NT7X68I" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_TEMPLATEDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-201">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_PROPERTYDESCRIPTOR_AUD" constraintName="FK_23QWGUU8OK4X2MO6MAY6763AJ" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-202">
+        <addForeignKeyConstraint baseColumnNames="DEPLOYMENT_ID"  baseTableName="TAMW_SHAKEDOWNTEST" constraintName="FK_26OEP7PVABDGCSYKPMECG8LKP" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_DEPLOYMENT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-203">
+        <addForeignKeyConstraint baseColumnNames="PROPERTYTYPEENTITY_ID"  baseTableName="TAMW_PROPERTYDESCRIPTOR" constraintName="FK_2AC6P8K3WXL3FM5QI77UBCVO6" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTYTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-204">
+        <addForeignKeyConstraint baseColumnNames="TAMW_CONTEXT_ID"  baseTableName="TAMW_CONTEXT_TMPLDESC" constraintName="FK_2G6US7HJ0WDOQJDS45WNMW0YC" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-206">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESRELTYPECONTEXT_ID"  baseTableName="TAMW_RESRELTCTX_TMPLDESC" constraintName="FK_2T8YFNL2G52E4K9MOP6S9SN0L" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESRELTYPECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-207">
+        <addForeignKeyConstraint baseColumnNames="MASTERRESOURCE_ID"  baseTableName="TAMW_PROVIDEDRESREL" constraintName="FK_36GAXSUDPCRJ064R01WEUDN0P" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-208">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_CONTEXTTYPE_TMPLDESC_AUD" constraintName="FK_37T6HIKLXSBDHGIMI93B6IUPW" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-209">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESRELCONTEXT_AUD" constraintName="FK_3MAYXLRLB4K8YQW7DAIE8SMWI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-210">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_CONTEXT_AUD" constraintName="FK_3S1597AMB8SH4N0VP7LYNUJ15" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-211">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESOURCETYPE_AUD" constraintName="FK_3UQ7UB7WO2EXOTG2JBMCG997P" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-212">
+        <addForeignKeyConstraint baseColumnNames="DESCRIPTOR_ID"  baseTableName="TAMW_PROPERTY" constraintName="FK_3XK690IP6V8UEBQJNS5HILLJX" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTYDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-213">
+        <addForeignKeyConstraint baseColumnNames="MASTERRESOURCE_ID"  baseTableName="TAMW_CONSUMEDRESREL" constraintName="FK_40H8629JKOE9CL2RI8WJIXJLL" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-214">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESOURCETYPECONTEXT_ID"  baseTableName="TAMW_RESTYPECTX_TMPLDESC" constraintName="FK_4C0AHEHWJ6PJ3H00QPLFG04QJ" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCETYPECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-215">
+        <addForeignKeyConstraint baseColumnNames="RESOURCERELATIONTYPE_ID"  baseTableName="TAMW_CONSUMEDRESREL" constraintName="FK_4N5TGSQPP2EWU9HUIYBQ7A6FC" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCERELATIONTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-216">
+        <addForeignKeyConstraint baseColumnNames="RESOURCETYPEENTITY_ID"  baseTableName="TAMW_RESOURCETYPECONTEXT" constraintName="FK_538N1JG0WLOXB7QV24CL897FY" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCETYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-217">
+        <addForeignKeyConstraint baseColumnNames="PARENTRESOURCETYPE_ID"  baseTableName="TAMW_RESOURCETYPE" constraintName="FK_5I0YGPEYAT7XQFE6FV3W5A0EI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCETYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-218">
+        <addForeignKeyConstraint baseColumnNames="APPLICATIONSERVER_ID"  baseTableName="TAMW_SHAKEDOWNTEST" constraintName="FK_5M9XW105O2DWT35S5E8TXAUBB" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-219">
+        <addForeignKeyConstraint baseColumnNames="TAMW_CONTEXT_ID"  baseTableName="TAMW_CONTEXT_PROP" constraintName="FK_5O15XQNCI484XT0AXX7MSU86S" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-220">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESRELTCTX_PROPDESC_AUD" constraintName="FK_5QBAQUYBJWM7J1YCO6LS0LNJ3" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-221">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESTYPECTX_PROP_AUD" constraintName="FK_5UG3SWYHCA7MFO7QK3WSG5H9M" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-222">
+        <addForeignKeyConstraint baseColumnNames="SLAVERESOURCE_ID"  baseTableName="TAMW_PROVIDEDRESREL" constraintName="FK_61B5OJ5206J3SWC5DOI94JGOG" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-223">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESTYPECTX_TMPLDESC_AUD" constraintName="FK_6ISV3T8E6MM96RVJ75XUQLFB" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-224">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESOURCERELATIONTYPE_AUD" constraintName="FK_6JM73164H1RN5ULJQEUTFI3E" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-225">
+        <addForeignKeyConstraint baseColumnNames="RESOURCERELATIONTYPE_ID"  baseTableName="TAMW_PROVIDEDRESREL" constraintName="FK_7V66IGDAHLEOA5YUFEMVPC7NH" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCERELATIONTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-226">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_VERSION_AUD" constraintName="FK_99HH6RPG2NB57BH63WF4AUVM" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-227">
+        <addForeignKeyConstraint baseColumnNames="TEMPLATEDESCRIPTORS_ID"  baseTableName="TAMW_TMPLDESC_TARGETPLAT" constraintName="FK_9UW28LCRGM87UBXBVED77XIER" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_TEMPLATEDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-228">
+        <addForeignKeyConstraint baseColumnNames="FIXEDNODE_ID"  baseTableName="TAMW_CONSUMEDRESREL" constraintName="FK_9WFC9RUDRQPL88TINY65W2RSG" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-229">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_CONTEXTTYPE_AUD" constraintName="FK_A6CSLN9UQSWI48KPHUXLYQ669" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-230">
+        <addForeignKeyConstraint baseColumnNames="TAMW_CONTEXTTYPE_ID"  baseTableName="TAMW_CONTEXTTYPE_PROP" constraintName="FK_A7L8T43DU3P8X9O3YIFX4SIFI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXTTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-231">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_CONTEXT_TMPLDESC_AUD" constraintName="FK_AHRJ2FE5FK5EF8LG8EWHVBBD7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-232">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESRELCONTEXT_ID"  baseTableName="TAMW_RESRELCTX_PROP" constraintName="FK_AKT9AJQ308NIK0Y1G304YHTX3" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESRELCONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-233">
+        <addForeignKeyConstraint baseColumnNames="RESOURCETYPE_ID"  baseTableName="TAMW_RESOURCE" constraintName="FK_AL0L9RAW9YY7F4XVEKR7DHLK9" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCETYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-234">
+        <addForeignKeyConstraint baseColumnNames="RESOURCE_ID"  baseTableName="TAMW_RESOURCECONTEXT" constraintName="FK_AOF11DMVCA9DRUIK2STLLG4C9" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-235">
+        <addForeignKeyConstraint baseColumnNames="PROPERTYDESCRIPTORS_ID"  baseTableName="TAMW_CONTEXT_PROPDESC" constraintName="FK_AP6KR6RNLRU8X9DGJYJ6GJFG4" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTYDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-236">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESOURCECTX_PROP_AUD" constraintName="FK_APTRYWH5EE5HQBREU6HI52BLN" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-237">
+        <addForeignKeyConstraint baseColumnNames="TEMPLATES_ID"  baseTableName="TAMW_RESRELTCTX_TMPLDESC" constraintName="FK_ARQME96GCGW626NQYF27NUCME" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_TEMPLATEDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-238">
+        <addForeignKeyConstraint baseColumnNames="PROVIDEDRESOURCERELATION_ID"  baseTableName="TAMW_RESRELCONTEXT" constraintName="FK_AT385PYX9LU6OVNSB6TDIO31Q" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROVIDEDRESREL"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-239">
+        <addForeignKeyConstraint baseColumnNames="PROPERTYDESCRIPTORS_ID"  baseTableName="TAMW_CONTEXTTYPE_PROPDESC" constraintName="FK_AV00MOYCTOBAP6Y5L6UP3TNFJ" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTYDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-240">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESRELTCTX_PROP_AUD" constraintName="FK_B0L6SF3SFD15DHTX96RIDL67" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-241">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_CONTEXT_PROPDESC_AUD" constraintName="FK_B7OXL1LU2E2DWH62R32S16EA" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-242">
+        <addForeignKeyConstraint baseColumnNames="USER_ID"  baseTableName="TAMW_FAVORITERESOURCE" constraintName="FK_BP9VL4DQWBSN2ECTPJ4DEF8V7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_USERSETTINGS"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-243">
+        <addForeignKeyConstraint baseColumnNames="CONTEXT_ID"  baseTableName="TAMW_RESRELCONTEXT" constraintName="FK_BSGQXPYJHHU5O35HQS8J0IALY" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-244">
+        <addForeignKeyConstraint baseColumnNames="TAMW_CONTEXT_ID"  baseTableName="TAMW_CONTEXT_PROPDESC" constraintName="FK_C7DF0M3QD7OHE4Y7DSJQXLVNT" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-245">
+        <addForeignKeyConstraint baseColumnNames="TAMW_CONTEXTTYPE_ID"  baseTableName="TAMW_CONTEXTTYPE_TMPLDESC" constraintName="FK_CC4GVRD4DNOODTHXHE1DEK1N2" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXTTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-246">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESRELCTX_PROPDESC_AUD" constraintName="FK_CS0WXHIMQWCS8MUTOOOS62S3V" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-247">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESOURCETYPECONTEXT_AUD" constraintName="FK_E0C7WF80XKSH6L5AIL4DHIM3D" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-248">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESTYPECTX_PROPDESC_AUD" constraintName="FK_EDIFWX2S7GCY9M2KLMQQYPOU5" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-249">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESRELCTX_PROP_AUD" constraintName="FK_EOGCEX99YYMYWDIO8X401A01" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-250">
+        <addForeignKeyConstraint baseColumnNames="TEMPLATES_ID"  baseTableName="TAMW_RESOURCECTX_TMPLDESC" constraintName="FK_EVDCL7RH2COLUENGX128V2OWD" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_TEMPLATEDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-251">
+        <addForeignKeyConstraint baseColumnNames="CONTEXT_ID"  baseTableName="TAMW_SHAKEDOWNTEST" constraintName="FK_EVGRWRXOLBTKW4734RNI84FOH" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-252">
+        <addForeignKeyConstraint baseColumnNames="PROPERTYDESCRIPTORS_ID"  baseTableName="TAMW_RESOURCECTX_PROPDESC" constraintName="FK_EWH8EJ13VRJMH5L1FVWCD1YAR" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTYDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-253">
+        <addForeignKeyConstraint baseColumnNames="PROPERTIES_ID"  baseTableName="TAMW_RESOURCECTX_PROP" constraintName="FK_EWYAP93IVL6PBWN15N1G3I91M" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTY"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-254">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESRELTYPECONTEXT_ID"  baseTableName="TAMW_RESRELTCTX_PROPDESC" constraintName="FK_FCMM9PL8I9YNKOKGLOVBWK134" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESRELTYPECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-255">
+        <addForeignKeyConstraint baseColumnNames="PROPERTIES_ID"  baseTableName="TAMW_CONTEXT_PROP" constraintName="FK_FI3QJC1E9WBHQLPLCKS5ROFD5" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTY"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-256">
+        <addForeignKeyConstraint baseColumnNames="CONTEXT_ID"  baseTableName="TAMW_RESOURCETYPECONTEXT" constraintName="FK_FJHH7UO28YBVS0WTA44HUER2U" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-257">
+        <addForeignKeyConstraint baseColumnNames="ROLES_ID"  baseTableName="TAMW_ROLE_PERMISSION" constraintName="FK_FLI24HJVOGR1AGDRMDMGJTW1S" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_ROLE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-258">
+        <addForeignKeyConstraint baseColumnNames="PROPERTYDESCRIPTORS_ID"  baseTableName="TAMW_RESRELCTX_PROPDESC" constraintName="FK_G2AQUNPU9N4OIDRMXPEMIUDH0" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTYDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-259">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_CONSUMEDRESREL_AUD" constraintName="FK_G7ML4W1GFKF5MO393CQD2U8Y9" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-260">
+        <addForeignKeyConstraint baseColumnNames="RESOURCE_ID"  baseTableName="TAMW_DEPLOYMENT" constraintName="FK_G96KUL2596JJS3R7D26DV33OF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-261">
+        <addForeignKeyConstraint baseColumnNames="PROPERTIES_ID"  baseTableName="TAMW_RESRELTCTX_PROP" constraintName="FK_GJNIM1TQT1DXAL56AJD4UOG6X" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTY"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-262">
+        <addForeignKeyConstraint baseColumnNames="SLAVERESOURCE_ID"  baseTableName="TAMW_CONSUMEDRESREL" constraintName="FK_GPDNGPWTO2FJ86LUW8S6N7HM7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-263">
+        <addForeignKeyConstraint baseColumnNames="PROPERTYDESCRIPTORS_ID"  baseTableName="TAMW_RESTYPECTX_PROPDESC" constraintName="FK_H5M52AFUIPMNUFKJJSYLM5A6J" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTYDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-264">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESOURCETYPECONTEXT_ID"  baseTableName="TAMW_RESTYPECTX_PROP" constraintName="FK_H5YMU9RJ4OSULWHU8W6TPN1NF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCETYPECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-265">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESOURCECONTEXT_ID"  baseTableName="TAMW_RESOURCECTX_TMPLDESC" constraintName="FK_H8AMG6Q0DWX1E2RL59L1GA8CB" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-266">
+        <addForeignKeyConstraint baseColumnNames="PROPERTIES_ID"  baseTableName="TAMW_RESRELCTX_PROP" constraintName="FK_HEB6UKX303DH1C3NBXFFL1E3S" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTY"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-267">
+        <addForeignKeyConstraint baseColumnNames="TEMPLATES_ID"  baseTableName="TAMW_CONTEXTTYPE_TMPLDESC" constraintName="FK_HJ75PN6MO48LAIUJUONPB2QE7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_TEMPLATEDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-268">
+        <addForeignKeyConstraint baseColumnNames="PROPERTIES_ID"  baseTableName="TAMW_CONTEXTTYPE_PROP" constraintName="FK_I44O4BO5V8J6VSVULHMV81QP2" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTY"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-269">
+        <addForeignKeyConstraint baseColumnNames="CONTEXT_ID"  baseTableName="TAMW_DEPLOYMENT" constraintName="FK_IA6HV7VED369G7G5XMIGPXF07" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-270">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_PROPERTYTYPE_AUD" constraintName="FK_ICJVFX1RM05PB4LUBU2X77OKL" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-271">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_CONTEXTTYPE_PROPDESC_AUD" constraintName="FK_ICYHH8MHXY9CI8O100U3W1BUB" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-272">
+        <addForeignKeyConstraint baseColumnNames="RESOURCE_ID"  baseTableName="TAMW_RESOURCETAG" constraintName="FK_JJVLP0F544MTB68LSC05BVDYI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-273">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESOURCE_AUD" constraintName="FK_K1DBO0GY75IEBV8T8K61WXHM3" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-274">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_TEMPLATEDESCRIPTOR_AUD" constraintName="FK_KFKCUJYBLWFN5AUDD0F90QA2" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-275">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESOURCECTX_PROPDESC_AUD" constraintName="FK_KGMM3A7FTGDA3HXLTKSIH3HUI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-276">
+        <addForeignKeyConstraint baseColumnNames="RESOURCETYPEA_ID"  baseTableName="TAMW_RESOURCERELATIONTYPE" constraintName="FK_KT85NCB51W96TCJAITMHRSV2J" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCETYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-277">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_PROPERTY_AUD" constraintName="FK_KU9FS49MBANPXWSYGPB3RR8VJ" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-278">
+        <addForeignKeyConstraint baseColumnNames="PARENT_ID"  baseTableName="TAMW_CONTEXT" constraintName="FK_M4D9672RME6C3JI7SAWH0NFMM" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-279">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESRELTYPECONTEXT_AUD" constraintName="FK_M88MS5DIQ13RVIV7AFR6DC000" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-280">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESRELCONTEXT_ID"  baseTableName="TAMW_RESRELCTX_TMPLDESC" constraintName="FK_MD0921EGHU3IS3MOQTXHAT1J8" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESRELCONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-281">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_PROVIDEDRESREL_AUD" constraintName="FK_MQ85PIBK6UMYTI1O9N66FBTYI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-282">
+        <addForeignKeyConstraint baseColumnNames="PERMISSIONS_ID"  baseTableName="TAMW_ROLE_PERMISSION" constraintName="FK_NF2I59RRVCL5UX3L56310KG8A" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PERMISSION"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-283">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_TMPLDESC_TARGETPLAT_AUD" constraintName="FK_NIAEGRDKQK4AXW08UAJBSE9E2" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-284">
+        <addForeignKeyConstraint baseColumnNames="TEMPLATES_ID"  baseTableName="TAMW_RESTYPECTX_TMPLDESC" constraintName="FK_O41QU1BV9T40LUWJUUNDB5M2F" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_TEMPLATEDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-285">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESOURCECONTEXT_ID"  baseTableName="TAMW_RESOURCECTX_PROPDESC" constraintName="FK_OC862492P7UH5AASU0JPS02HU" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-286">
+        <addForeignKeyConstraint baseColumnNames="CONTEXT_ID"  baseTableName="TAMW_RESOURCECONTEXT" constraintName="FK_OH7SX81C2LACR2EQ8QVF6KB7K" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-287">
+        <addForeignKeyConstraint baseColumnNames="CONTEXT_ID"  baseTableName="TAMW_PERMISSION" constraintName="FK_OKHN3OHCFWAX3RO12XB4M2MBI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-288">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESOURCECTX_TMPLDESC_AUD" constraintName="FK_OLLQO4M8ICH3IF9417GHVJS1H" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-289">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESRELCONTEXT_ID"  baseTableName="TAMW_RESRELCTX_PROPDESC" constraintName="FK_PAF6V1OAPGNG34GKHX144J7AI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESRELCONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-290">
+        <addForeignKeyConstraint baseColumnNames="PROPERTIES_ID"  baseTableName="TAMW_RESTYPECTX_PROP" constraintName="FK_PFYPK1CK3G9HQ3YUY8OT0LF2N" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTY"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-291">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESOURCECONTEXT_ID"  baseTableName="TAMW_RESOURCECTX_PROP" constraintName="FK_PU40TXWJ9MBTWFWECYJVWD7DB" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-292">
+        <addForeignKeyConstraint baseColumnNames="RESOURCERELATIONTYPE_ID"  baseTableName="TAMW_RESRELTYPECONTEXT" constraintName="FK_Q31IY0FPBQ7N6XFHNPJSDP2CJ" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCERELATIONTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-293">
+        <addForeignKeyConstraint baseColumnNames="PROPERTYDESCRIPTORS_ID"  baseTableName="TAMW_RESRELTCTX_PROPDESC" constraintName="FK_Q85PT2MB6UJ23TL8IAFB4A3JX" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_PROPERTYDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-294">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESOURCETAG_AUD" constraintName="FK_QDNCQHAHD3CVS7NFR9HPLCPKI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-295">
+        <addForeignKeyConstraint baseColumnNames="CONTEXT_ID"  baseTableName="TAMW_RESRELTYPECONTEXT" constraintName="FK_QJPRKP6M0VK5HDHVI2WKC0TU6" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-296">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESRELCTX_TMPLDESC_AUD" constraintName="FK_R4DYT9AKM9XRRBG8C4TED09XL" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-297">
+        <addForeignKeyConstraint baseColumnNames="TEMPLATES_ID"  baseTableName="TAMW_RESRELCTX_TMPLDESC" constraintName="FK_RE11H1R07C4U9N70EPTJM0AMC" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_TEMPLATEDESCRIPTOR"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-298">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_SHAKEDOWNSTP_AUD" constraintName="FK_S9PMUP0BAYFT2AFSLSW6CCH9D" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-299">
+        <addForeignKeyConstraint baseColumnNames="PREVIOUSVERSION_ID"  baseTableName="TAMW_RESOURCE" constraintName="FK_SCSLLX236LB89Y07JXV6MP24Q" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-300">
+        <addForeignKeyConstraint baseColumnNames="CONTEXTTYPE_ID"  baseTableName="TAMW_CONTEXT" constraintName="FK_SOO4P4WNMVSPP6KS0LK3R6MVN" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXTTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-301">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESRELTYPECONTEXT_ID"  baseTableName="TAMW_RESRELTCTX_PROP" constraintName="FK_SW01MJBL125WX5DMXJKDUMI33" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESRELTYPECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-302">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESOURCECONTEXT_AUD" constraintName="FK_T00B1QBMDM07FPNRM6KCL4QIR" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-303">
+        <addForeignKeyConstraint baseColumnNames="CONSUMEDRESOURCERELATION_ID"  baseTableName="TAMW_RESRELCONTEXT" constraintName="FK_T3BAKKYBE0KNAA50PXT8TY41D" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONSUMEDRESREL"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-304">
+        <addForeignKeyConstraint baseColumnNames="TAMW_CONTEXTTYPE_ID"  baseTableName="TAMW_CONTEXTTYPE_PROPDESC" constraintName="FK_T85Q5YS8HI3NTC0E4424IN4V8" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_CONTEXTTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-305">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESRELTCTX_TMPLDESC_AUD" constraintName="FK_TBQV2D3DNOX505S3NNI6RSC2C" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-306">
+        <addForeignKeyConstraint baseColumnNames="TAMW_RESOURCETYPECONTEXT_ID"  baseTableName="TAMW_RESTYPECTX_PROPDESC" constraintName="FK_TGWPOFAN7I14AO782R7QJIAL0" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCETYPECONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-307">
+        <addForeignKeyConstraint baseColumnNames="RESOURCETYPEB_ID"  baseTableName="TAMW_RESOURCERELATIONTYPE" constraintName="FK_TI4725SAF2O4VVSQA6QKHDXD5" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCETYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-308">
+        <addForeignKeyConstraint baseColumnNames="OUTOFSERVICERELEASE_ID"  baseTableName="TAMW_RESOURCEGROUP" constraintName="OUTOFSERVICERELEASE_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RELEASE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-309">
+        <addForeignKeyConstraint baseColumnNames="PARENTRELATION_ID"  baseTableName="TAMW_APPSERVERRELHIERARCHY" constraintName="PARENTRELATION_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_APPSERVERRELHIERARCHY"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-310">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RELEASE_AUD" constraintName="RELEASE_AUD_REV_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-311">
+        <addForeignKeyConstraint baseColumnNames="RESGROUP_ID"  baseTableName="TAMW_TMPLDESC_TARGETPLAT" constraintName="RESGROUP_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCEGROUP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-312">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESOURCEACTIVATION_AUD" constraintName="RESOURCEACT_AUD_REV_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-313">
+        <addForeignKeyConstraint baseColumnNames="RESGROUP_ID"  baseTableName="TAMW_RESOURCEACTIVATION" constraintName="RESOURCEACT_RESGRP_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCEGROUP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-314">
+        <addForeignKeyConstraint baseColumnNames="RESRELCTX_ID"  baseTableName="TAMW_RESOURCEACTIVATION" constraintName="RESOURCEACT_RESRELCTX_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESRELCONTEXT"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-315">
+        <addForeignKeyConstraint baseColumnNames="REV"  baseTableName="TAMW_RESOURCEGROUP_AUD" constraintName="RESOURCEGROUP_AUD_REV_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-316">
+        <addForeignKeyConstraint baseColumnNames="RESOURCEGROUP_ID"  baseTableName="TAMW_RESOURCE" constraintName="RESOURCEGROUP_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCEGROUP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-317">
+        <addForeignKeyConstraint baseColumnNames="RESOURCETYPE_ID"  baseTableName="TAMW_RESOURCEGROUP" constraintName="RESOURCETYPE_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCETYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-318">
+        <addForeignKeyConstraint baseColumnNames="RELEASE_ID"  baseTableName="TAMW_RESOURCE" constraintName="RESOURCE_RELEASE_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RELEASE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-319">
+        <addForeignKeyConstraint baseColumnNames="RESTYPEREL_ID"  baseTableName="TAMW_APPSERVERRELHIERARCHY" constraintName="RESTYPEREL_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCERELATIONTYPE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-320">
+        <addForeignKeyConstraint baseColumnNames="RELEASE_ID"  baseTableName="TAMW_SHAKEDOWNTEST" constraintName="SHAKEDOWNTEST_RELEASE_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RELEASE"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-321">
+        <addForeignKeyConstraint baseColumnNames="RESOURCEGROUP_ID"  baseTableName="TAMW_SHAKEDOWNTEST" constraintName="SHAKEDOWNTEST_RESGROUP_ID_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCEGROUP"/>
+    </changeSet>
+    <changeSet author="diff-script" id="initial-model-322">
+        <addForeignKeyConstraint baseColumnNames="SLAVERES_ID"  baseTableName="TAMW_APPSERVERRELHIERARCHY" constraintName="SLAVERES_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"  referencedTableName="TAMW_RESOURCEGROUP"/>
+    </changeSet>
+   <!-- <changeSet author="diff-script" id="initial-model-323">
+        <createView  viewName="VAMW_UDKVIEW">select
+            p.VALUE as HOSTNAME,
+            asRes.name as APPSERVER,
+            asRes.id as APPSERVER_ID,
+            v.VERSION as APPSERVER_VERSION,
+            appRes.name as APPLICATION,
+            tp.PLATFORMNAME as RUNTIME,
+            nodeRes.name AS NODENAME,
+            c.NAME as ENVIRONMENT
+            from TAMW_CONSUMEDRESREL crr
+            LEFT JOIN TAMW_RESOURCE asRes
+            ON crr.MASTERRESOURCE_ID = asRes.id
+            LEFT JOIN TAMW_RESOURCETYPE asResType
+            ON asRes.RESOURCETYPE_ID = asResType.ID
+            LEFT JOIN TAMW_RESOURCE nodeRes
+            ON crr.SLAVERESOURCE_ID = nodeRes.id
+            LEFT JOIN TAMW_RESOURCETYPE nodeResType
+            ON nodeRes.RESOURCETYPE_ID = nodeResType.ID
+            LEFT JOIN TAMW_CONSUMEDRESREL crr2
+            ON crr2.MASTERRESOURCE_ID = asRes.id
+            LEFT JOIN TAMW_RESOURCE appRes
+            ON crr2.SLAVERESOURCE_ID = appRes.id
+            LEFT JOIN TAMW_RESOURCETYPE appResType
+            ON appRes.RESOURCETYPE_ID = appResType.ID
+            LEFT JOIN TAMW_RESRELCONTEXT rrc
+            ON crr.ID = rrc.CONSUMEDRESOURCERELATION_ID
+            LEFT JOIN TAMW_resRelCtx_prop rrc_p
+            ON rrc.ID = rrc_p.TAMW_RESRELCONTEXT_ID
+            LEFT JOIN TAMW_PROPERTY p
+            ON rrc_p.PROPERTIES_ID = p.ID
+            LEFT JOIN TAMW_PROPERTYDESCRIPTOR pd
+            ON p.DESCRIPTOR_ID = pd.ID
+            LEFT JOIN TAMW_CONTEXT c
+            ON rrc.CONTEXT_ID = c.ID
+            LEFT JOIN TAMW_TARGETPLATFORM tp
+            ON asRes.TARGETPLATFORM_ID = tp.ID
+            LEFT JOIN TAMW_VERSION v
+            ON asRes.VERSION_ID = v.ID
+            LEFT JOIN TAMW_CONTEXTTYPE ct
+            ON c.CONTEXTTYPE_ID = ct.ID
+            where (pd.PROPERTYNAME = 'hostName')
+            AND (asResType.NAME = 'APPLICATIONSERVER')
+            AND (nodeResType.NAME = 'NODE')
+            AND (appResType.NAME = 'APPLICATION')
+            AND (ct.NAME = 'ENV')</createView>
+    </changeSet>-->
+</databaseChangeLog>

@@ -1,0 +1,53 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaPropertyDescriptorChanges/maiaPropertyDescriptorChanges.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="#10583 add (AMW)FUNCTION">
+
+        <createTable tableName="TAMW_FUNCTION">
+            <column name="ID" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="function_PK"/>
+            </column>
+            <column name="IMPLEMENTATION" type="CLOB"/>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RESOURCE_ID" type="INTEGER"/>
+            <column name="RESOURCETYPE_ID" type="INTEGER"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="RESOURCE_ID"
+                                 baseTableName="TAMW_FUNCTION" constraintName="TAMW_FUNRESOURCE_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_RESOURCE"/>
+        <addForeignKeyConstraint baseColumnNames="RESOURCETYPE_ID"
+                                 baseTableName="TAMW_FUNCTION" constraintName="TAMW_FUNRESOURCETYPE_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_RESOURCETYPE"/>
+
+        <insert tableName="SAMW_SEQUENCES">
+            <column name="seq_name" value="functionId"></column>
+            <column name="next_val" valueNumeric="1"></column>
+        </insert>
+
+        <createTable tableName="TAMW_FUNCTION_AUD">
+            <column name="ID" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="TINYINT"/>
+            <column name="IMPLEMENTATION" type="CLOB"/>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="RESOURCE_ID" type="INTEGER"/>
+            <column name="RESOURCETYPE_ID" type="INTEGER"/>
+        </createTable>
+        <addPrimaryKey tableName="TAMW_FUNCTION_AUD" columnNames="id, rev" constraintName="TAMW_FUNCTION_AUD_PK"/>
+        <addForeignKeyConstraint baseColumnNames="rev"
+                                 baseTableName="TAMW_FUNCTION_AUD" constraintName="TAMW_FUNCTION_revinfo_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_REVINFO"/>
+
+    </changeSet>
+
+
+</databaseChangeLog>

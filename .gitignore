@@ -1,0 +1,16 @@
+.metadata
+target/
+*/.settings/*
+.settings/
+**/*.iml
+.idea
+.classpath
+.project
+AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegration.trace.db
+AMW_parent.iml
+todo.tasks
+AMW_ruby/*.log*
+release.properties
+AMW_web/src/main/webapp/.sass-cache/
+response*.POST.html
+response*.GET.html

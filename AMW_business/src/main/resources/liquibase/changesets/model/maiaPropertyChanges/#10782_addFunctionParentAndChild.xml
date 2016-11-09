@@ -1,0 +1,27 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaPropertyDescriptorChanges/#10782_addFunctionParentAndChild.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="bschwaller" id="#10782_addFunctionParentAndChild">
+
+        <addColumn tableName="TAMW_FUNCTION">
+            <column name="OVERWRITTENPARENT_ID" type="INTEGER"></column>
+        </addColumn>
+
+
+        <addForeignKeyConstraint baseColumnNames="OVERWRITTENPARENT_ID"
+                                 baseTableName="TAMW_FUNCTION" constraintName="TAMW_FUN_P_FUN_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_FUNCTION"/>
+
+
+        <addColumn tableName="TAMW_FUNCTION_AUD">
+            <column name="OVERWRITTENPARENT_ID" type="INTEGER"></column>
+        </addColumn>
+
+
+    </changeSet>
+
+
+</databaseChangeLog>

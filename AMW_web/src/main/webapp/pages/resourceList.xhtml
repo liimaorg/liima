@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:mobi="http://java.sun.com/jsf/composite/mobi">
+
+<ui:composition template="templates/template.xhtml">
+	<f:metadata>
+		<f:event type="preRenderView"
+			listener="#{resourceListDataProvider.initView}"/>
+	</f:metadata>
+	<ui:param name="screen" value="newResourceList" />
+	<ui:define name="title">Resources</ui:define>
+	<ui:define name="pagetitle">
+		<h:outputText id="pageheader" value="Resources" />
+	</ui:define>
+	<ui:define name="body">
+		<ui:include src="components/selectEditResourceTypeComp.xhtml">
+			<ui:param name="renderItemsList" value="resourceInstanceListComp" />
+			<ui:param name="selectEditResourceTypeImpl"
+				value="#{resourceListDataProvider.selectEditResourceTypeComp}" />
+			<ui:param name="showCreateResourceType" value="${true}" />
+		</ui:include>
+		<section id="content">
+		<div class="container">
+
+			<ui:include src="components/resourceInstanceListComp.xhtml">
+				<ui:param name="resourceInstanceListImpl"
+					value="#{resourceListDataProvider}" />
+				<ui:param name="renderItemsList" value="selectEditResourceTypeComp" />
+			</ui:include>
+
+		</div>
+
+		</section>
+	</ui:define>
+
+	<ui:define name="component_popups">
+		<ui:include src="components/resourceInstanceListPopupsComp.xhtml">
+			<ui:param name="resourceInstanceListImpl"
+				value="#{resourceListDataProvider}" />
+			<ui:param name="renderItemsList" value="selectEditResourceTypeComp" />
+		</ui:include>
+		<mobi:createApplicationForAsPopup
+			parentDataProvider="#{resourceListDataProvider}"
+			renderList="resourceInstanceListComp" id="createApplicationForAsPopupComp"/>
+	</ui:define>
+
+</ui:composition>
+
+</html>

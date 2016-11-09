@@ -1,0 +1,127 @@
+// Autocomplete
+//----------------------------------------------------------------------
+
+input.rf-au-inp {
+}
+*.rf-au {
+	border-style: solid;
+	display: inline-block;
+	background-image: url(/AMW_web/rfRes/autocompleteFieldGradient.png.jsf?v=4.1.0.Final&db=eAFjAAAAAQAB&ln=org.richfaces.images);
+	background-repeat: repeat-x;
+	background-position: top left;
+	font-size: 1px;
+}
+*.rf-au-fld-btn {
+	display: inline-block;
+	font-size: 1px;
+	white-space: nowrap;
+	vertical-align: top;
+}
+/* *.rf-au-btn {
+	background-image: url(/AMW_web/rfRes/autocompleteButtonGradient.png.jsf?v=4.1.0.Final&db=eAFjAAAAAQAB&ln=org.richfaces.images);
+	background-repeat: repeat-x;
+	background-position: top left;
+	border-left-width: 1px;
+	border-left-style: solid;
+	display: inline-block;
+	vertical-align: top;
+}
+*.rf-au-btn-arrow, *.rf-au-btn-arrow-dis {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-image: url(/AMW_web/rfRes/comboDownButton.png.jsf?v=4.1.0.Final&db=eAH7z8DAAAAEAAEA&ln=org.richfaces.images);
+	cursor: pointer;
+	width: 15px;
+	height: 16px;
+	display: inline-block;
+}
+*.rf-au-btn-arrow-dis {
+	background-image: url(/AMW_web/rfRes/comboDisabledDownButton.png.jsf?v=4.1.0.Final&db=eAH7f-TASQAIlQNN&ln=org.richfaces.images);
+	cursor: default;
+}
+*/
+*.rf-au-lst-cord {
+	position: absolute;
+	z-index: 10000;
+	display: none;
+}
+*.rf-au-lst-dcrtn {
+	background: $grey7;
+	padding: 3px;
+	border: 1px solid $grey5;
+	@include border-radius(3px);
+}
+*.rf-au-lst-scrl {
+	overflow: auto;
+	overflow-x: hidden;
+	width: 200px;
+	max-height: 100px;
+	min-height: 20px;
+}
+*.rf-au-itm {
+	cursor: default;
+	padding: 2px;
+}
+*.rf-au-itm-sel {
+	padding: 1px;
+}
+*.rf-au-opt {
+	white-space: nowrap;
+	list-style-type: none;
+}
+*.rf-au-opt-sel {
+	width: 100%;
+}
+*.rf-au-shdw {
+	display: inline-block;
+	position: absolute;
+	float: left;
+	padding: 6px 6px 6px 6px;
+	top: -6px;
+	left: -7px;
+}
+/* *.rf-au-shdw-t {
+	background-image: url(/AMW_web/javax.faces.resource/combo_list_shadow.png.jsf?ln=org.richfaces);
+	background-position: top left;
+	position: absolute;
+	width: 6px;
+	top: 0px;
+	bottom: 6px;
+	left: 0px;
+}
+*.rf-au-shdw-l {
+	background-image: url(/AMW_web/javax.faces.resource/combo_list_shadow.png.jsf?ln=org.richfaces);
+	background-position: bottom left;
+	position: absolute;
+	height: 6px;
+	bottom: 0px;
+	left: 0px;
+	right: 6px;
+}
+*.rf-au-shdw-r {
+	background-image: url(/AMW_web/javax.faces.resource/combo_list_shadow.png.jsf?ln=org.richfaces);
+	background-position: bottom right;
+	position: absolute;
+	width: 6px;
+	top: 6px;
+	bottom: 0px;
+	right: 0px;
+}
+*.rf-au-shdw-b {
+	background-image: url(/AMW_web/javax.faces.resource/combo_list_shadow.png.jsf?ln=org.richfaces);
+	background-position: right top;
+	position: absolute;
+	height: 6px;
+	top: 0px;
+	left: 6px;
+	right: 0px;
+}
+*/
+*.rf-au-lst-ul {
+	margin: 0px;
+	padding: 0px;
+}
+*.rf-au-tbl {
+	border-spacing: 0px;
+}
+

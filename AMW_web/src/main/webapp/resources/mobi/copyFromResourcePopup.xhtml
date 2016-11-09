@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<composite:interface/>
+
+<composite:implementation>
+
+    <h:form>
+        <!-- COPY FROM RESOURCE POPUP -->
+
+        <rich:popupPanel id="copyFromResourcePopup" moveable="true" domElementAttachment="form"
+                         style="min-width:70vw; " autosized="true">
+            <div>
+                <f:facet name="header">
+                    <h2>
+                        <h:outputText value="Copy from resource"/>
+                    </h2>
+                </f:facet>
+                <f:facet name="controls">
+                    <h:outputLink value="#"
+                                  styleClass="close icon icon-close icon-replace"
+                                  onclick="#{rich:component('copyFromResourcePopup')}.hide(); return false;">x</h:outputLink>
+                </f:facet>
+                <h:panelGroup layout="block" styleClass="container">
+                    <aside>
+                        <nav class="primary fixed">
+                            <ul>
+                                <li class="current"><a><div class="ellipsisRight" title="#{editResourceView.capitalizedResourceTypeName}">#{editResourceView.capitalizedResourceTypeName}</div></a></li>
+                            </ul>
+                        </nav>
+                    </aside>
+                    <section class="popupNavigationComponent flexible ajaxScroll">
+                        <h:dataTable
+                                rendered="${copyResourceDataProvider.loadList}"
+                                id="copyResTable" var="resourceGroup"
+                                style=" margin-left:20px;"
+                                value="#{copyResourceDataProvider.getResourcesForSelectedResourceType()}"
+                                columnClasses=" ,last" styleClass="well"
+                                rowClasses="odd-row,even-row">
+                            <h:column
+                                    style="border-left:0px; border-bottom:0px; border-right:0px; border-top:1px solid; width:300px;">
+                                <f:facet name="header">
+                                    <h:outputText value="Name"/>
+                                </f:facet>
+                                <h:outputText value="#{resourceGroup.name}"/>
+                            </h:column>
+                            <h:column
+                                    style="border-left:0px; border-bottom:0px; border-right:0px; border-top:1px solid; width:300px;">
+                                <f:facet name="header">
+                                    <h:outputText value="Release"/>
+                                </f:facet>
+                                <h:selectOneMenu styleClass="switchRelease"
+                                                 value="#{resourceGroup.selectedReleaseId}">
+                                    <f:selectItems value="#{resourceGroup.releases}"
+                                                   var="release" itemLabel="#{release.name}"
+                                                   itemValue="#{release.id}"/>
+                                </h:selectOneMenu>
+
+                            </h:column>
+                            <h:column
+                                    style="border-left:0px; border-bottom:0px; border-right:0px; border-top:1px solid; width:400px;">
+                                <f:facet name="header">
+                                    <h:outputText value="Action"/>
+                                </f:facet>
+                                <table class="addRes">
+                                    <tr>
+                                        <td><h:commandLink value="Copy from this resource"
+                                                           rendered="#{copyResourceDataProvider.canCopyResource}"
+                                                           action="#{copyResourceDataProvider.copyFromResource(resourceGroup.id)}"
+                                                           onclick="if(confirmLeave(event)){showLoader(); return true;} else{return false;};">
+                                        </h:commandLink></td>
+                                    </tr>
+                                </table>
+                            </h:column>
+                        </h:dataTable></section>
+                </h:panelGroup>
+            </div>
+        </rich:popupPanel>
+    </h:form>
+</composite:implementation>
+</html>

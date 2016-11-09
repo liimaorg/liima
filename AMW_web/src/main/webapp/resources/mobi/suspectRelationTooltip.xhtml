@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+        >
+
+<!-- INTERFACE -->
+<composite:interface>
+    <composite:attribute name="sourceForeignableAttributes"/>
+    <composite:attribute name="relationForeignableAttributes"/>
+    <composite:attribute name="targetForeignableAttributes"/>
+</composite:interface>
+
+<!-- IMPLEMENTATION -->
+<composite:implementation>
+
+    <h:panelGroup rendered="#{resourceRelationModel.isSuspectRelation(cc.attrs.sourceForeignableAttributes,cc.attrs.relationForeignableAttributes,cc.attrs.targetForeignableAttributes)}">
+        <a class="help-inline info" onmouseover="this.parentNode.getElementsByTagName('div')[0].style.display='block';" onmouseout="this.parentNode.getElementsByTagName('div')[0].style.display='none';">
+        <i class="icon icon-warning"/>
+        </a>
+
+        <div class="tooltip">
+            <h2>
+                <h:outputText value="Suspect relation"/>
+            </h2>
+
+            <br class="clear"/>
+
+            <section>
+                <div class="well">
+                    <nav class="actionbar"/>
+                    <h:panelGrid id="grid" columns="2" cellpadding="4">
+
+                        <h:outputLabel value="Source owner: "/>
+                        <h:outputText id="sourceOwner" value="#{(cc.attrs.sourceForeignableAttributes != null) ? cc.attrs.sourceForeignableAttributes.owner : ''}"/>
+
+                        <h:outputLabel value="Relation owner: "/>
+                        <h:outputText id="relationOwner" value="#{(cc.attrs.relationForeignableAttributes != null) ? cc.attrs.relationForeignableAttributes.owner : ''}"/>
+
+                        <h:outputLabel value="Target owner: "/>
+                        <h:outputText id="targetOwner" value="#{(cc.attrs.targetForeignableAttributes != null) ? cc.attrs.targetForeignableAttributes.owner : ''}"/>
+
+                    </h:panelGrid>
+                </div>
+            </section>
+
+
+        </div>
+    </h:panelGroup>
+
+</composite:implementation>
+
+
+</html>

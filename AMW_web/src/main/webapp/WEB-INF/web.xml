@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="3.0"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	<display-name>AMW_web</display-name>
+	<context-param>
+		<description>Taglibrary for amw components</description>
+		<param-name>javax.faces.FACELETS_LIBRARIES</param-name>
+		<param-value>/WEB-INF/amw.taglib.xml</param-value>
+	</context-param>
+	<context-param>
+		<description>disable comments like "&lt;!-- --&gt;" within xhtml code to reduce html size</description>
+		<param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.PROJECT_STAGE</param-name>
+		<param-value>Production</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+		<param-value>server</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.sun.faces.numberOfLogicalViews</param-name>
+		<param-value>60</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.sun.faces.numberOfViewsInSession</param-name>
+		<param-value>15</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.ajax4jsf.handleViewExpiredOnClient</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.richfaces.enableControlSkinning</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.richfaces.skin</param-name>
+		<param-value>plain</param-value>
+	</context-param>
+	<context-param>
+		<param-name>org.richfaces.resourceOptimization.enabled</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+	<session-config>
+		<session-timeout>60</session-timeout>
+	</session-config>
+
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>/faces/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping>
+	<mime-mapping>
+		<extension>ecss</extension>
+		<mime-type>text/css</mime-type>
+	</mime-mapping>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/pages/error.xhtml</location>
+	</error-page>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Restricted to Secure role</web-resource-name>
+			<description>Declarative security</description>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+
+		<auth-constraint>
+			<role-name>viewer</role-name>
+			<role-name>config_admin</role-name>
+			<role-name>app_developer</role-name>
+			<role-name>server_admin</role-name>
+			<role-name>admin_deployer</role-name>
+			<role-name>test_deployer</role-name>
+			<role-name>developer_deployer</role-name>
+			<role-name>env_management_deployer</role-name>
+			<role-name>shakedown_tester</role-name>
+			<role-name>shakedown_admin</role-name>
+            <role-name>overwrite_foreignables</role-name>
+            <role-name>admin_developer</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-role>
+		<role-name>viewer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>config_admin</role-name>
+	</security-role>
+	<security-role>
+		<role-name>app_developer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>server_admin</role-name>
+	</security-role>
+	<security-role>
+		<role-name>admin_deployer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>test_deployer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>developer_deployer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>env_management_deployer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>shakedown_tester</role-name>
+	</security-role>
+	<security-role>
+		<role-name>shakedown_admin</role-name>
+	</security-role>
+    <security-role>
+        <role-name>overwrite_foreignables</role-name>
+    </security-role>
+	<security-role>
+		<role-name>admin_developer</role-name>
+	</security-role>
+
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>AMW login</realm-name>
+	</login-config>
+
+</web-app>

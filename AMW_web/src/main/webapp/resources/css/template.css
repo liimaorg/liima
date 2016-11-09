@@ -1,0 +1,64 @@
+.panelGridChapter {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.panelGridChapterHeader {
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: left;
+  padding: 10px;
+}
+
+.panelGridChapterBody {
+  width: 100%;
+  padding: 20px;
+}
+
+.simpleTogglePanelChapter {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.simpleTogglePanelChapterHeader {
+  font-size: 15px;
+  padding: 5px;
+  color: black;
+  font-weight: bold;
+  background-color: #EAEAEA;
+  background-image: none;
+  background-repeat: no-repeat;  
+  text-decoration: underline;
+  border: 1px solid silver;
+}
+
+.simpleTogglePanelChapterBody {
+  background-color: white;
+  padding: 5px;
+  height: 100%;
+}
+
+.simpleTogglePanelChapter {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.simpleTogglePanelChapterHeaderRed {
+  font-size: 15px;
+  padding: 5px;
+  font-weight: bold;
+}
+
+.simpleTogglePanelChapterBody {
+  background-color: white;
+  padding: 5px;
+}
+.xhtmlSourcePanelHeader {
+  background-color: white;
+  line-height: 0px;
+  display:none;
+}

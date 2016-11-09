@@ -1,0 +1,109 @@
+
+@import "compass/reset";
+
+// ---------------------------------------------------------------------------
+// Basic Grid
+
+$total-columns  : 10;
+$column-width   : 10em;
+$gutter-width   : 3em;
+$grid-padding   : $gutter-width;
+
+$padding 		: 20px;
+$aside-width	: 250px;
+
+$show-grid-backgrounds  : true;
+
+
+// ---------------------------------------------------------------------------
+// Vertical Rhythm
+
+$base-font-family	: 	Helvetica, Arial, sans-serif;
+$base-font-size		: 	16px;
+$base-line-height	: 	18px;
+$relative-font-sizing:	false;
+
+
+// ---------------------------------------------------------------------------
+// Colors
+
+$black: 			#161615;
+$grey1: 			#282827;
+$grey2: 			#434343;
+$grey3: 			#6B6B6A;
+$grey4: 			#A1A1A1;
+$grey5: 			#D6D6D6;
+$grey6: 			#EAEAEA;
+$grey7: 			#F8F8F8;
+
+$blue1:				#05366E;
+$blue2:				#2060A0;
+$blue3:				#E9EDF2;
+
+$red:				#CC3300;
+$green:				#087E4C;
+$yellow:			#FFFCE1;
+
+
+// ---------------------------------------------------------------------------
+// Forms & buttons
+
+$radius:	6px;
+$btnBorder:	$grey5;
+
+
+// ---------------------------------------------------------------------------
+// Forms & buttons
+
+$default-box-shadow-color		:	$grey5;
+$default-box-shadow-h-offset	:	1px;
+$default-box-shadow-v-offset	:	1px;
+$default-box-shadow-blur		:	6px;
+
+$default-text-shadow-color 		: 	white;
+$default-text-shadow-h-offset 	:	0px;
+$default-text-shadow-v-offset 	:	1px;
+$default-text-shadow-blur 		: 	0px;
+$default-text-shadow-spread 	: 	false;
+
+
+// ---------------------------------------------------------------------------
+// Forms & buttons
+
+$default-transition-duration	:	0.4s;
+
+
+// ---------------------------------------------------------------------------
+// Imports
+
+@import "compass/typography/vertical_rhythm";
+@import "compass/typography/lists/horizontal-list";
+@import "compass/css3/border-radius";
+@import "compass/css3/inline-block";
+@import "compass/css3/text-shadow";
+@import "compass/css3/box-shadow";
+@import "compass/css3/opacity";
+@import "compass/css3/transition";
+@import "compass/css3/images";
+@import "compass/utilities/tables/alternating-rows-and-columns";
+@import "compass/utilities/sprites";
+@import "susy";
+
+
+// ---------------------------------------------------------------------------
+// Mixins
+
+@mixin arrow($pWidth : 19px, $pHeight : 19px, $pRadius: 3px) {
+	position: relative;
+	&:after {
+		content:"";
+		width: $pWidth;
+		height: $pHeight;
+		@include border-radius($pRadius);
+		-moz-transform: rotate(45deg);
+		-webkit-transform: rotate(45deg);
+		display:block;
+		position: absolute;
+	}
+}
+

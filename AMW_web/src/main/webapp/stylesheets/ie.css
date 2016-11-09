@@ -1,0 +1,62 @@
+/* Für dieses Stylesheet muss eine funktionierende Browserweiche gesetzt werden!!! */
+header {
+	background-color: #161615;
+}
+
+#subheader {
+	background-color: #eaeaea;
+}
+
+.btn.primary {
+	background: #2060A0;
+}
+
+.btn.primary:hover {
+	background: #184676;
+}
+
+.btn.back:after {
+	border-bottom: 0px;
+	border-left: 0px;
+}
+
+/* overwrite line 98, ../sass/_base.scss */
+aside nav>ul>li.current>a:after {
+	margin-top: -5px;
+	height: 38px;
+	width: 16px;
+	background: url('../images/icons/ie_menu_icon.png') no-repeat;
+	/* background-color: red; */
+	background-position: 3px 0;
+}
+
+/* overwrite line 98, ../sass/_base.scss */
+aside nav>ul>li ul li.current>a:after {
+	margin-top: -5px;
+	height: 38px;
+	width: 16px;
+	background: url('../images/icons/ie_menu_icon.png') no-repeat;
+	/* background-color: red; */
+	background-position: 3px 0;
+}
+
+.back.btn{
+	background: url('../images/icons/ie_backbutton_center.png');
+	border-left:0px;
+		border-top:0px;
+			border-bottom:0px;
+	height:20px;
+}
+
+.back.btn:before{
+	position:absolute;
+	height:28px;
+	width:20px;
+	left:-20px;
+	top:0px;
+	content:'';
+	background: url('../images/icons/ie_backbutton.png');
+}
+
+
+

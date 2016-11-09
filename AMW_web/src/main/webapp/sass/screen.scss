@@ -1,0 +1,115 @@
+// ---------------------------------------------------------------------------
+// Imports
+
+@import "base";
+@import "typo";
+@import "icons";
+@import "forms";
+@import "table";
+@import "nav";
+@import "tooltip";
+@import "alerts";
+@import "comments";
+@import "popup";
+@import "modals";
+@import "calendar";
+@import "autocomplete";
+
+// ---------------------------------------------------------------------------
+// Layout
+
+body {
+	font-family:arial;
+}
+
+header {
+	@include clearfix;
+	@include background(linear-gradient($grey1, $black));
+	color:white;
+
+	h1 {
+		float: left;
+	}
+}
+
+#subheader {
+	padding:$padding*0.5 0;
+	@include background(
+		image-url("../images/bg_subheader.png"),
+		linear-gradient($grey7, $grey6)
+	);
+	@include clearfix;
+	h1 {
+		@include adjust-font-size-to(28px);
+	}
+}
+
+aside {
+	float: left;
+	width: $aside-width;
+	background: $grey2;
+}
+
+#main {
+	border-top: 2px solid $grey5;
+}
+#main > .container { 
+	background: url("../images/bg_body.png") white repeat-y top left;
+}
+
+#content {
+	width: 100%;
+	& > .container {
+		overflow:hidden;
+		padding-top: $base-line-height*1.5;
+		padding-bottom: $base-line-height*3;
+		padding-right: 0;
+	}
+
+	article { @include trailer; }
+}
+
+.actionbar {
+	float: right;
+	margin-top: -2px;
+	margin-bottom: 7px;
+	ul { @include horizontal-list; }
+} 
+
+.container {
+	@include container;
+	//@include susy-grid-background;
+}
+
+
+// ---------------------------------------------------------------------------
+// Share
+
+div.well {
+	background: $grey7;
+	border: 1px solid $grey6;
+	padding: 10px $padding;
+	@include border-radius($radius);
+}
+
+.meta { color:$grey3; }
+.right { float: right; }
+.currentContext { color: green !important; }
+.clear { font-size:0px; height:0; line-height:0; clear:both; padding:0; margin:0; }
+
+// ---------------------------------------------------------------------------
+// Columns
+
+.forty { 
+	@include span-columns($total-columns*0.4, $total-columns);
+}
+.fifty { 
+	@include span-columns($total-columns*0.5, $total-columns);
+}
+.sixty { 
+	@include span-columns($total-columns*0.6, $total-columns);
+}
+.omega {
+	@include omega;
+} 
+

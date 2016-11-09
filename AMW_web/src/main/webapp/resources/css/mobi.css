@@ -1,0 +1,353 @@
+/* ------------------------------------------------------------------------
+	global
+-------------------------------------------------------------------------- */
+* {
+	font-size: 13px;
+	font-family: Arial, Verdana;
+}
+
+
+.propertyList{
+	margin-top:10px;	
+}
+
+.resourceTypeSel-selected, .resourceTypeSel .subType-selected{
+	font-style: italic;
+	font-weight: bold;
+}
+
+.resourceTypeSel .subType-notselected{
+	font-style: none;
+	font-weight: normal;
+}
+
+.resourceTypeSel-subtypeselected{
+	font-style: italic;
+}
+
+.resourceTypeSel-notselected .subTypes{
+	display:none;
+}
+
+.resourceTypeSel-selected .subTypes{
+	display:block;
+}
+
+.propertyTable{
+	width: 100%;
+}
+
+.propertyList .propertyName{
+	width: 200px;
+}
+
+.propertyList .propertyInputField{
+	width:40%;
+}
+
+
+.currentContext {
+	color: green !important;
+}
+
+.upperContext {
+	color: black !important;
+}
+
+.errorMessage{	
+	color: #b94a48 !important;
+}
+
+.fieldValidationError {
+	color: #b94a48 !important;
+	background-color: #f2dede !important;
+	border-color: orange !important;
+	box-shadow: 0 0 6px #d59392 !important;
+}
+
+table {
+	margin: 0px;
+	border-collapse: collapse;
+}
+
+a {
+	text-decoration: none;
+	color: #DA2324;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #DA2324;
+}
+
+hr {
+	width: 1000px;
+}
+
+pre {
+	white-space: pre-wrap; /* CSS3 */
+	white-space: -moz-pre-wrap; /* Gecko */
+	white-space: -pre-wrap; /* Opera 4-6 */
+	white-space: -o-pre-wrap; /* Opera 7+ */
+	word-wrap: break-word; /* IE 5.5+ */
+}
+
+/* ------------------------------------------------------------------------
+	formGrid
+-------------------------------------------------------------------------- */
+.mobiFormLabelColumn {
+	width: 200px;
+	vertical-align: middle;
+	padding-bottom: 5px;
+	vertical-align: top;
+}
+
+.mobiFormFieldColumnLarge {
+	width: 670px;
+	vertical-align: top;
+	padding-bottom: 5px;
+	padding-left: 5px;
+}
+
+.mobiFormFieldColumn {
+	width: 280px;
+	vertical-align: top;
+	padding-bottom: 5px;
+	padding-left: 5px;
+}
+
+.mobiFormLabel {
+	background-color: #EAEAEA;
+	width: 100%;
+	height: 20px;
+	vertical-align: middle;
+	padding-left: 5px;
+}
+
+.mobiFormHeader {
+	text-align: left;
+	padding-bottom: 10px;
+	font-size: 15px;
+}
+
+/* ------------------------------------------------------------------------
+	toolTip
+-------------------------------------------------------------------------- */
+.toolTipIconInfo {
+	background-color: #EAEAEA;
+	border: 1px solid black;
+}
+
+.toolTipError {
+	background-color: #FFE1E1;
+	border: 1px solid black;
+}
+
+/* ------------------------------------------------------------------------
+	formGrid
+-------------------------------------------------------------------------- */
+.mobiInputDefault {
+	background-color: #FFFFFF;
+	border: 1px solid #A6A6A6;
+}
+
+.mobiInputReadonly {
+	background-color: #FFFFFF;
+	border: 1px solid #FFFFFF;
+}
+
+.mobiInputError {
+	background-color: #FFE1E1;
+	border: 1px solid #A6A6A6;
+}
+
+/* ------------------------------------------------------------------------
+	temp - die styles unten m�ssen noch �berarbeitet werden.
+-------------------------------------------------------------------------- */
+.verticalAlignTop {
+	vertical-align: top;
+}
+
+.formFooterBar {
+	text-align: left;
+	margin-top: 10px;
+}
+
+.formUl {
+	padding: 0px;
+	margin: 0px;
+}
+
+.formList {
+	clear: both;
+	list-style: none outside;
+	margin-bottom: 5px;
+}
+
+/* ------------------------------------------------------------------------
+	Components
+-------------------------------------------------------------------------- */
+.loupeIcon {
+	background-image:
+		url("/template_dev/resources/images/icons/find_16.gif");
+	background-repeat: no-repeat;
+	padding-left: 20px;
+}
+
+.mobiCalendarIcon {
+	height: 16px;
+	width: 16px;
+	margin-right: 5px;
+}
+
+.mobiComboBoxList {
+	border: 1px;
+	border-color: #A6A6A6;
+}
+
+.mobiComboBoxItem {
+	border: 1px;
+}
+
+.mobiComboBoxItemSelected {
+	background-color: #EAEAEA;
+	color: black;
+	border: none;
+}
+
+.mobiLabel {
+	background-color: #EAEAEA;
+	float: left;
+	margin-right: 10px;
+	margin-bottom: 5px;
+	padding-bottom: 2px;
+	padding-left: 5px;
+	padding-top: 2px;
+	width: 200px;
+}
+
+.mobiOutputText {
+	float: left;
+	width: 670px;
+	margin-bottom: 10px;
+}
+
+.mobiInputTextArea {
+	width: 300px;
+	height: 100px;
+}
+
+/* ------------------------------------------------------------------------
+	Überschreibt LIstenstyle
+-------------------------------------------------------------------------- */
+.messageBox {
+	list-style-type: none;
+	list-style-position: outside;
+	padding-left: 0;
+}
+
+/* ------------------------------------------------------------------------
+	messages
+-------------------------------------------------------------------------- */
+.globalMessageInfo {
+	background-color: #C8E5C2;
+	padding: 10px;
+	border: 1px solid black;
+}
+
+.globalMessageError {
+	border: 1px solid;
+	border-color: #FBAD17;
+	background-color: #FFF7E7;
+	background-image: url("../images/icons/messagebox_warning_16.png");
+	background-repeat: no-repeat;
+	background-position: 10px;
+	padding: 10px 10px 10px 40px;
+	color: black;
+}
+
+.globalMessageSuccess {
+	border: 1px solid;
+	border-color: #9EC49F;
+	background-color: #DDFADE;
+	background-image: url("../images/icons/messagebox_ok_16.png");
+	background-repeat: no-repeat;
+	background-position: 10px;
+	padding: 10px 10px 10px 40px;
+	color: black;
+}
+
+/* ------------------------------------------------------------------------
+	Layout
+-------------------------------------------------------------------------- */
+.buttonActionBar {
+	text-align: right;
+}
+
+.toolboxLogoColumn {
+	text-align: right;
+}
+
+.verticalAlignTopColumn {
+	vertical-align: top;
+}
+
+.commandButton {
+	margin-right: 5px;
+}
+
+.even-row {
+	background-color: #FCFFFE;
+}
+
+.odd-row {
+	background-color: #ECF3FE;
+}
+
+.active-row {
+	background-color: #FFEBDA !important;
+	cursor: pointer;
+}
+
+#tt {
+	position: absolute;
+	display: block;
+	background: url(../images/icons/tt_left.gif) top left no-repeat;
+}
+
+#tttop {
+	display: block;
+	height: 5px;
+	margin-left: 5px;
+	background: url(../images/icons/tt_top.gif) top right no-repeat;
+	overflow: hidden;
+}
+
+#ttcont {
+	display: block;
+	padding: 2px 12px 3px 7px;
+	margin-left: 5px;
+	background: #666;
+	color: #fff;
+}
+
+#ttbot {
+	display: block;
+	height: 5px;
+	margin-left: 5px;
+	background: url(../images/icons/tt_bottom.gif) top right no-repeat;
+	overflow: hidden;
+}
+
+.deploypopupGrid1 {
+	vertical-align: top;
+	padding-right: 25px;
+	width: 33%;
+}
+
+.deploypopupGrid2 {
+	vertical-align: top;
+	border-left: #ACBECE 1px solid;
+	padding-left: 10px;
+	width: 33%;
+}

@@ -1,0 +1,80 @@
+/*
+ * AMW - Automated Middleware allows you to manage the configurations of
+ * your Java EE applications on an unlimited number of different environments
+ * with various versions, including the automated deployment of those apps.
+ * Copyright (C) 2013-2016 by Puzzle ITC
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package ch.puzzle.itc.mobiliar.builders;
+
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import org.mockito.Mockito;
+
+import java.util.Set;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class ContextEntityBuilder extends BaseEntityBuilder {
+
+	public ContextEntity mockContextEntity(String name, ContextEntity parent, Set<ContextEntity> children) {
+		ContextEntity mock = mock(ContextEntity.class);
+		Integer id = getNextId();
+		when(mock.getId()).thenReturn(id);
+		when(mock.getName()).thenReturn(name);
+		when(mock.getParent()).thenReturn(parent);
+		if (parent != null && Mockito.mockingDetails(parent).isMock()) {
+			Set<ContextEntity> childs = parent.getChildren();
+			childs.add(mock);
+			when(parent.getChildren()).thenReturn(childs);
+		}
+
+		when(mock.getChildren()).thenReturn(children);
+		if (children != null) {
+			for (ContextEntity child : children) {
+				if (Mockito.mockingDetails(child).isMock()) {
+					when(child.getParent()).thenReturn(mock);
+				}
+			}
+		}
+
+		return mock;
+	}
+
+	public ContextEntity buildContextEntity(String name, ContextEntity parent, Set<ContextEntity> children, boolean withId) {
+		ContextEntity entity = new ContextEntity();
+
+		if (withId) {
+			Integer id = getNextId();
+			entity.setId(id);
+		}
+		entity.setName(name);
+		entity.setParent(parent);
+		if (parent != null) {
+			parent.getChildren().add(entity);
+		}
+
+		entity.setChildren(children);
+		if (children != null) {
+			for (ContextEntity child : children) {
+				child.setParent(entity);
+			}
+		}
+
+		return entity;
+	}
+
+}

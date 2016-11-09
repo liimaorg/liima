@@ -1,0 +1,123 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaForeignables/#11225_addForeignableElementsToModel.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="bschwaller" id="#11225_addForeignableElementsToModel">
+
+        <!-- Add foreignables to Resource-->
+        <addColumn tableName="TAMW_RESOURCE">
+            <column name="fcOwner" type="varchar(255)" defaultValue="AMW">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="TAMW_RESOURCE_AUD">
+            <column name="fcOwner" type="varchar(255)"  defaultValue="AMW"/>
+        </addColumn>
+
+        <!-- Add foreignables extensions to ResourceGroup-->
+
+        <addColumn tableName="TAMW_RESOURCEGROUP">
+            <column name="fcExternalLink" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_RESOURCEGROUP_AUD">
+            <column name="fcExternalLink" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_RESOURCEGROUP">
+            <column name="fcExternalKey" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_RESOURCEGROUP_AUD">
+            <column name="fcExternalKey" type="varchar(1024)"/>
+        </addColumn>
+
+        <!-- Add foreignables to ConsumedResRel-->
+        <addColumn tableName="TAMW_CONSUMEDRESREL">
+            <column name="fcOwner" type="varchar(255)" defaultValue="AMW">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="TAMW_CONSUMEDRESREL_AUD">
+            <column name="fcOwner" type="varchar(255)"  defaultValue="AMW"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_CONSUMEDRESREL">
+            <column name="fcExternalLink" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_CONSUMEDRESREL_AUD">
+            <column name="fcExternalLink" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_CONSUMEDRESREL">
+            <column name="fcExternalKey" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_CONSUMEDRESREL_AUD">
+            <column name="fcExternalKey" type="varchar(1024)"/>
+        </addColumn>
+
+        <!-- Add foreignables to ProvidedResRel-->
+        <addColumn tableName="TAMW_PROVIDEDRESREL">
+            <column name="fcOwner" type="varchar(255)" defaultValue="AMW">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROVIDEDRESREL_AUD">
+            <column name="fcOwner" type="varchar(255)"  defaultValue="AMW"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROVIDEDRESREL">
+            <column name="fcExternalLink" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROVIDEDRESREL_AUD">
+            <column name="fcExternalLink" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROVIDEDRESREL">
+            <column name="fcExternalKey" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROVIDEDRESREL_AUD">
+            <column name="fcExternalKey" type="varchar(1024)"/>
+        </addColumn>
+
+
+        <!-- Add foreignables to PropertyDescriptor-->
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR">
+            <column name="fcOwner" type="varchar(255)" defaultValue="AMW">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="fcOwner" type="varchar(255)"  defaultValue="AMW"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR">
+            <column name="fcExternalLink" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="fcExternalLink" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR">
+            <column name="fcExternalKey" type="varchar(1024)"/>
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="fcExternalKey" type="varchar(1024)"/>
+        </addColumn>
+
+    </changeSet>
+
+
+</databaseChangeLog>

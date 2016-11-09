@@ -1,0 +1,26 @@
+// Icons
+//----------------------------------------------------------------------
+
+@import "icons/*.png";
+
+.icon {
+	display: block;
+	@each $myIcon in edit, delete, add, info, close, comment, warning {
+		&.icon-#{$myIcon} {
+			@include	icons-sprite(#{$myIcon});
+			$height: 	icons-sprite-height(#{$myIcon});
+			$width: 	icons-sprite-width(#{$myIcon});
+			height:		$height;
+			width: 		$width;
+			background-color: $grey3;
+			@include single-transition(background-color);
+		}
+	}
+}
+.icon-replace {
+	text-indent: -9999px;
+	overflow: hidden;
+	display: inline-block;
+	position: relative;
+	min-width: 1em;
+}

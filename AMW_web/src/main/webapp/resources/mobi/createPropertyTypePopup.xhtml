@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j">
+<composite:interface/>
+
+<composite:implementation>
+
+        <!-- CREATE PROPERTY TYPE POPUP -->
+
+        <rich:popupPanel id="createPropertyTypePopup" autosized="true" styleClass="width850px"
+                         moveable="true" domElementAttachment="form">
+            <f:facet name="header">
+                <h2>
+                    <h:outputText value="Create Property Type"/>
+                </h2>
+            </f:facet>
+            <f:facet name="controls">
+                <h:outputLink value="#"
+                              styleClass="close icon icon-close icon-replace"
+                              onclick="#{rich:component('createPropertyTypePopup')}.hide(); return false;">
+                    x
+                </h:outputLink>
+            </f:facet>
+            <h:panelGroup id="createPropertyTypePanel">
+                <div class="control-group">
+                    <label class="control-label nowrap"><h:outputLabel
+                            value="Property Type Name"/></label>
+
+                    <div class="controls">
+                        <h:inputText id="newPropertyTypeName"
+                                     value="#{propertyTypeDataProvider.newPropertyTypeName}"/>
+                    </div>
+                    <label class="control-label nowrap width150"><h:outputLabel
+                            value="Property Type Validation"/></label>
+
+                    <div class="controls">
+                        <h:inputText id="newPropertyTypeValidation"
+                                     value="#{propertyTypeDataProvider.newValidationRegex}"/>
+                    </div>
+
+                    <label class="control-label nowrap">
+                        <h:outputLabel value="Encrypted"/>
+                    </label>
+
+                    <div class="controls" style="line-height: 28px">
+                        <h:selectBooleanCheckbox
+                                value="#{propertyTypeDataProvider.newEncrypted}">
+                        </h:selectBooleanCheckbox>
+                    </div>
+                    <label class="control-label nowrap"><h:outputText value="Tags"/></label>
+
+                    <div class="controls">
+                        <h:inputText styleClass="tokenfield propertyInputField form-control"
+                                             value="#{propertyTypeDataProvider.newPropTypeTagsString}"
+                                             id="tokenfield" placeholder="Type something and hit enter"/>
+                           <!-- placeholder does not work with jsf in our actual version -->
+                           <script>
+                               globalTags = [#{propertyTypeDataProvider.globalTagsString}];
+                           </script>
+                    </div>
+                </div>
+            </h:panelGroup>
+            <a4j:commandLink styleClass="btn primary right" value="Create"
+                             execute="@all"
+                             action="${propertyTypeDataProvider.createByPropertyTypeEntity()}"
+                             oncomplete="#{rich:component('createPropertyTypePopup')}.hide(); return false"
+                             render="@all, propertyTypes"/>
+
+        </rich:popupPanel>
+</composite:implementation>
+</html>

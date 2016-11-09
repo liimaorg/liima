@@ -1,0 +1,30 @@
+{
+    "nodeId":1,
+    "maven_artifacts":{
+        
+         "ch_puzzle_itc_mobi_amw":{
+            "MavenVersion":"0.0.1",
+            "MavenPackaging":"ear",
+            "MavenGroupId":"ch.puzzle.itc.mobiliar",
+            "MavenArtifactId":"AMW_ear",
+            "MavenArtifactDestination":"deployments"
+	}
+    },
+    "svn_files":[
+        
+        {
+            "Source":"config_std/keys_public/conf/keys/jspStore_dev.jks",
+            "Destination":"configuration/keys/jspStore_dev.jks"
+	}
+        ,
+        {
+            "Source":"config_std/keys_public/conf/keys/mobiJspDynWesTrust_dev.jks",
+            "Destination":"configuration/keys/mobiJspDynWesTrust_dev.jks"
+	}
+    ],
+    "project":"amw",
+    "host":"",
+    "envir":"b",
+    "liferayConfigName":"",
+    "asVersion":"600"
+}

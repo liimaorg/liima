@@ -1,0 +1,36 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaPropertyDescriptorChanges/maiaPropertyDescriptorChanges.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="#10583 add MIK">
+
+        <createTable tableName="TAMW_MIK">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="mik_PK"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="SAMW_SEQUENCES">
+            <column name="seq_name" value="mikId"></column>
+            <column name="next_val" valueNumeric="1"></column>
+        </insert>
+
+        <createTable tableName="TAMW_MIK_AUD">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+            <column name="rev" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revType" type="TINYINT"/>
+        </createTable>
+        <addPrimaryKey tableName="TAMW_MIK_AUD" columnNames="id, rev"/>
+
+        </changeSet>
+</databaseChangeLog>

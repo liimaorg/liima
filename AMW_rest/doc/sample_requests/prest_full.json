@@ -1,0 +1,18 @@
+{
+   "appServerName":"prest",
+   "releaseName":"RL-13.04",
+   "deploymentDate":1384804324074,
+   "stateToDeploy": 1384804324074, 
+   "requestOnly": true, 
+   "simulate": false, 
+   "executeShakedownTest": false, 
+   "neighbourhoodTest": false, 
+   "sendEmail": false, 
+   "appsWithMvnVersion":[ 
+      {
+         "applicationName":"ch_mobi_prest",
+         "mavenVersion":"1.0.21"
+      }
+   ],
+   "environmentName":"V"
+}

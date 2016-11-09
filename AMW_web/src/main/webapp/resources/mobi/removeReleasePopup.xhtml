@@ -1,0 +1,39 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:composite="http://java.sun.com/jsf/composite"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:mobi="http://java.sun.com/jsf/composite/mobi"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<composite:interface />
+
+<composite:implementation>
+	<h:form>
+		<!-- REMOVE RELEASE POPUP -->
+		<rich:popupPanel id="removeReleasePopup" autosized="true" domElementAttachment="form"
+			rendered="${releasingDataProvider.canRemoveRelease}">
+
+			<f:facet name="header">
+				<h2>
+					<h:outputText value="Delete #{editResourceView.resourceType.name} #{editResourceView.resource.name} (#{editResourceView.resource.release.name})" />
+				</h2>
+			</f:facet>
+			<f:facet name="controls">
+				<h:outputLink value="#"
+					styleClass="close icon icon-close icon-replace"
+					onclick="#{rich:component('removeReleasePopup')}.hide(); return false;">x</h:outputLink>
+			</f:facet>
+			<h:panelGrid style="margin-bottom:10px;">Are you sure you want to delete the selected resource?</h:panelGrid>
+			<h:panelGrid id="deleteResourceRelationsOverview" style="display:inline-block; max-height: 400px; width:100%; overflow:auto;"><mobi:resourceRelations enableEdit="false"/></h:panelGrid>
+
+			<h:commandLink value="Delete" styleClass="btn primary right" type="button"
+							 action="#{releasingDataProvider.removeRelease()}"
+							 onclick="if(confirmLeave(event)){#{rich:component('removeReleasePopup')}.hide(); showLoader();}else{return false;}"
+							 execute="@this" render="@form" oncomplete="updateElements(); hideLoader(); refreshSubChanges();"/>
+		</rich:popupPanel>
+	</h:form>
+</composite:implementation>
+
+</html>

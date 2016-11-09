@@ -1,0 +1,111 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/#12304_migrationSvnPathPropertiesToTag"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <!-- propertytype with name SVNPath must exist!-->
+    <preConditions onFail="WARN">
+        <sqlCheck expectedResult="1">(SELECT COUNT(1) FROM TAMW_PROPERTYTYPE WHERE PROPERTYTYPENAME = 'SVNPath')
+        </sqlCheck>
+    </preConditions>
+
+
+    <changeSet author="bschwaller" id="#12304_migrationSvnPathPropertiesToTag_create_tag_for_propertytype">
+
+        <!-- If not yet exists create a new SVNPath tag and add it to propertyType-->
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">(SELECT COUNT(1) FROM TAMW_PROPTYPE_PROPTAG WHERE (PROPERTYTAG_ID IN (SELECT ID FROM TAMW_PROPERTYTAG WHERE NAME = 'SVNPath')) AND (PROPERTYTYPE_ID IN (SELECT
+                ID FROM TAMW_PROPERTYTYPE WHERE PROPERTYTYPENAME = 'SVNPath')))
+            </sqlCheck>
+        </preConditions>
+        <comment>execute only if no svnpath tag defined yet for propertytype svn path</comment>
+
+
+        <!-- create tag with name SVNPath-->
+        <insert tableName="TAMW_PROPERTYTAG">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'propertyTagId')"/>
+            <column name="NAME" value="SVNPath"/>
+            <column name="TAGTYPE" value="LOCAL"/>
+        </insert>
+
+        <insert tableName="TAMW_PROPERTYTAG_AUD">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'propertyTagId')"/>
+            <column name="NAME" value="SVNPath"/>
+            <column name="TAGTYPE" value="LOCAL"/>
+
+            <column name="REVTYPE" value="0"/>
+            <column name="REV" value="1"/>
+        </insert>
+
+
+        <!-- create relation from tag and propertytype with name SVNPath-->
+
+        <insert tableName="TAMW_PROPTYPE_PROPTAG">
+            <column name="PROPERTYTAG_ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'propertyTagId')"/>
+            <column name="PROPERTYTYPE_ID" valueComputed="(SELECT ID FROM TAMW_PROPERTYTYPE WHERE PROPERTYTYPENAME = 'SVNPath')"/>
+        </insert>
+
+        <insert tableName="TAMW_PROPTYPE_PROPTAG_AUD">
+            <column name="PROPERTYTAG_ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'propertyTagId')"/>
+            <column name="PROPERTYTYPE_ID" valueComputed="(SELECT ID FROM TAMW_PROPERTYTYPE WHERE PROPERTYTYPENAME = 'SVNPath')"/>
+
+            <column name="REVTYPE" value="0"/>
+            <column name="REV" value="1"/>
+        </insert>
+
+
+        <!-- increment propertytygId-->
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='propertyTagId')"/>
+            <where>SEQ_NAME='propertyTagId'</where>
+        </update>
+
+    </changeSet>
+
+    <changeSet author="bschwaller" id="#12304_migrationSvnPathPropertiesToTag_create_tag_and_relation_foreach_propdescr_with_svnpathtype" dbms="oracle">
+        <!-- create tag for each propertydescriptor with propertytype SVNPath-->
+        <createProcedure encoding="utf8">
+            DECLARE
+            tagid number(19,0);
+
+            BEGIN
+            select next_val
+            into tagid
+            from SAMW_SEQUENCES
+            where seq_name = 'propertyTagId'
+            ;
+
+            for i in (
+            SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYTYPEENTITY_ID = (SELECT ID FROM TAMW_PROPERTYTYPE WHERE PROPERTYTYPENAME='SVNPath')
+            ) loop
+
+            INSERT INTO TAMW_PROPERTYTAG (ID, NAME, TAGTYPE) VALUES (tagid,'SVNPath','LOCAL');
+            INSERT INTO TAMW_PROPDESC_PROPTAG (PROPERTYTAG_ID, PROPERTYDESCRIPTOR_ID) VALUES (tagid, i.id);
+
+            INSERT INTO TAMW_PROPERTYTAG_AUD (ID, NAME, TAGTYPE, REVTYPE, REV) VALUES (tagid,'SVNPath','LOCAL', 0, 1);
+            INSERT INTO TAMW_PROPDESC_PROPTAG_AUD (PROPERTYTAG_ID, PROPERTYDESCRIPTOR_ID, REVTYPE, REV) VALUES (tagid, i.id, 0, 1);
+
+            tagid := tagid + 1;
+            end loop;
+
+            update SAMW_SEQUENCES
+            set next_val = tagid
+            where seq_name = 'propertyTagId'
+            ;
+
+            END;
+
+        </createProcedure>
+
+        <!-- increment propertytygId with a buffer value such that sequence number conflicts with cached hibernate sequence number on running system can be prevented-->
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+50 FROM SAMW_SEQUENCES WHERE SEQ_NAME='propertyTagId')"/>
+            <where>SEQ_NAME='propertyTagId'</where>
+        </update>
+
+    </changeSet>
+
+</databaseChangeLog>

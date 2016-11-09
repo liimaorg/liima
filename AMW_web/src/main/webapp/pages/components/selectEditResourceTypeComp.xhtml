@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<h:body>	<h:panelGroup layout="block" id="selectEditResourceTypeComp" rendered="#{securityDataProvider.hasPermission('RES_TYPE_LIST_TAB')}">
+			<aside> <nav class="primary fixed">
+			<ul>
+				<ui:repeat var="resType"
+					value="${selectEditResourceTypeImpl.predefinedResourceTypes}" id="selectEditPredefinedResourceTypeList">
+					<li
+						class="${selectEditResourceTypeImpl.isSelectedResourceType(resType.id) ? 'current' : ''}">
+						<a4j:commandLink value="#{resType.name}" execute="@this"
+							render="selectEditResourceTypeComp ${renderItemsList}" id="predefinedResType">
+							<a4j:param
+								assignTo="#{selectEditResourceTypeImpl.selectedResourceTypeId}"
+								value="${resType.id}" />
+						</a4j:commandLink>
+					</li>
+				</ui:repeat>
+				<h:panelGroup rendered="${selectEditResourceTypeImpl.runtimeResourceType ne null}"><li
+						class="${selectEditResourceTypeImpl.isSelectedResourceType(selectEditResourceTypeImpl.runtimeResourceType.id) ? 'current' : ''}">
+					<a4j:commandLink value="#{selectEditResourceTypeImpl.runtimeResourceType.name}" execute="@this"
+									 render="selectEditResourceTypeComp ${renderItemsList}" id="runtimeResType">
+						<a4j:param
+								assignTo="#{selectEditResourceTypeImpl.selectedResourceTypeId}"
+								value="${selectEditResourceTypeImpl.runtimeResourceType.id}" />
+					</a4j:commandLink>
+				</li></h:panelGroup>
+			</ul>
+			</nav> <nav id="customResTypes" class="ajaxScroll">
+			<ul>
+				<ui:repeat var="resType2"
+					value="${selectEditResourceTypeImpl.rootResourceTypes}" id="selectEditOtherResourceTypeList">
+					<li
+						class="${selectEditResourceTypeImpl.isSelectedResourceType(resType2.id) ? 'current' : ''} ${selectEditResourceTypeImpl.isSelectedSubResourceType(resType2.id) ? 'currentChild' : ''}">
+						<a4j:commandLink execute="@this" oncomplete="updateElements();restoreScrollPositions();" onclick="storeScrollPositions();"
+							render="selectEditResourceTypeComp ${renderItemsList}" id="otherResourceType"
+							styleClass="${resType2.getEntity().hasChildren() ? 'expandable' : ''}"><div class="ellipsisRight" title="${resType2.name}">${resType2.name}</div>
+							<a4j:param
+								assignTo="#{selectEditResourceTypeImpl.selectedResourceTypeId}"
+								value="${resType2.id}" />
+						</a4j:commandLink>
+						<ul>
+							<ui:repeat rendered="${selectEditResourceTypeImpl.isSelectedResourceType(resType2.id) or selectEditResourceTypeImpl.isSelectedSubResourceType(resType2.id)}" var="subType"
+								value="${selectEditResourceTypeImpl.getResourceTypeChildren(resType2.id)}">
+								<li
+									class="${selectEditResourceTypeImpl.isSelectedResourceType(subType.id) ? 'current' : ''}">
+
+									<a4j:commandLink execute="@this" oncomplete="updateElements();restoreScrollPositions();" onclick="storeScrollPositions();"
+										render="selectEditResourceTypeComp ${renderItemsList}">
+										<div class="ellipsisRight" title="${subType.name}">${subType.name}</div>
+										<a4j:param
+											assignTo="#{selectEditResourceTypeImpl.selectedResourceTypeId}"
+											value="${subType.id}" />
+									</a4j:commandLink></li>
+
+							</ui:repeat>
+						</ul></li>
+				</ui:repeat>
+
+			</ul>
+			</nav>
+			<nav class="fixed center">
+				<ul><li>
+				<ui:fragment rendered="${showCreateResourceType}" >
+					<a4j:commandLink rendered="#{securityDataProvider.hasPermission('NEW_RESTYPE')}"
+							styleClass="btn light"
+							onclick="${rich:component('addNewResourceTypePopupPanel')}.show();"
+							render="addNewResourceTypePopupPanelGroup" id="newResTypeButton"
+							>
+							<i class="icon icon-add"></i>
+							<h:outputText value="New Resource Type " />
+					</a4j:commandLink>
+				</ui:fragment></li></ul>
+			</nav>
+			</aside>
+		</h:panelGroup>
+
+		<rich:popupPanel id="addNewResourceTypePopupPanel" autosized="true"
+			movable="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h2>
+					<h:outputText value="Create New Resource Type" />
+				</h2>
+			</f:facet>
+			<f:facet name="controls">
+				<h:outputLink value="#" styleClass="close icon icon-close icon-replace"
+					onclick="${rich:component('addNewResourceTypePopupPanel')}.hide();$('#globalMessageBox').hide(); return false;" >
+					x
+					</h:outputLink>
+			</f:facet>
+			<h:panelGroup id="addNewResourceTypePopupPanelGroup">
+				<div class="control-group">
+					<label class="control-label"> <h:outputLabel
+							value="Resourcetype name" />
+					</label>
+					<div class="controls">
+						<h:inputText id="addResourceType"
+							value="${selectEditResourceTypeImpl.newResourceTypeName}" />
+					</div>
+					<label class="control-label"> <h:outputLabel
+							value="Parent resource type" />
+					</label>
+					<div class="controls">
+						<h:selectOneMenu
+							value="${selectEditResourceTypeImpl.newResourceTypeParentId}">
+							<f:selectItem value="${null}" label="" />
+							<f:selectItems
+								value="${selectEditResourceTypeImpl.resourceTypesSelectionList}" />
+						</h:selectOneMenu>
+					</div>
+				</div>
+				<a4j:commandLink styleClass="btn primary right" value="Create"
+					type="button"
+					action="${selectEditResourceTypeImpl.createResourceType()}"
+					oncomplete="if(!hasErrorMessage()){${rich:component('addNewResourceTypePopupPanel')}.hide();} return false;"
+					render="${renderItemsList}, selectEditResourceTypeComp" />
+			</h:panelGroup>
+		</rich:popupPanel>
+</h:body>
+</html>
+

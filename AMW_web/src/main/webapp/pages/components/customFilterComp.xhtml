@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<h:body>
+
+	<h:panelGroup id="filtercontrol">
+		<h3>Filter</h3>
+		<nav class="actionbar filter">
+		<ul>
+			<li>
+				<div class="control-group filter">
+					<label class="control-label">add filter</label>
+					<div class="controls">
+						<h:selectOneMenu id="filterselection"
+							value="#{customFilterImpl.selectedFilterItemEnumName}">
+							<f:selectItem itemLabel="Select Filter" itemValue="${null}" />
+							<f:selectItems value="${customFilterImpl.filterSelectionList}"
+								var="filter" itemLabel="${filter.displayName}"
+								itemValue="${filter.enumName}" />
+							<a4j:ajax
+								listener="${customFilterImpl.getSelectionChangeListener()}"
+								render="selectedFilter, filterselection, filtercontrol" />
+
+						</h:selectOneMenu>
+					</div>
+				</div>
+			</li>
+			<li><a4j:commandLink styleClass="btn light"
+					rendered="${customFilterImpl.hasSelectedFiltersInList()}"
+					render="selectedFilter, filterselection, filtercontrol"
+					action="${customFilterImpl.removeAllFilter()}">
+					<i class="icon icon-close"></i>
+					<h:outputText value="remove all filters" />
+				</a4j:commandLink></li>
+		</ul>
+		</nav>
+	</h:panelGroup>
+
+
+
+
+	<h:panelGroup id="selectedFilter">
+
+		<div>
+			<h:dataTable var="filter"
+				rendered="${customFilterImpl.hasSelectedFiltersInList()}"
+				value="#{customFilterImpl.updatedSelectedFilterList}"
+				iterationStatusVar="index" styleClass="filterTable well autoWidth" rowClasses="odd-row,even-row"
+				columnClasses="filterCol width_200, filterCol, filterCol, filterCol">
+
+				<h:column index="index">
+					<div>
+						<h:outputText value="${filter.filterDisplayName}" />
+					</div>
+				</h:column>
+
+				<h:column index="index">
+					<div>
+						<h:panelGroup rendered="${!filter.specialFilterType}">
+							<h:selectOneMenu class="width80px"
+								value="#{customFilterImpl.selectedComperator(filter)}"
+								disabled="${customFilterImpl.getTypedComperatorSelectionList(filter).size() == 1 }">
+								<f:selectItems
+									value="${customFilterImpl.getTypedComperatorSelectionList(filter)}"
+									var="comperator" itemLabel="${comperator.displayName}"
+									itemValue="${comperator}" />
+								<a4j:ajax
+									listener="#{customFilterImpl.getSelectionComperatorChangeListener(filter)}"
+									render="selectedFilter" />
+							</h:selectOneMenu>
+						</h:panelGroup>
+					</div>
+				</h:column>
+
+				<h:column index="index">
+
+					<div>
+						<h:panelGroup rendered="${filter.stringType}">
+							<h:inputText value="${filter.value}" size="30"
+								rendered="${!filter.hasDropDownItems()}">
+								<f:ajax />
+							</h:inputText>
+
+							<h:selectOneMenu value="${filter.value}"
+								rendered="${filter.hasDropDownItems() and !filter.alwaysAutoComplete and filter.dropDownItems.size() le 20}">
+								<f:selectItems value="${filter.dropDownItems}" var="item" itemLabel="#{item.length() gt 50 ? '...'.concat(item.substring(item.length()-47,item.length())): item}" itemValue="#{item}"/>
+								<a4j:ajax />
+							</h:selectOneMenu>
+							
+							<rich:autocomplete rendered="${filter.hasDropDownItems() and filter.alwaysAutoComplete or filter.dropDownItems.size() gt 20}"
+							value="#{filter.value}" autofill="false" mode="lazyClient" autocompleteList="#{filter.dropDownItems}" >
+								<a4j:ajax />
+							</rich:autocomplete>
+
+						</h:panelGroup>
+						<h:panelGroup rendered="${filter.booleanType}">
+							<h:selectOneMenu value="${filter.value}">
+								<f:selectItems value="${filter.dropDownItems}" />
+								<a4j:ajax />
+							</h:selectOneMenu>
+						</h:panelGroup>
+						<h:panelGroup rendered="${filter.integerType}">
+							<h:inputText value="${filter.value}" size="20">
+								<f:ajax />
+							</h:inputText>
+						</h:panelGroup>
+						<h:panelGroup rendered="${filter.dateType}">
+							<rich:calendar 
+							    buttonIcon="/AMW_web/images/calendarIcon.png"
+							    buttonDisabledIcon="/AMW_web/images/calendarIcon.png"
+							    value="#{filter.dateValue}" enableManualInput="false"
+								datePattern="dd.MM.yyyy HH:mm">
+								<a4j:ajax />
+							</rich:calendar>
+						</h:panelGroup>
+						<h:panelGroup rendered="${filter.labeledDateType or filter.enumType}">
+							<h:selectOneMenu value="${filter.value}"
+								rendered="${filter.hasDropDownItemsMap()}">
+								<f:selectItems value="${filter.dropDownItemsMap}" var="item" itemLabel="#{item.key}" itemValue="#{item.value}"/>
+								<a4j:ajax />
+							</h:selectOneMenu>
+						</h:panelGroup>
+					</div>
+				</h:column>
+
+				<h:column index="index">
+					<div>
+						<a4j:commandLink styleClass="btn light"
+							render="selectedFilter, filtercontrol"
+							action="${customFilterImpl.removeFilter(filter)}">
+							<i class="icon icon-close"></i>
+						</a4j:commandLink>
+					</div>
+				</h:column>
+			</h:dataTable>
+
+		</div>
+		<hr />
+	</h:panelGroup>
+
+</h:body>
+</html>

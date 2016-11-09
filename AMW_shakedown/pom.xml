@@ -1,0 +1,147 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ch.puzzle.itc.mobiliar</groupId>
+    <artifactId>AMW_shakedown</artifactId>
+    <name>AMW_shakedown</name>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <build.timestamp>${maven.build.timestamp}</build.timestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+        <!-- **************** -->
+        <!-- Plugins versions -->
+        <!-- **************** -->
+        <version.jar.plugin>2.5</version.jar.plugin>
+        <version.war.plugin>2.4</version.war.plugin>
+        <version.version.plugin>2.1</version.version.plugin>
+    </properties>
+    <modules>
+        <module>AMW_stm</module>
+        <module>AMW_stp_ws</module>
+        <module>AMW_stp_dnyws</module>
+        <module>AMW_stp_dummy</module>
+        <module>AMW_stp_serveralive</module>
+        <module>AMW_stp_tcpping</module>
+        <module>AMW_stp_jdbc</module>
+        <module>AMW_stp_check_connection</module>
+    </modules>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central Repository Europe</name>
+            <url>http://uk.maven.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jboss-public-repository</id>
+            <name>JBoss Repository</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public</url>
+            <!-- These optional flags are designed to speed up your builds by reducing
+                remote server calls -->
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.2</version>
+                    <configuration>
+                        <source>1.7</source>
+                        <target>1.7</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${version.jar.plugin}</version>
+                    <configuration>
+                        <archive>
+                            <index>true</index>
+                            <manifest>
+                                <addDefaultSpecificationEntries>
+                                    true
+                                </addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>
+                                    true
+                                </addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Java-Version>${java.version}</Java-Version>
+                                <Java-Vendor>${java.vendor}</Java-Vendor>
+                                <Os-Name>${os.name}</Os-Name>
+                                <Os-Arch>${os.arch}</Os-Arch>
+                                <Os-Version>${os.version}</Os-Version>
+                                <Build-Timestamp>${build.timestamp}</Build-Timestamp>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.1</version>
+                    <configuration>
+                        <preparationGoals>clean install</preparationGoals>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                    </configuration>
+                </plugin>
+                <!-- the following plugins are used by maven-release-plugin -->
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.10.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <scm>
+        <developerConnection>scm:git:https://git-amw.puzzle.ch/mobi_amw/amw_projects.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <!-- distribution management URL used by maven-release-plugin (implicitly by maven-deploy-plugin) to know where to deploy the builded artifacts to -->
+    <distributionManagement>
+        <repository>
+            <!-- this id must match the <servers><server><id /></server></servers> in your local maven settings.xml -->
+            <id>puzzle-releases</id>
+            <url>https://artifactory.puzzle.ch/artifactory/libs-release-local</url>
+        </repository>
+    </distributionManagement>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.11</version>
+                <type>jar</type>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

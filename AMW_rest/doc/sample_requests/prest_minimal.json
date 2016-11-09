@@ -1,0 +1,10 @@
+{
+   "appServerName":"prest",
+   "appsWithMvnVersion":[
+      {
+         "applicationName":"ch_mobi_prest",
+         "mavenVersion":"1.0.21"
+      }
+   ],
+   "environmentName":"V"
+}

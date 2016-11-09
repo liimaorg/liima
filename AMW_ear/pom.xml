@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>ch.puzzle.itc.mobiliar</groupId>
+		<artifactId>AMW_parent</artifactId>
+		<version>1.11.2-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<properties>
+        <deployPort>10099</deployPort>
+    </properties>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>AMW_ear</artifactId>
+	<packaging>ear</packaging>
+	<name>AMW_ear</name>
+
+	<profiles>
+		<profile>
+			<id>default-profile</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<finalName>AMW</finalName>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-ear-plugin</artifactId>
+						<configuration>
+
+							<!-- Tell Maven we are using Java EE 6 -->
+							<version>6</version>
+							<!-- Use Java EE ear libraries as needed. Java EE ear libraries are 
+								in easy way to package any libraries needed in the ear, and automatically 
+								have any modules (EJB-JARs and WARs) use them -->
+							<defaultLibBundleDir>lib</defaultLibBundleDir>
+							<modules>
+								<jarModule>
+									<groupId>ch.puzzle.itc.mobiliar</groupId>
+									<artifactId>AMW_commons</artifactId>
+									<bundleFileName>AMW_commons.jar</bundleFileName>
+								</jarModule>
+								<ejbModule>
+									<groupId>ch.puzzle.itc.mobiliar</groupId>
+									<artifactId>AMW_business</artifactId>
+									<bundleFileName>AMW_business.jar</bundleFileName>
+								</ejbModule>
+								<webModule>
+									<groupId>ch.puzzle.itc.mobiliar</groupId>
+									<artifactId>AMW_web</artifactId>
+									<bundleFileName>AMW_web.war</bundleFileName>
+								</webModule>
+								<webModule>
+									<groupId>ch.puzzle.itc.mobiliar</groupId>
+									<artifactId>AMW_rest</artifactId>
+									<bundleFileName>AMW_rest.war</bundleFileName>
+								</webModule>
+								<webModule>
+									<groupId>ch.puzzle.itc.mobiliar</groupId>
+									<artifactId>AMW_maia_federation</artifactId>
+									<bundleFileName>AMW_maia_federation.war</bundleFileName>
+									<!--<contextRoot>MaiaAmwFederationService_v1_0</contextRoot>-->
+								</webModule>
+							</modules>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			
+			<dependencies>
+				<!-- Depend on the ejb module and war so that we can package them -->
+				<dependency>
+					<groupId>ch.puzzle.itc.mobiliar</groupId>
+					<artifactId>AMW_commons</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>ch.puzzle.itc.mobiliar</groupId>
+					<artifactId>AMW_business</artifactId>
+					<type>ejb</type>
+				</dependency>
+				<dependency>
+					<groupId>ch.puzzle.itc.mobiliar</groupId>
+					<artifactId>AMW_web</artifactId>
+					<type>war</type>
+				</dependency>
+				<dependency>
+					<groupId>ch.puzzle.itc.mobiliar</groupId>
+					<artifactId>AMW_rest</artifactId>
+					<type>war</type>
+				</dependency>
+				<dependency>
+					<groupId>ch.puzzle.itc.mobiliar</groupId>
+					<artifactId>AMW_maia_federation</artifactId>
+					<type>war</type>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+</project>

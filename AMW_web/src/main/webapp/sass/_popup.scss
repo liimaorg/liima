@@ -1,0 +1,116 @@
+// POP UPS
+//----------------------------------------------------------------------
+
+.rf-pp-shade {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+	background-color: $grey1;
+	@include opacity(0.5);
+}
+
+.rf-pp-cntr {
+	background: white;
+	z-index: 100;
+	@include border-radius($radius);
+	@include single-box-shadow($grey3, 1px, 1px, 6px);
+	height: 450px;
+	overflow:hidden;
+}
+
+.rf-pp-hdr {
+	position: relative;
+	cursor: move;
+	padding-right:40px;
+	border-bottom: 1px solid $grey6;
+}
+
+.rf-pp-hdr-cnt {
+	overflow: hidden;
+	padding: 10px $padding;
+}
+
+.rf-pp-cnt-scrlr {
+	-moz-border-radius-bottomleft: 6px;
+	-webkit-border-bottom-left-radius: 6px;
+	border-bottom-left-radius: 6px;
+	-moz-border-radius-bottomright: 6px;
+	-webkit-border-bottom-right-radius: 6px;
+	border-bottom-right-radius: 6px;
+}
+
+.rf-pp-btn {
+	outline-style: none;
+	position: absolute;
+	clip: rect(0px, 0px, 1px, 1px);
+	height: 0px;
+	width: 0px;
+	left: 0px;
+	top: 0px;
+	z-index: -300;
+	opacity: 0.1;
+	filter: alpha(opacity=10);
+}
+
+
+.rf-pp-hdr-cntrls {
+	position: absolute;
+	top: 6px; right: 6px;
+	a { 
+		z-index: 100; 
+		background-color: $grey4;
+		&:hover {
+			background-color: $grey2;
+		}
+	}
+}
+
+.rf-pp-cnt-scrlr {
+	@include border-bottom-radius($radius);
+	overflow:auto;
+	height:402px;
+}
+.rf-pp-cnt-scrlr > .rf-pp-cnt {
+	
+	
+}
+.rf-pp-cnt {
+	padding: $padding;
+	color: black;
+	@include clearfix;
+	& > .btn { margin: 0; @include leader;}
+}
+
+.rf-p {
+	@extend .well;
+}
+
+.rf-pp-cntr {
+	@include border-radius(6px);
+}
+
+.rf-pp-shdw {
+	display: none;
+}
+
+.rf-pp-cntr {
+	border: 1px solid #EAEAEA !important;
+}
+
+.rf-pp-hdr { @include border-top-radius(6px); }
+
+.rf-pp-cntr aside{
+	margin-top:0px;
+	font-size:14px;
+}
+
+.rf-pp-cntr aside nav > ul{
+	padding-top:0px;
+	padding-bottom:0px;
+}
+
+.rf-pp-hdr-cnt{
+	font-weight: bold;
+}

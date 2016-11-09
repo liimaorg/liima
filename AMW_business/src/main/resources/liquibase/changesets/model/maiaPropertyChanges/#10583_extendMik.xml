@@ -1,0 +1,32 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaPropertyDescriptorChanges/maiaPropertyDescriptorChanges.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+
+    <changeSet author="rgalante" id="#10583 extend MIK">
+
+        <addColumn tableName="TAMW_MIK">
+            <column name="AMWFUNCTION_ID" type="INTEGER"/>
+        </addColumn>
+        <addUniqueConstraint tableName="TAMW_MIK" columnNames="name" constraintName="TAMW_MIK_UK"/>
+        <addForeignKeyConstraint baseColumnNames="AMWFUNCTION_ID"
+                                 baseTableName="TAMW_MIK" constraintName="TAMW_FUNCTION_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_FUNCTION"/>
+
+        <addColumn tableName="TAMW_MIK_AUD">
+            <column name="AMWFUNCTION_ID" type="INTEGER"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="rev"
+                                 baseTableName="TAMW_MIK_AUD" constraintName="TAMW_MIK_revinfo_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_REVINFO"/>
+
+    </changeSet>
+
+    <changeSet id="#10583 remove MIK uniquekey Contraint" author="tphilipona">
+        <dropUniqueConstraint constraintName="TAMW_MIK_UK"  tableName="TAMW_MIK" uniqueColumns="name"/>
+    </changeSet>
+
+
+</databaseChangeLog>

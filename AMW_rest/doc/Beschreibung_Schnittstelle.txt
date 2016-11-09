@@ -1,0 +1,128 @@
+# Date format: epoch timestamp (number of milliseconds since January 1st, 1970, UTC)
+
+######### Deployment aufgeben
+curl -v -H "Content-Type: application/json" -X POST --data "@prest.json" -u u112324:u112324 http://localhost:8080/AMW_rest/deployments/
+{
+   "appServerName":"prest",
+   "releaseName" : "RL-13.04", (optional, default next release if available or last release otherwise)
+   "deploymentDate":1384804324074, (optional, default now)
+   "stateToDeploy": 1384804324074, (optional, default now)
+   "requestOnly": false, (optional, default false)
+   "simulate": false, (optional, default false)
+   "executeShakedownTest": false, (optional, default false)
+   "neighbourhoodTest": false, (optional, default false)
+   "sendEmail": false, (optional, default false)
+   "appsWithMvnVersion":[ (must contain all applications)
+      {
+         "applicationName":"ch_mobi_prest",
+         "mavenVersion":"1.0.21"
+      }
+   ],
+   "environmentName":"V"
+}
+
+# Response:
+# Der Location Header zeigt auf das neu erstellte Deployment
+< HTTP/1.1 201 Created
+< Location: /deployments/7050
+< Content-Type: application/json
+< Transfer-Encoding: chunked
+< Date: Mon, 18 Nov 2013 19:52:04 GMT
+< 
+{
+   "id":7050,
+   "trackingId":3350,
+   "state":"scheduled",
+   "deploymentDate":1384804324074,
+   "appServerName":"prest",
+   "appsWithMvnVersion":[
+      {
+         "applicationName":"ch_mobi_prest",
+         "mavenVersion":"1.0.21"
+      }
+   ],
+   "environmentName":"V"
+}
+
+######### Abfragen einer Deployment ID
+# Wird die ID nicht gefunden wird HTTP 404 zurück gegeben
+
+curl -v -H "Content-Type: application/json" -X GET -u u112324:u112324 http://localhost:8080/AMW_rest/resources/deployments/7050
+< HTTP/1.1 201 Created
+< Content-Type: application/json
+< Transfer-Encoding: chunked
+< Date: Mon, 18 Nov 2013 19:52:04 GMT
+< 
+{
+   "id":7050,
+   "trackingId":3350,
+   "state":"scheduled",
+   "deploymentDate":1384804324074,
+   "appServerName":"prest",
+   "appsWithMvnVersion":[
+      {
+         "applicationName":"ch_mobi_prest",
+         "mavenVersion":"1.0.21"
+      }
+   ],
+  "environmentName":"V",
+  "releaseName":"Past",
+  "targetPlatform":"EAP 6",
+  "requestUser":"u113741",
+  "confirmUser":"u112258",
+  "cancleUser":null
+}
+
+
+######### Filtern von Deployments
+# Werden für den Filter keine Resultate gefunden wird eine leere Liste ausgegeben
+# Abfrage ohne Filter:
+curl -v -u u112324:u112324 "http://localhost:8080/AMW_rest/resources/deployments
+[
+   {
+      "id":4326,
+      "trackingId":1385,
+      "state":"success",
+      "deploymentDate":1373904071375,
+      "appServerName":"vnkey",
+      "appsWithMvnVersion":[
+         {
+            "applicationName":"ch_mobi_contractmanagement_VNKey",
+            "mavenVersion":"1.0.3"
+         }
+      ],
+      "environmentName":"V",
+      "releaseName":"Past",
+      "targetPlatform":"EAP 6",
+      "requestUser":"u113741",
+      "confirmUser":"u112258",
+      "cancleUser":null
+   },
+   ...
+
+# Alle Filter:
+Integer trackingId, String deploymentState, String appServerName, @DefaultValue("100") Integer maxResults,
+@DefaultValue("0") Integer offset, Long fromDate, Long toDate,
+List<String> environmentName, @DefaultValue("false") boolean onlyLatest
+
+# Filter Beispiele:
+curl -v -u u112324:u112324 "http://localhost:8080/AMW_rest/resources/deployments?trackingId=3309"
+curl -v -u u112324:u112324 "http://localhost:8080/AMW_rest/resources/deployments?environmentName=V&environmentName=W"
+curl -v -u u112324:u112324 "http://localhost:8080/AMW_rest/resources/deployments?deploymentState=success|failed|requested"
+curl -v -u u112324:u112324 "http://localhost:8080/AMW_rest/resources/deployments?appServerName=prest&appServerName=amw"
+curl -v -u u112324:u112324 "http://localhost:8080/AMW_rest/resources/deployments?appServerName=prest&deploymentState=failed"
+
+# Paging:
+# Im Header X-Total-Count werden die total Resultate angezeigt, ohne Angabe werden alle angezeigt:
+curl -v -u u112324:u112324 "http://localhost:8080/AMW_rest/resources/deployments?appServerName=prest&deploymentState=failed&maxResults=10"
+< HTTP/1.1 200 OK
+< X-Total-Count: 191
+< Content-Type: application/json
+< Transfer-Encoding: chunked
+< Date: Mon, 18 Nov 2013 20:19:50 GMT
+< 
+[{ result }]
+
+# Mit offset kann der Resultatebereich verschoben werden:
+curl -v -u u112324:u112324 "http://localhost:8080/AMW_rest/resources/deployments?appServerName=prest&deploymentState=failed&maxResults=10&offset=100"
+

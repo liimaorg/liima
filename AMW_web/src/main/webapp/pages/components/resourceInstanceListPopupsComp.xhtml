@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:mobi="http://java.sun.com/jsf/composite/mobi"
+	xmlns:rich="http://richfaces.org/rich">
+
+<h:body>
+	<h:form id="addResourcePopupForm">
+		<rich:popupPanel id="addResourcePopupPanel" autosized="true"
+			movable="true" onshow="#{rich:element('addResource')}.focus();"
+			domElementAttachment="form">
+			<f:facet name="header">
+				<h2>
+					<h:outputText
+						value="Create new instance for #{resourceInstanceListImpl.selectedResourceType.name}"
+						id="addResourcePopupPanelHeader" />
+				</h2>
+			</f:facet>
+			<f:facet name="controls">
+				<h:outputLink value="#"
+					styleClass="close icon icon-close icon-replace"
+					onclick="#{rich:component('addResourcePopupPanel')}.hide();$('#globalMessageBox').hide();">
+					x
+					</h:outputLink>
+			</f:facet>
+
+			<h:panelGroup id="addResourcePopupPanelGroup" styleClass="formGrid">
+				<h:panelGrid columns="2" styleClass="formGrid">
+					<h:outputLabel value="Resource name" />
+					<h:inputText id="addResource"
+						value="${resourceInstanceListImpl.newResourceName}" />
+					<h:outputLabel value="Release" />
+					<h:selectOneMenu styleClass="switchRelease" id="addResourceSwitchReleaseSelectBox"
+						value="${resourceInstanceListImpl.resourceReleaseSelector.selectedReleaseId}">
+						<f:selectItems
+							value="${resourceInstanceListImpl.releaseDataProvider.allReleases}"
+							var="release" itemLabel="${release.name}"
+							itemValue="${release.id}" />
+					</h:selectOneMenu>
+				</h:panelGrid>
+				<a4j:commandLink styleClass="btn primary right" value="Create"
+								 type="button" action="#{resourceInstanceListImpl.createResource()}"
+								 onclick="showLoader();" id="createResourceConfirmationButton"
+								 oncomplete="if(!hasErrorMessage()){#{rich:component('addResourcePopupPanel')}.hide();} hideLoader();"
+								 render="resourceInstanceListComp" />
+			</h:panelGroup>
+
+		</rich:popupPanel>
+	</h:form>
+	<h:form id="confirmResourceDeleteForm">
+	<rich:popupPanel id="confirmResourceDeletePopupPanel" autosized="true">
+		<f:facet name="controls">
+			<h:outputLink value="#" id="closeConfirmDeleteResourceButton"
+				styleClass="close icon icon-close icon-replace"
+				onclick="#{rich:component('confirmResourceDeletePopupPanel')}.hide(); return false;">
+					x
+					</h:outputLink>
+		</f:facet>
+		<f:facet name="header">
+			<h2>
+				<h:outputText
+					value="Delete #{resourceInstanceListImpl.selectedResourceType.name} #{resourceInstanceListImpl.selectedResourceGroup.name} (#{resourceInstanceListImpl.selectedResourceGroup.selectedResource.release.name})"
+					id="deleteResourcePopupPanelHeader" />
+			</h2>
+		</f:facet>
+		<h:panelGrid style="margin-bottom:10px;">Are you sure you want to delete the selected resource?</h:panelGrid>
+		<h:panelGrid id="deleteResourceRelationsOverview" style="display:inline-block; max-height: 400px; width:100%; overflow:auto;"><mobi:resourceRelations enableEdit="false" id="confirmDeleteResourceRelations"/></h:panelGrid>
+		<a4j:commandLink styleClass="btn primary right" value="Delete" id="confirmDeleteResourceButton"
+			type="button" action="#{resourceInstanceListImpl.deleteResource()}" onclick="showLoader();"
+			oncomplete="#{rich:component('confirmResourceDeletePopupPanel')}.hide(); hideLoader(); return false;"
+			render="resourceInstanceListComp" execute="@this" />
+	</rich:popupPanel>
+	</h:form>
+	<h:form id="confirmResourceTypeDeleteForm">
+	<rich:popupPanel id="confirmResourceTypeDeletePopupPanel"
+		autosized="true">
+		<f:facet name="controls">
+			<h:outputLink value="#"
+				styleClass="close icon icon-close icon-replace"
+				onclick="#{rich:component('confirmResourceTypeDeletePopupPanel')}.hide(); return false;">
+					x
+					</h:outputLink>
+		</f:facet>
+		<f:facet name="header">
+			<h2>
+				<h:outputText
+					value="Delete #{resourceInstanceListImpl.selectedResourceType.name}"
+					id="deleteResourceTypePopupPanelHeader" />
+			</h2>
+		</f:facet>
+		<h:panelGroup id="confirmResourceTypeDeletePopupPanelContent">
+			<h:panelGrid style="margin-bottom:10px;">Are you sure you want to delete the selected resourcetype?<br />(This will also remove all instances as well as sub resource types)</h:panelGrid>
+			<a4j:commandLink styleClass="btn primary right" value="Delete"
+				type="button" id="confirmDeleteResourceType"
+				action="#{resourceInstanceListImpl.removeResourceType()}" onclick="showLoader();"
+				oncomplete="#{rich:component('confirmResourceTypeDeletePopupPanel')}.hide(); hideLoader(); return false;"
+				render="resourceInstanceListComp ${renderItemsList}" execute="@this" />
+		</h:panelGroup>
+
+	</rich:popupPanel>
+	</h:form>
+</h:body>
+</html>
+

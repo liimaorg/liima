@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+
+<!-- INTERFACE -->
+<composite:interface>
+    <composite:attribute name="property"/>
+</composite:interface>
+
+<!-- IMPLEMENTATION -->
+<composite:implementation>
+    <a class="help-inline info"
+       onmouseover="var el = this.parentNode.getElementsByTagName('div')[0].getElementsByTagName('p')[0];if(this.parentNode.parentNode.querySelectorAll('textarea,input')[0].className.indexOf('ValidationError')!=-1){el.style.display='block';}else{el.style.display='none';}">
+        <i class="icon ${isTesting ? 'icon-infoWhite' : 'icon-info' }"/>
+    </a>
+
+    <div class="tooltip">
+        <h2>
+            <h:outputText value="${cc.attrs.property.propertyDisplayName}"/>
+        </h2>
+        <br class="clear"/>
+
+        <p class="errorMessage">
+            <h:outputText
+                    value="This value must not be empty or does not match the regex ${cc.attrs.property.validationLogic}"/>
+        </p>
+
+        <p>
+            <!-- not encrypted value replaces value from parent -->
+            <h:outputText
+                    value="Replaces value '${cc.attrs.property.replacedValue}' of ${cc.attrs.property.getOriginOfValue(sessionContext.contextId, resourceRelationModel.currentResourceRelation.identifier)}."
+                    rendered="${cc.attrs.property.isDefinedInContext(sessionContext.contextId) and cc.attrs.property.propertyValue!=null and  cc.attrs.property.replacedValue!=null and cc.attrs.property.getOriginOfValue(sessionContext.contextId, resourceRelationModel.currentResourceRelation.identifier)!=null and !cc.attrs.property.encrypted}"/>
+            <!-- encrypted value replaces value from parent-->
+            <h:outputText
+                    value="Replaces value of ${cc.attrs.property.getOriginOfValue(sessionContext.contextId, resourceRelationModel.currentResourceRelation.identifier)}."
+                    rendered="${cc.attrs.property.isDefinedInContext(sessionContext.contextId) and cc.attrs.property.propertyValue!=null and cc.attrs.property.replacedValue!=null and cc.attrs.property.getOriginOfValue(sessionContext.contextId, resourceRelationModel.currentResourceRelation.identifier)!=null and cc.attrs.property.encrypted}"/>
+
+            <!-- value is defined in parent-->
+            <h:outputText
+                    value="Defined in ${cc.attrs.property.getOriginOfValue(sessionContext.contextId, resourceRelationModel.currentResourceRelation.identifier)}"
+                    rendered="${(cc.attrs.property.replacedValue==null or !cc.attrs.property.isDefinedInContext(sessionContext.contextId)) and cc.attrs.property.getOriginOfValue(sessionContext.contextId, resourceRelationModel.currentResourceRelation.identifier)!=null}"/>
+            <br/>
+
+        </p>
+
+        <section>
+            <div class="well">
+                <nav class="actionbar"/>
+                <h:panelGrid id="grid" columns="2" cellpadding="4">
+
+                    <h:outputLabel value=" "/>
+                    <h:outputText id="emptyLine" value=" "/>
+
+                    <h:outputLabel value="TechKey: "/>
+                    <h:outputText id="techkey" value="${(cc.attrs.property.technicalKey != null) ? cc.attrs.property.technicalKey : ''}"/>
+
+                    <h:outputLabel value="Example Value: "/>
+                    <h:outputText id="examplevalue" value="${(cc.attrs.property.exampleValue != null) ? cc.attrs.property.exampleValue : ''}"/>
+
+                    <h:outputLabel value="Default Value: "/>
+                    <h:outputText id="defaultvalue" value="${(cc.attrs.property.defaultValue != null) ? cc.attrs.property.defaultValue : ''}"/>
+
+                    <h:outputLabel value="Comment: "/>
+                    <h:outputText id="comment" value="${(cc.attrs.property.propertyComment != null) ? cc.attrs.property.propertyComment : ''}"/>
+
+                    <h:outputLabel value="Machine Interpretation Key: "/>
+                    <h:outputText id="mik" value="${(cc.attrs.property.mik != null) ? cc.attrs.property.mik : ''}"/>
+                </h:panelGrid>
+            </div>
+        </section>
+
+    </div>
+</composite:implementation>
+
+
+</html>

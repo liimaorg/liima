@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<h:form id="releasesForm">
+		<h:panelGroup id="releases_panel" layout="block" rendered="#{securityDataProvider.hasPermission('VIEW_RELEASE')}">
+		
+			<!-- Releases Table-->
+			<h:dataTable id="releasesTable" styleClass="well" var="release"
+				value="${releaseMgmtScreenService.releases}"
+				columnClasses=" , , ,last,last" rowClasses="odd-row,even-row">
+				<f:facet name="caption">
+					<nav class="actionbar">
+					<ul>
+						<li><a4j:commandLink styleClass="btn light"
+								rendered="#{securityDataProvider.hasPermission('CREATE_RELEASE')}"
+								action="#{releaseMgmtScreenService.createRelease()}"
+								oncomplete="#{rich:component('editReleasePopupPanel')}.show(); return false;"
+								render="editReleasePopupPanel">
+								<i class="icon icon-add"></i>
+								<h:outputText value="Add" />
+							</a4j:commandLink></li>
+					</ul>
+					</nav>
+					<h2>
+						<h:outputText value="Releases" />
+					</h2>
+				</f:facet>
+				<h:column>
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Release Name" />
+							<br />
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="${release.name}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Main Release" />
+							<br />
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="x" rendered="${release.mainRelease}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Description" />
+							<br />
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="${release.description}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Date" />
+							<br />
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="${release.installationInProductionAt}">
+						<f:convertDateTime pattern="dd.MM.yyyy" timeZone="CET"/>
+					</h:outputText>
+				</h:column>
+				<h:column rendered="#{securityDataProvider.hasPermission('EDIT_RELEASE')}">
+					<f:facet name="header">
+						<h:outputText value="Edit" />
+					</f:facet>
+					<a4j:commandLink value="Edit"
+						rendered="#{!releaseMgmtScreenService.isDefaultRelease(release)}"
+						oncomplete="#{rich:component('editReleasePopupPanel')}.show(); return false;"
+						render="editReleasePopupPanel">
+						<a4j:param value="${release.id}"
+							assignTo="#{releaseMgmtScreenService.releaseId}" />
+					</a4j:commandLink>
+				</h:column>
+	
+				<h:column rendered="#{securityDataProvider.hasPermission('DELETE_RELEASE')}">
+					<f:facet name="header">
+						<h:outputText value="Delete" />
+					</f:facet>
+					<a4j:commandLink value="Delete"
+						rendered="#{!releaseMgmtScreenService.isDefaultRelease(release)}"
+						actionListener="#{releaseMgmtScreenService.loadResourcesAndDeploymentsForRelease(release.id)}"
+						oncomplete="#{rich:component('removeReleasePopupPanel')}.show(); return false;"
+						render="removeReleasePopupPanel">
+						<a4j:param value="${release.id}"
+							assignTo="#{releaseMgmtScreenService.releaseId}" />
+					</a4j:commandLink>
+				</h:column>
+				<f:facet name="footer">
+					<ui:include src="paginationComp.xhtml">
+						<ui:param name="extendsPagination" value="#{releaseMgmtScreenService}" />
+						<ui:param name="renderItemsList" value="releasesTable" />
+					</ui:include></f:facet>
+			</h:dataTable>
+		</h:panelGroup>
+	</h:form>
+	
+	<!-- Add/Edit Release Popup -->
+	<h:form>
+		<rich:popupPanel id="editReleasePopupPanel" autosized="true"
+			movable="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h2>
+					<h:outputText value="Edit release" />
+				</h2>
+			</f:facet>
+			<f:facet name="controls">
+				<h:outputLink value="#"
+					styleClass="close icon icon-close icon-replace"
+					onclick="#{rich:component('editReleasePopupPanel')}.hide(); return false;">
+						x
+						</h:outputLink>
+			</f:facet>
+			<h:panelGroup id="editReleasePopupPanelGroup">
+			<h:panelGrid columns="2" styleClass="marginBottom10">
+					<h:outputLabel value="Release name" />
+					<h:inputText id="releaseName"
+						value="#{releaseMgmtScreenService.currentRelease.name}"
+						maxlength="10"/>
+					<h:outputLabel value="Main Release" />
+					<h:selectBooleanCheckbox required="false"
+								 value="#{releaseMgmtScreenService.currentRelease.mainRelease}" />
+
+					<h:outputLabel value="Installation date" />
+					<rich:calendar 
+					    buttonIcon="/AMW_web/images/calendarIcon.png"
+					    buttonDisabledIcon="/AMW_web/images/calendarIcon.png"
+					    enableManualInput="true" showApplyButton="true"
+						datePattern="dd.MM.yyyy"
+						value="#{releaseMgmtScreenService.currentRelease.installationInProductionAt}">
+					</rich:calendar>
+					<h:outputLabel value="Release description" />
+					<h:inputTextarea required="false"
+					class="width500px height300px noneResize"
+						value="#{releaseMgmtScreenService.currentRelease.description}">
+					</h:inputTextarea>
+				</h:panelGrid>
+				<a4j:commandLink styleClass="btn primary right" value="Save"
+					action="#{releaseMgmtScreenService.save()}" onclick="showLoader();"
+					oncomplete="#{rich:component('editReleasePopupPanel')}.hide(); hideLoader(); return false;"
+					render="releasesTable, paginationPanel" />
+			</h:panelGroup>
+		</rich:popupPanel>
+	</h:form>
+	
+	<!-- Remove Release Popup -->
+	<h:form>
+		<rich:popupPanel id="removeReleasePopupPanel" autosized="true"
+			movable="true" domElementAttachment="form">
+			<f:facet name="header">
+				<h2>
+					<h:outputText value="Remove release" />
+				</h2>
+			</f:facet>
+			<f:facet name="controls">
+				<h:outputLink value="#"
+					styleClass="close icon icon-close icon-replace"
+					onclick="#{rich:component('removeReleasePopupPanel')}.hide(); return false;">
+						x
+						</h:outputLink>
+			</f:facet>
+			<h:panelGroup id="removeReleasePopupPanelGroup">
+				<h:outputLabel rendered="#{releaseMgmtScreenService.countDeploymentsForCurrentRelease() == null and !releaseMgmtScreenService.hasResourcesForCurrentRelease()}"
+					value="Do you really want to delete the release ${releaseMgmtScreenService.currentRelease.name}?" />
+				<br/>
+				<h:panelGroup rendered="#{releaseMgmtScreenService.hasResourcesForCurrentRelease()}">
+					<h3><h:outputText value="The release ${releaseMgmtScreenService.currentRelease.name} is used by the following resources and can not be deleted:" /></h3><br/>
+					<ul class="generatorTest">
+						<ui:repeat value="#{releaseMgmtScreenService.getResTypesForCurrentRelease()}" var="type">
+							<li><h:outputText value="#{type.name}" />
+							<ul>
+								<ui:repeat value="#{releaseMgmtScreenService.getResForCurrentReleaseByType(type.id)}" var="res">
+									<li><h:outputText value="#{res.name}" /></li>
+								</ui:repeat>
+							</ul></li>
+						</ui:repeat>
+					</ul>	
+				</h:panelGroup>
+				
+				<h3><h:outputText rendered="#{releaseMgmtScreenService.countDeploymentsForCurrentRelease() != null}"
+					value="The release ${releaseMgmtScreenService.currentRelease.name} is used by deployments and can not be deleted." /></h3>
+
+				<a4j:commandLink styleClass="btn primary right" value="Ok"
+					rendered="#{releaseMgmtScreenService.countDeploymentsForCurrentRelease() == null and !releaseMgmtScreenService.hasResourcesForCurrentRelease()}"
+					action="#{releaseMgmtScreenService.remove()}"
+					onclick="showLoader();"
+					oncomplete="#{rich:component('removeReleasePopupPanel')}.hide(); hideLoader(); return false;"
+					render="releasesTable, paginationPanel" />
+			</h:panelGroup>
+	
+		</rich:popupPanel>
+	</h:form>
+
+</html>

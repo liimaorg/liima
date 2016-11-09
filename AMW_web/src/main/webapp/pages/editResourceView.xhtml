@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:mobi="http://java.sun.com/jsf/composite/mobi">
+
+<ui:composition template="templates/template.xhtml">
+    <f:metadata>
+        <f:viewParam name="rel" value="#{editResourceView.relationIdViewParam}"/>
+        <f:viewParam name="ctx" value="#{editResourceView.contextIdViewParam}"/>
+        <f:viewParam name="id" value="#{editResourceView.resourceIdFromParam}"/>
+        <f:viewParam name="resTypId" value="#{editResourceView.resourceTypeIdFromParam}"/>
+    </f:metadata>
+    <ui:param name="screen" value="newEditRes"/>
+    <ui:define
+            name="title">Edit #{editResourceView.displayName} #{editResourceView.currentContext.name.toUpperCase()}</ui:define>
+
+    <ui:define name="pagetitle">
+        <span>Edit </span><h:outputText class="ellipsisLeft editResourceTitleName"
+                                        value="${editResourceView.displayName}"
+                                        title="${editResourceView.displayName}"/>
+        <h:panelGroup rendered="${editResourceView.editResource}">
+            <h:selectOneMenu styleClass="switchRelease"
+                             style="margin-left:20px;"
+                             value="${editResourceView.resourceId}" readonly="true"
+                             onchange="if(confirmLeave(event)){loadPage(this.options[this.selectedIndex].value, '${editResourceView.contextIdViewParam}');}else{this.value='${editResourceView.resourceId}'}">
+                <f:selectItems
+                        value="${propertyEditDataProvider.group.releaseToResourceMap}"/>
+            </h:selectOneMenu>
+            <mobi:foreignableOwnerTooltip foreignableAttributes="#{editResourceView.foreignableToEdit}"/>
+            <script type="application/javascript">
+                function loadPage(id, ctx) {
+                    var url = window.location.href;
+                    window.location.href = url.substring(0, url.indexOf("?")) + "?id\=" + id + "&amp;ctx\=" + ctx;
+                }
+            </script>
+        </h:panelGroup>
+        <mobi:warnOnChange/>
+    </ui:define>
+
+    <ui:define name="headerButtons">
+        <h:panelGroup id="saveButtons">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown"><h:commandButton onclick="disableChangeCheck();showLoader();"
+                                                    styleClass="btn primary right"
+                                                    action="#{propertyEditController.save()}" execute="@form"
+                                                    rendered="#{editResourceView.canSaveChanges()}" value="Save changes" />
+                </li>
+                <li class="dropdown">
+                    <a class="btn light dropdown-toggle" data-toggle="dropdown">
+                        More
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <h:commandLink id="tagCurrentState" render="tagConfigurationPopup"
+                                           rendered="#{taggingDataProvider.canTagCurrentState and propertyEditDataProvider.applicationServer}"
+                                           onclick="showLoader();" type="button" styleClass="btn light">
+                                Tag Current State
+                                <a4j:ajax
+                                        oncomplete="hideLoader();#{rich:component('tagConfigurationPopup')}.show();"/>
+                            </h:commandLink>
+                        </li>
+                        <li>
+                            <h:commandLink id="copyFromResource"
+                                           rendered="#{copyResourceDataProvider.canCopyResource}"
+                                           styleClass="btn light">
+                                Copy from resource
+                                <a4j:ajax render="copyFromResourcePopup"
+                                          listener="#{copyResourceDataProvider.enableLoadList()}"
+                                          onbegin="showLoader();"
+                                          oncomplete="hideLoader();#{rich:component('copyFromResourcePopup')}.show();"/>
+                            </h:commandLink>
+                        </li>
+                        <li>
+                            <h:commandLink id="copyFromPredecessor"
+                                           rendered="#{copyResourceDataProvider.canCopyFromPredecessorResource and editResourceView.resourceType.applicationResourceType}"
+                                           styleClass="btn light">
+                                Copy from Predecessor
+                                <a4j:ajax render="copyFromPredecessorPopup"
+                                          listener="#{copyResourceDataProvider.enableLoadList()}"
+                                          onbegin="showLoader();"
+                                          oncomplete="hideLoader();#{rich:component('copyFromPredecessorPopup')}.show();"/>
+                            </h:commandLink>
+                        </li>
+                        <li>
+                            <h:panelGroup id="testingModeButton"
+                                          styleClass="control-group ${editResourceView.testing ? 'testing' : ''}"
+                                          rendered="#{editResourceView.hasShakedownTestPermission()}">
+
+                                <label class="btn light"> <h:selectBooleanCheckbox
+                                        onclick="return confirmLeave(event);"
+                                        value="#{editResourceView.testing}">
+                                    <a4j:ajax oncomplete="window.location.reload();"
+                                              onbegin="showLoader();" onerror="hideLoader();"/>
+                                </h:selectBooleanCheckbox> Testing mode
+                                </label>
+                            </h:panelGroup>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li class="dropdown">
+                    <a class="btn light dropdown-toggle" data-toggle="dropdown">
+                        Analyze
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+
+                        <li>
+                            <h:link outcome="generationTest" value="Test Generation"
+                                    rendered="${editResourceView.testGenerationAvailable and editResourceView.canGenerateTestConfiguration}"
+                                    styleClass="btn light"
+                                    onclick="showLoader();confirmLeave(event);">
+                                <f:param name="id" value="${editResourceView.relativeApplicationServerId ne null ? editResourceView.relativeApplicationServerId : editResourceView.resourceId}"/>
+                                <f:param name="release" value="#{editResourceView.releaseId}" />
+                                <f:param name="ctx" value="${editResourceView.contextIdViewParam}"/>
+                                <f:param name="rel" value="#{editResourceView.relationIdViewParam}"/>
+                                <f:param name="resTypId" value="#{editResourceView.resourceTypeId}"/>
+
+                            </h:link>
+                        </li>
+                        <li>
+                            <h:link outcome="resourceDependenciesView" value="Show dependencies"
+                                    styleClass="btn light"
+                                    onclick="showLoader();confirmLeave(event);">
+                                <f:param name="rel" value="#{editResourceView.relationIdViewParam}"/>
+                                <f:param name="resTypId" value="#{editResourceView.resourceTypeId}"/>
+                                <f:param name="id" value="#{editResourceView.resourceId}" />
+                                <f:param name="ctx" value="#{editResourceView.contextIdViewParam}" />
+                            </h:link>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="btn light dropdown-toggle" data-toggle="dropdown">
+                        Release
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <h:commandLink id="newReleaseButton" render="createNewReleasePopup"
+                                           onclick="showLoader();"
+                                           rendered="${releasingDataProvider.canCreateNewRelease}"
+                                           styleClass="btn light"><i class="icon icon-add"/>New
+                                <a4j:ajax
+                                        oncomplete="hideLoader();#{rich:component('createNewReleasePopup')}.show();"/>
+                            </h:commandLink>
+                        </li>
+                        <li><h:commandLink id="changeReleaseButton" render="changeReleasePopup"
+                                           onclick="showLoader();"
+                                           rendered="${releasingDataProvider.canChangeRelease}"
+                                           styleClass="btn light">
+                            <i class="icon icon-edit"/>Change
+                            <a4j:ajax
+                                    oncomplete="hideLoader();#{rich:component('changeReleasePopup')}.show();"/>
+                        </h:commandLink></li>
+                        <li><a4j:commandLink id="removeReleaseButton" execute="@this"
+                                             render="removeReleasePopup deleteResourceRelationsOverview"
+                                             onclick="showLoader();"
+                                             styleClass="btn light"
+                                             rendered="${releasingDataProvider.canRemoveRelease}"
+                                             oncomplete="hideLoader();#{rich:component('removeReleasePopup')}.show();">
+                            <i class="icon icon-delete"/>Remove
+                            <a4j:param assignTo="#{resourceDependenciesView.resourceIdViewParam}"
+                                       value="${editResourceView.resourceId}" name="x"/>
+
+                        </a4j:commandLink></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="btn light dropdown-toggle" data-toggle="dropdown">
+                        Go to
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <h:link outcome="editResourceView" includeViewParams="true"
+                                    value="Resource type" styleClass="btn light"
+                                    rendered="${editResourceView.canEditResourceType}">
+                                <f:param name="id" value="${null}"/>
+                                <f:param name="rel" value="${null}"/>
+                                <f:param name="resTypId" value="${editResourceView.resourceTypeId}"/>
+                                <f:param name="ctx" value="#{editResourceView.contextIdViewParam}" />
+                            </h:link>
+                        </li>
+                        <li>
+                            <h:link outcome="editResourceView" includeViewParams="true"
+                                    value="Application server" styleClass="btn light"
+                                    rendered="${editResourceView.relativeApplicationServerId ne null}">
+                                <f:param name="id" value="${editResourceView.relativeApplicationServerId}"/>
+                                <f:param name="rel" value="${null}"/>
+                                <f:param name="resTypId" value="${null}"/>
+                                <f:param name="ctx" value="#{editResourceView.contextIdViewParam}" />
+                            </h:link>
+                        </li>
+                        <li>
+                            <h:link outcome="appServerRelation"
+                                    value="AS relation screen" styleClass="btn light"
+                                    rendered="${editResourceView.resourceType.applicationServerResourceType}">
+                                <f:param name="id" value="${editResourceView.resourceId}"/>
+                                <f:param name="rel" value="${null}"/>
+                                <f:param name="resTypId" value="${null}"/>
+                                <f:param name="ctx" value="#{editResourceView.contextIdViewParam}" />
+                            </h:link>
+                        </li>
+                        <li>
+                            <h:link outcome="deploy"
+                                    value="Deployments" styleClass="btn light"
+                                    rendered="${editResourceView.canShowDeploymentLink}">
+                                <f:param name="application_name" value="${editResourceView.applicationName}"/>
+                                <f:param name="appserver_name" value="${editResourceView.applicationServerName}"/>
+                                <f:param name="environment_name" value="${editResourceView.environmentName}"/>
+                            </h:link>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="body">
+
+        <!--  CONTEXT NAVIGATION -->
+        <mobi:contextTree />
+        <section id="content">
+            <div class="container">
+                <!-- RESOURCE PROPERTIES -->
+                <article class="sixty">
+                    <div class="well withHeight">
+                        <nav class="actionbar">
+                            <ul>
+                                <li>
+                                    <h:panelGroup id="managePropertiesComp" rendered="#{editResourceView.isGlobalContext()}">
+                                        <h:link outcome="editPropertyView"
+                                                includeViewParams="true"
+                                                rendered="#{editResourceView.hasAddPropertyPermission()}"
+                                                styleClass="btn light ${editResourceView.testing ? 'testing' : ''}">
+                                            <i class="icon ${editResourceView.testing ? 'icon-addWhite' :  'icon-add'}"/>
+                                            <h:outputText value="Add new ${editResourceView.editResource ? 'instance' : 'resource type'} ${editResourceView.testing ? 'testing ' : ''}Property"/>
+                                            <f:param name="id" value="#{editResourceView.resourceIdFromParam}"/>
+                                            <f:param name="resTypId" value="#{editResourceView.resourceTypeIdFromParam}"/>
+                                            <f:param name="ctx" value="#{editResourceView.contextIdViewParam}" />
+
+                                        </h:link>
+                                    </h:panelGroup>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <h2>Properties</h2>
+                        <hr/>
+                        <h:panelGroup id="resProps" styleClass="max_70vh ajaxScroll">
+                            <h:panelGroup>
+                                <table class="propertyTable" style="margin: 0px;">
+                                    <h:panelGroup rendered="#{editResourceView.isGlobalContext()}">
+                                        <tr>
+                                            <td>
+                                                <div class="control-group">
+                                                    <label class="control-label"><h:outputText
+                                                            value="#{editResourceView.nameLabel} name"/></label>
+
+                                                    <div class="controls">
+                                                        <h:inputText styleClass="propertyInputField changeAware"
+                                                                     disabled="#{!editResourceView.canRenameResource}"
+                                                                     value="#{editResourceView.asNamedIdentifiable.name}"/>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{propertyEditDataProvider.application}">
+                                        <tr>
+                                            <td>
+                                                <div class="control-group">
+                                                    <label class="control-label"><h:outputText
+                                                            value="Out Of Service"/></label>
+
+                                                    <div class="controls">
+                                                        <h:inputText styleClass="propertyInputField changeAware"
+                                                                     disabled="#{true}"
+                                                                     value="#{editResourceView.resource.resourceGroup.outOfServiceRelease.name}"/>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{editResourceView.canShowSoftlinkField}">
+                                        <tr>
+                                            <td>
+                                                <div class="control-group">
+                                                    <label class="control-label"><h:outputText
+                                                            value="Softlink Id"/></label>
+
+                                                    <div class="controls">
+                                                        <h:inputText styleClass="propertyInputField changeAware"
+                                                                     disabled="#{!editResourceView.canEditSoftlinkId}"
+                                                                     value="#{editResourceView.resource.softlinkId}"/>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </h:panelGroup>
+                                </table>
+                            </h:panelGroup>
+                            <mobi:editPropertiesTable
+                                    editProperties="#{propertyEditDataProvider.resourceEditProperties}"
+                                    isDefinedOnInstanceOrType="true" />
+                        </h:panelGroup>
+                    </div>
+                </article>
+                <article class="forty omega">
+                    <mobi:editTemplate/>
+                    <br class="clear"/>
+                    <mobi:editFunction/>
+                </article>
+
+                <mobi:addApplication/>
+
+                <br class="clear"/>
+
+                <!--  RELATED RESOURCES -->
+                <article><mobi:editRelatedProperties/></article>
+            </div>
+        </section>
+    </ui:define>
+    <ui:define name="component_popups">
+        <mobi:tagCurrentState/>
+        <mobi:copyFromResourcePopup/>
+        <mobi:copyFromPredecesorPopup/>
+        <mobi:createNewReleasePopup/>
+        <mobi:removeReleasePopup/>
+        <mobi:changeReleasePopup/>
+    </ui:define>
+</ui:composition>
+</html>

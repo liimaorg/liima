@@ -1,0 +1,236 @@
+// Buttons
+//----------------------------------------------------------------------
+
+.btn {
+	//@extend .btn-base;
+	@include inline-block;
+	padding: 4px 15px;
+
+	@include background(linear-gradient($grey7, $grey5));
+	@include border-radius($radius);
+
+	@include adjust-font-size-to(14px);
+	@include single-text-shadow;
+	font-weight: bold;
+	color: $grey1;
+
+	cursor: pointer;
+
+	border: 1px solid $btnBorder;
+	*border: 0; // Remove the border to prevent IE7's black border on input:focus
+	border-bottom-color: darken($btnBorder, 10%);
+
+	&:hover { 
+		@include background(linear-gradient(white, $grey7));
+	}
+	&:active { 
+		@include single-box-shadow( $grey5, 0, 0, 6px, 0, true);
+	}
+
+	&.primary {
+		@include background(linear-gradient($blue2, $blue1));
+		@include single-text-shadow($blue1, 0, -1px);
+		color: white;
+		border: none;
+		padding-top: 5px;
+		padding-bottom: 5px;
+
+		&:hover {
+			@include background(linear-gradient(darken($blue2, 10%), darken($blue1, 10%)));
+		}
+		&:active { 
+			@include single-box-shadow( darken($blue1, 30%), 0, 0, 6px, 0, true);
+		}
+	}
+
+	&.light {
+		background: white;
+		@include single-text-shadow(none);
+		color: $grey2;
+		border-color: $grey6;
+		@include transition(border-color);
+		&:hover .icon-delete { background-color: $red; }
+		&:hover {
+			border-color: $grey4;
+		}
+	}
+
+	&.disable {
+		@include background(linear-gradient(white, $grey7));
+		color: $grey4;
+		cursor: inherit;
+	}
+
+	&.back {
+		position: absolute;
+		left:0;
+		font-weight: normal;
+		padding-left: 15px;
+		margin-right: 70px;
+		@include arrow;
+		&:after{ // Arrow
+			@include background(linear-gradient(left top, $grey7, $grey5));
+			border-left: 1px solid $btnBorder;
+			border-bottom: 1px solid darken($btnBorder, 10%);
+			top:3px;
+			left:-8px;
+		}
+		&:hover:after { 
+			@include background(linear-gradient(white, $grey7));
+		}
+	}
+
+	.icon { float:left; margin:0 6px 0 0; background-color: $blue2; }
+}
+
+
+// Forms
+//----------------------------------------------------------------------
+
+// Declare width for legacy (can't be on input[type=*] selectors or it's too specific)
+input, textarea {
+  width: 60%;
+}
+input, textarea, select {
+	@include inline-block;
+}
+// Reset height since textareas have rows
+textarea {
+  height: auto;
+}
+
+textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"],
+input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"],
+input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
+
+	font-family: $base-font-family;
+	color: $grey2;
+	padding: 4px $padding*0.5;
+	background-color: white;
+	border: 1px solid $grey5;
+	@include single-box-shadow($grey6, 0, 1px, 2px, 0, true);
+
+	@include border-radius(3px);
+	@include transition(#{border-color linear .2s, background linear .2s});
+
+	// Focus state
+	&:focus {
+		background-color: $yellow;
+		@include single-box-shadow(darken($yellow, 20%), 0, 1px, 2px, 0, true);
+		border-color: darken($grey5, 5%);
+		outline: 0;
+		outline: thin dotted \9; /* IE6-9 */
+	}
+}
+
+// Reset width of input buttons, radios, checkboxes
+input[type="submit"], input[type="reset"], input[type="button"], input[type="radio"], input[type="checkbox"] {
+  width: auto; // Override of generic input selector
+}
+
+// Set the height of select and file controls to match text inputs
+select, input[type="file"] {
+	height: 24px; /* In IE7, the height of the select element cannot be changed by height, only font-size */
+	*margin-top: 4px; /* For IE7, add top margin to align select with labels */
+	line-height: 24px;
+}
+
+// Make select elements obey height by applying a border
+select {
+	width: 270px; // default input width + 10px of padding that doesn't get applied
+	border: 1px solid #bbb;
+}
+
+// Make multiple select elements height not fixed
+select[multiple], select[size] {
+	height: auto;
+}
+
+label {
+	display: block;
+	@include adjust-font-size-to(14px);
+}
+
+// Indent the labels to position radios/checkboxes as hanging
+.radio, .checkbox {
+	min-height: 18px; // clear the floating input if there is no label text
+	padding-left: 18px;
+}
+.radio input[type="radio"], .checkbox input[type="checkbox"] {
+	float: left;
+	margin-left: -18px;
+}
+
+.checkboxList label{
+	display:inline-block;
+}
+.checkboxList td{
+	padding:2px 2px 2px 2px;
+}
+
+// Move the options list down to align with labels
+.controls > .radio:first-child, .controls > .checkbox:first-child {
+	padding-top: 5px; // has to be padding because margin collaspes
+}
+
+// Radios and checkboxes on same line
+// TODO v3: Convert .inline to .control-inline
+.radio.inline, .checkbox.inline {
+	display: inline-block;
+	padding-top: 5px;
+	margin-bottom: 0;
+	vertical-align: middle;
+}
+.radio.inline + .radio.inline, .checkbox.inline + .checkbox.inline {
+	margin-left: 10px; // space out consecutive inline controls
+}
+
+.help-inline {
+	@include inline-block;
+	vertical-align: middle;
+	padding-left: 5px;
+}
+
+.control-group {
+	@include clearfix;
+	margin-top: -4px;
+	padding-bottom: 12px;
+}
+
+// Float the labels left
+.control-label {
+	float: left;
+	width: 140px;
+	padding-top: 5px;
+	text-align: right;
+}
+// Move over all input controls and content
+.controls {
+	// Super jank IE7 fix to ensure the inputs in .input-append and input-prepend
+	// don't inherit the margin of the parent, in this case .controls
+	*display: inline-block;
+	*padding-left: 20px;
+	margin-left: 160px;
+	*margin-left: 0;
+	&:first-child {
+		*padding-left: 160px;
+	}
+}
+
+.form-actions {
+	padding-left: 160px;
+}
+
+
+// Error
+// ------------------------
+.fieldValidationError {
+	color: #b94a48 !important;
+	background-color: #f2dede !important;
+	border-color: orange !important;
+	box-shadow: 0 0 6px #d59392 !important;
+}
+
+.errorMessage{	
+	color: #b94a48 !important;
+}

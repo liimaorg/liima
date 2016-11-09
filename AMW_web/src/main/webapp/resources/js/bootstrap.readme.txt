@@ -1,0 +1,10 @@
+We currently use the following modules:
+Alert
+Dropdown
+Modal
+Tab
+Tooltip
+Collapse
+Transitions
+
+but the whole bootstrap.min.js

@@ -1,0 +1,261 @@
+// CALENDAR
+//----------------------------------------------------------------------
+
+.controls td { padding-bottom: inherit; }
+
+.rf-cal-popup {
+	position: inherit !important;
+	background: white !important;
+	cursor: default !important;
+	width: 500px !important;
+	@include single-box-shadow($grey3 !important, 1px !important, 1px !important, 6px !important);
+}
+
+// Header
+//------------------------------
+.rf-cal-hdr { 
+	border-right: 0px solid !important;
+	background: $grey1 !important;
+	color: white !important;
+	padding: 0 4px !important;
+	.rf-cal-tl-btn-hov { // Hover
+		background: $grey2 !important;
+	}
+}
+.rf-cal-tl { // Header actions
+	vertical-align: middle !important;
+	text-align: center !important;
+	width: 20px !important;
+	height: 30px !important;
+}
+.rf-cal-hdr-month { // Month
+	vertical-align: middle !important;
+	text-align: center !important;
+	height: 30px !important;
+	white-space: nowrap !important;
+}
+
+// Controller
+//------------------------------
+.rf-cal-edtr-cntr {
+	position: absolute !important;
+	top: 0; left: 0 !important;
+	width: 100% !important;
+}
+.rf-cal-edtr-layout-shdw {
+	display: none !important;
+}
+
+// Pickers
+//------------------------------
+.rf-cal-monthpicker-cnt, .rf-cal-timepicker-cnt {
+	background: white !important;
+	position: relative !important;
+	@include single-box-shadow($grey3 !important, 1px !important, 1px !important, 6px !important);
+}
+td.rf-cal-monthpicker-ok, td.rf-cal-timepicker-ok {
+	.rf-cal-time-btn { @extend .primary; }
+	padding:10px 5px 10px 10px !important;
+	border-top: 1px solid $grey6 !important;
+}
+td.rf-cal-monthpicker-cancel, td.rf-cal-timepicker-cancel {
+	padding:10px 10px 10px 5px !important;
+	border-top: 1px solid $grey6 !important;
+}
+
+// Month Picker
+.rf-cal-monthpicker-split {
+	border-right: 1px solid $grey6 !important;
+}
+
+// Time Picker
+.rf-cal-timepicker-inp {
+	padding: 7px 7px 5px 7px !important;
+	white-space: nowrap !important;
+}
+
+// Buttons
+//------------------------------
+//.rf-cal-btn, .rf-cal-tl-btn {
+//	cursor: pointer !important;
+//}
+.rf-cal-time-btn {
+	@extend .btn;
+	text-align: center !important;
+}
+.rf-cal-time-btn-press {
+	border: 1px solid !important;
+}
+
+// + / -
+.rf-cal-sp-inp-ctnr {
+	padding-left: 8px !important;
+	width: 45px !important;
+}
+.rf-cal-sp-up, .rf-cal-sp-down {
+	background: url("../images/plus-minus.png") $blue2 no-repeat !important;
+	height: 16px !important;
+	width: 16px !important;
+	margin: 0 1px 1px 0 !important;
+	cursor: pointer !important;
+}
+.rf-cal-sp-up {
+	background-position: top center !important;
+}
+.rf-cal-sp-down {
+	background-position: bottom center !important;
+}
+.rf-cal-sp-press {
+	background-color: $blue1 !important;
+	margin: 1px 0 0 1px !important;
+}
+
+// Grid
+.rf-cal-c-cnt-overflow {
+	width: 25px !important;
+	height: 22px !important;
+}
+.rf-cal-c-cnt {
+	overflow: hidden !important;
+}
+.rf-cal-c {
+	border-bottom: 1px solid $grey5 !important;
+	border-right: 1px solid $grey5 !important;
+	padding: 0px !important;
+	vertical-align: middle !important;
+	text-align: center !important;
+}
+.rf-cal-day-lbl {
+	background: $grey6 !important;
+	color: $grey2 !important;
+	text-transform: uppercase !important;
+	font-size: 12px !important;
+	border-bottom: 1px solid $grey5 !important;
+	border-right: 0px solid !important;
+	vertical-align: middle !important;
+	text-align: center !important;
+	height: 22px !important;
+}
+
+// Weeks
+.rf-cal-week {
+	border-bottom: 1px solid $grey2 !important;
+	border-right: 1px solid $grey2 !important;
+	vertical-align: middle !important;
+	text-align: center !important;
+	width: 15px !important;
+	background: $grey3 !important;
+	color: $grey6 !important;
+}
+.rf-cal-right-c {
+	border-right: 0px !important;
+}
+
+// bottom line
+.rf-cal-tl-ftr {
+	height: 22px !important;
+	padding: 1px 2px 1px 1px !important;
+	background-repeat: no-repeat !important;
+	background-position: right center !important;
+}
+.rf-cal-ftr {
+	border-top: 1px solid !important;
+	border-right: 0px solid !important;
+	padding: 0px !important;
+}
+
+.rf-cal-ftr table {
+	margin: 0px !important;
+}
+
+.rf-cal-edtr-cntr,.rf-cal-edtr-cntr table,.rf-cal-edtr-cntr tr,.rf-cal-edtr-cntr td
+	{
+	padding: 0px !important;
+	margin: 0px !important;
+}
+
+.rf-cal-edtr-cntr {
+	width: auto !important;
+}
+
+// days
+.rf-cal-boundary-day {
+	color: $grey4 !important;
+}
+.rf-cal-today {
+	background: $blue1 !important;
+	color: white !important;
+}
+.rf-cal-tl-btn {
+	cursor: pointer !important;
+	padding: 2px 3px 2px 3px !important;
+	white-space: nowrap !important;
+}
+
+
+
+
+
+
+
+.rf-cal-ftr-optnl {
+	border-top: 1px solid !important;
+	border-right: 0px solid !important;
+	padding: 7px !important;
+	height: 22px !important;
+	font-weight: bold !important;
+	background: red !important;
+}
+.rf-cal-sp-inp {
+	border: 0px !important;
+	padding: 0px 0px 0px 3px !important;
+	background: none transparent scroll repeat 0% 0% !important;
+	width: 18px;
+}
+.rf-cal-sp-inp-cntr {
+	background-position: left top !important;
+	background-repeat: repeat-x !important;
+	border: 1px solid !important;
+}
+.rf-cal-tl-btn-dis {
+	cursor: pointer !important;
+	padding: 2px 3px 2px 3px !important;
+}
+.rf-cal-tl-btn-hov {
+	color: white !important;
+	background: $blue1 !important;
+}
+
+.rf-cal-time-inp {
+	width: 22px !important;
+	margin: 0px 2px !important;
+}
+
+.rf-cal-edtr-btn {
+	width: 36px !important;
+	padding: 2px !important;
+	margin: 2px !important;
+	text-align: center !important;
+	cursor: pointer !important;
+}
+.rf-cal-edtr-btn-over {
+	padding: 1px !important;
+	border: 1px solid !important;
+}
+.rf-cal-edtr-btn-sel {
+	padding: 2px !important;
+	border: 0px !important;
+	font-weight: bold !important;
+	cursor: default !important;
+}
+.rf-cal-edtr-tl-over {
+	padding: 1px !important;
+	border: 1px solid !important;
+}
+.rf-cal-edtr-tl-press {
+	padding: 1px !important;
+	border: 1px solid !important;
+}
+input.rf-cal-dflt-lbl {
+	color: rgb(179, 179, 179) !important;
+}

@@ -1,0 +1,21 @@
+{
+  "name": "AMW_web",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "src/main/webapp/resources/bower",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "codemirror": "5.17.0",
+    "google-diff-match-patch-js": "~1.0.0",
+    "cm-show-invisibles": "~1.2.0"
+  },
+  "dependencyComments": {
+    "codemirror": "Is used for syntax highlighting in the template editor",
+    "google-diff-match-patch-js": "This library is used by codemirror for the provision of the comparison view of the template editor",
+    "cm-show-invisibles": "Addon for CodeMirror that helps to show invisibles."
+  }
+}

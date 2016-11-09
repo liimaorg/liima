@@ -1,0 +1,207 @@
+// ---------------------------------------------------------------------------
+// Navigation
+
+header { 
+	nav {
+		float:right;
+		ul {
+			@include horizontal-list($padding);
+			a { 
+				@include adjust-font-size-to(14px, 2); 
+			}
+			li.settings {
+				border-left: 1px solid $grey2;
+				border-right: 1px solid $grey2;
+				padding-right: $padding;
+			}
+			.current {
+				font-weight: bold;
+				color: white;
+				background: darken($grey2, 5%);
+			}
+		}
+
+	}
+}
+
+nav {
+	a { 
+		color: $grey5; 
+		&:hover { color: white; }
+		text-decoration: none;
+	}
+}
+
+.caret {
+	font-size:0.75em;
+}
+
+aside {
+	margin-left: -$grid-padding;
+	margin-top: -2px;
+
+	nav.primary {
+		text-transform: uppercase;
+	}
+	nav {
+		& > ul {
+			padding-top: $base-line-height*1.5;
+			padding-bottom: $padding*0.5;
+
+			& > li {
+				& ul li:first-child a { border-top: none; }
+				& a {
+					display:block;
+					padding:$padding*0.5 $padding $padding*0.5 $grid-padding;
+					border-top: 1px solid darken($grey3, 10%);
+					border-bottom: 1px solid darken($grey2, 10%);
+
+					@include single-text-shadow($grey1, 0, 1px);
+					@include single-transition(background-color);
+
+					&:hover {
+						background: $grey1;
+					}
+				}
+				&.current > a {
+					background: $grey1;
+					color:white;
+					font-weight: bold;
+					border-bottom: 1px solid darken($grey3, 10%);
+					@include arrow(28px, 28px);
+					&:after{ // Arrow
+						background: $grey1;
+						top:5px;
+						right:-13px;
+					}
+				}
+				& ul li.current > a {
+					color:white;
+					font-weight: bold;
+				}
+				& ul li a {
+					@include adjust-font-size-to(12px);
+					padding-left: $grid-padding*2;
+				}
+			}	
+		} 
+	}
+}
+
+.level2 a { padding-left: $grid-padding + 2em; }
+.level3 a { padding-left: $grid-padding + 4em; }
+.level4 a { padding-left: $grid-padding + 6em; }
+
+
+// ---------------------------------------------------------------------------
+// Tabs
+
+
+// TABS AND PILLS
+// -------------
+
+// Common styles
+.nav-tabs {
+	@include clearfix;
+}
+.nav-tabs > li {
+	float: left;
+}
+.nav-tabs > li > a {
+	padding: $padding*0.5;
+	@include adjust-font-size-to(14px);
+}
+
+// TABS
+// ----
+
+// Give the tabs something to sit on
+.nav-tabs {
+	min-width: 180px;
+	background-color: $grey7;
+	@include border-bottom-left-radius($radius);
+	margin-right: -1px;
+	margin-bottom: -1px;
+}
+.nav-tabs > li > h3 {
+	display: block;
+	margin: 0;
+  	padding-top: 15px;
+  	padding-bottom: 5px;
+	border-right: 1px solid $grey6;
+	border-bottom: 1px solid $grey6;
+	color: $grey3;
+	text-transform: uppercase;
+	font-size: 11px;
+}
+// Actual tabs (as links)
+.nav-tabs > li > a {
+	display: block;
+	&:hover {
+		background: $blue3;
+	}
+}
+// Active state, and it's :hover to override normal :hover
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover {
+	cursor: default;
+}
+
+
+// Clear any floats
+.tabbable {
+	@include clearfix;
+	margin: -8px (-$padding) -10px;
+
+	@include border-bottom-radius($radius);
+}
+.tab-content {
+	overflow: auto; // prevent content from running below tabs
+	padding: 10px $padding 20px;
+	border-left: 1px solid $grey6;
+	background: white;
+	min-height: 300px;
+}
+
+// Remove border on bottom, left, right
+.tabs-below > .nav-tabs, .tabs-right > .nav-tabs, .tabs-left > .nav-tabs {
+	
+}
+
+// Show/hide tabbable areas
+.tab-content > .tab-pane {
+	display: none;
+}
+.tab-content > .active {
+	display: block;
+}
+
+// Common styles
+.tabs-left > .nav-tabs > li, .tabs-right > .nav-tabs > li {
+	float: none;
+
+	&:first-child > a {
+		border-top:none;
+	}
+}
+.tabs-left > .nav-tabs > li > a, .tabs-right > .nav-tabs > li > a {
+	border-top: 1px solid white;
+	border-bottom: 1px solid $grey6;
+	border-right: 1px solid $grey6;
+	margin-right: 0;
+}
+
+// Tabs on the left
+.tabs-left > .nav-tabs {
+	float: left;
+}
+.tabs-left > .nav-tabs > li > a {
+	
+}
+.tabs-left > .nav-tabs > li > a:hover {
+
+}
+.tabs-left > .nav-tabs .active > a, .tabs-left > .nav-tabs .active > a:hover {
+	background: white;
+	border-right:none;
+}
+

@@ -1,0 +1,220 @@
+.myfavorites{
+    line-height: 36px;
+    color: #d6d6d6;
+}
+
+#subheader{
+    overflow:visible;
+}
+
+#globalMessageBox{
+    position:fixed;
+    bottom: 2em;
+    right:2em;
+    z-index:1000;
+}
+
+#subheader{
+    padding-top:5px;
+    padding-bottom:5px;
+    position:fixed;
+    top:36px;
+    width:100%;
+    z-index:10;
+    border-bottom:2px solid #d6d6d6;
+
+}
+#subheader .container * {
+    vertical-align: middle;
+}
+
+#saveButtons .nav{
+    margin-top:5px;
+}
+
+#testingModeButton .btn{
+    font-weight: normal;
+}
+.dropdown-menu label{
+    padding-top:3px;
+    padding-bottom:3px;
+    min-width:158px;
+}
+
+header{
+    position:fixed;
+    top:0px;
+    height:36px;
+    width:100%;
+    z-index:10;
+}
+#main{
+    margin-top: 84px;
+}
+
+#main #content aside{
+    position:static;
+}
+
+#main aside {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    position: fixed;
+    top: 84px;
+    bottom: 0px;
+    padding-top: 27px;
+    padding-bottom: 20px;
+
+    /*direction:rtl;*/
+}
+#main aside nav:hover{
+    overflow-y:auto;
+}
+#main aside nav.fixed:hover{
+    overflow-y:hidden;
+}
+
+#main aside nav.fixed.primary{
+    margin-bottom:10px;
+}
+
+#main aside nav {
+    background-color:transparent;
+    width:320px;
+    flex: 1;
+    -ms-flex: 1 1 auto;
+    direction:rtl;
+    overflow-y:hidden;
+    overflow-x:hidden;
+    margin-top:3px;
+}
+
+
+.popupNavigationComponent{
+    max-height:80vh;
+    overflow-y:auto;
+    overflow-x:hidden;
+}
+
+aside.popupNavigationComponent{
+    direction:rtl;
+    width:270px;
+    background-color:transparent;
+
+}
+aside.popupNavigationComponent nav{
+    background-color:#434343;
+    width:250px;
+    direction:ltr;
+    margin-right:20px;
+}
+
+#main aside nav.fixed{
+    flex:inherit;
+    direction:ltr;
+    -ms-flex: 0 0 auto;
+}
+
+#main aside nav > ul {
+    background-color:#434343;
+    width:250px;
+    direction:ltr;
+    margin-right:70px; /*nav width - own width*/
+    padding-top:0px;
+    padding-bottom:0px;
+}
+
+#main aside nav ul ul{
+    margin-bottom:0px;
+}
+
+#content .container{
+    margin-left: 202px;
+}
+
+.center{
+    text-align:center;
+}
+.hiddenAnchor{
+    visibility:hidden;
+    height:0px;
+    margin:0px;
+    padding:0px;
+    border:0px;
+}
+
+#newResTypeButton{
+    margin-top:10px;
+}
+.relatedResource, .flexbox{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+
+}
+.relatedResource > #relatedResourceMenu{
+    flex: 0;
+    -ms-flex: 0 0 auto;
+}
+
+.relatedResource > section, .flexible{
+    flex: 1;
+    -ms-flex: 1 1 auto;
+}
+
+
+.controls{
+    white-space: nowrap;
+}
+ input, textarea{
+    width: 70%;
+}
+
+
+.controls input.resetBox{
+    width:auto;
+}
+
+.ellipsisLeft{
+    overflow:visible!important;
+}
+
+.form-control {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    color: #555;
+    display: block;
+    font-size: 14px;
+    height: 34px;
+    line-height: 1.42857;
+    padding: 6px 12px;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    vertical-align: middle;
+    width: 70%;
+}
+.form-control .token{
+	float:left;
+}
+
+.dropdown input[type="submit"]{
+	 font-family: Helvetica, Arial, sans-serif;
+	 padding-top: 4px;
+	 padding-bottom: 4px;
+	 padding-left: 12px;
+	 padding-right: 12px;
+	 
+}

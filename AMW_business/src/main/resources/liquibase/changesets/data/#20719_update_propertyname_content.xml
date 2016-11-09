@@ -1,0 +1,13 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/mvnversion_version/#20719_update_propertyname_content.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="#20719_update_propertyname_content.xml" >
+        <comment>
+            update content of ROPERTYNAME and PROPERTYCOMMENT
+        </comment>
+        <sql>update TAMW_PROPERTYDESCRIPTOR set PROPERTYNAME = 'Version', PROPERTYCOMMENT = 'Version' where PROPERTYNAME = 'MavenVersion'</sql>
+    </changeSet>
+</databaseChangeLog>

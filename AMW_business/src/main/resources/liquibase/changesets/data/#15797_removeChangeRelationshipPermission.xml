@@ -1,0 +1,18 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/#15797_removeChangeRelationshipPermission.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet author="bschwaller" id="#15797_removeChangeRelationshipPermission">
+
+        <delete tableName="TAMW_ROLE_PERMISSION">
+            <where>PERMISSIONS_ID = (SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'CHANGE_RELATIONSHIP')</where>
+        </delete>
+        <delete tableName="TAMW_PERMISSION">
+            <where>VALUE = 'CHANGE_RELATIONSHIP'</where>
+        </delete>
+
+    </changeSet>
+
+</databaseChangeLog>

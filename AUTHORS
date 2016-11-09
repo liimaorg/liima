@@ -1,0 +1,30 @@
+AMW was originally created by Puzzle ITC between 2011 and 2016 as a project for Die Mobiliar.
+
+We then together decided that the knowhow and expertise formed within the project team and the software itself
+could probably be useful for other engineers, operation teams, devs and the community, that it's worth to make 
+AMW open source.
+
+We decided to define the next steps and legal aspects in a binding contract between Die Mobiliar and Puzzle ITC, which
+basically gave us the legal power to make AMW open source under the GNU AFFERO GENERAL PUBLIC LICENSE Version 3 
+
+Here is an inevitably incomplete list of MUCH-APPRECIATED CONTRIBUTORS --
+people who have submitted patches, reported bugs, added features and generally made AMW that much better:
+
+	Lorenz Beyeler
+	Reto Galante
+	Christoph Gutmann 
+	Robin Lack
+	Andreas Maierhofer
+	Yves Peter
+	Thomas Philipona
+	Antonio Romano
+	Oliver Schmid
+	Beat Schwaller
+	Daniel Tschan
+	Claudia Weber
+	Michael Zaugg
+
+	
+A bit THANK goes to:
+
+	Die Mobiliar for letting us open-source AMW

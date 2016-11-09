@@ -1,0 +1,35 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaPropertyDescriptorChanges/#10884_globalAmwFunctions.xml" 
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	<changeSet author="tphilipona" id="#10884 added GlobalFunction Entity">
+        <createTable tableName="TAMW_GLOBALFUNCTION">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="globalFunction_PK"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="content" type="CLOB"/>
+        </createTable>
+
+        <insert tableName="SAMW_SEQUENCES">
+            <column name="seq_name" value="globalFunctionId"></column>
+            <column name="next_val" valueNumeric="1"></column>
+        </insert>
+
+        <createTable tableName="TAMW_GLOBALFUNCTION_AUD">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+            <column name="content" type="CLOB"/>
+            <column name="rev" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revType" type="TINYINT"/>
+        </createTable>
+        <addPrimaryKey tableName="TAMW_GLOBALFUNCTION_AUD" columnNames="id, rev"/>
+	</changeSet>
+</databaseChangeLog>

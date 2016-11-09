@@ -1,0 +1,546 @@
+recursion v2.0:
+
+            asVersion: 600
+            permSize: 
+            scanInterval: 0
+            verifyClient: true
+            # ==> templatefiles:
+            # ==> amw-system.properties ch_puzzle_itc_mobi_amw:
+            content: content
+            name: amw-system.properties
+            path: configuration/props/amw-system.properties
+            # <== amw-system.properties ch_puzzle_itc_mobi_amw
+            # ==> datasource_db2 ch_puzzle_itc_mobi_amw2db2Host:
+            content: content
+            name: datasource_db2
+            path: datasource_db2.tmp
+            # <== datasource_db2 ch_puzzle_itc_mobi_amw2db2Host
+            # ==> application-roles.properties ch_puzzle_itc_mobi_amw:
+            content: content
+            name: application-roles.properties
+            path: configuration/props/application-roles.properties
+            # <== application-roles.properties ch_puzzle_itc_mobi_amw
+            # ==> mail-socketbinding-template ch_puzzle_itc_mobi_amw2mailrelay:
+            content: content
+            name: mail-socketbinding-template
+            path: mail-socketbinding-template.tmp
+            # <== mail-socketbinding-template ch_puzzle_itc_mobi_amw2mailrelay
+            # ==> loginModule-cert ch_puzzle_itc_mobi_amw2certAdIntern:
+            content: content
+            name: loginModule-cert
+            path: new_loginModule-cert-ch_puzzle_itc_mobi_amw.tmp
+            # <== loginModule-cert ch_puzzle_itc_mobi_amw2certAdIntern
+            # ==> application-users.properties ch_puzzle_itc_mobi_amw:
+            content: content
+            name: application-users.properties
+            path: configuration/props/application-users.properties
+            # <== application-users.properties ch_puzzle_itc_mobi_amw
+            # ==> application-role-mapping.properties ch_puzzle_itc_mobi_amw:
+            content: content
+            name: application-role-mapping.properties
+            path: configuration/props/application-role-mapping.properties
+            # <== application-role-mapping.properties ch_puzzle_itc_mobi_amw
+            # ==> modClusterEAP ch_puzzle_itc_mobi_amw2proxy01:
+            content: content
+            name: modClusterEAP
+            path: modCluster.tmp
+            # <== modClusterEAP ch_puzzle_itc_mobi_amw2proxy01
+            # ==> modelFromApp ch_puzzle_itc_mobi_amw:
+            content: content
+            name: modelFromApp
+            path: modelFromApp.tmp
+            # <== modelFromApp ch_puzzle_itc_mobi_amw
+            # ==> jboss7Management ch_puzzle_itc_mobi_amw2jboss7Management_Ldap:
+            content: content
+            name: jboss7Management
+            path: jboss7Management_ldap.tmp
+            # <== jboss7Management ch_puzzle_itc_mobi_amw2jboss7Management_Ldap
+            # ==> mail-session ch_puzzle_itc_mobi_amw2mailrelay:
+            content: content
+            name: mail-session
+            path: mail-session.tmp
+            # <== mail-session ch_puzzle_itc_mobi_amw2mailrelay
+            # <== templatefiles
+            # ==> appServer:
+            additionalJavaOpts: 
+            appLogLevel: DEBUG
+            asProfile: default
+            asVersion: 600
+            autoDeployExploded: true
+            deploymentTimeout: 300
+            id: 8744
+            maxHeap: 512m
+            maxPermGen: 256m
+            minHeap: 128m
+            name: amw
+            permSize: 
+            scanInterval: 0
+            serverLogLevel: INFO
+            verifyClient: true
+            # <== appServer
+            autoDeployExploded: true
+            maxPermGen: 256m
+            # ==> env:
+            id: 5
+            name: B
+            # <== env
+            deploymentTimeout: 300
+            id: 8744
+            # ==> node:
+            deploy: true
+            deploymentId: 1
+            excludeAppFromNode: NULL
+            hostName: NULL
+            id: 1002
+            name: node_01
+            nodeId: 1
+            # <== node
+            additionalJavaOpts: 
+            minHeap: 128m
+            asProfile: default
+            maxHeap: 512m
+            name: amw
+            # ==> applications:
+            # ==> ch_puzzle_itc_mobi_amw:
+            MavenArtifactDestination: deployments
+            MavenArtifactId: AMW_ear
+            MavenGroupId: ch.puzzle.itc.mobiliar
+            MavenPackaging: ear
+            MavenVersion: 0.0.1
+            # ==> app:
+            MavenArtifactDestination: deployments
+            MavenArtifactId: AMW_ear
+            MavenGroupId: ch.puzzle.itc.mobiliar
+            MavenPackaging: ear
+            MavenVersion: 0.0.1
+            generatorPath: /home/jboss/amw/build
+            id: 8745
+            logoutUrl: http://mobiwiki.mobicorp.ch/wiki/index.php/AMW_Tool
+            logsPath: /home/jboss/amw/logs
+            name: ch_puzzle_itc_mobi_amw
+            stmpath: /home/jboss/amw/shakedown/stm.jar
+            stmrepo: /home/jboss/amw/shakedown/stps
+            testResultPath: /home/jboss/amw/shakedown/results
+            # <== app
+            # ==> appServer:
+            additionalJavaOpts: 
+            appLogLevel: DEBUG
+            asProfile: default
+            asVersion: 600
+            autoDeployExploded: true
+            deploymentTimeout: 300
+            id: 8744
+            maxHeap: 512m
+            maxPermGen: 256m
+            minHeap: 128m
+            name: amw
+            permSize: 
+            scanInterval: 0
+            serverLogLevel: INFO
+            verifyClient: true
+            # <== appServer
+            # ==> app_adIntern:
+            baseCtx: OU=Mobi-Acc
+            bindName: CN=Z100006,OU=Service-Accounts,OU=Mobi-Acc
+            domain: DC=umobi,DC=mobicorp,DC=test
+            id: 1051
+            name: adIntern
+            password: 
+            roleFilter: (member={1})
+            rolesCtx: OU=Groups,OU=Mobi-Acc
+            url_1: ldap://addc01.umobi.mobicorp.test:389
+            url_2: ldap://addc02.umobi.mobicorp.test:389
+            user: NULL
+            userFilter: (cn={0})
+            # <== app_adIntern
+            # ==> app_certAdIntern:
+            id: 13242
+            jaasName: jboss-secure
+            name: certAdIntern
+            propertyFilePrefix: application
+            # <== app_certAdIntern
+            # ==> app_db2Host:
+            backgroundValidationMillis: 60000
+            currentSchema: DB2BVIEW
+            databaseName: DB2B
+            datasourceClass: com.ibm.db2.jcc.DB2XADataSource
+            driverType: 4
+            fetchSize: 1000
+            id: 1003
+            jndiName: java:jboss/datasources/amwDS
+            name: db2Host
+            password: 
+            poolMaxSize: 30
+            poolMinSize: 0
+            poolPrefill: false
+            portNumber: 5057
+            sendDataAsIs: false
+            serverName: hostsys2.mobi.ch
+            user: Z100222D
+            validConnectionSQL: SELECT CURRENT SERVER FROM SYSIBM.TIMESHIFT
+            validateOnMatch: false
+            # <== app_db2Host
+            # ==> app_jboss7Management_Ldap:
+            id: 1200
+            name: jboss7Management_Ldap
+            securityRealmName: LDAPMgmtSecurityRealm
+            # <== app_jboss7Management_Ldap
+            # ==> app_jspCertJKS:
+            fileName: jspStore_dev.jks
+            id: 1254
+            keyAlias: jspdev
+            name: jspCertJKS
+            password: 
+            svnFile: config_std/keys_public/conf/keys/jspStore_dev.jks|configuration/keys/jspStore_dev.jks
+            type: JKS
+            # <== app_jspCertJKS
+            # ==> app_mailrelay:
+            host: mailrelay.mobicorp.ch
+            id: 9476
+            jndiName: java:/AutomationMiddlewareMail
+            name: mailrelay
+            port: 25
+            socketBinding: mail-smtp
+            # <== app_mailrelay
+            # ==> app_mobiTrustJKS:
+            fileName: mobiJspDynWesTrust_dev.jks
+            id: 1005
+            keyAlias: 
+            name: mobiTrustJKS
+            password: 
+            svnFile: config_std/keys_public/conf/keys/mobiJspDynWesTrust_dev.jks|configuration/keys/mobiJspDynWesTrust_dev.jks
+            type: JKS
+            # <== app_mobiTrustJKS
+            # ==> app_proxy01:
+            excludedContexts: activevos-help,activevos
+            id: 1900
+            name: proxy01
+            proxyList: jsplb0101b.umobi.mobicorp.test:6204,jsplb0102b.umobi.mobicorp.test:6204
+            proxyListHttp: jsplb0101b.umobi.mobicorp.test:6304,jsplb0102b.umobi.mobicorp.test:6304
+            sslActive: false
+            # <== app_proxy01
+            # ==> consumedResTypes:
+            # ==> ActiveDirectory:
+            # ==> adIntern:
+            baseCtx: OU=Mobi-Acc
+            bindName: CN=Z100006,OU=Service-Accounts,OU=Mobi-Acc
+            domain: DC=umobi,DC=mobicorp,DC=test
+            id: 1051
+            name: adIntern
+            password: 
+            roleFilter: (member={1})
+            rolesCtx: OU=Groups,OU=Mobi-Acc
+            url_1: ldap://addc01.umobi.mobicorp.test:389
+            url_2: ldap://addc02.umobi.mobicorp.test:389
+            user: NULL
+            userFilter: (cn={0})
+            # <== adIntern
+            # <== ActiveDirectory
+            # ==> CertLoginModule:
+            # ==> certAdIntern:
+            id: 13242
+            jaasName: jboss-secure
+            name: certAdIntern
+            propertyFilePrefix: application
+            # <== certAdIntern
+            # <== CertLoginModule
+            # ==> DB2:
+            # ==> db2Host:
+            backgroundValidationMillis: 60000
+            currentSchema: DB2BVIEW
+            databaseName: DB2B
+            datasourceClass: com.ibm.db2.jcc.DB2XADataSource
+            driverType: 4
+            fetchSize: 1000
+            id: 1003
+            jndiName: java:jboss/datasources/amwDS
+            name: db2Host
+            password: 
+            poolMaxSize: 30
+            poolMinSize: 0
+            poolPrefill: false
+            portNumber: 5057
+            sendDataAsIs: false
+            serverName: hostsys2.mobi.ch
+            user: Z100222D
+            validConnectionSQL: SELECT CURRENT SERVER FROM SYSIBM.TIMESHIFT
+            validateOnMatch: false
+            # <== db2Host
+            # <== DB2
+            # ==> JBoss7Management:
+            # ==> jboss7Management_Ldap:
+            id: 1200
+            name: jboss7Management_Ldap
+            securityRealmName: LDAPMgmtSecurityRealm
+            # <== jboss7Management_Ldap
+            # <== JBoss7Management
+            # ==> Keystore:
+            # ==> jspCertJKS:
+            fileName: jspStore_dev.jks
+            id: 1254
+            keyAlias: jspdev
+            name: jspCertJKS
+            password: 
+            svnFile: config_std/keys_public/conf/keys/jspStore_dev.jks|configuration/keys/jspStore_dev.jks
+            type: JKS
+            # <== jspCertJKS
+            # <== Keystore
+            # ==> Mail:
+            # ==> mailrelay:
+            host: mailrelay.mobicorp.ch
+            id: 9476
+            jndiName: java:/AutomationMiddlewareMail
+            name: mailrelay
+            port: 25
+            socketBinding: mail-smtp
+            # <== mailrelay
+            # <== Mail
+            # ==> ModCluster:
+            # ==> proxy01:
+            excludedContexts: activevos-help,activevos
+            id: 1900
+            name: proxy01
+            proxyList: jsplb0101b.umobi.mobicorp.test:6204,jsplb0102b.umobi.mobicorp.test:6204
+            proxyListHttp: jsplb0101b.umobi.mobicorp.test:6304,jsplb0102b.umobi.mobicorp.test:6304
+            sslActive: false
+            # <== proxy01
+            # <== ModCluster
+            # ==> Truststore:
+            # ==> mobiTrustJKS:
+            fileName: mobiJspDynWesTrust_dev.jks
+            id: 1005
+            keyAlias: 
+            name: mobiTrustJKS
+            password: 
+            svnFile: config_std/keys_public/conf/keys/mobiJspDynWesTrust_dev.jks|configuration/keys/mobiJspDynWesTrust_dev.jks
+            type: JKS
+            # <== mobiTrustJKS
+            # <== Truststore
+            # <== consumedResTypes
+            generatorPath: /home/jboss/amw/build
+            id: 8745
+            logoutUrl: http://mobiwiki.mobicorp.ch/wiki/index.php/AMW_Tool
+            logsPath: /home/jboss/amw/logs
+            name: ch_puzzle_itc_mobi_amw
+            # ==> node:
+            excludeAppFromNode: NULL
+            hostName: NULL
+            id: 1002
+            name: node_01
+            nodeId: 1
+            # <== node
+            # ==> propertyTypes:
+            # ==> AnyNoSpaces:
+           asProfile: 
+	       default
+           baseCtx: 
+	       OU=Mobi-Acc
+           bindName: 
+	       CN=Z100006,OU=Service-Accounts,OU=Mobi-Acc
+           currentSchema: 
+	       DB2BVIEW
+           databaseName: 
+	       DB2B
+           datasourceClass: 
+	       com.ibm.db2.jcc.DB2XADataSource
+           excludedContexts: 
+	       activevos-help,activevos
+           jaasName: 
+	       jboss-secure
+           jndiName: 
+	       java:/AutomationMiddlewareMail
+	       java:jboss/datasources/amwDS
+           keyAlias: 
+	       jspdev
+           logoutUrl: 
+	       http://mobiwiki.mobicorp.ch/wiki/index.php/AMW_Tool
+           password: 
+	       
+	       
+           propertyFilePrefix: 
+	       application
+           proxyList: 
+	       jsplb0101b.umobi.mobicorp.test:6204,jsplb0102b.umobi.mobicorp.test:6204
+           proxyListHttp: 
+	       jsplb0101b.umobi.mobicorp.test:6304,jsplb0102b.umobi.mobicorp.test:6304
+           rolesCtx: 
+	       OU=Groups,OU=Mobi-Acc
+           securityRealmName: 
+	       LDAPMgmtSecurityRealm
+           serverName: 
+	       hostsys2.mobi.ch
+           socketBinding: 
+	       mail-smtp
+           url_1: 
+	       ldap://addc01.umobi.mobicorp.test:389
+           url_2: 
+	       ldap://addc02.umobi.mobicorp.test:389
+           user: 
+	       Z100222D
+            # <== AnyNoSpaces
+            # ==> Boolean:
+           autoDeployExploded: 
+	       true
+           poolPrefill: 
+	       false
+           sendDataAsIs: 
+	       false
+           sslActive: 
+	       false
+           validateOnMatch: 
+	       false
+           verifyClient: 
+	       true
+            # <== Boolean
+            # ==> Custom:
+           MavenArtifactDestination: 
+	       deployments
+           MavenPackaging: 
+	       ear
+           MavenVersion: 
+	       1.4.4
+           additionalJavaOpts: 
+           domain: 
+	       DC=umobi,DC=mobicorp,DC=test
+           excludeAppFromNode: 
+           password: 
+	       
+	       
+           roleFilter: 
+	       (member={1})
+           userFilter: 
+	       (cn={0})
+           validConnectionSQL: 
+	       SELECT CURRENT SERVER FROM SYSIBM.TIMESHIFT
+            # <== Custom
+            # ==> FileName:
+           fileName: 
+	       jspStore_dev.jks
+	       mobiJspDynWesTrust_dev.jks
+            # <== FileName
+            # ==> Hostname:
+           host: 
+	       mailrelay.mobicorp.ch
+           hostName: 
+            # <== Hostname
+            # ==> JavaHeapSize:
+           maxHeap: 
+	       512m
+           maxPermGen: 
+	       256m
+           minHeap: 
+	       128m
+           permSize: 
+            # <== JavaHeapSize
+            # ==> KeyStoreType:
+           type: 
+	       JKS
+	       JKS
+            # <== KeyStoreType
+            # ==> LogLevel:
+           appLogLevel: 
+	       DEBUG
+           serverLogLevel: 
+	       INFO
+            # <== LogLevel
+            # ==> Number:
+           asVersion: 
+	       600
+           backgroundValidationMillis: 
+	       60000
+           deploymentTimeout: 
+	       300
+           driverType: 
+	       4
+           fetchSize: 
+	       1000
+           nodeId: 
+	       1
+           poolMaxSize: 
+	       30
+           poolMinSize: 
+	       0
+           portNumber: 
+	       5057
+           scanInterval: 
+	       0
+            # <== Number
+            # ==> Path:
+           MavenArtifactId: 
+	       AMW_ear
+           MavenGroupId: 
+	       ch.puzzle.itc.mobiliar
+           generatorPath: 
+	       /home/jboss/amw/build
+           logsPath: 
+	       /home/jboss/amw/logs
+           stmpath: 
+	       /home/jboss/amw/shakedown/stm.jar
+           stmrepo: 
+	       /home/jboss/amw/shakedown/stps
+           testResultPath: 
+	       /home/jboss/amw/shakedown/results
+            # <== Path
+            # ==> Port:
+           port: 
+	       25
+            # <== Port
+            # ==> SVNPath:
+           svnFile: 
+	       config_std/keys_public/conf/keys/jspStore_dev.jks|configuration/keys/jspStore_dev.jks
+	       config_std/keys_public/conf/keys/mobiJspDynWesTrust_dev.jks|configuration/keys/mobiJspDynWesTrust_dev.jks
+            # <== SVNPath
+            # <== propertyTypes
+            # ==> providedResTypes:
+            # <== providedResTypes
+            stmpath: /home/jboss/amw/shakedown/stm.jar
+            stmrepo: /home/jboss/amw/shakedown/stps
+            testResultPath: /home/jboss/amw/shakedown/results
+            # <== ch_puzzle_itc_mobi_amw
+            # <== applications
+            serverLogLevel: INFO
+            # ==> propertyTypes:
+            # ==> AnyNoSpaces:
+           asProfile: 
+	       default
+            # <== AnyNoSpaces
+            # ==> Boolean:
+           autoDeployExploded: 
+	       true
+           verifyClient: 
+	       true
+            # <== Boolean
+            # ==> Custom:
+           additionalJavaOpts: 
+           excludeAppFromNode: 
+            # <== Custom
+            # ==> Hostname:
+           hostName: 
+            # <== Hostname
+            # ==> JavaHeapSize:
+           maxHeap: 
+	       512m
+           maxPermGen: 
+	       256m
+           minHeap: 
+	       128m
+           permSize: 
+            # <== JavaHeapSize
+            # ==> LogLevel:
+           appLogLevel: 
+	       DEBUG
+           serverLogLevel: 
+	       INFO
+            # <== LogLevel
+            # ==> Number:
+           asVersion: 
+	       600
+           deploymentTimeout: 
+	       300
+           nodeId: 
+	       1
+           scanInterval: 
+	       0
+            # <== Number
+            # <== propertyTypes
+            appLogLevel: DEBUG

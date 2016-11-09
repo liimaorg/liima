@@ -1,0 +1,18 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/vmOrder/#10038_nodeActivation.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="bschwaller" id="#10352_removePropertyValueComments">
+
+        <!-- remove column propertycomment-->
+        <dropColumn tableName="TAMW_PROPERTY" columnName="propertycomment" />
+
+        <!-- remove audited column propertycomment-->
+        <dropColumn tableName="TAMW_PROPERTY_AUD" columnName="propertycomment" />
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,16 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaForeignables/#11305_foreignable_permissions_rename_chucknorris_role"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet author="bschwaller" id="#11305_foreignable_permissions_rename_chucknorris_role.xml">
+
+        <update tableName="TAMW_ROLE">
+            <column name="NAME" value="overwrite_foreignables"/>
+            <where>NAME='chuck_norris'</where>
+        </update>
+
+    </changeSet>
+
+</databaseChangeLog>

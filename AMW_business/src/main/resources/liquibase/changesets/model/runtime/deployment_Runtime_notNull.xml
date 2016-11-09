@@ -1,0 +1,20 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/changesets/model/runtime/deployment_Runtime_notNull.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet  author="tphilipona" id="deployment_runtime_not_nullable">
+        <validCheckSum>7:067c685fd76f5abc9a90de886f8f0567</validCheckSum>
+        <validCheckSum>7:92b79b4ffe859cf54db5577c3dde35f0</validCheckSum>
+        <update tableName="TAMW_DEPLOYMENT">
+            <column name="RUNTIME_RESOURCE_ID" value="249554"/>
+            <where>RUNTIME_RESOURCE_ID is null</where>
+        </update>
+
+        <addNotNullConstraint columnDataType="INTEGER" columnName="RUNTIME_RESOURCE_ID" tableName="TAMW_DEPLOYMENT"/>
+
+    </changeSet>
+
+
+</databaseChangeLog>

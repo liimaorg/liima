@@ -1,0 +1,23 @@
+#!/bin/sh
+scriptExit=0
+echo "start AmwRunScript on $HOSTNAME"
+#Enter script call or shellcommands here
+
+cd "`dirname $BASH_SOURCE`/.."
+
+echo "Starting Script on $HOSTNAME" >> /data/amw_share/logs/1_node_01.log 2>&1
+
+echo "Doing nothing, because no hostName is defined on node" >> /data/amw_share/logs/1_node_01.log 2>&1
+exit 0
+
+/data/amw/ActivePython-2.7/bin/python /data/amw_share/scripts/configBuilder/amwBuildJBoss7.py 1 true $PWD >> /data/amw_share/logs/1_node_01.log 2>&1
+scriptExit=$?
+
+#grep for annotated messages
+grep -o "@{.*}" /data/amw_share/logs/1_node_01.log
+
+#for debugging
+mkdir -p /data/amw/tmp_deploy/1/node_01/true
+cp -r * /data/amw/tmp_deploy/1/node_01/true
+
+exit $scriptExit

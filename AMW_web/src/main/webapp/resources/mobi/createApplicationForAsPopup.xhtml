@@ -1,0 +1,89 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j">
+
+<composite:interface>
+    <composite:attribute name="parentDataProvider" required="true" />
+    <composite:attribute name="renderList" />
+</composite:interface>
+
+<composite:implementation>
+    <h:form id="createApplicationForAsForm">
+
+        <!-- CREATE NEW APPLICATION POPUP -->
+
+        <rich:popupPanel id="createApplicationForAsPopup" autosized="true"
+                         onbeforeshow="#{createApplicationForAsPopup.init()}" moveable="true"
+                         onshow="#{rich:element('appName')}.focus();"
+                         domElementAttachment="form">
+
+            <f:facet name="header">
+                <h2>
+                    <h:outputText value="Create application!" />
+                </h2>
+            </f:facet>
+
+            <f:facet name="controls">
+                <h:outputLink value="#"
+                              styleClass="close icon icon-close icon-replace"
+                              onclick="#{rich:component('createApplicationForAsPopup')}.hide(); $('#globalMessageBox').hide();">
+                    x
+                </h:outputLink>
+            </f:facet>
+
+            <h:panelGroup id="createAppForAsPopupPanelGroup">
+                <h:panelGrid columns="2" styleClass="formGrid">
+
+                    <h:outputLabel value="Application" />
+                    <h:inputText id="appName" value="${createApplicationForAsPopup.appName}">
+                        <a4j:ajax />
+                    </h:inputText>
+
+                    <h:outputLabel value="Application Release" />
+                    <h:selectOneMenu styleClass="switchRelease"
+                                     value="#{createApplicationForAsPopup.appReleaseSelector.selectedReleaseId}">
+                        <f:selectItems
+                                value="#{createApplicationForAsPopup.releaseDataProvider.allReleases}"
+                                var="appRelease" itemLabel="${appRelease.name}"
+                                itemValue="${appRelease.id}" />
+                        <a4j:ajax />
+                    </h:selectOneMenu>
+
+                    <h:outputLabel value="Applicationserver" />
+                    <h:selectOneMenu id="asGroupsForApp"
+                                     value="#{createApplicationForAsPopup.appServerGroupId}">
+                        <f:selectItem itemLabel="---" itemValue="-1" />
+                        <f:selectItems
+                                value="#{createApplicationForAsPopup.asGroupsForSelectBox}"
+                                var="asGroup" itemLabel="${asGroup.name}"
+                                itemValue="${asGroup.id}" />
+                        <a4j:ajax event="change" render="createAppForAsPopupPanelGroup"/>
+                    </h:selectOneMenu>
+
+                    <h:outputLabel value="Applicationserver Release" />
+                    <h:selectOneMenu styleClass="switchRelease"
+                                     disabled="#{createApplicationForAsPopup.appServerGroupId == null}"
+                                     value="#{createApplicationForAsPopup.asReleaseId}">
+                        <f:selectItems value="#{createApplicationForAsPopup.releasesForAs}"
+                                       var="asForAppRelease" itemLabel="${asForAppRelease.name}"
+                                       itemValue="${asForAppRelease.id}" />
+                    </h:selectOneMenu>
+
+                </h:panelGrid>
+
+                <h:commandLink value="OK" styleClass="btn primary right" id="okButton"
+                               onclick="showLoader();">
+                    <a4j:ajax
+                            listener="#{createApplicationForAsPopup.createAppAndAppServer(cc.attrs.parentDataProvider)}"
+                            render="createAppForAsPopupPanelGroup #{cc.attrs.renderList}" execute="@form" oncomplete="if(!hasErrorMessage()){#{rich:component('createApplicationForAsPopup')}.hide();};hideLoader();" />
+                </h:commandLink>
+            </h:panelGroup>
+        </rich:popupPanel>
+    </h:form>
+</composite:implementation>
+
+</html>

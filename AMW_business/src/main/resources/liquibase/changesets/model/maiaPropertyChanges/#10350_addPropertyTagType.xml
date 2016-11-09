@@ -1,0 +1,26 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaPropertyDescriptorChanges/maiaPropertyDescriptorChanges.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="#10350 PropertyTag add tagType">
+
+        <addColumn tableName="TAMW_PROPERTYTAG">
+            <column name="tagType" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <createIndex indexName="idx_tagType" tableName="TAMW_PROPERTYTAG">
+            <column name="tagType" type="varchar(255)"/>
+        </createIndex>
+
+        <addColumn tableName="TAMW_PROPERTYTAG_AUD">
+            <column name="tagType" type="varchar(255)"/>
+        </addColumn>
+        <createIndex indexName="idx_tagType_AUD" tableName="TAMW_PROPERTYTAG_AUD">
+            <column name="tagType" type="varchar(255)"/>
+        </createIndex>
+
+        </changeSet>
+</databaseChangeLog>

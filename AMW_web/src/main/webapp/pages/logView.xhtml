@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<ui:composition template="templates/template.xhtml">
+	<f:metadata>
+		<f:viewParam name="file" value="#{logView.file}" />
+		<f:viewParam name="deploymentId"
+			value="#{logView.deploymentId}" />
+	</f:metadata>
+
+	<ui:param name="screen" value="logView" />
+	<ui:define name="title">Log files for deployment ${logView.deploymentId} (${logView.applicationServerName})</ui:define>
+
+	<!--  HEADER -->
+	<ui:define name="backlink">
+		<h:link outcome="deploy" value="Back to Deploy" styleClass="btn back"
+			onclick="showLoader();">
+		</h:link>
+	</ui:define>
+
+	<ui:define name="pagetitle">
+		Log file(s) for deployment ${logView.deploymentId} (${logView.applicationServerName})
+		<h:outputScript name="bower/codemirror/lib/codemirror.js" target="head" />
+		<h:outputScript name="bower/codemirror/addon/dialog/dialog.js" target="head" />
+		<h:outputScript name="bower/codemirror/addon/search/searchcursor.js" target="head" />
+		<h:outputScript name="bower/codemirror/addon/search/search.js"	target="head" />
+		<h:outputStylesheet name="bower/codemirror/lib/codemirror.css" />
+		<h:outputStylesheet name="bower/codemirror/addon/dialog/dialog.css" />
+		<h:outputStylesheet	name="css/codemirror_custom.css" />
+	</ui:define>
+
+	<ui:define name="headerButtons">
+
+	</ui:define>
+
+	<ui:define name="body">
+		<h:panelGroup layout="block" id="navig">
+			<aside> <nav>
+			<ul>
+				<li class="current"><h:commandLink value="Log file"
+						execute="@none" /></li>
+			</ul>
+
+			</nav> </aside>
+		</h:panelGroup>
+		<section id="content">
+		<div class="container">
+			<article>
+			<div class="well">
+				<h2>${logView.file}</h2>
+				<div class="controls right" style="">
+					<label class="control-label">Show log file:</label>
+					<h:selectOneMenu value="#{logView.file}">
+						<a4j:ajax render="@form" onbegin="showLoader();" oncomplete="hideLoader();" />
+						<f:selectItems value="${logView.availableLogFiles}" />
+					</h:selectOneMenu>
+				</div>
+				<hr />
+				<br class="clear" />
+				<h:panelGroup class="codeMirrorLogView">
+				<input id="codeMirrorReference" type="hidden" name="UserBrowser" value="#{logView.fileContent}"/>
+				<!-- codemirror -->
+				<script type="text/javascript">				
+			    	var codeEditor = document.getElementById("codeMirrorReference");
+			    	var code = codeEditor.value;
+                    var myCodeMirror = CodeMirror.fromTextArea(codeEditor, {value:code, readOnly: true});           
+				    </script>		
+				</h:panelGroup>	
+			</div>
+			</article>
+		</div>
+		</section>
+	</ui:define>
+</ui:composition>
+</html>

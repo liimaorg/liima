@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<composite:interface/>
+
+<composite:implementation>
+
+    <h:outputScript>
+        function confirmMatchingRelease(existsInCurrentRelease){
+        return existsInCurrentRelease || window.confirm('The selected resource does not exist for the release ${editResourceView.resource.release.name}. Are you sure you want to add it for this release?');
+        }
+    </h:outputScript>
+
+    <h:commandLink styleClass="btn light right"
+                   rendered="#{sessionContext.isGlobal and !editResourceView.editResource and resourceTypeRelationModel.allowedToAddRelations}">
+        <i class="icon icon-add"/> Add Related Resource Type
+        <a4j:ajax execute="@this" render="addRelationPopup"
+                  event="click"
+                  onbegin="showLoader();"
+                  oncomplete="if(confirmAddRelation()){#{rich:component('addRelationPopup')}.show();} hideLoader();"
+                  listener="#{relationDataProvider.loadResourceTypes()}"></a4j:ajax>
+    </h:commandLink>
+
+    <h:commandLink styleClass="btn light right"
+                   rendered="#{editResourceView.editResource and sessionContext.isGlobal and editResourceView.resourceType.defaultResourceType and resourceRelationModel.allowedToAddRelations}">
+        <i class="icon icon-add"/> Add Relation
+        <a4j:ajax execute="@this" render="addRelationPopup"
+                  event="click"
+                  onbegin="showLoader();"
+                  oncomplete="if(confirmAddRelation()){#{rich:component('addRelationPopup')}.show();} hideLoader();"
+                  listener="#{relationDataProvider.loadResourceGroupsForType(null, null)}"></a4j:ajax>
+    </h:commandLink>
+
+    <h:commandLink styleClass="btn light right"
+                   rendered="#{sessionContext.isGlobal and editResourceView.resourceType.applicationServerResourceType and resourceRelationModel.allowedToSelectRuntime}">
+        Set Runtime
+        <a4j:ajax execute="@this" render="addRelationPopup"
+                  event="click"
+                  onbegin="showLoader();"
+                  oncomplete="if(confirmAddRelation()){#{rich:component('addRelationPopup')}.show();} hideLoader();"
+                  listener="#{relationDataProvider.loadResourceGroupsForRuntime()}"></a4j:ajax>
+    </h:commandLink>
+
+    <h:commandLink styleClass="btn light right"
+                   rendered="#{resourceRelationModel.canShowAddSoftlinkRelationButton}">
+        <i class="icon icon-add"/> Add Softlink Relation
+        <a4j:ajax execute="@this" render="addSoftlinkRelationPopup"
+                  event="click"
+                  onbegin="showLoader();"
+                  oncomplete="if(confirmAddRelation()){#{rich:component('addSoftlinkRelationPopup')}.show();} hideLoader();"
+                />
+    </h:commandLink>
+
+    <rich:popupPanel id="addRelationPopup" moveable="true"
+                     style="min-width:70vw; " autosized="true"
+                     domElementAttachment="form">
+        <div style="width: 100%;">
+            <f:facet name="header">
+                <h2>
+                    <h:outputText
+                            value="${relationDataProvider.addRuntimeToAppServerMode ? 'Set Runtime' : relationDataProvider.addApplicationToAppServerMode ? 'Add Application to Appserver' : 'Add Related Resource'}"/>
+                </h2>
+            </f:facet>
+            <f:facet name="controls">
+                <h:outputLink value="#"
+                              styleClass="close icon icon-close icon-replace"
+                              onclick="#{rich:component('addRelationPopup')}.hide(); return false;">
+                    x
+                </h:outputLink>
+            </f:facet>
+
+
+            <!-- Popup content -->
+            <h:panelGroup layout="block" styleClass="container flexbox"
+                          id="relationPopupContent">
+                <h:panelGroup
+                        rendered="${editResourceView.editResource and !relationDataProvider.addApplicationToAppServerMode and !relationDataProvider.addRuntimeToAppServerMode}">
+                    <aside class="popupNavigationComponent ajaxScroll" id="popupNavigationComponentId">
+                        <nav>
+                            <ul>
+                                <ui:repeat var="resType"
+                                           value="${relationDataProvider.resourceTypes}">
+                                    <li
+                                            class="#{relationDataProvider.isCurrentType(resType.id) ? 'current' : ''} ${relationDataProvider.isChildCurrentType(resType.id) ? 'currentChild' : ''}">
+                                        <h:commandLink execute="@this"
+                                                       onclick="showLoader();storeScrollPositions();" styleClass="#{resType.getEntity().hasChildren() ? 'expandable' : ''}">
+                                            <div class="ellipsisRight" title="#{resType.name}">#{resType.name}</div>
+                                            <a4j:ajax execute="@this" render="relationPopupContent"
+                                                      oncomplete="hideLoader();restoreScrollPositions();"
+                                                      listener="#{relationDataProvider.loadResourceGroupsForType(resType.name, null)}"></a4j:ajax>
+                                        </h:commandLink>
+                                        <ul>
+                                            <ui:repeat var="subType" rendered="${relationDataProvider.isCurrentType(resType.id) or relationDataProvider.isChildCurrentType(resType.id)}"
+                                                       value="#{resourceTypeDataProvider.getResourceTypeById(resType.id).children}">
+                                                <li
+                                                        class="#{relationDataProvider.isCurrentType(subType.id) ? 'current' : ''}">
+                                                    <h:commandLink execute="@this"
+                                                                   onclick="showLoader();storeScrollPositions();">
+                                                        <div class="ellipsisRight" title="#{subType.name}">#{subType.name}</div>
+                                                        <a4j:ajax execute="@this"
+                                                                  render="relationPopupContent"
+                                                                  oncomplete="hideLoader();restoreScrollPositions();"
+                                                                  listener="#{relationDataProvider.loadResourceGroupsForType(subType.name, null)}"></a4j:ajax>
+                                                    </h:commandLink>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </li>
+                                </ui:repeat>
+                            </ul>
+                        </nav>
+                    </aside>
+                </h:panelGroup>
+                <section class="popupNavigationComponent flexible ajaxScroll"><h:dataTable
+                        id="relatedResTable" var="selectableItem"
+                        style=" margin-left:20px;"
+                        value="#{relationDataProvider.selectableItems}"
+                        columnClasses=" ,last" styleClass="well"
+                        rowClasses="odd-row,even-row">
+                    <h:column
+                            style="border-left:0px; border-bottom:0px; border-right:0px; border-top:1px solid; width:300px;">
+                        <f:facet name="header">
+                            <h:outputText value="Name"/>
+                        </f:facet>
+                        <h:outputText value="#{selectableItem.name}"/>
+                    </h:column>
+                    <h:column
+                            style="border-left:0px; border-bottom:0px; border-right:0px; border-top:1px solid; width:400px;">
+                        <f:facet name="header">
+                            <h:outputText value="Action"/>
+                        </f:facet>
+                        <table class="addRes">
+                            <tr>
+                                <td><h:commandLink
+                                        value="${relationDataProvider.addRuntimeToAppServerMode ? 'Set as runtime' : relationDataProvider.addApplicationToAppServerMode ? 'Add to appserver' : 'Add as consumed Resource'}"
+                                        rendered="#{editResourceView.editResource and relationDataProvider.canAddConsumedRelation}"
+                                        onclick="if(confirmLeave(event) &amp;&amp; confirmMatchingRelease(${editResourceView.existsForThisRelease(selectableItem)})){${rich:component('addRelationPopup')}.hide();showLoader();}else{return false;}">
+                                    <a4j:ajax
+                                            listener="#{relationDataProvider.addConsumedResource(selectableItem.id)}"
+                                            render="relatedResourcesGroup, applicationInstanceListComp" execute="@this"
+                                            oncomplete="updateElements();hideLoader();refreshChanges();refreshSubChanges();"/>
+                                </h:commandLink></td>
+                                <td><h:commandLink value="Add as provided Resource"
+                                                   rendered="#{editResourceView.editResource and relationDataProvider.isAllowedToAddProvidedRelations(selectableItem.id)}"
+                                                   onclick="if(confirmLeave(event) &amp;&amp; confirmMatchingRelease(${editResourceView.existsForThisRelease(selectableItem)})){${rich:component('addRelationPopup')}.hide();showLoader();}else{return false;}">
+                                    <a4j:ajax
+                                            listener="#{relationDataProvider.addProvidedResource(selectableItem.id)}"
+                                            render="relatedResourcesGroup" execute="@this"
+                                            oncomplete="updateElements();hideLoader();refreshChanges();refreshSubChanges();"/>
+                                </h:commandLink></td>
+                                <td><h:commandLink
+                                        value="Add relation"
+                                        rendered="#{!editResourceView.editResource and relationDataProvider.canAddResourceTypeRelation}"
+                                        onclick="if(confirmLeave(event)){${rich:component('addRelationPopup')}.hide();showLoader();}else{return false;}">
+                                    <a4j:ajax
+                                            listener="#{relationDataProvider.addResourceTypeRelation(selectableItem.id)}"
+                                            render="relatedResourcesGroup" execute="@this"
+                                            oncomplete="updateElements();hideLoader();refreshChanges();refreshSubChanges()"/>
+                                </h:commandLink></td>
+                            </tr>
+                        </table>
+                    </h:column>
+                </h:dataTable></section>
+            </h:panelGroup>
+        </div>
+    </rich:popupPanel>
+
+    <!-- Softlink relation popup -->
+    <rich:popupPanel id="addSoftlinkRelationPopup" moveable="true" autosized="true" domElementAttachment="form">
+        <div>
+            <f:facet name="header">
+                <h2>
+                    <h:outputText value="Create Softlink Relation"/>
+                </h2>
+            </f:facet>
+            <f:facet name="controls">
+                <h:outputLink value="#"
+                              styleClass="close icon icon-close icon-replace"
+                              onclick="#{rich:component('addSoftlinkRelationPopup')}.hide(); return false;">
+                    x
+                </h:outputLink>
+            </f:facet>
+
+
+            <!-- Popup content -->
+
+            <h:panelGroup id="addSoftlinkRelationPopupContent">
+                <h:panelGrid columns="2" styleClass="formGrid">
+                    <h:outputLabel value="Softlink Reference Name"/>
+                    <h:inputText id="softlinkIdRef"
+                                 value="#{relationDataProvider.softlinkReferenceName}">
+                        <a4j:ajax/>
+                    </h:inputText>
+                </h:panelGrid>
+
+
+                <h:commandLink
+                        styleClass="btn primary right"
+                        value="Create softlink relation"
+                        onclick="if(confirmLeave(event)){${rich:component('addSoftlinkRelationPopup')}.hide();showLoader();}else{return false;}">
+                    <a4j:ajax
+                            listener="#{relationDataProvider.createSoftlinkRelation()}"
+                            render="relatedResourcesGroup" execute="@this"
+                            oncomplete="updateElements();hideLoader();refreshChanges();refreshSubChanges()"/>
+                </h:commandLink>
+            </h:panelGroup>
+
+
+        </div>
+
+    </rich:popupPanel>
+
+
+</composite:implementation>
+
+</html>

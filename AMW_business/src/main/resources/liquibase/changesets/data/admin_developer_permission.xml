@@ -1,0 +1,212 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/changesets/data/permissionfix.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet author="tphilipona" id="admindeveloper_role_permissions-1">
+
+        <!-- ROLE -->
+        <insert tableName="TAMW_ROLE">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'roleId')" />
+            <column name="NAME" value="admin_developer"></column>
+            <column name="V" valueNumeric="0" />
+            <column name="DEPLOYABLE" valueNumeric="0" />
+            <column name="DELETABLE" valueNumeric="0" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='roleId')" />
+            <where>SEQ_NAME='roleId'</where>
+        </update>
+
+    </changeSet>
+    <changeSet author="tphilipona" id="admindeveloper_role_permissions-2">
+
+        <!-- RENAME APP SERVER -->
+        <insert tableName="TAMW_PERMISSION">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
+            <column name="VALUE" value="RENAME_APPSERVER"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'config_admin')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'RENAME_APPSERVER')" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+        <!-- RENAME_APP -->
+        <insert tableName="TAMW_PERMISSION">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
+            <column name="VALUE" value="RENAME_APP"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'config_admin')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'RENAME_APP')" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+        <!-- RENAME_NODE -->
+        <insert tableName="TAMW_PERMISSION">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
+            <column name="VALUE" value="RENAME_NODE"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'config_admin')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'RENAME_NODE')" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+        <!-- RENAME_RES -->
+        <insert tableName="TAMW_PERMISSION">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
+            <column name="VALUE" value="RENAME_RES"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'config_admin')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'RENAME_RES')" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+        <!-- COPY_FROM_RESOURCE_APP -->
+        <insert tableName="TAMW_PERMISSION">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
+            <column name="VALUE" value="COPY_FROM_RESOURCE_APP"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'config_admin')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'COPY_FROM_RESOURCE_APP')" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+        <!-- COPY_FROM_RESOURCE_APPSERVER -->
+        <insert tableName="TAMW_PERMISSION">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
+            <column name="VALUE" value="COPY_FROM_RESOURCE_APPSERVER"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'config_admin')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'COPY_FROM_RESOURCE_APPSERVER')" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+        <!-- COPY_FROM_RESOURCE_NODE -->
+        <insert tableName="TAMW_PERMISSION">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
+            <column name="VALUE" value="COPY_FROM_RESOURCE_NODE"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'config_admin')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'COPY_FROM_RESOURCE_NODE')" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'ADD_APP')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'NEW_RES')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'ADD_APPSERVER')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'ADD_APP_TO_APP_SERVER')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'ADD_NODE_RELATION')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'COPY_FROM_RESOURCE_APPSERVER')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'COPY_FROM_RESOURCE_APP')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'DELETE_APP_TO_APP_SERVER')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'DELETE_NODE_RELATION')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'EXCLUDE_APP_FROM_NODE')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'MODIFY_APPSERVER_RELATION')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'RENAME_APP')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'RENAME_APPSERVER')" />
+        </insert>
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'admin_developer')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'SELECT_RUNTIME')" />
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:mobi="http://java.sun.com/jsf/composite/mobi"
+      >
+ 
+    <composite:interface> 
+ 		<composite:attribute name="editProperties" required="true"/>
+		<composite:attribute name="isDefinedOnInstanceOrType" required="true"/>
+    </composite:interface>
+ 
+    <composite:implementation>
+	<h:dataTable value="#{cc.attrs.editProperties}" var="prop"
+		styleClass="propertyTable" rendered="#{securityDataProvider.hasPermission('PROP_LIST')}">
+		<h:column >
+		<h:panelGroup layout="block" styleClass="control-group ${prop.testing and editPropertiesTable.testing ? 'testing' : ''}" rendered="#{editPropertiesTable.isPropertyDisplayable(prop)}">
+				<label class="control-label ellipsisRight" title="${prop.propertyDisplayName}" >
+					<h:link rendered="${cc.attrs.isDefinedOnInstanceOrType and editPropertiesTable.isEditable(prop)}" outcome="editPropertyView" includeViewParams="true">
+						${prop.propertyDisplayName}
+						<f:param name="propDescId" value="${prop.descriptorId}" />
+						<f:param name="rel" value="#{editPropertiesTable.relationId}"/>
+						<f:param name="id" value="#{editPropertiesTable.resourceId}"/>
+						<f:param name="resTypId" value="#{editPropertiesTable.resourceTypeId}"/>
+					</h:link>
+					<h:outputText value="${prop.propertyDisplayName}" rendered="${!cc.attrs.isDefinedOnInstanceOrType or !editPropertiesTable.isEditable(prop)}"></h:outputText>
+				</label>
+				<mobi:propertyEditor property="#{prop}" />
+		</h:panelGroup>			
+		</h:column>
+	</h:dataTable>  
+    </composite:implementation>
+ 
+</html>

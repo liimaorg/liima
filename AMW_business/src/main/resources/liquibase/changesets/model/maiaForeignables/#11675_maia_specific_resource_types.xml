@@ -1,0 +1,95 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaForeignables/#11675_maia_specific_resource_types"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="rgalante" id="#11675_maia_specific_resource_types">
+
+        <insert tableName="TAMW_RESOURCETYPE">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')" />
+            <column name="NAME" value="WSPPI"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_RESOURCETYPE">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')" />
+            <column name="NAME" value="TokyoWSPPI"></column>
+            <column name="PARENTRESOURCETYPE_ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_RESOURCETYPE">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL+2 FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')" />
+            <column name="NAME" value="WSCPI"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_RESOURCETYPE">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL+3 FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')" />
+            <column name="NAME" value="TokyoWSCPI"></column>
+            <column name="PARENTRESOURCETYPE_ID" valueComputed="(SELECT NEXT_VAL+2 FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_PROPERTYTYPE">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'propertytypeId')" />
+            <column name="PROPERTYTYPENAME" value="MAIAPropertyType"></column>
+            <column name="VALIDATIONREGEX" value=".*"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+
+        <insert tableName="TAMW_RESOURCETYPE_AUD">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')" />
+            <column name="NAME" value="WSPPI"></column>
+            <column name="REV" valueNumeric="1" />
+            <column name="REVTYPE" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_RESOURCETYPE_AUD">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')" />
+            <column name="NAME" value="TokyoWSPPI"></column>
+            <column name="PARENTRESOURCETYPE_ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')"></column>
+            <column name="REV" valueNumeric="1" />
+            <column name="REVTYPE" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_RESOURCETYPE_AUD">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL+2 FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')" />
+            <column name="NAME" value="WSCPI"></column>
+            <column name="REV" valueNumeric="1" />
+            <column name="REVTYPE" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_RESOURCETYPE_AUD">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL+3 FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')" />
+            <column name="NAME" value="TokyoWSCPI"></column>
+            <column name="PARENTRESOURCETYPE_ID" valueComputed="(SELECT NEXT_VAL+2 FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'resourceTypeId')"></column>
+            <column name="REV" valueNumeric="1" />
+            <column name="REVTYPE" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_PROPERTYTYPE_AUD">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'propertytypeId')" />
+            <column name="PROPERTYTYPENAME" value="MAIAPropertyType"></column>
+            <column name="VALIDATIONREGEX" value=".*"></column>
+            <column name="REV" valueNumeric="1" />
+            <column name="REVTYPE" valueNumeric="0" />
+        </insert>
+
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+4 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceTypeId')" />
+            <where>SEQ_NAME='resourceTypeId'</where>
+        </update>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='propertytypeId')" />
+            <where>SEQ_NAME='propertytypeId'</where>
+        </update>
+
+    </changeSet>
+
+</databaseChangeLog>

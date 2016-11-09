@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:type-ch-mobi-common-commonsv3_0="http://xml.mobi.ch/datatype/common/Commons/v3" 
+xmlns:type-ch-mobi-maia-amw-maiaamwfederationv1_0="http://xml.mobi.ch/datatype/ch/mobi/maia/amw/MaiaAmwFederation/v1_0"
+ xmlns:tns="http://xml.mobi.ch/datatype/ch/mobi/maia/amw/MaiaAmwFederationServiceTypes/v1_0" targetNamespace="http://xml.mobi.ch/datatype/ch/mobi/maia/amw/MaiaAmwFederationServiceTypes/v1_0" version="1.0">
+
+<!-- modelName: ch.mobi.maia.amw.MaiaAmwFederationServiceTypes.v1_0 -->
+<!-- featureSoap: soap1208 -->
+<!-- generated: 2015_12_17_10_08 -->
+
+	<xsd:import namespace="http://xml.mobi.ch/datatype/common/Commons/v3" schemaLocation="common-Commons-3.0.xsd"/>
+	<xsd:import namespace="http://xml.mobi.ch/datatype/ch/mobi/maia/amw/MaiaAmwFederation/v1_0" schemaLocation="ch-mobi-maia-amw-MaiaAmwFederation-v1.0.xsd"/>
+
+	<!-- complex type UpdateRequest -->
+	<xsd:element name="UpdateRequest" type="tns:UpdateRequest"/>
+	<xsd:complexType name="UpdateRequest">
+		<xsd:sequence>
+			<xsd:element name="applications" type="type-ch-mobi-maia-amw-maiaamwfederationv1_0:Application"  minOccurs="0" maxOccurs="unbounded"
+			/>
+			<xsd:element name="applicationPredecessors" type="tns:ApplicationPredecessorRelation"  minOccurs="0" maxOccurs="unbounded"
+			/>
+			<xsd:element name="removedApplications" type="type-ch-mobi-maia-amw-maiaamwfederationv1_0:ApplicationID"  minOccurs="0" maxOccurs="unbounded"
+			/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!-- complex type ApplicationPredecessorRelation -->
+	<xsd:element name="ApplicationPredecessorRelation" type="tns:ApplicationPredecessorRelation"/>
+	<xsd:complexType name="ApplicationPredecessorRelation">
+		<xsd:sequence>
+			<xsd:element name="newApplication" type="type-ch-mobi-maia-amw-maiaamwfederationv1_0:ApplicationID" />
+			<xsd:element name="predecessorApplication" type="type-ch-mobi-maia-amw-maiaamwfederationv1_0:ApplicationID" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!-- complex type UpdateResponse -->
+	<xsd:element name="UpdateResponse" type="tns:UpdateResponse"/>
+	<xsd:complexType name="UpdateResponse">
+		<xsd:sequence>
+			<xsd:element name="processedApplications" type="tns:ApplicationUpdateResult"  minOccurs="0" maxOccurs="unbounded"
+			/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!-- complex type ApplicationUpdateResult -->
+	<xsd:element name="ApplicationUpdateResult" type="tns:ApplicationUpdateResult"/>
+	<xsd:complexType name="ApplicationUpdateResult">
+		<xsd:sequence>
+			<xsd:element name="id" type="type-ch-mobi-maia-amw-maiaamwfederationv1_0:ApplicationID" />
+			<xsd:element name="state" type="tns:ProcessingState" />
+			<xsd:element name="amwLink" type="xsd:string"  minOccurs="0"
+			/>
+			<xsd:element name="messages" type="tns:Message"  minOccurs="0" maxOccurs="unbounded"
+			/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!-- enumeration ProcessingState -->
+	<xsd:simpleType name="ProcessingState">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="OK"/>
+			<xsd:enumeration value="FAILED"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<!-- complex type Message -->
+	<xsd:element name="Message" type="tns:Message"/>
+	<xsd:complexType name="Message">
+		<xsd:sequence>
+			<xsd:element name="severity" type="type-ch-mobi-common-commonsv3_0:MessageSeverity" />
+			<xsd:element name="humanReadableMessage" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+</xsd:schema>

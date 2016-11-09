@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:mobi="http://java.sun.com/jsf/composite/mobi">
+
+<ui:composition template="templates/template.xhtml">
+	<f:metadata>
+		<f:viewParam name="rel" value="#{resourceDependenciesView.relationIdViewParam}"/>
+		<f:viewParam name="resTypId" value="#{resourceDependenciesView.resourceTypeIdViewParam}"/>
+		<f:viewParam name="id" value="#{resourceDependenciesView.resourceIdViewParam}" />
+		<f:viewParam name="ctx" value="#{resourceDependenciesView.contextIdViewParam}" />
+
+	</f:metadata>
+	<ui:param name="screen" value="resourceDependencies" />
+	<ui:define name="title">Dependencies for #{resourceDependenciesView.resourceName}</ui:define>
+
+	<!--  HEADER -->
+	<ui:define name="backlink">
+
+		<h:link outcome="editResourceView" value="Back to Edit Resource"
+				rendered="#{resourceDependenciesView.hasPermissionToEditResource() and resourceDependenciesView.editResource}"
+				styleClass="btn back" onclick="showLoader();" includeViewParams="true">
+			<f:param name="rel" value="#{resourceDependenciesView.relationIdViewParam}"/>
+			<f:param name="id" value="#{resourceDependenciesView.resourceIdViewParam}"/>
+			<f:param name="resTypId" value="#{resourceDependenciesView.resourceTypeIdViewParam}"/>
+		</h:link>
+
+		<h:link outcome="editResourceView" value="Back to Edit Resource Type"
+				rendered="#{!resourceDependenciesView.editResource}"
+				styleClass="btn back" onclick="showLoader();" includeViewParams="true">
+		</h:link>
+	</ui:define>
+
+	<ui:define name="pagetitle">
+		<h:outputText id="pageheader"
+			value="Dependencies for #{resourceDependenciesView.resourceName}" />
+	</ui:define>
+
+	<ui:define name="body">
+		<h:panelGroup layout="block" id="navig">
+			<aside> <nav>
+			<ul>
+				<li class="current"><h:commandLink value="Dependencies"
+						execute="@none" /></li>
+			</ul>
+
+			</nav> </aside>
+		</h:panelGroup>
+
+		<section id="content">
+		<div class="container">
+			<mobi:resourceRelations/>
+		</div>
+		</section>
+	</ui:define>
+
+</ui:composition>
+</html>

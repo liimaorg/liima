@@ -1,0 +1,12 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/refactoring/#15798_remove_deployment_started_and_executed.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="bschwaller" id="#15798_remove_deployment_started_and_executed" >
+
+        <dropColumn tableName="TAMW_DEPLOYMENT" columnName="deploymentstarted" />
+        <dropColumn tableName="TAMW_DEPLOYMENT" columnName="deploymentexecuted" />
+
+    </changeSet>
+</databaseChangeLog>

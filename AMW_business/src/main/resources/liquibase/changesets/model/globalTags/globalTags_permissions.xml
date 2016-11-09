@@ -1,0 +1,29 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/globalTags/globalTags_permissions.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="tphilipona" id="globalTagPermissions">
+
+        <!-- GlobalTags -->
+        <insert tableName="TAMW_PERMISSION">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
+            <column name="VALUE" value="MANAGE_GLOBAL_TAGS"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'config_admin')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'MANAGE_GLOBAL_TAGS')" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+
+    </changeSet>
+
+</databaseChangeLog>

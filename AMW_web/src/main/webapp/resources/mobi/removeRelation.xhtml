@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+<composite:interface>
+    <composite:attribute name="application" default="${false}"/>
+</composite:interface>
+
+<composite:implementation>
+    <rich:popupPanel id="removeRelationPopup" autosized="true" domElementAttachment="form">
+        <f:facet name="header">
+            <h2>
+                <h:outputText value="Remove Resource Relation"/>
+            </h2>
+        </f:facet>
+        <f:facet name="controls">
+            <h:outputLink value="#"
+                          styleClass="close icon icon-close icon-replace"
+                          onclick="#{rich:component('removeRelationPopup')}.hide(); return false;">
+                x
+            </h:outputLink>
+        </f:facet>
+
+        <h:panelGrid rendered="#{cc.attrs.application}"
+                     style="margin-bottom:10px;">Are you sure you want to delete the relation to application #{resourceRelationModel.removeResourceRelation.displayName}?<br/></h:panelGrid>
+
+        <h:panelGrid rendered="#{!cc.attrs.application and !resourceRelationModel.softlinkRelationSelected}"
+                     style="margin-bottom:10px;">Are you sure you want to delete the resource relation #{resourceRelationModel.removeResourceRelation.displayName}?<br/><br/>If you continue, all defined property values for the relation will be lost.</h:panelGrid>
+        <h:panelGrid rendered="#{!cc.attrs.application and resourceRelationModel.softlinkRelationSelected}"
+                     style="margin-bottom:10px;">Are you sure you want to delete the resource relation #{resourceRelationModel.softlinkRelation.softlinkRelationEntity.softlinkRef}?</h:panelGrid>
+
+
+        <h:commandLink value="Delete" styleClass="btn primary right" type="button"
+                       action="#{relationDataProvider.removeResourceRelation()}"
+                       onclick="if(confirmLeave(event)){#{rich:component('removeRelationPopup')}.hide(); showLoader();}else{return false;}">
+
+            <a4j:ajax render="relatedResourcesGroup applicationDataTable"
+                      oncomplete="updateElements(); hideLoader(); refreshSubChanges();"/>
+
+        </h:commandLink>
+
+    </rich:popupPanel>
+</composite:implementation>
+</html>
+

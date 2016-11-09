@@ -1,0 +1,72 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/vmOrder/#10038_nodeActivation.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="cweber" id="#10344_removeOldMaiaImplementation">
+
+        <!-- Remove MAIA Permissions from Roles -->
+        <delete tableName="TAMW_ROLE_PERMISSION">
+            <where>PERMISSIONS_ID = (SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'MAIA_TAB')</where>
+        </delete>
+        <delete tableName="TAMW_ROLE_PERMISSION">
+            <where>PERMISSIONS_ID = (SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'MAIA_LOAD')</where>
+        </delete>
+        <delete tableName="TAMW_ROLE_PERMISSION">
+            <where>PERMISSIONS_ID = (SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'MAIA_SAVE')</where>
+        </delete>
+        <delete tableName="TAMW_ROLE_PERMISSION">
+            <where>PERMISSIONS_ID = (SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'MAIA_SELECT_ALL')</where>
+        </delete>
+        <delete tableName="TAMW_ROLE_PERMISSION">
+            <where>PERMISSIONS_ID = (SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'MAIA_DESELECT_ALL')</where>
+        </delete>
+        <delete tableName="TAMW_ROLE_PERMISSION">
+            <where>PERMISSIONS_ID = (SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'SELECT_MAIA_APP_CHECKBOX')</where>
+        </delete>
+        <delete tableName="TAMW_ROLE_PERMISSION">
+            <where>PERMISSIONS_ID = (SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'MAIA_APP_LIST')</where>
+        </delete>
+
+        <!-- Delete MAIA Permission -->
+        <delete tableName="TAMW_PERMISSION">
+            <where>VALUE = 'MAIA_TAB'</where>
+        </delete>
+        <delete tableName="TAMW_PERMISSION">
+            <where>VALUE = 'MAIA_LOAD'</where>
+        </delete>
+        <delete tableName="TAMW_PERMISSION">
+            <where>VALUE = 'MAIA_SAVE'</where>
+        </delete>
+        <delete tableName="TAMW_PERMISSION">
+            <where>VALUE = 'MAIA_SELECT_ALL'</where>
+        </delete>
+        <delete tableName="TAMW_PERMISSION">
+            <where>VALUE = 'MAIA_DESELECT_ALL'</where>
+        </delete>
+        <delete tableName="TAMW_PERMISSION">
+            <where>VALUE = 'SELECT_MAIA_APP_CHECKBOX'</where>
+        </delete>
+        <delete tableName="TAMW_PERMISSION">
+            <where>VALUE = 'MAIA_APP_LIST'</where>
+        </delete>
+
+        <!-- Remove importname from resource -->
+        <dropColumn tableName="TAMW_RESOURCE" columnName="IMPORTNAME" />
+        <dropColumn tableName="TAMW_RESOURCE_AUD" columnName="IMPORTNAME" />
+
+        <!-- Remove resourceStatus from resource -->
+        <dropColumn tableName="TAMW_RESOURCE" columnName="RESOURCESTATUS" />
+        <dropColumn tableName="TAMW_RESOURCE_AUD" columnName="RESOURCESTATUS" />
+
+        <!-- Remove resourceStatus from resourceRelations -->
+        <dropColumn tableName="TAMW_CONSUMEDRESREL" columnName="RESOURCESTATUS" />
+        <dropColumn tableName="TAMW_CONSUMEDRESREL_AUD" columnName="RESOURCESTATUS" />
+
+        <dropColumn tableName="TAMW_PROVIDEDRESREL" columnName="RESOURCESTATUS" />
+        <dropColumn tableName="TAMW_PROVIDEDRESREL_AUD" columnName="RESOURCESTATUS" />
+
+    </changeSet>
+
+</databaseChangeLog>

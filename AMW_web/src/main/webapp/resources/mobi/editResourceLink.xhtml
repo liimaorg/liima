@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+
+<!-- INTERFACE -->
+<composite:interface>
+	<composite:attribute name="resId" />
+	<composite:attribute name="linkLabel" />
+	<composite:attribute name="editPermission" />
+	<composite:attribute name="ctxId" default="#{contextDataProvider.globalContextId}" />
+</composite:interface>
+
+<!-- IMPLEMENTATION -->
+<composite:implementation>
+	<composite:implementation>
+		<h:link value="${cc.attrs.linkLabel}" outcome="editResourceView"
+			rendered="${securityDataProvider.hasPermission(cc.attrs.editPermission)}">
+			<f:param name="id" value="${cc.attrs.resId}" />
+			<f:param name="ctx" value="#{cc.attrs.ctxId}" />
+		</h:link>
+		<h:outputText
+			rendered="${!securityDataProvider.hasPermission(cc.attrs.editPermission)}"
+			value="${cc.attrs.linkLabel}" />
+	</composite:implementation>
+</composite:implementation>
+
+</html>

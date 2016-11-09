@@ -1,0 +1,17 @@
+// Comments
+//----------------------------------------------------------------------
+
+.comments_list {
+	clear: both;
+	li { 
+		@include clearfix;
+		@include leader(0.75);
+		max-width: 500px;
+		.icon { 
+			float: left; 
+			margin-top:2px; 
+			margin-right:5px; 
+			background-color: $grey5;
+		}
+	}
+}

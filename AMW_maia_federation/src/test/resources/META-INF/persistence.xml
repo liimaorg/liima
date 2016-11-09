@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+	version="2.0">
+
+	<persistence-unit name="persistence-test" transaction-type="RESOURCE_LOCAL">
+
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<class>ch.puzzle.itc.mobiliar.business.resourceactivation.entity.ResourceActivationEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationHierarchyEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency</class>
+		<class>ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.environment.entity.ContextTypeEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.usersettings.entity.FavoriteResourceEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.property.entity.MikEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeContextEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownStpEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.database.entity.SequencesEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter</class>
+		<class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key</class>
+
+        <properties>
+           <property name="hibernate.connection.url" value="jdbc:h2:mem:test" />
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"></property>
+            <property name="hibernate.connection.driver_class" value="org.h2.Driver" />
+            <property name="hibernate.connection.password" value="sa" />
+            <property name="hibernate.connection.username" value="" />
+            <property name="hibernate.hbm2ddl.auto" value="create-drop" />
+        </properties>
+	</persistence-unit>
+	
+	<persistence-unit name="persistence-integration-test" >
+
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<class>ch.puzzle.itc.mobiliar.business.resourceactivation.entity.ResourceActivationEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationHierarchyEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency</class>
+		<class>ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.environment.entity.ContextTypeEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.usersettings.entity.FavoriteResourceEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.property.entity.MikEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeContextEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownStpEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity</class>
+        <class>ch.puzzle.itc.mobiliar.business.database.entity.SequencesEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity</class>
+		<class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter</class>
+		<class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key</class>
+        <properties>
+           <property name="hibernate.connection.url" value="jdbc:h2:file:../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning;user=sa;password=int" />
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"></property>
+            <property name="hibernate.connection.driver_class" value="org.h2.Driver" />
+        </properties>
+	</persistence-unit>
+</persistence>

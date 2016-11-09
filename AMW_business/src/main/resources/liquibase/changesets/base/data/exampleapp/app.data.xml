@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="initial-data" id="example-appserver">
+        <comment>Resource Appserver</comment>
+        <sql>
+        	Insert into TAMW_RESOURCEGROUP (ID,V,OUTOFSERVICERELEASE_ID,NAME,RESOURCETYPE_ID) values 
+        	(1,0,null,'as',2);
+        	Insert into TAMW_RESOURCE (ID,NAME,V,PREVIOUSVERSION_ID,RESOURCETYPE_ID,VERSION_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE) values
+        	(1,'as',0,null,2,null,1,1,'1');
+        </sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-app">
+        <comment>Resource App</comment>
+        <sql>
+        	Insert into TAMW_RESOURCEGROUP (ID,V,OUTOFSERVICERELEASE_ID,NAME,RESOURCETYPE_ID) values 
+        	(2,0,null,'app',1);
+        	Insert into TAMW_RESOURCE (ID,NAME,V,PREVIOUSVERSION_ID,RESOURCETYPE_ID,VERSION_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE) values
+        	(2,'app',0,null,1,null,1,2,'1');
+        </sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-node">
+        <comment>Resource node</comment>
+        <sql>
+        	Insert into TAMW_RESOURCEGROUP (ID,V,OUTOFSERVICERELEASE_ID,NAME,RESOURCETYPE_ID) values 
+        	(3,0,null,'node1',3);
+        	Insert into TAMW_RESOURCE (ID,NAME,V,PREVIOUSVERSION_ID,RESOURCETYPE_ID,VERSION_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE) values
+        	(3,'node1',0,null,3,null,1,3,'1');
+        </sql>
+    </changeSet>
+    
+    <changeSet author="initial-data" id="example-runtime">
+        <comment>Resource runtime</comment>
+        <sql>
+        	Insert into TAMW_RESOURCEGROUP (ID,V,OUTOFSERVICERELEASE_ID,NAME,RESOURCETYPE_ID) values 
+        	(4,0,null,'EAP62',7);
+        	Insert into TAMW_RESOURCE (ID,NAME,V,PREVIOUSVERSION_ID,RESOURCETYPE_ID,VERSION_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE) values
+        	(4,'EAP62',0,null,7,null,1,4,'1');
+        	
+        	Insert into TAMW_RESOURCEGROUP (ID,V,OUTOFSERVICERELEASE_ID,NAME,RESOURCETYPE_ID) values 
+        	(50,0,null,'JBoss7',7);
+        	Insert into TAMW_RESOURCE (ID,NAME,V,PREVIOUSVERSION_ID,RESOURCETYPE_ID,VERSION_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE) values
+        	(50,'JBoss7',0,null,7,null,1,50,'1');
+        </sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-database-pg">
+        <comment>Resource postgresdb</comment>
+        <sql>
+        	Insert into TAMW_RESOURCEGROUP (ID,V,OUTOFSERVICERELEASE_ID,NAME,RESOURCETYPE_ID) values 
+        	(6,0,null,'postgresDB',6);
+        	Insert into TAMW_RESOURCE (ID,NAME,V,PREVIOUSVERSION_ID,RESOURCETYPE_ID,VERSION_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE) values
+        	(6,'postgresDB',0,null,6,null,1,6,'1');
+        </sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-database-ora">
+        <comment>Resource oradb</comment>
+        <sql>
+        	Insert into TAMW_RESOURCEGROUP (ID,V,OUTOFSERVICERELEASE_ID,NAME,RESOURCETYPE_ID) values 
+        	(5,0,null,'Oracle',5);
+        	Insert into TAMW_RESOURCE (ID,NAME,V,PREVIOUSVERSION_ID,RESOURCETYPE_ID,VERSION_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE) values
+        	(5,'Oracle',0,null,5,null,1,5,'1');
+        </sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-deploymentEnvironment">
+        <comment>Resource OpenShift</comment>
+        <sql>
+        	Insert into TAMW_RESOURCEGROUP (ID,V,OUTOFSERVICERELEASE_ID,NAME,RESOURCETYPE_ID) values 
+        	(8,0,null,'OpenShift',8);
+        	Insert into TAMW_RESOURCE (ID,NAME,V,PREVIOUSVERSION_ID,RESOURCETYPE_ID,VERSION_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE) values
+        	(8,'OpenShift',0,null,8,null,1,8,'1');
+        </sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-java7">
+        <comment>Resource Java</comment>
+        <sql>
+        	Insert into TAMW_RESOURCEGROUP (ID,V,OUTOFSERVICERELEASE_ID,NAME,RESOURCETYPE_ID) values 
+        	(9,0,null,'Java7',9);
+        	Insert into TAMW_RESOURCE (ID,NAME,V,PREVIOUSVERSION_ID,RESOURCETYPE_ID,VERSION_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE) values
+        	(9,'Java7',0,null,9,null,1,9,'1');
+        </sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-java8">
+        <comment>Resource Java8</comment>
+        <sql>
+        	Insert into TAMW_RESOURCEGROUP (ID,V,OUTOFSERVICERELEASE_ID,NAME,RESOURCETYPE_ID) values 
+        	(11,0,null,'Java8',9);
+        	Insert into TAMW_RESOURCE (ID,NAME,V,PREVIOUSVERSION_ID,RESOURCETYPE_ID,VERSION_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE) values
+        	(11,'Java8',0,null,9,null,1,11,'1');
+        </sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-smtp">
+        <comment>SMTPMailsession</comment>
+        <sql>
+        	Insert into TAMW_RESOURCEGROUP (ID,V,OUTOFSERVICERELEASE_ID,NAME,RESOURCETYPE_ID) values 
+        	(10,0,null,'SMTPServer',10);
+        	Insert into TAMW_RESOURCE (ID,NAME,V,PREVIOUSVERSION_ID,RESOURCETYPE_ID,VERSION_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE) values
+        	(10,'SMTPServer',0,null,10,null,1,10,'1');
+        </sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-resource_relationtype">
+        <comment>Resource resource relationtype</comment>
+        <sql>
+        	<!-- as -> node -->
+        	Insert into TAMW_RESOURCERELATIONTYPE  (ID,V,IDENTIFIER,RESOURCETYPEA_ID, RESOURCETYPEB_ID) values 
+        	(1,0,null,2,3);
+        	<!-- as -> app -->
+        	Insert into TAMW_RESOURCERELATIONTYPE  (ID,V,IDENTIFIER,RESOURCETYPEA_ID, RESOURCETYPEB_ID) values 
+        	(2,0,null,2,1);
+        	<!-- as -> runtime -->
+        	Insert into TAMW_RESOURCERELATIONTYPE  (ID,V,IDENTIFIER,RESOURCETYPEA_ID, RESOURCETYPEB_ID) values 
+        	(3,0,'runtime',2,7);
+        	<!-- as -> java7 -->
+        	Insert into TAMW_RESOURCERELATIONTYPE  (ID,V,IDENTIFIER,RESOURCETYPEA_ID, RESOURCETYPEB_ID) values 
+        	(4,0,null,2,9);
+        	<!-- as -> openshift -->
+        	Insert into TAMW_RESOURCERELATIONTYPE  (ID,V,IDENTIFIER,RESOURCETYPEA_ID, RESOURCETYPEB_ID) values 
+        	(5,0,null,2,8);
+        	<!-- app -> SMTPServer -->
+        	Insert into TAMW_RESOURCERELATIONTYPE  (ID,V,IDENTIFIER,RESOURCETYPEA_ID, RESOURCETYPEB_ID) values 
+        	(6,0,null,1,10);
+        	<!-- app -> postgresdb -->
+        	Insert into TAMW_RESOURCERELATIONTYPE  (ID,V,IDENTIFIER,RESOURCETYPEA_ID, RESOURCETYPEB_ID) values 
+        	(7,0,null,1,6);
+        	
+        </sql>
+    </changeSet>
+    
+    <changeSet author="initial-data" id="example-resource_relations">
+        <comment>Resource resource relations</comment>
+        <sql>
+        	<!-- as -> node -->
+        	Insert into TAMW_CONSUMEDRESREL (ID,V,IDENTIFIER, RELATIONSTRATEGY, MASTERRESOURCE_ID,  RESOURCERELATIONTYPE_ID, SLAVERESOURCE_ID, FIXEDNODE_ID) values
+        	(1,0, null, 'ONE2ONE',1,1,3,null);
+        	<!-- as -> app -->
+        	Insert into TAMW_CONSUMEDRESREL (ID,V,IDENTIFIER, RELATIONSTRATEGY, MASTERRESOURCE_ID,  RESOURCERELATIONTYPE_ID, SLAVERESOURCE_ID, FIXEDNODE_ID) values
+        	(2,0, null, null,1,2,2,null);
+        	<!-- as -> runtime -->
+        	Insert into TAMW_CONSUMEDRESREL (ID,V,IDENTIFIER, RELATIONSTRATEGY, MASTERRESOURCE_ID,  RESOURCERELATIONTYPE_ID, SLAVERESOURCE_ID, FIXEDNODE_ID) values
+        	(3,0, null, 'ONE2ONE',1,3,4,null);
+        	<!-- as -> java7 -->
+        	Insert into TAMW_CONSUMEDRESREL (ID,V,IDENTIFIER, RELATIONSTRATEGY, MASTERRESOURCE_ID,  RESOURCERELATIONTYPE_ID, SLAVERESOURCE_ID, FIXEDNODE_ID) values
+        	(4,0, null, 'ONE2ONE',1,4,9,null);
+        	<!-- as -> openshift -->
+        	Insert into TAMW_CONSUMEDRESREL (ID,V,IDENTIFIER, RELATIONSTRATEGY, MASTERRESOURCE_ID,  RESOURCERELATIONTYPE_ID, SLAVERESOURCE_ID, FIXEDNODE_ID) values
+        	(5,0, null, 'ONE2ONE',1,5,8,null);
+        	<!-- app -> SMTPServer -->
+        	Insert into TAMW_CONSUMEDRESREL (ID,V,IDENTIFIER, RELATIONSTRATEGY, MASTERRESOURCE_ID,  RESOURCERELATIONTYPE_ID, SLAVERESOURCE_ID, FIXEDNODE_ID) values
+        	(6,0, null, 'ONE2ONE',2,6,10,null);
+        	<!-- app -> postgresdb -->
+        	Insert into TAMW_CONSUMEDRESREL (ID,V,IDENTIFIER, RELATIONSTRATEGY, MASTERRESOURCE_ID,  RESOURCERELATIONTYPE_ID, SLAVERESOURCE_ID, FIXEDNODE_ID) values
+        	(7,0,null, null, 'ONE2ONE',2,7,6,null);
+        	Insert into TAMW_CONSUMEDRESREL (ID,V,IDENTIFIER, RELATIONSTRATEGY, MASTERRESOURCE_ID,  RESOURCERELATIONTYPE_ID, SLAVERESOURCE_ID, FIXEDNODE_ID) values
+        	(8,0,'1', 'ONE2ONE',2,7,6,null);
+        	
+        </sql>
+    </changeSet>
+     <changeSet author="initial-data" id="example-resourcetype_propertydescriptor-smtp">
+        <comment>Resource resourcetype propertydescriptor</comment>
+        <sql>
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('2000',null,'jndiName','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('2001',null,'port','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('2002',null,'pw','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('2003',null,'ref','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('2004',null,'smtpServerName','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('2005',null,'user','1','.*', null,'0','0','0','0');
+            Insert into TAMW_RESOURCETYPECONTEXT (ID,V,CONTEXT_ID,RESOURCETYPEENTITY_ID) values ('3','1','1','10');
+            Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('3','2000');
+            Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('3','2001');
+            Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('3','2002');
+            Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('3','2003');
+            Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('3','2004');
+            Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('3','2005');
+        	
+        </sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-resourcetype_propertydescriptor-postgres">
+        <comment>Resource resourcetype propertydescriptor</comment>
+        <sql>
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('3000',null,'jndiName','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('3001',null,'poolName','1','.*', null,'0','0','0','0');
+
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING)
+			values ('3002',null,'dbhost','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING)
+			values ('3003',null,'username','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING)
+			values ('3004',null,'password','1','.*', null,'0','0','0','0');
+			
+            Insert into TAMW_RESOURCETYPECONTEXT (ID,V,CONTEXT_ID,RESOURCETYPEENTITY_ID) values ('4','1','1','6');
+            Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('4','3000');
+            Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('4','3001');
+			Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('4','3002');
+			Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('4','3003');
+			Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('4','3004');
+        </sql>
+    </changeSet>
+	<changeSet author="initial-data" id="example-resourcetype_propertydescriptor-app">
+		<comment>Resource resourcetype propertydescriptor</comment>
+		<sql>
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING)
+			values ('3500',null,'LogLevel','1','.*', null,'0','0','0','0');
+
+
+			Insert into TAMW_RESOURCETYPECONTEXT (ID,V,CONTEXT_ID,RESOURCETYPEENTITY_ID) values ('15','1','1','1');
+			Insert into TAMW_RESTYPECTX_PROPDESC (TAMW_RESOURCETYPECONTEXT_ID,PROPERTYDESCRIPTORS_ID) values ('15','3500');
+		</sql>
+	</changeSet>
+    <changeSet author="initial-data" id="example-resourcetype_propertydescriptor-openshift">
+        <comment>Resource resource propertydescriptor</comment>
+        <sql>
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('4000',null,'brokerurl','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('4001',null,'namespace','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('4002',null,'gearsize','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('4003',null,'password','1','.*', null,'0','0','0','0');
+			Insert into TAMW_PROPERTYDESCRIPTOR (ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,READONLY,TESTING) 
+			values ('4004',null,'username','1','.*', null,'0','0','0','0');
+			
+            Insert into TAMW_RESOURCECONTEXT (ID,V,CONTEXT_ID,RESOURCE_ID) values ('1','1','1','8');
+            Insert into TAMW_RESOURCECTX_PROPDESC  (TAMW_RESOURCECONTEXT_ID, PROPERTYDESCRIPTORS_ID) values ('1','4000');
+            Insert into TAMW_RESOURCECTX_PROPDESC  (TAMW_RESOURCECONTEXT_ID, PROPERTYDESCRIPTORS_ID) values ('1','4001');
+            Insert into TAMW_RESOURCECTX_PROPDESC  (TAMW_RESOURCECONTEXT_ID, PROPERTYDESCRIPTORS_ID) values ('1','4002');
+            Insert into TAMW_RESOURCECTX_PROPDESC  (TAMW_RESOURCECONTEXT_ID, PROPERTYDESCRIPTORS_ID) values ('1','4003');
+            Insert into TAMW_RESOURCECTX_PROPDESC  (TAMW_RESOURCECONTEXT_ID, PROPERTYDESCRIPTORS_ID) values ('1','4004');
+           
+        </sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-resourcetype_template_as_standalone">
+        <comment>Resourcetype standalone templates</comment>
+        <sql><![CDATA[
+			Insert into TAMW_TEMPLATEDESCRIPTOR (ID,NAME,TARGETPATH,V,TESTING, FILECONTENT) 
+			values (1,'standalone.xml','.openshift/config/standalone.xml',0,'0', 'content');
+			Insert into TAMW_RESOURCETYPECONTEXT (ID,V,CONTEXT_ID,RESOURCETYPEENTITY_ID) values ('10','1','1','2');
+			Insert into TAMW_RESTYPECTX_TMPLDESC (TAMW_RESOURCETYPECONTEXT_ID, TEMPLATES_ID) values (10,1);
+        ]]></sql>
+    </changeSet>
+    
+    <changeSet author="initial-data" id="example-resourcetype_template_mail">
+        <comment>Resourcetype mail templates</comment>
+        <sql><![CDATA[
+			Insert into TAMW_TEMPLATEDESCRIPTOR (ID,NAME,TARGETPATH,V,TESTING, FILECONTENT) 
+			values (2,'mailsession-mail.tmp','mailsession-mail.tmp',0,'0', '<mail-session jndi-name="${jndiname}" debug="true">
+      <smtp-server outbound-socket-binding-ref="${ref}">
+           <login name="${user}" password="${pw}"/>
+      </smtp-server>
+</mail-session>');
+			Insert into TAMW_TEMPLATEDESCRIPTOR (ID,NAME,TARGETPATH,V,TESTING, FILECONTENT) 
+			values (3,'outbound-socket-mail.tmp','outbound-socket-mail.tmp',0,'0', '<outbound-socket-binding name="${ref}">
+     <remote-destination host="${smtpServerName}" port="587"/>
+</outbound-socket-binding>');
+			Insert into TAMW_RESOURCETYPECONTEXT (ID,V,CONTEXT_ID,RESOURCETYPEENTITY_ID) values ('20','1','1','10');
+			Insert into TAMW_RESTYPECTX_TMPLDESC (TAMW_RESOURCETYPECONTEXT_ID, TEMPLATES_ID) values (20,2);
+			Insert into TAMW_RESTYPECTX_TMPLDESC (TAMW_RESOURCETYPECONTEXT_ID, TEMPLATES_ID) values (20,3);
+        ]]></sql>
+    </changeSet>
+    
+    <changeSet author="initial-data" id="example-resource_template_as">
+        <comment>Resource as templates</comment>
+        <sql><![CDATA[
+			Insert into TAMW_TEMPLATEDESCRIPTOR (ID,NAME,TARGETPATH,V,TESTING, FILECONTENT) 
+			values (4,'pre_start','.openshift/action_hooks/pre_start',0,'0', '#! /bin/sh
+
+/bin/cp -f $OPENSHIFT_REPO_DIR/.openshift/config/application-*.properties $OPENSHIFT_JBOSSEAP_DIR/standalone/configuration
+');
+			
+			Insert into TAMW_TEMPLATEDESCRIPTOR (ID,NAME,TARGETPATH,V,TESTING, FILECONTENT) 
+			values (5,'application-roles.properties','.openshift/config/application-roles.properties',0,'0', 'antonio=viewer
+admin=config_admin,viewer
+oli=app_developer,viewer
+thomas=server_admin,viewer
+beat=admin_deployer,viewer
+yves=test_deployer,viewer
+mark=developer_deployer,viewer
+nick=env_management_deployer,viewer
+mobi=viewer,config_admin,app_developer,server_admin,admin_deployer,test_deployer,developer_deployer,env_management_deployer,admin_deployer,shakedown_tester,shakedown_admin
+usertest=viewer,server_admin
+config=viewer,config_admin
+romano=viewer,config_admin,app_developer,server_admin,admin_deployer,test_deployer,developer_deployer,env_management_deployer,
+ant=viewer');
+			
+			Insert into TAMW_TEMPLATEDESCRIPTOR (ID,NAME,TARGETPATH,V,TESTING, FILECONTENT) 
+			values (6,'application-users.properties','.openshift/config/application-users.properties',0,'0', 'antonio=antonioMobi14
+admin=adminMobi14
+oli=oliMobi14
+thomas=thomasMobi14
+beat=beatMobi14
+yves=yvesMobi14
+mark=markMobi14
+nick=nickMobi14
+mobi=mobiMobi14
+usertest=usertestMobi14
+config=configMobi14
+romano=romanoMobi14
+ant=df7f337b15286411c3bafe154fedba18');
+			
+			
+			Insert into TAMW_RESOURCECONTEXT (ID,V,CONTEXT_ID,RESOURCE_ID) values ('2','1','1','1');
+			Insert into  TAMW_RESOURCECTX_TMPLDESC (TAMW_RESOURCECONTEXT_ID, TEMPLATES_ID) values (2,4);
+			Insert into  TAMW_RESOURCECTX_TMPLDESC (TAMW_RESOURCECONTEXT_ID, TEMPLATES_ID) values (2,5);
+			Insert into  TAMW_RESOURCECTX_TMPLDESC (TAMW_RESOURCECONTEXT_ID, TEMPLATES_ID) values (2,6);
+			
+        ]]></sql>
+    </changeSet>
+    
+    <changeSet author="initial-data" id="example-resource_template_db">
+        <comment>Resource db templates</comment>
+        <sql><![CDATA[
+			Insert into TAMW_TEMPLATEDESCRIPTOR (ID,NAME,TARGETPATH,V,TESTING, FILECONTENT) 
+			values (7,'cardridge-db.tmp','cardridge-db.tmp',0,'0', 'postgresql-9.2');
+			
+			Insert into TAMW_TEMPLATEDESCRIPTOR (ID,NAME,TARGETPATH,V,TESTING, FILECONTENT) 
+			values (8,'datasource-pg.tmp','datasource-pg.tmp',0,'0', '<datasource jndi-name="${jndiName}"
+					enabled="@.@{postgresql.enabled}" use-java-context="true" pool-name="${poolName}"
+					use-ccm="true">
+					<connection-url>jdbc:postgresql://@.@{env.OPENSHIFT_POSTGRESQL_DB_HOST}:@.@{env.OPENSHIFT_POSTGRESQL_DB_PORT}/@.@{env.OPENSHIFT_APP_NAME}
+					</connection-url>
+					<driver>postgresql</driver>
+					<security>
+						<user-name>@.@{env.OPENSHIFT_POSTGRESQL_DB_USERNAME}</user-name>
+						<password>@.@{env.OPENSHIFT_POSTGRESQL_DB_PASSWORD}</password>
+					</security>
+					<validation>
+                    	<check-valid-connection-sql>SELECT 1</check-valid-connection-sql>
+                    	<background-validation>true</background-validation>
+                	</validation>
+                	<pool>
+						<flush-strategy>IdleConnections</flush-strategy>
+						<allow-multiple-users/>
+					</pool>
+				</datasource>');
+
+			
+			Insert into TAMW_RESOURCECONTEXT (ID,V,CONTEXT_ID,RESOURCE_ID) values ('3','1','1','6');
+			Insert into  TAMW_RESOURCECTX_TMPLDESC (TAMW_RESOURCECONTEXT_ID, TEMPLATES_ID) values (3,7);
+			Insert into  TAMW_RESOURCECTX_TMPLDESC (TAMW_RESOURCECONTEXT_ID, TEMPLATES_ID) values (3,8);
+        ]]></sql>
+    </changeSet>
+    
+    <changeSet author="initial-data" id="example-resource_template_openshift">
+        <comment>Resource openshift templates</comment>
+        <sql><![CDATA[
+			Insert into TAMW_TEMPLATEDESCRIPTOR (ID,NAME,TARGETPATH,V,TESTING, FILECONTENT) 
+			values (9,'AmwRunScriptOpenShift','amwScript/AmwRunScript.sh',0,'0', 'asdf');
+
+			Insert into TAMW_RESOURCECONTEXT (ID,V,CONTEXT_ID,RESOURCE_ID) values ('4','1','1','8');
+			Insert into  TAMW_RESOURCECTX_TMPLDESC (TAMW_RESOURCECONTEXT_ID, TEMPLATES_ID) values (4,9);
+        ]]></sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-resource_template_java7marker">
+        <comment>Resource java7marker templates</comment>
+        <sql><![CDATA[
+			Insert into TAMW_TEMPLATEDESCRIPTOR (ID,NAME,TARGETPATH,V,TESTING, FILECONTENT) 
+			values (10,'java7_marker','.openshift/markers/java7',0,'0', '');
+
+			Insert into TAMW_RESOURCECONTEXT (ID,V,CONTEXT_ID,RESOURCE_ID) values ('5','1','1','9');
+			Insert into  TAMW_RESOURCECTX_TMPLDESC (TAMW_RESOURCECONTEXT_ID, TEMPLATES_ID) values (5,10);
+        ]]></sql>
+    </changeSet>
+    <changeSet author="initial-data" id="example-resource_template_runtime">
+        <comment>Resource runtime templates</comment>
+        <sql><![CDATA[
+			Insert into TAMW_TEMPLATEDESCRIPTOR (ID,NAME,TARGETPATH,V,TESTING, FILECONTENT) 
+			values (11,'cardridge-runtime.tmp','cardridge-runtime.tmp',0,'0', 'jbosseap-6');
+
+			Insert into TAMW_RESOURCECONTEXT (ID,V,CONTEXT_ID,RESOURCE_ID) values ('6','1','1','4');
+			Insert into  TAMW_RESOURCECTX_TMPLDESC (TAMW_RESOURCECONTEXT_ID, TEMPLATES_ID) values (6,11);
+        ]]></sql>
+    </changeSet>
+    
+    
+</databaseChangeLog>

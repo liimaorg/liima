@@ -1,0 +1,9 @@
+{
+   "appServerName":"prest",
+   "appsWithMvnVersion":[
+      {
+         "applicationName":"ch_mobi_prest"
+      }
+   ],
+   "environmentName":"V"
+}

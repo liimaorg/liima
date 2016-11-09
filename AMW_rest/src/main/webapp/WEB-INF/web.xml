@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	<security-constraint>
+
+		<web-resource-collection>
+			<web-resource-name>Restricted to Secure role</web-resource-name>
+			<description>Declarative security</description>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+
+		<auth-constraint>
+			<role-name>viewer</role-name>
+			<role-name>config_admin</role-name>
+			<role-name>app_developer</role-name>
+			<role-name>server_admin</role-name>
+			<role-name>admin_deployer</role-name>
+			<role-name>test_deployer</role-name>
+			<role-name>developer_deployer</role-name>
+			<role-name>env_management_deployer</role-name>
+			<role-name>shakedown_tester</role-name>
+			<role-name>shakedown_admin</role-name>
+            <role-name>overwrite_foreignables</role-name>
+			<role-name>admin_developer</role-name>
+		</auth-constraint>
+
+	</security-constraint>
+
+	<security-role>
+		<role-name>viewer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>config_admin</role-name>
+	</security-role>
+	<security-role>
+		<role-name>app_developer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>server_admin</role-name>
+	</security-role>
+	<security-role>
+		<role-name>admin_deployer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>test_deployer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>developer_deployer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>env_management_deployer</role-name>
+	</security-role>
+	<security-role>
+		<role-name>shakedown_tester</role-name>
+	</security-role>
+	<security-role>
+		<role-name>shakedown_admin</role-name>
+	</security-role>
+    <security-role>
+        <role-name>overwrite_foreignables</role-name>
+    </security-role>
+	<security-role>
+		<role-name>admin_developer</role-name>
+	</security-role>
+
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>JBoss Authorization "Application Middleware"</realm-name>
+	</login-config>
+
+</web-app>

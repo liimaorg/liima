@@ -1,0 +1,29 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaPropertyChanges/#12164_addLocalPortId.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="#12164_addLocalPortId">
+
+        <addColumn tableName="TAMW_resource">
+            <column name="localPortId" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <createIndex tableName="TAMW_resource" indexName="idx_localPortId" unique="false">
+            <column name="localPortId" type="varchar(1024)"/>
+        </createIndex>
+
+
+        <addColumn tableName="TAMW_resource_AUD">
+            <column name="localPortId" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <createIndex tableName="TAMW_resource_AUD" indexName="idx_localPortId_AUD" unique="false">
+            <column name="localPortId" type="varchar(1024)"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

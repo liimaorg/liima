@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:composite="http://java.sun.com/jsf/composite"
+	xmlns:mobi="http://java.sun.com/jsf/composite/mobi"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<composite:interface />
+
+<composite:implementation>
+	<h:panelGroup rendered="#{propertyEditDataProvider.applicationServer}">
+		<br class="clear" />
+		<article> <h:panelGroup id="applicationInstanceListComp"
+			layout="block" styleClass="well">
+			<nav class="actionbar">
+			<ul>
+				<li><h:commandLink onclick="showLoader();"
+						styleClass="btn light" type="button"
+						rendered="#{sessionContext.isGlobal and securityDataProvider.hasPermission('ADD_APP_TO_APP_SERVER')}">
+						<i class="icon icon-add"/>Add application
+								<a4j:ajax execute="@this" render="addRelationPopup"
+							oncomplete="if(confirmAddRelation()){#{rich:component('addRelationPopup')}.show();} hideLoader();"
+							listener="#{relationDataProvider.loadResourceGroupsForApplication()}"/>
+					</h:commandLink></li>
+				<h:commandLink value="${unresolved}"
+					rendered="#{sessionContext.isGlobal and resourceRelationModel.allowedToAddRelations}"
+					onclick="showLoader();">
+					<a4j:ajax execute="@this" render="addRelationPopup"
+						oncomplete="if(confirmAddRelation()){#{rich:component('addRelationPopup')}.show();} hideLoader();"
+						listener="#{relationDataProvider.loadResourceGroupsForType(key, unresolved)}"/>
+				</h:commandLink>
+
+			</ul>
+			</nav>
+			<h2>Applications</h2>
+			<hr />
+			<h:dataTable id="applicationDataTable" var="app"
+				value="#{resourceRelationModel.consumedApplications}"
+				styleClass="well" columnClasses=" ,last,last"
+				rowClasses="odd-row,even-row">
+				<h:column
+					rendered="#{securityDataProvider.hasPermission('APP_LIST_ADDED_APPSERVER')}">
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Application Name" />
+						</h:panelGroup>
+					</f:facet>
+					<mobi:editResourceLink resId="#{app.slaveId}" linkLabel="#{app.slaveName}" editPermission="EDIT_APP"/>
+				</h:column>
+				<h:column
+					rendered="#{securityDataProvider.hasPermission('EDIT_APP')}">
+					<f:facet name="header">
+						<h:outputText value="Edit" />
+					</f:facet>
+
+					<h:link outcome="editResourceView" value="Edit"
+						onclick="showLoader();"
+						rendered="#{securityDataProvider.hasPermission('EDIT_APP')}">
+						<f:param name="id" value="${app.slaveId}" />
+						<f:param name="ctx"
+							value="${contextDataProvider.globalContextId}" />
+					</h:link>
+				</h:column>
+				<h:column
+					rendered="#{sessionContext.isGlobal and securityDataProvider.hasPermission('DELETE_APP_TO_APP_SERVER')}">
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Remove" />
+						</h:panelGroup>
+					</f:facet>
+					<h:commandLink
+						rendered="${sessionContext.isGlobal and resourceRelationModel.allowedToRemoveRelations}">Remove
+								<a4j:ajax
+							listener="#{resourceRelationModel.setResourceRelationForRemoval(app)}"
+							oncomplete="#{rich:component('removeRelationPopup')}.show();"
+							render="removeRelationPopup" />
+					</h:commandLink>
+				</h:column>
+			</h:dataTable>
+		</h:panelGroup> </article>
+	</h:panelGroup>
+	<mobi:removeRelation application="${true}"/>
+</composite:implementation>
+
+</html>

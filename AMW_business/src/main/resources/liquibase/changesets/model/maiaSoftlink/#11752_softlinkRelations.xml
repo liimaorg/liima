@@ -1,0 +1,84 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaSoftlink/#11752_softlinkRelations.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="cweber" id="#11752_softlinkRelations">
+
+        <!-- add column softlink to resource -->
+        <addColumn tableName="TAMW_RESOURCE">
+            <column name="softlinkId" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="TAMW_RESOURCE_AUD">
+            <column name="softlinkId" type="varchar(1024)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+        <!-- create table softlinkrelation -->
+        <createTable tableName="TAMW_SOFTLINKRELATION">
+            <column name="ID" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="softlinkRelation_PK" ></constraints>
+            </column>
+            <column name="SOFTLINKREF" type="VARCHAR(1024)" />
+            <column name="CPIRESOURCE_ID" type="INTEGER">
+                <constraints foreignKeyName="TAMW_CPIRESOURCE_FK" referencedTableName="TAMW_RESOURCE" referencedColumnNames="ID"/>
+            </column>
+            <column name="FCOWNER" type="varchar(255)"  defaultValue="AMW"/>
+            <column name="FCEXTERNALLINK" type="varchar(1024)"/>
+            <column name="FCEXTERNALKEY" type="varchar(1024)"/>
+            <column name="V" type="BIGINT" valueNumeric="0"/>
+        </createTable>
+
+        <insert tableName="SAMW_SEQUENCES">
+            <column name="seq_name" value="softlinkrelationId" />
+            <column name="next_val" valueNumeric="1" />
+        </insert>
+
+        <!-- create table softlinkrelation_aud -->
+        <createTable tableName="TAMW_SOFTLINKRELATION_AUD">
+            <column name="ID" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="softlinkrelation_AUD_PK" ></constraints>
+            </column>
+            <column name="SOFTLINKREF" type="VARCHAR(1024)" />
+            <column name="CPIRESOURCE_ID" type="INTEGER"/>
+            <column name="FCOWNER" type="varchar(255)"  defaultValue="AMW"/>
+            <column name="FCEXTERNALLINK" type="varchar(1024)"/>
+            <column name="FCEXTERNALKEY" type="varchar(1024)"/>
+            <column name="V" type="BIGINT"/>
+            <column name="REV" type="int">
+                <constraints nullable="false" foreignKeyName="TAMW_softlinkrels_revinfo_FK" referencedTableName="TAMW_REVINFO" referencedColumnNames="ID"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet author="tphilipona" id="#11752_softlinkRelations_indexes">
+        <createIndex indexName="I_TAMW_RESOURCE_01"
+                     tableName="TAMW_RESOURCE"
+                     unique="false">
+            <column name="SOFTLINKID"/>
+        </createIndex>
+        <createIndex indexName="I_TAMW_RESOURCE_A_01"
+                     tableName="TAMW_RESOURCE_AUD"
+                     unique="false">
+            <column name="SOFTLINKID"/>
+        </createIndex>
+        <createIndex indexName="I_TAMW_SOFTLINKRELATION_01"
+                     tableName="TAMW_SOFTLINKRELATION"
+                     unique="false">
+            <column name="SOFTLINKREF"/>
+        </createIndex>
+        <createIndex indexName="I_TAMW_SOFTLINKRELATION_A_01"
+                     tableName="TAMW_SOFTLINKRELATION_AUD"
+                     unique="false">
+            <column name="SOFTLINKREF"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,58 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:composite="http://java.sun.com/jsf/composite"
+		xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<composite:interface />
+
+<composite:implementation>
+	<h:form>
+	<!-- TAG CONFIGURATION POPUP -->
+	<rich:popupPanel id="tagConfigurationPopup" autosized="true"
+		domElementAttachment="form"
+		rendered="#{taggingDataProvider.canTagCurrentState and propertyEditDataProvider.applicationServer}">
+		<f:facet name="header">
+			<h2>
+				<h:outputText value="Tag Application Server" />
+			</h2>
+		</f:facet>
+		<f:facet name="controls">
+			<h:outputLink value="#"
+				styleClass="close icon icon-close icon-replace"
+				onclick="#{rich:component('tagConfigurationPopup')}.hide(); return false;">x</h:outputLink>
+		</f:facet>
+		<h:panelGrid style="margin-bottom:10px;">
+			<h:outputText
+				value="You are going to tag the current configuration of the ${editResourceView.capitalizedResourceTypeName} ${editResourceView.resource.name} in release ${editResourceView.resource.release.name}." />
+			<h:outputText
+				value="This will save the changes that you have made to the current configuration." />
+		</h:panelGrid>
+		<div class="control-group">
+			<label class="control-label"><h:outputText value="Tag name:" /></label>
+			<div class="controls">
+				<h:inputText value="#{taggingDataProvider.tagLabel}" />
+			</div>
+			<label class="control-label"><h:outputText
+					value="Tag timestamp:" /></label>
+			<div class="controls">
+				<rich:calendar 
+				    buttonIcon="/AMW_web/images/calendarIcon.png"
+				    buttonDisabledIcon="/AMW_web/images/calendarIcon.png"
+				    value="#{taggingDataProvider.tagDate}"
+					enableManualInput="true" datePattern="dd.MM.yyyy HH:mm">
+				</rich:calendar>
+			</div>
+		</div>
+		<h:commandLink id="tagConfigurationButton" value="Create Tag" render="@form"
+			type="button" styleClass="btn primary right" onclick="showLoader();return confirmLeave(event);"
+			action="#{taggingDataProvider.tagConfiguration()}">
+
+		</h:commandLink>
+	</rich:popupPanel>
+</h:form>
+
+</composite:implementation>
+</html>

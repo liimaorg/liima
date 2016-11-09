@@ -1,0 +1,25 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+
+<composite:interface />
+
+<composite:implementation>
+	<hr />
+	<h3>Active Applications</h3>
+
+	<h:panelGroup>
+		<h:selectManyCheckbox
+			value="#{activeApplicationsDataProvider.activeApplications}"
+			disabled="#{!activeApplicationsDataProvider.canExcludeApps}"
+			styleClass="checkboxList subChangeAware" layout="pageDirection" >
+			<f:selectItems value="#{resourceRelationModel.consumedApplications}"
+				var="app" itemLabel="#{app.displayName}" itemValue="#{app.slaveGroupId}"></f:selectItems>
+		</h:selectManyCheckbox>
+	</h:panelGroup>
+	<hr />
+</composite:implementation>
+
+</html>

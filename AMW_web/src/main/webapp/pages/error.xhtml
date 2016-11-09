@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<ui:composition template="templates/template.xhtml">
+	<ui:param name="screen" value="error" />
+	<ui:define name="title">Error</ui:define>
+	<ui:define name="pagetitle">
+		<h:outputText id="pageheader" value="General System Failure" />
+	</ui:define>
+	<ui:define name="body">
+
+		<aside>&#160;</aside>
+
+		<section id="content" class="errorPage">
+			<div class="container textCenter">
+
+				<div class="alert alert-error">
+					<span class="symbol"/>
+					<h3 class="alert-heading">A general System Failure occurred!</h3>
+					<br/>
+					<a4j:outputPanel onclick="$('#stacktrace').show();">#{errorPage.message}</a4j:outputPanel>
+				</div>
+
+				<br/>
+				<div id="stacktrace" style="display:none; text-align:left;"><h:outputText escape="false"
+																						  value="#{errorPage.stacktrace}"/>
+				</div>
+			</div>
+		</section>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+
+  <composite:interface> 
+ 		<composite:attribute name="enableEdit"  default="true"/>	
+    </composite:interface>
+
+<composite:implementation>
+
+	<h:panelGroup id="contentPanelGroup">
+
+		<!-- CONSUMED -->
+		<h:panelGroup id="consumedTable"
+			rendered="#{!resourceRelations.consumedRelations.isEmpty()}">
+			<h:dataTable var="consumed"
+				value="#{resourceRelations.consumedRelations}"
+				styleClass="deployTable well" rowClasses="odd-row,even-row">
+
+				<f:facet name="caption">
+					<h2>
+						<h:outputText
+							value="Resources consuming #{resourceRelations.resourceName}" />
+					</h2>
+				</f:facet>
+
+				<h:column index="index">
+					<f:facet name="header">
+						<h:panelGroup>
+							<div style="white-space: nowrap;">
+								<h:outputText value="ResourceType" />
+							</div>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="#{consumed.resourceTypeName}" />
+				</h:column>
+
+				<h:column index="index">
+					<f:facet name="header">
+						<h:panelGroup>
+							<div style="white-space: nowrap;">
+								<h:outputText value="ResourceName" />
+							</div>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="#{consumed.resourceName}" />
+				</h:column>
+
+				<h:column index="index">
+					<f:facet name="header">
+						<h:panelGroup>
+							<div style="white-space: nowrap;">
+								<h:outputText value="Release" />
+							</div>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="#{consumed.releaseName}" />
+				</h:column>
+
+				<h:column index="index">
+					<f:facet name="header">
+						<h:panelGroup>
+							<div style="white-space: nowrap;">
+								<h:outputText value="Overwrites" />
+							</div>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="#{consumed.overwrites}" />
+				</h:column>
+
+				<h:column index="index" rendered="${cc.attrs.enableEdit}">
+					<f:facet name="header">
+						<h:panelGroup>
+							<div style="white-space: nowrap;">
+								<h:outputText value="Edit" />
+							</div>
+						</h:panelGroup>
+					</f:facet>
+					<h:link id="editLink" value="Edit" outcome="editResourceView"
+						onclick="showLoader();" rendered="#{consumed.overwrites == null}">
+						<f:param name="id" value="#{consumed.resourceId}" />
+						<f:param name="ctx" value="1" />
+					</h:link>
+				</h:column>
+
+			</h:dataTable>
+		</h:panelGroup>
+
+		<!-- PROVIDED -->
+		<h:panelGroup id="providedTable"
+			rendered="#{!resourceRelations.providedRelations.isEmpty()}">
+			<h:dataTable var="provided"
+				value="#{resourceRelations.providedRelations}"
+				styleClass="deployTable well" rowClasses="odd-row,even-row">
+
+				<f:facet name="caption">
+					<h2>
+						<h:outputText
+							value="Resources providing #{resourceRelations.resourceName}" />
+					</h2>
+				</f:facet>
+
+				<h:column index="index">
+					<f:facet name="header">
+						<h:panelGroup>
+							<div style="white-space: nowrap;">
+								<h:outputText value="ResourceType" />
+							</div>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="#{provided.resourceTypeName}" />
+				</h:column>
+
+				<h:column index="index">
+					<f:facet name="header">
+						<h:panelGroup>
+							<div style="white-space: nowrap;">
+								<h:outputText value="ResourceName" />
+							</div>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="#{provided.resourceName}" />
+				</h:column>
+
+				<h:column index="index">
+					<f:facet name="header">
+						<h:panelGroup>
+							<div style="white-space: nowrap;">
+								<h:outputText value="Release" />
+							</div>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="#{provided.releaseName}" />
+				</h:column>
+
+				<h:column index="index" rendered="${cc.attrs.enableEdit}">
+					<f:facet name="header">
+						<h:panelGroup>
+							<div style="white-space: nowrap;">
+								<h:outputText value="Edit" />
+							</div>
+						</h:panelGroup>
+					</f:facet>
+					<h:link id="editLink" value="Edit" outcome="editResourceView"
+						onclick="showLoader();">
+						<f:param name="id" value="#{provided.resourceId}" />
+						<f:param name="ctx" value="1" />
+					</h:link>
+				</h:column>
+
+			</h:dataTable>
+		</h:panelGroup>
+	</h:panelGroup>
+
+    <!-- REFERENCING SOFTLINK -->
+    <h:panelGroup id="consumingSoftlink"
+                  rendered="#{!resourceRelations.consumingSoftlinkResources.isEmpty()}">
+
+        <h:dataTable var="soft"
+                     value="#{resourceRelations.consumingSoftlinkResources}"
+                     styleClass="deployTable well" rowClasses="odd-row,even-row">
+
+            <f:facet name="caption">
+                <h2>
+                    <h:outputText
+                            value="Resources referencing softlink #{resourceRelations.softlinkId}"/>
+                </h2>
+            </f:facet>
+
+            <h:column index="index">
+                <f:facet name="header">
+                    <h:panelGroup>
+                        <div style="white-space: nowrap;">
+                            <h:outputText value="ResourceType"/>
+                        </div>
+                    </h:panelGroup>
+                </f:facet>
+                <h:outputText value="#{soft.resourceType.name}"/>
+            </h:column>
+
+            <h:column index="index">
+                <f:facet name="header">
+                    <h:panelGroup>
+                        <div style="white-space: nowrap;">
+                            <h:outputText value="ResourceName"/>
+                        </div>
+                    </h:panelGroup>
+                </f:facet>
+                <h:outputText value="#{soft.name}"/>
+            </h:column>
+
+            <h:column index="index">
+                <f:facet name="header">
+                    <h:panelGroup>
+                        <div style="white-space: nowrap;">
+                            <h:outputText value="Release" />
+                        </div>
+                    </h:panelGroup>
+                </f:facet>
+                <h:outputText value="#{soft.release.name}" />
+            </h:column>
+
+            <h:column index="index" rendered="${cc.attrs.enableEdit}">
+                <f:facet name="header">
+                    <h:panelGroup>
+                        <div style="white-space: nowrap;">
+                            <h:outputText value="Edit" />
+                        </div>
+                    </h:panelGroup>
+                </f:facet>
+                <h:link id="editLink" value="Edit" outcome="editResourceView"
+                        onclick="showLoader();">
+                    <f:param name="id" value="#{soft.id}" />
+                    <f:param name="ctx" value="1" />
+                </h:link>
+            </h:column>
+
+        </h:dataTable>
+    </h:panelGroup>
+
+	<h:panelGroup id="consumedTableNon"
+		rendered="#{resourceRelations.consumedRelations.isEmpty() and resourceRelations.consumingSoftlinkResources.isEmpty() and resourceRelations.providedRelations.isEmpty()}">
+				No Dependencies found.
+			</h:panelGroup>
+</composite:implementation>
+
+</html>

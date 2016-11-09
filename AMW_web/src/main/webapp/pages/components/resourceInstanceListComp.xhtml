@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:mobi="http://java.sun.com/jsf/composite/mobi"
+	xmlns:rich="http://richfaces.org/rich">
+
+<h:body>
+	<h:panelGroup id="resourceInstanceListWrapper">
+		<h:dataTable id="resourceInstanceListComp" styleClass="well" var="group"
+			value="${resourceInstanceListImpl.resourceGroupsForSelectedResourceType}"
+			columnClasses=" ,last,last,last,last,last" rowClasses="odd-row,even-row">
+			<f:facet name="caption">
+				<nav class="actionbar">
+				<ul>
+					<li><a4j:commandLink styleClass="btn light" id="newResourceButton"
+							rendered="#{!resourceInstanceListImpl.selectedResourceType.isApplicationResourceType() and resourceInstanceListImpl.canCreateResourceInstance}"
+							onclick="#{rich:component('addResourcePopupPanel')}.show();"
+							render="addResourcePopupPanelGroup, addResourcePopupPanelHeader">
+							<i class="icon icon-add"></i>
+							<h:outputText value="New Resource" />
+						</a4j:commandLink></li> 
+					<li><a4j:commandLink id="createAppButton" type="button" styleClass="btn light right"
+							rendered="#{resourceInstanceListImpl.selectedResourceType.isApplicationResourceType() and resourceInstanceListImpl.canCreateResourceInstance}"
+							onclick="showLoader();">
+							<i class="icon icon-add" /> New Application
+							<a4j:ajax render="createApplicationForAsPopup"
+											oncomplete="hideLoader();#{rich:component('createApplicationForAsPopup')}.show();"></a4j:ajax>
+						</a4j:commandLink></li>
+					<li>
+					<h:link includeViewParams="true" styleClass="btn light" rendered="#{securityDataProvider.hasPermission('EDIT_RES_TYPE')}"
+								outcome="editResourceView" onclick="showLoader();" id="editResourceTypeButton">
+                                    <i class="icon icon-edit"></i>Edit Resource Type
+                                <f:param name="id" value="${null}"/>
+                                <f:param name="rel" value="${null}"/>
+                                <f:param name="resTypId"
+                                         value="${resourceInstanceListImpl.selectedResourceType.id}"/>
+                            </h:link>
+					</li>
+					<li><a4j:commandLink type="button"
+							rendered="#{!resourceInstanceListImpl.defaultResourceType and !resourceInstanceListImpl.runtimeResourceType and securityDataProvider.hasPermission('DELETE_RESTYPE')}"
+							styleClass="btn light" id="deleteResourceTypeButton"
+							render="deleteResourceTypePopupPanelHeader"
+							onclick="#{rich:component('confirmResourceTypeDeletePopupPanel')}.show();">
+							<i class="icon icon-delete"></i>Delete Resource Type</a4j:commandLink></li>
+				</ul>
+				</nav>
+				<h2>
+					<h:outputText
+						value="${resourceInstanceListImpl.selectedResourceType.name}" />
+				</h2>
+			</f:facet>
+			<h:column rendered="#{securityDataProvider.hasPermission('RESOURCE_LIST')}">
+				<f:facet name="header">
+					<h:outputText value="Resource Name" />
+				</f:facet>
+				<mobi:editResourceLink resId="#{group.selectedResourceId}" linkLabel="#{group.name}" editPermission="EDIT_RES"/>
+                <mobi:foreignableOwnerTooltip foreignableAttributes="#{resourceInstanceListImpl.getForeignableAttribute(group,group.selectedReleaseId)}"/>
+			</h:column>
+			<h:column rendered="#{securityDataProvider.hasPermission('RESOURCE_LIST')}">
+				<f:facet name="header">
+					<h:outputText value="Release" />
+				</f:facet>
+				<h:selectOneMenu styleClass="switchRelease" style="width:auto;" id="switchReleaseSelectBox"
+						value="#{group.selectedReleaseId}">
+						<f:selectItems value="${group.releases}" var="release" itemLabel="${release.name}" itemValue="${release.id}" />
+						<a4j:ajax render="editLink, viewLink, deleteLink, resourceInstanceListWrapper" onbegin="showLoaderImmediate();" oncomplete="hideLoader();" />
+				</h:selectOneMenu>
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Favorite" />
+				</f:facet>
+				<h:selectBooleanCheckbox readonly="true" value="${userSettings.getFavorite(group.id)}" id="selectFavoriteCheckbox">
+					<a4j:ajax execute="#{userSettings.setFavorite(group.id, group.name, resourceInstanceListImpl.selectedResourceType.name)}">						
+					</a4j:ajax>
+				</h:selectBooleanCheckbox>
+			</h:column>
+			<h:column rendered="#{securityDataProvider.hasPermission('EDIT_RES')}">
+				<f:facet name="header">
+					<h:outputText value="Edit" />
+				</f:facet>
+
+				<h:link id="editLink"
+					outcome="${resourceInstanceListImpl.outcomePageForResourceEdit}" onclick="showLoader();"
+					value="Edit">
+					<f:param name="id" value="#{group.selectedResourceId}" />
+					<f:param name="ctx" value="#{contextDataProvider.globalContextId}" />
+				</h:link>
+			</h:column>
+
+			<h:column rendered="#{securityDataProvider.hasPermission('EDIT_RES') and resourceInstanceListImpl.selectedResourceType.applicationServerResourceType}">
+				<f:facet name="header">
+					<h:outputText value="View" />
+				</f:facet>
+
+				<h:link id="viewLink"
+					outcome="appServerRelation" onclick="showLoader();"
+					value="View ">
+					<f:param name="id" value="#{group.selectedResourceId}" />
+				</h:link>
+			</h:column>
+
+			<h:column rendered="${resourceInstanceListImpl.canRemoveDefaultInstanceOfResType}">
+				<f:facet name="header">
+					<h:outputText value="Delete" />
+				</f:facet>
+
+				<a4j:commandLink execute="@this" id="deleteLink"
+					render="deleteResourcePopupPanelHeader deleteResourceRelationsOverview" value="Delete"
+					rendered="${resourceInstanceListImpl.isAmwOnly(group,group.selectedReleaseId)}"
+					onclick="showLoader();"
+					oncomplete="#{rich:component('confirmResourceDeletePopupPanel')}.show();hideLoader();">
+					<a4j:param assignTo="#{resourceDependenciesView.resourceIdViewParam}" value="${group.selectedResourceId}" name="x" />
+					
+					<f:setPropertyActionListener target="#{resourceInstanceListImpl.selectedResourceGroup}" value="#{group}"/>
+				</a4j:commandLink>
+			</h:column>
+		</h:dataTable>
+	</h:panelGroup>
+</h:body>
+</html>
+

@@ -1,0 +1,16 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/refactoring/#15797_remove_node_relationship.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="bschwaller" id="#15797_remove_node_relationship" >
+
+        <dropColumn tableName="TAMW_CONSUMEDRESREL" columnName="RELATIONSTRATEGY" />
+        <dropColumn tableName="TAMW_CONSUMEDRESREL" columnName="FIXEDNODE_ID" />
+
+        <dropColumn tableName="TAMW_CONSUMEDRESREL_AUD" columnName="RELATIONSTRATEGY" />
+        <dropColumn tableName="TAMW_CONSUMEDRESREL_AUD" columnName="FIXEDNODE_ID" />
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,788 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/runtime/#5553_runtime.xml" 
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    
+	<changeSet author="oschmid" id="#5553_runtime">
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCETYPE">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceTypeId')" />
+			<column name="NAME" value="RUNTIME" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCETYPE_AUD">
+			<column name="NAME" value="RUNTIME" />
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceTypeId')" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceTypeId')" />
+			<where>SEQ_NAME='resourceTypeId'</where>
+		</update>
+	</changeSet>
+
+	<changeSet author="oschmid"
+		id="#5553_runtime_createRuntimesForTargetPlatforms">
+
+		<!-- JBOSS 5 -->
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME" value="JBoss 5" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="V" valueNumeric="0"/>
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP_AUD">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE_AUD">
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<where>SEQ_NAME='resourceGroupId'</where>
+		</update>
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<where>SEQ_NAME='resourceId'</where>
+		</update>
+
+
+		<!-- JBOSS 7 -->
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME" value="JBoss 7" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP_AUD">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE_AUD">
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<where>SEQ_NAME='resourceGroupId'</where>
+		</update>
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<where>SEQ_NAME='resourceId'</where>
+		</update>
+
+
+		<!-- Tomcat -->
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME" value="Tomcat" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP_AUD">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE_AUD">
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<where>SEQ_NAME='resourceGroupId'</where>
+		</update>
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<where>SEQ_NAME='resourceId'</where>
+		</update>
+
+
+
+		<!-- Java Batch -->
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME" value="JavaBatch" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP_AUD">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE_AUD">
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<where>SEQ_NAME='resourceGroupId'</where>
+		</update>
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<where>SEQ_NAME='resourceId'</where>
+		</update>
+
+
+
+		<!-- EAP 6 -->
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME" value="EAP 6" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP_AUD">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE_AUD">
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<where>SEQ_NAME='resourceGroupId'</where>
+		</update>
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<where>SEQ_NAME='resourceId'</where>
+		</update>
+
+
+
+		<!-- Liferay -->
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME" value="Liferay" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP_AUD">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE_AUD">
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<where>SEQ_NAME='resourceGroupId'</where>
+		</update>
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<where>SEQ_NAME='resourceId'</where>
+		</update>
+
+
+
+		<!-- Triggerclient -->
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME" value="Triggerclient" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCEGROUP_AUD">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCE_AUD">
+			<column name="NAME"
+				valueComputed="(SELECT NAME FROM TAMW_RESOURCEGROUP WHERE ID=(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId'))" />
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<column name="RESOURCETYPE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="RELEASE_ID"
+				valueComputed="(SELECT ID FROM TAMW_RELEASE WHERE (SELECT MIN(INSTALLATIONINPRODUCTION) FROM TAMW_RELEASE)=INSTALLATIONINPRODUCTION)" />
+			<column name="RESOURCEGROUP_ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<column name="DELETABLE" valueNumeric="0" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceGroupId')" />
+			<where>SEQ_NAME='resourceGroupId'</where>
+		</update>
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceId')" />
+			<where>SEQ_NAME='resourceId'</where>
+		</update>
+
+	</changeSet>
+
+	<changeSet author="oschmid" id="#5553_createRelationsFromASToRuntimes">
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCERELATIONTYPE">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceRelationTypeId')" />
+			<column name="RESOURCETYPEA_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='APPLICATIONSERVER')" />
+			<column name="RESOURCETYPEB_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="V" valueNumeric="0" />
+		</insert>
+		<insert dbms="h2, oracle, DB2" tableName="TAMW_RESOURCERELATIONTYPE_AUD">
+			<column name="ID"
+				valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceRelationTypeId')" />
+			<column name="RESOURCETYPEA_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='APPLICATIONSERVER')" />
+			<column name="RESOURCETYPEB_ID"
+				valueComputed="(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')" />
+			<column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+			<column name="REVTYPE" valueNumeric="0" />
+		</insert>
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceRelationTypeId')" />
+			<where>SEQ_NAME='resourceRelationTypeId'</where>
+		</update>
+	</changeSet>
+
+	<changeSet author="oschmid"
+		id="#5553_createConsumedRelationsFromASToRuntimes">
+		<sql dbms="oracle,h2" splitStatements="true">
+			INSERT INTO
+			TAMW_CONSUMEDRESREL(ID,V,MASTERRESOURCE_ID,RESOURCERELATIONTYPE_ID,SLAVERESOURCE_ID)
+			(SELECT id+masterresource_id as id, v,
+			masterresource_id, resourceTypeRelationId, runtimeId FROM (
+			SELECT
+			(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME='resourceRelationId') as
+			id,
+			0 as v,
+			r.id as masterresource_id,
+			(SELECT ID FROM TAMW_RESOURCERELATIONTYPE WHERE RESOURCETYPEA_ID=(SELECT ID
+			FROM TAMW_RESOURCETYPE WHERE NAME='APPLICATIONSERVER') AND
+			RESOURCETYPEB_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE
+			NAME='RUNTIME')) as resourcetypeRelationId,
+			idmap.runtimeId
+			FROM TAMW_RESOURCE r LEFT JOIN (SELECT tp.id, r.id as runtimeId FROM
+			TAMW_TARGETPLATFORM tp LEFT JOIN TAMW_RESOURCE r ON
+			r.name=tp.PLATFORMNAME) idmap on r.TARGETPLATFORM_ID=idmap.id WHERE
+			TARGETPLATFORM_ID IS NOT NULL
+			)
+			);
+		</sql>
+
+		<sql dbms="oracle,h2" splitStatements="true">
+			<![CDATA[
+			INSERT INTO TAMW_CONSUMEDRESREL_AUD(ID,MASTERRESOURCE_ID,RESOURCERELATIONTYPE_ID,SLAVERESOURCE_ID,REV,REVTYPE) (
+			  SELECT
+    ID,
+    RESID,
+    resourcetypeRelationId,
+    runtimeId,
+    revision,
+    revtype
+  FROM (
+
+    -- We want to create corresponding audit entries for all "runtime"-changes that happened during the lifetime of a application...
+    SELECT
+      (SELECT NEXT_VAL
+       FROM SAMW_SEQUENCES
+       WHERE SEQ_NAME = 'resourceRelationId') + runtimeChanges.resId AS id,
+      (SELECT ID
+       FROM TAMW_RESOURCERELATIONTYPE
+       WHERE RESOURCETYPEA_ID = (SELECT ID
+                                 FROM TAMW_RESOURCETYPE
+                                 WHERE NAME = 'APPLICATIONSERVER') AND
+             RESOURCETYPEB_ID = (SELECT ID
+                                 FROM TAMW_RESOURCETYPE
+                                 WHERE
+                                   NAME = 'RUNTIME'))                AS resourcetypeRelationId,
+      idmap.runtimeId,
+      runtimeChanges.*
+
+
+    -- get a table of all resource_audit entries, which do have a platform-id change. the table contains the new and the old version.
+    FROM (
+            SELECT
+              x.r1id                AS resId,
+              x.r1rev               AS revision,
+              x.r1plat              AS targetPlatform,
+              CASE WHEN x.r1plat IS NULL THEN 2 ELSE CASE WHEN res.targetPlatform_ID IS NULL THEN 0 ELSE 1 END END AS revType,
+              res.TARGETPLATFORM_ID AS previousTargetPlatform
+            FROM (
+                   SELECT
+                     r1id,
+                     r1rev,
+                     r1type,
+                     r1plat,
+                     max(rev) previousRev
+                   FROM (
+                     SELECT
+                       r1.ID                r1id,
+                       r1.REV               r1rev,
+                       r1.REVTYPE           r1type,
+                       r1.TARGETPLATFORM_ID r1plat,
+                       r2.*
+                     FROM TAMW_RESOURCE_AUD r1,
+                       (SELECT
+                          ID,
+                          TARGETPLATFORM_ID,
+                          REV,
+                          2 AS revType
+                        FROM TAMW_RESOURCE_AUD r) r2
+                     WHERE r1.ID = r2.ID AND r2.REV < r1.REV)
+                   GROUP BY r1id, r1rev, r1type, r1plat) x LEFT JOIN TAMW_RESOURCE_AUD res
+                ON x.r1id = res.ID AND x.previousRev = res.REV
+            WHERE
+              x.r1plat != res.TARGETPLATFORM_ID OR (x.r1plat IS NULL AND res.TARGETPLATFORM_ID IS NOT NULL)
+              OR
+              (x.r1plat IS NOT NULL AND res.TARGETPLATFORM_ID IS NULL)
+          )
+               runtimeChanges
+      LEFT JOIN (SELECT
+                   tp.id,
+                   r.id AS runtimeId
+                 FROM TAMW_TARGETPLATFORM tp LEFT JOIN TAMW_RESOURCE r ON r.name = tp.PLATFORMNAME) idmap
+        ON runtimeChanges.TARGETPLATFORM = idmap.id
+    ORDER BY revision
+  )
+  UNION
+
+  -- but the changes of runtime do not involve these resources, which did have a runtime from their beginning (e.g. copied resources). This is why we need to add creation-entries for those as well.
+  SELECT
+    ID,
+    RESID,
+    resourcetypeRelationId,
+    runtimeId,
+    revision,
+    revtype
+  FROM (
+    SELECT
+      (SELECT NEXT_VAL
+       FROM SAMW_SEQUENCES
+       WHERE SEQ_NAME = 'resourceRelationId') + runtimeChanges.resId AS id,
+      (SELECT ID
+       FROM TAMW_RESOURCERELATIONTYPE
+       WHERE RESOURCETYPEA_ID = (SELECT ID
+                                 FROM TAMW_RESOURCETYPE
+                                 WHERE NAME = 'APPLICATIONSERVER') AND
+             RESOURCETYPEB_ID = (SELECT ID
+                                 FROM TAMW_RESOURCETYPE
+                                 WHERE
+                                   NAME = 'RUNTIME'))                AS resourcetypeRelationId,
+      idmap.runtimeId,
+      runtimeChanges.*
+
+
+   FROM (SELECT r.id as resId, r.REV as revision, r.TARGETPLATFORM_ID as targetPlatform, 0 as revType FROM TAMW_RESOURCE_AUD r WHERE REVTYPE=0 AND TARGETPLATFORM_ID IS NOT NULL)
+         runtimeChanges
+      LEFT JOIN (SELECT
+                   tp.id,
+                   r.id AS runtimeId
+                 FROM TAMW_TARGETPLATFORM tp LEFT JOIN TAMW_RESOURCE r ON r.name = tp.PLATFORMNAME) idmap
+        ON runtimeChanges.TARGETPLATFORM = idmap.id
+    ORDER BY revision
+  )
+);	]]>
+		</sql>
+		<update tableName="SAMW_SEQUENCES">
+			<column name="NEXT_VAL" type="INTEGER"
+				valueComputed="(SELECT MAX(ID)+1 FROM TAMW_CONSUMEDRESREL)" />
+			<where>SEQ_NAME='resourceRelationId'</where>
+		</update>
+	</changeSet>
+
+	<changeSet author="oschmid" id="#5553_changeRelationsBetweenTemplateAndRuntime">
+		<addColumn tableName="TAMW_TMPLDESC_TARGETPLAT">
+			<column name="RESGROUP_ID" type="INTEGER" />
+		</addColumn>
+		<update tableName="TAMW_TMPLDESC_TARGETPLAT" >
+			<column name="RESGROUP_ID" type="INTEGER"
+				valueComputed="(SELECT r.RESOURCEGROUP_ID FROM TAMW_TARGETPLATFORM tp LEFT JOIN TAMW_RESOURCE r ON	r.name=tp.PLATFORMNAME WHERE tp.id=TAMW_TMPLDESC_TARGETPLAT.targetPlatforms_id)" />
+		</update>						
+		<addColumn tableName="TAMW_TMPLDESC_TARGETPLAT_AUD">
+			<column name="RESGROUP_ID" type="INTEGER" />
+		</addColumn>
+		<update tableName="TAMW_TMPLDESC_TARGETPLAT_AUD">
+			<column name="RESGROUP_ID" type="INTEGER"
+				valueComputed="(SELECT r.RESOURCEGROUP_ID FROM TAMW_TARGETPLATFORM tp LEFT JOIN TAMW_RESOURCE r ON	r.name=tp.PLATFORMNAME WHERE tp.id=TAMW_TMPLDESC_TARGETPLAT_AUD.targetPlatforms_id)" />
+		</update>			
+		<addForeignKeyConstraint baseColumnNames="RESGROUP_ID"
+			baseTableName="TAMW_TMPLDESC_TARGETPLAT" constraintName="RESGROUP_FK"
+			referencedColumnNames="ID" referencedTableName="TAMW_RESOURCEGROUP" />
+		 <dropPrimaryKey tableName="TAMW_TMPLDESC_TARGETPLAT"/>
+		 <addPrimaryKey columnNames="TEMPLATEDESCRIPTORS_ID,RESGROUP_ID"
+            constraintName="TMPLDESC_TARGETPLAT_PK"
+            tableName="TAMW_TMPLDESC_TARGETPLAT"/>
+           <dropPrimaryKey tableName="TAMW_TMPLDESC_TARGETPLAT_AUD"/>
+		 <addPrimaryKey columnNames="TEMPLATEDESCRIPTORS_ID,RESGROUP_ID,REV"
+            constraintName="TMPLDESC_TARGETPLAT_AUD_PK"
+            tableName="TAMW_TMPLDESC_TARGETPLAT_AUD"/>
+	<addNotNullConstraint columnName="RESGROUP_ID"
+		tableName="TAMW_TMPLDESC_TARGETPLAT" columnDataType="INTEGER" />
+	<addNotNullConstraint columnName="RESGROUP_ID"
+		tableName="TAMW_TMPLDESC_TARGETPLAT_AUD" columnDataType="INTEGER"/>
+		<dropColumn columnName="TARGETPLATFORMS_ID" tableName="TAMW_TMPLDESC_TARGETPLAT"/>
+		<dropColumn columnName="TARGETPLATFORMS_ID" tableName="TAMW_TMPLDESC_TARGETPLAT_AUD"/>
+	</changeSet>
+	
+	
+	<changeSet author="oschmid" id="#5553_changeRelationFromDeploymentToTargetplatform">
+		<addColumn tableName="TAMW_DEPLOYMENT">
+			<column name="RUNTIME_RESOURCE_ID" type="INTEGER" />
+		</addColumn>
+		<update tableName="TAMW_DEPLOYMENT" >
+			<column name="RUNTIME_RESOURCE_ID" type="INTEGER"
+				valueComputed="(SELECT r.id FROM TAMW_TARGETPLATFORM tp LEFT JOIN TAMW_RESOURCE r ON r.name=tp.PLATFORMNAME WHERE tp.id=TAMW_DEPLOYMENT.TARGETPLATFORM_ID)" />
+		</update>					
+		<addForeignKeyConstraint baseColumnNames="RUNTIME_RESOURCE_ID"
+			baseTableName="TAMW_DEPLOYMENT" constraintName="DEPLOYMENT_TO_RUNTIME_FK"
+			referencedColumnNames="ID" referencedTableName="TAMW_RESOURCE" />
+		<dropColumn columnName="TARGETPLATFORM_ID" tableName="TAMW_DEPLOYMENT"/>
+	</changeSet>
+	
+	<changeSet author="oschmid" id="#5553_removeTargetPlatformInclItsReferences">
+		<dropColumn columnName="TARGETPLATFORM_ID" tableName="TAMW_RESOURCE"/>
+		<dropColumn columnName="TARGETPLATFORM_ID" tableName="TAMW_RESOURCE_AUD"/>
+		<dropTable tableName="TAMW_TARGETPLATFORM"/>
+		<dropTable tableName="TAMW_TARGETPLATFORM_AUD"/>
+	</changeSet>
+	
+	<changeSet author="cweber" id="#5553_permissions_for_runtime">
+
+		<update tableName="TAMW_PERMISSION">
+			<column name="VALUE" value="SELECT_RUNTIME"></column>
+			<where>VALUE LIKE 'SELECT_JBOSS_RUNTIME'</where>
+		</update>
+		
+		<delete tableName="TAMW_ROLE_PERMISSION"><where>PERMISSIONS_ID=(SELECT ID FROM TAMW_PERMISSION WHERE VALUE LIKE 'SAVE_NAME_AND_OR_TARGET_PLATFORM')</where></delete>
+		
+		<delete tableName="TAMW_PERMISSION"><where>VALUE LIKE 'SAVE_NAME_AND_OR_TARGET_PLATFORM'</where></delete>
+
+	</changeSet>
+	<changeSet author="oschmid" id="#5553_runtime_whitespacefix">
+		<update tableName="TAMW_RESOURCEGROUP">
+			<column name="NAME" type="VARCHAR(255)"
+					value="JBoss5" />
+			<where>NAME='JBoss 5' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+		<update tableName="TAMW_RESOURCEGROUP_AUD">
+			<column name="NAME" type="VARCHAR(255)"
+					value="JBoss5" />
+			<where>NAME='JBoss 5' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+		<update tableName="TAMW_RESOURCE">
+			<column name="NAME" type="VARCHAR(255)"
+					value="JBoss5" />
+			<where>NAME='JBoss 5' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+		<update tableName="TAMW_RESOURCE_AUD">
+			<column name="NAME" type="VARCHAR(255)"
+					value="JBoss5" />
+			<where>NAME='JBoss 5' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+
+		<update tableName="TAMW_RESOURCEGROUP">
+			<column name="NAME" type="VARCHAR(255)"
+					value="JBoss7" />
+			<where>NAME='JBoss 7' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+		<update tableName="TAMW_RESOURCEGROUP_AUD">
+			<column name="NAME" type="VARCHAR(255)"
+					value="JBoss7" />
+			<where>NAME='JBoss 7' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+		<update tableName="TAMW_RESOURCE">
+			<column name="NAME" type="VARCHAR(255)"
+					value="JBoss7" />
+			<where>NAME='JBoss 7' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+		<update tableName="TAMW_RESOURCE_AUD">
+			<column name="NAME" type="VARCHAR(255)"
+					value="JBoss7" />
+			<where>NAME='JBoss 7' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+
+		<update tableName="TAMW_RESOURCEGROUP">
+			<column name="NAME" type="VARCHAR(255)"
+					value="EAP6" />
+			<where>NAME='EAP 6' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+		<update tableName="TAMW_RESOURCEGROUP_AUD">
+			<column name="NAME" type="VARCHAR(255)"
+					value="EAP6" />
+			<where>NAME='EAP 6' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+		<update tableName="TAMW_RESOURCE">
+			<column name="NAME" type="VARCHAR(255)"
+					value="EAP6" />
+			<where>NAME='EAP 6' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+		<update tableName="TAMW_RESOURCE_AUD">
+			<column name="NAME" type="VARCHAR(255)"
+					value="EAP6" />
+			<where>NAME='EAP 6' AND RESOURCETYPE_ID=(SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME='RUNTIME')</where>
+		</update>
+	</changeSet>
+</databaseChangeLog>

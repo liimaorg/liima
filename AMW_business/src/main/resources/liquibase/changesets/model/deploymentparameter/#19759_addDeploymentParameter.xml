@@ -1,0 +1,70 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/deploymentparameter/#19759_addDeploymentParameter.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet author="bschwaller" id="#19759_addDeploymentParameter">
+
+        <!-- create deploy parameter key-->
+
+        <createTable tableName="TAMW_DEPLOYPARAMKEY">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="deployparamkey_PK"/>
+            </column>
+            <column name="name" type="varchar(1024)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <insert tableName="SAMW_SEQUENCES">
+            <column name="seq_name" value="deployParameterKeyId"></column>
+            <column name="next_val" valueNumeric="1"></column>
+        </insert>
+
+
+        <!-- create deploy parameter -->
+
+        <createTable tableName="TAMW_DEPLOYPARAM">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="deployparam_PK"/>
+            </column>
+            <column name="value" type="varchar(1024)"></column>
+
+            <column name="deployment_id" type="INTEGER">
+                <constraints nullable="true" foreignKeyName="deployment_FK" referencedColumnNames="ID" referencedTableName="TAMW_DEPLOYMENT"/>
+            </column>
+
+            <column name="key" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <insert tableName="SAMW_SEQUENCES">
+            <column name="seq_name" value="deployParameterId"></column>
+            <column name="next_val" valueNumeric="1"></column>
+        </insert>
+
+
+        <!-- Permission for deploy param -->
+        <insert tableName="TAMW_PERMISSION">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
+            <column name="VALUE" value="MANAGE_DEPLOYMENT_PARAMETER"></column>
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_ROLE_PERMISSION">
+            <column name="ROLES_ID" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'config_admin')" />
+            <column name="PERMISSIONS_ID" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'MANAGE_DEPLOYMENT_PARAMETER')" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+
+    </changeSet>
+</databaseChangeLog>

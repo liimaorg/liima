@@ -1,0 +1,14 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaSoftlink/#11752_softlinkRelations_aud.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="cweber" id="#11752_softlinkRelations_aud">
+
+        <!-- fix problem with primarykey -->
+        <dropPrimaryKey tableName="TAMW_SOFTLINKRELATION_AUD" constraintName="SOFTLINKRELATION_AUD_PK"/>
+        <addPrimaryKey  columnNames="ID, REV" tableName="TAMW_SOFTLINKRELATION_AUD" constraintName="SOFTLINKRELATION_AUD_PK" />
+    </changeSet>
+
+</databaseChangeLog>

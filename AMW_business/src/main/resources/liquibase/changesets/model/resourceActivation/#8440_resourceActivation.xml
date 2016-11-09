@@ -1,0 +1,63 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/resourceActivation/#8440_resourceActivation.xml" 
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    
+	<changeSet author="oschmid" id="#8440_resourceActivation">
+
+		<insert tableName="SAMW_SEQUENCES">
+			<column name="SEQ_NAME" value="resActId" />
+			<column name="NEXT_VAL" valueNumeric="100" />
+		</insert>
+
+		<createTable tableName="TAMW_resourceActivation">
+			<column name="id" type="INTEGER">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="resourceAct_PK" />
+			</column>
+			<column name="resRelCtx_ID" type="INTEGER"/>
+			<column name="resGroup_ID" type="INTEGER"/>
+			<column name="active" type="NUMBER(1,0)"/>
+		</createTable>
+
+		<addForeignKeyConstraint baseColumnNames="resRelCtx_ID"
+								 baseTableName="TAMW_resourceActivation" constraintName="resourceAct_resRelCtx_FK"
+								 referencedColumnNames="ID" referencedTableName="TAMW_resRelContext" />
+		<addForeignKeyConstraint baseColumnNames="resGroup_ID"
+								 baseTableName="TAMW_resourceActivation" constraintName="resourceAct_resGrp_FK"
+								 referencedColumnNames="ID" referencedTableName="TAMW_resourcegroup" />
+
+
+		<createTable tableName="TAMW_resourceActivation_AUD">
+			<column name="id" type="INTEGER">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="resourceAct_aud_PK" />
+			</column>
+			<column name="resRelCtx_ID" type="INTEGER"/>
+			<column name="resGroup_ID" type="INTEGER"/>
+			<column name="active" type="NUMBER(1,0)"/>
+			<column name="REV" type="INTEGER">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="resourceAct_aud_PK" />
+			</column>
+			<column name="REVTYPE" type="TINYINT" />
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="REV"
+								 baseTableName="TAMW_resourceActivation_AUD" constraintName="resourceAct_aud_REV_FK"
+								 referencedColumnNames="ID" referencedTableName="TAMW_REVINFO" />
+
+	</changeSet>
+	<changeSet author="oschmid" id="#8440_resourceActivation_add_version">
+		<addColumn tableName="TAMW_resourceActivation">
+			<column name="V" type="BIGINT" valueNumeric="0"/>
+		</addColumn>
+		<addColumn tableName="TAMW_resourceActivation_AUD">
+			<column name="V" type="BIGINT" valueNumeric="0"/>
+		</addColumn>
+		<addNotNullConstraint columnDataType="BIGINT"
+							  columnName="V"
+							  tableName="TAMW_resourceActivation"/>
+	</changeSet>
+	<changeSet author="oschmid" id="#8440_resourceActivation_add_uniqueConstraint">
+		<addUniqueConstraint tableName="TAMW_RESOURCEACTIVATION" columnNames="RESRELCTX_ID, RESGROUP_ID"/>
+	</changeSet>
+
+</databaseChangeLog>

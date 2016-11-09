@@ -1,0 +1,408 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ch.puzzle.itc.mobiliar</groupId>
+    <artifactId>AMW_parent</artifactId>
+    <name>AMW_parent</name>
+    <version>1.11.2-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Define the version of JBoss' Java EE 6 APIs we want to import. Any
+            dependencies from org.jboss.spec will have their version defined by this
+            BOM -->
+        <javaee6.web.spec.version>2.0.0.Final</javaee6.web.spec.version>
+        <!-- Alternatively, you can use version 3.0.0.Beta1-redhat-1 which is a
+            release certified to work with JBoss EAP 6. It requires you have access to
+            the JBoss EAP 6 maven repository. <javaee6.web.spec.version>3.0.0.Beta1-redhat-1</javaee6.web.spec.version> -->
+        <!-- JBoss AS Version (used for arquillion) -->
+        <jboss-as-version>7.1.1.Final</jboss-as-version>
+
+        <sonar.language>java</sonar.language>
+
+        <build.timestamp>${maven.build.timestamp}</build.timestamp>
+        <!-- buildNumber is used in xhtml files for client side caching -->
+        <buildNumber>${maven.build.timestamp}</buildNumber>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+        <!-- **************** -->
+        <!-- Plugins versions -->
+        <!-- **************** -->
+        <version.ear.plugin>2.9.1</version.ear.plugin>
+        <version.ejb.plugin>2.3</version.ejb.plugin>
+        <version.jar.plugin>2.5</version.jar.plugin>
+        <version.war.plugin>2.4</version.war.plugin>
+        <version.sonar.maven.plugin>2.5</version.sonar.maven.plugin>
+        <version.jacoco.maven.plugin>0.7.4.201502262128</version.jacoco.maven.plugin>
+        <version.deploy.maven.plugin>2.8.2</version.deploy.maven.plugin>
+        <version.source.maven.plugin>2.4</version.source.maven.plugin>
+        <version.javadoc.maven.plugin>2.10.1</version.javadoc.maven.plugin>
+
+        <!-- do not use versions 3.2.1 and 3.2.2 for liquibase-maven-plugin due
+ to a diff bug: https://liquibase.jira.com/browse/CORE-1987 -->
+        <version.liquibase>3.1.1</version.liquibase>
+        <version.liquibase-slf4j>1.2.1</version.liquibase-slf4j>
+        <version.assertj-core>2.4.1</version.assertj-core>
+        <version.java>1.7</version.java>
+    </properties>
+
+
+    <modules>
+        <module>AMW_business</module>
+        <module>AMW_commons</module>
+        <module>AMW_ear</module>
+        <module>AMW_web</module>
+        <module>AMW_rest</module>
+        <module>AMW_maia_federation</module>
+        
+        
+        <module>AMW_db_scripts</module>
+        <module>AMW_wsauth_test</module>
+    </modules>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central Repository Europe</name>
+            <url>http://uk.maven.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>maia-gluecode-local</id>
+            <name>Mobi Maia Repository</name>
+            <url>file://${basedir}/../AMW_gluecode_export/repository/</url>
+            <layout>default</layout>
+        </repository>
+
+        <repository>
+            <id>maia-gluecode-local-src</id>
+            <name>Mobi Maia Source Repository</name>
+            <url>file://${basedir}/../AMW_gluecode_export/repository-src/</url>
+        </repository>
+
+    </repositories>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                        <skip>true</skip>
+                        <skipDeploy>true</skipDeploy>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.1</version>
+                    <configuration>
+                        <preparationGoals>clean install</preparationGoals>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.2</version>
+                    <configuration>
+                        <source>${version.java}</source>
+                        <target>${version.java}</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${version.jar.plugin}</version>
+                    <configuration>
+                        <archive>
+                            <index>true</index>
+                            <manifest>
+                                <addDefaultSpecificationEntries>
+                                    true
+                                </addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>
+                                    true
+                                </addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Java-Version>${java.version}</Java-Version>
+                                <Java-Vendor>${java.vendor}</Java-Vendor>
+                                <Os-Name>${os.name}</Os-Name>
+                                <Os-Arch>${os.arch}</Os-Arch>
+                                <Os-Version>${os.version}</Os-Version>
+                                <Build-Timestamp>${build.timestamp}</Build-Timestamp>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${version.war.plugin}</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-ejb-plugin</artifactId>
+                    <version>${version.ejb.plugin}</version>
+                    <configuration>
+                        <!-- Tell Maven we are using EJB 3.1 -->
+                        <ejbVersion>3.1</ejbVersion>
+                        <archive>
+                            <index>true</index>
+                            <manifest>
+                                <addDefaultSpecificationEntries>
+                                    true
+                                </addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>
+                                    true
+                                </addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Java-Version>${java.version}</Java-Version>
+                                <Java-Vendor>${java.vendor}</Java-Vendor>
+                                <Os-Name>${os.name}</Os-Name>
+                                <Os-Arch>${os.arch}</Os-Arch>
+                                <Os-Version>${os.version}</Os-Version>
+                                <Build-Timestamp>${build.timestamp}</Build-Timestamp>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-ear-plugin</artifactId>
+                    <version>${version.ear.plugin}</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <!-- The JBoss AS plugin deploys your ear to a local JBoss AS container -->
+                <!-- Due to Maven's lack of intelligence with EARs we need to configure
+                    the jboss-as maven plugin to skip deployment for all modules. We then enable
+                    it specifically in the ear module. -->
+                <plugin>
+                    <groupId>org.jboss.as.plugins</groupId>
+                    <artifactId>jboss-as-maven-plugin</artifactId>
+                    <version>${jboss-as-version}</version>
+                    <inherited>true</inherited>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+                <!-- the following plugins are used by maven-release-plugin -->
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${version.deploy.maven.plugin}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${version.source.maven.plugin}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${version.javadoc.maven.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${version.sonar.maven.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${version.jacoco.maven.plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>default-prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>default-report</id>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>default-check</id>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <!-- URL to Git repository used by maven-release-plugin -->
+    <scm>
+        <developerConnection>scm:git:https://git-amw.puzzle.ch/mobi_amw/amw_projects.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <!-- distribution management URL used by maven-release-plugin (implicitly by maven-deploy-plugin) to know where to deploy the builded artifacts to -->
+    <distributionManagement>
+        <repository>
+            <!-- this id must match the <servers><server><id /></server></servers> in your local maven settings.xml -->
+            <id>puzzle-releases</id>
+            <url>https://artifactory.puzzle.ch/artifactory/libs-release-local</url>
+        </repository>
+    </distributionManagement>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>ch.puzzle.itc.mobiliar</groupId>
+                <artifactId>AMW_business</artifactId>
+                <version>1.11.2-SNAPSHOT</version>
+                <type>ejb</type>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.puzzle.itc.mobiliar</groupId>
+                <artifactId>AMW_commons</artifactId>
+                <version>1.11.2-SNAPSHOT</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.puzzle.itc.mobiliar</groupId>
+                <artifactId>AMW_web</artifactId>
+                <version>1.11.2-SNAPSHOT</version>
+                <type>war</type>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.puzzle.itc.mobiliar</groupId>
+                <artifactId>AMW_rest</artifactId>
+                <version>1.11.2-SNAPSHOT</version>
+                <type>war</type>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.puzzle.itc.mobiliar</groupId>
+                <artifactId>AMW_maia_federation</artifactId>
+                <version>1.11.2-SNAPSHOT</version>
+                <type>war</type>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.12.6</version>
+                <scope>provided</scope>
+            </dependency>
+
+
+            <!-- JBoss distributes a complete set of Java EE 6 APIs including a Bill
+                of Materials (BOM). A BOM specifies the versions of a "stack" (or a collection)
+                of artifacts. We use this here so that we always get the correct versions
+                of artifacts. Here we use the jboss-javaee-web-6.0 stack (you can read this
+                as the JBoss stack of the Java EE Web Profile 6 APIs) -->
+            <dependency>
+                <groupId>org.jboss.spec</groupId>
+                <artifactId>jboss-javaee-web-6.0</artifactId>
+                <version>${javaee6.web.spec.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- JSR-303 (Bean Validation) Implementation -->
+            <!-- Provides portable constraints such as @Email -->
+            <!-- Hibernate Validator is shipped in JBoss AS 7 -->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>4.3.1.Final</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>4.2.14.Final</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>dom4j</artifactId>
+                        <groupId>dom4j</groupId>
+                    </exclusion>
+                </exclusions>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-envers</artifactId>
+                <version>4.2.14.Final</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>dom4j</artifactId>
+                        <groupId>dom4j</groupId>
+                    </exclusion>
+                </exclusions>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.11</version>
+                <type>jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${version.assertj-core}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.2.4</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+
+    </dependencies>
+</project>

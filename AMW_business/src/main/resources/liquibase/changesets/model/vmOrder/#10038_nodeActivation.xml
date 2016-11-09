@@ -1,0 +1,269 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/vmOrder/#10038_nodeActivation.xml" 
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="cweber" id="#10038_nodeActivation">
+
+        <!-- Add new propertyDescriptor for "active" -->
+        <insert dbms="h2, oracle, DB2" tableName="TAMW_PROPERTYDESCRIPTOR">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyDescriptorId')" />
+            <column name="PROPERTYNAME" value="active" />
+            <column name="ENCRYPT" valueNumeric="0" />
+            <column name="NULLABLE" valueNumeric="0" />
+            <column name="READONLY" valueNumeric="0" />
+            <column name="TESTING" valueNumeric="0" />
+            <column name="CARDINALITYPROPERTY" valueNumeric="0" />
+            <column name="PROPERTYTYPEENTITY_ID" valueComputed="(SELECT ID FROM TAMW_PROPERTYTYPE WHERE PROPERTYTYPENAME = 'Boolean')" />
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <!-- Add new propertyDescriptor for "active" to history data -->
+        <insert dbms="h2, oracle, DB2" tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyDescriptorId')" />
+            <column name="PROPERTYNAME" value="active" />
+            <column name="ENCRYPT" valueNumeric="0" />
+            <column name="NULLABLE" valueNumeric="0" />
+            <column name="READONLY" valueNumeric="0" />
+            <column name="TESTING" valueNumeric="0" />
+            <column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+            <column name="CARDINALITYPROPERTY" valueNumeric="0" />
+            <column name="PROPERTYTYPEENTITY_ID" valueComputed="(SELECT ID FROM TAMW_PROPERTYTYPE WHERE PROPERTYTYPENAME = 'Boolean')" />
+            <column name="REVTYPE" valueNumeric="0" />
+         </insert>
+
+        <!-- Update sequence for propertyDescriptorId -->
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" valueComputed="NEXT_VAL +1" />
+            <where>SAMW_SEQUENCES.SEQ_NAME = 'propertyDescriptorId'</where>
+        </update>
+
+        <!-- Add propertyDescriptor "active" to resourceType NODE -->
+        <insert dbms="h2, oracle, DB2" tableName="TAMW_RESTYPECTX_PROPDESC">
+            <column name="TAMW_RESOURCETYPECONTEXT_ID"
+                    valueComputed="(SELECT ID FROM TAMW_RESOURCETYPECONTEXT WHERE CONTEXT_ID = (
+                        SELECT ID FROM TAMW_CONTEXT WHERE NAME = 'Global') AND RESOURCETYPEENTITY_ID = (
+                            SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'NODE'))" />
+            <column name="PROPERTYDESCRIPTORS_ID" valueComputed="(SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'active' AND CARDINALITYPROPERTY = 0)" />
+        </insert>
+
+        <!-- Add propertyDescriptor "active" to resourceType NODE in history data -->
+        <insert dbms="h2, oracle, DB2" tableName="TAMW_RESTYPECTX_PROPDESC_AUD">
+            <column name="TAMW_RESOURCETYPECONTEXT_ID"
+                    valueComputed="(SELECT ID FROM TAMW_RESOURCETYPECONTEXT WHERE CONTEXT_ID = (
+                        SELECT ID FROM TAMW_CONTEXT WHERE NAME = 'Global') AND RESOURCETYPEENTITY_ID = (
+                            SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'NODE'))" />
+            <column name="PROPERTYDESCRIPTORS_ID" valueComputed="(SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'active' AND CARDINALITYPROPERTY = 0)" />
+            <column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+            <column name="REVTYPE" valueNumeric="0" />
+        </insert>
+
+        <!-- Create new property for propertyDescriptor "active" with value false -->
+        <insert dbms="h2, oracle, DB2" tableName="TAMW_PROPERTY">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId')" />
+            <column name="VALUE" value="false" />
+            <column name="DESCRIPTOR_ID" valueComputed="(SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'active' AND CARDINALITYPROPERTY = 0)" />
+            <column name="V" valueNumeric="0" />
+        </insert>
+
+        <!-- Create new property for propertyDescriptor "active" with value false in history data -->
+        <insert dbms="h2, oracle, DB2" tableName="TAMW_PROPERTY_AUD">
+            <column name="ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId')" />
+            <column name="VALUE" value="false" />
+            <column name="DESCRIPTOR_ID" valueComputed="(SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'active' AND CARDINALITYPROPERTY = 0)" />
+            <column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+            <column name="REVTYPE" valueNumeric="0" />
+        </insert>
+
+        <!-- Add property active=false to resourceType NODE on context GLOBAL -->
+        <insert dbms="h2, oracle, DB2" tableName="TAMW_RESTYPECTX_PROP">
+            <column name="TAMW_RESOURCETYPECONTEXT_ID"
+                    valueComputed="(SELECT ID FROM TAMW_RESOURCETYPECONTEXT WHERE CONTEXT_ID = (SELECT ID FROM TAMW_CONTEXT WHERE NAME = 'Global') AND RESOURCETYPEENTITY_ID = (SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'NODE'))" />
+            <column name="PROPERTIES_ID" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId')" />
+        </insert>
+
+        <!-- Add property active=false to resourceType NODE on context GLOBAL in history data -->
+        <insert dbms="h2, oracle, DB2" tableName="TAMW_RESTYPECTX_PROP_AUD">
+            <column name="TAMW_RESOURCETYPECONTEXT_ID"
+                    valueComputed="(SELECT ID FROM TAMW_RESOURCETYPECONTEXT WHERE CONTEXT_ID = (SELECT ID FROM TAMW_CONTEXT WHERE NAME = 'Global') AND RESOURCETYPEENTITY_ID = (SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'NODE'))" />
+            <column name="PROPERTIES_ID"
+                    valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId')" />
+            <column name="REV" valueComputed="(SELECT MIN(ID) FROM TAMW_REVINFO)" />
+            <column name="REVTYPE" valueNumeric="0" />
+        </insert>
+
+        <!--Update sequence for propertyId -->
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" valueComputed="NEXT_VAL +1" />
+            <where>SAMW_SEQUENCES.SEQ_NAME = 'propertyId'</where>
+        </update>
+
+
+        <!--
+            Set property active = true for relations with hostname set
+        ______________________________________________________________  -->
+
+        <!--Create new property for "active" with value true for all resourceRelations APPLICATIONSERVER - NODE where property for "hostname" exists -->
+        <sql dbms="h2, oracle, DB2">
+            INSERT INTO TAMW_PROPERTY (ID,DESCRIPTOR_ID, VALUE, V)
+            (SELECT id+propertyId as id, descriptorId, propertyValue, v FROM (
+            SELECT
+            (SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId') as id,
+            (SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'active' AND CARDINALITYPROPERTY = 0) as descriptorId,
+            resRelProp.PROPERTIES_ID as propertyId,
+            'true' as propertyValue,
+            0 as v
+            FROM TAMW_RESRELCTX_PROP resRelProp WHERE PROPERTIES_ID IN (
+            SELECT ID FROM TAMW_PROPERTY WHERE DESCRIPTOR_ID = (
+            SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'hostName' AND CARDINALITYPROPERTY = 0)) AND TAMW_RESRELCONTEXT_ID IN (
+            SELECT ID FROM TAMW_RESRELCONTEXT WHERE CONSUMEDRESOURCERELATION_ID IN (
+            SELECT ID FROM TAMW_CONSUMEDRESREL WHERE RESOURCERELATIONTYPE_ID = (
+            SELECT ID FROM TAMW_RESOURCERELATIONTYPE WHERE RESOURCETYPEA_ID = (
+            SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'APPLICATIONSERVER') AND RESOURCETYPEB_ID =(
+            SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'NODE')))
+            )
+            ));
+        </sql>
+
+        <!--Create new property for "active" with value true for all resourceRelations APPLICATIONSERVER - NODE where property for "hostname" exists for history data in last revision -->
+        <sql dbms="h2, oracle, DB2">
+            INSERT INTO TAMW_PROPERTY_AUD (ID, REV, REVTYPE, DESCRIPTOR_ID, VALUE)
+            (SELECT id+propertyId as id,(SELECT MAX(ID) FROM TAMW_REVINFO),0, descriptorId, propertyValue FROM (
+            SELECT
+            (SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId') as id,
+            (SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'active' AND CARDINALITYPROPERTY = 0) as descriptorId,
+            resRelProp.PROPERTIES_ID as propertyId,
+            'true' as propertyValue
+            FROM TAMW_RESRELCTX_PROP resRelProp WHERE PROPERTIES_ID IN (
+            SELECT ID FROM TAMW_PROPERTY WHERE DESCRIPTOR_ID = (
+            SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'hostName' AND CARDINALITYPROPERTY = 0)) AND TAMW_RESRELCONTEXT_ID IN (
+            SELECT ID FROM TAMW_RESRELCONTEXT WHERE CONSUMEDRESOURCERELATION_ID IN (
+            SELECT ID FROM TAMW_CONSUMEDRESREL WHERE RESOURCERELATIONTYPE_ID = (
+            SELECT ID FROM TAMW_RESOURCERELATIONTYPE WHERE RESOURCETYPEA_ID = (
+            SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'APPLICATIONSERVER') AND RESOURCETYPEB_ID =(
+            SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'NODE')))
+            )
+            ));
+        </sql>
+
+        <!--Add property crated before to all resourceRelations APPLICATIONSERVER - NODE where property for "hostname" exists -->
+        <sql dbms="h2, oracle, DB2">
+            INSERT INTO TAMW_RESRELCTX_PROP (TAMW_RESRELCONTEXT_ID, PROPERTIES_ID)
+            (SELECT resRelCtx_id, id+propertyId as properties_id FROM (
+            SELECT
+            (SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId') as id,
+            resRelProp.PROPERTIES_ID as propertyId,
+            resRelProp.TAMW_RESRELCONTEXT_ID as resRelCtx_id
+            FROM TAMW_RESRELCTX_PROP resRelProp WHERE PROPERTIES_ID IN (
+            SELECT ID FROM TAMW_PROPERTY WHERE DESCRIPTOR_ID = (
+            SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'hostName' AND CARDINALITYPROPERTY = 0)) AND TAMW_RESRELCONTEXT_ID IN (
+            SELECT ID FROM TAMW_RESRELCONTEXT WHERE CONSUMEDRESOURCERELATION_ID IN (
+            SELECT ID FROM TAMW_CONSUMEDRESREL WHERE RESOURCERELATIONTYPE_ID = (
+            SELECT ID FROM TAMW_RESOURCERELATIONTYPE WHERE RESOURCETYPEA_ID = (
+            SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'APPLICATIONSERVER') AND RESOURCETYPEB_ID =(
+            SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'NODE')))
+            )
+            ));
+        </sql>
+
+        <!--Add property crated before to all resourceRelations APPLICATIONSERVER - NODE where property for "hostname" exists for history data in last revision -->
+        <sql dbms="h2, oracle, DB2">
+            INSERT INTO TAMW_RESRELCTX_PROP_AUD (REV, REVTYPE, TAMW_RESRELCONTEXT_ID, PROPERTIES_ID)
+            (SELECT (SELECT MAX(ID) FROM TAMW_REVINFO), 0, resRelCtx_id, id+propertyId as properties_id FROM (
+            SELECT
+            (SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId') as id,
+            resRelProp.PROPERTIES_ID as propertyId,
+            resRelProp.TAMW_RESRELCONTEXT_ID as resRelCtx_id
+            FROM TAMW_RESRELCTX_PROP resRelProp WHERE PROPERTIES_ID IN (
+            SELECT ID FROM TAMW_PROPERTY WHERE DESCRIPTOR_ID = (
+            SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'hostName' AND CARDINALITYPROPERTY = 0)) AND TAMW_RESRELCONTEXT_ID IN (
+            SELECT ID FROM TAMW_RESRELCONTEXT WHERE CONSUMEDRESOURCERELATION_ID IN (
+            SELECT ID FROM TAMW_CONSUMEDRESREL WHERE RESOURCERELATIONTYPE_ID = (
+            SELECT ID FROM TAMW_RESOURCERELATIONTYPE WHERE RESOURCETYPEA_ID = (
+            SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'APPLICATIONSERVER') AND RESOURCETYPEB_ID =(
+            SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'NODE')))
+            )
+            ));
+        </sql>
+
+        <!--
+            Set property active = true for resources with hostname set
+        ______________________________________________________________  -->
+
+        <!--Create new property for "active" with value true for all resources where property for "hostname" exists -->
+        <sql dbms="h2, oracle, DB2">
+            INSERT INTO TAMW_PROPERTY (ID,DESCRIPTOR_ID, VALUE, V)
+            (SELECT id+propertyId as id, descriptorId, propertyValue, v FROM (
+            SELECT
+            (SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId') as id,
+            (SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'active' AND CARDINALITYPROPERTY = 0) as descriptorId,
+            resProp.PROPERTIES_ID propertyId,
+            'true' as propertyValue,
+            0 as v
+            FROM TAMW_RESOURCECTX_PROP resProp WHERE PROPERTIES_ID IN (
+            SELECT prop.ID FROM TAMW_PROPERTYDESCRIPTOR des RIGHT JOiN TAMW_PROPERTY prop ON des.ID = prop.DESCRIPTOR_ID WHERE PROPERTYNAME='hostName' and CARDINALITYPROPERTY=0
+            )
+            ));
+        </sql>
+
+        <!--Create new property for "active" with value true for all resources where property for "hostname" exists for history data in last revision -->
+        <sql dbms="h2, oracle, DB2">
+            INSERT INTO TAMW_PROPERTY_AUD (ID, REV, REVTYPE, DESCRIPTOR_ID, VALUE)
+            (SELECT id+propertyId as id,(SELECT MAX(ID) FROM TAMW_REVINFO),0, descriptorId, propertyValue FROM (
+            SELECT
+            (SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId') as id,
+            (SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'active' AND CARDINALITYPROPERTY = 0) as descriptorId,
+            resProp.PROPERTIES_ID propertyId,
+            'true' as propertyValue
+            FROM TAMW_RESOURCECTX_PROP resProp WHERE PROPERTIES_ID IN (
+            SELECT prop.ID FROM TAMW_PROPERTYDESCRIPTOR des RIGHT JOiN TAMW_PROPERTY prop ON des.ID = prop.DESCRIPTOR_ID WHERE PROPERTYNAME='hostName' and CARDINALITYPROPERTY=0
+            )
+            ));
+        </sql>
+
+        <!--Add property crated before to all resources where property for "hostname" exists -->
+        <sql dbms="h2, oracle, DB2">
+            INSERT INTO TAMW_RESOURCECTX_PROP (TAMW_RESOURCECONTEXT_ID, PROPERTIES_ID)
+            (SELECT resRelCtx_id, id+propertyId as properties_id FROM (
+            SELECT
+            (SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId') as id,
+            resProp.PROPERTIES_ID as propertyId,
+            resProp.TAMW_RESOURCECONTEXT_ID as resRelCtx_id
+            FROM TAMW_RESOURCECTX_PROP resProp WHERE PROPERTIES_ID IN (
+            SELECT prop.ID FROM TAMW_PROPERTYDESCRIPTOR des RIGHT JOiN TAMW_PROPERTY prop ON des.ID = prop.DESCRIPTOR_ID WHERE PROPERTYNAME='hostName' and CARDINALITYPROPERTY=0
+            )
+            ));
+        </sql>
+
+        <!--Add property crated before to all resources where property for "hostname" exists for history data in last revision -->
+        <sql dbms="h2, oracle, DB2">
+            INSERT INTO TAMW_RESRELCTX_PROP_AUD (REV, REVTYPE, TAMW_RESRELCONTEXT_ID, PROPERTIES_ID)
+            (SELECT (SELECT MAX(ID) FROM TAMW_REVINFO), 0, resRelCtx_id, id+propertyId as properties_id FROM (
+            SELECT
+            (SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SAMW_SEQUENCES.SEQ_NAME = 'propertyId') as id,
+            resProp.PROPERTIES_ID as propertyId,
+            resProp.TAMW_RESOURCECONTEXT_ID as resRelCtx_id
+            FROM TAMW_RESOURCECTX_PROP resProp WHERE PROPERTIES_ID IN (
+            SELECT prop.ID FROM TAMW_PROPERTYDESCRIPTOR des RIGHT JOiN TAMW_PROPERTY prop ON des.ID = prop.DESCRIPTOR_ID WHERE PROPERTYNAME='hostName' and CARDINALITYPROPERTY=0
+            )
+            ));
+        </sql>
+
+        <!--Update sequence for propertyId -->
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" valueComputed="NEXT_VAL +(
+            SELECT max(PROPERTIES_ID) FROM TAMW_RESRELCTX_PROP resRelProp WHERE PROPERTIES_ID IN (
+                SELECT ID FROM TAMW_PROPERTY WHERE DESCRIPTOR_ID = (
+                SELECT ID FROM TAMW_PROPERTYDESCRIPTOR WHERE PROPERTYNAME = 'hostName' AND CARDINALITYPROPERTY = 0)) AND TAMW_RESRELCONTEXT_ID IN (
+                SELECT ID FROM TAMW_RESRELCONTEXT WHERE CONSUMEDRESOURCERELATION_ID IN (
+                SELECT ID FROM TAMW_CONSUMEDRESREL WHERE RESOURCERELATIONTYPE_ID = (
+                SELECT ID FROM TAMW_RESOURCERELATIONTYPE WHERE RESOURCETYPEA_ID = (
+                SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'APPLICATIONSERVER') AND RESOURCETYPEB_ID =(
+                SELECT ID FROM TAMW_RESOURCETYPE WHERE NAME = 'NODE'))))) +1" />
+            <where>SAMW_SEQUENCES.SEQ_NAME = 'propertyId'</where>
+        </update>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,43 @@
+// Tooltips
+//----------------------------------------------------------------------
+
+.info:hover {
+	.icon {background-color:$blue2;}
+}
+
+.tooltip {
+	display:none;
+	padding: $padding;
+	background: white;
+	@include border-top-radius($radius);
+	@include border-bottom-right-radius($radius);
+	@include single-box-shadow;
+
+	margin-left: -5px;
+
+	&:before {  
+		content: ' ';
+		position: absolute;
+		width: 0;
+		height: 0;
+		left: -1px;
+		//bottom: -14px;
+		//border: 7px solid;
+		top: -12px;
+		border: 6px solid;
+		border-color: $grey6 transparent transparent $grey7;
+	}
+
+	&:after {
+		content: ' ';
+		position: absolute;
+		width: 0;
+		height: 0;
+		left: 0px;
+		//bottom: -12px;
+		//border: 6px solid;
+		top: -14px;
+		border: 7px solid;
+		border-color: #fff transparent transparent #fff;
+	}
+}

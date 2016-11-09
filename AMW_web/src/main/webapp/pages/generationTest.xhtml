@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:mobi="http://java.sun.com/jsf/composite/mobi">
+
+<ui:composition template="templates/template.xhtml">
+	<f:metadata>
+		<f:viewParam name="id" value="#{generationTestController.resourceIdFromParam}" />
+		<f:viewParam name="release" value="#{generationTestController.releaseId}" />
+		<f:viewParam name="ctx" value="#{generationTestController.contextIdViewParam}" />
+        <f:viewParam name="rel" value="#{generationTestController.relationIdViewParam}"/>
+        <f:viewParam name="resTypId" value="#{generationTestController.resourceTypeId}"/>
+		<f:event listener="#{generationTestController.init}" type="preRenderView" />
+
+		<!-- TO BE REMOVED! -->
+	</f:metadata>
+	<ui:param name="screen" value="testDeploy" />
+	<ui:define name="title">Test Generation for Application Server #{generationTestController.currentResource.name} #{generationTestController.currentContext.name}</ui:define>
+
+	<!--  HEADER -->
+	<ui:define name="backlink">
+		<h:link outcome="editResourceView" value="Back to Resource"
+			rendered="#{generationTestController.hasPermissionToGoBackToResListView()}"
+			styleClass="btn back" onclick="showLoader();">
+			<f:param name="id" value="#{generationTestController.resourceIdFromParam}" />
+            <f:param name="release" value="#{generationTestController.releaseId}" />
+			<f:param name="ctx" value="#{generationTestController.contextIdViewParam}" />
+            <f:param name="rel" value="#{generationTestController.relationIdViewParam}"/>
+            
+
+            <!-- TODO add all backlink parameter!-->
+		</h:link>
+	</ui:define>
+
+	<ui:define name="pagetitle">
+		<h:outputText id="pageheaderDefaultResourceType"
+			value="Test Generation for Application Server #{generationTestController.currentResource.name}" />
+		<h:outputScript
+			name="bower/google-diff-match-patch-js/diff_match_patch.js"
+			target="head" />
+		<h:outputScript name="bower/codemirror/lib/codemirror.js"
+			target="head" />
+		<h:outputScript name="bower/codemirror/mode/shell/shell.js"
+			target="head" />
+		<h:outputScript name="bower/codemirror/addon/merge/merge.js"
+			target="head" />
+		<h:outputScript name="bower/codemirror/addon/dialog/dialog.js"
+			target="head" />
+		<h:outputScript name="bower/codemirror/addon/search/searchcursor.js"
+			target="head" />
+		<h:outputScript name="bower/codemirror/addon/search/search.js"	target="head" />
+
+		<h:outputStylesheet name="bower/codemirror/lib/codemirror.css" />
+		<h:outputStylesheet name="bower/codemirror/addon/merge/merge.css" />
+		<h:outputStylesheet name="bower/codemirror/addon/dialog/dialog.css" />
+	</ui:define>
+
+	<ui:define name="headerButtons">
+
+	</ui:define>
+
+	<ui:define name="body">
+		<mobi:contextTree />
+		<section id="content">
+
+		<div class="container">
+			<h1>
+				<h:outputText value="${generationTestController.currentResource.name}" />
+			</h1>
+
+			<script>
+			function loadPage(id, release, ctx){
+				showLoader();
+				var url = window.location.href;				
+				window.location.href = url.substring(0,url.indexOf("?"))+"?id\="+id+"&amp;release\="+release+"&amp;ctx\="+ctx;
+			}							
+			
+			var shownEditors = [];
+			
+			function resetEditors(){
+				shownEditors = [];
+			}
+			
+			function showEditor(id, compId, equal, omitted){
+				if(!omitted) {
+					if (equal) {
+						showSingleEditor(id);
+					}
+					else {
+						showCompareEditor(id, compId);
+					}
+				}
+			}
+			
+			function showSingleEditor(id){
+				if($.inArray(id, shownEditors)==-1){
+					var element = document.getElementById(id);							
+					CodeMirror.fromTextArea(element, {value:element.parentElement, mode: 'sh', lineNumbers: true, readOnly:true});
+			        shownEditors.push(id);
+				}
+			}
+			
+			function showCompareEditor(id, compId){
+				if($.inArray(id, shownEditors)==-1){
+					var element=document.getElementById(id);						
+					var elementComp=document.getElementById(compId);
+					
+					var parentElement;
+					var originalValue='';			
+					var compValue='';
+					if(typeof(element)!='undefined' &amp;&amp; element != null){
+						parentElement=element.parentElement;
+						originalValue=element.value;
+					}
+					if(typeof(elementComp)!='undefined' &amp;&amp; elementComp != null){
+						parentElement = elementComp.parentElement;
+						compValue = elementComp.value;
+					}											
+                    var codemirrorDiff = CodeMirror.MergeView(parentElement, {
+                   		 value: originalValue,
+                   		 orig: compValue,
+   						 lineNumbers: true,
+   						 readOnly: true,
+    					 mode: 'sh',
+    					 highlightDifferences: true                   
+                   		} );
+                   		shownEditors.push(id);
+				}
+			}	           
+			</script>
+			<h:selectOneMenu styleClass="switchRelease"
+				style="margin-left:20px; margin-top: 8px;"
+				value="#{generationTestController.releaseId}"
+				onchange="loadPage(${generationTestController.resourceIdFromParam}, this.options[this.selectedIndex].value, ${generationTestController.contextIdViewParam});">
+				<f:selectItems value="${generationTestController.releases}"
+					itemLabel="${res.name}" itemValue="${res.id}" var="res" />
+			</h:selectOneMenu>
+			<!-- DEPENDENCIES, COPY AND CREATE RELEASE BUTTONS -->
+
+			<h:panelGroup id="compareSelection" styleClass="right" layout="block">
+				<div class="control-group " style="text-align: right;">
+					<label class="inlineBlock">Compare with Release <h:selectOneMenu
+							value="#{generationTestController.compareReleaseId}">
+							<f:selectItem itemLabel="Don't compare" itemValue="${null}"></f:selectItem>
+							<f:selectItems value="${generationTestController.releases}"
+								itemLabel="${rel.name}" itemValue="${rel.id}" var="rel" />
+							<a4j:ajax onbegin="showLoader();" execute="@this"
+								oncomplete="resetEditors(); hideLoader();"
+								render="compareSelection generationResult" />
+						</h:selectOneMenu></label>
+				</div>
+				<div class="control-group">
+					<h:panelGroup styleClass="inlineBlock" id="compareDateSelection"
+						rendered="#{generationTestController.hasCompareRelease()}">
+						<label class="inlineBlock">state on </label>
+						    <rich:calendar 
+						        buttonIcon="/AMW_web/images/calendarIcon.png"
+						        buttonDisabledIcon="/AMW_web/images/calendarIcon.png"
+								value="#{generationTestController.compareDate}" enableManualInput="true"
+								showApplyButton="true"
+								datePattern="dd.MM.yyyy HH:mm">
+								<a4j:ajax event="change" onbegin="showLoader();" oncomplete="resetEditors(); hideLoader();" render="compareSelection generationResult" />
+							</rich:calendar>
+					</h:panelGroup>
+					<h:commandLink id="latestDeploymentSelection"
+						styleClass="btn light inlineBlock"
+						title="Latest successful deployment" value="Deployed state"
+						rendered="#{generationTestController.hasCompareRelease() and generationTestController.hasLatestDeployment()}">
+						<a4j:ajax onbegin="showLoader();"
+							listener="#{generationTestController.setToLatestDeployment()}"
+							oncomplete="resetEditors(); hideLoader();"
+							render="compareSelection generationResult" />
+					</h:commandLink>
+				</div>
+
+			</h:panelGroup>
+			<h:panelGroup id="generationResult">
+				<br class="clear" />
+				<ui:repeat value="#{generationTestController.compareResult.nodes}"
+					var="node">
+					<article>
+					<div class="well" style="min-height: 320px;">
+
+						<h2 class="inline">
+							<h:outputText
+								value="Application Server #{generationTestController.currentResource.name} on #{node.name}" />
+						</h2>
+						<div class="CodeMirror-merge-2pane">
+							<div class="CodeMirror-merge-pane testErrorMsg">
+								<ul>
+									<ui:repeat
+										value="#{generationTestController.compareResult.getResultForNodeOriginal(node).propertyValidationExceptions}"
+										var="preprocessErrors">
+										<li class="testErrorMsg"><h:outputText
+												value="#{preprocessErrors.message}" /></li>
+									</ui:repeat>
+									<ui:repeat
+											value="#{generationTestController.compareResult.getResultForNodeOriginal(node).preprocessResults}"
+											var="preprocessErrors">
+										<li class="testErrorMsg"><h:outputText
+												value="#{preprocessErrors.message}" /></li>
+									</ui:repeat>
+								</ul>
+							</div>
+
+							<h:panelGroup
+									rendered="#{generationTestController.compareResult.compareMode}"
+									styleClass="CodeMirror-merge-gap descriptionGap">
+							</h:panelGroup>
+							<h:panelGroup
+								rendered="#{generationTestController.compareResult.compareMode}"
+								class="CodeMirror-merge-pane testErrorMsg" style="margin-right: -70px;">
+								<ul>
+									<ui:repeat
+										value="#{generationTestController.compareResult.getResultForNodeCompare(node).propertyValidationExceptions}"
+										var="preprocessErrors">
+										<li class="testErrorMsg"><h:outputText
+												value="#{preprocessErrors.message}" /></li>
+									</ui:repeat>
+								</ul>
+							</h:panelGroup>
+						</div>
+
+
+						<hr />
+						<h3>Templates</h3>
+
+						<ul class="generatorTest">
+
+							<ui:repeat
+								value="#{generationTestController.compareResult.getAppServerResults(node)}"
+								var="astempl">
+								<li>
+									<div
+										class="well${generationTestController.compareResult.compareMode and !astempl.sameContent() ? ' templateDiff' : ''}">
+										<rich:collapsiblePanel expanded="false" switchType="client"
+											id="templatePanel" styleClass="togglePanel"
+											headerClass="toggleHeader" leftCollapsedIcon="none"
+											leftExpandedIcon="none"
+											onswitch="showEditor('#{rich:clientId('templatePanel')}TextArea', '#{rich:clientId('templatePanel')}TextAreaComp', #{!generationTestController.compareResult.compareMode or (astempl.hasOriginalTemplate() and astempl.hasComparedTemplate() and astempl.sameContent())}, #{astempl.isOmitted()});">
+											<f:facet name="headerCollapsed">
+												<div class="CodeMirror-merge-2pane">
+													<div class="CodeMirror-merge-pane">
+														<h:graphicImage
+															rendered="${!astempl.hasOriginalTemplate()}"
+															value="../images/icons/canceled.png"
+															title="The template does not exist in this configuration"
+															styleClass="statusImage" />
+														<h:graphicImage
+															rendered="${astempl.hasOriginalTemplate() and astempl.originalTemplate.hasErrors()}"
+															value="../images/icons/failed.png"
+															title="The generation of the template has failed!"
+															styleClass="statusImage" />
+														<h:graphicImage
+															rendered="${astempl.hasOriginalTemplate() and !astempl.originalTemplate.hasErrors()}"
+															value="../images/icons/success.png"
+															title="The generation of the template was successful"
+															styleClass="statusImage" />
+														<h:outputText value="${astempl.path}"
+															styleClass="${!astempl.hasOriginalTemplate() ? 'inexistant' : ''}" />
+													</div>
+													<h:panelGroup
+														rendered="#{generationTestController.compareResult.compareMode}"
+														styleClass="CodeMirror-merge-gap descriptionGap">
+														<h:graphicImage
+															rendered="${astempl.hasOriginalTemplate() and astempl.hasComparedTemplate() and !astempl.sameContent()}"
+															value="../images/icons/diff.png"
+															title="Template differs between the configurations" />
+														<h:graphicImage
+															rendered="${!astempl.hasOriginalTemplate()}"
+															value="../images/icons/removeTo.png"
+															title="Template only exists in compared configuration" />
+														<h:graphicImage
+															rendered="${!astempl.hasComparedTemplate()}"
+															value="../images/icons/addTo.png"
+															title="Template only exists in original configuration" />
+													</h:panelGroup>
+													<h:panelGroup
+														rendered="#{generationTestController.compareResult.compareMode}"
+														class="CodeMirror-merge-pane" style="margin-right: -70px;">
+														<h:graphicImage
+															rendered="${!astempl.hasComparedTemplate()}"
+															value="../images/icons/canceled.png"
+															title="The template does not exist in this configuration"
+															styleClass="statusImage" />
+														<h:graphicImage
+															rendered="${astempl.hasComparedTemplate() and astempl.comparedTemplate.hasErrors()}"
+															value="../images/icons/failed.png"
+															title="The generation of the template has failed!"
+															styleClass="statusImage" />
+														<h:graphicImage
+															rendered="${astempl.hasComparedTemplate() and !astempl.comparedTemplate.hasErrors()}"
+															value="../images/icons/success.png"
+															title="The generation of the template was successful"
+															styleClass="statusImage" />
+														<h:outputText value="${astempl.path}"
+															styleClass="${!astempl.hasComparedTemplate() ? 'inexistant' : ''}" />
+													</h:panelGroup>
+												</div>
+											</f:facet>
+											<f:facet name="headerExpanded">
+												<div class="CodeMirror-merge-2pane">
+													<div class="CodeMirror-merge-pane">
+														<h:graphicImage
+															rendered="${!astempl.hasOriginalTemplate()}"
+															value="../images/icons/canceled.png"
+															title="The template does not exist in this configuration"
+															styleClass="statusImage" />
+														<h:graphicImage
+															rendered="${astempl.hasOriginalTemplate() and astempl.originalTemplate.hasErrors()}"
+															value="../images/icons/failed.png"
+															title="The generation of the template has failed!"
+															styleClass="statusImage" />
+														<h:graphicImage
+															rendered="${astempl.hasOriginalTemplate() and !astempl.originalTemplate.hasErrors()}"
+															value="../images/icons/success.png"
+															title="The generation of the template was successful"
+															styleClass="statusImage" />
+														<h:outputText value="${astempl.path}"
+															styleClass="${!astempl.hasOriginalTemplate() ? 'inexistant' : ''}" />
+														<ul>
+															<ui:repeat
+																value="#{astempl.originalTemplate.errorMessages}"
+																var="aserror">
+																<li class="testErrorMsg"><h:outputText
+																		value="#{aserror.message}" /></li>
+															</ui:repeat>
+														</ul>
+
+													</div>
+													<h:panelGroup
+														rendered="#{generationTestController.compareResult.compareMode}"
+														styleClass="CodeMirror-merge-gap descriptionGap">
+														<h:graphicImage
+															rendered="${astempl.hasOriginalTemplate() and astempl.hasComparedTemplate() and !astempl.sameContent()}"
+															value="../images/icons/diff.png"
+															title="Template differs between the configurations" />
+														<h:graphicImage
+															rendered="${!astempl.hasOriginalTemplate()}"
+															value="../images/icons/removeTo.png"
+															title="Template only exists in compared configuration" />
+														<h:graphicImage
+															rendered="${!astempl.hasComparedTemplate()}"
+															value="../images/icons/addTo.png"
+															title="Template only exists in original configuration" />
+													</h:panelGroup>
+													<h:panelGroup
+														rendered="#{generationTestController.compareResult.compareMode}"
+														styleClass="CodeMirror-merge-pane"
+														style="margin-right: -70px;">
+														<h:graphicImage
+															rendered="${!astempl.hasComparedTemplate()}"
+															value="../images/icons/canceled.png"
+															title="The template does not exist in this configuration"
+															styleClass="statusImage" />
+														<h:graphicImage
+															rendered="${astempl.hasComparedTemplate() and astempl.comparedTemplate.hasErrors()}"
+															value="../images/icons/failed.png"
+															title="The generation of the template has failed!"
+															styleClass="statusImage" />
+														<h:graphicImage
+															rendered="${astempl.hasComparedTemplate() and !astempl.comparedTemplate.hasErrors()}"
+															value="../images/icons/success.png"
+															title="The generation of the template was successful"
+															styleClass="statusImage" />
+														<h:outputText value="${astempl.path}"
+															styleClass="${!astempl.hasComparedTemplate() ? 'inexistant' : ''}" />
+														<ul>
+															<ui:repeat
+																value="#{astempl.comparedTemplate.errorMessages}"
+																var="aserror">
+																<li class="testErrorMsg"><h:outputText
+																		value="#{aserror.message}" /></li>
+															</ui:repeat>
+														</ul>
+													</h:panelGroup>
+												</div>
+
+											</f:facet>
+											<h:panelGroup rendered="#{astempl.isOmitted()}">You don't have the permission to see the content of this template.</h:panelGroup>
+											<textarea id="${rich:clientId('templatePanel')}TextArea"
+												style="display: none;">${astempl.originalTemplate.content}</textarea>
+											<textarea id="${rich:clientId('templatePanel')}TextAreaComp"
+												style="display: none;">${astempl.comparedTemplate.content}</textarea>
+										</rich:collapsiblePanel>
+
+									</div>
+								</li>
+							</ui:repeat>
+						</ul>
+						<hr />
+						<h3>Applications</h3>
+						<ui:repeat
+							value="#{generationTestController.compareResult.getApplications(node)}"
+							var="app">
+							<h4 class="generatorTest">
+								<h:outputText value="#{app.name}" />
+							</h4>
+							<ul class="generatorTest">
+								<ui:repeat
+									value="#{generationTestController.compareResult.getApplicationResults(node, app)}"
+									var="appGenResult">
+
+									<li>
+										<div
+											class="well#{generationTestController.compareResult.compareMode and !appGenResult.sameContent() ? ' templateDiff' : ''}">
+											<rich:collapsiblePanel expanded="false" switchType="client"
+												id="templatePanel" styleClass="togglePanel"
+												headerClass="toggleHeader" leftCollapsedIcon="none"
+												leftExpandedIcon="none"
+												onswitch="showEditor('#{rich:clientId('templatePanel')}TextArea', '#{rich:clientId('templatePanel')}TextAreaComp', #{!generationTestController.compareResult.compareMode or (appGenResult.hasOriginalTemplate() and appGenResult.hasComparedTemplate() and appGenResult.sameContent())}, #{appGenResult.isOmitted()});">
+												<f:facet name="headerCollapsed">
+													<div class="CodeMirror-merge-2pane">
+														<div class="CodeMirror-merge-pane">
+															<h:graphicImage
+																rendered="${!appGenResult.hasOriginalTemplate()}"
+																value="../images/icons/canceled.png"
+																title="The template does not exist in this configuration"
+																styleClass="statusImage" />
+															<h:graphicImage
+																rendered="${appGenResult.hasOriginalTemplate() and appGenResult.originalTemplate.hasErrors()}"
+																value="../images/icons/failed.png"
+																title="The generation of the template has failed!"
+																styleClass="statusImage" />
+															<h:graphicImage
+																rendered="${appGenResult.hasOriginalTemplate() and !appGenResult.originalTemplate.hasErrors()}"
+																value="../images/icons/success.png"
+																title="The generation of the template was successful"
+																styleClass="statusImage" />
+															<h:outputText value="${appGenResult.path}"
+																styleClass="${!appGenResult.hasOriginalTemplate() ? 'inexistant' : ''}" />
+														</div>
+														<h:panelGroup
+															rendered="#{generationTestController.compareResult.compareMode}"
+															styleClass="CodeMirror-merge-gap descriptionGap">
+															<h:graphicImage
+																rendered="${appGenResult.hasOriginalTemplate() and appGenResult.hasComparedTemplate() and !appGenResult.sameContent()}"
+																value="../images/icons/diff.png"
+																title="Template differs between the configurations" />
+															<h:graphicImage
+																rendered="${!appGenResult.hasOriginalTemplate()}"
+																value="../images/icons/removeTo.png"
+																title="Template only exists in compared configuration" />
+															<h:graphicImage
+																rendered="${!appGenResult.hasComparedTemplate()}"
+																value="../images/icons/addTo.png"
+																title="Template only exists in original configuration" />
+														</h:panelGroup>
+														<h:panelGroup
+															rendered="#{generationTestController.compareResult.compareMode}"
+															styleClass="CodeMirror-merge-pane"
+															style="margin-right: -70px;">
+															<h:graphicImage
+																rendered="${!appGenResult.hasComparedTemplate()}"
+																value="../images/icons/canceled.png"
+																title="The template does not exist in this configuration"
+																styleClass="statusImage" />
+															<h:graphicImage
+																rendered="${appGenResult.hasComparedTemplate()  and appGenResult.hasComparedTemplate() and appGenResult.comparedTemplate.hasErrors()}"
+																value="../images/icons/failed.png"
+																title="The generation of the template has failed!"
+																styleClass="statusImage" />
+															<h:graphicImage
+																rendered="${appGenResult.hasComparedTemplate() and !appGenResult.comparedTemplate.hasErrors()}"
+																value="../images/icons/success.png"
+																title="The generation of the template was successful"
+																styleClass="statusImage" />
+															<h:outputText value="${appGenResult.path}"
+																styleClass="${!appGenResult.hasComparedTemplate() ? 'inexistant' : ''}" />
+														</h:panelGroup>
+													</div>
+												</f:facet>
+												<f:facet name="headerExpanded">
+													<div class="CodeMirror-merge-2pane">
+														<div class="CodeMirror-merge-pane">
+															<h:graphicImage
+																rendered="${!appGenResult.hasOriginalTemplate()}"
+																value="../images/icons/canceled.png"
+																title="The template does not exist in this configuration"
+																styleClass="statusImage" />
+															<h:graphicImage
+																rendered="${appGenResult.hasOriginalTemplate() and appGenResult.originalTemplate.hasErrors()}"
+																value="../images/icons/failed.png"
+																title="The generation of the template has failed!"
+																styleClass="statusImage" />
+															<h:graphicImage
+																rendered="${appGenResult.hasOriginalTemplate() and !appGenResult.originalTemplate.hasErrors()}"
+																value="../images/icons/success.png"
+																title="The generation of the template was successful"
+																styleClass="statusImage" />
+															<h:outputText value="${appGenResult.path}"
+																styleClass="${!appGenResult.hasOriginalTemplate() ? 'inexistant' : ''}" />
+															<ul>
+																<ui:repeat
+																	value="#{appGenResult.originalTemplate.errorMessages}"
+																	var="error">
+																	<li class="testErrorMsg"><h:outputText
+																			value="#{error.message}" /></li>
+																</ui:repeat>
+															</ul>
+
+														</div>
+														<h:panelGroup
+															rendered="#{generationTestController.compareResult.compareMode}"
+															class="CodeMirror-merge-gap descriptionGap">
+															<h:graphicImage
+																rendered="${appGenResult.hasOriginalTemplate() and appGenResult.hasComparedTemplate() and !appGenResult.sameContent()}"
+																value="../images/icons/diff.png"
+																title="Template differs between the configurations" />
+															<h:graphicImage
+																rendered="${!appGenResult.hasOriginalTemplate()}"
+																value="../images/icons/removeTo.png"
+																title="Template only exists in compared configuration" />
+															<h:graphicImage
+																rendered="${!appGenResult.hasComparedTemplate()}"
+																value="../images/icons/addTo.png"
+																title="Template only exists in original configuration" />
+														</h:panelGroup>
+														<h:panelGroup
+															rendered="#{generationTestController.compareResult.compareMode}"
+															styleClass="CodeMirror-merge-pane"
+															style="margin-right: -70px;">
+															<h:graphicImage
+																rendered="${!appGenResult.hasComparedTemplate()}"
+																value="../images/icons/canceled.png"
+																title="The template does not exist in this configuration"
+																styleClass="statusImage" />
+															<h:graphicImage
+																rendered="${appGenResult.hasComparedTemplate() and appGenResult.hasComparedTemplate() and appGenResult.comparedTemplate.hasErrors()}"
+																value="../images/icons/failed.png"
+																title="The generation of the template has failed!"
+																styleClass="statusImage" />
+															<h:graphicImage
+																rendered="${appGenResult.hasComparedTemplate() and !appGenResult.comparedTemplate.hasErrors()}"
+																value="../images/icons/success.png"
+																title="The generation of the template was successful"
+																styleClass="statusImage" />
+															<h:outputText value="${appGenResult.path}"
+																styleClass="${!appGenResult.hasComparedTemplate() ? 'inexistant' : ''}" />
+															<ul>
+																<ui:repeat
+																	value="#{appGenResult.comparedTemplate.errorMessages}"
+																	var="error">
+																	<li class="testErrorMsg"><h:outputText
+																			value="#{error.message}" /></li>
+																</ui:repeat>
+															</ul>
+														</h:panelGroup>
+													</div>
+
+												</f:facet>
+												<h:panelGroup rendered="#{appGenResult.isOmitted()}">You don't have the permission to see the content of this template.</h:panelGroup>
+												<textarea id="${rich:clientId('templatePanel')}TextArea"
+													style="display: none;">${appGenResult.originalTemplate.content}</textarea>
+												<textarea id="${rich:clientId('templatePanel')}TextAreaComp"
+													style="display: none;">${appGenResult.comparedTemplate.content}</textarea>
+											</rich:collapsiblePanel>
+										</div>
+									</li>
+								</ui:repeat>
+							</ul>
+						</ui:repeat>
+					</div>
+					</article>
+				</ui:repeat>
+			</h:panelGroup>
+		</div>
+		</section>
+	</ui:define>
+</ui:composition>
+</html>

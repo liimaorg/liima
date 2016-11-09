@@ -1,0 +1,72 @@
+// Alerts
+//----------------------------------------------------------------------
+
+// Base alert styles
+.alert {
+	padding: $padding*0.5 $padding*3  $padding*0.5  60px;
+
+	@include single-box-shadow;
+	background-color: white;
+	@include border-radius($radius);
+
+	position: relative;
+
+	margin: 0px 0px 10px 20px;
+	overflow: hidden;
+}
+
+// Adjust close link position
+.alert .close {
+	position: absolute;
+	top: 6px; right: 6px;
+	background-color: $grey4;
+	&:hover {
+		background-color: $grey2;
+	}
+}
+
+.alert .symbol {
+	background: url("../images/bg_alert.png") $red no-repeat top left;
+	display: block;
+	float: left;
+	padding: 0;
+	position:absolute;
+	top: 0; left: 0; bottom: 0;
+	width: 50px;
+	@include border-left-radius($radius);
+}
+
+// Alternate styles
+// ----------------
+.alert-success {
+	.symbol, .close { background-color: $green; }
+	.close:hover { background-color: scale-lightness($green, -20%); }
+}
+.alert-danger, .alert-error {
+	.symbol, .close { background-color: $red; }
+	.close:hover { background-color: scale-lightness($red, -20%); }
+}
+.alert-info {
+	.symbol, .close { background-color: $blue2; }
+	.close:hover { background-color: $blue1; }
+}
+
+// Block alerts
+// ------------------------
+.alert-block {
+	float: right;
+    clear: right;
+}
+.alert-block > h3, .alert-block > p, .alert-block > ul {
+	margin-bottom: 0;
+}
+.alert-block p + p {
+	@include leader;
+}
+
+// Warning sign
+// ------------------------
+.warning .icon { 
+	background-color: $red; 
+	&:hover { background-color: scale-lightness($red, -20%); }
+}

@@ -1,0 +1,187 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/maiaPropertyDescriptorChanges/maiaPropertyDescriptorChanges.xml" 
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="#10237 PropertyDescriptor for MAIA - add defaultValue">
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR">
+            <column name="defaultValue" type="varchar(360)"  />
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="defaultValue" type="varchar(360)"  />
+        </addColumn>
+    </changeSet>
+    <changeSet author="rgalante" id="#10237 PropertyDescriptor for MAIA - add exampleValue">
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR">
+            <column name="exampleValue" type="varchar(255)"  />
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="exampleValue" type="varchar(255)"  />
+        </addColumn>
+    </changeSet>
+    <changeSet author="rgalante" id="#10237 PropertyDescriptor for MAIA - add machineInterpretationKey">
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR">
+            <column name="machineInterpretationKey" type="varchar(255)"  />
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="machineInterpretationKey" type="varchar(255)"  />
+        </addColumn>
+    </changeSet>
+    <changeSet author="rgalante" id="#10237 PropertyDescriptor for MAIA - add optional">
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR">
+            <column name="optional" type="boolean" defaultValueBoolean="false" />
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="optional" type="boolean" defaultValueBoolean="false" />
+        </addColumn>
+    </changeSet>
+    <changeSet author="rgalante" id="#10237 PropertyDescriptor for MAIA - add propertyTag">
+
+        <createTable tableName="TAMW_PROPERTYTAG">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="propertyTag_PK"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="SAMW_SEQUENCES">
+            <column name="seq_name" value="propertyTagId"></column>
+            <column name="next_val" valueNumeric="1"></column>
+        </insert>
+
+        <createTable tableName="TAMW_PROPERTYTAG_AUD">
+            <column name="id" type="INTEGER">
+                    <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+            <column name="rev" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revType" type="TINYINT"/>
+        </createTable>
+        <addPrimaryKey tableName="TAMW_PROPERTYTAG_AUD" columnNames="id, rev"/>
+        <addForeignKeyConstraint baseColumnNames="rev"
+                                 baseTableName="TAMW_PROPERTYTAG_AUD" constraintName="TAMW_PROPERTYTAG_revinfo_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_REVINFO"/>
+
+        <createTable tableName="TAMW_PROPDESC_PROPTAG">
+            <column name="propertyTag_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="propertyDescriptor_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="TAMW_PROPDESC_PROPTAG" columnNames="propertyDescriptor_id, propertyTag_id"/>
+        <addForeignKeyConstraint baseColumnNames="propertyTag_id"
+                                 baseTableName="TAMW_PROPDESC_PROPTAG" constraintName="TAMW_propertyTag_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_PROPERTYTAG"/>
+        <addForeignKeyConstraint baseColumnNames="propertyDescriptor_id"
+                                 baseTableName="TAMW_PROPDESC_PROPTAG" constraintName="TAMW_propertyDescriptor_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_PROPERTYDESCRIPTOR"/>
+
+        <createTable tableName="TAMW_PROPDESC_PROPTAG_AUD">
+            <column name="propertyTag_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="propertyDescriptor_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revType" type="TINYINT"/>
+        </createTable>
+        <addPrimaryKey tableName="TAMW_PROPDESC_PROPTAG_AUD" columnNames="rev, propertyDescriptor_id, propertyTag_id"/>
+        <addForeignKeyConstraint baseColumnNames="rev"
+                                 baseTableName="TAMW_PROPDESC_PROPTAG_AUD" constraintName="TAMW_PROPDESCTAG_revinfo_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+
+    <changeSet author="rgalante" id="#10281 PropertyDescriptor for MAIA - extend value range">
+
+        <modifyDataType tableName="TAMW_PROPERTYDESCRIPTOR" columnName="propertyName" newDataType="varchar(1024)" />
+        <modifyDataType tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="propertyName" newDataType="varchar(1024)" />
+
+        <modifyDataType tableName="TAMW_PROPERTYDESCRIPTOR" columnName="machineInterpretationKey" newDataType="varchar(1024)" />
+        <modifyDataType tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="machineInterpretationKey" newDataType="varchar(1024)" />
+
+    </changeSet>
+
+    <changeSet author="rgalante" id="#10281 PropertyDescriptor for MAIA - extend value range (CLOB)">
+
+        <addColumn tableName="TAMW_PROPERTY"><column name="value_t" type="CLOB" /></addColumn>
+        <sql>update TAMW_PROPERTY set value_t = value</sql>
+        <dropColumn tableName="TAMW_PROPERTY" columnName="value" />
+        <renameColumn tableName="TAMW_PROPERTY" newColumnName="value" oldColumnName="value_t" />
+
+        <addColumn tableName="TAMW_PROPERTY_AUD"><column name="value_t" type="CLOB" /></addColumn>
+        <sql>update TAMW_PROPERTY_AUD set value_t = value</sql>
+        <dropColumn tableName="TAMW_PROPERTY_AUD" columnName="value" />
+        <renameColumn tableName="TAMW_PROPERTY_AUD" newColumnName="value" oldColumnName="value_t" />
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR"><column name="defaultValue_t" type="CLOB" /></addColumn>
+        <sql>update TAMW_PROPERTYDESCRIPTOR set defaultValue_t = defaultValue</sql>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR" columnName="defaultValue" />
+        <renameColumn tableName="TAMW_PROPERTYDESCRIPTOR" newColumnName="defaultValue" oldColumnName="defaultValue_t" />
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD"><column name="defaultValue_t" type="CLOB" /></addColumn>
+        <sql>update TAMW_PROPERTYDESCRIPTOR_AUD set defaultValue_t = defaultValue</sql>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="defaultValue" />
+        <renameColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD" newColumnName="defaultValue" oldColumnName="defaultValue_t" />
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR"><column name="exampleValue_t" type="CLOB" /></addColumn>
+        <sql>update TAMW_PROPERTYDESCRIPTOR set exampleValue_t = exampleValue</sql>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR" columnName="exampleValue" />
+        <renameColumn tableName="TAMW_PROPERTYDESCRIPTOR" newColumnName="exampletValue" oldColumnName="exampleValue_t" />
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD"><column name="exampleValue_t" type="CLOB" /></addColumn>
+        <sql>update TAMW_PROPERTYDESCRIPTOR_AUD set exampleValue_t = exampleValue</sql>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="exampleValue" />
+        <renameColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD" newColumnName="exampleValue" oldColumnName="exampleValue_t" />
+
+    </changeSet>
+
+    <changeSet author="rgalante" id="#10281 PropertyDescriptor for MAIA - extend value range (CLOB) ERRATA">
+
+        <renameColumn tableName="TAMW_PROPERTYDESCRIPTOR" oldColumnName="exampletValue" newColumnName="exampleValue" />
+
+    </changeSet>
+
+    <changeSet author="tphilipona" id="#10353 display Name">
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR">
+            <column name="displayName" type="varchar(1024)"  />
+        </addColumn>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="displayName" type="varchar(1024)"  />
+        </addColumn>
+    </changeSet>
+    <changeSet author="tphilipona" id="PropertyTag_PrimaryKey" dbms="oracle">
+        <dropPrimaryKey tableName="TAMW_PROPDESC_PROPTAG_AUD" />
+    </changeSet>
+    <changeSet author="tphilipona" id="PropertyTag_PrimaryKey h2" dbms="h2">
+        <dropForeignKeyConstraint baseTableName="TAMW_PROPDESC_PROPTAG_AUD" constraintName="TAMW_PROPDESCTAG_revinfo_FK"/>
+        <dropPrimaryKey tableName="TAMW_PROPDESC_PROPTAG_AUD" />
+        <addForeignKeyConstraint baseColumnNames="rev"
+                                 baseTableName="TAMW_PROPDESC_PROPTAG_AUD" constraintName="TAMW_PROPDESCTAG_revinfo_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_REVINFO"/>
+    </changeSet>
+    <changeSet author="tphilipona" id="PropertyTag_readdedPrimaryKey">
+        <addPrimaryKey tableName="TAMW_PROPDESC_PROPTAG_AUD" columnNames="rev, propertyDescriptor_id, propertyTag_id"/>
+    </changeSet>
+
+
+</databaseChangeLog>

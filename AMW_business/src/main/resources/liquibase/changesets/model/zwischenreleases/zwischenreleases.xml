@@ -1,0 +1,24 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/zwischenreleases/zwischenreleases.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="tphilipona" id="addHauptNebenReleaseIdentification">
+        <!-- Add column mainrelease -->
+        <addColumn tableName="TAMW_RELEASE">
+            <column name="MAINRELEASE" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="TAMW_RELEASE_AUD">
+            <column name="MAINRELEASE" type="boolean" defaultValueBoolean="false"></column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="tphilipona" id="setHauptreleases">
+        <sql>update TAMW_RELEASE set MAINRELEASE = 1 where name in ('RL-13.04', 'RL-13.10', 'RL-14.04', 'RL-14.10', 'BW-14.50', 'RL-15.04', 'BW-15.32', 'RL-15.10', 'RL-16.04', 'RL-16.10', 'RL-17.04');</sql>
+        <sql>update TAMW_RELEASE_AUD set MAINRELEASE = 1 where name in ('RL-13.04', 'RL-13.10', 'RL-14.04', 'RL-14.10', 'BW-14.50', 'RL-15.04', 'BW-15.32', 'RL-15.10', 'RL-16.04', 'RL-16.10', 'RL-17.04');</sql>
+    </changeSet>
+
+
+</databaseChangeLog>

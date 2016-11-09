@@ -1,0 +1,97 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>ch.puzzle.itc.mobiliar</groupId>
+        <artifactId>AMW_parent</artifactId>
+        <version>1.11.2-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>AMW_web</artifactId>
+    <packaging>war</packaging>
+    <name>AMW_web</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- Dependency on the EJB module so we can use it's services if needed -->
+        <dependency>
+            <groupId>ch.puzzle.itc.mobiliar</groupId>
+            <artifactId>AMW_business</artifactId>
+            <type>ejb</type>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <!-- Import the JAX-RS API, we use provided scope as the API is included
+            in JBoss AS 7 -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Import the CDI API, we use provided scope as the API is included in
+            JBoss AS 7 -->
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Import the JPA API, we use provided scope as the API is included in
+            JBoss AS 7 -->
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.richfaces</groupId>
+            <artifactId>richfaces</artifactId>
+            <version>4.5.10.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.puzzle.itc.mobiliar</groupId>
+            <artifactId>AMW_commons</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>6.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

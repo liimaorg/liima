@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j">
+<composite:interface/>
+
+<composite:implementation>
+
+        <!-- PROPERTY TYPE DELETE-->
+        <rich:popupPanel id="deletePropertyTypePopup" autosized="true"
+                         domElementAttachment="form">
+            <f:facet name="header">
+                <h2>
+                    <h:outputText value="Remove Property Type" />
+                </h2>
+            </f:facet>
+            <f:facet name="controls">
+                <h:outputLink value="#"
+                              styleClass="close icon icon-close icon-replace"
+                              onclick="#{rich:component('propertyTypeDelete')}.hide(); return false;">
+                    x
+                </h:outputLink>
+            </f:facet>
+            <h:panelGrid>Are you sure you want to delete the selected property type?</h:panelGrid>
+            <a4j:commandLink styleClass="btn primary right" value="Delete"
+            				 execute="@this"
+                             render="@all, propertyTypes" type="button"
+                             action="#{propertyTypeDataProvider.remove()}"
+                             oncomplete="#{rich:component('deletePropertyTypePopup')}.hide(); return false;" />
+        </rich:popupPanel>
+</composite:implementation>
+</html>

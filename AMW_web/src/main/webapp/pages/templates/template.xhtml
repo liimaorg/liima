@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:a4j="http://richfaces.org/a4j" >
+
+<h:head>
+    <title><ui:insert name="title" /> - AMW</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta name="viewport"
+        content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <h:outputScript name="jsf.js" library="javax.faces" />
+    <h:outputScript name="js/jquery-1.11.2.min.js" target="head" />
+    <h:outputScript name="js/jquery-ui.min.js" target="head" />
+    <h:outputScript name="js/bootstrap.min.js" target="head" />
+    <h:outputScript name="js/bootstrap-tokenfield.min.js" target="head" />
+    <h:outputScript name="js/scrollspy.js" target="head" />
+    <h:outputScript name="js/tags.js" target="head" />
+    <h:outputScript target="head">
+        // Put jQuery into noConflict mode.
+        $jql = (jQuery.noConflict(true));
+    </h:outputScript>
+
+    <link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css"
+          media="screen, projection" rel="stylesheet" type="text/css" />
+    <link href="../${buildNumber}/stylesheets/bootstrap-tokenfield/bootstrap-tokenfield.min.css"
+          media="screen, projection" rel="stylesheet" type="text/css" />
+    <h:outputText value="&lt;!--[if lt IE 10]&gt;" escape="false" />
+    <link href="../${buildNumber}/stylesheets/ie.css" media="screen, projection"
+          rel="stylesheet" type="text/css" />
+    <h:outputText value="&lt;![endif]--&gt;" escape="false" />
+    <h:outputText value="&lt;!--[if lt IE 9]&gt;" escape="false" />
+    <h:outputScript name="js/html5shiv.js" />
+    <h:outputText value="&lt;![endif]--&gt;" escape="false" />
+
+</h:head>
+
+<h:body>
+
+    <link href="../${buildNumber}/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+    <link href="../${buildNumber}/stylesheets/customized-screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+    <link href="../${buildNumber}/stylesheets/fixed.css" media="screen, projection" rel="stylesheet" type="text/css" />
+
+    <h:outputScript name="js/app.js" target="head" />
+    <h:outputScript name="js/trimmed-tooltips.js" target="head" />
+    <h:outputScript name="js/property-tooltips.js" target="head" />
+    <h:outputScript name="js/jquery.tools.min.js" target="head" />
+    <h:outputScript name="js/trim.js" target="head" />
+
+    <div id="loader">
+        <img src="../${buildNumber}/images/ajax-loader.gif" alt="loader" />
+    </div>
+    <h:outputScript>
+        var scrollPositions = [];
+        var bodyScroll = 0;
+
+        function storeScrollPositions() {
+            $('.ajaxScroll').each(function (index, el) {
+                scrollPositions[el.id] = el.scrollTop;
+            });
+            bodyScroll = document.body.scrollTop;
+        }
+        function restoreScrollPositions() {
+            $('.ajaxScroll').each(function (index, el){
+                el.scrollTop = scrollPositions[el.id];
+            });
+            document.body.scrollTop=bodyScroll;
+        }
+
+        var showTimer;
+
+        function showLoader() {
+            showTimer = window.setTimeout("doDisplayLoader()", 150);
+        }
+
+        function showLoaderImmediate() {
+            doDisplayLoader();
+        }
+
+        function hideLoader() {
+            document.getElementById("loader").style.display = 'none';
+            if (showTimer != null) {
+                window.clearTimeout(showTimer);
+                showTimer = null;
+            }
+        }
+
+        function doDisplayLoader() {
+            document.getElementById("loader").style.display = 'block';
+        }
+
+        function hasErrorMessage(){
+            return $("#globalMessageBox").find(".alert-error").length > 0;
+        }
+    </h:outputScript>
+    <a4j:outputPanel ajaxRendered="true" styleClass="alert-block" id="globalMessageBox">
+        <ui:repeat value="#{facesContext.messageList}" var="facesMessage">
+            <ul>
+                <h:panelGroup rendered="#{2 == facesMessage.severity.ordinal}">
+                    <li class="alert alert-block alert-error">
+                        <span class="symbol"></span>
+                        <a href="#" data-dismiss="alert" class="close icon icon-close icon-replace">x</a>
+                        <h3 class="alert-heading">Warning!</h3>
+                        <ul class="bullet">
+                            <h:outputText value="#{facesMessage.summary}" escape="false" />
+                        </ul>
+                    </li>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{2 != facesMessage.severity.ordinal}">
+                    <li class="alert alert-block alert-info">
+                        <span class="symbol"></span>
+                        <a href="#" data-dismiss="alert" class="close icon icon-close icon-replace">x</a>
+                        <h3 class="alert-heading">Information</h3>
+                        <ul class="bullet">
+                            <h:outputText value="#{facesMessage.summary}" escape="false" />
+                        </ul>
+                    </li>
+                </h:panelGroup>
+            </ul>
+        </ui:repeat>
+        <h:outputScript>
+            if (!hasErrorMessage()) {
+                $("#globalMessageBox").delay(4000).fadeOut(600);
+            }</h:outputScript>
+    </a4j:outputPanel>
+
+    <h:form id="navigationForm">
+        <header>
+        <div class="container">
+            <h1>AMW</h1>
+            <nav>
+            <ul>
+                <li>
+                    <label class="inlineBlock myfavorites">
+                        <h:selectBooleanCheckbox value="#{userSettings.myAMWMode}" onclick="if(window.confirmLeave){return confirmLeave(event)};">
+                            <a4j:ajax render="fullBody"
+                                      oncomplete="window.location.reload();"
+                                      onbegin="showLoaderImmediate();" onerror="hideLoader();" />
+                        </h:selectBooleanCheckbox> Show my favorites only
+                    </label>
+                </li>
+                <li class="#{screen eq 'newApplist' ? 'current' : ''}"><h:link
+                        outcome="applist" value="Apps" onclick="showLoader();" /></li>
+                <li class="#{screen eq 'server' ? 'current' : ''}"><h:link
+						outcome="serverListView" value="Servers" onclick="showLoader();" /></li>
+                <li
+                    class="#{screen eq 'newResourceList' or screen eq 'newEditRes' or screen eq 'newEditApp' or screen eq 'newEditNode' or screen eq 'newEditResType' ? 'current' : ''}"><h:link
+                        outcome="resourceList" value="Resources" onclick="showLoader();" /></li>
+                <li class="#{screen eq 'newDeploy' ? 'current' : ''}"><h:link
+                        outcome="deploy" value="Deploy" onclick="showLoader();" /></li>
+
+                <li class="#{screen eq 'shakedownTest' ? 'current' : ''}"><h:link
+                        outcome="shakedownTest" value="Shakedown Test"
+                        onclick="showLoader();"
+                        rendered="#{securityDataProvider.hasPermission('SHAKEDOWN_TEST_PAGE')}" /></li>
+
+                <li class="#{screen eq 'newSettings' ? ' current' : ''}"><h:link
+                        outcome="settings" onclick="showLoader();">Settings</h:link></li>
+                <li>
+                <h:commandLink action="#{securityDataProvider.logout()}"
+                    value="Logout #{securityDataProvider.userName}" /></li>
+            </ul>
+            </nav>
+        </div>
+        </header>
+    </h:form>
+
+    <h:form id="mainform" prependId="false" autocomplete="off" >
+        <section id="subheader">
+        <div class="container">
+            <ui:insert name="backlink"></ui:insert>
+            <h1>
+                <ui:insert name="pagetitle"></ui:insert>
+            </h1>
+            <span class="marginTop10"> <ui:insert name="headerButtons" />
+            </span>
+
+
+        </div>
+        </section>
+
+        <ui:insert name="loginmodule"></ui:insert>
+
+        <section id="main"> <h:panelGroup layout="block"
+            styleClass="container" id="fullBody">
+            <ui:insert name="body">Default content</ui:insert>
+        </h:panelGroup></section>
+
+        <h:outputScript>
+            restoreScrollPositions();
+            updateElements();
+        </h:outputScript>
+        <!-- Prevent Chrome from automatically filling in passwords into property fields -->
+        <div style="display: none;">
+            <input type="text" id="PreventChromeAutocomplete" name="PreventChromeAutocomplete" autocomplete="address-level4"/>
+        </div>
+    </h:form>
+
+    <ui:insert name="component_popups"></ui:insert>
+
+
+</h:body>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:update xmlns:ns2="http://xml.mobi.ch/service/ch/mobi/maia/amw/v1_0/MaiaAmwFederationService/datatype">
+    <callContext>
+        <caller>caller0</caller>
+        <user>user1</user>
+        <uuid>uuid2</uuid>
+    </callContext>
+    <fcOwner>fcOwner0</fcOwner>
+    <update>
+        <removedApplications>
+            <name>ch_mobi_testing_PuzzleBank_v1_default</name>
+        </removedApplications>
+    </update>
+</ns2:update>
+        <!-- updaterequest calculated from difference between model 'uc_dev_iterations/model_01_add_puzzlebank' and 'model_small' -->

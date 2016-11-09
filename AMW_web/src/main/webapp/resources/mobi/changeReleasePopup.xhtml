@@ -1,0 +1,46 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:composite="http://java.sun.com/jsf/composite"
+	xmlns:rich="http://richfaces.org/rich">
+
+<composite:interface />
+
+<composite:implementation>
+	<h:form>
+		<!-- CHANGE RELEASE POPUP -->
+		<rich:popupPanel id="changeReleasePopup" autosized="true" domElementAttachment="form"
+			rendered="${releasingDataProvider.canChangeRelease}">
+			<f:facet name="header">
+				<h2>
+					<h:outputText value="Change Release" />
+				</h2>
+			</f:facet>
+			<f:facet name="controls">
+				<h:outputLink value="#"
+					styleClass="close icon icon-close icon-replace"
+					onclick="#{rich:component('changeReleasePopup')}.hide(); return false;">x</h:outputLink>
+			</f:facet>
+			<h:panelGroup layout="block" styleClass="popupContent">
+				<div style="display: inline-block; float: left;">
+					<h:selectOneMenu id="changeReleaseSelection"
+						value="#{releasingDataProvider.newReleaseId}"
+						style="width:auto; margin-right:10px;">
+						<f:selectItem itemLabel="Select Release" itemValue="-1" />
+						<f:selectItems value="${releasingDataProvider.notDefinedReleases}"
+							var="release" itemValue="${release.id}"
+							itemLabel="${release.name}" />
+					</h:selectOneMenu>
+					<h:commandLink id="changeRelButton" value="Save"
+						render="@form" type="button" styleClass="btn primary right"
+						onclick="showLoader(); return confirmLeave(event);"
+						action="#{releasingDataProvider.changeRelease()}">
+					</h:commandLink>
+				</div>
+			</h:panelGroup>
+		</rich:popupPanel>
+	</h:form>
+</composite:implementation>
+
+</html>
