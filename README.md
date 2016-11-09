@@ -45,9 +45,12 @@ mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.fail
 
 Execute Sonar analysis
 ----------------------
-mvn sonar:sonar
 
+```
+mvn sonar:sonar
+```
 The Sonar properties must be confiured in ~/.m2/settings.xml
+```
 <settings>
     <profiles>
         <profile>
@@ -71,6 +74,7 @@ The Sonar properties must be confiured in ~/.m2/settings.xml
         </profile>
      </profiles>
 </settings>
+```
 
 ## Copying
 
