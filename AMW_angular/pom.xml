@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>ch.puzzle.itc.mobiliar</groupId>
+        <artifactId>AMW_parent</artifactId>
+        <version>1.11.2-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>AMW_angular</artifactId>
+    <packaging>war</packaging>
+    <name>AMW_angular</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${version.war.plugin}</version>
+                <configuration>
+                    <webResources>
+                        <!-- filter only the index HTML file  -->
+                        <resource>
+                            <directory>io/dist</directory>
+                            <includes>
+                                <include>index.html</include>
+                            </includes>
+                            <filtering>true</filtering>
+                        </resource>
+                        <!-- everything else is not filtered -->
+                        <resource>
+                            <directory>io/dist</directory>
+                            <excludes>
+                                <exclude>index.html</exclude>
+                            </excludes>
+                            <filtering>false</filtering>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.1</version>
+                <configuration>
+                    <workingDirectory>io</workingDirectory>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>v6.9.1</nodeVersion>
+                            <npmVersion>3.10.8</npmVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm build:prod</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build:prod</arguments>
+                        </configuration>
+                    </execution>
+                    <!--<execution>-->
+                        <!--<id>javascript tests</id>-->
+                        <!--<goals>-->
+                            <!--<goal>karma</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>test</phase>-->
+                        <!--<configuration>-->
+                            <!--<karmaConfPath>karma.conf.js</karmaConfPath>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
