@@ -4,32 +4,12 @@ import {ResourceService} from "./resource.service";
 
 @Component({
   selector: 'amw-resource-list',
-  template: `
-  <section>
-    <section *ngIf="isLoading && !errorMessage">
-    Retrieving data...
-    </section>
-    <section *ngIf="resource">
-        <amw-resource [resource]="resource" (notifyType)='byType($event)' (notifyResourceGroup)='getResourceGroup($event)'></amw-resource>
-    </section>
-    <section *ngIf="resources">
-      <ul>
-        <li *ngFor="let resource of resources">
-            <amw-resource [resource]="resource" (notifyType)='byType($event)' (notifyResourceGroup)='getResourceGroup($event)'></amw-resource>
-        </li>
-      </ul>
-     </section>
-     <section *ngIf="errorMessage">
-        {{errorMessage}}
-     </section>
-  </section>
-  `,
+  templateUrl: './resource-list.component.html',
   providers: [ResourceService]
 })
 export class ResourceListComponent implements OnInit {
   resource: Resource = null;
   resources: Resource[] = [];
-//  resourceGroupName: string = 'amw';
   errorMessage: string = '';
   isLoading: boolean = true;
 
@@ -39,7 +19,6 @@ export class ResourceListComponent implements OnInit {
   ngOnInit() {
     console.log('hello `ResourceList` component');
     this.resourceService
-    //      .get(this.resourceGroupName)
       .getAll()
       .subscribe(
         /* happy path */ r => this.resources = r,

@@ -4,7 +4,7 @@ import {Resource} from "./resource";
 @Component({
   selector: 'amw-resource',
   template: `
-  <span *ngIf="resource.type != 'APPLICATION'">{{resource.name}}</span>
+  <section *ngIf="resource.type != 'APPLICATION'">{{resource.name}}</section>
   <button *ngIf="resource.type === 'APPLICATION'" (click)="getResourceGroup(resource.name)">{{resource.name}}</button>
   <button (click)="byType(resource.type)">{{resource.type}}</button>
     <ul>

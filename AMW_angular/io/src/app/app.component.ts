@@ -55,19 +55,18 @@ import { AppState } from './app.service';
     <pre class="app-state">this.appState.state = {{ appState.state | json }}</pre>
 
     <footer>
-      <span>WebPack Angular 2 Starter by <a [href]="url">@AngularClass</a></span>
       <div>
         <a [href]="url">
-          <img [src]="angularclassLogo" width="25%">
+          <img [src]="angularLogo" width="25%">
         </a>
       </div>
     </footer>
   `
 })
 export class AppComponent {
-  angularclassLogo = 'assets/img/angularclass-avatar.png';
-  name = 'Angular 2 Webpack Starter';
-  url = 'https://twitter.com/AngularClass';
+  angularLogo = 'assets/img/angular-logo.png';
+  name = 'Angular 2';
+  url = 'http://angular.io';
 
   constructor(
     public appState: AppState) {
