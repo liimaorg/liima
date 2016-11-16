@@ -13,6 +13,8 @@ AMW Docs are available under https://github.com/a-gogo/docs
 ## Build and create Release 
 Build the AMW ear
 
+**Note:** when using Oracle JDK to build AMW, make sure to install the Java Cryptography Extension (JCE) Unlimited Strength. Otherwise the decryption tests are going to fail.  
+
 ```
 mvn clean install
 ```
