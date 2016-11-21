@@ -1,5 +1,5 @@
-import {Component, Input, Output, EventEmitter} from "@angular/core";
-import {Resource} from "./resource";
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Resource } from './resource';
 
 @Component({
   selector: 'amw-resource',

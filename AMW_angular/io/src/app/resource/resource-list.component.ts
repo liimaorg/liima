@@ -1,6 +1,6 @@
-import {Component, OnInit} from "@angular/core";
-import {Resource} from "./resource";
-import {ResourceService} from "./resource.service";
+import { Component, OnInit } from '@angular/core';
+import { Resource } from './resource';
+import { ResourceService } from './resource.service';
 
 @Component({
   selector: 'amw-resource-list',

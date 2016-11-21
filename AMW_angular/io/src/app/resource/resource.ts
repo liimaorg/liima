@@ -1,4 +1,4 @@
-import {Release} from "./release";
+import { Release } from './release';
 
 export interface Resource {
   name: string;
