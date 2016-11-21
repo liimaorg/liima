@@ -1,10 +1,8 @@
 sudo: required
 services:
 - docker
-before_install:
-- docker pull maven:3-jdk-8-alpine
 install:
-- docker run -it --name amw-install -v "$PWD":/usr/src/amw -w /usr/src/amw maven:3.2-jdk-7 mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+- docker run -it --name amw-install -v "$PWD":/usr/src/amw -w /usr/src/amw maven:3-jdk-8-alpine mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 - docker commit amw-install amw-install
 script:
 - docker run -it --name amw-test -v "$PWD":/usr/src/amw amw-install mvn test -B
