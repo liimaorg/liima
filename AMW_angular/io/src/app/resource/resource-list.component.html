@@ -2,13 +2,42 @@
   <section *ngIf="isLoading && !errorMessage">
     Retrieving data...
   </section>
-  <section *ngIf="resource">
-    <amw-resource [resource]="resource" (notifyType)='byType($event)' (notifyResourceGroup)='getResourceGroup($event)'></amw-resource>
+  <section *ngIf="!isLoading">
+    <button (click)="getAllResources()">Alle laden</button>
   </section>
-  <section *ngIf="resources">
+  <section *ngIf="resourceInRelease">
+    <h3>{{titleLabel}}</h3>
+      <ul>
+        <li *ngFor="let relation of resourceInRelease.relations">Relation:
+          <ul>
+            <li>relatedResourceName: {{relation.relatedResourceName}}</li>
+            <li>relatedResourceRelease: {{relation.relatedResourceRelease}}</li>
+            <li>identifier: {{relation.identifier}}</li>
+          </ul>
+        </li>
+      </ul>
+      <ul>
+        <li *ngFor="let property of resourceInRelease.properties">Property:
+          <ul>
+            <li>name: {{property.name}}</li>
+            <li>value: {{property.value}}</li>
+            <li>replacedValue: {{property.replacedValue}}</li>
+            <li>generalComment: {{property.generalComment}}</li>
+            <li>valueComment: {{property.valueComment}}</li>
+            <li>context: {{property.context}}</li>
+          </ul>
+        </li>
+      </ul>
+  </section>
+  <section *ngIf="!resourceInRelease && resource">
+    <h3>{{titleLabel}}</h3>
+    <amw-resource [resource]="resource" (notifyType)='byType($event)' (notifyResourceGroup)='getResourceGroup($event)' (notifyRelease)='getInRelease($event)'></amw-resource>
+  </section>
+  <section *ngIf="!resourceInRelease && resources.length > 0">
+    <h3>{{titleLabel}}</h3>
     <ul>
       <li *ngFor="let resource of resources">
-        <amw-resource [resource]="resource" (notifyType)='byType($event)' (notifyResourceGroup)='getResourceGroup($event)'></amw-resource>
+        <amw-resource [resource]="resource" (notifyType)='byType($event)' (notifyResourceGroup)='getResourceGroup($event)' (notifyRelease)='getInRelease($event)'></amw-resource>
       </li>
     </ul>
   </section>

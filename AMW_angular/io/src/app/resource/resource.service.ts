@@ -34,6 +34,14 @@ export class ResourceService{
     return resource$;
   }
 
+  getInRelease(resourceGroupName: string, releaseName: string): Observable<Resource> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/${resourceGroupName}/${releaseName}?env=Global`, {headers: this.getHeaders()})
+      .map((response:Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   private getHeaders(){
     let headers = new Headers();
     headers.append('Accept', 'application/json');
@@ -44,45 +52,46 @@ export class ResourceService{
 function mapResources(response:Response): Resource[]{
   // uncomment to simulate error:
   // throw new Error('ups! Force choke!');
-
-  // The response of the API has a results
-  // property with the actual results
-  return response.json().map(toResource)
+  return response.json().map(toResource);
 }
 
 function toResource(r:any): Resource{
   let resource = <Resource>({
     name: r.name,
     type: r.type,
-    releases: mapReleases(r.releases),
+    release: r.release ? mapRelease(r.release) : '',
+    releases: r.releases ? mapReleases(r.releases) : [],
   });
   console.log('Parsed resource:', resource);
   return resource;
 }
 
 function mapResource(response:Response): Resource{
-  // toPerson looks just like in the previous example
   return toResource(response.json());
 }
 
 function mapReleases(releases): Release[]{
-  return releases.map(toRelease)
+  return releases.map(toRelease);
 }
 
 function toRelease(r:any): Release{
   let release = <Release>({
     release: r.release,
+    properties: r.properties,
   });
   console.log('Parsed release:', release);
   return release;
 }
 
+function mapRelease(response:Response): Release{
+  return toRelease(response.json());
+}
 
 // this could also be a private method of the component class
 function handleError (error: any) {
   // log error
   // could be something more sofisticated
-  let errorMsg = error.message || `Error retrieving your data`
+  let errorMsg = error.message || `Error retrieving your data`;
   console.error(errorMsg);
 
   // throw an application level error
