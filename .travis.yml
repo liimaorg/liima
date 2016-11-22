@@ -4,6 +4,5 @@ services:
 - docker
 install:
 - docker run -it --name amw-install -v "$PWD":/usr/src/amw -w /usr/src/amw maven:3-jdk-8-alpine mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-- docker commit amw-install amw-install
 script:
-- docker run -it --name amw-test -v "$PWD":/usr/src/amw amw-install mvn test -B
+- docker run -it --name amw-test -v "$PWD":/usr/src/amw --volumes-from amw-install -w /usr/src/amw maven:3-jdk-8-alpine mvn test -B
