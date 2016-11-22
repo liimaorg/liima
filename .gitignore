@@ -15,3 +15,4 @@ AMW_web/src/main/webapp/.sass-cache/
 response*.POST.html
 response*.GET.html
 .DS_Store
+.m2
