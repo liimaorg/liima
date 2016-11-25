@@ -2,7 +2,7 @@
 	<parent>
 		<groupId>ch.puzzle.itc.mobiliar</groupId>
 		<artifactId>AMW_parent</artifactId>
-		<version>1.11.2-SNAPSHOT</version>
+		<version>1.12.0</version>
 		<relativePath>..</relativePath>
 	</parent>
 
