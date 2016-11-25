@@ -20,44 +20,45 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import lombok.Getter;
 import lombok.Setter;
 
-@XmlRootElement(name = "release")
+@XmlRootElement(name = "template")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public class ReleaseDTO {
+public class TemplateDTO {
 
     @Getter @Setter
-    private String release;
-    @Getter @Setter      
-    private List<ResourceRelationDTO> relations;
+    private String relatedResourceIdentifier;
     @Getter @Setter
-    private List<PropertyDTO> properties;
+    private String name;
     @Getter @Setter
-    private List<TemplateDTO> templates;
+    private String targetPath;
+    @Getter @Setter
+    private Set<String> targetPlatforms;
+    @Getter @Setter
+    private String fileContent;
 
-    ReleaseDTO(){}
+    TemplateDTO(){}
 
-    public ReleaseDTO(ResourceEntity resource, List<ResourceRelationDTO> relations, List<PropertyDTO> properties, List<TemplateDTO> templates){
-        this.release = resource.getRelease().getName();
-        this.relations = relations;
-        this.properties = properties;
-        this.templates = templates;
-    }
+    public TemplateDTO(TemplateDescriptorEntity template){
+        this.relatedResourceIdentifier = template.getRelatedResourceIdentifier();
+        this.name = template.getName();
+        this.targetPath = template.getTargetPath();
+        targetPlatforms = new HashSet<>();
+        for (ResourceGroupEntity pf : template.getTargetPlatforms()) {
+            targetPlatforms.add(pf.getName());
+        }
 
-    public ReleaseDTO(ReleaseEntity release, List<ResourceRelationDTO> relations, List<PropertyDTO> properties, List<TemplateDTO> templates){
-        this.release = release.getName();
-        this.relations = relations;
-        this.properties = properties;
-        this.templates = templates;
+        this.fileContent = template.getFileContent();
     }
 }

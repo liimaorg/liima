@@ -78,11 +78,13 @@ public class ResourcePropertiesRest {
     List<PropertyDTO> getResourceProperties(String resourceGroupName, String releaseName, String environment) throws ValidationException {
         ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
         ContextEntity context =  contextLocator.getContextByName(environment);
-        List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(resource.getId(),
-                  context.getId());
         List<PropertyDTO> result = new ArrayList<>();
-        for (ResourceEditProperty property : properties) {
-            result.add(new PropertyDTO(property, context.getName()));
+        if (resource!=null) {
+            List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(resource.getId(),
+                    context.getId());
+            for (ResourceEditProperty property : properties) {
+                result.add(new PropertyDTO(property, context.getName()));
+            }
         }
         return result;
     }
@@ -93,11 +95,13 @@ public class ResourcePropertiesRest {
     public Response getResourcePropertyValueForEnvironment(@PathParam("propertyName") String propertyName, @DefaultValue("Global")  @QueryParam("env")  String environment) throws ValidationException {
         ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
         ContextEntity context =  contextLocator.getContextByName(environment);
-        List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(resource.getId(),
-                  context.getId());
-        for (ResourceEditProperty property : properties) {
-            if(property.getTechnicalKey().equals(propertyName)) {
-                return Response.ok(new PropertyDTO(property, context.getName())).build();
+        if (resource!=null) {
+            List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(resource.getId(),
+                    context.getId());
+            for (ResourceEditProperty property : properties) {
+                if (property.getTechnicalKey().equals(propertyName)) {
+                    return Response.ok(new PropertyDTO(property, context.getName())).build();
+                }
             }
         }
         return Response.status(Response.Status.NOT_FOUND).build();

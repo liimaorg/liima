@@ -87,10 +87,14 @@ public class ResourceRelationPropertiesRest {
     @GET
     @ApiOperation(value = "Get all properties of the relation between the two resource releases")
     public List<PropertyDTO> getResourceRelationProperties(@DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
-        ConsumedResourceRelationEntity relation = resourceRelationLocator.getResourceRelation(resourceGroupName, releaseName, relatedResourceGroupName, relatedReleaseName);
+        List<ConsumedResourceRelationEntity> relations = resourceRelationLocator.getResourceRelationList(resourceGroupName, releaseName, relatedResourceGroupName, relatedReleaseName);
         ContextEntity context = contextLocator.getContextByName(environment);
-        List<ResourceEditProperty> properties = propertyEditor.getPropertiesForRelatedResource(relation,
-                context.getId());
+        List<ResourceEditProperty> properties = new ArrayList<>();
+        for (ConsumedResourceRelationEntity relation : relations) {
+            List<ResourceEditProperty> temp = propertyEditor.getPropertiesForRelatedResource(relation,
+                    context.getId());
+            properties.addAll(temp);
+        }
         List<PropertyDTO> result = new ArrayList<>();
         for (ResourceEditProperty property : properties) {
             result.add(new PropertyDTO(property, context.getName()));
@@ -107,9 +111,9 @@ public class ResourceRelationPropertiesRest {
     @Path("/batch")
     @GET
     @ApiOperation(value = "Get all batch properties")
-    public List<BatchPropertyDTO> getResourceRelationBatchProperties(
-            @ApiParam("the environment - if not set, this falls back to global") @QueryParam("env") String environment)
-                    throws ValidationException {
+    public List<BatchPropertyDTO> getResourceRelationBatchProperties(@DefaultValue("Global")
+                                                                     @ApiParam("the environment - if not set, this falls back to global") @QueryParam("env") String environment)
+            throws ValidationException {
 
         List<ConsumedResourceRelationEntity> relations = resourceRelationLocator
                 .getResourceRelationList(resourceGroupName, releaseName, relatedResourceGroupName, relatedReleaseName);
@@ -147,8 +151,8 @@ public class ResourceRelationPropertiesRest {
     @GET
     @ApiOperation(value = "Get a batchjob property")
     public List<BatchPropertyDTO> getResourceRelationBatchProperty(@PathParam("propertyName") String propertyName,
-            @ApiParam("the environment - if not set, this falls back to global") @QueryParam("env") String environment)
-                    throws ValidationException {
+                                                                   @ApiParam("the environment - if not set, this falls back to global") @DefaultValue("Global") @QueryParam("env") String environment)
+            throws ValidationException {
 
         List<ConsumedResourceRelationEntity> relations = resourceRelationLocator
                 .getResourceRelationList(resourceGroupName, releaseName, relatedResourceGroupName, relatedReleaseName);
@@ -179,11 +183,15 @@ public class ResourceRelationPropertiesRest {
     @GET
     @ApiOperation(value = "Get the given property of the relation between the two resource releases")
     public Response getResourceRelationProperty(@PathParam("propertyName") String propertyName, @DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
-        ConsumedResourceRelationEntity relation = resourceRelationLocator.getResourceRelation(resourceGroupName,
+        List<ConsumedResourceRelationEntity> relations = resourceRelationLocator.getResourceRelationList(resourceGroupName,
                 releaseName, relatedResourceGroupName, relatedReleaseName);
         ContextEntity context = contextLocator.getContextByName(environment);
-        List<ResourceEditProperty> properties = propertyEditor.getPropertiesForRelatedResource(relation,
-                context.getId());
+        List<ResourceEditProperty> properties = new ArrayList<>();
+        for (ConsumedResourceRelationEntity relation : relations) {
+            List<ResourceEditProperty> temp = propertyEditor.getPropertiesForRelatedResource(relation,
+                    context.getId());
+            properties.addAll(temp);
+        }
         for (ResourceEditProperty property : properties) {
             if (property.getTechnicalKey().equals(propertyName)) {
                 return Response.ok(new PropertyDTO(property, context.getName())).build();

@@ -88,6 +88,15 @@ public class TemplatesScreenDomainService {
 		return getTemplateDescriptorsForResourceRelationTypeContext(contextService.getGlobalResourceContextEntity(), resRelType, new ArrayList<TemplateDescriptorEntity>(), testing);
 	}
 
+	public List<TemplateDescriptorEntity> getTemplatesForResourceRelation(AbstractResourceRelationEntity relation, boolean testing) throws ResourceNotFoundException, GeneralDBException {
+		return getTemplateDescriptorsForResourceRelationContext(contextService.getGlobalResourceContextEntity(), resourceRelationService.getResourceRelation(relation.getId()), new ArrayList<TemplateDescriptorEntity>(), testing);
+	}
+
+	public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResourceRelation(Integer identifier, boolean testing) {
+		ResourceRelationTypeEntity resRelType = entityManager.find(ResourceRelationTypeEntity.class, identifier);
+		return getTemplateDescriptorsForResourceRelationTypeContext(contextService.getGlobalResourceContextEntity(), resRelType, new ArrayList<TemplateDescriptorEntity>(), testing);
+	}
+
 	private List<TemplateDescriptorEntity> getTemplateDescriptorsForResourceTypeContext(ContextEntity context, ResourceTypeEntity resourceType,
 			List<TemplateDescriptorEntity> templateDescriptors, boolean testing) {
 		if (resourceType != null) {

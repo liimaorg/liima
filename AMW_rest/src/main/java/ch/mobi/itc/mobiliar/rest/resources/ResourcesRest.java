@@ -89,15 +89,15 @@ public class ResourcesRest {
     @Inject
     ResourcePropertiesRest resourceProperties;
 
-    /*
-     *  Fuer JavaBatch Monitor
-     */
+    @Inject
+    ResourceTemplatesRest resourceTemplatesRest;
+
+    @Inject
+    ResourceRelationTemplatesRest resourceRelationTemplatesRest;
+
     @Inject
     private ServerView serverView;
 
-    /**
-     *  Fuer JavaBatch Monitor
-     */
     @Inject
     ResourceRelationLocator resourceRelationLocator;
 
@@ -124,7 +124,7 @@ public class ResourcesRest {
                 List<ReleaseDTO> releases = new ArrayList<>();
                 for (ResourceEntity resource : resources) {
                     if(resource != null && resource.getRelease() != null) {
-                        releases.add(new ReleaseDTO(resource, null, null));
+                        releases.add(new ReleaseDTO(resource, null, null, null));
                     }
                 }
                 result.add(new ResourceDTO(resourceGroupEntity, releases));
@@ -146,7 +146,7 @@ public class ResourcesRest {
         List<ReleaseEntity> releases = releaseLocator.getReleasesForResourceGroup(resourceGroupByName);
         List<ReleaseDTO> result = new ArrayList<>();
         for (ReleaseEntity release : releases) {
-            result.add(new ReleaseDTO(release, null, null));
+            result.add(new ReleaseDTO(release, null, null, null));
         }
         return new ResourceDTO(resourceGroupByName, result);
     }
@@ -159,7 +159,7 @@ public class ResourcesRest {
 		ResourceEntity resourceByRelease = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
 		return new ReleaseDTO(resourceByRelease, resourceRelations.getResourceRelations(resourceGroupName,
 				releaseName), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
-				environment));
+				environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
 	}
 
     // Fuer JavaBatch Monitor

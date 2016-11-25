@@ -111,6 +111,19 @@ public class ResourceLocator {
     }
 
     /**
+     * @param name
+     * @param releaseName
+     * @return
+     * @throws ValidationException thrown if one of the arguments is either empty or null
+     */
+    public ResourceEntity getResourceByNameAndReleaseWithTemplates(String name, String releaseName)
+            throws ValidationException {
+        ValidationHelper.validateNotNullOrEmptyChecked(name, releaseName);
+        ReleaseEntity release = releaseLocator.getReleaseByName(releaseName);
+        return resourceRepository.getResourceByNameAndReleaseWithTemplates(name, release);
+    }
+
+    /**
      * @return resource for id with resourceGroup and other resources
      */
     public ResourceEntity getResourceWithGroupAndRelatedResources(Integer resourceId) {
@@ -283,10 +296,10 @@ public class ResourceLocator {
      * @return Map<String app, String server>
      */
     public Map<String, String> getAppToAppServerMapping(List<String> appServerList) {
+        Map<String, String> map = new HashMap<>();
         if (appServerList==null || appServerList.isEmpty()) {
-            return null;
+            return map;
         }
-        Map<String, String> map = new HashMap<>();        
         List<ResourceEntity> resultList = resourceRepository.getAppToAppServerMapping(appServerList);
         for (ResourceEntity entity : resultList) {
             for (ConsumedResourceRelationEntity rel: entity.getConsumedMasterRelations()) {

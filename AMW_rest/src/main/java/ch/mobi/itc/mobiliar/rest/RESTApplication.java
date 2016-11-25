@@ -33,7 +33,9 @@ import ch.mobi.itc.mobiliar.rest.exceptions.NotAuthorizedExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.resources.HostNamesRest;
 import ch.mobi.itc.mobiliar.rest.resources.ResourcePropertiesRest;
 import ch.mobi.itc.mobiliar.rest.resources.ResourceRelationPropertiesRest;
+import ch.mobi.itc.mobiliar.rest.resources.ResourceRelationTemplatesRest;
 import ch.mobi.itc.mobiliar.rest.resources.ResourceRelationsRest;
+import ch.mobi.itc.mobiliar.rest.resources.ResourceTemplatesRest;
 import ch.mobi.itc.mobiliar.rest.resources.ResourcesRest;
 import ch.mobi.itc.mobiliar.rest.resources.ServerTupleCSVBodyWriter;
 
@@ -58,8 +60,10 @@ public class RESTApplication extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(ResourcesRest.class);
         resources.add(ResourcePropertiesRest.class);
+        resources.add(ResourceTemplatesRest.class);
         resources.add(ResourceRelationsRest.class);
         resources.add(ResourceRelationPropertiesRest.class);
+        resources.add(ResourceRelationTemplatesRest.class);
         resources.add(HostNamesRest.class);
         resources.add(DeploymentsRest.class);
         resources.add(NoResultExceptionMapper.class);

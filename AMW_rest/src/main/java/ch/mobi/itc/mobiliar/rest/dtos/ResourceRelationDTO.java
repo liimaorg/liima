@@ -20,6 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
+import java.util.List;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,7 @@ public class ResourceRelationDTO {
     private String relatedResourceName;
     private String relatedResourceRelease;
     private String identifier;
+    private List<TemplateDTO> templates;
 
     ResourceRelationDTO(){}
 

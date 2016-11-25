@@ -67,6 +67,9 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 	private Set<ResourceGroupEntity> targetPlatforms;
 
 	@Transient
+	private String relatedResourceIdentifier;
+
+	@Transient
 	private AbstractContext ownerResource;
 
 	@Version
@@ -142,6 +145,14 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 		return getName() == null;
 	}
 
+	public String getRelatedResourceIdentifier() {
+		return relatedResourceIdentifier;
+	}
+
+	public void setRelatedResourceIdentifier(String relatedResourceIdentifier) {
+		this.relatedResourceIdentifier = relatedResourceIdentifier;
+	}
+
 	@Override
 	public String toString() {
 		return "TemplateDescriptorEntity [id=" + id + ", name=" + name + ", targetPath=" + targetPath + ", ownerResource=" + ownerResource + "]";
@@ -185,6 +196,8 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 				}
 			}
 		}
+
+		target.setRelatedResourceIdentifier(this.getRelatedResourceIdentifier());
 
 		return target;
 	}
