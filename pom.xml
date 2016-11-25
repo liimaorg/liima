@@ -67,19 +67,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>maia-gluecode-local</id>
-            <name>Mobi Maia Repository</name>
-            <url>file://${basedir}/../AMW_gluecode_export/repository/</url>
-            <layout>default</layout>
-        </repository>
-
-        <repository>
-            <id>maia-gluecode-local-src</id>
-            <name>Mobi Maia Source Repository</name>
-            <url>file://${basedir}/../AMW_gluecode_export/repository-src/</url>
-        </repository>
-
     </repositories>
 
     <build>
@@ -263,18 +250,9 @@
 
     <!-- URL to Git repository used by maven-release-plugin -->
     <scm>
-        <developerConnection>scm:git:https://git-amw.puzzle.ch/mobi_amw/amw_projects.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/a-gogo/agogo.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-
-    <!-- distribution management URL used by maven-release-plugin (implicitly by maven-deploy-plugin) to know where to deploy the builded artifacts to -->
-    <distributionManagement>
-        <repository>
-            <!-- this id must match the <servers><server><id /></server></servers> in your local maven settings.xml -->
-            <id>puzzle-releases</id>
-            <url>https://artifactory.puzzle.ch/artifactory/libs-release-local</url>
-        </repository>
-    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -409,7 +387,5 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-
-
     </dependencies>
 </project>

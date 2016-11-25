@@ -6,9 +6,6 @@
 		<version>1.11.2-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<properties>
-        <deployPort>10099</deployPort>
-    </properties>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>AMW_ear</artifactId>
 	<packaging>ear</packaging>
@@ -59,7 +56,6 @@
 									<groupId>ch.puzzle.itc.mobiliar</groupId>
 									<artifactId>AMW_maia_federation</artifactId>
 									<bundleFileName>AMW_maia_federation.war</bundleFileName>
-									<!--<contextRoot>MaiaAmwFederationService_v1_0</contextRoot>-->
 								</webModule>
 							</modules>
 						</configuration>
