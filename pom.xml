@@ -195,6 +195,9 @@
                 <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>${version.deploy.maven.plugin}</version>
+                    <configuration>
+                        <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
@@ -253,6 +256,14 @@
         <developerConnection>scm:git:https://github.com/a-gogo/agogo.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>internal.repo</id>
+            <name>Temporary Repository</name>
+            <url>file://${project.build.directory}/mvn-repo</url>
+        </repository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
