@@ -304,17 +304,12 @@ public class DeploymentsRest {
 
     private ArrayList<DeploymentParameter> convertToDeploymentParameter(List<DeploymentParameterDTO> deploymentParameters) {
         ArrayList<DeploymentParameter> parameters = new ArrayList<>();
-
-        if (deploymentParameters != null) {
-            for (DeploymentParameterDTO deploymentParameterDto : deploymentParameters) {
-                String key = deploymentParameterDto.getKey().trim();
-                Key firstKeyByName = keyRepository.findFirstKeyByName(key);
-                if (firstKeyByName != null) {
-                    parameters.add(new DeploymentParameter(firstKeyByName.getName(), deploymentParameterDto.getValue()));
-                } else {
-                    throw new IllegalArgumentException("No deployment parameter with key \""+key+"\" found");
-                }
-            }
+        if (deploymentParameters == null) {
+            return parameters;
+        }
+        for (DeploymentParameterDTO deploymentParameterDto : deploymentParameters) {
+            String key = deploymentParameterDto.getKey().trim();
+            parameters.add(new DeploymentParameter(key, deploymentParameterDto.getValue()));
         }
 
         return parameters;
