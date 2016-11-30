@@ -27,19 +27,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 
-@XmlRootElement(name = "appWithVersion")
+/**
+* @deprecated Only here for backwards compatibility of the rest API
+*/
+@XmlRootElement(name = "appWithMvnVersion")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter @Setter
-public class AppWithVersionDTO {
-	
+@Deprecated
+public class AppWithMvnVersionDTO {
+
 	private String applicationName;
-	private String version;
-	
-	public AppWithVersionDTO() {}
-	
-	public AppWithVersionDTO(String applicationName, String version) {
-		this.applicationName = applicationName;
-		this.version = version;
+	private String mavenVersion;
+
+	public AppWithMvnVersionDTO() {
 	}
-	
+
+	public AppWithMvnVersionDTO(String applicationName, String mavenVersion) {
+		this.applicationName = applicationName;
+		this.mavenVersion = mavenVersion;
+	}
+
 }

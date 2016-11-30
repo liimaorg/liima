@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @XmlRootElement(name = "deploymentRequest")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 @Getter @Setter
 public class DeploymentRequestDTO {
 	
@@ -49,6 +49,23 @@ public class DeploymentRequestDTO {
 	private List<DeploymentParameterDTO> deploymentParameters; // optional
 	
 	public DeploymentRequestDTO() {	
+	}
+	
+	/**
+	 * @deprecated Only here for backwards compatibility of the rest API
+	 */
+	@Deprecated
+	public void setAppsWithMvnVersion(List<AppWithMvnVersionDTO> appsWithMvnVersion) {
+		if (appsWithMvnVersion == null) {
+			this.appsWithVersion = null;
+			return;
+		}
+		
+		this.appsWithVersion = new LinkedList<>();
+		
+		for(AppWithMvnVersionDTO app : appsWithMvnVersion) {
+			this.appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getMavenVersion()));
+		}
 	}
 	
 	//copy constructor

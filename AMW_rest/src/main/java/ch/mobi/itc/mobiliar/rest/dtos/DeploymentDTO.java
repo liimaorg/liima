@@ -38,7 +38,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @XmlRootElement(name = "deployment")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 @Getter @Setter
 public class DeploymentDTO {
 
@@ -81,7 +81,19 @@ public class DeploymentDTO {
 		for (NodeJobEntity job : entity.getNodeJobs()) {
 			nodeJobs.add(new NodeJobDTO(job));
 		}
-		
 	}
 
+	/**
+	 * @deprecated Only here for backwards compatibility of the rest API
+	 */
+	@Deprecated
+	public List<AppWithMvnVersionDTO> getAppsWithMvnVersion() {
+		List<AppWithMvnVersionDTO> appsWithMvnVersion = new LinkedList<>();
+
+		for(AppWithVersionDTO app : this.appsWithVersion) {
+			appsWithMvnVersion.add(new AppWithMvnVersionDTO(app.getApplicationName(), app.getVersion()));
+		}
+		
+		return appsWithMvnVersion;
+	}
 }
