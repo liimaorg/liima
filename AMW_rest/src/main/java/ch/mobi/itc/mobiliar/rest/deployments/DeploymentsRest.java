@@ -385,13 +385,10 @@ public class DeploymentsRest {
             for (ResourceEntity app : apps) {
                 // if the name matches, convert the app
                 if (requestedApp.getApplicationName().equals(app.getName())) {
-                    //for backwards compatibility: use MavenVersion as Version
-                    String appVersion = (requestedApp.getMavenVersion() != null && !requestedApp.getMavenVersion().isEmpty())
-                            ? requestedApp.getMavenVersion() : requestedApp.getVersion();
                     //convert
                     result.add(
                             new ApplicationWithVersion(
-                                    requestedApp.getApplicationName(), app.getId(), appVersion));
+                                    requestedApp.getApplicationName(), app.getId(), requestedApp.getVersion()));
                     //scratch off
                     requestedAppsCopy.remove(requestedApp);
                     appsCopy.remove(app);
