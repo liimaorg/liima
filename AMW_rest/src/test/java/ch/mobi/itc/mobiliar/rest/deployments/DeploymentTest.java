@@ -422,33 +422,6 @@ public class DeploymentTest {
 	    ExceptionDto exception = (ExceptionDto) response.getEntity();
 	    assertTrue(exception.getDetail().length() > 0);
 	}
-
-
-	@SuppressWarnings("unchecked")
-	@Test
-	public void addDeploymentParameterKeyNotExistRequest() throws GeneralDBException {
-
-		when(deploymentService.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class), any(LinkedList.class), any(ArrayList.class), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean()))
-				.thenReturn(deploymentEntity.getTrackingId());
-		when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
-		when(
-				deploymentService.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
-						any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
-				new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
-		when(releaseService.findByName(anyString())).thenReturn(release);
-		when(generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(any(ResourceEntity.class), any(ContextEntity.class), any(Date.class))).thenReturn(Boolean.TRUE);
-
-		// no key
-		deploymentRequestDto.addDeploymentParameter("key", "value");
-
-		when(keyRepositoryMock.findFirstKeyByName(anyString())).thenReturn(null);
-
-		Response response = deploymentRestService.addDeployment(deploymentRequestDto);
-		assertEquals(400, response.getStatus());
-
-		ExceptionDto exception = (ExceptionDto) response.getEntity();
-		assertTrue(exception.getMessage().length() > 0);
-	}
 	
 	private ReleaseEntity mockRelease(){
 		ReleaseEntity mock = mock(ReleaseEntity.class);
