@@ -48,13 +48,13 @@ public class DeploymentDTO {
 	private Date deploymentDate;
 	private String appServerName;
 	private List<AppWithVersionDTO> appsWithVersion = new LinkedList<>();
-	private List<DeploymentParameterDTO> deploymentParameters = new LinkedList<>();
+	private List<DeploymentParameterDTO> deploymentParams = new LinkedList<>();
 	private String environmentName;
 	private String releaseName;
 	private String runtimeName;
 	private String requestUser;
 	private String confirmUser;
-	private String cancleUser;
+	private String cancelUser;
 	private Set<NodeJobDTO> nodeJobs = new HashSet<>();
 	
 	public DeploymentDTO() {}
@@ -69,7 +69,7 @@ public class DeploymentDTO {
 			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
 		}
 		for (DeploymentParameter param : entity.getDeploymentParameters()) {
-			deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
+			deploymentParams.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
 		}
 		this.deploymentDate = entity.getDeploymentDate();
 		this.environmentName = entity.getContext().getName();
@@ -77,7 +77,7 @@ public class DeploymentDTO {
 		this.setRuntimeName(entity.getRuntime().getName());
 		this.setRequestUser(entity.getDeploymentRequestUser());
 		this.setConfirmUser(entity.getDeploymentConfirmationUser());
-		this.setCancleUser(entity.getDeploymentCancelUser());
+		this.setCancelUser(entity.getDeploymentCancelUser());
 		for (NodeJobEntity job : entity.getNodeJobs()) {
 			nodeJobs.add(new NodeJobDTO(job));
 		}
@@ -95,5 +95,13 @@ public class DeploymentDTO {
 		}
 		
 		return appsWithMvnVersion;
+	}
+	
+	/**
+	 * @deprecated Only here for backwards compatibility of the rest API
+	 */
+	@Deprecated
+	public String getCancleUser() {
+		return this.cancelUser;
 	}
 }
