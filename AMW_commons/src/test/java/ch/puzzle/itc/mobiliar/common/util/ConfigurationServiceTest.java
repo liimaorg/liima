@@ -252,6 +252,16 @@ public class ConfigurationServiceTest {
 		// then
 		assertEquals(ConfigKey.LOCAL_ENV.getDefaultValue(), property);
 	}
+
+	@Test
+	public void getDefaultValue() {
+		// when
+		String defaultValue = ConfigurationService.getDefaultValue(ConfigKey.LOCAL_ENV);
+
+		// then
+		assertEquals(ConfigKey.LOCAL_ENV.getDefaultValue(), defaultValue);
+	}
+
 	
 	@Test
 	public void getKeyDefaultOverride() {
