@@ -48,9 +48,9 @@ public class ConfigurationService {
 		TEST_RESULT_PATH("amw.testResultPath", false), 
 		DEPLOYMENT_IN_PROGRESS_TIMEOUT("amw.deploymentInProgressTimeout", "3600", false),
 		PREDEPLOYMENT_IN_PROGRESS_TIMEOUT("amw.predeploymentInProgressTimeout", "7200", false),
-		DEPLOYMENT_PROCESSING_AMOUNT_PER_RUN("amw.deploymentProcessingAmountPerRun", false), 
-		DEPLOYMENT_SIMULATION_AMOUNT_PER_RUN("amw.deploymentSimulationAmountPerRun", false),
-		DEPLOYMENT_PREDEPLOYMENT_AMOUNT_PER_RUN("amw.deploymentPredeploymentAmountPerRun", false),
+		DEPLOYMENT_PROCESSING_AMOUNT_PER_RUN("amw.deploymentProcessingAmountPerRun", "5", false),
+		DEPLOYMENT_SIMULATION_AMOUNT_PER_RUN("amw.deploymentSimulationAmountPerRun", "5", false),
+		DEPLOYMENT_PREDEPLOYMENT_AMOUNT_PER_RUN("amw.deploymentPredeploymentAmountPerRun", "5", false),
 		DEPLOYMENT_SCHEDULER_DISABLED("amw.deploymentSchedulerDisabled", "false", false),
 		DEPLOYMENT_CLEANUP_SCHEDULER_DISABLED("amw.deploymentCleanupSchedulerDisabled", "false", false),
 		/** Age of folders to be deleted in minutes */
@@ -117,7 +117,7 @@ public class ConfigurationService {
 	 * @param defaultValue
 	 * @return
 	 */
-	public static Integer getPropertyAsInt(ConfigKey key, Integer defaultValue) {
+	protected static Integer getPropertyAsInt(ConfigKey key, Integer defaultValue) {
 		String propValue = getPropertyValue(key);
 		
 		if(propValue != null){

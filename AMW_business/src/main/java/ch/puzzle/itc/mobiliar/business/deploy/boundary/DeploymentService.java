@@ -84,9 +84,6 @@ import java.util.logging.Logger;
 @Stateless
 public class DeploymentService {
 
-    private static final int DEFAULT_DEPLOYMENT_PROCESSING_AMOUNT_PER_RUN = 5;
-    private static final int DEFAULT_PREDEPLOYMENT_PROCESSING_AMOUNT_PER_RUN = 5;
-    private static final int DEFAULT_DEPLOYMENT_SIMULATION_AMOUNT_PER_RUN = 5;
     private static final String DEPLOYMENT_ENTITY_NAME = "DeploymentEntity";
     private static final String DEPLOYMENT_QL_ALIAS = "d";
     private static final String RELEASE_QL = DEPLOYMENT_QL_ALIAS + ".release";
@@ -755,14 +752,14 @@ public class DeploymentService {
      * @return the Amount of Deployments processing in one Run
      */
     public int getDeploymentProcessingLimit() {
-        return ConfigurationService.getPropertyAsInt(ConfigKey.DEPLOYMENT_PROCESSING_AMOUNT_PER_RUN, DEFAULT_DEPLOYMENT_PROCESSING_AMOUNT_PER_RUN);
+        return ConfigurationService.getPropertyAsInt(ConfigKey.DEPLOYMENT_PROCESSING_AMOUNT_PER_RUN);
     }
 
     /**
      * @return the Amount of PreDeployments processing in one Run
      */
     public int getPreDeploymentProcessingLimit() {
-        return ConfigurationService.getPropertyAsInt(ConfigKey.DEPLOYMENT_PREDEPLOYMENT_AMOUNT_PER_RUN, DEFAULT_PREDEPLOYMENT_PROCESSING_AMOUNT_PER_RUN);
+        return ConfigurationService.getPropertyAsInt(ConfigKey.DEPLOYMENT_PREDEPLOYMENT_AMOUNT_PER_RUN);
     }
 
     /**
@@ -848,7 +845,7 @@ public class DeploymentService {
      * @return the Amount of Deployments simulating in one run
      */
     public int getDeploymentSimulationLimit() {
-        return ConfigurationService.getPropertyAsInt(ConfigKey.DEPLOYMENT_SIMULATION_AMOUNT_PER_RUN, DEFAULT_DEPLOYMENT_SIMULATION_AMOUNT_PER_RUN);
+        return ConfigurationService.getPropertyAsInt(ConfigKey.DEPLOYMENT_SIMULATION_AMOUNT_PER_RUN);
     }
 
     // TODO test
