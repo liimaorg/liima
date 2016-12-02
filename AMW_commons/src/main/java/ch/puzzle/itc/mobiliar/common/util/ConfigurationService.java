@@ -28,7 +28,7 @@ import lombok.Getter;
 public class ConfigurationService {
 	public enum ConfigKey {
 
-		LOGS_PATH("amw.logsPath", false), 
+		LOGS_PATH("amw.logsPath", false),
 		
 		/** Age of logs to be deleted in minutes */
 		LOGS_CLEANUP_AGE("amw.logsLeanupAge", new Integer(7*24*60).toString(), false),
@@ -108,6 +108,15 @@ public class ConfigurationService {
 	
 	public static String getProperty(ConfigKey key) {
 		return getProperty(key, key.getDefaultValue());
+	}
+
+	/**
+	 * Return the default Value for a given ConfigKey
+	 * @param key
+	 * @return
+	 */
+	public static String getDefaultValue(ConfigKey key) {
+		return key.getDefaultValue();
 	}
 	
 	/**
