@@ -91,7 +91,7 @@ public class ConfigurationService {
 		String configPropertyValue = System.getProperty(key.getValue());
 		// if the systemProperty is not set, check corresponding ENV
 		if(configPropertyValue == null){
-			configPropertyValue = System.getenv(key.getEnvName());
+			configPropertyValue = RuntimeEnvironment.getValueOfEnvironmentVariable(key.getEnvName());
 		}
 
 		return configPropertyValue;

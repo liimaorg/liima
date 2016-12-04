@@ -32,7 +32,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(RuntimeEnvironment.class)
 public class ConfigurationServiceTest {
 
 	@Before
@@ -43,7 +50,9 @@ public class ConfigurationServiceTest {
 		props.setProperty(ConfigKey.DELIVER_MAIL.getValue(), "true");
 		//used for booleanTests
 		props.setProperty(ConfigKey.GENERATOR_PATH.getValue(), "true");
-		System.setProperties(props);
+
+		PowerMockito.mockStatic(RuntimeEnvironment.class);
+		Mockito.when(RuntimeEnvironment.getValueOfEnvironmentVariable(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST.getEnvName())).thenReturn("envvalue");
 	}
 	
 	@After
@@ -53,7 +62,6 @@ public class ConfigurationServiceTest {
 		props.remove(ConfigKey.DEPLOYMENT_IN_PROGRESS_TIMEOUT.getValue());
 		props.remove(ConfigKey.DELIVER_MAIL.getValue());
 		props.remove(ConfigKey.GENERATOR_PATH.getValue());
-		System.setProperties(props);
 	}
 	
 	@Test
@@ -261,6 +269,29 @@ public class ConfigurationServiceTest {
 		// then
 		assertEquals(ConfigKey.LOCAL_ENV.getDefaultValue(), defaultValue);
 	}
+
+	@Test
+	public void shouldReturnEnvironmentVariableValue() {
+		// when
+		String envvalue = ConfigurationService.getProperty(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST);
+
+		// then
+		assertEquals("envvalue", envvalue);
+	}
+
+    @Test
+    public void shouldReturnSystemPropertyBeforeEnvironmentVariableValue() {
+        // given
+        System.getProperties().put(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST.getValue(), "systempropertyvalue");
+
+        // when
+        String envvalue = ConfigurationService.getProperty(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST);
+
+        // then
+        assertEquals("systempropertyvalue", envvalue);
+
+        System.getProperties().remove(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST.getValue());
+    }
 
 	
 	@Test
