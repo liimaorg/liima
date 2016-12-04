@@ -31,4 +31,8 @@ public class ConfigurationKeyValuePair {
 	@Getter
 	@Setter
 	private String value;
+
+	@Getter
+	@Setter
+	private String defaultValue;
 }

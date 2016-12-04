@@ -144,6 +144,7 @@ public class ApplicationVersionService {
 			if(property != null){
 				c.setValue(property);
 			}
+			c.setDefaultValue(ConfigurationService.getDefaultValue(configKey));
 			
 			config.addConfigurationKeyValuePair(c);
 		}

@@ -57,6 +57,15 @@
 				<h:column>
 					<f:facet name="header">
 						<h:panelGroup>
+							<h:outputText value="ENV" />
+							<br />
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="${configItem.key.envName}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:panelGroup>
 							<h:outputText value="Value" />
 							<br />
 						</h:panelGroup>
@@ -64,6 +73,17 @@
 					
 					<h:outputText value="${configItem.value}" rendered="${!configItem.key.secretValue}" />
 					<h:outputText value="***************" rendered="${configItem.key.secretValue}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="DefaultValue" />
+							<br />
+						</h:panelGroup>
+					</f:facet>
+
+					<h:outputText value="${configItem.defaultValue}" rendered="${!configItem.key.secretValue}" />
+					<h:outputText value="***************" rendered="${configItem.key.secretValue and configItem.defaultValue != null}" />
 				</h:column>
 			</h:dataTable>
 	</h:panelGroup>
