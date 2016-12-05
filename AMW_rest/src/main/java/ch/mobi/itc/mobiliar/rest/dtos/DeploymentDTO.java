@@ -48,7 +48,7 @@ public class DeploymentDTO {
 	private Date deploymentDate;
 	private String appServerName;
 	private List<AppWithVersionDTO> appsWithVersion = new LinkedList<>();
-	private List<DeploymentParameterDTO> deploymentParams = new LinkedList<>();
+	private List<DeploymentParameterDTO> deploymentParameters = new LinkedList<>();
 	private String environmentName;
 	private String releaseName;
 	private String runtimeName;
@@ -69,7 +69,7 @@ public class DeploymentDTO {
 			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
 		}
 		for (DeploymentParameter param : entity.getDeploymentParameters()) {
-			deploymentParams.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
+			deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
 		}
 		this.deploymentDate = entity.getDeploymentDate();
 		this.environmentName = entity.getContext().getName();
