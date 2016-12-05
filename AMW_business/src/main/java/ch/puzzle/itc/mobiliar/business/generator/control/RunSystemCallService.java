@@ -62,6 +62,7 @@ public class RunSystemCallService
 	 * @param folder
 	 *               - the relative path of the configuration-folder for
 	 *               which the execution scripts shall be invoked.
+	 * @return Result Output of Script
 	 * @throws ScriptExecutionException
 	 *                - if the execution of one of the scripts was not
 	 *                successful. If the script was executed but had errors
@@ -69,15 +70,18 @@ public class RunSystemCallService
 	 *                exception should contain the given information provided
 	 *                by the process itself.
 	 */
-	public void getAndExecuteScriptFromGeneratedConfig(String folder)
+	public String getAndExecuteScriptFromGeneratedConfig(String folder)
 			throws ScriptExecutionException {
 
 		List<File> scriptPath = getScriptFiles(folder);
 
+		StringBuilder result = new StringBuilder();
+
 		for (File file : scriptPath) {
 			String filePath = makeScriptExecutableAndGetAbsolutePath(file);
 			if (filePath != null) {
-				executeScript(filePath);
+				result.append("output of Script " + filePath);
+				result.append(executeScript(filePath));
 			} else {
 				String message = "File permissions of "
 						+ file.getName()
@@ -87,6 +91,7 @@ public class RunSystemCallService
 						REASON.PERMISSION);
 			}
 		}
+		return result.toString();
 	}
 
 	/**
@@ -94,15 +99,17 @@ public class RunSystemCallService
 	 * 
 	 * @param scriptPath
 	 *               - the abolute file path of the script to be executed
+	 * @return String result
 	 * @throws ScriptExecutionException
 	 *                - an exception if anything fails in the execution
 	 *                process.
 	 */
-	private void executeScript(String scriptPath)
+	private String executeScript(String scriptPath)
 			throws ScriptExecutionException {
 		if (scriptPath != null) {
-			runSystemCall(scriptPath);
+			String result = runSystemCall(scriptPath);
 			log.info(scriptPath + " was excuted successfully.");
+			return result;
 		} else {
 			throw new ScriptExecutionException(
 					"Undefined script path", REASON.NOTAVAILABLE);
@@ -120,12 +127,13 @@ public class RunSystemCallService
 	 * @param command
 	 *               - the command to be executed natively.lso includes the
 	 *               error stack trace (System.err)
+	 * @return parsed result as Script
 	 * @throws ScriptExecutionException
 	 *                - if the script was not able to execute properly or
 	 *                exited with an error code. Includes the recorded error
 	 *                messages as part of the message.
 	 */
-	private void runSystemCall(String command)
+	private String runSystemCall(String command)
 			throws ScriptExecutionException {
 		Runtime r = Runtime.getRuntime();
 		try {
@@ -136,6 +144,7 @@ public class RunSystemCallService
 			InputStreamReader inread = new InputStreamReader(buf);
 			BufferedReader bufferedreader = new BufferedReader(inread);
 			StringBuilder sb = new StringBuilder();
+			StringBuilder systemCallResult = new StringBuilder();
 			String line;
 			while ((line = bufferedreader.readLine()) != null) {
 				// TODO schreibe resultat in eine logdatei
@@ -146,6 +155,7 @@ public class RunSystemCallService
 							line.length() - 1)).append(
 							'\n');
 				}
+				systemCallResult.append(line);
 			}
 			try {
 				if (p.waitFor() != 0) {
@@ -156,6 +166,7 @@ public class RunSystemCallService
 											.trim(),
 							REASON.EXECUTIONEXCEPTION);
 				}
+				return systemCallResult.toString();
 			} catch (InterruptedException e) {
 				throw new ScriptExecutionException(
 						"Script execution interrupted",
