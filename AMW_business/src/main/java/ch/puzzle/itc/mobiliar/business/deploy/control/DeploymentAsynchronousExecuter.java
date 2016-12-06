@@ -20,6 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +34,9 @@ import javax.inject.Inject;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.*;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
+import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 import ch.puzzle.itc.mobiliar.common.exception.ScriptExecutionException;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
 @Stateless
 public class DeploymentAsynchronousExecuter {
@@ -45,7 +49,7 @@ public class DeploymentAsynchronousExecuter {
 	
 	@Inject
 	private RunSystemCallService systemCallService;
-	
+
 	@Inject
 	protected GeneratorFileWriter generatorFileWriter;
 	
@@ -86,9 +90,22 @@ public class DeploymentAsynchronousExecuter {
 		for (EnvironmentGenerationResult envResult : generationResult.getEnvironmentGenerationResults()) {
 			for (NodeGenerationResult nodeResult : envResult.getNodeGenerationResults()) {
 				if(nodeResult.isNodeEnabled()){
-					nodeResult.setSystemCallOutput(systemCallService.getAndExecuteScriptFromGeneratedConfig(nodeResult.getFolderToExecute()));
+
+					String targetLogPrefix = ConfigurationService.getProperty(ConfigurationService.ConfigKey.LOGS_PATH)
+							+ File.separator + generationResult.getDeployment().getId() + '_' + "script_output";
+
+					String scriptOutput = systemCallService.getAndExecuteScriptFromGeneratedConfig(nodeResult.getFolderToExecute());
+					writeLogfile(targetLogPrefix + ".log", scriptOutput);
 				}
 			}
+		}
+	}
+
+	private void writeLogfile(String filePath, String scriptOutput) {
+		try {
+			generatorFileWriter.writeFile(new File(filePath), scriptOutput);
+		} catch (IOException e) {
+			throw new AMWRuntimeException("Error writing scriptOutput to file: " + filePath, e);
 		}
 	}
 }

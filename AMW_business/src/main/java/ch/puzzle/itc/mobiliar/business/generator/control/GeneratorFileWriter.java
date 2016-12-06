@@ -145,7 +145,7 @@ public class GeneratorFileWriter {
 
 	}
 
-	private void writeFile(File temp, String content) throws IOException, FileNotFoundException {
+	public void writeFile(File temp, String content) throws IOException, FileNotFoundException {
 		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(temp));
 		bufferedWriter.write(content);
 		bufferedWriter.close();

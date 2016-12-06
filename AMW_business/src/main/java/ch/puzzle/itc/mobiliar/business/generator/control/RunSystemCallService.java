@@ -50,6 +50,8 @@ import ch.puzzle.itc.mobiliar.common.util.SystemCallTemplate;
 public class RunSystemCallService
 {
 
+	private String lineSeparator = System.getProperty("line.separator");
+
 	@Inject
 	protected Logger log;
 
@@ -81,6 +83,7 @@ public class RunSystemCallService
 			String filePath = makeScriptExecutableAndGetAbsolutePath(file);
 			if (filePath != null) {
 				result.append("output of Script " + filePath);
+				result.append(lineSeparator);
 				result.append(executeScript(filePath));
 			} else {
 				String message = "File permissions of "
@@ -156,6 +159,7 @@ public class RunSystemCallService
 							'\n');
 				}
 				systemCallResult.append(line);
+				systemCallResult.append(lineSeparator);
 			}
 			try {
 				if (p.waitFor() != 0) {

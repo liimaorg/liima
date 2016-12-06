@@ -49,10 +49,6 @@ public class NodeGenerationResult {
 	private String folderToExecute;
 
 	@Getter
-	@Setter
-	private String systemCallOutput;
-
-	@Getter
 	private List<TemplatePropertyException> propertyValidationExceptions = new ArrayList<TemplatePropertyException>();
 
 	@Getter
