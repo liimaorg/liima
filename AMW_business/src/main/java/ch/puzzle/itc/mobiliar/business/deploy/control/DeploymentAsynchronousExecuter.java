@@ -30,9 +30,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
-import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorFileWriter;
-import ch.puzzle.itc.mobiliar.business.generator.control.RunSystemCallService;
+import ch.puzzle.itc.mobiliar.business.generator.control.*;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.common.exception.ScriptExecutionException;
 
@@ -64,7 +62,7 @@ public class DeploymentAsynchronousExecuter {
 	public void executeDeployment(GenerationResult generationResult, DeploymentEntity deployment, GenerationModus generationModus) {
 		try {
 			log.log(Level.INFO, "Starting Deployment: " + deployment.getTrackingId() + " (tracking id: " + deployment.getTrackingId() + ") " + generationModus.getName());
-			String systemCallOutput = execute(generationResult);
+			execute(generationResult);
 			// Handle Result
 			log.log(Level.INFO, "Deployment successful: "+deployment.getId()+" (tracking id: " + deployment.getTrackingId()+")");
 			deploymentExecutionResultHandler.handleSuccessfulDeployment(generationModus, generationResult);
@@ -79,18 +77,18 @@ public class DeploymentAsynchronousExecuter {
 		}
 	}
 	
-	private String execute(GenerationResult generationResult) throws ScriptExecutionException{
+	private void execute(GenerationResult generationResult) throws ScriptExecutionException{
 		// We execute the deployment scripts sequentially!
 		// This is very important since otherwise, all nodes would go down in parallel and the servers would
 		// not be available anymore. Please also note, that if one deployment fails, the loop is
 		// interrupted (since the execution method throws an exception).
 		// If the deployment of the first node fails, the second one will not be deployed anymore.
-		StringBuilder generationOutput = new StringBuilder();
-		for (final String f : generationResult.getAllFoldersToExecute()) {
-			generationOutput.append("Output for folder " + f);
-			String result = systemCallService.getAndExecuteScriptFromGeneratedConfig(f);
-			generationOutput.append(result);
+		for (EnvironmentGenerationResult envResult : generationResult.getEnvironmentGenerationResults()) {
+			for (NodeGenerationResult nodeResult : envResult.getNodeGenerationResults()) {
+				if(nodeResult.isNodeEnabled()){
+					nodeResult.setSystemCallOutput(systemCallService.getAndExecuteScriptFromGeneratedConfig(nodeResult.getFolderToExecute()));
+				}
+			}
 		}
-		return generationOutput.toString();
 	}
 }

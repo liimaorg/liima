@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import ch.puzzle.itc.mobiliar.business.generator.control.EnvironmentGenerationResult;
+import ch.puzzle.itc.mobiliar.business.generator.control.NodeGenerationResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -106,14 +108,17 @@ public class DeploymentAsynchronousExecuterTest {
 		// given		
 		
 		final ScriptExecutionException se = new ScriptExecutionException("error", REASON.EXECUTIONEXCEPTION);
-		
+
 		String folder = "folder";
 		Mockito.doThrow(se).when(systemCallService).getAndExecuteScriptFromGeneratedConfig(folder);
 
-		GenerationResult result = Mockito.mock(GenerationResult.class);
-		List<String> folders = new ArrayList<String>();
-		folders.add(folder);
-		Mockito.when(result.getAllFoldersToExecute()).thenReturn(folders);
+		GenerationResult result = new GenerationResult();
+		EnvironmentGenerationResult envResult = new EnvironmentGenerationResult();
+		NodeGenerationResult nodeResult = new NodeGenerationResult();
+		nodeResult.setFolderToExecute(folder);
+		nodeResult.setNodeEnabled(true);
+		envResult.addNodeGenerationResult(nodeResult);
+		result.addEnvironmentGenerationResult(envResult);
 		
 		// when
 		deploymentAsynchronousExecuter.executeDeployment(result, deployment, GenerationModus.DEPLOY);
