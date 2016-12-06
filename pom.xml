@@ -87,6 +87,7 @@
                     <configuration>
                         <preparationGoals>clean install</preparationGoals>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <tagNameFormat>v@{project.version}</tagNameFormat>
                     </configuration>
                 </plugin>
                 <plugin>
