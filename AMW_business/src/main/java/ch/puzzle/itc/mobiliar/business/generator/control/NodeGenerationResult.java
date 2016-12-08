@@ -22,9 +22,11 @@ package ch.puzzle.itc.mobiliar.business.generator.control;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +63,16 @@ public class NodeGenerationResult {
 
     @Setter
     private boolean nodeEnabledForTestGeneration = false;
+
+	public String getScriptOutputFilename(Integer deploymentId){
+		String nodeName = "";
+		if(getNode() != null && getNode().getName() != null){
+			nodeName = getNode().getName();
+		}
+
+		return ConfigurationService.getProperty(ConfigurationService.ConfigKey.LOGS_PATH)
+				+ File.separator + deploymentId + '_' + nodeName + "_" + "script_output.log";
+	}
 
      public void omitAllTemplates(){
 	    if(applicationServerResults!=null) {

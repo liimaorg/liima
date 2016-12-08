@@ -91,11 +91,8 @@ public class DeploymentAsynchronousExecuter {
 			for (NodeGenerationResult nodeResult : envResult.getNodeGenerationResults()) {
 				if(nodeResult.isNodeEnabled()){
 
-					String targetLogPrefix = ConfigurationService.getProperty(ConfigurationService.ConfigKey.LOGS_PATH)
-							+ File.separator + generationResult.getDeployment().getId() + '_' + "script_output";
-
 					String scriptOutput = systemCallService.getAndExecuteScriptFromGeneratedConfig(nodeResult.getFolderToExecute());
-					writeLogfile(targetLogPrefix + ".log", scriptOutput);
+					writeLogfile(nodeResult.getScriptOutputFilename(generationResult.getDeployment().getId()), scriptOutput);
 				}
 			}
 		}
