@@ -41,22 +41,22 @@ import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 @Stateless
 public class DeploymentAsynchronousExecuter {
 
-	@Inject 
+	@Inject
 	private DeploymentExecutionResultHandlerService deploymentExecutionResultHandler;
-	
+
 	@Inject
 	private Logger log;
-	
+
 	@Inject
 	private RunSystemCallService systemCallService;
 
 	@Inject
 	protected GeneratorFileWriter generatorFileWriter;
-	
-	
+
+
 	/**
 	 * executes a Deployment for the given generationResult
-	 * 
+	 *
 	 * @param generationResult
 	 * @param deployment
 	 * @param generationModus
@@ -80,7 +80,7 @@ public class DeploymentAsynchronousExecuter {
 			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, generationResult, e);
 		}
 	}
-	
+
 	private void execute(GenerationResult generationResult) throws ScriptExecutionException{
 		// We execute the deployment scripts sequentially!
 		// This is very important since otherwise, all nodes would go down in parallel and the servers would
@@ -90,19 +90,9 @@ public class DeploymentAsynchronousExecuter {
 		for (EnvironmentGenerationResult envResult : generationResult.getEnvironmentGenerationResults()) {
 			for (NodeGenerationResult nodeResult : envResult.getNodeGenerationResults()) {
 				if(nodeResult.isNodeEnabled()){
-
-					String scriptOutput = systemCallService.getAndExecuteScriptFromGeneratedConfig(nodeResult.getFolderToExecute());
-					writeLogfile(nodeResult.getScriptOutputFilename(generationResult.getDeployment().getId()), scriptOutput);
+					systemCallService.getAndExecuteScriptFromGeneratedConfig(nodeResult.getFolderToExecute(), nodeResult.getScriptOutputFilename(generationResult.getDeployment().getId()));
 				}
 			}
-		}
-	}
-
-	private void writeLogfile(String filePath, String scriptOutput) {
-		try {
-			generatorFileWriter.writeFile(new File(filePath), scriptOutput);
-		} catch (IOException e) {
-			throw new AMWRuntimeException("Error writing scriptOutput to file: " + filePath, e);
 		}
 	}
 }

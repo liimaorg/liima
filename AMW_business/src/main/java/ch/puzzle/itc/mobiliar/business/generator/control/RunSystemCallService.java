@@ -20,12 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -50,7 +45,7 @@ import ch.puzzle.itc.mobiliar.common.util.SystemCallTemplate;
 public class RunSystemCallService
 {
 
-	private String lineSeparator = System.getProperty("line.separator");
+	private String lineSeparator = System.lineSeparator();
 
 	@Inject
 	protected Logger log;
@@ -64,7 +59,7 @@ public class RunSystemCallService
 	 * @param folder
 	 *               - the relative path of the configuration-folder for
 	 *               which the execution scripts shall be invoked.
-	 * @return Result Output of Script
+	 * @param scriptOutputLogFilename
 	 * @throws ScriptExecutionException
 	 *                - if the execution of one of the scripts was not
 	 *                successful. If the script was executed but had errors
@@ -72,19 +67,15 @@ public class RunSystemCallService
 	 *                exception should contain the given information provided
 	 *                by the process itself.
 	 */
-	public String getAndExecuteScriptFromGeneratedConfig(String folder)
+	public void getAndExecuteScriptFromGeneratedConfig(String folder, String scriptOutputLogFilename)
 			throws ScriptExecutionException {
 
 		List<File> scriptPath = getScriptFiles(folder);
 
-		StringBuilder result = new StringBuilder();
-
 		for (File file : scriptPath) {
 			String filePath = makeScriptExecutableAndGetAbsolutePath(file);
 			if (filePath != null) {
-				result.append("output of Script " + filePath);
-				result.append(lineSeparator);
-				result.append(executeScript(filePath));
+				executeScript(filePath, scriptOutputLogFilename);
 			} else {
 				String message = "File permissions of "
 						+ file.getName()
@@ -94,7 +85,6 @@ public class RunSystemCallService
 						REASON.PERMISSION);
 			}
 		}
-		return result.toString();
 	}
 
 	/**
@@ -102,17 +92,16 @@ public class RunSystemCallService
 	 * 
 	 * @param scriptPath
 	 *               - the abolute file path of the script to be executed
-	 * @return String result
+	 * @param scriptOutputLogFilename
 	 * @throws ScriptExecutionException
 	 *                - an exception if anything fails in the execution
 	 *                process.
 	 */
-	private String executeScript(String scriptPath)
+	private void executeScript(String scriptPath, String scriptOutputLogFilename)
 			throws ScriptExecutionException {
 		if (scriptPath != null) {
-			String result = runSystemCall(scriptPath);
+			runSystemCall(scriptPath, scriptOutputLogFilename);
 			log.info(scriptPath + " was excuted successfully.");
-			return result;
 		} else {
 			throw new ScriptExecutionException(
 					"Undefined script path", REASON.NOTAVAILABLE);
@@ -130,15 +119,17 @@ public class RunSystemCallService
 	 * @param command
 	 *               - the command to be executed natively.lso includes the
 	 *               error stack trace (System.err)
-	 * @return parsed result as Script
+	 * @param scriptOutputLogFilename
 	 * @throws ScriptExecutionException
 	 *                - if the script was not able to execute properly or
 	 *                exited with an error code. Includes the recorded error
 	 *                messages as part of the message.
 	 */
-	private String runSystemCall(String command)
+	private void runSystemCall(String command, String scriptOutputLogFilename)
 			throws ScriptExecutionException {
 		Runtime r = Runtime.getRuntime();
+		BufferedWriter logOutput = null;
+		FileWriter logOutputFileWriter = null;
 		try {
 			log.info("Execute command: \"" + command + "\"");
 			Process p = r.exec(command);
@@ -147,19 +138,19 @@ public class RunSystemCallService
 			InputStreamReader inread = new InputStreamReader(buf);
 			BufferedReader bufferedreader = new BufferedReader(inread);
 			StringBuilder sb = new StringBuilder();
-			StringBuilder systemCallResult = new StringBuilder();
+			logOutputFileWriter = new FileWriter(scriptOutputLogFilename);
+			logOutput  = new BufferedWriter(logOutputFileWriter);
 			String line;
 			while ((line = bufferedreader.readLine()) != null) {
-				// TODO schreibe resultat in eine logdatei
-				// TODO ev output parsen und fehler loggen
+
 				log.info("" + line);
 				if (line.startsWith("@{") && line.endsWith("}")) {
 					sb.append(line.substring(2,
 							line.length() - 1)).append(
 							'\n');
 				}
-				systemCallResult.append(line);
-				systemCallResult.append(lineSeparator);
+				logOutput.write(line);
+				logOutput.write(lineSeparator);
 			}
 			try {
 				if (p.waitFor() != 0) {
@@ -170,7 +161,6 @@ public class RunSystemCallService
 											.trim(),
 							REASON.EXECUTIONEXCEPTION);
 				}
-				return systemCallResult.toString();
 			} catch (InterruptedException e) {
 				throw new ScriptExecutionException(
 						"Script execution interrupted",
@@ -186,6 +176,19 @@ public class RunSystemCallService
 			throw new ScriptExecutionException(
 					"Could not execute systemcall",
 					REASON.GENERIC, e);
+		} finally {
+			try {
+				if (logOutput != null) {
+					logOutput.close();
+				}
+				if (logOutputFileWriter != null) {
+					logOutputFileWriter.close();
+				}
+			} catch (IOException e) {
+				throw new ScriptExecutionException(
+						"Could not close logOutput Writer",
+						REASON.GENERIC, e);
+			}
 		}
 	}
 
