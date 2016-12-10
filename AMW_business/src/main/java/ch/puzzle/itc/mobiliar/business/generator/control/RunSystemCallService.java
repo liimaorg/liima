@@ -140,6 +140,8 @@ public class RunSystemCallService
 			StringBuilder sb = new StringBuilder();
 			logOutputFileWriter = new FileWriter(scriptOutputLogFilename);
 			logOutput  = new BufferedWriter(logOutputFileWriter);
+			logOutput.write("Executing Script: (" + command + ")");
+			logOutput.write(lineSeparator);
 			String line;
 			while ((line = bufferedreader.readLine()) != null) {
 
