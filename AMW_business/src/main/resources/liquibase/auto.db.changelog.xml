@@ -4,11 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <!-- Base Modell and Base Data  -->
-    <!-- TODO integrate the changelogs in the Prod DBs, so this changesets do not run any more
-    <include file="liquibase/changesets/base/auto.db.changelog-base.xml"/>
-    <include file="liquibase/changesets/base/data/initial.data.xml"/>
-    <include file="liquibase/changesets/base/data/exampleapp/app.data.xml"/>  -->
-
+    <!-- TODO integrate the changelogs from auto.db.changelog-initialrun.xml -->
 
     <!--1.8 -->
     <include file="changesets/model/ora_migration_smallint/oramigration_smallint.xml" relativeToChangelogFile="true"/>
@@ -63,5 +59,9 @@
     <include file="changesets/model/mvnversion_version/#20719_rename_mvnversion_version.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/#20719_update_version_content.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/#20719_update_propertyname_content.xml" relativeToChangelogFile="true"/>
+
+    <!--include Database Changes always in both changesets auto.db.changelog-initialrun.xml and this one
+    it is necessary  until all production instances have the changelogs for the initial data run
+    -->
 
 </databaseChangeLog>
