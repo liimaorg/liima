@@ -37,9 +37,7 @@
         <version.source.maven.plugin>2.4</version.source.maven.plugin>
         <version.javadoc.maven.plugin>2.10.1</version.javadoc.maven.plugin>
 
-        <!-- do not use versions 3.2.1 and 3.2.2 for liquibase-maven-plugin due
- to a diff bug: https://liquibase.jira.com/browse/CORE-1987 -->
-        <version.liquibase>3.1.1</version.liquibase>
+        <version.liquibase>3.5.3</version.liquibase>
         <version.liquibase-slf4j>1.2.1</version.liquibase-slf4j>
         <version.assertj-core>2.4.1</version.assertj-core>
         <version.java>1.7</version.java>

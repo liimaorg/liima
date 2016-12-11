@@ -5,6 +5,9 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="rgalante" id="#10350 PropertyTag add tagType">
+        <validCheckSum>
+            7:e492825a6aaeda69f62995f15baaea40
+        </validCheckSum>
 
         <addColumn tableName="TAMW_PROPERTYTAG">
             <column name="tagType" type="varchar(255)">
