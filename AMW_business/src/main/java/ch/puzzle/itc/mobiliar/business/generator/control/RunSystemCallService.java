@@ -127,18 +127,17 @@ public class RunSystemCallService
 	 */
 	private void runSystemCall(String command, String scriptOutputLogFilename)
 			throws ScriptExecutionException {
-		Runtime r = Runtime.getRuntime();
 		BufferedWriter logOutput = null;
 		FileWriter logOutputFileWriter = null;
 		try {
 			log.info("Execute command: \"" + command + "\"");
-			Process p = r.exec(command);
+			Process p = new ProcessBuilder(command).redirectErrorStream(true).start();
 			InputStream in = p.getInputStream();
 			BufferedInputStream buf = new BufferedInputStream(in);
 			InputStreamReader inread = new InputStreamReader(buf);
 			BufferedReader bufferedreader = new BufferedReader(inread);
 			StringBuilder sb = new StringBuilder();
-			logOutputFileWriter = new FileWriter(scriptOutputLogFilename);
+			logOutputFileWriter = new FileWriter(scriptOutputLogFilename, true);
 			logOutput  = new BufferedWriter(logOutputFileWriter);
 			logOutput.write("Executing Script: (" + command + ")");
 			logOutput.write(lineSeparator);
