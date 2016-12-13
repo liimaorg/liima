@@ -90,7 +90,7 @@ public class DeploymentAsynchronousExecuter {
 		for (EnvironmentGenerationResult envResult : generationResult.getEnvironmentGenerationResults()) {
 			for (NodeGenerationResult nodeResult : envResult.getNodeGenerationResults()) {
 				if(nodeResult.isNodeEnabled()){
-					systemCallService.getAndExecuteScriptFromGeneratedConfig(nodeResult.getFolderToExecute(), nodeResult.getScriptOutputFilename(generationResult.getDeployment().getId()));
+					systemCallService.getAndExecuteScriptFromGeneratedConfig(nodeResult.getFolderToExecute(), nodeResult.getDeploymentLogfilePath());
 				}
 			}
 		}

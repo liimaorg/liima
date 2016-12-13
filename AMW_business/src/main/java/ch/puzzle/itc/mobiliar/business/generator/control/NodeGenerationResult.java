@@ -63,16 +63,9 @@ public class NodeGenerationResult {
 
     @Setter
     private boolean nodeEnabledForTestGeneration = false;
-
-	public String getScriptOutputFilename(Integer deploymentId){
-		String nodeName = "";
-		if(getNode() != null && getNode().getName() != null){
-			nodeName = getNode().getName();
-		}
-
-		return ConfigurationService.getProperty(ConfigurationService.ConfigKey.LOGS_PATH)
-				+ File.separator + deploymentId + '_' + nodeName + "_" + "script_output.log";
-	}
+	@Setter
+	@Getter
+	private String deploymentLogfilePath;
 
      public void omitAllTemplates(){
 	    if(applicationServerResults!=null) {

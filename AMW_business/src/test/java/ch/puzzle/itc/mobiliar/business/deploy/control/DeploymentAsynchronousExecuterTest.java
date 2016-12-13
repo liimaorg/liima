@@ -117,7 +117,7 @@ public class DeploymentAsynchronousExecuterTest {
 		result.addEnvironmentGenerationResult(envResult);
 
 
-		Mockito.doThrow(se).when(systemCallService).getAndExecuteScriptFromGeneratedConfig(folder, nodeResult.getScriptOutputFilename(result.getDeployment().getId()));
+		Mockito.doThrow(se).when(systemCallService).getAndExecuteScriptFromGeneratedConfig(folder, nodeResult.getDeploymentLogfilePath());
 		
 		// when
 		deploymentAsynchronousExecuter.executeDeployment(result, deployment, GenerationModus.DEPLOY);
