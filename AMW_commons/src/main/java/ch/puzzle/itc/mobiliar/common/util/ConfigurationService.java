@@ -66,7 +66,7 @@ public class ConfigurationService {
 		/**
 		 * Database Change sets
 		 */
-		LOAD_INITIAL_SCHEMA_DATA("amw.loadInitialSchemaAndData", "AMW_LOADINITIALSCHEMAANDDATA", false);
+		LOAD_INITIAL_SCHEMA_DATA("amw.loadInitialSchemaAndData", "AMW_LOADINITIALSCHEMAANDDATA", "false", false);
 
 
 		@Getter
