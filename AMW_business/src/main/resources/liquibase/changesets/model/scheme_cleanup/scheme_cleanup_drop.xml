@@ -1,0 +1,36 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/scheme_cleanup/scheme_cleanup_drop.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="rgalante" id="scheme_cleanup_drop">
+        <comment>
+            drop some superflous columns
+        </comment>
+
+        <!-- eliminate columns -->
+        <!-- TAMW_APPSERVERRELHIERARCHY_AUD -->
+        <dropColumn tableName="TAMW_APPSERVERRELHIERARCHY_AUD" columnName="V"/>
+
+        <!-- TAMW_RELEASE_AUD -->
+        <dropColumn tableName="TAMW_RELEASE_AUD" columnName="V"/>
+
+        <!-- TAMW_RESOURCEACTIVATION_AUD -->
+        <dropColumn tableName="TAMW_RESOURCEACTIVATION_AUD" columnName="V"/>
+
+        <!-- TAMW_RESOURCEGROUP_AUD -->
+        <dropColumn tableName="TAMW_RESOURCEGROUP_AUD" columnName="V"/>
+
+        <!-- TAMW_SOFTLINKRELATION_AUD -->
+        <dropColumn tableName="TAMW_SOFTLINKRELATION_AUD" columnName="V"/>
+
+        <!-- TAMW_RESOURCE -->
+        <dropColumn tableName="TAMW_RESOURCE" columnName="VERSION_ID"/>
+        <dropColumn tableName="TAMW_RESOURCE" columnName="PREVIOUSVERSION_ID"/>
+
+        <!-- TAMW_RESOURCE_AUD -->
+        <dropColumn tableName="TAMW_RESOURCE_AUD" columnName="VERSION_ID"/>
+        <dropColumn tableName="TAMW_RESOURCE_AUD" columnName="PREVIOUSVERSION_ID"/>
+
+    </changeSet>
+</databaseChangeLog>

@@ -64,4 +64,8 @@
     <include file="changesets/data/#20719_update_version_content.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/#20719_update_propertyname_content.xml" relativeToChangelogFile="true"/>
 
+    <!--1.12.2-->
+    <include file="changesets/model/scheme_cleanup/scheme_cleanup_drop.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/scheme_cleanup/scheme_cleanup_fix_boolean.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

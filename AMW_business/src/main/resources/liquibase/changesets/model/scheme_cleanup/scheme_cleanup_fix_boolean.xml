@@ -1,0 +1,36 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/scheme_cleanup/scheme_cleanup_fix_boolean.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="rgalante" id="scheme_cleanup_fix_boolean" dbms="oracle">
+        <comment>
+            in the db2 to ora mig some boolean fields were migrated from SMALLINT to NUMBER(*,0), this changeset
+            modifies the datatype back to Number(1,0)
+        </comment>
+
+        <!-- convert to boolean -->
+        <!-- TAMW_PROPERTYDESCRIPTOR_AUD -->
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="ENCRYPT_tmp" type="NUMBER(1,0)"/>
+        </addColumn>
+        <sql>update TAMW_PROPERTYDESCRIPTOR_AUD set ENCRYPT_tmp = ENCRYPT</sql>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="ENCRYPT"/>
+        <renameColumn newColumnName="ENCRYPT" oldColumnName="ENCRYPT_tmp" tableName="TAMW_PROPERTYDESCRIPTOR_AUD"/>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="NULLABLE_tmp" type="NUMBER(1,0)"/>
+        </addColumn>
+        <sql>update TAMW_PROPERTYDESCRIPTOR_AUD set NULLABLE_tmp = NULLABLE</sql>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="NULLABLE"/>
+        <renameColumn newColumnName="NULLABLE" oldColumnName="NULLABLE_tmp" tableName="TAMW_PROPERTYDESCRIPTOR_AUD"/>
+
+        <addColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD">
+            <column name="TESTING_tmp" type="NUMBER(1,0)"/>
+        </addColumn>
+        <sql>update TAMW_PROPERTYDESCRIPTOR_AUD set TESTING_tmp = TESTING</sql>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="TESTING"/>
+        <renameColumn newColumnName="TESTING" oldColumnName="TESTING_tmp" tableName="TAMW_PROPERTYDESCRIPTOR_AUD"/>
+
+    </changeSet>
+</databaseChangeLog>
