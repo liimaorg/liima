@@ -66,7 +66,12 @@ public class ConfigurationService {
 		/**
 		 * Database Change sets
 		 */
-		LOAD_INITIAL_SCHEMA_DATA("amw.loadInitialSchemaAndData", "AMW_LOADINITIALSCHEMAANDDATA", "false", false);
+		LOAD_INITIAL_SCHEMA_DATA("amw.loadInitialSchemaAndData", "AMW_LOADINITIALSCHEMAANDDATA", "false", false),
+		/**
+		 * Create not Existent Directory Structure
+		 */
+		CREATE_NOT_EXISTING_DIRECTORIES_ON_STARTUP("amw.createNotExistingDirectoriesOnStartUp", "AMW_CREATENOTEXISTINGDIRECTORIESONSTARTUP", "false", false);
+
 
 
 		@Getter
