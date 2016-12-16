@@ -5,6 +5,9 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="rgalante" id="#12164_addLocalPortId">
+        <validCheckSum>
+            7:6916705692504c57b563c3cd82d0c5fd
+        </validCheckSum>
 
         <addColumn tableName="TAMW_resource">
             <column name="localPortId" type="varchar(1024)">

@@ -31,6 +31,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import liquibase.integration.cdi.CDILiquibaseConfig;
 import liquibase.integration.cdi.annotations.LiquibaseType;
 import liquibase.resource.ClassLoaderResourceAccessor;
@@ -65,7 +66,13 @@ public class LiquibaseProducer {
 	@LiquibaseType
 	public CDILiquibaseConfig createConfig() {
 		CDILiquibaseConfig config = new CDILiquibaseConfig();
-		config.setChangeLog("liquibase/auto.db.changelog.xml");
+		// is used until all production instances have the changelogs for the initial data run
+		if(ConfigurationService.getPropertyAsBoolean(ConfigurationService.ConfigKey.LOAD_INITIAL_SCHEMA_DATA)){
+			config.setChangeLog("liquibase/auto.db.changelog-initialrun.xml");
+		}else{
+			config.setChangeLog("liquibase/auto.db.changelog.xml");
+		}
+
 		return config;
 	}
 

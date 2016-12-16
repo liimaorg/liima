@@ -23,7 +23,7 @@
 
 		<!-- dependency versions -->
 		<version.h2>1.4.181</version.h2>
-		<version.pg>9.1-901-1.jdbc4</version.pg>
+		<version.pg>9.4-1200-jdbc41</version.pg>
 		<version.ora>11.2.0.3</version.ora>
 		
 		<version.hibernate4-maven-plugin>1.0.5</version.hibernate4-maven-plugin>
@@ -93,6 +93,8 @@
 			<artifactId>liquibase-cdi</artifactId>
 			<version>${version.liquibase}</version>
 		</dependency>
+
+
 		<dependency>
 			<!-- logging adapter to prevent liquibase from logging to stderr -->
 			<groupId>com.mattbertolini</groupId>
@@ -107,8 +109,8 @@
 		</dependency>
 		
 		<dependency>
-		    <groupId>postgresql</groupId>
-		    <artifactId>postgresql</artifactId>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
 		    <version>${version.pg}</version>
 		</dependency>
 		

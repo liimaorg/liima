@@ -16,3 +16,4 @@ response*.POST.html
 response*.GET.html
 .DS_Store
 .m2
+AMW_openshift_deploy/deployments
