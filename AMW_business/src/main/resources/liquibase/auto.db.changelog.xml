@@ -60,7 +60,11 @@
     <include file="changesets/data/#20719_update_version_content.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/#20719_update_propertyname_content.xml" relativeToChangelogFile="true"/>
 
-    <!--include Database Changes always in both changesets auto.db.changelog-initialrun.xml and this one
+    <!--1.12.2-->
+    <include file="changesets/model/scheme_cleanup/scheme_cleanup_drop.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/scheme_cleanup/scheme_cleanup_fix_boolean.xml" relativeToChangelogFile="true"/>
+
+  <!--include Database Changes always in both changesets auto.db.changelog-initialrun.xml and this one
     it is necessary  until all production instances have the changelogs for the initial data run
     -->
 
