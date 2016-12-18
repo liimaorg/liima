@@ -20,9 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 
-import ch.puzzle.itc.mobiliar.business.appserverrelation.boundary.AppServerRelation;
-import ch.puzzle.itc.mobiliar.business.appserverrelation.control.AppServerRelationPath;
-import ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationCapable;
 import ch.puzzle.itc.mobiliar.business.database.control.AmwAuditReader;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -71,9 +68,6 @@ public class GenerationUnitFactory {
 	ResourceDependencyResolverService dependencyResolver;
 
 	@Inject
-	private AppServerRelation asRelationService;
-
-	@Inject
 	PermissionService permissionService;
 	
 	@Inject
@@ -99,15 +93,13 @@ public class GenerationUnitFactory {
 	public GenerationPackage createWorkForAppServer(GenerationOptions options,
 			ResourceEntity applicationServer, AMWTemplateExceptionHandler templateExceptionHandler) {
 
-		// relations which will overwrite a consumed Relation
-		List<AppServerRelationPath> dirtyRelations = asRelationService.getAppServerRelationsInSameTransaction(applicationServer, options.getContext().getTargetRelease(), false);
-	   	//find excluded application
+		//find excluded application
 	     List<Integer> excludedApplicationGroupIds = getExcludedApplicationGroups(options.getContext());
 		GenerationPackage mainWorkSet = new GenerationPackage();
 		mainWorkSet.setGenerationOptions(options);
 
 		GenerationSubPackage generationUnitForResource = getGenerationUnitForResource(mainWorkSet, options,
-				templateExceptionHandler, applicationServer, dirtyRelations, excludedApplicationGroupIds, null, 0, true);
+				templateExceptionHandler, applicationServer, excludedApplicationGroupIds, null, 0, true);
 	     if(generationUnitForResource!=null) {
 		   mainWorkSet.addGenerationSubPackage(generationUnitForResource);
 	    	}
@@ -152,14 +144,13 @@ public class GenerationUnitFactory {
 	 * @param options
 	 * @param templateExceptionHandler
 	 * @param resource
-	 * @param dirtyRelations
 	 * @param walkingPathIndex
 	 *             - the current walking path when traversing the tree
 	 * @return the generation sub package for this resource or null if the given resource is part of the excluded resource groups defined in the given GenerationOptions
 	 */
 	private GenerationSubPackage getGenerationUnitForResource(GenerationPackage mainWorkSet,
 			GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler,
-			ResourceEntity resource, List<AppServerRelationPath> dirtyRelations, List<Integer> excludedApplicationGroupIds,
+			ResourceEntity resource,  List<Integer> excludedApplicationGroupIds,
 			Set<TemplateDescriptorEntity> currentResourceTemplates, int walkingPathIndex, boolean generateTemplates) {
 		log.info(resource.getName());
 
@@ -177,10 +168,7 @@ public class GenerationUnitFactory {
 		GenerationSubPackage resourceWorkSet = new GenerationSubPackage();
 
 		// generate consumedResources
-		handleConsumedRelations(mainWorkSet, options, templateExceptionHandler, resource, dirtyRelations, excludedApplicationGroupIds, walkingPathIndex, properties, resourceWorkSet, generateTemplates);
-
-		// Try to resolve unresolved relations by looking up app server relations
-		resolveUnresolvedRelations(mainWorkSet, options, templateExceptionHandler, resource, dirtyRelations, excludedApplicationGroupIds, walkingPathIndex, properties, resourceWorkSet);
+		handleConsumedRelations(mainWorkSet, options, templateExceptionHandler, resource, excludedApplicationGroupIds, walkingPathIndex, properties, resourceWorkSet, generateTemplates);
 
 		// is this resource a CPI which is connected to a PPI by softlink
 		handleSoftlinkRelation(options, templateExceptionHandler, resource, properties, options.getContext().getDeployment().getDeploymentStateDate());
@@ -202,29 +190,7 @@ public class GenerationUnitFactory {
 		return resourceWorkSet;
 	}
 
-	private void resolveUnresolvedRelations(GenerationPackage mainWorkSet, GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler, ResourceEntity resource, List<AppServerRelationPath> dirtyRelations, List<Integer> excludedApplicationGroupIds, int walkingPathIndex, AppServerRelationProperties properties, GenerationSubPackage resourceWorkSet) {
-		for (ResourceRelationTypeEntity resTypeRel : resource.getConsumedResourceRelationTypes()) {
-			List<AppServerRelationPath> potentialPaths = filterASRelationsByWalkingPath(dirtyRelations,
-					walkingPathIndex, resTypeRel);
-			ResourceEntity newResource = getNewResource(resTypeRel, potentialPaths, options.getContext()
-					.getTargetRelease());
-			if (newResource != null) {
-				// We have found a resource type relation which is overridden by a app server relation. We
-				// therefore create a new, virtual (not persisted) consumed relation entity
-				ConsumedResourceRelationEntity relation = new ConsumedResourceRelationEntity();
-				relation.setMasterResource(resource);
-				relation.setSlaveResource(newResource);
-				relation.setIdentifier(resTypeRel.getIdentifier());
-				relation.setResourceRelationType(resTypeRel);
-				resource.getVirtualConsumedResources().add(relation);
-				createGenerationUnitForConsumedResource(mainWorkSet, options, templateExceptionHandler,
-						resource, walkingPathIndex, properties, resourceWorkSet, relation, excludedApplicationGroupIds,
-						potentialPaths, newResource, true);
-			}
-		}
-	}
-
-	private void handleConsumedRelations(GenerationPackage mainWorkSet, GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler, ResourceEntity resource, List<AppServerRelationPath> dirtyRelations, List<Integer> excludedApplicationGroupIds, int walkingPathIndex, AppServerRelationProperties properties, GenerationSubPackage resourceWorkSet, boolean parentGenerateTemplates) {
+	private void handleConsumedRelations(GenerationPackage mainWorkSet, GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler, ResourceEntity resource, List<Integer> excludedApplicationGroupIds, int walkingPathIndex, AppServerRelationProperties properties, GenerationSubPackage resourceWorkSet, boolean parentGenerateTemplates) {
 		Set<ConsumedResourceRelationEntity> consumedMasterRelations = dependencyResolver.getConsumedMasterRelationsForRelease(resource, options.getContext().getTargetRelease());
 		List<ConsumedResourceRelationEntity> consumedMasterRelationsSorted = new ArrayList<>(
 				consumedMasterRelations);
@@ -243,19 +209,8 @@ public class GenerationUnitFactory {
                 generateTemplates = false;
 		    }
 
-		    // We reduce the list to the appserver relation paths to those which are still valid for the
-		    // branch of the current walking step
-		    List<AppServerRelationPath> potentialPaths = filterASRelationsByWalkingPath(dirtyRelations,
-					walkingPathIndex, resourceRelation);
-
-			ResourceEntity newResource = getNewResource(resourceRelation, potentialPaths, options
-					.getContext().getTargetRelease());
-			if (newResource != null) {
-				slave = newResource;
-			}
 			createGenerationUnitForConsumedResource(mainWorkSet, options, templateExceptionHandler,
-					resource, walkingPathIndex, properties, resourceWorkSet, resourceRelation, excludedApplicationGroupIds,
-					potentialPaths,  slave, generateTemplates);
+					resource, walkingPathIndex, properties, resourceWorkSet, resourceRelation, excludedApplicationGroupIds,  slave, generateTemplates);
 		}
 	}
 
@@ -390,12 +345,12 @@ public class GenerationUnitFactory {
 			GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler,
 			ResourceEntity resource, int walkingPathIndex, AppServerRelationProperties properties,
 			GenerationSubPackage resourceWorkSet, ConsumedResourceRelationEntity resourceRelation, List<Integer> excludedApplicationGroupIds,
-			List<AppServerRelationPath> potentialPaths, ResourceEntity slave, boolean generateTemplates) {
+					ResourceEntity slave, boolean generateTemplates) {
 		
 		Set<TemplateDescriptorEntity> resourceTemplates = templatesForResource(options, slave);
 		// recursive call getGenerationUnitForResource does traverse the tree
 		GenerationSubPackage generationUnitForResource = getGenerationUnitForResource(mainWorkSet, options,
-				templateExceptionHandler, slave, potentialPaths, excludedApplicationGroupIds, resourceTemplates, ++walkingPathIndex, generateTemplates);
+				templateExceptionHandler, slave, excludedApplicationGroupIds, resourceTemplates, ++walkingPathIndex, generateTemplates);
 	     //There is no generation sub package - this means, that we ignore this consumed resource and therefore don't need to continue.
 	    if(generationUnitForResource==null){
 		    return;
@@ -441,36 +396,6 @@ public class GenerationUnitFactory {
         }
 
         addUnit(resourceWorkSet, generationUnit);
-	}
-
-	private List<AppServerRelationPath> filterASRelationsByWalkingPath(List<AppServerRelationPath> paths,
-			int currentPathIndex, AppServerRelationCapable currentWalkingStep) {
-		List<AppServerRelationPath> result = new ArrayList<>();
-		for (AppServerRelationPath path : paths) {
-			if (path.getPath() != null && path.getPath().size() > currentPathIndex) {
-				if (currentWalkingStep.getId().equals(path.getPath().get(currentPathIndex).getId())) {
-					result.add(path);
-				}
-			}
-		}
-		return result;
-	}
-
-	private ResourceEntity getNewResource(AppServerRelationCapable capable,
-			List<AppServerRelationPath> dirtyRelations, ReleaseEntity targetRelease) {
-		for (AppServerRelationPath appServerRelation : dirtyRelations) {
-			if (appServerRelation.getAppserverRelation() != null
-					&& appServerRelation.getLastRelationOfPath() != null
-					&& appServerRelation.getLastRelationOfPath().getId().equals(capable.getId())) {
-				ResourceGroupEntity resGroup = appServerRelation.getAppserverRelation()
-						.getOverriddenSlaveResource();
-				if (resGroup != null) {
-					return dependencyResolver.getResourceEntityForRelease(resGroup,
-							targetRelease);
-				}
-			}
-		}
-		return null;
 	}
 
 	private void addUnit(GenerationSubPackage workSet, GenerationUnit generationUnit) {

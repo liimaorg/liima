@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
@@ -36,11 +35,8 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 
-import ch.puzzle.itc.mobiliar.business.appserverrelation.boundary.AppServerRelation;
-import ch.puzzle.itc.mobiliar.business.appserverrelation.control.AppServerRelationPath;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -53,7 +49,6 @@ import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorUtils;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.EntityBuilder;
@@ -94,18 +89,16 @@ public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 	@InjectMocks
 	protected GenerationUnitFactory factory;
 	
-	@Mock
-	AppServerRelation appServerRelationService;
+
 	@Mock
 	FunctionService FunctionService;
 
 	protected  GenerationPackage work;
 	protected GenerationOptions options;
-	protected List<AppServerRelationPath> appserverRelationPaths = new ArrayList<>();
+
 
 	protected void generate(AMWTemplateExceptionHandler templateExceptionHandler) throws IOException {
 		CustomLogging.setup(Level.OFF);
-		Mockito.when(appServerRelationService.getAppServerRelationsFromLiveDB(Mockito.anyInt(), Mockito.any(ReleaseEntity.class))).thenReturn(appserverRelationPaths);
 		prepareWorkUnits(templateExceptionHandler);
 		generateTemplates();
 		writeFiles();

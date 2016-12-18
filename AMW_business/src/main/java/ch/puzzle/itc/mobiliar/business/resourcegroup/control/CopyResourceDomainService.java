@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import ch.puzzle.itc.mobiliar.business.appserverrelation.boundary.AppServerRelation;
 import ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationHierarchyEntity;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
@@ -134,9 +133,6 @@ public class CopyResourceDomainService {
 
 	@Inject
 	private EntityManager entityManager;
-
-	@Inject
-	AppServerRelation asRelationService;
 
 	@Inject
 	PropertyTagEditingService propertyTagEditingService;
@@ -304,11 +300,6 @@ public class CopyResourceDomainService {
 				if(target != null) {
 					copyResourceRelationContexts(origin.getContexts(), target, copyUnit);
 
-					// do copy appServerRelations if the resource to be copied is an application server
-					if (copyUnit.getOriginResource().getResourceType().isApplicationServerResourceType()) {
-						copyAppServerRelations(origin, target);
-					}
-
 					foreignableService.verifyEditableByOwner(copyUnit.getActingOwner(), consumedResourceRelationForeignableHashCodeBeforeChange, target);
 					targets.add(target);
 				}
@@ -328,50 +319,6 @@ public class CopyResourceDomainService {
 		return !originalRuntime.getId().equals(newRuntime.getId());
 	}
 
-	/**
-	 * Copies the application server relations of the origin resource entity (expected to be an application
-	 * server) to the target instance for the parametrized consumed relation.
-	 *
-	 * @param originalASRelation
-	 * @param targetASRelation
-	 */
-	void copyAppServerRelations(ConsumedResourceRelationEntity originalASRelation,
-			ConsumedResourceRelationEntity targetASRelation) {
-		for (AppServerRelationHierarchyEntity asRelation : originalASRelation.getAppServerRelations()) {
-			AppServerRelationHierarchyEntity copyOfRelation = copyAppServerRelationRec(null, asRelation);
-			// The initial relation is the only one we want to be different from the original one...
-			copyOfRelation.setRelation(targetASRelation);
-			targetASRelation.getAppServerRelations().add(copyOfRelation);
-		}
-	}
-
-	/**
-	 * Walks down the whole {@link AppServerRelationHierarchyEntity} path and copies the children entities as
-	 * well as required to ensure a complete path.
-	 *
-	 * @param parent
-	 * @param entity
-	 * @return the uppermost {@link AppServerRelationHierarchyEntity}
-	 */
-	AppServerRelationHierarchyEntity copyAppServerRelationRec(AppServerRelationHierarchyEntity parent,
-			AppServerRelationHierarchyEntity entity) {
-		AppServerRelationHierarchyEntity copy = new AppServerRelationHierarchyEntity();
-		copy.setOverriddenSlaveResource(entity.getOverriddenSlaveResource());
-		copy.setParentRelation(parent);
-		if (entity.getAssignedConsumedResourceRelation() != null) {
-			copy.setRelation(entity.getAssignedConsumedResourceRelation());
-		}
-		if (entity.getAssignedResourceTypeRelation() != null) {
-			copy.setRelation(entity.getAssignedResourceTypeRelation());
-		}
-		if (entity.getChildRelations() != null && !entity.getChildRelations().isEmpty()) {
-			for (AppServerRelationHierarchyEntity child : entity.getChildRelations()) {
-				copyAppServerRelationRec(copy, child);
-			}
-		}
-		entityManager.persist(copy);
-		return copy;
-	}
 
 	protected void copyProvidedMasterRelations(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
 		Set<ProvidedResourceRelationEntity> targetProvidedResRels = copyUnit.getTargetResource()

@@ -93,7 +93,6 @@ public class CopyResourceDomainServiceParameterizedTest {
 	private CopyResourceDomainService copyDomainService = new CopyResourceDomainService();
 
 	private ResourceTypeEntityBuilder resourceTypeEntityBuilder = new ResourceTypeEntityBuilder();
-	private AppServerRelationBuilder appServerRelationBuilder = new AppServerRelationBuilder();
 	private ResourceRelationEntityBuilder relationEntityBuilder = new ResourceRelationEntityBuilder();
 	private TemplateDescriptorEntityBuilder templateDescriptorEntityBuilder = new TemplateDescriptorEntityBuilder();
 	private TargetPlatformEntityBuilder targetPlatformEntityBuilder = new TargetPlatformEntityBuilder();
@@ -361,50 +360,6 @@ public class CopyResourceDomainServiceParameterizedTest {
 		assertTrue(copyUnit.getResult().isSuccess());
 		assertNotNull(copy);
 		assertEquals(1, copy.size());
-	}
-
-	@Test
-	public void copyAppServerRelations_copy_should_not_contain_application_relations() {
-		// given
-		List<AppServerRelationHierarchyEntity> origins = new ArrayList<AppServerRelationHierarchyEntity>();
-
-		// given relation from as to app
-		ResourceEntity app = new ResourceEntityBuilder().mockApplicationEntity("app", null, null);
-		ConsumedResourceRelationEntity origResRel = relationEntityBuilder.buildConsumedResRelEntity(
-				originResource, app, app.getName(), null);
-		AppServerRelationHierarchyEntity origResRelASR = appServerRelationBuilder
-				.forConsumedResourceRelation(origResRel, null);
-
-		// given relation from app to slave resource
-		ResourceEntity slave = new ResourceEntityBuilder().mockResourceEntity("slave", null,
-				"activeDirectory", null);
-		ConsumedResourceRelationEntity slaveResRel = relationEntityBuilder.buildConsumedResRelEntity(app,
-				slave, slave.getName(), null);
-		AppServerRelationHierarchyEntity slaveResRelASR = appServerRelationBuilder
-				.forConsumedResourceRelation(slaveResRel, origResRelASR);
-
-		// given relation from as to slave2 resource
-		ConsumedResourceRelationEntity as2slaveResRel = relationEntityBuilder.buildConsumedResRelEntity(
-				originResource, slave, slave.getName(), null);
-		AppServerRelationHierarchyEntity as2slaveResRelASR = appServerRelationBuilder
-				.forConsumedResourceRelation(as2slaveResRel, origResRelASR);
-
-		ResourceEntity targetAS = new ResourceEntityBuilder().mockAppServerEntity("targetas", null, null,
-				null);
-		ResourceEntity someApp = new ResourceEntityBuilder().mockApplicationEntity("someapp", null, null);
-		ConsumedResourceRelationEntity targetASRel = relationEntityBuilder.buildConsumedResRelEntity(
-				targetAS, someApp, null, null);
-
-		// when
-		copyDomainService.copyAppServerRelations(origResRel, targetASRel);
-
-		// then
-		// Make sure, only the Appserver 2 Slave relation is available
-		assertNotNull(targetASRel.getAppServerRelations());
-		assertEquals(1, targetASRel.getAppServerRelations().size());
-		AppServerRelationHierarchyEntity asRel = targetASRel.getAppServerRelations().iterator().next();
-		Assert.assertEquals(targetAS, asRel.getAssignedConsumedResourceRelation().getMasterResource());
-		Assert.assertEquals(someApp, asRel.getAssignedConsumedResourceRelation().getSlaveResource());
 	}
 
 	private PropertyDescriptorEntity createPropDesc(Integer id, String name, String value,
