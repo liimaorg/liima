@@ -199,16 +199,6 @@
                             </h:link>
                         </li>
                         <li>
-                            <h:link outcome="appServerRelation"
-                                    value="AS relation screen" styleClass="btn light"
-                                    rendered="${editResourceView.resourceType.applicationServerResourceType}">
-                                <f:param name="id" value="${editResourceView.resourceId}"/>
-                                <f:param name="rel" value="${null}"/>
-                                <f:param name="resTypId" value="${null}"/>
-                                <f:param name="ctx" value="#{editResourceView.contextIdViewParam}" />
-                            </h:link>
-                        </li>
-                        <li>
                             <h:link outcome="deploy"
                                     value="Deployments" styleClass="btn light"
                                     rendered="${editResourceView.canShowDeploymentLink}">

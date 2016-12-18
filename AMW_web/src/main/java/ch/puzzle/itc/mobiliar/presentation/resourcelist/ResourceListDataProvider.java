@@ -176,10 +176,6 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 		return outcome;
 	}
 
-	public String getOutcomePageForView() {
-		return "appServerRelations";
-	}
-
 	public String getOutcomePageForResourceTypeEdit() {
 		return "editResourceType";
 	}

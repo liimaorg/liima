@@ -34,7 +34,6 @@ import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ApplicationServer;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.DisplayDependencies;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
@@ -51,9 +50,6 @@ import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 @RequestScoped
 @Deprecated
 public class DependenciesController {
-
-	@Inject
-	DisplayDependencies displayDependencies;
 
 	@Inject
 	private DependenciesDataProvider dependenciesDataProvider;
@@ -93,13 +89,8 @@ public class DependenciesController {
 		List<ConsumedResourceRelationEntity> consumed = relationService.getConsumedSlaveRelations(resource);
 		for(ConsumedResourceRelationEntity rel:consumed){
 			if (appWithoutAsContainer == null || !rel.getMasterResource().getId().equals(appWithoutAsContainer.getId())) {
-				models.add(new DependencyModel(rel, null));
+				models.add(new DependencyModel(rel));
 			}
-		}
-
-		Map<AbstractResourceRelationEntity, ResourceEntity> asRelMap = displayDependencies.getAppServerRelations(resource);
-		for (AbstractResourceRelationEntity rel : asRelMap.keySet()) {
-			models.add(new DependencyModel(rel, asRelMap.get(rel)));
 		}
 
 		return models;
@@ -109,7 +100,7 @@ public class DependenciesController {
 		List<DependencyModel> models = new ArrayList<DependencyModel>();
 		List<ProvidedResourceRelationEntity> provided = relationService.getProvidedSlaveRelations(resource);
 		for (ProvidedResourceRelationEntity rel : provided) {
-			models.add(new DependencyModel(rel, null));
+			models.add(new DependencyModel(rel));
 		}
 		return models;
 	}

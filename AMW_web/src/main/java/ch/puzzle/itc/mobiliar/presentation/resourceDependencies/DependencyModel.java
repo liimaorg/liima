@@ -35,13 +35,11 @@ public class DependencyModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	@Setter
-	private ResourceEntity overwritingAs;
+
 	private AbstractResourceRelationEntity relation;
 
-	public DependencyModel(AbstractResourceRelationEntity relation, ResourceEntity overwritingAs) {
+	public DependencyModel(AbstractResourceRelationEntity relation) {
 		this.relation = relation;
-		this.overwritingAs = overwritingAs;
 	}
 
 	public String getResourceTypeName() {
@@ -54,13 +52,6 @@ public class DependencyModel implements Serializable {
 
 	public String getReleaseName() {
 		return relation.getMasterResource().getRelease().getName();
-	}
-
-	public String getOverwrites() {
-		if (overwritingAs != null) {
-			return "via AS-Relation from " + overwritingAs.getName();
-		}
-		return null;
 	}
 
 	public Integer getResourceId() {

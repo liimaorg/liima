@@ -59,17 +59,6 @@
 					<h:outputText value="#{consumed.releaseName}" />
 				</h:column>
 
-				<h:column index="index">
-					<f:facet name="header">
-						<h:panelGroup>
-							<div style="white-space: nowrap;">
-								<h:outputText value="Overwrites" />
-							</div>
-						</h:panelGroup>
-					</f:facet>
-					<h:outputText value="#{consumed.overwrites}" />
-				</h:column>
-
 				<h:column index="index" rendered="${cc.attrs.enableEdit}">
 					<f:facet name="header">
 						<h:panelGroup>
