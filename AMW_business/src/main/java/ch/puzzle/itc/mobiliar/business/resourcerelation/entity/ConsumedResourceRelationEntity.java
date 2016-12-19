@@ -20,20 +20,16 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcerelation.entity;
 
-import ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationCapable;
-import ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationHierarchyEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
-import lombok.Getter;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -42,8 +38,7 @@ import static javax.persistence.CascadeType.ALL;
 @Entity
 @Audited()
 @Table(name = "TAMW_consumedResRel")
-public class ConsumedResourceRelationEntity extends AbstractResourceRelationEntity implements
-		AppServerRelationCapable {
+public class ConsumedResourceRelationEntity extends AbstractResourceRelationEntity {
 
     // IMPORTANT! Whenever a new field (not relation to other entity) is added then this field must be added to foreignableFieldEquals method!!!
 
@@ -63,11 +58,6 @@ public class ConsumedResourceRelationEntity extends AbstractResourceRelationEnti
 	public ConsumedResourceRelationEntity(ForeignableOwner owner) {
 		super(Objects.requireNonNull(owner, "Owner must not be null"));
 	}
-
-
-    @OneToMany(mappedBy = "assignedConsumedResourceRelation", cascade = ALL)
-	@Getter
-	private Set<AppServerRelationHierarchyEntity> appServerRelations = new HashSet<>();
 	
 	@Override
 	public Set<ResourceRelationContextEntity> getContexts() {
@@ -85,52 +75,22 @@ public class ConsumedResourceRelationEntity extends AbstractResourceRelationEnti
 				+ getSlaveResource() + "]";
 	}
 
-	@Override
 	public String getMasterResourceName() {
 		return getMasterResource().getName();
 	}
 
-	@Override
 	public Integer getMasterResourceId() {
 		return getMasterResource().getId();
 	}
 
-	@Override
-	public String getMasterResourceTypeName() {
-		return getMasterResource().getResourceType().getName();
-	}
-
-	@Override
-	public Integer getMasterResourceTypeId() {
-		return getMasterResource().getResourceType().getId();
-	}
-
-	@Override
-	public boolean isMasterDefaultResourceType() {
-		return getMasterResource().getResourceType().isDefaultResourceType();
-	}
-
-	@Override
-	public String getSlaveResourceTypeName() {
-		return getSlaveResource().getResourceType().getName();
-	}
-
-	@Override
 	public Integer getSlaveResourceTypeId() {
 		return this.getSlaveResource().getResourceType().getId();				
 	}
 
-	@Override
-	public Class<?> getBaseClass() {
-		return ConsumedResourceRelationEntity.class;
-	}
-
-	@Override
 	public String getRelationIdentifier() {
 		return getIdentifier() != null ? getIdentifier() : getResourceRelationType().getIdentifier();
 	}
 
-	@Override
 	public String getMasterRelease() {
 		return getMasterResource().getRelease().getName();
 	}

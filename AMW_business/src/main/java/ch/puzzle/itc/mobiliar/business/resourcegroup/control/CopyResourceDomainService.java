@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationHierarchyEntity;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
