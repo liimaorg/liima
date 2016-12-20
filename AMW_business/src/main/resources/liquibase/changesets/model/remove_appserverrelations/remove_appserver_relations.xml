@@ -1,0 +1,12 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/remove_appserverrelations/remove_appserver_relations.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="tphilipona" id="remove_appserverrelations_drop">
+        <dropTable tableName="TAMW_APPSERVERRELATION"/>
+        <dropTable tableName="TAMW_APPSERVERRELATION_AUD"/>
+        <dropTable tableName="TAMW_APPSERVERRELHIERARCHY"/>
+        <dropTable tableName="TAMW_APPSERVERRELHIERARCHY_AUD"/>
+    </changeSet>
+</databaseChangeLog>
