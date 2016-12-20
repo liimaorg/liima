@@ -77,9 +77,9 @@ public class ResourcePropertiesRest {
 
     List<PropertyDTO> getResourceProperties(String resourceGroupName, String releaseName, String environment) throws ValidationException {
         ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
-        ContextEntity context =  contextLocator.getContextByName(environment);
         List<PropertyDTO> result = new ArrayList<>();
-        if (resource!=null) {
+        if (resource != null) {
+            ContextEntity context = contextLocator.getContextByName(environment);
             List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(resource.getId(),
                     context.getId());
             for (ResourceEditProperty property : properties) {
@@ -92,10 +92,10 @@ public class ResourcePropertiesRest {
     @Path("/{propertyName}")
     @GET
     @ApiOperation(value = "Get the property including its value for a resource in a specific release")
-    public Response getResourcePropertyValueForEnvironment(@PathParam("propertyName") String propertyName, @DefaultValue("Global")  @QueryParam("env")  String environment) throws ValidationException {
+    public Response getResourcePropertyValueForEnvironment(@PathParam("propertyName") String propertyName, @DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
         ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
-        ContextEntity context =  contextLocator.getContextByName(environment);
-        if (resource!=null) {
+        if (resource != null) {
+            ContextEntity context = contextLocator.getContextByName(environment);
             List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(resource.getId(),
                     context.getId());
             for (ResourceEditProperty property : properties) {
