@@ -25,6 +25,7 @@ const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 const HOST = process.env.HOST || 'localhost';
 const PORT = process.env.PORT || 8080;
 const METADATA = webpackMerge(commonConfig({env: ENV}).metadata, {
+  baseUrl: '/AMW_angular/',
   host: HOST,
   port: PORT,
   ENV: ENV,

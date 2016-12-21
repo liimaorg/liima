@@ -25,7 +25,7 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const HMR = helpers.hasProcessFlag('hot');
 const METADATA = {
   title: 'AMW',
-  baseUrl: '/AMW_angular/',
+//  baseUrl: '/AMW_angular/',
   isDevServer: helpers.isWebpackDevServer()
 };
 
@@ -205,7 +205,7 @@ module.exports = function (options) {
         to: 'assets',
       }, {
         from: 'src/meta',
-      }, ]),
+      },]),
 
 
       /*

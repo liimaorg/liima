@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>ch.puzzle.itc.mobiliar</groupId>
         <artifactId>AMW_parent</artifactId>
@@ -68,24 +69,24 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>npm build:prod</id>
+                        <id>npm build</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build:prod</arguments>
+                            <arguments>run build</arguments>
                         </configuration>
                     </execution>
                     <!--<execution>-->
-                        <!--<id>javascript tests</id>-->
-                        <!--<goals>-->
-                            <!--<goal>karma</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>test</phase>-->
-                        <!--<configuration>-->
-                            <!--<karmaConfPath>karma.conf.js</karmaConfPath>-->
-                        <!--</configuration>-->
+                    <!--<id>javascript tests</id>-->
+                    <!--<goals>-->
+                    <!--<goal>karma</goal>-->
+                    <!--</goals>-->
+                    <!--<phase>test</phase>-->
+                    <!--<configuration>-->
+                    <!--<karmaConfPath>karma.conf.js</karmaConfPath>-->
+                    <!--</configuration>-->
                     <!--</execution>-->
 
                 </executions>
