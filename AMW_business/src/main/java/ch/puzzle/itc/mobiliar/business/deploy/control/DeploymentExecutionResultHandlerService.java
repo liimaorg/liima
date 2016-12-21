@@ -77,7 +77,7 @@ public class DeploymentExecutionResultHandlerService {
 	@Asynchronous
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void handleUnSuccessfulDeployment(GenerationModus generationModus, DeploymentEntity deployment, GenerationResult generationResult, Exception e) {	
-		String msg = generationModus.getAction() + "("+deployment.getId()+") failed " + e.getMessage();
+		String msg = generationModus.getAction() + "("+deployment.getId()+") failed \n" + e.getMessage();
 		log.log(Level.SEVERE, msg, e);
 		deploymentService.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(), msg, deployment.getResource() != null ? deployment.getResource()
 				.getId() : null, generationResult);

@@ -152,6 +152,7 @@ public class RunSystemCallService
 				}
 				logOutput.write(line);
 				logOutput.write(lineSeparator);
+				logOutput.flush();
 			}
 			try {
 				if (p.waitFor() != 0) {

@@ -115,9 +115,9 @@ public class DeploymentExecutionResultHandlerServiceTest {
 
 		// then
 		verify(deploymentService, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.DEPLOY, deployment.getId(),
-				"Deployment(100) failed null",
+				"Deployment(100) failed \nnull",
 				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
-		verify(log, times(1)).log(Level.SEVERE, "Deployment(100) failed null", e);
+		verify(log, times(1)).log(Level.SEVERE, "Deployment(100) failed \nnull", e);
 	}
 
 	@Test
@@ -129,9 +129,9 @@ public class DeploymentExecutionResultHandlerServiceTest {
 
 		// then
 		verify(deploymentService, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.SIMULATE, deployment.getId(),
-				"Build(100) failed null",
+				"Build(100) failed \nnull",
 				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
-		verify(log, times(1)).log(Level.SEVERE, "Build(100) failed null", e);
+		verify(log, times(1)).log(Level.SEVERE, "Build(100) failed \nnull", e);
 	}
 
 }
