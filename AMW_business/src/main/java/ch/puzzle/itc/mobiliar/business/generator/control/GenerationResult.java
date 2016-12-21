@@ -51,17 +51,6 @@ public class GenerationResult {
 	}
 
 	/**
-	 * @return the list of foldersToExevute of all EnvironmentGenerationResults
-	 */
-	public List<String> getAllFoldersToExecute() {
-		List<String> foldersToExecute = new ArrayList<String>();
-		for (EnvironmentGenerationResult result : environmentGenerationResults) {
-			foldersToExecute.addAll(result.getFoldersToExecute());
-		}
-		return foldersToExecute;
-	}
-
-	/**
 	 * checks if there were generation Errors on all Environments
 	 * @return
 	 */

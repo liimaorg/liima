@@ -82,6 +82,22 @@ public class DeploymentProperties {
     @Setter
     private NodeJobEntity nodeJobEntity;
 
+
+    public String getAmwLogFilePath(){
+        String result = getTargetPrefix();
+
+        if (node != null) {
+            String nodeName = node.getName();
+            result +=  nodeName + ".log";
+        }
+        return result;
+    }
+
+    private String getTargetPrefix(){
+        return ConfigurationService.getProperty(ConfigurationService.ConfigKey.LOGS_PATH)
+                + File.separator + deployment.getId() + '_';
+    }
+
     /**
      * Returns the deployment Properties as Map to use it in Templates
      *
@@ -90,13 +106,8 @@ public class DeploymentProperties {
     public Map<String, Object> asMap() {
         final Map<String, Object> map = new HashMap<String, Object>();
         if (deployment != null) {
-            String targetLogPrefix = ConfigurationService.getProperty(ConfigurationService.ConfigKey.LOGS_PATH)
-                    + File.separator + deployment.getId() + '_';
-            map.put(DEPLOYMENT_PROPERTIES_TARGET_LOGPREFIX, targetLogPrefix);
-            if (node != null) {
-                String nodeName = node.getName();
-                map.put(DEPLOYMENT_PROPERTIES_AMWLOGFILE, targetLogPrefix + nodeName + ".log");
-            }
+            map.put(DEPLOYMENT_PROPERTIES_TARGET_LOGPREFIX, getTargetPrefix());
+            map.put(DEPLOYMENT_PROPERTIES_AMWLOGFILE, getAmwLogFilePath());
             map.put(DEPLOYMENT_PROPERTIES_KEY_ID, deployment.getId());
             map.put(DEPLOYMENT_PROPERTIES_KEY_TRACKINGID, deployment.getTrackingId());
             map.put(DEPLOYMENT_PROPERTIES_KEY_GENERATIONSTATE_DATE,

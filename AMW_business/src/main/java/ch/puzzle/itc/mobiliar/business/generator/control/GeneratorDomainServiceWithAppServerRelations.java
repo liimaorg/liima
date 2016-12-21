@@ -552,6 +552,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
 
         // add Result
         result.setNode(context.getNode());
+        result.setDeploymentLogfilePath(context.getDeploymentProperties().getAmwLogFilePath());
         result.setHostname(appServerRelationsTemplateProcessor.getHostname());
 
         // checks if the node is enabled
