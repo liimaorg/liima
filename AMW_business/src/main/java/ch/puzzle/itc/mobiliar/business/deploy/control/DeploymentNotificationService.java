@@ -117,9 +117,25 @@ public class DeploymentNotificationService {
 			message.append("\n");
 			message.append(deployment.getStateMessage());
 			message.append("\n");
+			message.append(getApplicationWithVersionsString(deployment));
 			message.append("\n");
 		}
 		return message.toString();
+	}
+
+	private String getApplicationWithVersionsString(DeploymentEntity deploymentEntity){
+		StringBuffer result = new StringBuffer();
+		if(deploymentEntity != null){
+			List<DeploymentEntity.ApplicationWithVersion> applicationsWithVersions = deploymentEntity.getApplicationsWithVersion();
+			for (DeploymentEntity.ApplicationWithVersion applicationsWithVersion : applicationsWithVersions ){
+				result.append("- ");
+				result.append(applicationsWithVersion.getApplicationName());
+				result.append(" ");
+				result.append(applicationsWithVersion.getVersion());
+				result.append("\n");
+			}
+		}
+		return result.toString();
 	}
 
 	/**
