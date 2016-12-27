@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.test;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.lang.System;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,8 @@ public class CustomLoggingTest {
 
 	@Test
 	public void test() throws IOException {
-		new CustomLogging().setup(Level.FINEST, "/tmp/out.log");
+		String tmpDir = System.getProperty("java.io.tmpdir");
+		new CustomLogging().setup(Level.FINEST, tmpDir + "/out.log");
 		log.info("test");
 	}
 
