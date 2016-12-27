@@ -10,7 +10,6 @@
 		<class>ch.puzzle.itc.mobiliar.business.resourceactivation.entity.ResourceActivationEntity</class>
 		<class>ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext</class>
 		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity</class>
-		<class>ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationHierarchyEntity</class>
 		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity</class>
 		<class>ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency</class>
 		<class>ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity</class>
@@ -64,7 +63,6 @@
 		<class>ch.puzzle.itc.mobiliar.business.resourceactivation.entity.ResourceActivationEntity</class>
 		<class>ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext</class>
 		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity</class>
-		<class>ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationHierarchyEntity</class>
 		<class>ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity</class>
 		<class>ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency</class>
 		<class>ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity</class>

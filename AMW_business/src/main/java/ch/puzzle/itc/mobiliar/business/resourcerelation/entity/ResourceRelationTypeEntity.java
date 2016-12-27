@@ -20,14 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcerelation.entity;
 
-import ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationCapable;
-import ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationHierarchyEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
@@ -46,7 +43,7 @@ import static javax.persistence.CascadeType.ALL;
 @Audited
 @Table(name = "TAMW_resourceRelationType")
 public class ResourceRelationTypeEntity extends HasContexts<ResourceRelationTypeContextEntity> implements
-		Serializable, Identifiable, AppServerRelationCapable {
+		Serializable, Identifiable {
 
 	@Getter
 	@Setter
@@ -72,10 +69,6 @@ public class ResourceRelationTypeEntity extends HasContexts<ResourceRelationType
 
 	@OneToMany(mappedBy = "resourceRelationType", cascade = ALL)
 	private Set<ProvidedResourceRelationEntity> providedResourceRelations;
-
-	@OneToMany(mappedBy = "assignedResourceTypeRelation", cascade = ALL)
-	@Getter
-	private Set<AppServerRelationHierarchyEntity> appServerRelations;
 
 	private static final long serialVersionUID = 1L;
 
@@ -117,15 +110,6 @@ public class ResourceRelationTypeEntity extends HasContexts<ResourceRelationType
 		return consumedResourceRelations;
 	}
 
-	/**
-	 * When using this object as a {@link AppServerRelationCapable}, it might be that we need to know the
-	 * context, this relation is used in. We therefore allow to set this transient value to fulfill the
-	 * interface correctly.
-	 */
-	@Transient
-	@Getter
-	@Setter
-	ResourceEntity temporaryMasterResource;
 
 	public Set<ProvidedResourceRelationEntity> getProvidedResourceRelations() {
 		return providedResourceRelations;
@@ -137,58 +121,13 @@ public class ResourceRelationTypeEntity extends HasContexts<ResourceRelationType
 				+ resourceTypeA + ", resourceTypeB=" + resourceTypeB + "]";
 	}
 
-	@Override
-	public String getMasterResourceName() {
-		return temporaryMasterResource != null ? temporaryMasterResource.getName() : null;
-	}
 
-	@Override
-	public Integer getMasterResourceId() {
-		return temporaryMasterResource != null ? temporaryMasterResource.getId() : null;
-	}
-
-	@Override
-	public String getMasterResourceTypeName() {
-		return resourceTypeA != null ? resourceTypeA.getName() : null;
-	}
-
-	@Override
-	public Integer getMasterResourceTypeId() {
-		return resourceTypeB != null ? resourceTypeB.getId() : null;
-	}
-
-	@Override
-	public boolean isMasterDefaultResourceType() {
-		return DefaultResourceTypeDefinition.contains(getMasterResourceTypeName());
-	}
-
-	@Override
 	public String getRelationIdentifier() {
 		return identifier;
 	}
 
-	@Override
 	public ResourceEntity getSlaveResource() {
 		return null;
 	}
 
-	@Override
-	public String getSlaveResourceTypeName() {
-		return resourceTypeB != null ? resourceTypeB.getName() : null;
-	}
-
-	@Override
-	public Integer getSlaveResourceTypeId() {
-		return resourceTypeB != null ? resourceTypeB.getId() : null;
-	}
-
-	@Override
-	public Class<?> getBaseClass() {
-		return ResourceRelationTypeEntity.class;
-	}
-
-	@Override
-	public String getMasterRelease() {
-		return temporaryMasterResource != null ? temporaryMasterResource.getRelease().getName() : null;
-	}
 }

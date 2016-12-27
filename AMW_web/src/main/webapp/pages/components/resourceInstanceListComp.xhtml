@@ -90,18 +90,6 @@
 				</h:link>
 			</h:column>
 
-			<h:column rendered="#{securityDataProvider.hasPermission('EDIT_RES') and resourceInstanceListImpl.selectedResourceType.applicationServerResourceType}">
-				<f:facet name="header">
-					<h:outputText value="View" />
-				</f:facet>
-
-				<h:link id="viewLink"
-					outcome="appServerRelation" onclick="showLoader();"
-					value="View ">
-					<f:param name="id" value="#{group.selectedResourceId}" />
-				</h:link>
-			</h:column>
-
 			<h:column rendered="${resourceInstanceListImpl.canRemoveDefaultInstanceOfResType}">
 				<f:facet name="header">
 					<h:outputText value="Delete" />

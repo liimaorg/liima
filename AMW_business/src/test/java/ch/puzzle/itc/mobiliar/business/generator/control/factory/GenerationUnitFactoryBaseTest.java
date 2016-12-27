@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.factory;
 
-import ch.puzzle.itc.mobiliar.business.appserverrelation.boundary.AppServerRelation;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.function.control.FunctionService;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
@@ -68,9 +67,6 @@ public class GenerationUnitFactoryBaseTest<T extends EntityBuilder> {
 
 	@Mock
 	ResourceTypeProvider resourceTypeProvider;
-
-	@Mock
-	AppServerRelation appServerRelationService;
 
     @Mock
     ResourceDependencyResolverService dependencyResolver;

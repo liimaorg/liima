@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 
-import ch.puzzle.itc.mobiliar.business.appserverrelation.entity.AppServerRelationHierarchyEntity;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
@@ -256,12 +255,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 		if (relation instanceof ConsumedResourceRelationEntity) {
 			if (relation != null && consumedMasterRelations != null) {
 				ConsumedResourceRelationEntity rel = (ConsumedResourceRelationEntity) relation;
-				if (rel.getAppServerRelations() != null) {
-					for (AppServerRelationHierarchyEntity asrel : rel.getAppServerRelations()) {
-						asrel.setRelation(rel.getResourceRelationType());
-					}
-					rel.getAppServerRelations().clear();
-				}
 				consumedMasterRelations.remove(relation);
 			}
 		}
@@ -528,18 +521,7 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	public ConsumedResourceRelationEntity addConsumedResourceRelation(final ResourceEntity relatedResource,
 			final ResourceRelationTypeEntity resourceRelationTypeOfRelation, Integer identifier, ForeignableOwner changingOwner) {
 		final ConsumedResourceRelationEntity r = new ConsumedResourceRelationEntity();
-		if (resourceRelationTypeOfRelation != null
-				&& resourceRelationTypeOfRelation.getAppServerRelations() != null) {
-			for (AppServerRelationHierarchyEntity appserverrel : resourceRelationTypeOfRelation
-					.getAppServerRelations()) {
-				if (appserverrel.getParentRelation() != null
-						&& appserverrel.getParentRelation().getAssignedConsumedResourceRelation() != null
-						&& this.equals(appserverrel.getParentRelation()
-								.getAssignedConsumedResourceRelation().getSlaveResource())) {
-					appserverrel.setRelation(r);
-				}
-			}
-		}
+
 		if (identifier != null) {
 			r.setIdentifier(identifier.toString());
 		}
