@@ -216,6 +216,7 @@ public class DeploymentNotificationServiceTest {
 		deployment.setTrackingId(Integer.valueOf(12));
 		deployment.setDeploymentState(DeploymentState.success);
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
+		deployment.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
 		deployment.setContext(context);
 		deployments.add(deployment);
 		

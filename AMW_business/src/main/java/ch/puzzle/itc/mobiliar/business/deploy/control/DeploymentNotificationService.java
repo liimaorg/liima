@@ -109,17 +109,34 @@ public class DeploymentNotificationService {
 			final List<DeploymentEntity> deployments) {
 		final StringBuffer message = new StringBuffer();
 		for (final DeploymentEntity deployment : deployments) {
-
-			message.append("AMW-Deployment: ").append(deployment.getId()).append("(").append(deployment.getResourceGroup().getName())
-			.append(" on ").append(deployment.getContext().getName()).append(")");
+			message.append("Application server: ").append(deployment.getResourceGroup().getName());
+			message.append(" (").append(deployment.getRelease()).append(")\n");
+			message.append("Applications: \n");
+			message.append(getApplicationWithVersionsString(deployment));
+			message.append("Result: ").append(deployment.getDeploymentState().toString()).append("\n");
+			message.append("Environment: ").append(deployment.getContext().getName()).append("\n");
+			message.append("Id: ").append(deployment.getId()).append("\n");
 			message.append("\n");
-			message.append("Result: ").append(deployment.getDeploymentState().toString());
-			message.append("\n");
-			message.append(deployment.getStateMessage());
-			message.append("\n");
-			message.append("\n");
+			message.append("State message:\n");
+			message.append(deployment.getStateMessage()).append("\n");
+			message.append("\n\n");
 		}
 		return message.toString();
+	}
+
+	private String getApplicationWithVersionsString(DeploymentEntity deploymentEntity){
+		StringBuffer result = new StringBuffer();
+		if(deploymentEntity != null){
+			List<DeploymentEntity.ApplicationWithVersion> applicationsWithVersions = deploymentEntity.getApplicationsWithVersion();
+			for (DeploymentEntity.ApplicationWithVersion applicationsWithVersion : applicationsWithVersions ){
+				result.append("- ");
+				result.append(applicationsWithVersion.getApplicationName());
+				result.append(" ");
+				result.append(applicationsWithVersion.getVersion());
+				result.append("\n");
+			}
+		}
+		return result.toString();
 	}
 
 	/**

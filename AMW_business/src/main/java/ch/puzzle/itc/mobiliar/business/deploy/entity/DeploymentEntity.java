@@ -340,21 +340,23 @@ public class DeploymentEntity implements Serializable {
             return applicationsWithVersionList;
         }
         List<ApplicationWithVersion> result = new ArrayList<DeploymentEntity.ApplicationWithVersion>();
-        JSONArray o1 = JSONArray.fromObject(applicationsWithVersion);
-        for (Object object : o1) {
-            JSONObject o = JSONObject.fromObject(object);
-            Object appName = o.get("applicationName");
-            Object appId = o.get("applicationId");
-            Object version = o.get("version");
-            result.add(new ApplicationWithVersion(appName.toString(), (Integer) appId, version.toString()));
-        }
-        // sort the apps
-        Collections.sort(result, new Comparator<ApplicationWithVersion>() {
-            @Override
-            public int compare(ApplicationWithVersion app1, ApplicationWithVersion app2) {
-                return app1.getApplicationName().toLowerCase().compareTo(app2.getApplicationName().toLowerCase());
+        if(applicationsWithVersion !=  null) {
+            JSONArray o1 = JSONArray.fromObject(applicationsWithVersion);
+            for (Object object : o1) {
+                JSONObject o = JSONObject.fromObject(object);
+                Object appName = o.get("applicationName");
+                Object appId = o.get("applicationId");
+                Object version = o.get("version");
+                result.add(new ApplicationWithVersion(appName.toString(), (Integer) appId, version.toString()));
             }
-        });
+            // sort the apps
+            Collections.sort(result, new Comparator<ApplicationWithVersion>() {
+                @Override
+                public int compare(ApplicationWithVersion app1, ApplicationWithVersion app2) {
+                    return app1.getApplicationName().toLowerCase().compareTo(app2.getApplicationName().toLowerCase());
+                }
+            });
+        }
 
         applicationsWithVersionList = result;
         return result;
