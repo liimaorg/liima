@@ -37,6 +37,8 @@ import lombok.Setter;
 public class ReleaseDTO {
 
     @Getter @Setter
+    private Integer id;
+    @Getter @Setter
     private String release;
     @Getter @Setter      
     private List<ResourceRelationDTO> relations;
@@ -48,14 +50,16 @@ public class ReleaseDTO {
     ReleaseDTO(){}
 
     public ReleaseDTO(ResourceEntity resource, List<ResourceRelationDTO> relations, List<PropertyDTO> properties, List<TemplateDTO> templates){
-        this.release = resource.getRelease().getName();
+		this.id = resource.getRelease().getId();        
+		this.release = resource.getRelease().getName();
         this.relations = relations;
         this.properties = properties;
         this.templates = templates;
     }
 
     public ReleaseDTO(ReleaseEntity release, List<ResourceRelationDTO> relations, List<PropertyDTO> properties, List<TemplateDTO> templates){
-        this.release = release.getName();
+		this.id = release.getId();        
+		this.release = release.getName();
         this.relations = relations;
         this.properties = properties;
         this.templates = templates;

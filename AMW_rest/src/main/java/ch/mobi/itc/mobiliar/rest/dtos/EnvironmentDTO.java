@@ -20,38 +20,35 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
-import java.util.List;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import lombok.Getter;
-import lombok.Setter;
-
-@XmlRootElement(name = "resource")
+@XmlRootElement(name = "environment")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public class ResourceDTO {
+public class EnvironmentDTO {
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private Integer id;
-    @Getter @Setter
+    @Getter
+    @Setter
     private String name;
-    @Getter @Setter
-    private String type;
-    @Getter @Setter
-    private List<ReleaseDTO> releases;
-    
-    ResourceDTO(){}
+    @Getter
+    @Setter
+    private String parent;
 
-    public ResourceDTO(ResourceGroupEntity resourceGroup, List<ReleaseDTO> releases){
-        this.id = resourceGroup.getId();
-        this.name = resourceGroup.getName();
-        this.type = resourceGroup.getResourceType() != null ? resourceGroup.getResourceType().getName(): null;
-        if(releases!=null && !releases.isEmpty()){
-            this.releases = releases;
-        }
+    EnvironmentDTO() {
+    }
+
+    public EnvironmentDTO(ContextEntity context) {
+        this.id = context.getId();
+        this.name = context.getName();
+        this.parent = context.getParent().getName();
     }
 }

@@ -29,17 +29,16 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 @RequestScoped
 @Path("/resources/{resourceGroupName}/{releaseName}/relations")
@@ -68,15 +67,17 @@ public class ResourceRelationsRest {
     @GET
     @ApiOperation(value = "Get all relations of the current resource")
     public List<ResourceRelationDTO> getResourceRelations() throws ValidationException {
-        return getResourceRelations(resourceGroupName, releaseName);
+        return getResourceRelations(resourceGroupName, releaseName, false);
     }
 
-    List<ResourceRelationDTO> getResourceRelations(String resourceGroupName, String releaseName) throws ValidationException {
+    List<ResourceRelationDTO> getResourceRelations(String resourceGroupName, String releaseName, boolean applicationsOnly) throws ValidationException {
         ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithRelations(resourceGroupName, releaseName);
-
         List<ResourceRelationDTO> resourceRelations = new ArrayList<>();
         for (ConsumedResourceRelationEntity relation : resource.getConsumedMasterRelations()) {
-            ResourceRelationDTO resRel = new ResourceRelationDTO(relation);
+			if (applicationsOnly && !relation.getResourceRelationType().getResourceTypeB().isApplicationResourceType()) {
+                    continue;
+            }            
+			ResourceRelationDTO resRel = new ResourceRelationDTO(relation);
             List<TemplateDTO> templates = resourceRelationTemplatesRest.getResourceRelationTemplates(resourceGroupName, releaseName,
                     relation.getSlaveResource().getName(), relation.getSlaveResource().getRelease().getName(), "");
             addTemplates(resRel, templates);
@@ -84,7 +85,8 @@ public class ResourceRelationsRest {
         }
         return resourceRelations;
     }
-
+    
+   
     @Path("/{relatedResourceGroupName}")
     @GET
     @ApiOperation(value = "Get all related releases of the given resource")
@@ -103,6 +105,14 @@ public class ResourceRelationsRest {
         return resourceRelations;
     }
 
+    @Path("/{relatedResourceGroupName}/{relatedReleaseName}")
+    @GET
+    @ApiOperation(value = "Get the relation between the two resource releases")
+    public ResourceRelationDTO getResourceRelation(@PathParam("relatedResourceGroupName") String relatedResourceGroupName,
+            @PathParam("relatedReleaseName") String relatedReleaseName) throws ValidationException {
+        return new ResourceRelationDTO(resourceRelationLocator.getResourceRelation(resourceGroupName, releaseName,
+                relatedResourceGroupName, relatedReleaseName));
+    }
 
     // List of ResourceRelationDTO
     @Path("/{relatedResourceGroupName}/{relatedReleaseName}")
@@ -141,4 +151,5 @@ public class ResourceRelationsRest {
         resRel.getTemplates().addAll(templatesToAdd);
     }
 
+    
 }

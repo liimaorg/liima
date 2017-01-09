@@ -98,6 +98,9 @@ public class ResourcesRest {
     @Inject
     private ServerView serverView;
 
+    /**
+     *  Fuer JavaBatch Monitor
+     */
     @Inject
     ResourceRelationLocator resourceRelationLocator;
 
@@ -155,10 +158,11 @@ public class ResourcesRest {
 	@GET
 	@ApiOperation(value = "Get resource in specific release")
 	public ReleaseDTO getResource(@PathParam("resourceGroupName") String resourceGroupName,
-			@PathParam("releaseName") String releaseName, @DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
+			@PathParam("releaseName") String releaseName, @DefaultValue("Global") @QueryParam("env") String environment, 
+			@QueryParam("appsOnly") boolean appsOnly) throws ValidationException {
 		ResourceEntity resourceByRelease = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
 		return new ReleaseDTO(resourceByRelease, resourceRelations.getResourceRelations(resourceGroupName,
-				releaseName), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
+				releaseName, appsOnly), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
 				environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
 	}
 
@@ -310,7 +314,7 @@ public class ResourcesRest {
         String runtime = "JavaBatch*"; // aber nur Batch
         String host = null;
         String node = null;
-        List<ServerTuple> servers = serverView.getServers(host, appServer, runtime, node, env, true);
+        List<ServerTuple> servers = serverView.getServers(host, appServer, runtime, node, env);
         List<String> appServerList = new ArrayList<>();
         for (ServerTuple t : servers) {
             appServerList.add(t.getAppServer().toLowerCase());
