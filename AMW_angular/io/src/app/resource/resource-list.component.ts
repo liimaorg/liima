@@ -110,7 +110,7 @@ export class ResourceListComponent implements OnInit {
     this.resource = null;
     this.titleLabel = 'Gruppe ' +this.resourceName+ ' in Release ' +this.releaseName;
     this.resourceService
-      .getInRelease(this.resourceName, this.releaseName)
+      .getInRelease(this.resourceName, this.releaseName, true)
       .subscribe(
         /* happy path */ r => this.resourceInRelease = r,
         /* error path */ e => this.errorMessage = e,

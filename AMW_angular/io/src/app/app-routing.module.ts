@@ -4,18 +4,19 @@ import { AboutComponent } from './about';
 import { NgModule } from '@angular/core';
 
 export const routes: Routes = [
-  { path: '',      component: HomeComponent },
-  { path: 'about', component: AboutComponent },
+  {path: '', component: HomeComponent},
+  {path: 'about', component: AboutComponent},
   {
     path: 'detail', loadChildren: () => System.import('./+detail').then((comp: any) => {
-      return comp.default;
-    })
+    return comp.default;
+  })
     ,
   },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true })],
+  imports: [RouterModule.forRoot(routes, {useHash: true})],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule {
+}

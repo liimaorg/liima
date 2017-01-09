@@ -4,6 +4,7 @@ import { inject, TestBed } from '@angular/core/testing';
 
 // Load the implementations that should be tested
 import { AboutComponent } from './about.component';
+import {Observable} from "rxjs";
 
 describe('About', () => {
   // provide our implementations or mocks to the dependency injector

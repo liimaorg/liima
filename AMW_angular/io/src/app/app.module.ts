@@ -2,14 +2,12 @@ import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { RouterModule } from '@angular/router';
 import { removeNgStyles, createNewHosts, createInputTransfer } from '@angularclass/hmr';
-
 /*
  * Feature Modules
  */
 import { ResourceModule } from './resource/resource.module';
-
+import { DeploymentModule } from './deployment/deployment.module';
 /*
  * Platform and Environment providers/directives/pipes
  */
@@ -22,6 +20,7 @@ import { AppState, InternalStateType } from './app.service';
 import { HomeComponent } from './home';
 import { AboutComponent } from './about';
 import { XLarge } from './home/x-large';
+import { PageNotFoundComponent } from './not-found.component';
 //import {ResourceRoutingModule} from "./resource/resource-routing.module";
 
 
@@ -41,11 +40,12 @@ type StoreType = {
  * `AppModule` is the main entry point into Angular2's bootstraping process
  */
 @NgModule({
-  bootstrap: [ AppComponent ],
+  bootstrap: [AppComponent],
   declarations: [
     AppComponent,
     AboutComponent,
     HomeComponent,
+    PageNotFoundComponent,
     XLarge
   ],
   imports: [ // import Angular's modules
@@ -53,7 +53,8 @@ type StoreType = {
     FormsModule,
     HttpModule,
     AppRoutingModule,
-    ResourceModule
+    ResourceModule,
+    DeploymentModule
   ],
   providers: [ // expose our Services and Providers into Angular's dependency injection
     ENV_PROVIDERS,
@@ -61,7 +62,8 @@ type StoreType = {
   ]
 })
 export class AppModule {
-  constructor(public appRef: ApplicationRef, public appState: AppState) {}
+  constructor(public appRef: ApplicationRef, public appState: AppState) {
+  }
 
   hmrOnInit(store: StoreType) {
     if (!store || !store.state) return;
@@ -87,7 +89,7 @@ export class AppModule {
     // recreate root elements
     store.disposeOldHosts = createNewHosts(cmpLocation);
     // save input values
-    store.restoreInputValues  = createInputTransfer();
+    store.restoreInputValues = createInputTransfer();
     // remove styles
     removeNgStyles();
   }

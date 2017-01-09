@@ -2,7 +2,6 @@
  * Angular 2 decorators and services
  */
 import { Component, ViewEncapsulation } from '@angular/core';
-
 import { AppState } from './app.service';
 
 /*
@@ -39,7 +38,13 @@ import { AppState } from './app.service';
         <a [routerLink]=" ['./resource'] ">
           Resources
         </a>
-      </span>      
+      </span>   
+      |
+      <span>
+        <a [routerLink]=" ['./deployment'] ">
+          Deployments
+        </a>
+      </span> 
     </nav>
 
     <main>
@@ -62,8 +67,7 @@ export class AppComponent {
   name = 'Angular 2';
   url = 'http://angular.io';
 
-  constructor(
-    public appState: AppState) {
+  constructor(public appState: AppState) {
 
   }
 
