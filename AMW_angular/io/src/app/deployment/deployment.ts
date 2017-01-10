@@ -10,4 +10,5 @@ export interface Deployment {
   doSendEmail: boolean;
   doExecuteShakedownTest: boolean;
   doNeighbourhoodTest: boolean;
+  requestOnly: boolean;
 }

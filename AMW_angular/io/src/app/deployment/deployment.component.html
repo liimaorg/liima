@@ -30,9 +30,19 @@
       </span>
     </section>
   </section>
-  <section *ngIf="resourceInRelease">
-    <label>Applications</label>
-    <section *ngFor="let relation of resourceInRelease.relations">{{relation.identifier}}</section>
+  <section *ngIf="relations">
+    <section>
+      <label>Applications</label>
+      <section *ngFor="let relation of relations">
+        <span *ngIf="relation.type == 'APPLICATION' && relation.relatedResourceRelease == selectedRelease.release">{{relation.identifier}}</span>
+      </section>
+    </section>
+    <section>
+      <label>Runtime</label>
+      <section *ngFor="let relation of relations">
+        <span *ngIf="relation.type == 'RUNTIME'">{{relation.identifier}}</span>
+      </section>
+    </section>
   </section>
   <section>
     <label>Details</label>
@@ -50,7 +60,8 @@
     </section>
   </section>
   <section *ngIf="isReadyForDeployment()">
-    <input type="button" (click)="createDeployment()" value="Deploy!">
+    <input type="button" (click)="requestDeployment()" value="Request deployment">
+    <input type="button" (click)="createDeployment()" value="Deploy">
   </section>
   <section *ngIf="errorMessage">
     {{errorMessage}}

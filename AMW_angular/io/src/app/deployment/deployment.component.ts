@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Resource } from '../resource/resource';
 import { Release } from '../resource/release';
+import { Relation } from '../resource/relation';
 import { ResourceService } from '../resource/resource.service';
 import { DeploymentService } from './deployment.service';
 import { EnvironmentService } from './environment.service';
@@ -8,6 +9,7 @@ import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Environment } from './environment';
 import { Deployment } from './deployment';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'amw-deployment',
@@ -23,8 +25,7 @@ export class DeploymentComponent implements OnInit {
   selectedAppserver: Resource = null;
   appservers: Resource[] = [];
   selectedRelease: Release = null;
-  resourceInRelease: Resource;
-  apps: Resource[] = [];
+  relations: Relation[] = [];
   environments: Environment[] = [];
   environmentGroups: string[] = [];
   doSendEmail: boolean = false;
@@ -74,8 +75,9 @@ export class DeploymentComponent implements OnInit {
     if (this.hasRelease(release.release)) {
       this.selectedRelease = release;
       this.goTo([this.selectedAppserver.name, release.release]);
-      this.resourceService.getInRelease(this.selectedAppserver.name, release.release, true).subscribe(
-        /* happy path */ r => this.resourceInRelease = r,
+      this.isLoading = true;
+      this.resourceService.getRelated(this.selectedAppserver.name, release.release).subscribe(
+        /* happy path */ r => this.relations = r,
         /* error path */ e => this.errorMessage = e,
         /* onComplete */ () => this.isLoading = false);
     }
@@ -95,7 +97,15 @@ export class DeploymentComponent implements OnInit {
     return (this.selectedRelease && this.environments.filter(item => item.selected).length > 0);
   }
 
+  requestDeployment() {
+    console.log(this.populateDeployment(true));
+  }
+
   createDeployment() {
+    console.log(this.populateDeployment(false));
+  }
+
+  populateDeployment(requestOnly: boolean): Deployment {
     if (this.isReadyForDeployment()) {
       let deployment: Deployment = <Deployment>{};
       deployment.appServerId = this.selectedAppserver.id;
@@ -104,7 +114,8 @@ export class DeploymentComponent implements OnInit {
       deployment.doSendEmail = this.doSendEmail;
       deployment.doExecuteShakedownTest = this.doExecuteShakedownTest;
       deployment.doNeighbourhoodTest = this.doNeighbourhoodTest;
-      console.log(deployment);
+      deployment.requestOnly = requestOnly;
+      return deployment;
     }
   }
 
@@ -128,7 +139,7 @@ export class DeploymentComponent implements OnInit {
     this.isLoading = true;
     this.resourceService
       .getByType('APPLICATIONSERVER').subscribe(
-      /* happy path */ r => this.appservers = r,
+      /* happy path */ r => this.appservers = _.sortBy(_.uniqBy(r, 'id'), 'name'),
       /* error path */ e => this.errorMessage = e,
       /* onComplete */ () => this.setSelectedServer());
   }

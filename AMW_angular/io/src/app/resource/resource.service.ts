@@ -3,6 +3,7 @@ import { Http, Response, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Resource } from './resource';
 import { Release } from './release';
+import { Relation } from './relation';
 
 @Injectable()
 export class ResourceService {
@@ -42,6 +43,14 @@ export class ResourceService {
     return resource$;
   }
 
+  getRelated(resourceGroupName: string, releaseName: string): Observable<Relation[]> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/${resourceGroupName}/${releaseName}/relations`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   private getHeaders() {
     let headers = new Headers();
     headers.append('Accept', 'application/json');
@@ -60,10 +69,11 @@ function toResource(r: any): Resource {
     id: r.id,
     name: r.name,
     type: r.type,
+    version: r.version,
     release: r.release ? mapRelease(r.release) : '',
     releases: r.releases ? mapReleases(r.releases) : [],
   });
-  console.log('Parsed resource:', resource);
+  //console.log('Parsed resource:', resource);
   return resource;
 }
 
@@ -82,7 +92,7 @@ function toRelease(r: any): Release {
     relations: r.relations,
     properties: r.properties,
   });
-  console.log('Parsed release:', release);
+  //console.log('Parsed release:', release);
   return release;
 }
 

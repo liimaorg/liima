@@ -132,23 +132,23 @@ describe('Deployment', () => {
 
   it('should call resourceService on onChangeRelease', inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
     let testRelease: Release = <Release>{id: 1, release: 'testRelease'};
-    spyOn(resourceService, 'getInRelease').and.returnValue(Observable.of(''));
+    spyOn(resourceService, 'getRelated').and.returnValue(Observable.of(''));
     deploymentComponent.selectedAppserver = <Resource>{name: 'testServer', releases: [testRelease]};
 
     deploymentComponent.onChangeRelease(testRelease);
     expect(deploymentComponent.hasRelease(testRelease.release)).toBeTruthy();
-    expect(resourceService.getInRelease).toHaveBeenCalled();
+    expect(resourceService.getRelated).toHaveBeenCalled();
   }));
 
   it('should not call resourceService on onChangeRelease if not available for selectedAppserver', inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
     let testRelease: Release = <Release>{id: 1, release: 'testRelease'};
     let anotherRelease: Release = <Release>{id: 2, release: 'anotherRelease'};
-    spyOn(resourceService, 'getInRelease').and.returnValue(Observable.of(''));
+    spyOn(resourceService, 'getRelated').and.returnValue(Observable.of(''));
     deploymentComponent.selectedAppserver = <Resource>{name: 'testServer', releases: [testRelease]};
 
     deploymentComponent.onChangeRelease(anotherRelease);
     expect(deploymentComponent.hasRelease(anotherRelease.release)).toBeFalsy();
-    expect(resourceService.getInRelease).not.toHaveBeenCalled();
+    expect(resourceService.getRelated).not.toHaveBeenCalled();
   }));
 
   it('should not be readyForDeployment if no environment is selected', inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
