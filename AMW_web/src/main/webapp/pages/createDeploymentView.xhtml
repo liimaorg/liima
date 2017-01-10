@@ -13,7 +13,8 @@
 
     <!--  HEADER -->
     <ui:define name="backlink">
-        <h:link outcome="deploy" value="Back deploy" styleClass="btn back" onclick="showLoader();" includeViewParams="true"/>
+        <h:link outcome="deploy" value="Back deploy" styleClass="btn back" onclick="showLoader();"
+                includeViewParams="true"/>
     </ui:define>
 
     <ui:define name="pagetitle">#{createDeploymentView.getTitle()}
@@ -26,6 +27,7 @@
                 <nav>
                     <ul>
                         <li class="current"><h:link value="Deployments"/></li>
+                        <li><a href="/AMW_angular/#/deployment">Angular</a></li>
                     </ul>
                 </nav>
             </aside>
@@ -51,32 +53,41 @@
                                     <div class="controls">
 
                                         <h:panelGroup rendered="#{!createDeploymentView.isRedeployment()}">
-                                            <h:selectOneMenu value="#{createDeploymentView.selectedApplicationServerGroup}">
+                                            <h:selectOneMenu
+                                                    value="#{createDeploymentView.selectedApplicationServerGroup}">
                                                 <f:selectItem itemLabel="None" itemValue="${null}"/>
                                                 <f:selectItems
                                                         value="${createDeploymentView.applicationServerGroups}"
                                                         var="appServerGroup" itemLabel="${appServerGroup.name}"
                                                         itemValue="${appServerGroup.id}"/>
                                                 <a4j:ajax render="createDeploymentPanelGroup"
-                                                          onbegin="showLoader();" oncomplete="updateElements(); hideLoader();"
+                                                          onbegin="showLoader();"
+                                                          oncomplete="updateElements(); hideLoader();"
                                                           onerror="hideLoader();"/>
                                             </h:selectOneMenu>
                                         </h:panelGroup>
                                         <h:panelGroup rendered="#{createDeploymentView.isRedeployment()}">
 
-                                            <h:panelGroup rendered="#{createDeploymentView.hasOnlyOneDeploymentSelected()}">
+                                            <h:panelGroup
+                                                    rendered="#{createDeploymentView.hasOnlyOneDeploymentSelected()}">
                                                 <ul>
-                                                    <ui:repeat var="selecteddeployment" value="${createDeploymentView.selectedDeploymentsForRedeployment}">
+                                                    <ui:repeat var="selecteddeployment"
+                                                               value="${createDeploymentView.selectedDeploymentsForRedeployment}">
                                                         <li>
                                                             <h:panelGroup layout="block">
-                                                                <h:outputText styleClass="boldFont" value="#{selecteddeployment.resourceGroup.name} (#{selecteddeployment.release.name})"/>
-                                                                <ui:repeat var="appToShow" value="${selecteddeployment.applicationsWithVersion}">
-                                                                    <h:panelGroup styleClass="paddingLeft20 smallFont" layout="block">
+                                                                <h:outputText styleClass="boldFont"
+                                                                              value="#{selecteddeployment.resourceGroup.name} (#{selecteddeployment.release.name})"/>
+                                                                <ui:repeat var="appToShow"
+                                                                           value="${selecteddeployment.applicationsWithVersion}">
+                                                                    <h:panelGroup styleClass="paddingLeft20 smallFont"
+                                                                                  layout="block">
 
-                                                                        <h:outputText value="${appToShow.applicationName}"/>
-                                                                        <h:outputText rendered="${appToShow.version != ''}"
-                                                                                      value=" (${appToShow.version})"
-                                                                                      styleClass="grey marginLeft10"/>
+                                                                        <h:outputText
+                                                                                value="${appToShow.applicationName}"/>
+                                                                        <h:outputText
+                                                                                rendered="${appToShow.version != ''}"
+                                                                                value=" (${appToShow.version})"
+                                                                                styleClass="grey marginLeft10"/>
                                                                     </h:panelGroup>
                                                                 </ui:repeat>
                                                             </h:panelGroup>
@@ -85,7 +96,8 @@
                                                     </ui:repeat>
                                                 </ul>
                                             </h:panelGroup>
-                                            <h:panelGroup rendered="#{!createDeploymentView.hasOnlyOneDeploymentSelected()}">
+                                            <h:panelGroup
+                                                    rendered="#{!createDeploymentView.hasOnlyOneDeploymentSelected()}">
                                                 <a4j:commandLink styleClass="smallFont"
                                                                  render="appserverListPopupPanelGroup"
                                                                  onclick="showLoader();"
@@ -106,13 +118,16 @@
                                             <h:outputText value="Release:"/>
                                         </label>
                                         <div class="controls">
-                                            <h:selectOneMenu disabled="#{!createDeploymentView.isApplicationserverSelected()}"
-                                                             value="#{createDeploymentView.selectedReleaseId}">
+                                            <h:selectOneMenu
+                                                    disabled="#{!createDeploymentView.isApplicationserverSelected()}"
+                                                    value="#{createDeploymentView.selectedReleaseId}">
                                                 <f:selectItems
                                                         value="${createDeploymentView.releasesForAs}"
-                                                        var="release" itemLabel="${release.name}" itemValue="${release.id}"/>
+                                                        var="release" itemLabel="${release.name}"
+                                                        itemValue="${release.id}"/>
                                                 <a4j:ajax render="createDeploymentPanelGroup"
-                                                          onbegin="showLoader();" oncomplete="updateElements(); hideLoader();"
+                                                          onbegin="showLoader();"
+                                                          oncomplete="updateElements(); hideLoader();"
                                                           onerror="hideLoader();"/>
                                             </h:selectOneMenu>
                                         </div>
@@ -126,19 +141,23 @@
                                         <h:outputText value="Environments:"/>
                                     </label>
                                     <div class="controls">
-                                            <ui:repeat value="${createDeploymentView.domains}" var="dom">
-                                                <label>${dom.name.toUpperCase()}</label>
-                                                <h:selectManyCheckbox layout="lineDirection" disabled="${!createDeploymentView.isContextSelectionEnabled()}"
-                                                                      styleClass="checkboxList changeAware"
-                                                                      value="#{dom.selectedContextIds}">
-                                                    <f:selectItems value="#{createDeploymentView.getContextsForDomain(dom.name)}" var="env"
-                                                                   itemValue="#{env.id}" itemLabel="#{env.name}" />
-                                                    <a4j:ajax render="createDeploymentPanelGroup" immediate="true"
-                                                              onbegin="showLoader();" oncomplete="updateElements(); hideLoader();"
-                                                              onerror="hideLoader();"/>
-                                                </h:selectManyCheckbox>
-                                                <br/>
-                                            </ui:repeat>
+                                        <ui:repeat value="${createDeploymentView.domains}" var="dom">
+                                            <label>${dom.name.toUpperCase()}</label>
+                                            <h:selectManyCheckbox layout="lineDirection"
+                                                                  disabled="${!createDeploymentView.isContextSelectionEnabled()}"
+                                                                  styleClass="checkboxList changeAware"
+                                                                  value="#{dom.selectedContextIds}">
+                                                <f:selectItems
+                                                        value="#{createDeploymentView.getContextsForDomain(dom.name)}"
+                                                        var="env"
+                                                        itemValue="#{env.id}" itemLabel="#{env.name}"/>
+                                                <a4j:ajax render="createDeploymentPanelGroup" immediate="true"
+                                                          onbegin="showLoader();"
+                                                          oncomplete="updateElements(); hideLoader();"
+                                                          onerror="hideLoader();"/>
+                                            </h:selectManyCheckbox>
+                                            <br/>
+                                        </ui:repeat>
                                     </div>
                                 </div>
 
@@ -155,10 +174,12 @@
                                                          columnClasses=" ,versionInput"
                                                          rowClasses="odd-row,even-row">
                                                 <h:column>
-                                                    <h:outputLabel class="inlineBlock ellipsisLeft marginTop5" value="#{appWithVersion.applicationName}"/>
+                                                    <h:outputLabel class="inlineBlock ellipsisLeft marginTop5"
+                                                                   value="#{appWithVersion.applicationName}"/>
                                                 </h:column>
                                                 <h:column>
-                                                    <h:inputText value="#{appWithVersion.version}" disabled="#{!createDeploymentView.isContextSelected()}">
+                                                    <h:inputText value="#{appWithVersion.version}"
+                                                                 disabled="#{!createDeploymentView.isContextSelected()}">
                                                         <a4j:ajax onbegin="showLoader();"
                                                                   oncomplete="hideLoader();" onerror="hideLoader();"/>
                                                     </h:inputText>
@@ -173,7 +194,8 @@
                                             <h:outputText value="Runtime:"/>
                                         </label>
                                         <label class="controls">
-                                            <h:outputText value="#{createDeploymentView.getRuntimeOfCurrentAppserver()}"/>
+                                            <h:outputText
+                                                    value="#{createDeploymentView.getRuntimeOfCurrentAppserver()}"/>
                                         </label>
                                     </div>
 
@@ -188,7 +210,8 @@
                                                 <f:selectItem itemLabel="HEAD" itemValue="0"/>
                                                 <f:selectItems value="#{createDeploymentView.getTags()}"/>
                                                 <a4j:ajax render="createDeploymentPanelGroup"
-                                                          onbegin="showLoader();" oncomplete="updateElements(); hideLoader();"
+                                                          onbegin="showLoader();"
+                                                          oncomplete="updateElements(); hideLoader();"
                                                           onerror="hideLoader();"/>
                                             </h:selectOneMenu>
                                         </div>
@@ -208,7 +231,8 @@
                                                        enableManualInput="true" showApplyButton="true"
                                                        datePattern="dd.MM.yyyy HH:mm">
                                             <a4j:ajax render="createDeploymentPanelGroup"
-                                                      onbegin="showLoader();" oncomplete="updateElements(); hideLoader();"
+                                                      onbegin="showLoader();"
+                                                      oncomplete="updateElements(); hideLoader();"
                                                       onerror="hideLoader();"/>
                                         </rich:calendar>
                                     </div>
@@ -223,40 +247,43 @@
                                         <h:panelGroup class="deploy-param-controls">
                                             <div class="left">
                                                 <a4j:outputPanel id="deployParamSelection">
-                                                <rich:autocomplete disabled="#{!createDeploymentView.isServerAndContextSelected()}"
-                                                                   autofill="false" mode="lazyClient"
-                                                                   value="#{createDeploymentView.selectedKeyName}"
-                                                                   autocompleteMethod="#{createDeploymentView.getAvailableKeys}" />
+                                                    <rich:autocomplete
+                                                            disabled="#{!createDeploymentView.isServerAndContextSelected()}"
+                                                            autofill="false" mode="lazyClient"
+                                                            value="#{createDeploymentView.selectedKeyName}"
+                                                            autocompleteMethod="#{createDeploymentView.getAvailableKeys}"/>
                                                 </a4j:outputPanel>
                                             </div>
                                             <a4j:outputPanel id="deployParams" ajaxRendered="true">
                                                 <div class="width_500px">
-                                                <ul>
-                                                    <li>
-                                                        <h:inputText styleClass="width_240px" id="newDeployParamName"
-                                                                     disabled="#{!createDeploymentView.isServerAndContextSelected()}"
-                                                                     value="#{createDeploymentView.deployParameterValue}"/>
-                                                    </li>
-                                                    <li>
-                                                        <h:commandLink styleClass="btn disable" disabled="true"
-                                                                       rendered="#{!createDeploymentView.isServerAndContextSelected()}"
-                                                                       value="Add">
-                                                            <i class="icon icon-add"/>
-                                                        </h:commandLink>
-                                                        <a4j:commandLink styleClass="btn light" rendered="#{createDeploymentView.isServerAndContextSelected()}"
-                                                                         action="#{createDeploymentView.createNewParameter()}"
-                                                                         value="Add" render="deployParamSelection">
-                                                            <i class="icon icon-add"/>
-                                                        </a4j:commandLink>
-                                                    </li>
-                                                </ul>
+                                                    <ul>
+                                                        <li>
+                                                            <h:inputText styleClass="width_240px"
+                                                                         id="newDeployParamName"
+                                                                         disabled="#{!createDeploymentView.isServerAndContextSelected()}"
+                                                                         value="#{createDeploymentView.deployParameterValue}"/>
+                                                        </li>
+                                                        <li>
+                                                            <h:commandLink styleClass="btn disable" disabled="true"
+                                                                           rendered="#{!createDeploymentView.isServerAndContextSelected()}"
+                                                                           value="Add">
+                                                                <i class="icon icon-add"/>
+                                                            </h:commandLink>
+                                                            <a4j:commandLink styleClass="btn light"
+                                                                             rendered="#{createDeploymentView.isServerAndContextSelected()}"
+                                                                             action="#{createDeploymentView.createNewParameter()}"
+                                                                             value="Add" render="deployParamSelection">
+                                                                <i class="icon icon-add"/>
+                                                            </a4j:commandLink>
+                                                        </li>
+                                                    </ul>
                                                 </div>
                                             </a4j:outputPanel>
                                         </h:panelGroup>
 
                                         <a4j:outputPanel id="deployParamPanel" ajaxRendered="true">
                                             <h:dataTable id="deployParamTable" styleClass="well" var="deployParam"
-                                            			 rendered="#{createDeploymentView.allSelectedDeploymentParameters.size() gt 0 }"
+                                                         rendered="#{createDeploymentView.allSelectedDeploymentParameters.size() gt 0 }"
                                                          value="#{createDeploymentView.allSelectedDeploymentParameters}"
                                                          columnClasses=" , ,width_20" rowClasses="odd-row,even-row">
 
@@ -269,8 +296,9 @@
                                                 </h:column>
 
                                                 <h:column>
-                                                    <a4j:commandLink action="#{createDeploymentView.removeParameter(deployParam)}"
-                                                                     render="deployParamTable">
+                                                    <a4j:commandLink
+                                                            action="#{createDeploymentView.removeParameter(deployParam)}"
+                                                            render="deployParamTable">
                                                         <i class="icon icon-delete"/>
                                                     </a4j:commandLink>
                                                 </h:column>
@@ -289,9 +317,11 @@
                                         <div class="CodeMirror-merge-2pane">
                                             <div class="CodeMirror-merge-pane">
                                                 <h:panelGroup>
-                                                    <h:panelGroup rendered="#{createDeploymentView.deploymentDate!=null}">
+                                                    <h:panelGroup
+                                                            rendered="#{createDeploymentView.deploymentDate!=null}">
                                                         <label class="inlineBlock">
-                                                            <h:selectBooleanCheckbox value="#{createDeploymentView.simulateGeneration}"/>simulate before deployment</label>
+                                                            <h:selectBooleanCheckbox
+                                                                    value="#{createDeploymentView.simulateGeneration}"/>simulate before deployment</label>
                                                     </h:panelGroup>
                                                     <div>
                                                         <label class="inlineBlock">
@@ -299,10 +329,12 @@
                                                                     value="#{createDeploymentView.sendEmail}"/>send an email when deployed</label>
                                                     </div>
                                                     <div>
-                                                        <h:panelGroup rendered="#{securityDataProvider.hasPermission('EXECUTE_SHAKE_TEST_CHECKBOX')}">
+                                                        <h:panelGroup
+                                                                rendered="#{securityDataProvider.hasPermission('EXECUTE_SHAKE_TEST_CHECKBOX')}">
 
                                                             <label class="inlineBlock">
-                                                                <h:selectBooleanCheckbox value="#{createDeploymentView.executeShakedownTest}">
+                                                                <h:selectBooleanCheckbox
+                                                                        value="#{createDeploymentView.executeShakedownTest}">
                                                                     <a4j:ajax render="testNeighbourhoodButtonId"/>
                                                                 </h:selectBooleanCheckbox>execute shakedown tests when deployed</label>
                                                         </h:panelGroup>
@@ -330,26 +362,30 @@
                             <br class="clear"/>
 
                             <div class="control-group">
-                            
-                            	<h:commandLink value="Deploy"
-	                                           rendered="#{!createDeploymentView.isServerAndContextSelected()}"
-	                                           disabled="true"
-	                                           styleClass="btn right disable marginLeft20">
-	                            </h:commandLink>
-	                            <h:commandLink action="#{createDeploymentView.createNewDeployment()}" value="Deploy"
-	                                           rendered="#{createDeploymentView.isServerAndContextSelected()}"
-	                                           styleClass="btn primary right marginLeft20" onclick="showLoader();" includeViewParams="true">
-	                            </h:commandLink>
 
-	                            <h:commandLink value="Request deployment"
-	                                           rendered="#{!createDeploymentView.isServerAndContextSelected()}"
-	                                           disabled="true"
-	                                           styleClass="btn right disable marginLeft20" onclick="showLoader();" includeViewParams="true">
-	                            </h:commandLink>
-	                            <h:commandLink action="#{createDeploymentView.createDeploymentRequest}" value="Request deployment"
-	                                           rendered="#{createDeploymentView.isServerAndContextSelected()}"
-	                                           styleClass="btn primary right marginLeft20" onclick="showLoader();" includeViewParams="true">
-	                            </h:commandLink>
+                                <h:commandLink value="Deploy"
+                                               rendered="#{!createDeploymentView.isServerAndContextSelected()}"
+                                               disabled="true"
+                                               styleClass="btn right disable marginLeft20">
+                                </h:commandLink>
+                                <h:commandLink action="#{createDeploymentView.createNewDeployment()}" value="Deploy"
+                                               rendered="#{createDeploymentView.isServerAndContextSelected()}"
+                                               styleClass="btn primary right marginLeft20" onclick="showLoader();"
+                                               includeViewParams="true">
+                                </h:commandLink>
+
+                                <h:commandLink value="Request deployment"
+                                               rendered="#{!createDeploymentView.isServerAndContextSelected()}"
+                                               disabled="true"
+                                               styleClass="btn right disable marginLeft20" onclick="showLoader();"
+                                               includeViewParams="true">
+                                </h:commandLink>
+                                <h:commandLink action="#{createDeploymentView.createDeploymentRequest}"
+                                               value="Request deployment"
+                                               rendered="#{createDeploymentView.isServerAndContextSelected()}"
+                                               styleClass="btn primary right marginLeft20" onclick="showLoader();"
+                                               includeViewParams="true">
+                                </h:commandLink>
                             </div>
                         </h:panelGroup>
                     </div>
@@ -386,11 +422,14 @@
                         <div style="overflow-x: auto;height: 500px;">
                             <div class="CodeMirror-merge-pane">
                                 <ul>
-                                    <ui:repeat var="selecteddeployment" value="${createDeploymentView.selectedDeploymentsForRedeployment}">
+                                    <ui:repeat var="selecteddeployment"
+                                               value="${createDeploymentView.selectedDeploymentsForRedeployment}">
                                         <li>
                                             <h:panelGroup layout="block">
-                                                <h:outputText styleClass="boldFont" value="#{selecteddeployment.resourceGroup.name} (#{selecteddeployment.release.name})"/>
-                                                <ui:repeat var="appToShow" value="${selecteddeployment.applicationsWithVersion}">
+                                                <h:outputText styleClass="boldFont"
+                                                              value="#{selecteddeployment.resourceGroup.name} (#{selecteddeployment.release.name})"/>
+                                                <ui:repeat var="appToShow"
+                                                           value="${selecteddeployment.applicationsWithVersion}">
                                                     <h:panelGroup styleClass="paddingLeft20 smallFont" layout="block">
 
                                                         <h:outputText value="${appToShow.applicationName}"/>
