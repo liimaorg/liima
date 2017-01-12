@@ -64,4 +64,9 @@ public class ReleaseDTO {
         this.properties = properties;
         this.templates = templates;
     }
+
+    public ReleaseDTO(ReleaseEntity release) {
+        this.id = release.getId();
+        this.release = release.getName();
+    }
 }

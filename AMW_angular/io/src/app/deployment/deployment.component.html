@@ -15,7 +15,7 @@
   <section *ngIf="selectedAppserver">
     <label>Release</label>
     <select [(ngModel)]="selectedRelease" (ngModelChange)="onChangeRelease($event)">
-      <option [ngValue]="release" *ngFor="let release of selectedAppserver.releases">{{release.release}}</option>
+      <option [ngValue]="release" *ngFor="let release of releases">{{release.release}}</option>
     </select>
   </section>
   <section>
@@ -25,23 +25,21 @@
       <span *ngFor="let env of environments">
         <span *ngIf="env.parent == group">
           <label>{{env.name}}</label>
-          <input type="checkbox" [(ngModel)]="env.selected">
+          <input type="checkbox" (change)="onChangeEnvironment($event)" [(ngModel)]="env.selected">
         </span>
       </span>
     </section>
   </section>
-  <section *ngIf="relations">
+  <section *ngIf="appsWithVersion">
     <section>
       <label>Applications</label>
-      <section *ngFor="let relation of relations">
-        <span *ngIf="relation.type == 'APPLICATION' && relation.relatedResourceRelease == selectedRelease.release">{{relation.identifier}}</span>
+      <section *ngFor="let app of appsWithVersion">
+        <span>{{app.applicationName}}</span> : <span>{{app.version}}</span>
       </section>
     </section>
     <section>
       <label>Runtime</label>
-      <section *ngFor="let relation of relations">
-        <span *ngIf="relation.type == 'RUNTIME'">{{relation.identifier}}</span>
-      </section>
+      <span *ngIf="runtime">{{runtime.identifier}}</span>
     </section>
   </section>
   <section>

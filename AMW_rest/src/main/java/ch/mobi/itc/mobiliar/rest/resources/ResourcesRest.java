@@ -20,30 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-
-import ch.mobi.itc.mobiliar.rest.dtos.BatchJobInventoryDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.BatchResourceDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.BatchResourceRelationDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.ReleaseDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.ResourceDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.*;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
@@ -60,6 +37,14 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import java.util.*;
 
 @RequestScoped
 @Path("/resources")
@@ -75,6 +60,12 @@ public class ResourcesRest {
     ReleaseLocator releaseLocator;
 
     @Inject
+    ReleaseMgmtService releaseMgmtService;
+
+    @Inject
+    DeploymentService deploymentService;
+
+    @Inject
     ResourceGroupLocator resourceGroupLocator;
 
     @Inject
@@ -85,7 +76,7 @@ public class ResourcesRest {
 
     @Inject
     ResourceRelationPropertiesRest resourceRelationProperties;
-    
+
     @Inject
     ResourcePropertiesRest resourceProperties;
 
@@ -99,23 +90,23 @@ public class ResourcesRest {
     private ServerView serverView;
 
     /**
-     *  Fuer JavaBatch Monitor
+     * Fuer JavaBatch Monitor
      */
     @Inject
     ResourceRelationLocator resourceRelationLocator;
 
     /**
-     *  Fuer JavaBatch Monitor
+     * Fuer JavaBatch Monitor
      */
     @Inject
     ContextLocator contextLocator;
 
     /**
-     *  Fuer JavaBatch Monitor
+     * Fuer JavaBatch Monitor
      */
     @Inject
     PropertyEditor propertyEditor;
-    
+
     @GET
     @ApiOperation(value = "Get resources", notes = "Returns the available resources")
     public List<ResourceDTO> getResources(
@@ -154,26 +145,63 @@ public class ResourcesRest {
         return new ResourceDTO(resourceGroupByName, result);
     }
 
-	@Path("/{resourceGroupName}/{releaseName}")
-	@GET
-	@ApiOperation(value = "Get resource in specific release")
-	public ReleaseDTO getResource(@PathParam("resourceGroupName") String resourceGroupName,
-			@PathParam("releaseName") String releaseName, @DefaultValue("Global") @QueryParam("env") String environment, 
-			@QueryParam("appsOnly") boolean appsOnly) throws ValidationException {
-		ResourceEntity resourceByRelease = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
-		return new ReleaseDTO(resourceByRelease, resourceRelations.getResourceRelations(resourceGroupName,
-				releaseName, appsOnly), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
-				environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
-	}
+    @Path("/{resourceGroupName}/{releaseName}")
+    @GET
+    @ApiOperation(value = "Get resource in specific release")
+    public ReleaseDTO getResource(@PathParam("resourceGroupName") String resourceGroupName,
+                                  @PathParam("releaseName") String releaseName,
+                                  @QueryParam("env") @DefaultValue("Global") String environment,
+                                  @QueryParam("type") String resourceType) throws ValidationException {
+        ResourceEntity resourceByRelease = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
+        return new ReleaseDTO(resourceByRelease, resourceRelations.getResourceRelations(resourceGroupName,
+                releaseName, resourceType), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
+                environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
+    }
+
+    @Path("/{resourceGroupName}/{releaseName}/appversions/")
+    @GET
+    @ApiOperation(value = "Get application with version for a specific resourceGroup, release and context(s)")
+    public Response getAppplicationsWithVersionForRelease(@PathParam("resourceGroupName") String resourceGroupName,
+                                                          @PathParam("releaseName") String releaseName,
+                                                          @QueryParam("context") List<Integer> contextIds) throws ValidationException {
+        ResourceEntity appServer = resourceLocator.getResourceByNameAndReleaseWithRelations(resourceGroupName, releaseName);
+        List<AppWithVersionDTO> apps = new ArrayList<>();
+        List<DeploymentEntity.ApplicationWithVersion> appVersions = deploymentService.getVersions(appServer, contextIds, appServer.getRelease());
+        for (DeploymentEntity.ApplicationWithVersion appVersion : appVersions) {
+            apps.add(new AppWithVersionDTO(appVersion.getApplicationName(), appVersion.getVersion()));
+        }
+        return Response.ok(apps).build();
+
+    }
+
+    @Path("/{resourceGroupName}/releases/")
+    @GET
+    @ApiOperation(value = "Get deployable releases for a specific resourceGroup")
+    public Response getDeployableReleasesForResourceGroup(@PathParam("resourceGroupName") String resourceGroupName) throws ValidationException {
+
+        ResourceGroupEntity group = resourceGroupLocator.getResourceGroupByName(resourceGroupName);
+        if (group == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        List<ReleaseDTO> releases = new ArrayList<>();
+        List<ReleaseEntity> deployableReleases = releaseMgmtService.getDeployableReleasesForResourceGroup(group);
+        for (ReleaseEntity deployableRelease : deployableReleases) {
+            releases.add(new ReleaseDTO(deployableRelease));
+        }
+        return Response.ok(releases).build();
+
+    }
 
     // Fuer JavaBatch Monitor
+
     /**
      * Alle Consumed Resources zu dieser App <br>
      * App Details<br>
      * Job name<br>
      * Server<br>
      * consumed resources (short)
-     * 
+     *
      * @throws ValidationException
      */
     @Path("/batchjobResources/{app}")
@@ -182,7 +210,7 @@ public class ResourcesRest {
     @ApiOperation(value = "Get batch job resources", notes = "Returns the consumed resources for this app")
     public List<BatchResourceDTO> getBatchJobResources(
             @ApiParam(value = "return resources for this app") @PathParam("app") String app)
-                    throws ValidationException {
+            throws ValidationException {
         if (app == null || app.isEmpty()) {
             throw new ValidationException("App must not be empty");
         }
@@ -230,6 +258,7 @@ public class ResourcesRest {
     }
 
     // Fuer JavaBatch Monitor
+
     /**
      * Alle Apps mit Resourcen vom Typ 'batchjob' lesen: <br>
      * App Details<br>
@@ -249,7 +278,7 @@ public class ResourcesRest {
             @ApiParam(value = "Filter by Release") @QueryParam("rel") String relFilter,
             @ApiParam(value = "Filter by consumed DB type") @QueryParam("db") String dbFilter,
             @ApiParam(value = "Filter by consumed WS name or part") @QueryParam("ws") String wsFilter)
-                    throws ValidationException {
+            throws ValidationException {
         BatchJobInventoryDTO inventory = new BatchJobInventoryDTO();
         int resourceType = 0;
         try {

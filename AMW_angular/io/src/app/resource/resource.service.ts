@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers } from '@angular/http';
+import { Http, Response, Headers, URLSearchParams, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Resource } from './resource';
 import { Release } from './release';
 import { Relation } from './relation';
+import { Property } from './property';
+import { AppWithVersion } from '../deployment/app-with-version';
 
 @Injectable()
 export class ResourceService {
@@ -43,13 +45,52 @@ export class ResourceService {
     return resource$;
   }
 
-  getRelated(resourceGroupName: string, releaseName: string): Observable<Relation[]> {
+  getRuntime(resourceGroupName: string, releaseName: string): Observable<Relation[]> {
+    let params: URLSearchParams = new URLSearchParams();
+    params.set('type', 'RUNTIME');
+    let options = new RequestOptions({
+      search: params,
+      headers: this.getHeaders()
+    });
     let resource$ = this.http
-      .get(`${this.baseUrl}/resources/${resourceGroupName}/${releaseName}/relations`, {headers: this.getHeaders()})
+      .get(`${this.baseUrl}/resources/${resourceGroupName}/${releaseName}/relations`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
     return resource$;
   }
+
+  getProperty(resourceGroupName: string, releaseName: string, propertyName: string): Observable<Property> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/${resourceGroupName}/${releaseName}/properties/${propertyName}`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
+  getDeployableReleases(resourceGroupName: string): Observable<Release[]> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/${resourceGroupName}/releases/`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
+  getAppversion(resourceGroupName: string, releaseName: string, environmentIds: number[]): Observable<AppWithVersion[]> {
+    let params: URLSearchParams = new URLSearchParams();
+    for (let i = 0; i < environmentIds.length; i++) {
+      params.append('context', String(environmentIds[i]));
+    }
+    let options = new RequestOptions({
+      search: params,
+      headers: this.getHeaders()
+    });
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/${resourceGroupName}/${releaseName}/appversions/`, options)
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
 
   private getHeaders() {
     let headers = new Headers();

@@ -1,8 +1,6 @@
-import { Release } from './release';
-
 export interface Relation {
   relatedResourceName: string;
-  relatedResourceRelease: Release;
+  relatedResourceRelease: string;
   identifier: string;
   type: string;
 }

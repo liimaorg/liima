@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Deployment } from './deployment';
+import { DeploymentRequest } from './deployment-request';
 
 @Injectable()
 export class DeploymentService {
@@ -18,8 +19,21 @@ export class DeploymentService {
     return resource$;
   }
 
+  createDeployment(deploymentRequest: DeploymentRequest): Observable<Deployment> {
+    console.log('createDeployment: ' + deploymentRequest);
+    return this.http.post(`${this.baseUrl}/deployments`, deploymentRequest, {headers: this.postHeaders()}).map((res: Response) => res.json())
+      .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+  }
+
   private getHeaders() {
     let headers = new Headers();
+    headers.append('Accept', 'application/json');
+    return headers;
+  }
+
+  private postHeaders() {
+    let headers = new Headers();
+    headers.append('Content-Type', 'application/json');
     headers.append('Accept', 'application/json');
     return headers;
   }
