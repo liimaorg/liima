@@ -20,14 +20,12 @@
 
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
-import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.generator.control.TemplateUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
-import java.sql.Clob;
 
 /**
  * Read only entity for the resource edit screen to display properties
@@ -216,15 +214,20 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
      * @param fcExternalKey foreignable external key of propertydescriptor
      * @param fcExternalLink foreignable external link propertydescriptor
      */
-    public ResourceEditProperty(String technicalKey, String displayName, Clob propertyValue, Clob exampleValue, Clob defaultValue,
-            Clob propertyComment, boolean isNullable, boolean isOptional, boolean isEncrypted, Integer cardinalityProperty,
+    public ResourceEditProperty(String technicalKey, String displayName, String propertyValue, String exampleValue, String defaultValue,
+                                String propertyComment, boolean isNullable, boolean isOptional, boolean isEncrypted, Integer cardinalityProperty,
             boolean isTesting, String validationLogic, String machineInterpretationKey, Integer propContextId, Integer typeContextId,
             Integer descriptorId, String propContName, String typeContName, Integer typeId, Integer propertyValueTypeId,
             Integer masterTypeId, String typeName, String validationRegex, Integer propertyId,
             String origin, String loadedFor, String resourceName, String propertyDescriptorOrigin, String fcOwner, String fcExternalKey, String fcExternalLink) {
         this.technicalKey = technicalKey;
         this.displayName = displayName;
-        try {
+        this.propertyValue = propertyValue;
+        this.propertyComment = propertyComment;
+        this.exampleValue = exampleValue;
+        this.defaultValue = defaultValue;
+
+        /*try {
             this.propertyValue = QueryUtils.clobToString(propertyValue);
             this.propertyComment = QueryUtils.clobToString(propertyComment);
             this.exampleValue = QueryUtils.clobToString(exampleValue);
@@ -232,7 +235,7 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
         }
         catch (Exception e) {
             // do nothing
-        }
+        }*/
         this.originalValue = this.propertyValue;
         this.originalPropertyComment = this.propertyComment;
         this.isNullable = isNullable;

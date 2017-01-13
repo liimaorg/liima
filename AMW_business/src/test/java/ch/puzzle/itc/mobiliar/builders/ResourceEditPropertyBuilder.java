@@ -35,8 +35,8 @@ public class ResourceEditPropertyBuilder {
 
 	private String technicalKey = null;
 	private String displayName = null;
-	private Clob propertyValue = null;
-	private Clob propertyComment = null;
+	private String propertyValue = null;
+	private String propertyComment = null;
 	private boolean isNullable = false;
     private boolean isOptional = false;
 	private boolean isEncrypted = false;
@@ -58,8 +58,8 @@ public class ResourceEditPropertyBuilder {
 	private String origin = null;
 	private String loadedFor = null;
 	private String resourceName = null;
-	private Clob exampleValue = null;
-	private Clob defaultValue = null;
+	private String exampleValue = null;
+	private String defaultValue = null;
     private String descriptorOrigin = null;
     private String fcOwner = null;
     private String fcExternalKey = null;
@@ -90,7 +90,7 @@ public class ResourceEditPropertyBuilder {
      * Comment on propertyDescriptor
      */
     public ResourceEditPropertyBuilder withComment(String propertyComment) {
-        this.propertyComment = convert(propertyComment);
+        this.propertyComment = propertyComment;
         return this;
     }
 
@@ -156,7 +156,7 @@ public class ResourceEditPropertyBuilder {
      * the value in the given context
      */
 	public ResourceEditPropertyBuilder withValue(String value) {
-        this.propertyValue = convert(value);
+        this.propertyValue = value;
         return this;
     }
 
@@ -259,12 +259,12 @@ public class ResourceEditPropertyBuilder {
 
 
     public ResourceEditPropertyBuilder withExampleValue(String exampleValue) {
-        this.exampleValue = convert(exampleValue);
+        this.exampleValue = exampleValue;
         return this;
     }
 
     public ResourceEditPropertyBuilder withDefaultValue(String defaultValue) {
-        this.defaultValue = convert(defaultValue);
+        this.defaultValue = defaultValue;
         return this;
     }
 
@@ -306,7 +306,7 @@ public class ResourceEditPropertyBuilder {
     public ResourceEditPropertyBuilder withDescriptor(PropertyDescriptorEntity descriptor) {
         this.technicalKey = descriptor.getPropertyName();
         this.displayName = descriptor.getDisplayName();
-        this.propertyComment = convert(descriptor.getPropertyComment());
+        this.propertyComment = descriptor.getPropertyComment();
         this.isNullable = descriptor.isNullable();
         this.isOptional = descriptor.isOptional();
         this.isEncrypted = descriptor.isEncrypt();

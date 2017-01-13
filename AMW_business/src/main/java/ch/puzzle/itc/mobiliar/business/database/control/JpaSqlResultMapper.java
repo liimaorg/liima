@@ -20,9 +20,14 @@
 
 package ch.puzzle.itc.mobiliar.business.database.control;
 
+import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
+
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,6 +73,12 @@ public class JpaSqlResultMapper {
 						resultNum = true;
 					}
 					result[i] = resultNum;
+				}
+			}else if(a instanceof Clob){
+				try {
+					result[i] = QueryUtils.clobToString((Clob)a);
+				} catch (SQLException | IOException e) {
+					throw new AMWRuntimeException("An Error occured converting a Clob into a String", e);
 				}
 			}
 			else {
