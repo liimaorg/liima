@@ -21,7 +21,7 @@ import { Release } from '../resource/release';
 class DummyComponent {
 }
 
-describe('Deployment', () => {
+describe('DeploymentComponent', () => {
   // provide our implementations or mocks to the dependency injector
   beforeEach(() => TestBed.configureTestingModule({
     imports: [

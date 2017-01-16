@@ -18,10 +18,7 @@ import { AppComponent } from './app.component';
 import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
 import { HomeComponent } from './home';
-import { AboutComponent } from './about';
-import { XLarge } from './home/x-large';
 import { PageNotFoundComponent } from './not-found.component';
-//import {ResourceRoutingModule} from "./resource/resource-routing.module";
 
 
 // Application wide providers
@@ -43,10 +40,8 @@ type StoreType = {
   bootstrap: [AppComponent],
   declarations: [
     AppComponent,
-    AboutComponent,
     HomeComponent,
-    PageNotFoundComponent,
-    XLarge
+    PageNotFoundComponent
   ],
   imports: [ // import Angular's modules
     BrowserModule,

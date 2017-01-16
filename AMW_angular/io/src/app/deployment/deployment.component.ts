@@ -233,7 +233,4 @@ export class DeploymentComponent implements OnInit {
     this.location.go('deployment/' + destination);
   }
 
-  goBack(): void {
-    this.location.back();
-  }
 }

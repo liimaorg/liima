@@ -2,8 +2,8 @@
   <section *ngIf="isLoading && !errorMessage">
     Retrieving data...
   </section>
-  <section *ngIf="!isLoading">
-    <a href="#" (click)="goBack()">Zurück</a><br>
+  <section *ngIf="errorMessage">
+    {{errorMessage}}
   </section>
   <section *ngIf="appservers">
     <h3>{{titleLabel}}</h3>
@@ -60,8 +60,5 @@
   <section *ngIf="isReadyForDeployment()">
     <input type="button" (click)="requestDeployment()" value="Request deployment">
     <input type="button" (click)="createDeployment()" value="Deploy">
-  </section>
-  <section *ngIf="errorMessage">
-    {{errorMessage}}
   </section>
 </section>

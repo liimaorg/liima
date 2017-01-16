@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Resource } from './resource';
 import { ResourceService } from './resource.service';
-
 import { Location } from '@angular/common';
-import { ActivatedRoute, Router } from "@angular/router";
-import {type} from "os";
+import { ActivatedRoute, Router } from '@angular/router';
+import { type } from 'os';
 
 @Component({
   selector: 'amw-resource-list',

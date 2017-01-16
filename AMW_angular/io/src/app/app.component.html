@@ -1,0 +1,19 @@
+<nav>
+  <span>
+        <a [routerLink]=" ['./'] ">Index</a>
+  </span>
+  |
+  <span>
+        <a [routerLink]=" ['./resource'] ">Resources</a>
+  </span>
+  |
+  <span>
+        <a [routerLink]=" ['./deployment'] ">Deployments</a>
+  </span>
+</nav>
+
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+<pre class="app-state">this.appState.state = {{ appState.state | json }}</pre>

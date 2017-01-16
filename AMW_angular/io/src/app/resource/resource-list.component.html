@@ -2,33 +2,36 @@
   <section *ngIf="isLoading && !errorMessage">
     Retrieving data...
   </section>
+  <section *ngIf="errorMessage">
+    {{errorMessage}}
+  </section>
   <section *ngIf="!isLoading">
     <a routerLink="/resource">Alle laden</a>
     <a href="#" (click)="goBack()">Zurück</a><br>
   </section>
   <section *ngIf="resourceInRelease">
     <h3>{{titleLabel}}</h3>
-      <ul>
-        <li *ngFor="let relation of resourceInRelease.relations">Relation:
-          <ul>
-            <li>relatedResourceName: {{relation.relatedResourceName}}</li>
-            <li>relatedResourceRelease: {{relation.relatedResourceRelease}}</li>
-            <li>identifier: {{relation.identifier}}</li>
-          </ul>
-        </li>
-      </ul>
-      <ul>
-        <li *ngFor="let property of resourceInRelease.properties">Property:
-          <ul>
-            <li>name: {{property.name}}</li>
-            <li>value: {{property.value}}</li>
-            <li>replacedValue: {{property.replacedValue}}</li>
-            <li>generalComment: {{property.generalComment}}</li>
-            <li>valueComment: {{property.valueComment}}</li>
-            <li>context: {{property.context}}</li>
-          </ul>
-        </li>
-      </ul>
+    <ul>
+      <li *ngFor="let relation of resourceInRelease.relations">Relation:
+        <ul>
+          <li>relatedResourceName: {{relation.relatedResourceName}}</li>
+          <li>relatedResourceRelease: {{relation.relatedResourceRelease}}</li>
+          <li>identifier: {{relation.identifier}}</li>
+        </ul>
+      </li>
+    </ul>
+    <ul>
+      <li *ngFor="let property of resourceInRelease.properties">Property:
+        <ul>
+          <li>name: {{property.name}}</li>
+          <li>value: {{property.value}}</li>
+          <li>replacedValue: {{property.replacedValue}}</li>
+          <li>generalComment: {{property.generalComment}}</li>
+          <li>valueComment: {{property.valueComment}}</li>
+          <li>context: {{property.context}}</li>
+        </ul>
+      </li>
+    </ul>
   </section>
   <section *ngIf="!resourceInRelease && resource">
     <h3>{{titleLabel}}</h3>
@@ -41,8 +44,5 @@
         <amw-resource [resource]="resource" (notifyType)='byType($event)'></amw-resource>
       </li>
     </ul>
-  </section>
-  <section *ngIf="errorMessage">
-    {{errorMessage}}
   </section>
 </section>

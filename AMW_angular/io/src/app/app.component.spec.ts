@@ -1,8 +1,4 @@
-import {
-  inject,
-  TestBed
-} from '@angular/core/testing';
-
+import { inject, TestBed } from '@angular/core/testing';
 // Load the implementations that should be tested
 import { AppComponent } from './app.component';
 import { AppState } from './app.service';
@@ -13,10 +9,11 @@ describe('App', () => {
     providers: [
       AppState,
       AppComponent
-    ]}));
+    ]
+  }));
 
-  it('should have a url', inject([ AppComponent ], (app: AppComponent) => {
-    expect(app.url).toEqual('http://angular.io');
+  it('should have a name', inject([AppComponent], (app: AppComponent) => {
+    expect(app.name).toEqual('Angular 2');
   }));
 
 });
