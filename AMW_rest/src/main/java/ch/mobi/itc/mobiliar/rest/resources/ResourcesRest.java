@@ -310,7 +310,7 @@ public class ResourcesRest {
         String runtime = "JavaBatch*"; // aber nur Batch
         String host = null;
         String node = null;
-        List<ServerTuple> servers = serverView.getServers(host, appServer, runtime, node, env);
+        List<ServerTuple> servers = serverView.getServers(host, appServer, runtime, node, env, true);
         List<String> appServerList = new ArrayList<>();
         for (ServerTuple t : servers) {
             appServerList.add(t.getAppServer().toLowerCase());

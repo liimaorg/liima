@@ -64,7 +64,8 @@ public class ServerView {
 	private static final String LOCAL_ENV = ConfigurationService.getProperty(ConfigKey.LOCAL_ENV);
 	public static final String MULTI_MARKER = "multiple";
 	
-	public List<ServerTuple> getServers(String hostFilter, String appServerFilter, String runtimeFilter, String nodeFilter, String contextFilter) {
+	public List<ServerTuple> getServers(String hostFilter, String appServerFilter, String runtimeFilter, String nodeFilter, String contextFilter, boolean merge) {
+		List<ServerTuple> result;
 		
 		//convert wildcards
 		hostFilter = JpaWildcardConverter.convertWildCards(hostFilter);
@@ -74,12 +75,29 @@ public class ServerView {
 		
 		List<ServerTuple> nodeServers = this.getNodeServers(hostFilter, appServerFilter, runtimeFilter, nodeFilter, contextFilter);
 		List<ServerTuple> asServers = this.getAppServers(hostFilter, appServerFilter, runtimeFilter, nodeFilter, contextFilter);
-		
 		nodeServers.addAll(asServers);
+
+		result = nodeServers;
+		if(merge) {
+			result = new LinkedList<ServerTuple>(merge(result).values());
+		}
 		
-        //filter duplicates and merge releases, runtime with same hostname
+		//sort
+        Collections.sort(result, new Comparator<ServerTuple>() {
+			@Override
+			public int compare(ServerTuple o1, ServerTuple o2) {
+				String name1 = o1.getAppServer()+o1.getEnvironment()+o1.getNode();
+				String name2 = o2.getAppServer()+o2.getEnvironment()+o2.getNode();
+				return name1.toLowerCase().compareTo(name2.toLowerCase());
+			}
+		});
+		return result;
+	}
+
+	// filter duplicates and merge releases, runtime with same hostname
+	private HashMap<String, ServerTuple> merge(List<ServerTuple> servers) {
         HashMap<String, ServerTuple> releaseFilteredServer = new HashMap<String, ServerTuple>();
-        for(ServerTuple server : nodeServers) {
+        for(ServerTuple server : servers) {
             String code = server.getHost()+server.getAppServer()+server.getEnvironment()+server.getNode();
             if(releaseFilteredServer.containsKey(code)) {
                 ServerTuple oldServer = releaseFilteredServer.get(code);
@@ -96,19 +114,7 @@ public class ServerView {
             }
             releaseFilteredServer.put(code, server);
         }
-        
-		//sort
-        LinkedList<ServerTuple> result = new LinkedList<ServerTuple>(releaseFilteredServer.values());
-        Collections.sort(result, new Comparator<ServerTuple>() {
-			@Override
-			public int compare(ServerTuple o1, ServerTuple o2) {
-				String name1 = o1.getAppServer()+o1.getEnvironment()+o1.getNode();
-				String name2 = o2.getAppServer()+o2.getEnvironment()+o2.getNode();
-				return name1.toLowerCase().compareTo(name2.toLowerCase());
-			}
-		});
-        
-		return result;
+        return releaseFilteredServer;
 	}
 	
 	// get hostName Properties directly on nodes
