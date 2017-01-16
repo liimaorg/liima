@@ -86,7 +86,7 @@ export class ResourceService {
     });
     let resource$ = this.http
       .get(`${this.baseUrl}/resources/${resourceGroupName}/${releaseName}/appversions/`, options)
-      .map((response: Response) => response.json())
+      .map(mapAppWithVersion)
       .catch(handleError);
     return resource$;
   }
@@ -97,6 +97,23 @@ export class ResourceService {
     headers.append('Accept', 'application/json');
     return headers;
   }
+}
+
+function mapAppWithVersion(response: Response): AppWithVersion[] {
+  // uncomment to simulate error:
+  // throw new Error('ups! Force choke!');
+  return response.json().map(toAppWithVersion);
+}
+
+function toAppWithVersion(r: any): AppWithVersion {
+  let appWithVersion = <AppWithVersion>({
+    applicationId: r.applicationId,
+    applicationName: r.applicationName,
+    // no mavenVersion!
+    version: r.version,
+  });
+  //console.log('Parsed appWithVersion:', appWithVersion);
+  return appWithVersion;
 }
 
 function mapResources(response: Response): Resource[] {

@@ -34,7 +34,7 @@
     <section>
       <label>Applications</label>
       <section *ngFor="let app of appsWithVersion">
-        <span>{{app.applicationName}}</span> : <span>{{app.version}}</span>
+        <span>{{app.applicationName}} <input type="text" [(ngModel)]="app.version"></span>
       </section>
     </section>
     <section>
