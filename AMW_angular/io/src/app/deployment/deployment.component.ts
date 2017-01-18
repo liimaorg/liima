@@ -73,16 +73,24 @@ export class DeploymentComponent implements OnInit {
     this.loadReleases();
   }
 
+  private setSelectedRelease(): Subscription {
+    return this.resourceService.getMostRelevantRelease(this.selectedAppserver.name).subscribe(
+      /* happy path */ r => this.selectedRelease = this.releases.find(release => release.release === r.release),
+      /* error path */ e => this.errorMessage = e,
+      /* onComplete */ () => this.onChangeRelease());
+  }
+
   private loadReleases(): Subscription {
     console.log('loading releases for ' + this.selectedAppserver.name);
     this.isLoading = true;
     return this.resourceService.getDeployableReleases(this.selectedAppserver.name).subscribe(
       /* happy path */ r => this.releases = r,
       /* error path */ e => this.errorMessage = e,
-      /* onComplete */ () => this.onChangeRelease());
+      /* onComplete */ () => this.setSelectedRelease());
   }
 
   onChangeRelease() {
+    console.log('selected release is '+this.selectedRelease.release);
     if (!this.selectedRelease) {
       this.selectedRelease = this.releases[0];
     }
@@ -196,37 +204,21 @@ export class DeploymentComponent implements OnInit {
           break;
         }
       }
+      this.resourceService.getDeployableReleases(this.appserverName).subscribe(
+        /* happy path */ r => this.releases = r,
+        /* error path */ e => this.errorMessage = e,
+        /* onComplete */ () => this.setRelease());
+      this.isLoading = false;
     }
-    this.resourceService.getDeployableReleases(this.appserverName).subscribe(
-      /* happy path */ r => this.releases = r,
-      /* error path */ e => this.errorMessage = e,
-      /* onComplete */ () => this.setRelease());
-    this.isLoading = false;
   }
 
   // for url params only
   private setRelease() {
     if (this.releaseName) {
       console.log('pre-selected release is ' + this.releaseName);
-      for (let i = 0; i < this.releases.length; i++) {
-        if (this.releases[i].release === this.releaseName) {
-          this.selectedRelease = this.releases[i];
-          this.onChangeRelease();
-          return;
-        }
-      }
+      this.selectedRelease = this.releases.find(release => release.release === this.releaseName);
+      this.onChangeRelease();
     }
-  }
-
-  hasRelease(releaseName: string): boolean {
-    if (this.releases) {
-      for (let i = 0; i < this.releases.length; i++) {
-        if (this.releases[i].release === releaseName) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 
   private goTo(destination: string) {

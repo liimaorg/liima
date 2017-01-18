@@ -75,6 +75,14 @@ export class ResourceService {
     return resource$;
   }
 
+  getMostRelevantRelease(resourceGroupName: string): Observable<Release> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/${resourceGroupName}/releases/most-relevant/`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   getAppversion(resourceGroupName: string, releaseName: string, environmentIds: number[]): Observable<AppWithVersion[]> {
     let params: URLSearchParams = new URLSearchParams();
     for (let i = 0; i < environmentIds.length; i++) {

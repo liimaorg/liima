@@ -160,13 +160,13 @@ describe('DeploymentComponent', () => {
     let testRelease: Release = <Release>{id: 1, release: 'testRelease'};
     let runTime: Resource = <Resource> {id: 1, name: 'EAP6', type: 'RUNTIME'};
     deploymentComponent.releases = [testRelease];
+    deploymentComponent.selectedRelease = testRelease;
     spyOn(resourceService, 'getRuntime').and.returnValue(Observable.of([runTime]));
     spyOn(resourceService, 'getAppversion').and.returnValue(Observable.of(''));
     deploymentComponent.selectedAppserver = <Resource>{name: 'testServer', releases: [testRelease]};
     // when
     deploymentComponent.onChangeRelease();
     // then
-    expect(deploymentComponent.hasRelease(testRelease.release)).toBeTruthy();
     expect(resourceService.getRuntime).toHaveBeenCalled();
     expect(resourceService.getAppversion).toHaveBeenCalled();
   }));
