@@ -1,19 +1,53 @@
-<nav>
-  <span>
-        <a [routerLink]=" ['./'] ">Index</a>
-  </span>
-  |
-  <span>
-        <a [routerLink]=" ['./resource'] ">Resources</a>
-  </span>
-  |
-  <span>
-        <a [routerLink]=" ['./deployment'] ">Deployments</a>
-  </span>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+              aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">AMW</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/AMW_web/pages/applist.xhtml">Apps</a></li>
+        <li><a href="/AMW_web/pages/serverListView.xhtml">Servers</a></li>
+        <li><a href="/AMW_web/pages/resourceList.xhtml">Resources</a></li>
+        <li><a [routerLink]=" ['./deployment'] ">Deploy</a></li>
+        <li><a href="/AMW_web/pages/shakedownTest.xhtml">Shakedown Test</a></li>
+        <li><a href="/AMW_web/pages/settings.xhtml">Settings</a></li>
+        <li><a href="/AMW_web/pages/applist.xhtml">Logout admin_role</a></li>
+      </ul>
+      <form class="navbar-form navbar-right">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox"> Show my favorites only
+          </label>
+        </div>
+      </form>
+    </div>
+  </div>
 </nav>
+
+
+<!--<div class="row page-header">
+  <div class="col-md-4">
+    <h1>Komponenten-Bibliothek</h1>
+  </div>
+</div>-->
+
+
+<div class="col-sm-3 col-md-2 sidebar">
+  <ul class="nav nav-sidebar">
+    <li class="active"><a href="#">Deployments <span class="sr-only">(current)</span></a></li>
+  </ul>
+</div>
+
 
 <main>
   <router-outlet></router-outlet>
 </main>
 
-<pre class="app-state">this.appState.state = {{ appState.state | json }}</pre>
+<!--<pre class="app-state">this.appState.state = {{ appState.state | json }}</pre>-->

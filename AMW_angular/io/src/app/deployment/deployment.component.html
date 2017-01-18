@@ -1,64 +1,106 @@
-<section>
-  <section *ngIf="isLoading && !errorMessage">
-    Retrieving data...
-  </section>
-  <section *ngIf="errorMessage">
-    {{errorMessage}}
-  </section>
-  <section *ngIf="appservers">
-    <h3>{{titleLabel}}</h3>
-    <label>Applicationserver</label>
-    <select [(ngModel)]="selectedAppserver" (ngModelChange)="onChangeAppserver($event)">
-      <option [ngValue]="server" *ngFor="let server of appservers">{{server.name}}</option>
-    </select>
-  </section>
-  <section *ngIf="selectedAppserver">
-    <label>Release</label>
-    <select [(ngModel)]="selectedRelease" (ngModelChange)="onChangeRelease($event)">
-      <option [ngValue]="release" *ngFor="let release of releases">{{release.release}}</option>
-    </select>
-  </section>
-  <section>
-    <label>Environments</label>
-    <section *ngFor="let group of environmentGroups">
-      <label>{{group}}: </label>
-      <span *ngFor="let env of environments">
-        <span *ngIf="env.parent == group">
-          <label>{{env.name}}</label>
-          <input type="checkbox" (change)="onChangeEnvironment($event)" [(ngModel)]="env.selected">
-        </span>
-      </span>
-    </section>
-  </section>
-  <section *ngIf="appsWithVersion">
-    <section>
-      <label>Applications</label>
-      <section *ngFor="let app of appsWithVersion">
-        <span>{{app.applicationName}} <input type="text" [(ngModel)]="app.version"></span>
+<div class="row page-header">
+  <div class="col-md-4">
+    <h1>{{titleLabel}}</h1>
+  </div>
+</div>
+
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <h3 class="panel-title pull-left">{{titleLabel}}</h3>
+    </div>
+    <div class="panel-body">
+
+      <section *ngIf="isLoading && !errorMessage">
+        Retrieving data...
       </section>
-    </section>
-    <section>
-      <label>Runtime</label>
-      <span *ngIf="runtime">{{runtime.identifier}}</span>
-    </section>
-  </section>
-  <section>
-    <label>Details</label>
-    <section>
-      <label>send an email when deployed</label>
-      <input type="checkbox" [(ngModel)]="doSendEmail">
-    </section>
-    <section>
-      <label>execute shakedown tests when deployed</label>
-      <input type="checkbox" [(ngModel)]="doExecuteShakedownTest">
-    </section>
-    <section *ngIf="doExecuteShakedownTest">
-      <label>test neighbourhood</label>
-      <input type="checkbox" [(ngModel)]="doNeighbourhoodTest">
-    </section>
-  </section>
-  <section *ngIf="isReadyForDeployment()">
-    <input type="button" (click)="requestDeployment()" value="Request deployment">
-    <input type="button" (click)="createDeployment()" value="Deploy">
-  </section>
-</section>
+      <section *ngIf="errorMessage">
+        {{errorMessage}}
+      </section>
+      <div class="form-group" *ngIf="appservers">
+        <label for="input1" class="col-sm-3">Applicationserver</label>
+        <div class="col-sm-9">
+          <select id="input1" [(ngModel)]="selectedAppserver" (ngModelChange)="onChangeAppserver($event)">
+            <option [ngValue]="server" *ngFor="let server of appservers">{{server.name}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="selectedAppserver">
+        <label for="input2" class="col-sm-3">Release</label>
+        <div class="col-sm-9">
+          <select id="input2" [(ngModel)]="selectedRelease" (ngModelChange)="onChangeRelease($event)">
+            <option [ngValue]="release" *ngFor="let release of releases">{{release.release}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3">Environments</label>
+        <div *ngFor="let group of environmentGroups">
+          <label class="col-sm-12">{{group}}: </label>
+          <span *ngFor="let env of environments">
+              <span *ngIf="env.parent == group">
+                <label>{{env.name}}</label>
+                <input type="checkbox" (change)="onChangeEnvironment($event)" [(ngModel)]="env.selected">
+              </span>
+            </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3">Applications</label>
+        <section *ngFor="let app of appsWithVersion">
+          <span>{{app.applicationName}} <input type="text" [(ngModel)]="app.version"></span>
+        </section>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3">Runtime</label>
+        <span *ngIf="runtime">{{runtime.identifier}}</span>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3">State</label>
+        <span>TODO</span>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3">Deploy at</label>
+        <span>TODO</span>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3">Deployment parameter</label>
+        <input type="text" value="TODO"><input type="text" value="TODO">
+        <button class="btn btn-default" type="button">
+          <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>Add
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3">Details</label>
+        <section>
+          <label class="col-sm-3">send an email when deployed</label>
+          <input type="checkbox" [(ngModel)]="doSendEmail">
+        </section>
+        <section>
+          <label class="col-sm-3">execute shakedown tests when deployed</label>
+          <input type="checkbox" [(ngModel)]="doExecuteShakedownTest">
+        </section>
+        <section *ngIf="doExecuteShakedownTest">
+          <label class="col-sm-3">test neighbourhood</label>
+          <input type="checkbox" [(ngModel)]="doNeighbourhoodTest">
+        </section>
+      </div>
+
+      <hr>
+      <section *ngIf="isReadyForDeployment()">
+        <input type="button" (click)="requestDeployment()" value="Request deployment">
+        <input type="button" (click)="createDeployment()" value="Deploy">
+      </section>
+
+    </div>
+  </div>
+</div>
