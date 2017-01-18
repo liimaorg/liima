@@ -1,0 +1,6 @@
+ID,NAME,V,RESOURCETYPE_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE,FCOWNER,SOFTLINKID,LOCALPORTID
+251758,eap_70,2,2200,1,250858,true,AMW,null,null
+251762,testapplication,0,1,1,250862,true,AMW,null,null
+251759,node1,0,3,1,250859,true,AMW,null,null
+251760,node2,0,3,1,250860,true,AMW,null,null
+251761,testapplicationserver,0,2,1,250861,true,AMW,null,null
