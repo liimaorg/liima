@@ -1,0 +1,5 @@
+ID,CARDINALITYPROPERTY,PROPERTYNAME,V,VALIDATIONLOGIC,PROPERTYTYPEENTITY_ID,ENCRYPT,NULLABLE,TESTING,MACHINEINTERPRETATIONKEY,OPTIONAL,DISPLAYNAME,FCOWNER,FCEXTERNALLINK,FCEXTERNALKEY
+10101,0,hostName,1,"^([a-zA-Z0-9\$\{\}]|[a-zA-Z0-9\$\{\}][a-zA-Z0-9\-\$\{\}]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9\$\{\}]|[a-zA-Z0-9\$\{\}][a-zA-Z0-9\-\$\{\}]{0,61}[a-zA-Z0-9\$\{\}]))*$",1100,false,false,false,null,false,null,AMW,null,null
+10102,0,active,1,"^true$|^TRUE$|^false$|^FALSE$",5,false,false,false,null,false,null,AMW,null,null
+10104,0,Version,0,"[^ ]*",4,false,false,false,null,false,Version,AMW,null,null
+        

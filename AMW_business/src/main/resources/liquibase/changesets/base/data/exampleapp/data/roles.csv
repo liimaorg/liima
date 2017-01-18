@@ -1,0 +1,14 @@
+ID,NAME,V,DEPLOYABLE,DELETABLE
+1052,viewer,1,false,false
+1053,config_admin,0,false,false
+1054,app_developer,0,false,false
+1055,server_admin,0,false,false
+1056,shakedown_tester,1,false,false
+1057,shakedown_admin,0,false,false
+1058,Permissions without assigned Role,2,false,false
+1059,test_deployer,6,true,true
+1060,developer_deployer,12,true,true
+1061,env_management_deployer,4,true,true
+1062,admin_deployer,0,true,true
+1163,overwrite_foreignables,0,false,false
+1165,admin_developer,0,false,false

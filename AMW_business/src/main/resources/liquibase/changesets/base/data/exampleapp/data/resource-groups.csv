@@ -1,0 +1,6 @@
+ID,OUTOFSERVICERELEASE_ID,NAME,V,RESOURCETYPE_ID,FCEXTERNALLINK,FCEXTERNALKEY
+250858,null,eap_70,2,2200,null,null
+250862,null,testapplication,0,1,null,null
+250859,null,node1,0,3,null,null
+250860,null,node2,0,3,null,null
+250861,null,testapplicationserver,0,2,null,null
