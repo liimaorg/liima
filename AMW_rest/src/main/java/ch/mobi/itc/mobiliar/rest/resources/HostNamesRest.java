@@ -25,6 +25,7 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -107,9 +108,10 @@ public class HostNamesRest {
 			 @ApiParam("Runtime name") @QueryParam("runtime") String runtime,
 			 @ApiParam("Environement name") @QueryParam("environment") String environment,
 			 @ApiParam("Host name") @QueryParam("host") String host,
-			 @ApiParam("Node name") @QueryParam("node") String node) {
+			 @ApiParam("Node name") @QueryParam("node") String node,
+			 @ApiParam("Merge releases") @QueryParam("disableMerge") @DefaultValue("false") boolean disableMerge) {
 
-		return serverView.getServers(host, appServer, runtime, node, environment);
+		return serverView.getServers(host, appServer, runtime, node, environment, !disableMerge);
 	}
 
 }

@@ -80,7 +80,7 @@ public class ServerListView implements Serializable {
 		if(!FacesContext.getCurrentInstance().isPostback()) {
 			if(!serverListFilter.isEmpty() || serverListFilter.isEmptySearch()) {
 				servers = serverView.getServers(serverListFilter.getHost(), serverListFilter.getAppServer(), serverListFilter.getRuntime(),
-						serverListFilter.getNode(), serverListFilter.getEnvironment());
+						serverListFilter.getNode(), serverListFilter.getEnvironment(), true);
 			}
 			loadRuntimes();
 		}
