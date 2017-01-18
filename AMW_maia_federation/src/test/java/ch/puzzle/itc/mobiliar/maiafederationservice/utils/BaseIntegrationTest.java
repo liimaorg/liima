@@ -45,12 +45,24 @@ import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.maiafederationservice.boundary.MaiaAmwFederationServiceApplicationBean;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.testrunner.WeldJUnit4Runner;
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.DatabaseException;
+import liquibase.exception.LiquibaseException;
+import liquibase.resource.ClassLoaderResourceAccessor;
+import org.hibernate.Session;
+import org.hibernate.internal.SessionFactoryImpl;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -116,6 +128,20 @@ public abstract class BaseIntegrationTest {
 		protected Map<String, ReleaseEntity> addedReleaseEntitiesCache = new HashMap<>();
 
 		protected void setUp() {
+
+			try {
+				Connection connection = ((SessionFactoryImpl)
+                        entityManager.unwrap(Session.class).getSessionFactory()).getConnectionProvider().getConnection();
+
+				Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+
+				Liquibase liquibase = new Liquibase("integration-test/data/testdata.xml", new ClassLoaderResourceAccessor(), database);
+				liquibase.update("test");
+			} catch (SQLException |  LiquibaseException e) {
+				throw new RuntimeException("Error loading testdata");
+			}
+
+
 			entityManager.getTransaction().begin();
 
 			System.getProperties().put(ConfigurationService.ConfigKey.LOGS_PATH.getValue(),
