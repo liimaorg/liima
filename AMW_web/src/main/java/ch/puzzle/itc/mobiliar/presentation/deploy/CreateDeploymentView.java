@@ -59,6 +59,7 @@ public class CreateDeploymentView implements Serializable {
     ReleaseSelectionDataProvider releaseDataProvider;
 
     private ResourceGroupEntity selectedApplicationServerGroup;
+    @Getter
     private ReleaseEntity selectedRelease;
 
     @Getter
@@ -217,11 +218,6 @@ public class CreateDeploymentView implements Serializable {
         }
     }
 
-
-    private ReleaseEntity getSelectedRelease() {
-        return selectedRelease != null ? selectedRelease : getDefaultRelease();
-    }
-
     private ReleaseEntity getDefaultRelease() {
         Integer upcomingReleaseId = releaseDataProvider.getUpcomingReleaseId();
         releaseDataProvider.reset();
@@ -253,8 +249,8 @@ public class CreateDeploymentView implements Serializable {
                 // load all relations of all resources so we can work with them on the gui
                 selectedApplicationServerGroup = controller
                         .getResourceGroupWithResourceRelations(newSelectedGroup.getId());
-                selectedRelease = null;
                 loadReleasesForAs();
+                selectedRelease = getDefaultRelease();
                 loadApplicationsForSelecedAppServer();
             }
         }

@@ -20,11 +20,10 @@
 
 package ch.puzzle.itc.mobiliar.presentation.deploy;
 
-import static org.junit.Assert.assertEquals;
-
+import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import org.junit.Test;
 
-import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
+import static org.junit.Assert.*;
 
 public class CreateDeploymentViewTest {
 
@@ -89,6 +88,20 @@ public class CreateDeploymentViewTest {
         cdv.createNewParameter();
         assertEquals(1, cdv.getAvailableKeys("").size());
         assertEquals("atest", cdv.getAvailableKeys("").get(0));
+    }
+
+    @Test
+    public void shouldReturnNullIfNoReleaseIsSelected() {
+
+        CreateDeploymentView cdv = new CreateDeploymentView();
+        assertNull(cdv.getSelectedRelease());
+    }
+
+    @Test
+    public void shouldReturnFalseIfNoReleaseIsSelected() {
+
+        CreateDeploymentView cdv = new CreateDeploymentView();
+        assertFalse(cdv.isReleaseSelected());
     }
 
 }
