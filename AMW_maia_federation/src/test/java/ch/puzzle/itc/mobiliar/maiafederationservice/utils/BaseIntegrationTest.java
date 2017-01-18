@@ -115,12 +115,6 @@ public abstract class BaseIntegrationTest {
 
 		protected Map<String, ReleaseEntity> addedReleaseEntitiesCache = new HashMap<>();
 
-		@BeforeClass
-		public static void beforeClass() {
-			// set correct Persistence Unit
-			EntityManagerProducerIntegrationTestImpl.useEmptyDB();
-		}
-
 		protected void setUp() {
 			entityManager.getTransaction().begin();
 
