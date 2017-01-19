@@ -17,6 +17,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 
 
@@ -61,8 +62,20 @@ public class LiquibaseChangeSetTest {
         //liquibase.changeLogSync(new Contexts(), new LabelExpression());
         List<ChangeSet> unrunChangeSets = liquibase.listUnrunChangeSets(new Contexts(), new LabelExpression());
 
-        // then must not fail
-        assertEquals(unrunChangeSets.size(), 0);
+        // if there are open Changesets apply them and look for errors
+        if(unrunChangeSets.size()>0){
+            try {
+                liquibase.update(new Contexts(), new LabelExpression());
+            }catch (LiquibaseException e){
+                fail("There are open Database Changesets on the local H2 Database, which fail when you apply them, you need to fix that");
+            }finally {
+                if(conn !=null) {
+                    conn.close();
+                }
+            }
+            fail("There are open Database Changesets on the local H2 Database, that can be applied without error, run AMW_db_scripts/update_h2_test_db.sh to apply them directly");
+        }
+
         if(conn !=null) {
             conn.close();
         }
