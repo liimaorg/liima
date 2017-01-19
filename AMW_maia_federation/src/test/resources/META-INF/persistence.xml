@@ -100,7 +100,7 @@
 		<class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter</class>
 		<class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key</class>
         <properties>
-           <property name="hibernate.connection.url" value="jdbc:h2:file:../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning;user=sa;password=int" />
+           <property name="hibernate.connection.url" value="jdbc:h2:file:../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning;user=sa;password=" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"></property>
             <property name="hibernate.connection.driver_class" value="org.h2.Driver" />
         </properties>

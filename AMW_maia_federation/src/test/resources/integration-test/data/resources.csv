@@ -1,0 +1,7 @@
+ID,NAME,V,RESOURCETYPE_ID,RELEASE_ID,RESOURCEGROUP_ID,DELETABLE,FCOWNER,SOFTLINKID,LOCALPORTID
+1000,db2Host,0,1001,1,1000,true,AMW,null,null
+1001,adExtern,0,1004,1,1001,true,AMW,null,null
+1002,adIntern,0,1004,1,1002,true,AMW,null,null
+1003,amw,0,2,1,1003,true,AMW,null,null
+1004,ch_puzzle_itc_moby_amw,0,1,1,1004,true,AMW,null,null
+1005,JBoss7,0,2200,1,1005,true,AMW,null,null

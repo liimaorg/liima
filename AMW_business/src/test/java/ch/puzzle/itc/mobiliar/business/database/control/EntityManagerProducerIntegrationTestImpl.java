@@ -37,17 +37,12 @@ public class EntityManagerProducerIntegrationTestImpl extends EntityManagerProdu
 
     private static String persistenceUnit = "persistence-integration-test";
 
-    private static boolean emptyDB;
-
-    private static boolean memoryDB;
-
     @Produces
     public EntityManager createEntityManager() {
         // only create the EntityManger once
         if (em == null) {
             try {
-                if (!memoryDB)
-                    copyIntegrationTestDB();
+                copyIntegrationTestDB();
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -57,27 +52,24 @@ public class EntityManagerProducerIntegrationTestImpl extends EntityManagerProdu
         return em;
     }
 
-    public static void useMemoryPU() {
-        persistenceUnit = "persistence-test";
-        memoryDB = true;
-    }
-
-    public static void useEmptyDB() {
-        emptyDB = true;
-    }
-
     public static void copyIntegrationTestDB() throws IOException {
         // also copy local integration Test DB to gitignored location
         File from;
         File to;
-        if (!emptyDB) {
-            from = new File("../AMW_testing/src/test/resources/integration-test/testdb/amwFileDbIntegration.h2.db");
-            to = new File(
-                    "../AMW_testing/src/test/resources/integration-test/testdb/amwFileDbIntegrationRunning.h2.db");
-        } else {
-            from = new File("../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmpty.h2.db");
-            to = new File("../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning.h2.db");
-        }
+
+        from = new File("../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmpty.h2.db");
+        to = new File("../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning.h2.db");
+
+        Files.copy(from, to);
+    }
+
+    public static void copyIntegrationTestDB(String newName) throws IOException {
+        // also copy local integration Test DB to gitignored location
+        File from;
+        File to;
+
+        from = new File("../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmpty.h2.db");
+        to = new File("../AMW_business/src/test/resources/integration-test/testdb/"+ newName);
         Files.copy(from, to);
     }
 

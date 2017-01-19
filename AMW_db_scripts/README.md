@@ -13,11 +13,10 @@ IMPORTANT: Execute the following maven commands within the current project (AMW_
 Local Oracle Server in Docker Image
 * mvn compile -Pliquibase -Ddb=ora.local
 
-H2 local Database:
-* mvn compile -Pliquibase -Ddb=h2.local
-
-H2 test Database:
+H2 test Database (AMW_business/src/test/resources/integration-test/testdb):
 * mvn compile -Pliquibase -Ddb=h2.test
+
+To apply the open changesets to the H2 test Database run update_h2_test_db.sh
 
 
 ## Check which changesets are going to be applied
