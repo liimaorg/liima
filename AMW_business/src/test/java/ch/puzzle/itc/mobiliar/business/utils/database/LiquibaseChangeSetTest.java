@@ -52,7 +52,7 @@ public class LiquibaseChangeSetTest {
         EntityManagerProducerIntegrationTestImpl.copyIntegrationTestDB("amwFileDbIntegrationOpenChangeSets.h2.db");
 
         Class.forName("org.h2.Driver");
-        conn = DriverManager.getConnection("jdbc:h2:file:../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationOpenChangeSets", "sa", "int");
+        conn = DriverManager.getConnection("jdbc:h2:file:../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationOpenChangeSets", "sa", "");
 
         database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
         Liquibase liquibase = new Liquibase("liquibase/auto.db.changelog.xml", new ClassLoaderResourceAccessor(), database);

@@ -45,6 +45,8 @@ import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.maiafederationservice.boundary.MaiaAmwFederationServiceApplicationBean;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.testrunner.WeldJUnit4Runner;
+import liquibase.Contexts;
+import liquibase.LabelExpression;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -129,6 +131,7 @@ public abstract class BaseIntegrationTest {
 
 		protected void setUp() {
 
+			entityManager.getTransaction().begin();
 			try {
 				Connection connection = ((SessionFactoryImpl)
                         entityManager.unwrap(Session.class).getSessionFactory()).getConnectionProvider().getConnection();
@@ -136,12 +139,12 @@ public abstract class BaseIntegrationTest {
 				Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
 
 				Liquibase liquibase = new Liquibase("integration-test/data/testdata.xml", new ClassLoaderResourceAccessor(), database);
-				liquibase.update("test");
+				liquibase.update(new Contexts(), new LabelExpression());
 			} catch (SQLException |  LiquibaseException e) {
-				throw new RuntimeException("Error loading testdata");
+				throw new RuntimeException("Error loading testdata", e);
 			}
 
-
+			entityManager.getTransaction().commit();
 			entityManager.getTransaction().begin();
 
 			System.getProperties().put(ConfigurationService.ConfigKey.LOGS_PATH.getValue(),
