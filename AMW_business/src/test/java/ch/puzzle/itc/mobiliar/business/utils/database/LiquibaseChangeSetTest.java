@@ -67,7 +67,7 @@ public class LiquibaseChangeSetTest {
             try {
                 liquibase.update(new Contexts(), new LabelExpression());
             }catch (LiquibaseException e){
-                fail("There are open Database Changesets on the local H2 Database, which fail when you apply them, you need to fix that");
+                fail("There are open Database Changesets on the local H2 Database, which fail when you apply them, you need to fix that and apply them afterwards with: AMW_db_scripts/update_h2_test_db.sh");
             }finally {
                 if(conn !=null) {
                     conn.close();
