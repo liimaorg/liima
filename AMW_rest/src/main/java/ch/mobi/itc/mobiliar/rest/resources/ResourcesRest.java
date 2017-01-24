@@ -191,6 +191,9 @@ public class ResourcesRest {
                                                         @PathParam("releaseId") Integer releaseId) throws ValidationException {
 
         ResourceEntity resource = resourceDependencyResolverService.getResourceEntityForRelease(resourceGroupId, releaseId);
+        if (resource == null) {
+            return null;
+        }
         List<String> uniqueNames = new ArrayList<>();
         List<ResourceRelationDTO> resourceRelationDTOs = new ArrayList<>();
         for (ConsumedResourceRelationEntity consumedResourceRelationEntity : resource.getConsumedMasterRelations()) {
@@ -211,6 +214,9 @@ public class ResourcesRest {
                                                           @PathParam("releaseId") Integer releaseId,
                                                           @QueryParam("context") List<Integer> contextIds) throws ValidationException {
         ResourceEntity appServer = resourceLocator.getResourceByGroupIdAndRelease(resourceGroupId, releaseId);
+        if (appServer == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         List<AppWithVersionDTO> apps = new ArrayList<>();
         List<DeploymentEntity.ApplicationWithVersion> appVersions = deploymentService.getVersions(appServer, contextIds, appServer.getRelease());
         for (DeploymentEntity.ApplicationWithVersion appVersion : appVersions) {
@@ -229,7 +235,6 @@ public class ResourcesRest {
         if (group == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-
         List<ReleaseDTO> releases = new ArrayList<>();
         List<ReleaseEntity> deployableReleases = releaseMgmtService.getDeployableReleasesForResourceGroup(group);
         for (ReleaseEntity deployableRelease : deployableReleases) {
