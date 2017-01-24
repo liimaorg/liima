@@ -9,6 +9,7 @@ export interface DeploymentRequest {
   neighbourhoodTest: boolean;
   sendEmail: boolean;
   appsWithVersion: AppWithVersion[];
+  stateToDeploy: number;
   // TODO
   /*
    private Date deploymentDate; // optional

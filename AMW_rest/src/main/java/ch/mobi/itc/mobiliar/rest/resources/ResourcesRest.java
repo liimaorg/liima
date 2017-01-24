@@ -183,7 +183,6 @@ public class ResourcesRest {
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
     }
 
-    // TODO
     @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}")
     @GET
     @ApiOperation(value = "Get resource in specific release - used by Angular")
@@ -202,10 +201,8 @@ public class ResourcesRest {
                 resourceRelationDTOs.add(new ResourceRelationDTO(consumedResourceRelationEntity));
             }
         }
-        // TODO properties! List<PropertyDTO> properties
-        return new ReleaseDTO(resource, resourceRelationDTOs, Collections.EMPTY_LIST);
+        return new ReleaseDTO(resource, resourceRelationDTOs);
     }
-
 
     @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}/appWithVersions/")
     @GET

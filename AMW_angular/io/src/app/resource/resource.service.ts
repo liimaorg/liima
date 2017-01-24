@@ -6,6 +6,7 @@ import { Release } from './release';
 import { Relation } from './relation';
 import { Property } from './property';
 import { AppWithVersion } from '../deployment/app-with-version';
+import { ResourceTag } from './resource-tag';
 
 @Injectable()
 export class ResourceService {
@@ -156,6 +157,7 @@ function toRelease(r: any): Release {
     release: r.release,
     relations: r.relations,
     properties: r.properties,
+    resourceTags: r.resourceTags,
   });
   // console.log('Parsed release:', release);
   return release;

@@ -27,7 +27,7 @@ describe('EnvironmentService', () => {
     // given
     mockBackend.connections.subscribe(connection => {
       expect(connection.request.url).toMatch('http://localhost:8080/AMW_rest/resources/environments');
-      var mockResponse = new Response(new ResponseOptions({
+      let mockResponse = new Response(new ResponseOptions({
         body: [{id: 1, name: 'test'}]
       }));
       connection.mockRespond(mockResponse);

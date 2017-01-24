@@ -14,6 +14,7 @@ import { DeploymentRequest } from './deployment-request';
 import { AppWithVersion } from './app-with-version';
 import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
+import { ResourceTag } from '../resource/resource-tag';
 
 
 @Component({
@@ -38,6 +39,7 @@ export class DeploymentComponent implements OnInit {
   releases: Release[] = [];
   selectedRelease: Release = null;
   runtime: Relation = null;
+  resourceTag: ResourceTag = null;
   appsWithVersion: AppWithVersion[] = [];
   deploymentRequests: DeploymentRequest[] = [];
 
@@ -196,6 +198,7 @@ export class DeploymentComponent implements OnInit {
         deploymentRequest.neighbourhoodTest = this.doNeighbourhoodTest;
         deploymentRequest.requestOnly = this.requestOnly;
         deploymentRequest.appsWithVersion = this.appsWithVersion;
+        deploymentRequest.stateToDeploy = this.resourceTag ? this.resourceTag.tagDate : new Date().getTime();
         // TODO Deploymentparameter
         console.log(deploymentRequest);
 

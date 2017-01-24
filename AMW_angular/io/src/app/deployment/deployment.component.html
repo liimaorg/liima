@@ -70,7 +70,12 @@
 
       <div class="form-group">
         <label class="col-sm-3">State</label>
-        <span>TODO</span>
+        <section *ngIf="bestForSelectedRelease">
+          <select id="input6" [(ngModel)]="resourceTag">
+            <option>HEAD</option>
+            <option [ngValue]="resourceTag" *ngFor="let resourceTag of bestForSelectedRelease.resourceTags">{{resourceTag.label}}</option>
+          </select>
+        </section>
       </div>
 
       <div class="form-group">
