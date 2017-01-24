@@ -69,7 +69,7 @@ export class ResourceService {
 
   getDeployableReleases(resourceGroupId: number): Observable<Release[]> {
     let resource$ = this.http
-      .get(`${this.baseUrl}/resources/${resourceGroupId}/releases/`, {headers: this.getHeaders()})
+      .get(`${this.baseUrl}/resources/resourceGroups/${resourceGroupId}/releases/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
     return resource$;
