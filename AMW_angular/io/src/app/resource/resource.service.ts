@@ -37,9 +37,9 @@ export class ResourceService {
     return resource$;
   }
 
-  getInRelease(resourceGroupName: string, releaseName: string, appsOnly: boolean): Observable<Resource> {
+  getLatestForRelease(resourceGroupId: number, releaseId: number): Observable<Release> {
     let resource$ = this.http
-      .get(`${this.baseUrl}/resources/${resourceGroupName}/${releaseName}?env=Global&appsOnly=${appsOnly}`, {headers: this.getHeaders()})
+      .get(`${this.baseUrl}/resources/resourceGroups/${resourceGroupId}/releases/${releaseId}`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
     return resource$;
@@ -67,23 +67,23 @@ export class ResourceService {
     return resource$;
   }
 
-  getDeployableReleases(resourceGroupName: string): Observable<Release[]> {
+  getDeployableReleases(resourceGroupId: number): Observable<Release[]> {
     let resource$ = this.http
-      .get(`${this.baseUrl}/resources/${resourceGroupName}/releases/`, {headers: this.getHeaders()})
+      .get(`${this.baseUrl}/resources/${resourceGroupId}/releases/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
     return resource$;
   }
 
-  getMostRelevantRelease(resourceGroupName: string): Observable<Release> {
+  getMostRelevantRelease(resourceGroupId: number): Observable<Release> {
     let resource$ = this.http
-      .get(`${this.baseUrl}/resources/${resourceGroupName}/releases/most-relevant/`, {headers: this.getHeaders()})
+      .get(`${this.baseUrl}/resources/resourceGroups/${resourceGroupId}/releases/mostRelevant/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
     return resource$;
   }
 
-  getAppversion(resourceGroupName: string, releaseName: string, environmentIds: number[]): Observable<AppWithVersion[]> {
+  getAppsWithVersions(resourceGroupId: number, releaseId: number, environmentIds: number[]): Observable<AppWithVersion[]> {
     let params: URLSearchParams = new URLSearchParams();
     for (let i = 0; i < environmentIds.length; i++) {
       params.append('context', String(environmentIds[i]));
@@ -93,12 +93,11 @@ export class ResourceService {
       headers: this.getHeaders()
     });
     let resource$ = this.http
-      .get(`${this.baseUrl}/resources/${resourceGroupName}/${releaseName}/appversions/`, options)
+      .get(`${this.baseUrl}/resources/resourceGroups/${resourceGroupId}/releases/${releaseId}/appWithVersions/`, options)
       .map(mapAppWithVersion)
       .catch(handleError);
     return resource$;
   }
-
 
   private getHeaders() {
     let headers = new Headers();
@@ -120,7 +119,7 @@ function toAppWithVersion(r: any): AppWithVersion {
     // no mavenVersion!
     version: r.version,
   });
-  //console.log('Parsed appWithVersion:', appWithVersion);
+  // console.log('Parsed appWithVersion:', appWithVersion);
   return appWithVersion;
 }
 
@@ -139,7 +138,7 @@ function toResource(r: any): Resource {
     release: r.release ? mapRelease(r.release) : '',
     releases: r.releases ? mapReleases(r.releases) : [],
   });
-  //console.log('Parsed resource:', resource);
+  // console.log('Parsed resource:', resource);
   return resource;
 }
 
@@ -158,7 +157,7 @@ function toRelease(r: any): Release {
     relations: r.relations,
     properties: r.properties,
   });
-  //console.log('Parsed release:', release);
+  // console.log('Parsed release:', release);
   return release;
 }
 
@@ -169,7 +168,7 @@ function mapRelease(response: Response): Release {
 // this could also be a private method of the component class
 function handleError(error: any) {
   // log error
-  // could be something more sofisticated
+  // could be something more sophisticated
   let errorMsg = error.message || `Error retrieving your data`;
   console.error(errorMsg);
 

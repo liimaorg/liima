@@ -31,7 +31,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "relations")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter @Setter
+@Getter
+@Setter
 public class ResourceRelationDTO {
 
     private String relatedResourceName;
@@ -40,9 +41,10 @@ public class ResourceRelationDTO {
     private String type;
     private List<TemplateDTO> templates;
 
-    ResourceRelationDTO(){}
+    ResourceRelationDTO() {
+    }
 
-    public ResourceRelationDTO(ConsumedResourceRelationEntity relation){
+    public ResourceRelationDTO(ConsumedResourceRelationEntity relation) {
         relatedResourceName = relation.getSlaveResource().getName();
         relatedResourceRelease = relation.getSlaveResource().getRelease().getName();
         identifier = relation.buildIdentifer();

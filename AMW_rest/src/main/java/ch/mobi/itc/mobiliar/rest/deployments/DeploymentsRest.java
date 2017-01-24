@@ -200,6 +200,17 @@ public class DeploymentsRest {
         return Response.status(Status.OK).entity(new DeploymentDTO(result)).build();
     }
 
+    @GET
+    @Path("/deploymentParameterKeys/")
+    @ApiOperation(value = "returns the keys of all available DeploymentParameter")
+    public Response getAllDeploymentParameterKeys() {
+        List<DeploymentParameterDTO> deploymentParameters = new ArrayList<>();
+        for (Key key : keyRepository.findAllKeys()) {
+            deploymentParameters.add(new DeploymentParameterDTO(key.getName(), null));
+        }
+        return Response.status(Status.OK).entity(deploymentParameters).build();
+    }
+
     /**
      * Creates a new deployment and returns the newly created deployment. Only creates one deployment per request.
      *
@@ -304,12 +315,12 @@ public class DeploymentsRest {
 
     private ArrayList<DeploymentParameter> convertToDeploymentParameter(List<DeploymentParameterDTO> deploymentParameters) {
         ArrayList<DeploymentParameter> parameters = new ArrayList<>();
-        if (deploymentParameters == null) {
-            return parameters;
-        }
-        for (DeploymentParameterDTO deploymentParameterDto : deploymentParameters) {
-            String key = deploymentParameterDto.getKey().trim();
-            parameters.add(new DeploymentParameter(key, deploymentParameterDto.getValue()));
+
+        if (deploymentParameters != null) {
+            for (DeploymentParameterDTO deploymentParameterDto : deploymentParameters) {
+                String key = deploymentParameterDto.getKey().trim();
+            	parameters.add(new DeploymentParameter(key, deploymentParameterDto.getValue()));
+            }
         }
 
         return parameters;
@@ -380,10 +391,13 @@ public class DeploymentsRest {
             for (ResourceEntity app : apps) {
                 // if the name matches, convert the app
                 if (requestedApp.getApplicationName().equals(app.getName())) {
+                    //for backwards compatibility: use MavenVersion as Version
+                    String appVersion = (requestedApp.getMavenVersion() != null && !requestedApp.getMavenVersion().isEmpty())
+                            ? requestedApp.getMavenVersion() : requestedApp.getVersion();
                     //convert
                     result.add(
                             new ApplicationWithVersion(
-                                    requestedApp.getApplicationName(), app.getId(), requestedApp.getVersion()));
+                                    requestedApp.getApplicationName(), app.getId(), appVersion));
                     //scratch off
                     requestedAppsCopy.remove(requestedApp);
                     appsCopy.remove(app);

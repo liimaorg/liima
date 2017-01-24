@@ -1,6 +1,6 @@
 <div class="row page-header">
   <div class="col-md-4">
-    <h1>{{titleLabel}}</h1>
+    <h1>{{appState.get('pageTitle')}}</h1>
   </div>
 </div>
 
@@ -8,7 +8,7 @@
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
-      <h3 class="panel-title pull-left">{{titleLabel}}</h3>
+      <h3 class="panel-title pull-left">{{appState.get('pageTitle')}}</h3>
     </div>
     <div class="panel-body">
 
@@ -51,8 +51,15 @@
 
       <div class="form-group">
         <label class="col-sm-3">Applications</label>
-        <section *ngFor="let app of appsWithVersion">
-          <span>{{app.applicationName}} <input type="text" [(ngModel)]="app.version"></span>
+        <section *ngIf="(appsWithVersion.length === 0)">
+          <section *ngFor="let app of appsWithoutVersion">
+            <span>{{app}} <input type="text"></span>
+          </section>
+        </section>
+        <section *ngIf="(appsWithVersion.length > 0)">
+          <section *ngFor="let app of appsWithVersion">
+            <span>{{app.applicationName}} <input type="text" [(ngModel)]="app.version"></span>
+          </section>
         </section>
       </div>
 

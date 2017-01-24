@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
 import { Environment } from './environment';
 import { Resource } from '../resource/resource';
 import { Release } from '../resource/release';
+import { AppState } from '../app.service';
 
 
 @Component({
@@ -43,8 +44,8 @@ describe('DeploymentComponent', () => {
       EnvironmentService,
       DeploymentService,
       ResourceService,
-      DeploymentComponent
-
+      DeploymentComponent,
+      AppState,
     ],
     declarations: [DummyComponent],
   }));
@@ -83,6 +84,16 @@ describe('DeploymentComponent', () => {
     deploymentComponent.ngOnInit();
     // then
     expect(resourceService.getByType).toHaveBeenCalled();
+  }));
+
+  it('should call deploymentService on ngOnInit', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+    // given
+    spyOn(deploymentService, 'getAllDeploymentParameterKeys').and.returnValue(Observable.of([]));
+    expect(deploymentService.getAllDeploymentParameterKeys).not.toHaveBeenCalled();
+    // when
+    deploymentComponent.ngOnInit();
+    // then
+    expect(deploymentService.getAllDeploymentParameterKeys).toHaveBeenCalled();
   }));
 
   it('should call environmentService on ngOnInit', inject([DeploymentComponent, EnvironmentService], (deploymentComponent: DeploymentComponent, environmentService: EnvironmentService) => {
@@ -141,7 +152,7 @@ describe('DeploymentComponent', () => {
       expect(deploymentComponent.selectedRelease).toBeNull();
     }));
 
-  it('should de-select environments on onChangeAppserver', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should keep environments selected on onChangeAppserver', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
     deploymentComponent.selectedRelease = <Release>{id: 1};
     let appServer: Resource = <Resource>{name: 'testServer'};
@@ -152,23 +163,23 @@ describe('DeploymentComponent', () => {
     // then
     expect(deploymentComponent.selectedRelease).toBeNull();
     expect(deploymentComponent.environments[0].selected).toBeFalsy();
-    expect(deploymentComponent.environments[1].selected).toBeFalsy();
+    expect(deploymentComponent.environments[1].selected).toBeTruthy();
   }));
 
   it('should call resourceService on onChangeRelease', inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
     // given
     let testRelease: Release = <Release>{id: 1, release: 'testRelease'};
-    let runTime: Resource = <Resource> {id: 1, name: 'EAP6', type: 'RUNTIME'};
+    let betterRelease: Release = <Release>{id: 1, release: 'betterRelease'};
     deploymentComponent.releases = [testRelease];
     deploymentComponent.selectedRelease = testRelease;
-    spyOn(resourceService, 'getRuntime').and.returnValue(Observable.of([runTime]));
-    spyOn(resourceService, 'getAppversion').and.returnValue(Observable.of(''));
+    spyOn(resourceService, 'getLatestForRelease').and.returnValue(Observable.of(betterRelease));
+    spyOn(resourceService, 'getAppsWithVersions').and.returnValue(Observable.of(''));
     deploymentComponent.selectedAppserver = <Resource>{name: 'testServer', releases: [testRelease]};
     // when
     deploymentComponent.onChangeRelease();
     // then
-    expect(resourceService.getRuntime).toHaveBeenCalled();
-    expect(resourceService.getAppversion).toHaveBeenCalled();
+    expect(resourceService.getLatestForRelease).toHaveBeenCalled();
+    expect(resourceService.getAppsWithVersions).toHaveBeenCalled();
   }));
 
   it('should not be readyForDeployment if no environment is selected', inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {

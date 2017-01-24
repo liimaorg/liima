@@ -1,3 +1,17 @@
+<div class="row page-header">
+  <div class="col-md-4">
+    <h1>{{appState.get('pageTitle')}}</h1>
+  </div>
+</div>
+
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <h3 class="panel-title pull-left">{{appState.get('pageTitle')}}</h3>
+    </div>
+    <div class="panel-body">
+
 <section>
   <section *ngIf="isLoading && !errorMessage">
     Retrieving data...
@@ -9,10 +23,10 @@
     <a routerLink="/resource">Alle laden</a>
     <a href="#" (click)="goBack()">Zurück</a><br>
   </section>
-  <section *ngIf="resourceInRelease">
+  <section *ngIf="release">
     <h3>{{titleLabel}}</h3>
     <ul>
-      <li *ngFor="let relation of resourceInRelease.relations">Relation:
+      <li *ngFor="let relation of release.relations">Relation:
         <ul>
           <li>relatedResourceName: {{relation.relatedResourceName}}</li>
           <li>relatedResourceRelease: {{relation.relatedResourceRelease}}</li>
@@ -21,7 +35,7 @@
       </li>
     </ul>
     <ul>
-      <li *ngFor="let property of resourceInRelease.properties">Property:
+      <li *ngFor="let property of release.properties">Property:
         <ul>
           <li>name: {{property.name}}</li>
           <li>value: {{property.value}}</li>
@@ -33,11 +47,11 @@
       </li>
     </ul>
   </section>
-  <section *ngIf="!resourceInRelease && resource">
+  <section *ngIf="!release && resource">
     <h3>{{titleLabel}}</h3>
     <amw-resource [resource]="resource" (notifyType)='byType($event)'></amw-resource>
   </section>
-  <section *ngIf="!resourceInRelease && resources.length > 0">
+  <section *ngIf="!release && resources.length > 0">
     <h3>{{titleLabel}}</h3>
     <ul>
       <li *ngFor="let resource of resources">
@@ -46,3 +60,7 @@
     </ul>
   </section>
 </section>
+
+    </div>
+  </div>
+</div>

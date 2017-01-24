@@ -20,7 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted;
 
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceReleaseComparator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -42,6 +44,12 @@ public class ResourceDependencyResolverService {
 
     @Inject
     ResourceReleaseComparator resourceReleaseComparator;
+
+    @Inject
+    ReleaseLocator releaseLocator;
+
+    @Inject
+    ResourceGroupLocator resourceGroupLocator;
 
     static class ReleaseComparator implements Comparator<ReleaseEntity> {
         @Override
@@ -202,6 +210,17 @@ public class ResourceDependencyResolverService {
 
     public ResourceEntity getResourceEntityForRelease(@NotNull ResourceGroupEntity resourceGroup, @NotNull ReleaseEntity release) {
         return getResourceEntityForRelease(resourceGroup.getResources(), release);
+    }
+
+    /**
+     * Used by Angular-Rest
+     * @param resourceGroupId
+     * @param releaseId
+     * @return
+     */
+    public ResourceEntity getResourceEntityForRelease(@NotNull Integer resourceGroupId, @NotNull Integer releaseId) {
+        ResourceGroupEntity resourceGroup = resourceGroupLocator.getResourceGroupForCreateDeploy(resourceGroupId);
+        return getResourceEntityForRelease(resourceGroup.getResources(), releaseLocator.getReleaseById(releaseId));
     }
 
     public ResourceEntity getResourceEntityForRelease(@NotNull Collection<ResourceEntity> resources, @NotNull ReleaseEntity release) {

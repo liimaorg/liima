@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { AppState } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
 import { Resource } from '../resource/resource';
 import { Release } from '../resource/release';
 import { Relation } from '../resource/relation';
+import { DeploymentParameter } from './deployment-parameter';
 import { DeploymentService } from './deployment.service';
 import { EnvironmentService } from './environment.service';
 import { Environment } from './environment';
@@ -12,6 +14,7 @@ import { DeploymentRequest } from './deployment-request';
 import { AppWithVersion } from './app-with-version';
 import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'amw-deployment',
@@ -24,16 +27,18 @@ export class DeploymentComponent implements OnInit {
   appserverName: string = '';
   releaseName: string = '';
 
-  selectedAppserver: Resource = null;
+  // these are valid for all (loaded ony once)
   appservers: Resource[] = [];
+  environments: Environment[] = [];
+  environmentGroups: string[] = [];
+  deploymentParameter: DeploymentParameter[] = [];
+
+  // per appserver/deployment request
+  selectedAppserver: Resource = null;
   releases: Release[] = [];
   selectedRelease: Release = null;
   runtime: Relation = null;
-  environments: Environment[] = [];
-  environmentGroups: string[] = [];
-
   appsWithVersion: AppWithVersion[] = [];
-
   deploymentRequests: DeploymentRequest[] = [];
 
   requestOnly: boolean = false;
@@ -42,7 +47,9 @@ export class DeploymentComponent implements OnInit {
   // may only be enabled if above is true
   doNeighbourhoodTest: boolean = false;
 
-  titleLabel: string = 'Create new deployment';
+  bestForSelectedRelease: Release = null;
+  appsWithoutVersion: string[] = [];
+
   errorMessage: string = '';
   isLoading: boolean = false;
 
@@ -50,10 +57,14 @@ export class DeploymentComponent implements OnInit {
               private environmentService: EnvironmentService,
               private deploymentService: DeploymentService,
               private activatedRoute: ActivatedRoute,
-              private location: Location) {
+              private location: Location,
+              private appState: AppState) {
   }
 
   ngOnInit(): void {
+
+    this.appState.set('navTitle', 'Deployments');
+    this.appState.set('pageTitle', 'Create new deployment');
 
     this.activatedRoute.params.subscribe(
       (param: any) => {
@@ -64,8 +75,20 @@ export class DeploymentComponent implements OnInit {
       });
 
     console.log('hello `Deployment` component');
+
     this.initAppservers();
     this.initEnvironments();
+    // we dont need this right away
+    this.loadDeploymentParameters();
+  }
+
+  initAppservers() {
+    this.isLoading = true;
+    this.resourceService
+      .getByType('APPLICATIONSERVER').subscribe(
+      /* happy path */ r => this.appservers = _.sortBy(_.uniqBy(r, 'id'), 'name'),
+      /* error path */ e => this.errorMessage = e,
+      /* onComplete */ () => this.setPreselected());
   }
 
   onChangeAppserver() {
@@ -73,61 +96,17 @@ export class DeploymentComponent implements OnInit {
     this.loadReleases();
   }
 
-  private setSelectedRelease(): Subscription {
-    return this.resourceService.getMostRelevantRelease(this.selectedAppserver.name).subscribe(
-      /* happy path */ r => this.selectedRelease = this.releases.find(release => release.release === r.release),
-      /* error path */ e => this.errorMessage = e,
-      /* onComplete */ () => this.onChangeRelease());
-  }
-
-  private loadReleases(): Subscription {
-    console.log('loading releases for ' + this.selectedAppserver.name);
-    this.isLoading = true;
-    return this.resourceService.getDeployableReleases(this.selectedAppserver.name).subscribe(
-      /* happy path */ r => this.releases = r,
-      /* error path */ e => this.errorMessage = e,
-      /* onComplete */ () => this.setSelectedRelease());
-  }
-
   onChangeRelease() {
-    console.log('selected release is '+this.selectedRelease.release);
+    console.log('selected release is ' + this.selectedRelease.release);
     if (!this.selectedRelease) {
       this.selectedRelease = this.releases[0];
     }
-    this.getRuntime();
-    this.getAppVersion();
+    this.getRelatedForRelease();
     this.goTo(this.selectedAppserver.name + '/' + this.selectedRelease.release);
   }
 
   onChangeEnvironment() {
-    this.getAppVersion();
-  }
-
-  private getAppVersion() {
-    this.isLoading = true;
-    this.resourceService.getAppversion(this.selectedAppserver.name, this.selectedRelease.release, _.filter(this.environments, 'selected').map(val => val.id)).subscribe(
-      /* happy path */ r => this.appsWithVersion = r,
-      /* error path */ e => this.errorMessage = e,
-      /* onComplete */ () => this.isLoading = false);
-  }
-
-  private getRuntime() {
-    this.isLoading = true;
-    this.resourceService.getRuntime(this.selectedAppserver.name, this.selectedRelease.release).subscribe(
-      /* happy path */ r => this.runtime = r.pop(),
-      /* error path */ e => this.errorMessage = e,
-      /* onComplete */ () => this.isLoading = false);
-  }
-
-  private resetVars() {
-    this.selectedRelease = null;
-    this.doSendEmail = false;
-    this.doExecuteShakedownTest = false;
-    this.doNeighbourhoodTest = false;
-    this.appsWithVersion = [];
-    this.environments.forEach(function (item) {
-      item.selected = false
-    });
+    this.getAppVersions();
   }
 
   isReadyForDeployment(): boolean {
@@ -146,6 +125,64 @@ export class DeploymentComponent implements OnInit {
     this.prepareDeployment();
   }
 
+  private setSelectedRelease(): Subscription {
+    return this.resourceService.getMostRelevantRelease(this.selectedAppserver.id).subscribe(
+      /* happy path */ r => this.selectedRelease = this.releases.find(release => release.release === r.release),
+      /* error path */ e => this.errorMessage = e,
+      /* onComplete */ () => this.onChangeRelease());
+  }
+
+  private loadReleases(): Subscription {
+    console.log('loading releases for ' + this.selectedAppserver.name);
+    this.isLoading = true;
+    return this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe(
+      /* happy path */ r => this.releases = r,
+      /* error path */ e => this.errorMessage = e,
+      /* onComplete */ () => this.setSelectedRelease());
+  }
+
+  private getRelatedForRelease() {
+    console.log('getRelatedForRelease ' + this.selectedRelease.release);
+    this.isLoading = true;
+    this.resourceService.getLatestForRelease(this.selectedAppserver.id, this.selectedRelease.id).subscribe(
+      /* happy path */ r => this.bestForSelectedRelease = r,
+      /* error path */ e => this.errorMessage = e,
+      /* onComplete */ () => this.extractFromRelations());
+  }
+
+  private extractFromRelations() {
+     this.runtime = _.filter(this.bestForSelectedRelease.relations, {'type': 'RUNTIME'}).pop();
+     this.appsWithoutVersion = _.filter(this.bestForSelectedRelease.relations, {'type': 'APPLICATION'}).map(val => val.relatedResourceName);
+     console.log('got appsWithoutVersion ' + this.appsWithoutVersion);
+     this.appsWithVersion = [];
+     this.getAppVersions();
+  }
+
+  private getAppVersions() {
+    console.log('getAppVersions');
+    if (!this.bestForSelectedRelease) {
+      console.log('!! bestForSelectedRelease is undefined !!');
+    }
+    this.isLoading = true;
+    this.resourceService.getAppsWithVersions(this.selectedAppserver.id, this.bestForSelectedRelease.id, _.filter(this.environments, 'selected').map(val => val.id)).subscribe(
+      /* happy path */ r => this.appsWithVersion = r,
+      /* error path */ e => this.errorMessage = e,
+      /* onComplete */ () => this.isLoading = false);
+  }
+
+  private resetVars() {
+    this.selectedRelease = null;
+    this.bestForSelectedRelease = null;
+    this.doSendEmail = false;
+    this.doExecuteShakedownTest = false;
+    this.doNeighbourhoodTest = false;
+    this.appsWithVersion = [];
+    this.appsWithoutVersion = [];
+/*    this.environments.forEach(function (item) {
+      item.selected = false
+    });*/
+  }
+
   private prepareDeployment() {
     if (this.isReadyForDeployment()) {
       let environments: string[] = _.filter(this.environments, 'selected').map(val => val.name);
@@ -159,6 +196,7 @@ export class DeploymentComponent implements OnInit {
         deploymentRequest.neighbourhoodTest = this.doNeighbourhoodTest;
         deploymentRequest.requestOnly = this.requestOnly;
         deploymentRequest.appsWithVersion = this.appsWithVersion;
+        // TODO Deploymentparameter
         console.log(deploymentRequest);
 
         this.deploymentService.createDeployment(deploymentRequest).subscribe(
@@ -185,13 +223,11 @@ export class DeploymentComponent implements OnInit {
     this.isLoading = false;
   }
 
-  initAppservers() {
-    this.isLoading = true;
-    this.resourceService
-      .getByType('APPLICATIONSERVER').subscribe(
-      /* happy path */ r => this.appservers = _.sortBy(_.uniqBy(r, 'id'), 'name'),
-      /* error path */ e => this.errorMessage = e,
-      /* onComplete */ () => this.setPreselected());
+  private loadDeploymentParameters() {
+    this.deploymentService
+      .getAllDeploymentParameterKeys().subscribe(
+      /* happy path */ r => this.deploymentParameter = r,
+      /* error path */ e => this.errorMessage = e);
   }
 
   // for url params only
@@ -204,7 +240,7 @@ export class DeploymentComponent implements OnInit {
           break;
         }
       }
-      this.resourceService.getDeployableReleases(this.appserverName).subscribe(
+      this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe(
         /* happy path */ r => this.releases = r,
         /* error path */ e => this.errorMessage = e,
         /* onComplete */ () => this.setRelease());

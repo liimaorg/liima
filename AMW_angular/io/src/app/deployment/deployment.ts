@@ -1,4 +1,5 @@
 import { Deployment } from './deployment';
+import { DeploymentParameter } from './deployment-parameter';
 import { AppWithVersion } from './app-with-version';
 
 export interface Deployment {
@@ -8,6 +9,7 @@ export interface Deployment {
   deploymentDate: Date,
   appServerName: string,
   appsWithVersion: AppWithVersion[];
+  deploymentParams: DeploymentParameter[];
   environmentName: string;
   releaseName: string;
   runtimeName: string;
@@ -18,6 +20,5 @@ export interface Deployment {
 
 /*
  // TODO
- deploymentParams = {LinkedList@20568}  size = 0
  nodeJobs = {HashSet@20575}  size = 0
  */

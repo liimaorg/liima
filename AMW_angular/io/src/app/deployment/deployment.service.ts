@@ -3,6 +3,7 @@ import { Http, Response, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Deployment } from './deployment';
 import { DeploymentRequest } from './deployment-request';
+import { DeploymentParameter } from './deployment-parameter';
 
 @Injectable()
 export class DeploymentService {
@@ -23,6 +24,14 @@ export class DeploymentService {
     console.log('createDeployment: ' + deploymentRequest);
     return this.http.post(`${this.baseUrl}/deployments`, deploymentRequest, {headers: this.postHeaders()}).map((res: Response) => res.json())
       .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+  }
+
+  getAllDeploymentParameterKeys(): Observable<DeploymentParameter[]> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/deploymentParameterKeys/`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
   }
 
   private getHeaders() {

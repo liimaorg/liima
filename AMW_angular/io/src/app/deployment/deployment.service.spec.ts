@@ -33,7 +33,7 @@ describe('DeploymentService', () => {
     // given
     mockBackend.connections.subscribe(connection => {
       expect(connection.request.url).toMatch('http://localhost:8080/AMW_rest/resources/deployments');
-      var mockResponse = new Response(new ResponseOptions({
+      let mockResponse = new Response(new ResponseOptions({
         body: [{id: 1}]
       }));
       connection.mockRespond(mockResponse);
@@ -41,6 +41,21 @@ describe('DeploymentService', () => {
     // when then
     deploymentService.getAll().subscribe(response => {
       expect(response).toEqual([{id: 1}]);
+    });
+  }));
+
+  it('should request data from the right endpoint when getAllDeploymentParameterKeys is called', inject([DeploymentService, MockBackend, Http], (deploymentService: DeploymentService, mockBackend: MockBackend, http: Http) => {
+    // given
+    mockBackend.connections.subscribe(connection => {
+      expect(connection.request.url).toMatch('http://localhost:8080/AMW_rest/resources/deployments/deploymentParameterKeys');
+      let mockResponse = new Response(new ResponseOptions({
+        body: [{key: 1, value: 'test'}]
+      }));
+      connection.mockRespond(mockResponse);
+    });
+    // when then
+    deploymentService.getAllDeploymentParameterKeys().subscribe(response => {
+      expect(response).toEqual([{key: 1, value: 'test'}]);
     });
   }));
 

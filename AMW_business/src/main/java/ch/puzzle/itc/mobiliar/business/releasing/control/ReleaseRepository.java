@@ -36,6 +36,10 @@ public class ReleaseRepository {
         return entityManager.createQuery("select r from ReleaseEntity r where LOWER(r.name)=:name", ReleaseEntity.class).setParameter("name", name.toLowerCase()).getSingleResult();
     }
 
+    public ReleaseEntity getReleaseById(Integer id){
+        return entityManager.createQuery("select r from ReleaseEntity r where r.id=:id", ReleaseEntity.class).setParameter("id", id).getSingleResult();
+    }
+
     public List<ReleaseEntity> getReleasesForResourceGroup(ResourceGroupEntity resgrp){
         return entityManager.createQuery("select r from ReleaseEntity r left join r.resources res left join res.resourceGroup resgrp where resgrp=:resgrp", ReleaseEntity.class).setParameter("resgrp", resgrp).getResultList();
     }

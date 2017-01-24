@@ -183,13 +183,34 @@ public class ResourcesRest {
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
     }
 
-    @Path("/{resourceGroupName}/{releaseName}/appversions/")
+    // TODO
+    @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}")
     @GET
-    @ApiOperation(value = "Get application with version for a specific resourceGroup, release and context(s)")
-    public Response getAppplicationsWithVersionForRelease(@PathParam("resourceGroupName") String resourceGroupName,
-                                                          @PathParam("releaseName") String releaseName,
+    @ApiOperation(value = "Get resource in specific release - used by Angular")
+    public ReleaseDTO getResourceRelationListForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
+                                                        @PathParam("releaseId") Integer releaseId) throws ValidationException {
+
+        ResourceEntity resource = resourceDependencyResolverService.getResourceEntityForRelease(resourceGroupId, releaseId);
+        List<String> uniqueNames = new ArrayList<>();
+        List<ResourceRelationDTO> resourceRelationDTOs = new ArrayList<>();
+        for (ConsumedResourceRelationEntity consumedResourceRelationEntity : resource.getConsumedMasterRelations()) {
+            if (!uniqueNames.contains(consumedResourceRelationEntity.getSlaveResource().getName())) {
+                uniqueNames.add(consumedResourceRelationEntity.getSlaveResource().getName());
+                resourceRelationDTOs.add(new ResourceRelationDTO(consumedResourceRelationEntity));
+            }
+        }
+        // TODO properties! List<PropertyDTO> properties
+        return new ReleaseDTO(resource, resourceRelationDTOs, Collections.EMPTY_LIST);
+    }
+
+
+    @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}/appWithVersions/")
+    @GET
+    @ApiOperation(value = "Get application with version for a specific resourceGroup, release and context(s) - used by Angular")
+    public Response getAppplicationsWithVersionForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
+                                                          @PathParam("releaseId") Integer releaseId,
                                                           @QueryParam("context") List<Integer> contextIds) throws ValidationException {
-        ResourceEntity appServer = resourceLocator.getResourceByNameAndReleaseWithRelations(resourceGroupName, releaseName);
+        ResourceEntity appServer = resourceLocator.getResourceByGroupIdAndRelease(resourceGroupId, releaseId);
         List<AppWithVersionDTO> apps = new ArrayList<>();
         List<DeploymentEntity.ApplicationWithVersion> appVersions = deploymentService.getVersions(appServer, contextIds, appServer.getRelease());
         for (DeploymentEntity.ApplicationWithVersion appVersion : appVersions) {
@@ -199,12 +220,12 @@ public class ResourcesRest {
 
     }
 
-    @Path("/{resourceGroupName}/releases/")
+    @Path("/resourceGroups/{resourceGroupId}/releases/")
     @GET
-    @ApiOperation(value = "Get deployable releases for a specific resourceGroup")
-    public Response getDeployableReleasesForResourceGroup(@PathParam("resourceGroupName") String resourceGroupName) throws ValidationException {
+    @ApiOperation(value = "Get deployable releases for a specific resourceGroup - used by Angular")
+    public Response getDeployableReleasesForResourceGroup(@PathParam("resourceGroupId") Integer resourceGroupId) throws ValidationException {
 
-        ResourceGroupEntity group = resourceGroupLocator.getResourceGroupByName(resourceGroupName);
+        ResourceGroupEntity group = resourceGroupLocator.getResourceGroupById(resourceGroupId);
         if (group == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -218,11 +239,11 @@ public class ResourcesRest {
 
     }
 
-    @Path("/{resourceGroupName}/releases/most-relevant/")
+    @Path("/resourceGroups/{resourceGroupId}/releases/mostRelevant/")
     @GET
-    @ApiOperation(value = "Get most relevant release for a specific resourceGroup")
-    public Response getMostRelevantReleaseForResourceGroup(@PathParam("resourceGroupName") String resourceGroupName) {
-        ResourceGroupEntity group = resourceGroupLocator.getResourceGroupByName(resourceGroupName);
+    @ApiOperation(value = "Get most relevant release for a specific resourceGroup - used by Angular")
+    public Response getMostRelevantReleaseForResourceGroup(@PathParam("resourceGroupId") Integer resourceGroupId) {
+        ResourceGroupEntity group = resourceGroupLocator.getResourceGroupById(resourceGroupId);
         if (group == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
