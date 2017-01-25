@@ -198,7 +198,7 @@ export class DeploymentComponent implements OnInit {
         deploymentRequest.neighbourhoodTest = this.doNeighbourhoodTest;
         deploymentRequest.requestOnly = this.requestOnly;
         deploymentRequest.appsWithVersion = this.appsWithVersion;
-        deploymentRequest.stateToDeploy = this.resourceTag ? this.resourceTag.tagDate : new Date().getTime();
+        deploymentRequest.stateToDeploy = (this.resourceTag && this.resourceTag.tagDate) ? this.resourceTag.tagDate : new Date().getTime();
         // TODO Deploymentparameter
         console.log(deploymentRequest);
 
