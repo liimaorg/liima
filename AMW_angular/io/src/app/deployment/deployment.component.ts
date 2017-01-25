@@ -3,6 +3,7 @@ import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { AppState } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
+import { ResourceTag } from '../resource/resource-tag';
 import { Resource } from '../resource/resource';
 import { Release } from '../resource/release';
 import { Relation } from '../resource/relation';
@@ -14,8 +15,6 @@ import { DeploymentRequest } from './deployment-request';
 import { AppWithVersion } from './app-with-version';
 import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
-import { ResourceTag } from '../resource/resource-tag';
-
 
 @Component({
   selector: 'amw-deployment',
@@ -32,16 +31,20 @@ export class DeploymentComponent implements OnInit {
   appservers: Resource[] = [];
   environments: Environment[] = [];
   environmentGroups: string[] = [];
-  deploymentParameter: DeploymentParameter[] = [];
+  deploymentParameters: DeploymentParameter[] = [];
 
   // per appserver/deployment request
   selectedAppserver: Resource = null;
   releases: Release[] = [];
   selectedRelease: Release = null;
   runtime: Relation = null;
-  resourceTag: ResourceTag = null;
+  resourceTags: ResourceTag[] = [<ResourceTag>{label: 'HEAD'}];
+  selectedResourceTag: ResourceTag = null;
+  deploymentDate: number = null;
   appsWithVersion: AppWithVersion[] = [];
   deploymentRequests: DeploymentRequest[] = [];
+  transDeploymentParameter: DeploymentParameter = <DeploymentParameter>{};
+  transDeploymentParameters: DeploymentParameter[] = [];
 
   requestOnly: boolean = false;
   doSendEmail: boolean = false;
@@ -111,18 +114,28 @@ export class DeploymentComponent implements OnInit {
     this.getAppVersions();
   }
 
+  onAddParam() {
+    _.remove(this.transDeploymentParameters, { key: this.transDeploymentParameter.key });
+    this.transDeploymentParameters.push(this.transDeploymentParameter);
+    this.transDeploymentParameter = <DeploymentParameter>{};
+  }
+
+  onRemoveParam(deParam: DeploymentParameter) {
+    _.pull(this.transDeploymentParameters, deParam);
+  }
+
   isReadyForDeployment(): boolean {
     return (this.selectedRelease && _.filter(this.environments, 'selected').length > 0);
   }
 
   requestDeployment() {
-    this.requestOnly = false;
+    this.requestOnly = true;
     console.log('requestDeployment()');
     this.prepareDeployment();
   }
 
   createDeployment() {
-    this.requestOnly = true;
+    this.requestOnly = false;
     console.log('createDeployment()');
     this.prepareDeployment();
   }
@@ -135,7 +148,6 @@ export class DeploymentComponent implements OnInit {
   }
 
   private loadReleases(): Subscription {
-    console.log('loading releases for ' + this.selectedAppserver.name);
     this.isLoading = true;
     return this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe(
       /* happy path */ r => this.releases = r,
@@ -144,7 +156,6 @@ export class DeploymentComponent implements OnInit {
   }
 
   private getRelatedForRelease() {
-    console.log('getRelatedForRelease ' + this.selectedRelease.release);
     this.isLoading = true;
     this.resourceService.getLatestForRelease(this.selectedAppserver.id, this.selectedRelease.id).subscribe(
       /* happy path */ r => this.bestForSelectedRelease = r,
@@ -155,16 +166,12 @@ export class DeploymentComponent implements OnInit {
   private extractFromRelations() {
      this.runtime = _.filter(this.bestForSelectedRelease.relations, {'type': 'RUNTIME'}).pop();
      this.appsWithoutVersion = _.filter(this.bestForSelectedRelease.relations, {'type': 'APPLICATION'}).map(val => val.relatedResourceName);
-     console.log('got appsWithoutVersion ' + this.appsWithoutVersion);
+     this.resourceTags = this.resourceTags.concat(this.bestForSelectedRelease.resourceTags);
      this.appsWithVersion = [];
      this.getAppVersions();
   }
 
   private getAppVersions() {
-    console.log('getAppVersions');
-    if (!this.bestForSelectedRelease) {
-      console.log('!! bestForSelectedRelease is undefined !!');
-    }
     this.isLoading = true;
     this.resourceService.getAppsWithVersions(this.selectedAppserver.id, this.bestForSelectedRelease.id, _.filter(this.environments, 'selected').map(val => val.id)).subscribe(
       /* happy path */ r => this.appsWithVersion = r,
@@ -175,11 +182,15 @@ export class DeploymentComponent implements OnInit {
   private resetVars() {
     this.selectedRelease = null;
     this.bestForSelectedRelease = null;
+    this.selectedResourceTag = null;
+    this.resourceTags = [<ResourceTag>{label: 'HEAD'}];
     this.doSendEmail = false;
     this.doExecuteShakedownTest = false;
     this.doNeighbourhoodTest = false;
     this.appsWithVersion = [];
     this.appsWithoutVersion = [];
+    this.transDeploymentParameter = <DeploymentParameter>{};
+    this.transDeploymentParameters = [];
 /*    this.environments.forEach(function (item) {
       item.selected = false
     });*/
@@ -198,8 +209,11 @@ export class DeploymentComponent implements OnInit {
         deploymentRequest.neighbourhoodTest = this.doNeighbourhoodTest;
         deploymentRequest.requestOnly = this.requestOnly;
         deploymentRequest.appsWithVersion = this.appsWithVersion;
-        deploymentRequest.stateToDeploy = (this.resourceTag && this.resourceTag.tagDate) ? this.resourceTag.tagDate : new Date().getTime();
-        // TODO Deploymentparameter
+        deploymentRequest.stateToDeploy = (this.selectedResourceTag && this.selectedResourceTag.tagDate) ? this.selectedResourceTag.tagDate : new Date().getTime();
+        deploymentRequest.deploymentDate = this.deploymentDate;
+        if (this.transDeploymentParameters.length > 0) {
+          deploymentRequest.deploymentParameters = this.transDeploymentParameters;
+        }
         console.log(deploymentRequest);
 
         this.deploymentService.createDeployment(deploymentRequest).subscribe(
@@ -229,7 +243,7 @@ export class DeploymentComponent implements OnInit {
   private loadDeploymentParameters() {
     this.deploymentService
       .getAllDeploymentParameterKeys().subscribe(
-      /* happy path */ r => this.deploymentParameter = r,
+      /* happy path */ r => this.deploymentParameters = r,
       /* error path */ e => this.errorMessage = e);
   }
 

@@ -82,9 +82,8 @@
         <div class="form-group">
           <label for="selectState" class="col-sm-2 control-label">State</label>
           <div class="col-sm-10 col-md-5" *ngIf="bestForSelectedRelease">
-            <select id="selectState" class="form-control input-sm" [(ngModel)]="resourceTag">
-              <option>HEAD</option>
-              <option [ngValue]="resourceTag" *ngFor="let resourceTag of bestForSelectedRelease.resourceTags">{{resourceTag.label}}</option>
+            <select id="selectState" class="form-control input-sm" [(ngModel)]="selectedResourceTag">
+              <option *ngFor="let resourceTag of resourceTags">{{resourceTag.label}}</option>
             </select>
           </div>
         </div>
@@ -93,7 +92,7 @@
             <label for="dateDeployment" class="col-sm-2 control-label">Deploy at</label>
             <div class="col-sm-10 col-md-5">
               <div class="input-group date datepicker">
-                <input id="dateDeployment" type="text" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                <input id="dateDeployment" type="text" class="form-control" [(ngModel)]="deploymentDate"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
               </div>
             </div>
         </div>
@@ -101,17 +100,37 @@
         <div class="form-group">
           <label class="col-sm-2 control-label">Deployment parameter</label>
           <div class="col-sm-2">
-            <input class="form-control" placeholder="TODO" type="text">
+            <input class="form-control" list="depParamList" type="text" [(ngModel)]="transDeploymentParameter.key">
+            <datalist id="depParamList">
+              <option *ngFor="let depParam of deploymentParameters">{{depParam.key}}</option>
+            </datalist>
           </div>
           <div class="col-sm-3">
-            <input class="form-control" placeholder="TODO" type="text">
+            <input class="form-control" type="text" [(ngModel)]="transDeploymentParameter.value">
           </div>
           <div class="col-sm-2">
-            <button type="button" class="btn btn-default">
-              <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add
+            <button type="button" class="btn btn-default" *ngIf="(transDeploymentParameter.key && transDeploymentParameter.value)" (click)="onAddParam($event)">
+              <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
             </button>
           </div>
         </div>
+
+        <ng-container *ngIf="(transDeploymentParameters.length > 0)">
+        <div class="form-group" *ngFor="let transDepParam of transDeploymentParameters">
+          <label for="selectApplicationserver" class="col-sm-2 control-label"></label>
+          <div class="col-sm-2">
+            <input class="form-control" disabled type="text" value="{{transDepParam.key}}">
+          </div>
+          <div class="col-sm-3">
+            <input class="form-control" disabled type="text" value="{{transDepParam.value}}">
+          </div>
+          <div class="col-sm-2">
+            <button type="button" class="btn btn-default"  (click)="onRemoveParam(transDepParam)">
+              <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+        </ng-container>
 
         <div class="form-group">
           <label class="col-sm-2 control-label">Details</label>

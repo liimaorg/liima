@@ -1,4 +1,5 @@
 import { AppWithVersion } from './app-with-version';
+import { DeploymentParameter } from './deployment-parameter';
 
 export interface DeploymentRequest {
   appServerName: string;
@@ -10,13 +11,12 @@ export interface DeploymentRequest {
   sendEmail: boolean;
   appsWithVersion: AppWithVersion[];
   stateToDeploy: number;
+  deploymentDate: number;
+  deploymentParameters: DeploymentParameter[];
+
   // TODO
   /*
-   private Date deploymentDate; // optional
-   private Date stateToDeploy; // optional
-   private List<AppWithVersionDTO> appsWithVersion;
    private Boolean simulate = false; // optional
-   private List<DeploymentParameterDTO> deploymentParameters; // optional
    */
 
 }

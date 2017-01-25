@@ -14,6 +14,11 @@ import { Environment } from './environment';
 import { Resource } from '../resource/resource';
 import { Release } from '../resource/release';
 import { AppState } from '../app.service';
+import { DeploymentRequest } from './deployment-request';
+import { DeploymentParameter } from './deployment-parameter';
+import { Deployment } from './deployment';
+import {ResourceTag} from "../resource/resource-tag";
+import {AppWithVersion} from "./app-with-version";
 
 
 @Component({
@@ -182,7 +187,30 @@ describe('DeploymentComponent', () => {
     expect(resourceService.getAppsWithVersions).toHaveBeenCalled();
   }));
 
-  it('should not be readyForDeployment if no environment is selected', inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
+  it('should replace deploymentParameters with same key onAddParam', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+    // given
+    deploymentComponent.transDeploymentParameters = [ <DeploymentParameter>{key:'atest', value:'foo'} ];
+    deploymentComponent.transDeploymentParameter = <DeploymentParameter>{key:'atest', value:'bar'};
+    // when
+    deploymentComponent.onAddParam();
+    // then
+    expect(deploymentComponent.transDeploymentParameters.length).toBe(1);
+    expect(deploymentComponent.transDeploymentParameters[0].value).toEqual('bar');
+  }));
+
+  it('should remove the right deploymentParameter onRemoveParam', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+    // given
+    let parameterA: DeploymentParameter = <DeploymentParameter>{key:'atest', value:'foo'};
+    let parameterB: DeploymentParameter = <DeploymentParameter>{key:'btest', value:'bar'};
+    deploymentComponent.transDeploymentParameters = [ parameterA, parameterB ];
+    // when
+    deploymentComponent.onRemoveParam(parameterA);
+    // then
+    expect(deploymentComponent.transDeploymentParameters.length).toBe(1);
+    expect(deploymentComponent.transDeploymentParameters[0].value).toEqual(parameterB.value);
+  }));
+
+  it('should not be readyForDeployment if no environment is selected', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
     deploymentComponent.selectedAppserver = <Resource>{name: 'testServer'};
     deploymentComponent.selectedRelease = <Release>{id: 1, release: 'testRelease'};
@@ -191,13 +219,53 @@ describe('DeploymentComponent', () => {
     expect(deploymentComponent.isReadyForDeployment()).toBeFalsy();
   }));
 
-  it('should be readyForDeployment if a release ist set and an environment is selected', inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
+  it('should be readyForDeployment if a release ist set and an environment is selected', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
     deploymentComponent.selectedAppserver = <Resource>{name: 'testServer'};
     deploymentComponent.selectedRelease = <Release>{id: 1, release: 'testRelease'};
     deploymentComponent.environments = [<Environment>{id: 1}, <Environment>{id: 2, selected: true}];
     // when then
     expect(deploymentComponent.isReadyForDeployment()).toBeTruthy();
+  }));
+
+  it('should call the deploymentService with the right values on requestDeployment', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+    // given
+    deploymentComponent.selectedAppserver = <Resource>{name: 'testServer'};
+    deploymentComponent.selectedRelease = <Release>{id: 1, release: 'testRelease'};
+    deploymentComponent.environments = [<Environment>{id: 2, name: 'A'}, <Environment>{id: 3, name: 'B', selected: true}];
+    deploymentComponent.doExecuteShakedownTest = true;
+    deploymentComponent.appsWithVersion = [<AppWithVersion>{applicationId: 4, applicationName: 'testApp', version: '1.2.3'}];
+    deploymentComponent.selectedResourceTag = <ResourceTag> {id: 5, tagDate: 1485378084103};
+    deploymentComponent.transDeploymentParameters = [ <DeploymentParameter>{key:'atest', value:'foo'}, <DeploymentParameter>{key:'btest', value:'bar'} ];
+    let deploymentRequest: DeploymentRequest = <DeploymentRequest>{ appServerName: 'testServer', environmentName: 'B',
+      releaseName: 'testRelease', sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
+      neighbourhoodTest: false, requestOnly: true,  appsWithVersion: deploymentComponent.appsWithVersion,
+      stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentDate: null, deploymentParameters: deploymentComponent.transDeploymentParameters};
+    spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment>{}));
+    // when
+    deploymentComponent.requestDeployment();
+    // then
+    expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
+  }));
+
+  it('should call the deploymentService with the right values on createDeployment', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+    // given
+    deploymentComponent.selectedAppserver = <Resource>{name: 'testServer'};
+    deploymentComponent.selectedRelease = <Release>{id: 1, release: 'testRelease'};
+    deploymentComponent.environments = [<Environment>{id: 2, name: 'A', selected: true}, <Environment>{id: 3, name: 'B'}];
+    deploymentComponent.doExecuteShakedownTest = true;
+    deploymentComponent.appsWithVersion = [<AppWithVersion>{applicationId: 4, applicationName: 'testApp', version: '1.2.3'}, <AppWithVersion>{applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'}];
+    deploymentComponent.selectedResourceTag = <ResourceTag> {id: 5, tagDate: 1485378084103};
+    deploymentComponent.transDeploymentParameters = [ <DeploymentParameter>{key:'atest', value:'foo'}, <DeploymentParameter>{key:'btest', value:'bar'} ];
+    let deploymentRequest: DeploymentRequest = <DeploymentRequest>{ appServerName: 'testServer', environmentName: 'A',
+      releaseName: 'testRelease', sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
+      neighbourhoodTest: false, requestOnly: false,  appsWithVersion: deploymentComponent.appsWithVersion,
+      stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentDate: null, deploymentParameters: deploymentComponent.transDeploymentParameters};
+    spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment>{}));
+    // when
+    deploymentComponent.createDeployment();
+    // then
+    expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
   }));
 
 });
