@@ -53,18 +53,18 @@
 
         <div class="form-group">
           <label class="col-sm-2 control-label">Applications</label>
-          <div class="col-sm-10">
+          <div class="col-sm-10 col-md-5">
 
               <table class="table table-striped" *ngIf="(appsWithVersion.length === 0)">
                 <tr *ngFor="let app of appsWithoutVersion">
-                  <td width="33%">{{app}}</td>
+                  <td class="col-md-2">{{app}}</td>
                   <td><input class="form-control" type="text"></td>
                 </tr>
               </table>
 
               <table class="table table-striped" *ngIf="(appsWithVersion.length > 0)">
                   <tr *ngFor="let app of appsWithVersion">
-                    <td width="33%">{{app.applicationName}}</td>
+                    <td class="col-md-2">{{app.applicationName}}</td>
                     <td><input class="form-control" type="text" [(ngModel)]="app.version"></td>
                   </tr>
               </table>
