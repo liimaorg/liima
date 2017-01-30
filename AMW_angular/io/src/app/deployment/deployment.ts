@@ -17,8 +17,3 @@ export interface Deployment {
   confirmUser: string;
   cancleUser: string;
 }
-
-/*
- // TODO
- nodeJobs = {HashSet@20575}  size = 0
- */

@@ -17,8 +17,8 @@ import { AppState } from '../app.service';
 import { DeploymentRequest } from './deployment-request';
 import { DeploymentParameter } from './deployment-parameter';
 import { Deployment } from './deployment';
-import {ResourceTag} from "../resource/resource-tag";
-import {AppWithVersion} from "./app-with-version";
+import { ResourceTag } from '../resource/resource-tag';
+import { AppWithVersion } from './app-with-version';
 
 
 @Component({
@@ -189,8 +189,8 @@ describe('DeploymentComponent', () => {
 
   it('should replace deploymentParameters with same key onAddParam', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
-    deploymentComponent.transDeploymentParameters = [ <DeploymentParameter>{key:'atest', value:'foo'} ];
-    deploymentComponent.transDeploymentParameter = <DeploymentParameter>{key:'atest', value:'bar'};
+    deploymentComponent.transDeploymentParameters = [ <DeploymentParameter>{key: 'atest', value: 'foo'} ];
+    deploymentComponent.transDeploymentParameter = <DeploymentParameter>{key: 'atest', value: 'bar'};
     // when
     deploymentComponent.onAddParam();
     // then
@@ -200,8 +200,8 @@ describe('DeploymentComponent', () => {
 
   it('should remove the right deploymentParameter onRemoveParam', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
-    let parameterA: DeploymentParameter = <DeploymentParameter>{key:'atest', value:'foo'};
-    let parameterB: DeploymentParameter = <DeploymentParameter>{key:'btest', value:'bar'};
+    let parameterA: DeploymentParameter = <DeploymentParameter>{key: 'atest', value: 'foo'};
+    let parameterB: DeploymentParameter = <DeploymentParameter>{key: 'btest', value: 'bar'};
     deploymentComponent.transDeploymentParameters = [ parameterA, parameterB ];
     // when
     deploymentComponent.onRemoveParam(parameterA);
@@ -236,11 +236,12 @@ describe('DeploymentComponent', () => {
     deploymentComponent.doExecuteShakedownTest = true;
     deploymentComponent.appsWithVersion = [<AppWithVersion>{applicationId: 4, applicationName: 'testApp', version: '1.2.3'}];
     deploymentComponent.selectedResourceTag = <ResourceTag> {id: 5, tagDate: 1485378084103};
-    deploymentComponent.transDeploymentParameters = [ <DeploymentParameter>{key:'atest', value:'foo'}, <DeploymentParameter>{key:'btest', value:'bar'} ];
+    deploymentComponent.deploymentDate = '02.01.2017 12:00';
+    deploymentComponent.transDeploymentParameters = [ <DeploymentParameter>{key: 'atest', value: 'foo'}, <DeploymentParameter>{key: 'btest', value: 'bar'} ];
     let deploymentRequest: DeploymentRequest = <DeploymentRequest>{ appServerName: 'testServer', environmentName: 'B',
-      releaseName: 'testRelease', sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
+      releaseName: 'testRelease', simulate: false, sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
       neighbourhoodTest: false, requestOnly: true,  appsWithVersion: deploymentComponent.appsWithVersion,
-      stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentDate: null, deploymentParameters: deploymentComponent.transDeploymentParameters};
+      stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentDate: 1483354800000, deploymentParameters: deploymentComponent.transDeploymentParameters};
     spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment>{}));
     // when
     deploymentComponent.requestDeployment();
@@ -254,13 +255,14 @@ describe('DeploymentComponent', () => {
     deploymentComponent.selectedRelease = <Release>{id: 1, release: 'testRelease'};
     deploymentComponent.environments = [<Environment>{id: 2, name: 'A', selected: true}, <Environment>{id: 3, name: 'B'}];
     deploymentComponent.doExecuteShakedownTest = true;
+    deploymentComponent.simulate = true;
     deploymentComponent.appsWithVersion = [<AppWithVersion>{applicationId: 4, applicationName: 'testApp', version: '1.2.3'}, <AppWithVersion>{applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'}];
     deploymentComponent.selectedResourceTag = <ResourceTag> {id: 5, tagDate: 1485378084103};
-    deploymentComponent.transDeploymentParameters = [ <DeploymentParameter>{key:'atest', value:'foo'}, <DeploymentParameter>{key:'btest', value:'bar'} ];
+    deploymentComponent.transDeploymentParameters = [ <DeploymentParameter>{key: 'atest', value: 'foo'}, <DeploymentParameter>{key: 'btest', value: 'bar'} ];
     let deploymentRequest: DeploymentRequest = <DeploymentRequest>{ appServerName: 'testServer', environmentName: 'A',
-      releaseName: 'testRelease', sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
+      releaseName: 'testRelease', simulate: deploymentComponent.simulate, sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
       neighbourhoodTest: false, requestOnly: false,  appsWithVersion: deploymentComponent.appsWithVersion,
-      stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentDate: null, deploymentParameters: deploymentComponent.transDeploymentParameters};
+      stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentParameters: deploymentComponent.transDeploymentParameters};
     spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment>{}));
     // when
     deploymentComponent.createDeployment();

@@ -6,6 +6,7 @@ export interface DeploymentRequest {
   environmentName: string;
   releaseName: string;
   requestOnly: boolean;
+  simulate: boolean;
   executeShakedownTest: boolean;
   neighbourhoodTest: boolean;
   sendEmail: boolean;
@@ -13,10 +14,4 @@ export interface DeploymentRequest {
   stateToDeploy: number;
   deploymentDate: number;
   deploymentParameters: DeploymentParameter[];
-
-  // TODO
-  /*
-   private Boolean simulate = false; // optional
-   */
-
 }

@@ -13,8 +13,9 @@ import { EnvironmentService } from './environment.service';
 import { Environment } from './environment';
 import { DeploymentRequest } from './deployment-request';
 import { AppWithVersion } from './app-with-version';
-import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
+import * as _ from 'lodash';
+import * as moment from 'moment';
 
 @Component({
   selector: 'amw-deployment',
@@ -40,12 +41,13 @@ export class DeploymentComponent implements OnInit {
   runtime: Relation = null;
   resourceTags: ResourceTag[] = [<ResourceTag>{label: 'HEAD'}];
   selectedResourceTag: ResourceTag = null;
-  deploymentDate: number = null;
+  deploymentDate: string = '';
   appsWithVersion: AppWithVersion[] = [];
   deploymentRequests: DeploymentRequest[] = [];
   transDeploymentParameter: DeploymentParameter = <DeploymentParameter>{};
   transDeploymentParameters: DeploymentParameter[] = [];
 
+  simulate: boolean = false;
   requestOnly: boolean = false;
   doSendEmail: boolean = false;
   doExecuteShakedownTest: boolean = false;
@@ -164,11 +166,11 @@ export class DeploymentComponent implements OnInit {
   }
 
   private extractFromRelations() {
-     this.runtime = _.filter(this.bestForSelectedRelease.relations, {'type': 'RUNTIME'}).pop();
-     this.appsWithoutVersion = _.filter(this.bestForSelectedRelease.relations, {'type': 'APPLICATION'}).map(val => val.relatedResourceName);
-     this.resourceTags = this.resourceTags.concat(this.bestForSelectedRelease.resourceTags);
-     this.appsWithVersion = [];
-     this.getAppVersions();
+    this.runtime = _.filter(this.bestForSelectedRelease.relations, {'type': 'RUNTIME'}).pop();
+    this.appsWithoutVersion = _.filter(this.bestForSelectedRelease.relations, {'type': 'APPLICATION'}).map(val => val.relatedResourceName);
+    this.resourceTags = this.resourceTags.concat(this.bestForSelectedRelease.resourceTags);
+    this.appsWithVersion = [];
+    this.getAppVersions();
   }
 
   private getAppVersions() {
@@ -183,7 +185,9 @@ export class DeploymentComponent implements OnInit {
     this.selectedRelease = null;
     this.bestForSelectedRelease = null;
     this.selectedResourceTag = null;
+    this.deploymentDate = null;
     this.resourceTags = [<ResourceTag>{label: 'HEAD'}];
+    this.simulate = false;
     this.doSendEmail = false;
     this.doExecuteShakedownTest = false;
     this.doNeighbourhoodTest = false;
@@ -191,9 +195,9 @@ export class DeploymentComponent implements OnInit {
     this.appsWithoutVersion = [];
     this.transDeploymentParameter = <DeploymentParameter>{};
     this.transDeploymentParameters = [];
-/*    this.environments.forEach(function (item) {
-      item.selected = false
-    });*/
+    /*    this.environments.forEach(function (item) {
+     item.selected = false
+     });*/
   }
 
   private prepareDeployment() {
@@ -204,13 +208,17 @@ export class DeploymentComponent implements OnInit {
         deploymentRequest.appServerName = this.selectedAppserver.name;
         deploymentRequest.releaseName = this.selectedRelease.release;
         deploymentRequest.environmentName = environmentName;
+        deploymentRequest.simulate = this.simulate;
         deploymentRequest.sendEmail = this.doSendEmail;
         deploymentRequest.executeShakedownTest = this.doExecuteShakedownTest;
         deploymentRequest.neighbourhoodTest = this.doNeighbourhoodTest;
         deploymentRequest.requestOnly = this.requestOnly;
         deploymentRequest.appsWithVersion = this.appsWithVersion;
         deploymentRequest.stateToDeploy = (this.selectedResourceTag && this.selectedResourceTag.tagDate) ? this.selectedResourceTag.tagDate : new Date().getTime();
-        deploymentRequest.deploymentDate = this.deploymentDate;
+        if (this.deploymentDate) {
+          let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
+          deploymentRequest.deploymentDate = dateTime.valueOf();
+        }
         if (this.transDeploymentParameters.length > 0) {
           deploymentRequest.deploymentParameters = this.transDeploymentParameters;
         }

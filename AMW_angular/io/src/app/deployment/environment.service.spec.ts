@@ -35,7 +35,7 @@ describe('EnvironmentService', () => {
     // when then
     environmentService.getAll().subscribe(response => {
       expect(response).toEqual([{id: 1, name: 'test'}]);
-    })
+    });
   }));
 
 });
