@@ -70,9 +70,11 @@ public class ConfigurationService {
 		/**
 		 * Create not Existent Directory Structure
 		 */
-		CREATE_NOT_EXISTING_DIRECTORIES_ON_STARTUP("amw.createNotExistingDirectoriesOnStartUp", "AMW_CREATENOTEXISTINGDIRECTORIESONSTARTUP", "false", false);
+		CREATE_NOT_EXISTING_DIRECTORIES_ON_STARTUP("amw.createNotExistingDirectoriesOnStartUp", "AMW_CREATENOTEXISTINGDIRECTORIESONSTARTUP", "false", false),
 
 
+		/*Feature toggles*/
+		FEATURE_ANGULAR_GUI_CREATE_DEPLOYMENT("amw.feature.angularGuiCreateDeployment","AMW_FEATURE_ANGULARGUICREATEDEPLOYMENT","false", false);
 
 		@Getter
 		private String value;
