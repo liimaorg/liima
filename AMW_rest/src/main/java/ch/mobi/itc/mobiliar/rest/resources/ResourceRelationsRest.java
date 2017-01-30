@@ -21,6 +21,7 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -105,15 +106,6 @@ public class ResourceRelationsRest {
             resourceRelations.add(resRel);
         }
         return resourceRelations;
-    }
-
-    @Path("/{relatedResourceGroupName}/{relatedReleaseName}")
-    @GET
-    @ApiOperation(value = "Get the relation between the two resource releases")
-    public ResourceRelationDTO getResourceRelation(@PathParam("relatedResourceGroupName") String relatedResourceGroupName,
-                                                   @PathParam("relatedReleaseName") String relatedReleaseName) throws ValidationException {
-        return new ResourceRelationDTO(resourceRelationLocator.getResourceRelation(resourceGroupName, releaseName,
-                relatedResourceGroupName, relatedReleaseName));
     }
 
     // List of ResourceRelationDTO

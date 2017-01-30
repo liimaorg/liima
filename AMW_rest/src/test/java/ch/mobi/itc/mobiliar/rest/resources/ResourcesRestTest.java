@@ -207,7 +207,7 @@ public class ResourcesRestTest {
         String env = "V";
         Integer type = 2305;
         List<ServerTuple> list = new ArrayList<>();
-        Mockito.when(serverViewMock.getServers(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(list);
+        Mockito.when(serverViewMock.getServers(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(list);
         
         // when
         BatchJobInventoryDTO result = rest.getBatchJobInventar(env, type, null, null, null, null, null);

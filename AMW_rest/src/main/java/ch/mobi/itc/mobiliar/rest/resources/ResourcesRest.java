@@ -25,6 +25,7 @@ import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
@@ -404,7 +405,7 @@ public class ResourcesRest {
         String runtime = "JavaBatch*"; // aber nur Batch
         String host = null;
         String node = null;
-        List<ServerTuple> servers = serverView.getServers(host, appServer, runtime, node, env);
+        List<ServerTuple> servers = serverView.getServers(host, appServer, runtime, node, env, true);
         List<String> appServerList = new ArrayList<>();
         for (ServerTuple t : servers) {
             appServerList.add(t.getAppServer().toLowerCase());

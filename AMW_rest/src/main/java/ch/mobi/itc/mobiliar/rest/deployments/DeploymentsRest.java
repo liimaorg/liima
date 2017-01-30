@@ -392,8 +392,8 @@ public class DeploymentsRest {
                 // if the name matches, convert the app
                 if (requestedApp.getApplicationName().equals(app.getName())) {
                     //for backwards compatibility: use MavenVersion as Version
-                    String appVersion = (requestedApp.getMavenVersion() != null && !requestedApp.getMavenVersion().isEmpty())
-                            ? requestedApp.getMavenVersion() : requestedApp.getVersion();
+                    String appVersion = (requestedApp.getVersion() != null && !requestedApp.getVersion().isEmpty())
+                            ? requestedApp.getVersion() : requestedApp.getVersion();
                     //convert
                     result.add(
                             new ApplicationWithVersion(
