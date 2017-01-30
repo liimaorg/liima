@@ -217,7 +217,9 @@ export class DeploymentComponent implements OnInit {
         deploymentRequest.stateToDeploy = (this.selectedResourceTag && this.selectedResourceTag.tagDate) ? this.selectedResourceTag.tagDate : new Date().getTime();
         if (this.deploymentDate) {
           let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
-          deploymentRequest.deploymentDate = dateTime.valueOf();
+          if (dateTime && dateTime.isValid()) {
+            deploymentRequest.deploymentDate = dateTime.valueOf();
+          }
         }
         if (this.transDeploymentParameters.length > 0) {
           deploymentRequest.deploymentParameters = this.transDeploymentParameters;
