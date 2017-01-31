@@ -1,19 +1,19 @@
-# AMW
-[![Build Status](https://travis-ci.org/a-gogo/agogo.svg?branch=master)](https://travis-ci.org/a-gogo/agogo)
+# Liima
+[![Build Status](https://travis-ci.org/liimaorg/liima.svg?branch=master)](https://travis-ci.org/liimaorg/liima)
 
-AMW - Automated Middleware allows you to manage the configurations of
+Liima - (AMW) Automated Middleware allows you to manage the configurations of
 your Java EE applications on an unlimited number of different environments
 with various versions, including the automated deployment of those apps.
 
 ## Docs
 
-AMW Docs are available under https://github.com/a-gogo/docs
+Liima Docs are available under https://github.com/liimaorg/docs
 
 
 ## Build and create Release 
-Build the AMW ear
+Build the Liima ear
 
-**Note:** when using Oracle JDK to build AMW, make sure to install the Java Cryptography Extension (JCE) Unlimited Strength. Otherwise the decryption tests are going to fail.  
+**Note:** when using Oracle JDK to build Liima, make sure to install the Java Cryptography Extension (JCE) Unlimited Strength. Otherwise the decryption tests are going to fail.  
 
 ```
 mvn clean install
@@ -85,7 +85,7 @@ please check [Copying file](COPYING)
 
 ## License
 
-AMW is licensed under the GNU AGPLv3 License, see [LICENSE file](LICENSE)
+Liima is licensed under the GNU AGPLv3 License, see [LICENSE file](LICENSE)
 
 ## Contribution
 
@@ -93,7 +93,7 @@ Please have a look at the [contribution guide](CONTRIBUTING.md)
 
 ## Authors
 
-The contributors who are working on AMW or did contribute to AMW are listed in the [AUTHORS file](AUTHORS)
+The contributors who are working on Liima or did contribute to Liima are listed in the [AUTHORS file](AUTHORS)
 
 
 
