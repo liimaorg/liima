@@ -105,11 +105,18 @@
                                                 </li>
                                                 <li>
                                                     <h:link outcome="createDeploymentView" value="Add deployment"
-                                                            rendered="#{securityDataProvider.hasPermissionToDeploy()}"
+                                                            rendered="#{securityDataProvider.hasPermissionToDeploy() and !deployScreenDataProvider.isAngularEnabled()}"
                                                             styleClass="btn light"
                                                             onclick="showLoader();confirmLeave(event);">
                                                         <i class="icon icon-add"/>
                                                     </h:link>
+                                                    <h:outputLink value="/AMW_angular/#/deployment"
+                                                            rendered="#{securityDataProvider.hasPermissionToDeploy() and deployScreenDataProvider.isAngularEnabled()}"
+                                                            styleClass="btn light"
+                                                            onclick="showLoader();confirmLeave(event);">
+                                                        <i class="icon icon-add"/>
+                                                        <h:outputText value="Add deployment" />
+                                                    </h:outputLink>
                                                 </li>
                                             </ul>
                                         </nav>

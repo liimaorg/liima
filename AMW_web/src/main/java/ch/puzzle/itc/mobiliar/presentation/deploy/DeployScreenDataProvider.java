@@ -34,6 +34,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
 import ch.puzzle.itc.mobiliar.common.util.CustomFilter.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
@@ -149,6 +150,8 @@ public class DeployScreenDataProvider implements Serializable {
     private SortingDirectionType sortingDirection = SortingDirectionType.DESC;
     private deployscreenColDescriptor sortingColumn = deployscreenColDescriptor.DEPLOY_TIME;
 
+    private static final boolean useAngular = Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_ANGULAR_GUI_CREATE_DEPLOYMENT));
+
     @Getter
     @Setter
     private Long selectedDate;
@@ -259,6 +262,9 @@ public class DeployScreenDataProvider implements Serializable {
         getCustomFilterComp().getSelectedFilterList().add(filter);
     }
 
+    public boolean isAngularEnabled() {
+        return useAngular;
+    }
 
     class MyComparator implements Comparator<DeploymentFilterTypes> {
         @Override
