@@ -25,7 +25,6 @@ export class EnvironmentService {
   }
 }
 
-
 // this could also be a private method of the component class
 function handleError(error: any) {
   // log error

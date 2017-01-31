@@ -4,6 +4,8 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { AppState } from './app.service';
 
+// import { Datetimepicker } from "eonasdan-bootstrap-datetimepicker";
+
 /*
  * App Component
  * Top Level Component
@@ -20,7 +22,6 @@ export class AppComponent {
   name = 'Angular 2';
 
   constructor(public appState: AppState) {
-
   }
 
   ngOnInit() {

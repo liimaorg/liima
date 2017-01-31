@@ -39,12 +39,12 @@ export class DeploymentComponent implements OnInit {
   releases: Release[] = [];
   selectedRelease: Release = null;
   runtime: Relation = null;
-  resourceTags: ResourceTag[] = [<ResourceTag>{label: 'HEAD'}];
+  resourceTags: ResourceTag[] = [<ResourceTag> {label: 'HEAD'}];
   selectedResourceTag: ResourceTag = null;
   deploymentDate: string = '';
   appsWithVersion: AppWithVersion[] = [];
   deploymentRequests: DeploymentRequest[] = [];
-  transDeploymentParameter: DeploymentParameter = <DeploymentParameter>{};
+  transDeploymentParameter: DeploymentParameter = <DeploymentParameter> {};
   transDeploymentParameters: DeploymentParameter[] = [];
 
   simulate: boolean = false;
@@ -93,8 +93,8 @@ export class DeploymentComponent implements OnInit {
     this.isLoading = true;
     this.resourceService
       .getByType('APPLICATIONSERVER').subscribe(
-      /* happy path */ r => this.appservers = _.sortBy(_.uniqBy(r, 'id'), 'name'),
-      /* error path */ e => this.errorMessage = e,
+      /* happy path */ (r) => this.appservers = _.sortBy(_.uniqBy(r, 'id'), 'name'),
+      /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.setPreselected());
   }
 
@@ -119,7 +119,7 @@ export class DeploymentComponent implements OnInit {
   onAddParam() {
     _.remove(this.transDeploymentParameters, { key: this.transDeploymentParameter.key });
     this.transDeploymentParameters.push(this.transDeploymentParameter);
-    this.transDeploymentParameter = <DeploymentParameter>{};
+    this.transDeploymentParameter = <DeploymentParameter> {};
   }
 
   onRemoveParam(deParam: DeploymentParameter) {
@@ -144,30 +144,30 @@ export class DeploymentComponent implements OnInit {
 
   private setSelectedRelease(): Subscription {
     return this.resourceService.getMostRelevantRelease(this.selectedAppserver.id).subscribe(
-      /* happy path */ r => this.selectedRelease = this.releases.find(release => release.release === r.release),
-      /* error path */ e => this.errorMessage = e,
+      /* happy path */ (r) => this.selectedRelease = this.releases.find((release) => release.release === r.release),
+      /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.onChangeRelease());
   }
 
   private loadReleases(): Subscription {
     this.isLoading = true;
     return this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe(
-      /* happy path */ r => this.releases = r,
-      /* error path */ e => this.errorMessage = e,
+      /* happy path */ (r) => this.releases = r,
+      /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.setSelectedRelease());
   }
 
   private getRelatedForRelease() {
     this.isLoading = true;
     this.resourceService.getLatestForRelease(this.selectedAppserver.id, this.selectedRelease.id).subscribe(
-      /* happy path */ r => this.bestForSelectedRelease = r,
-      /* error path */ e => this.errorMessage = e,
+      /* happy path */ (r) => this.bestForSelectedRelease = r,
+      /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.extractFromRelations());
   }
 
   private extractFromRelations() {
-    this.runtime = _.filter(this.bestForSelectedRelease.relations, {'type': 'RUNTIME'}).pop();
-    this.appsWithoutVersion = _.filter(this.bestForSelectedRelease.relations, {'type': 'APPLICATION'}).map(val => val.relatedResourceName);
+    this.runtime = _.filter(this.bestForSelectedRelease.relations, {type: 'RUNTIME'}).pop();
+    this.appsWithoutVersion = _.filter(this.bestForSelectedRelease.relations, {type: 'APPLICATION'}).map((val) => val.relatedResourceName);
     this.resourceTags = this.resourceTags.concat(this.bestForSelectedRelease.resourceTags);
     this.appsWithVersion = [];
     this.getAppVersions();
@@ -175,9 +175,9 @@ export class DeploymentComponent implements OnInit {
 
   private getAppVersions() {
     this.isLoading = true;
-    this.resourceService.getAppsWithVersions(this.selectedAppserver.id, this.bestForSelectedRelease.id, _.filter(this.environments, 'selected').map(val => val.id)).subscribe(
-      /* happy path */ r => this.appsWithVersion = r,
-      /* error path */ e => this.errorMessage = e,
+    this.resourceService.getAppsWithVersions(this.selectedAppserver.id, this.bestForSelectedRelease.id, _.filter(this.environments, 'selected').map((val) => val.id)).subscribe(
+      /* happy path */ (r) => this.appsWithVersion = r,
+      /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }
 
@@ -186,14 +186,14 @@ export class DeploymentComponent implements OnInit {
     this.bestForSelectedRelease = null;
     this.selectedResourceTag = null;
     this.deploymentDate = null;
-    this.resourceTags = [<ResourceTag>{label: 'HEAD'}];
+    this.resourceTags = [<ResourceTag> {label: 'HEAD'}];
     this.simulate = false;
     this.doSendEmail = false;
     this.doExecuteShakedownTest = false;
     this.doNeighbourhoodTest = false;
     this.appsWithVersion = [];
     this.appsWithoutVersion = [];
-    this.transDeploymentParameter = <DeploymentParameter>{};
+    this.transDeploymentParameter = <DeploymentParameter> {};
     this.transDeploymentParameters = [];
     /*    this.environments.forEach(function (item) {
      item.selected = false
@@ -202,59 +202,61 @@ export class DeploymentComponent implements OnInit {
 
   private prepareDeployment() {
     if (this.isReadyForDeployment()) {
-      let environments: string[] = _.filter(this.environments, 'selected').map(val => val.name);
+      let environments: string[] = _.filter(this.environments, 'selected').map((val) => val.name);
       environments.forEach(function (environmentName) {
-        let deploymentRequest: DeploymentRequest = <DeploymentRequest>{};
-        deploymentRequest.appServerName = this.selectedAppserver.name;
-        deploymentRequest.releaseName = this.selectedRelease.release;
-        deploymentRequest.environmentName = environmentName;
-        deploymentRequest.simulate = this.simulate;
-        deploymentRequest.sendEmail = this.doSendEmail;
-        deploymentRequest.executeShakedownTest = this.doExecuteShakedownTest;
-        deploymentRequest.neighbourhoodTest = this.doNeighbourhoodTest;
-        deploymentRequest.requestOnly = this.requestOnly;
-        deploymentRequest.appsWithVersion = this.appsWithVersion;
-        deploymentRequest.stateToDeploy = (this.selectedResourceTag && this.selectedResourceTag.tagDate) ? this.selectedResourceTag.tagDate : new Date().getTime();
-        if (this.deploymentDate) {
-          let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
-          if (dateTime && dateTime.isValid()) {
-            deploymentRequest.deploymentDate = dateTime.valueOf();
-          }
-        }
-        if (this.transDeploymentParameters.length > 0) {
-          deploymentRequest.deploymentParameters = this.transDeploymentParameters;
-        }
+        let deploymentRequest = this.createDeploymentRequest(environmentName);
         console.log(deploymentRequest);
-
         this.deploymentService.createDeployment(deploymentRequest).subscribe(
-          /* happy path */ r => r, // => this.relations = r,
-          /* error path */ e => this.errorMessage = e);
-
+          /* happy path */ (r) => r, // => this.relations = r,
+          /* error path */ (e) => this.errorMessage = e);
         this.deploymentRequests.push(deploymentRequest);
-
       }, this);
     }
+  }
+
+  private createDeploymentRequest(environmentName: string) {
+    let deploymentRequest: DeploymentRequest = <DeploymentRequest> {};
+    deploymentRequest.appServerName = this.selectedAppserver.name;
+    deploymentRequest.releaseName = this.selectedRelease.release;
+    deploymentRequest.environmentName = environmentName;
+    deploymentRequest.simulate = this.simulate;
+    deploymentRequest.sendEmail = this.doSendEmail;
+    deploymentRequest.executeShakedownTest = this.doExecuteShakedownTest;
+    deploymentRequest.neighbourhoodTest = this.doNeighbourhoodTest;
+    deploymentRequest.requestOnly = this.requestOnly;
+    deploymentRequest.appsWithVersion = this.appsWithVersion;
+    deploymentRequest.stateToDeploy = (this.selectedResourceTag && this.selectedResourceTag.tagDate) ? this.selectedResourceTag.tagDate : new Date().getTime();
+    if (this.deploymentDate) {
+      let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
+      if (dateTime && dateTime.isValid()) {
+        deploymentRequest.deploymentDate = dateTime.valueOf();
+      }
+    }
+    if (this.transDeploymentParameters.length > 0) {
+      deploymentRequest.deploymentParameters = this.transDeploymentParameters;
+    }
+    return deploymentRequest;
   }
 
   private initEnvironments() {
     this.isLoading = true;
     this.environmentService
       .getAll().subscribe(
-      /* happy path */ r => this.environments = r,
-      /* error path */ e => this.errorMessage = e,
+      /* happy path */ (r) => this.environments = r,
+      /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.extractEnvironmentGroups());
   }
 
   private extractEnvironmentGroups() {
-    this.environmentGroups = Array.from(new Set(this.environments.map(env => env.parent)));
+    this.environmentGroups = Array.from(new Set(this.environments.map((env) => env.parent)));
     this.isLoading = false;
   }
 
   private loadDeploymentParameters() {
     this.deploymentService
       .getAllDeploymentParameterKeys().subscribe(
-      /* happy path */ r => this.deploymentParameters = r,
-      /* error path */ e => this.errorMessage = e);
+      /* happy path */ (r) => this.deploymentParameters = r,
+      /* error path */ (e) => this.errorMessage = e);
   }
 
   // for url params only
@@ -268,8 +270,8 @@ export class DeploymentComponent implements OnInit {
         }
       }
       this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe(
-        /* happy path */ r => this.releases = r,
-        /* error path */ e => this.errorMessage = e,
+        /* happy path */ (r) => this.releases = r,
+        /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => this.setRelease());
       this.isLoading = false;
     }
@@ -279,7 +281,7 @@ export class DeploymentComponent implements OnInit {
   private setRelease() {
     if (this.releaseName) {
       console.log('pre-selected release is ' + this.releaseName);
-      this.selectedRelease = this.releases.find(release => release.release === this.releaseName);
+      this.selectedRelease = this.releases.find((release) => release.release === this.releaseName);
       this.onChangeRelease();
     }
   }

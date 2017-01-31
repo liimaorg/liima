@@ -6,7 +6,6 @@ import { Release } from './release';
 import { Relation } from './relation';
 import { Property } from './property';
 import { AppWithVersion } from '../deployment/app-with-version';
-import { ResourceTag } from './resource-tag';
 
 @Injectable()
 export class ResourceService {
@@ -114,7 +113,7 @@ function mapAppWithVersion(response: Response): AppWithVersion[] {
 }
 
 function toAppWithVersion(r: any): AppWithVersion {
-  let appWithVersion = <AppWithVersion>({
+  let appWithVersion = <AppWithVersion> ({
     applicationId: r.applicationId,
     applicationName: r.applicationName,
     // no mavenVersion!
@@ -131,7 +130,7 @@ function mapResources(response: Response): Resource[] {
 }
 
 function toResource(r: any): Resource {
-  let resource = <Resource>({
+  let resource = <Resource> ({
     id: r.id,
     name: r.name,
     type: r.type,
@@ -152,7 +151,7 @@ function mapReleases(releases): Release[] {
 }
 
 function toRelease(r: any): Release {
-  let release = <Release>({
+  let release = <Release> ({
     id: r.id,
     release: r.release,
     relations: r.relations,

@@ -3,6 +3,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { removeNgStyles, createNewHosts, createInputTransfer } from '@angularclass/hmr';
+
+//import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker';
 /*
  * Feature Modules
  */
@@ -19,6 +21,7 @@ import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
 import { HomeComponent } from './home';
 import { PageNotFoundComponent } from './not-found.component';
+/*import { Datetimepicker } from "eonasdan-bootstrap-datetimepicker";*/
 
 
 // Application wide providers
@@ -50,6 +53,7 @@ type StoreType = {
     AppRoutingModule,
     ResourceModule,
     DeploymentModule
+/*    Datetimepicker*/
   ],
   providers: [ // expose our Services and Providers into Angular's dependency injection
     ENV_PROVIDERS,
@@ -58,6 +62,11 @@ type StoreType = {
 })
 export class AppModule {
   constructor(public appRef: ApplicationRef, public appState: AppState) {
+/*    $(function() {
+      $(".datepicker").datetimepicker({
+        format:"DD.MM.YYYY HH:mm"
+      })
+    });*/
   }
 
   hmrOnInit(store: StoreType) {

@@ -16,12 +16,13 @@
       "dom",
       "es6"
     ],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
     "types": [
       "hammerjs",
       "jasmine",
       "node",
-      "protractor",
-      "selenium-webdriver",
       "source-map",
       "uglify-js",
       "webpack"
