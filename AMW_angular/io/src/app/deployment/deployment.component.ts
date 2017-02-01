@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { AppState } from '../app.service';
@@ -17,12 +17,14 @@ import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
+declare var $: any;
+
 @Component({
   selector: 'amw-deployment',
   templateUrl: './deployment.component.html',
   providers: [DeploymentService]
 })
-export class DeploymentComponent implements OnInit {
+export class DeploymentComponent implements OnInit, AfterViewInit {
 
   // from url
   appserverName: string = '';
@@ -43,7 +45,7 @@ export class DeploymentComponent implements OnInit {
   selectedResourceTag: ResourceTag = null;
   deploymentDate: string = '';
   appsWithVersion: AppWithVersion[] = [];
-  deploymentRequests: DeploymentRequest[] = [];
+  //deploymentRequests: DeploymentRequest[] = [];
   transDeploymentParameter: DeploymentParameter = <DeploymentParameter> {};
   transDeploymentParameters: DeploymentParameter[] = [];
 
@@ -87,6 +89,10 @@ export class DeploymentComponent implements OnInit {
     this.initEnvironments();
     // we dont need this right away
     this.loadDeploymentParameters();
+  }
+
+  ngAfterViewInit(): void {
+    $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
   }
 
   initAppservers() {
@@ -203,14 +209,7 @@ export class DeploymentComponent implements OnInit {
   private prepareDeployment() {
     if (this.isReadyForDeployment()) {
       let environments: string[] = _.filter(this.environments, 'selected').map((val) => val.name);
-      environments.forEach(function (environmentName) {
-        let deploymentRequest = this.createDeploymentRequest(environmentName);
-        console.log(deploymentRequest);
-        this.deploymentService.createDeployment(deploymentRequest).subscribe(
-          /* happy path */ (r) => r, // => this.relations = r,
-          /* error path */ (e) => this.errorMessage = e);
-        this.deploymentRequests.push(deploymentRequest);
-      }, this);
+      environments.forEach((environmentName) => this.createDeploymentRequest(environmentName));
     }
   }
 
@@ -235,7 +234,9 @@ export class DeploymentComponent implements OnInit {
     if (this.transDeploymentParameters.length > 0) {
       deploymentRequest.deploymentParameters = this.transDeploymentParameters;
     }
-    return deploymentRequest;
+    this.deploymentService.createDeployment(deploymentRequest).subscribe(
+      /* happy path */ (r) => r, // => this.relations = r,
+      /* error path */ (e) => this.errorMessage = e);
   }
 
   private initEnvironments() {

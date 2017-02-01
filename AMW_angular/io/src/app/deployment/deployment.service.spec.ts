@@ -25,7 +25,7 @@ describe('DeploymentService', () => {
   }));
 
   it('should have a createDeployment method', inject([DeploymentService], (deploymentService: DeploymentService) => {
-    let deploymentRequest: DeploymentRequest = <DeploymentRequest>{};
+    let deploymentRequest: DeploymentRequest = <DeploymentRequest> {};
     expect(deploymentService.createDeployment(deploymentRequest)).toBeDefined();
   }));
 

@@ -85,9 +85,7 @@ export class ResourceService {
 
   getAppsWithVersions(resourceGroupId: number, releaseId: number, environmentIds: number[]): Observable<AppWithVersion[]> {
     let params: URLSearchParams = new URLSearchParams();
-    for (let i = 0; i < environmentIds.length; i++) {
-      params.append('context', String(environmentIds[i]));
-    }
+    environmentIds.forEach((id) => params.append('context', String(id)));
     let options = new RequestOptions({
       search: params,
       headers: this.getHeaders()
