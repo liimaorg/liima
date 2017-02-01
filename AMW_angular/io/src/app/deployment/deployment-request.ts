@@ -3,7 +3,7 @@ import { DeploymentParameter } from './deployment-parameter';
 
 export interface DeploymentRequest {
   appServerName: string;
-  environmentName: string;
+  contextIds: number[];
   releaseName: string;
   requestOnly: boolean;
   simulate: boolean;

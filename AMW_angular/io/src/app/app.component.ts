@@ -1,7 +1,7 @@
 /*
  * Angular 2 decorators and services
  */
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit } from '@angular/core';
 import { AppState } from './app.service';
 
 // import { Datetimepicker } from "eonasdan-bootstrap-datetimepicker";
@@ -18,7 +18,7 @@ import { AppState } from './app.service';
   ],
   templateUrl: './app.component.html'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   name = 'Angular 2';
 
   constructor(public appState: AppState) {

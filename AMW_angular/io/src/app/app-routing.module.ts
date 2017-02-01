@@ -4,7 +4,7 @@ import { DeploymentComponent } from './deployment/deployment.component';
 
 export const routes: Routes = [
   // default route only, the rest is done in module routing
-  {path: '', component: DeploymentComponent}
+  {path: '', component: DeploymentComponent},
 ];
 
 @NgModule({

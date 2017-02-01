@@ -204,16 +204,16 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private prepareDeployment() {
     if (this.isReadyForDeployment()) {
-      let environments: string[] = _.filter(this.environments, 'selected').map((val) => val.name);
-      environments.forEach((environmentName) => this.createDeploymentRequest(environmentName));
+      let contextIds: number[] = _.filter(this.environments, 'selected').map((val) => val.id);
+      this.createDeploymentRequest(contextIds);
     }
   }
 
-  private createDeploymentRequest(environmentName: string) {
+  private createDeploymentRequest(contextIds: number[]) {
     let deploymentRequest: DeploymentRequest = <DeploymentRequest> {};
     deploymentRequest.appServerName = this.selectedAppserver.name;
     deploymentRequest.releaseName = this.selectedRelease.release;
-    deploymentRequest.environmentName = environmentName;
+    deploymentRequest.contextIds = contextIds;
     deploymentRequest.simulate = this.simulate;
     deploymentRequest.sendEmail = this.doSendEmail;
     deploymentRequest.executeShakedownTest = this.doExecuteShakedownTest;
@@ -260,16 +260,13 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private setPreselected() {
     if (this.appserverName) {
       console.log('pre-selected server is ' + this.appserverName);
-      for (let i = 0; i < this.appservers.length; i++) {
-        if (this.appservers[i].name === this.appserverName) {
-          this.selectedAppserver = this.appservers[i];
-          break;
-        }
+      this.selectedAppserver = _.find(this.appservers, {name: this.appserverName});
+      if (this.selectedAppserver) {
+        this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe(
+          /* happy path */ (r) => this.releases = r,
+          /* error path */ (e) => this.errorMessage = e,
+          /* onComplete */ () => this.setRelease());
       }
-      this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe(
-        /* happy path */ (r) => this.releases = r,
-        /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */ () => this.setRelease());
       this.isLoading = false;
     }
   }

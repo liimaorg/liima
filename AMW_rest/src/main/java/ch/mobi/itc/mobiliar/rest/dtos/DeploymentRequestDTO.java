@@ -47,7 +47,8 @@ public class DeploymentRequestDTO {
 	private Boolean sendEmail = false; // optional
 	private String releaseName; // optional
 	private List<DeploymentParameterDTO> deploymentParameters; // optional
-	
+	private List<Integer> contextIds; // optional
+
 	public DeploymentRequestDTO() {	
 	}
 	
@@ -96,6 +97,7 @@ public class DeploymentRequestDTO {
 				deploymentParameters.add(new DeploymentParameterDTO(parameter.getKey(), parameter.getValue()));
 			}
 		}
+		contextIds = deploymentRequestDto.getContextIds();
 	}
 
 	public void addDeploymentParameter(String keyName, String value){

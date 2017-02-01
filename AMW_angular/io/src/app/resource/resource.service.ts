@@ -111,14 +111,8 @@ function mapAppWithVersion(response: Response): AppWithVersion[] {
 }
 
 function toAppWithVersion(r: any): AppWithVersion {
-  let appWithVersion = <AppWithVersion> ({
-    applicationId: r.applicationId,
-    applicationName: r.applicationName,
-    // no mavenVersion!
-    version: r.version,
-  });
-  // console.log('Parsed appWithVersion:', appWithVersion);
-  return appWithVersion;
+  delete r.mavenVersion;
+  return r;
 }
 
 function mapResources(response: Response): Resource[] {
@@ -128,40 +122,18 @@ function mapResources(response: Response): Resource[] {
 }
 
 function toResource(r: any): Resource {
-  let resource = <Resource> ({
-    id: r.id,
-    name: r.name,
-    type: r.type,
-    version: r.version,
-    release: r.release ? mapRelease(r.release) : '',
-    releases: r.releases ? mapReleases(r.releases) : [],
-  });
-  // console.log('Parsed resource:', resource);
-  return resource;
+  r.release = r.release && toRelease(r.release);
+  r.releases = (r.releases || []).map(toRelease);
+  return r;
 }
 
 function mapResource(response: Response): Resource {
   return toResource(response.json());
 }
 
-function mapReleases(releases): Release[] {
-  return releases.map(toRelease);
-}
-
 function toRelease(r: any): Release {
-  let release = <Release> ({
-    id: r.id,
-    release: r.release,
-    relations: r.relations,
-    properties: r.properties,
-    resourceTags: r.resourceTags,
-  });
-  // console.log('Parsed release:', release);
-  return release;
-}
-
-function mapRelease(response: Response): Release {
-  return toRelease(response.json());
+  delete r.templates;
+  return r;
 }
 
 // this could also be a private method of the component class

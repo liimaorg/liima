@@ -223,7 +223,7 @@ public class DeploymentsRest {
         Integer trackingId;
         ResourceEntity appServer;
         Set<ResourceEntity> apps;
-        ContextEntity environement;
+        ContextEntity environement = null;
         List<ApplicationWithVersion> applicationsWithVersion;
         LinkedList<CustomFilter> filters = new LinkedList<>();
         ReleaseEntity release;
@@ -262,10 +262,12 @@ public class DeploymentsRest {
         }
 
         // get the id of the Environment
-        try {
-            environement = environmentsService.getContextByName(request.getEnvironmentName());
-        } catch (RuntimeException e) {
-            return catchNoResultException(e, "Environement " + request.getEnvironmentName() + " not found.");
+        if (request.getEnvironmentName() != null) {
+            try {
+                environement = environmentsService.getContextByName(request.getEnvironmentName());
+            } catch (RuntimeException e) {
+                return catchNoResultException(e, "Environement " + request.getEnvironmentName() + " not found.");
+            }
         }
 
         // get the apps of the appServer
@@ -290,15 +292,24 @@ public class DeploymentsRest {
         }
 
         // check whether the AS has at least one node with hostname to deploy to
-        boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environement, request.getStateToDeploy());
-        if (!hasNode) {
+        if (environement != null) {
+            boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environement, request.getStateToDeploy());
+            if (!hasNode) {
+                return Response.status(Status.BAD_REQUEST)
+                        .entity(new ExceptionDto("No active Node found on Environement " + request.getEnvironmentName()))
+                        .build();
+            }
+            contexts.add(environement.getId());
+        } else if (request.getContextIds() != null && !request.getContextIds().isEmpty()) {
+            contexts.addAll(request.getContextIds());
+        }
+
+        if (contexts.isEmpty()) {
             return Response.status(Status.BAD_REQUEST)
-                    .entity(new ExceptionDto("No active Node found on Environement " + request.getEnvironmentName()))
+                    .entity(new ExceptionDto("No ContextIds"))
                     .build();
         }
 
-
-        contexts.add(environement.getId());
         trackingId = deploymentService.createDeploymentReturnTrackingId(group.getId(), release.getId(), request.getDeploymentDate(),
                 request.getStateToDeploy(), contexts,
                 applicationsWithVersion, deployParams, request.getSendEmail(), request.getRequestOnly(), request.getSimulate(), request.getExecuteShakedownTest(),
