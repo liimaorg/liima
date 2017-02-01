@@ -89,16 +89,6 @@ describe('DeploymentComponent', () => {
     expect(resourceService.getByType).toHaveBeenCalled();
   }));
 
-  it('should call deploymentService on ngOnInit', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
-    // given
-    spyOn(deploymentService, 'getAllDeploymentParameterKeys').and.returnValue(Observable.of([]));
-    expect(deploymentService.getAllDeploymentParameterKeys).not.toHaveBeenCalled();
-    // when
-    deploymentComponent.ngOnInit();
-    // then
-    expect(deploymentService.getAllDeploymentParameterKeys).toHaveBeenCalled();
-  }));
-
   it('should call environmentService on ngOnInit', inject([DeploymentComponent, EnvironmentService], (deploymentComponent: DeploymentComponent, environmentService: EnvironmentService) => {
     // given
     spyOn(environmentService, 'getAll').and.returnValue(Observable.of([]));
@@ -118,6 +108,16 @@ describe('DeploymentComponent', () => {
     deploymentComponent.ngOnInit();
     // then
     expect(deploymentComponent.environmentGroups).toContain('DEV');
+  }));
+
+  it('should call deploymentService on ngAfterViewInit', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+    // given
+    spyOn(deploymentService, 'getAllDeploymentParameterKeys').and.returnValue(Observable.of([]));
+    expect(deploymentService.getAllDeploymentParameterKeys).not.toHaveBeenCalled();
+    // when
+    deploymentComponent.ngAfterViewInit()
+    // then
+    expect(deploymentService.getAllDeploymentParameterKeys).toHaveBeenCalled();
   }));
 
   it('should set selectedAppserver and selectedRelease', inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {

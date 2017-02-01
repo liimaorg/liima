@@ -45,7 +45,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   selectedResourceTag: ResourceTag = null;
   deploymentDate: string = '';
   appsWithVersion: AppWithVersion[] = [];
-  //deploymentRequests: DeploymentRequest[] = [];
   transDeploymentParameter: DeploymentParameter = <DeploymentParameter> {};
   transDeploymentParameters: DeploymentParameter[] = [];
 
@@ -87,12 +86,12 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
     this.initAppservers();
     this.initEnvironments();
-    // we dont need this right away
-    this.loadDeploymentParameters();
   }
 
   ngAfterViewInit(): void {
     $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
+    // we dont need this right away
+    this.loadDeploymentParameters();
   }
 
   initAppservers() {
@@ -201,9 +200,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.appsWithoutVersion = [];
     this.transDeploymentParameter = <DeploymentParameter> {};
     this.transDeploymentParameters = [];
-    /*    this.environments.forEach(function (item) {
-     item.selected = false
-     });*/
   }
 
   private prepareDeployment() {
