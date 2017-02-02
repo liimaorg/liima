@@ -213,7 +213,7 @@ public class DeploymentsRest {
         ResourceEntity appServer;
         Set<ResourceEntity> apps;
         ContextEntity environement;
-        List<ApplicationWithVersion> applicationsWithVersion;
+        List<ApplicationWithVersion> applicationsWithVersion = new ArrayList<>();
         LinkedList<CustomFilter> filters = new LinkedList<>();
         ReleaseEntity release;
         ResourceGroupEntity group;
@@ -265,7 +265,9 @@ public class DeploymentsRest {
             if (apps == null) {
                 apps = new HashSet<>();
             }
-            applicationsWithVersion = convertToApplicationWithVersion(request.getAppsWithVersion(), apps);
+            if(request.getAppsWithVersion() != null) {
+                applicationsWithVersion = convertToApplicationWithVersion(request.getAppsWithVersion(), apps);
+            }
 
         } catch (ValidationException e) {
             return Response.status(Status.BAD_REQUEST).entity(
