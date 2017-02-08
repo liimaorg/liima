@@ -33,16 +33,17 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   // these are valid for all (loaded ony once)
   appservers: Resource[] = [];
   environments: Environment[] = [];
-  environmentGroups: string[] = [];
+  groupedEnvironments: { [key: string] : Environment[] } = {};
   deploymentParameters: DeploymentParameter[] = [];
+  defaultResourceTag: ResourceTag = <ResourceTag> {label: 'HEAD'};
 
   // per appserver/deployment request
   selectedAppserver: Resource = null;
   releases: Release[] = [];
   selectedRelease: Release = null;
   runtime: Relation = null;
-  resourceTags: ResourceTag[] = [<ResourceTag> {label: 'HEAD'}];
-  selectedResourceTag: ResourceTag = null;
+  resourceTags: ResourceTag[] = [this.defaultResourceTag];
+  selectedResourceTag: ResourceTag = this.defaultResourceTag;
   deploymentDate: string = '';
   appsWithVersion: AppWithVersion[] = [];
   transDeploymentParameter: DeploymentParameter = <DeploymentParameter> {};
@@ -147,6 +148,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.prepareDeployment();
   }
 
+  getEnvironmentGroups() {
+    return Object.keys(this.groupedEnvironments);
+  }
+
   private setSelectedRelease(): Subscription {
     return this.resourceService.getMostRelevantRelease(this.selectedAppserver.id).subscribe(
       /* happy path */ (r) => this.selectedRelease = this.releases.find((release) => release.release === r.release),
@@ -189,9 +194,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private resetVars() {
     this.selectedRelease = null;
     this.bestForSelectedRelease = null;
-    this.selectedResourceTag = null;
+    this.resourceTags = [this.defaultResourceTag];
+    this.selectedResourceTag = this.defaultResourceTag;
     this.deploymentDate = null;
-    this.resourceTags = [<ResourceTag> {label: 'HEAD'}];
     this.simulate = false;
     this.doSendEmail = false;
     this.doExecuteShakedownTest = false;
@@ -245,7 +250,12 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private extractEnvironmentGroups() {
-    this.environmentGroups = Array.from(new Set(this.environments.map((env) => env.parent)));
+    this.environments.forEach((environment) => {
+      if (!this.groupedEnvironments[environment['parent']]) {
+        this.groupedEnvironments[environment['parent']] = [];
+      }
+      this.groupedEnvironments[environment['parent']].push(environment);
+    });
     this.isLoading = false;
   }
 

@@ -7,7 +7,7 @@
     "build:dev": "webpack --config config/webpack.dev.js --progress --profile",
     "build:docker": "npm run build:prod && docker build -t angular2-webpack-start:latest .",
     "build:prod": "webpack --config config/webpack.prod.js  --progress --profile --bail",
-    "build": "npm run build:dev",
+    "build": "npm run build:prod",
     "ci": "npm run lint && npm test && npm run e2e",
     "clean:dist": "npm run rimraf -- dist",
     "clean:install": "npm set progress=false && npm install",

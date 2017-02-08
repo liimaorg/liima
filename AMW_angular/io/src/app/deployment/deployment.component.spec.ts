@@ -99,15 +99,15 @@ describe('DeploymentComponent', () => {
     expect(environmentService.getAll).toHaveBeenCalled();
   }));
 
-  it('should populate environmentGroups on ngOnInit', inject([DeploymentComponent, EnvironmentService], (deploymentComponent: DeploymentComponent, environmentService: EnvironmentService) => {
+  it('should populate groupedEnvironments on ngOnInit', inject([DeploymentComponent, EnvironmentService], (deploymentComponent: DeploymentComponent, environmentService: EnvironmentService) => {
     // given
     let environments: Environment[] = [<Environment> {id: 1, name: 'A', parent: 'DEV'}];
     spyOn(environmentService, 'getAll').and.returnValue(Observable.of(environments));
-    expect(deploymentComponent.environmentGroups).toEqual([]);
+    expect(deploymentComponent.groupedEnvironments).toEqual({});
     // when
     deploymentComponent.ngOnInit();
     // then
-    expect(deploymentComponent.environmentGroups).toContain('DEV');
+    expect(deploymentComponent.groupedEnvironments['DEV'].length).toBe(1);
   }));
 
   // TODO should work as soon as jQuery and bootstrap-datetimepicker are integrated
@@ -154,9 +154,23 @@ describe('DeploymentComponent', () => {
       // then
       expect(deploymentComponent.selectedAppserver.name).toBe('testServer');
       expect(deploymentComponent.selectedRelease).toBeNull();
-    }));
+  }));
 
-  it('should keep environments selected on onChangeAppserver', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should return environementGroupNames on getEnvironmentGroups()',
+    inject([DeploymentComponent, EnvironmentService], (deploymentComponent: DeploymentComponent, environmentService: EnvironmentService) => {
+    // given
+    let environments: Environment[] = [ <Environment> {id: 1, name: 'A', parent: 'DEV'}, <Environment> {id: 2, name: 'B', parent: 'DEV'}, <Environment> {id: 3, name: 'P', parent: 'PROD'}];
+    spyOn(environmentService, 'getAll').and.returnValue(Observable.of(environments));
+    deploymentComponent.ngOnInit();
+    // when
+    let groups: string[] = deploymentComponent.getEnvironmentGroups();
+    // then
+    expect(groups.length).toBe(2);
+    expect(groups).toContain('DEV','PROD');
+  }));
+
+  it('should keep environments selected on onChangeAppserver',
+    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
     deploymentComponent.selectedRelease = <Release> {id: 1};
     let appServer: Resource = <Resource> {name: 'testServer'};
@@ -170,7 +184,8 @@ describe('DeploymentComponent', () => {
     expect(deploymentComponent.environments[1].selected).toBeTruthy();
   }));
 
-  it('should call resourceService on onChangeRelease', inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
+  it('should call resourceService on onChangeRelease',
+    inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
     // given
     let testRelease: Release = <Release> {id: 1, release: 'testRelease'};
     let betterRelease: Release = <Release> {id: 1, release: 'betterRelease'};
@@ -186,7 +201,8 @@ describe('DeploymentComponent', () => {
     expect(resourceService.getAppsWithVersions).toHaveBeenCalled();
   }));
 
-  it('should replace deploymentParameters with same key onAddParam', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should replace deploymentParameters with same key onAddParam',
+    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
     deploymentComponent.transDeploymentParameters = [ <DeploymentParameter> {key: 'atest', value: 'foo'} ];
     deploymentComponent.transDeploymentParameter = <DeploymentParameter> {key: 'atest', value: 'bar'};
@@ -197,7 +213,8 @@ describe('DeploymentComponent', () => {
     expect(deploymentComponent.transDeploymentParameters[0].value).toEqual('bar');
   }));
 
-  it('should remove the right deploymentParameter onRemoveParam', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should remove the right deploymentParameter onRemoveParam',
+    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
     let parameterA: DeploymentParameter = <DeploymentParameter> {key: 'atest', value: 'foo'};
     let parameterB: DeploymentParameter = <DeploymentParameter> {key: 'btest', value: 'bar'};
@@ -209,7 +226,8 @@ describe('DeploymentComponent', () => {
     expect(deploymentComponent.transDeploymentParameters[0].value).toEqual(parameterB.value);
   }));
 
-  it('should not be readyForDeployment if no environment is selected', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should not be readyForDeployment if no environment is selected',
+    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
     deploymentComponent.selectedAppserver = <Resource> {name: 'testServer'};
     deploymentComponent.selectedRelease = <Release> {id: 1, release: 'testRelease'};
@@ -218,7 +236,8 @@ describe('DeploymentComponent', () => {
     expect(deploymentComponent.isReadyForDeployment()).toBeFalsy();
   }));
 
-  it('should be readyForDeployment if a release ist set and an environment is selected', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should be readyForDeployment if a release ist set and an environment is selected',
+    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
     deploymentComponent.selectedAppserver = <Resource> {name: 'testServer'};
     deploymentComponent.selectedRelease = <Release> {id: 1, release: 'testRelease'};
@@ -227,7 +246,8 @@ describe('DeploymentComponent', () => {
     expect(deploymentComponent.isReadyForDeployment()).toBeTruthy();
   }));
 
-  it('should call the deploymentService with the right values on requestDeployment', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+  it('should call the deploymentService with the right values on requestDeployment',
+    inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
     // given
     deploymentComponent.selectedAppserver = <Resource> {name: 'testServer'};
     deploymentComponent.selectedRelease = <Release> {id: 1, release: 'testRelease'};
@@ -248,7 +268,8 @@ describe('DeploymentComponent', () => {
     expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
   }));
 
-  it('should call the deploymentService with the right values on createDeployment', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+  it('should call the deploymentService with the right values on createDeployment',
+    inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
     // given
     deploymentComponent.selectedAppserver = <Resource> {name: 'testServer'};
     deploymentComponent.selectedRelease = <Release> {id: 1, release: 'testRelease'};

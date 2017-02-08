@@ -30,10 +30,10 @@
           </div>
         </div>
 
-        <div class="form-group" *ngIf="selectedAppserver">
+        <div class="form-group">
           <label for="selectRelease" class="col-sm-2 control-label">Release</label>
           <div class="col-sm-10 col-md-5">
-            <select id="selectRelease" class="form-control input-sm" [(ngModel)]="selectedRelease" (ngModelChange)="onChangeRelease($event)">
+            <select *ngIf="selectedAppserver" id="selectRelease" class="form-control input-sm" [(ngModel)]="selectedRelease" (ngModelChange)="onChangeRelease($event)">
               <option [ngValue]="release" *ngFor="let release of releases">{{release.release}}</option>
             </select>
           </div>
@@ -42,10 +42,10 @@
         <div class="form-group">
           <label class="col-sm-2 control-label">Environments</label>
           <div class="col-sm-10">
-            <ng-container *ngFor="let group of environmentGroups">
+            <ng-container *ngFor="let group of getEnvironmentGroups()">
               <h5 class="environments-title">{{group}}: </h5>
-              <ng-container *ngFor="let env of environments">
-                <label class="checkbox-inline" *ngIf="env.parent == group"><input type="checkbox" (change)="onChangeEnvironment($event)" [(ngModel)]="env.selected">{{env.name}}</label>
+              <ng-container *ngFor="let env of groupedEnvironments[group]">
+                <label class="checkbox-inline"><input type="checkbox" (change)="onChangeEnvironment($event)" [(ngModel)]="env.selected">{{env.name}}</label>
               </ng-container>
             </ng-container>
           </div>
@@ -83,7 +83,7 @@
           <label for="selectState" class="col-sm-2 control-label">State</label>
           <div class="col-sm-10 col-md-5" *ngIf="bestForSelectedRelease">
             <select id="selectState" class="form-control input-sm" [(ngModel)]="selectedResourceTag">
-              <option *ngFor="let resourceTag of resourceTags">{{resourceTag.label}}</option>
+              <option *ngFor="let resourceTag of resourceTags" [ngValue]="resourceTag">{{resourceTag.label}}</option>
             </select>
           </div>
         </div>
