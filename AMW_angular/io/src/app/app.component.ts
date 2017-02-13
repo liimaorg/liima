@@ -4,8 +4,6 @@
 import { Component, ViewEncapsulation, OnInit } from '@angular/core';
 import { AppState } from './app.service';
 
-// import { Datetimepicker } from "eonasdan-bootstrap-datetimepicker";
-
 /*
  * App Component
  * Top Level Component
@@ -13,9 +11,9 @@ import { AppState } from './app.service';
 @Component({
   selector: 'app',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: [
-    './app.component.css'
-  ],
+  // styleUrls: [
+  //   './app.component.css'
+  // ],
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {

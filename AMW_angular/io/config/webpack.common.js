@@ -8,21 +8,21 @@ const helpers = require('./helpers');
 /*
  * Webpack Plugins
  */
-// problem with copy-webpack-plugin
 const AssetsPlugin = require('assets-webpack-plugin');
-const ContextReplacementPlugin = require('webpack/lib/ContextReplacementPlugin');
-const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
+const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
+const ContextReplacementPlugin = require('webpack/lib/ContextReplacementPlugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlElementsPlugin = require('./html-elements-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
+require('url-loader')
 
 /*
  * Webpack Constants
  */
-const HMR = helpers.hasProcessFlag('hot');
+//const HMR = helpers.hasProcessFlag('hot');
 const METADATA = {
   title: 'AMW',
 //  baseUrl: '/AMW_angular/',
@@ -61,6 +61,11 @@ module.exports = function (options) {
 
     },
 
+    output: {
+      chunkFilename: "[name].bundle.js",
+      filename: "[name].bundle.js"
+    },
+
     /*
      * Options affecting the resolving of modules.
      *
@@ -76,7 +81,7 @@ module.exports = function (options) {
       extensions: ['.ts', '.js', '.json'],
 
       // An array of directory names to be resolved to the current directory
-      modules: [helpers.root('src'), 'node_modules'],
+      modules: [helpers.root('src'), 'node_modules']
 
     },
 
@@ -87,7 +92,41 @@ module.exports = function (options) {
      */
     module: {
 
+      /*
+       * An array of automatically applied loaders.
+       *
+       * IMPORTANT: The loaders here are resolved relative to the resource which they are applied to.
+       * This means they are not resolved relative to the configuration file.
+       *
+       * See: http://webpack.github.io/docs/configuration.html#module-loaders
+       */
       rules: [
+
+        /*
+         * Tslint loader support for *.ts files
+         *
+         * See: https://github.com/wbuchwalter/tslint-loader
+         */
+        { test: /\.ts$/,
+          enforce: "pre",
+          use: 'tslint-loader',
+          exclude: [ helpers.root('node_modules') ] },
+
+        /*
+         * Source map loader support for *.js files
+         * Extracts SourceMaps for source files that as added as sourceMappingURL comment.
+         *
+         * See: https://github.com/webpack/source-map-loader
+         */
+        {
+          test: /\.js$/,
+          enforce: "pre",
+          use: 'source-map-loader',
+          exclude: [
+            // these packages have problems with their sourcemaps
+            helpers.root('node_modules/rxjs')
+          ]
+        },
 
         /*
          * Typescript loader support for .ts and Angular 2 async routes via .async.ts
@@ -98,33 +137,43 @@ module.exports = function (options) {
          */
         {
           test: /\.ts$/,
-          loaders: [
-            '@angularclass/hmr-loader?pretty=' + !isProd + '&prod=' + isProd,
+          use: [
             'awesome-typescript-loader',
             'angular2-template-loader'
           ],
           exclude: [/\.(spec|e2e)\.ts$/]
         },
 
-        /*
-         * Json loader support for *.json files.
-         *
-         * See: https://github.com/webpack/json-loader
-         */
-        {
-          test: /\.json$/,
-          loader: 'json-loader'
-        },
+        // /*
+        //  * Raw loader support for *.css files
+        //  * Returns file content as string
+        //  *
+        //  * See: https://github.com/webpack/raw-loader
+        //  */
+        // {
+        //   test: /\.css$/,
+        //   loader: 'raw-loader'
+        // },
 
         /*
-         * to string and css loader support for *.css files
-         * Returns file content as string
+         * SASS loader support for *.scss files
          *
+         * See: https://github.com/jtangelder/sass-loader
+         * No css-loader?sourceMap so far because of https://github.com/webpack/style-loader/pull/96
          */
         {
-          test: /\.css$/,
-          loaders: ['to-string-loader', 'css-loader']
+          test: /\.scss$/,
+          use: ['style-loader',
+            'css-loader',
+            'resolve-url-loader',
+            'sass-loader?source-map-loader']
         },
+        // {
+        //   test: /\.css$/,
+        //   use: ['style-loader',
+        //     'css-loader',
+        //     'resolve-url-loader']
+        // },
 
         /* Raw loader support for *.html
          * Returns file content as string
@@ -133,18 +182,48 @@ module.exports = function (options) {
          */
         {
           test: /\.html$/,
-          loader: 'raw-loader',
+          use: 'raw-loader',
           exclude: [helpers.root('src/index.html')]
         },
 
-        /* File loader for supporting images, for example, in CSS files.
+        /* File loader support for fonts and images
          */
         {
-          test: /\.(jpg|png|gif)$/,
-          loader: 'file'
+          test: /\.woff2?$|\.ttf$|\.eot$|\.svg$|\.png|\.gif|\.jpg/,
+          use: 'file-loader'
         },
 
-      ],
+        // /* Expose window._ and window.lodash
+        //  */
+        // {
+        //   test: /lodash\.js/,
+        //   loader: 'expose?_!expose?lodash'
+        // },
+
+        /* Expose window.$ and window.jQuery
+         */
+        {
+          test: /jquery\.js/,
+          use: ['expose-loader?$',
+            'expose-loader?jQuery']
+        },
+
+        /* Expose window.moment
+         */
+        {
+          test: /moment\.js/,
+          use: 'expose-loader?moment'
+        },
+
+        /* Disable AMD/CommonJS for jQuery plugins that cause registration problems
+         */
+        {
+          test: /eonasdan-bootstrap-datetimepicker\.js/,
+          use: ['imports-loader?define=>false',
+            'exports-loader=>false,moment=moment']
+        }
+
+      ]
 
     },
 
@@ -161,7 +240,7 @@ module.exports = function (options) {
       }),
 
       /*
-       * Plugin: ForkCheckerPlugin
+       * Plugin: CheckerPlugin
        * Description: Do type checking in a separate process, so webpack don't need to wait.
        *
        * See: https://github.com/s-panferov/awesome-typescript-loader#forkchecker-boolean-defaultfalse
@@ -176,7 +255,7 @@ module.exports = function (options) {
        * See: https://github.com/webpack/docs/wiki/optimization#multi-page-app
        */
       new CommonsChunkPlugin({
-        name: ['polyfills', 'vendor'].reverse()
+        name: helpers.reverse(['polyfills', 'vendor'])
       }),
 
       /**
@@ -219,7 +298,7 @@ module.exports = function (options) {
       new HtmlWebpackPlugin({
         template: 'src/index.html',
         title: METADATA.title,
-        chunksSortMode: 'dependency',
+        chunksSortMode: helpers.packageSort(['polyfills', 'vendor', 'main']),
         metadata: METADATA,
         inject: 'head'
       }),
@@ -231,8 +310,16 @@ module.exports = function (options) {
        *
        * See: https://github.com/numical/script-ext-html-webpack-plugin
        */
-      new ScriptExtHtmlWebpackPlugin({
-        defaultAttribute: 'defer'
+       new ScriptExtHtmlWebpackPlugin({
+         defaultAttribute: 'defer'
+       }),
+
+      // https://github.com/Eonasdan/bootstrap-datetimepicker/issues/1319
+
+      new webpack.ProvidePlugin({
+        $: 'jquery',
+        jQuery: 'jquery',
+        'windows.jQuery': 'jquery'
       }),
 
       /*
@@ -277,7 +364,7 @@ module.exports = function (options) {
      * See: https://webpack.github.io/docs/configuration.html#node
      */
     node: {
-      global: true,
+      global: 'window',
       crypto: 'empty',
       process: true,
       module: false,

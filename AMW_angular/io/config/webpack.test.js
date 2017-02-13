@@ -3,7 +3,6 @@
  */
 
 const helpers = require('./helpers');
-const path = require('path');
 
 /**
  * Webpack Plugins
@@ -51,7 +50,8 @@ module.exports = function (options) {
       /**
        * Make sure root is src
        */
-      modules: [ path.resolve(__dirname, 'src'), 'node_modules' ]
+      // modules: [ path.resolve(__dirname, 'src'), 'node_modules' ]
+      modules: [ helpers.root('src'), 'node_modules' ]
 
     },
 
@@ -65,18 +65,6 @@ module.exports = function (options) {
       rules: [
 
         /**
-         * Tslint loader support for *.ts files
-         *
-         * See: https://github.com/wbuchwalter/tslint-loader
-         */
-        {
-          enforce: 'pre',
-          test: /\.ts$/,
-          loader: 'tslint-loader',
-          exclude: [helpers.root('node_modules')]
-        },
-
-        /**
          * Source map loader support for *.js files
          * Extracts SourceMaps for source files that as added as sourceMappingURL comment.
          *
@@ -85,7 +73,7 @@ module.exports = function (options) {
         {
           enforce: 'pre',
           test: /\.js$/,
-          loader: 'source-map-loader',
+          use: 'source-map-loader',
           exclude: [
             // these packages have problems with their sourcemaps
             helpers.root('node_modules/rxjs'),
@@ -94,14 +82,27 @@ module.exports = function (options) {
         },
 
         /**
+         * Tslint loader support for *.ts files
+         *
+         * See: https://github.com/wbuchwalter/tslint-loader
+         */
+        {
+          enforce: 'pre',
+          test: /\.ts$/,
+          use: 'tslint-loader',
+          exclude: [helpers.root('node_modules')]
+        },
+
+
+        /**
          * Typescript loader support for .ts and Angular 2 async routes via .async.ts
          *
          * See: https://github.com/s-panferov/awesome-typescript-loader
          */
         {
           test: /\.ts$/,
-          loader: 'awesome-typescript-loader',
-          query: {
+          loader: 'awesome-typescript-loader', // somehow "we" need loader instead of use here..
+          options: {
             // use inline sourcemaps for "karma-remap-coverage" reporter
             sourceMap: false,
             inlineSourceMap: true,
@@ -117,17 +118,6 @@ module.exports = function (options) {
         },
 
         /**
-         * Json loader support for *.json files.
-         *
-         * See: https://github.com/webpack/json-loader
-         */
-        {
-          test: /\.json$/,
-          loader: 'json-loader',
-          exclude: [helpers.root('src/index.html')]
-        },
-
-        /**
          * Raw loader support for *.css files
          * Returns file content as string
          *
@@ -135,7 +125,7 @@ module.exports = function (options) {
          */
         {
           test: /\.css$/,
-          loaders: ['to-string-loader', 'css-loader'],
+          use: ['to-string-loader', 'css-loader'],
           exclude: [helpers.root('src/index.html')]
         },
 
@@ -147,7 +137,7 @@ module.exports = function (options) {
          */
         {
           test: /\.html$/,
-          loader: 'raw-loader',
+          use: 'raw-loader',
           exclude: [helpers.root('src/index.html')]
         },
 
@@ -160,7 +150,7 @@ module.exports = function (options) {
         {
           enforce: 'post',
           test: /\.(js|ts)$/,
-          loader: 'istanbul-instrumenter-loader',
+          use: 'istanbul-instrumenter-loader',
           include: helpers.root('src'),
           exclude: [
             /\.(e2e|spec)\.ts$/,
@@ -211,7 +201,7 @@ module.exports = function (options) {
         helpers.root('src') // location of your src
       ),
 
-       /**
+      /**
        * Plugin LoaderOptionsPlugin (experimental)
        *
        * See: https://gist.github.com/sokra/27b24881210b56bbaff7

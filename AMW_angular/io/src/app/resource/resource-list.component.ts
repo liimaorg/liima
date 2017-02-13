@@ -5,7 +5,6 @@ import { ResourceService } from './resource.service';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppState } from '../app.service';
-import { type } from 'os';
 
 @Component({
   selector: 'amw-resource-list',
@@ -47,10 +46,10 @@ export class ResourceListComponent implements OnInit {
 
     if (this.releaseName && this.resourceName) {
       this.getInRelease();
-      //this.resourceService.getInRelease(this.resourceName, this.releaseName).subscribe(r => this.resourceInRelease = r);
+      // this.resourceService.getInRelease(this.resourceName, this.releaseName).subscribe(r => this.resourceInRelease = r);
     } else if (this.resourceName) {
       this.getResourceGroup();
-      //this.resourceService.get(this.resourceName).subscribe(r => this.resource = r);
+      // this.resourceService.get(this.resourceName).subscribe(r => this.resource = r);
     } else if (this.resourceType) {
       this.byType(this.resourceType);
     } else {
@@ -69,8 +68,8 @@ export class ResourceListComponent implements OnInit {
     this.resourceService
       .getAll()
       .subscribe(
-        /* happy path */ r => this.resources = r,
-        /* error path */ e => this.errorMessage = e,
+        /* happy path */ (r) => this.resources = r,
+        /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => this.isLoading = false);
   }
 
@@ -83,8 +82,8 @@ export class ResourceListComponent implements OnInit {
     this.resourceService
       .getByType(type)
       .subscribe(
-        /* happy path */ r => this.resources = r,
-        /* error path */ e => this.errorMessage = e,
+        /* happy path */ (r) => this.resources = r,
+        /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => this.isLoading = false);
   }
 
@@ -97,8 +96,8 @@ export class ResourceListComponent implements OnInit {
     this.resourceService
       .get(this.resourceName)
       .subscribe(
-        /* happy path */ r => this.resource = r,
-        /* error path */ e => this.errorMessage = e,
+        /* happy path */ (r) => this.resource = r,
+        /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => this.isLoading = false);
     this.router.navigate(['/resource', this.resourceName]);
   }
@@ -111,21 +110,22 @@ export class ResourceListComponent implements OnInit {
     this.resourceService
       .get(this.resourceName)
       .subscribe(
-        /* happy path */ r => this.resource = r,
-        /* error path */ e => this.errorMessage = e,
+        /* happy path */ (r) => this.resource = r,
+        /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => this.setInRelease());
-  }
-
-  private setInRelease() {
-    this.resourceService
-      .getLatestForRelease(this.resource.id, this.resource.releases.find(release => release.release === this.releaseName)['id'])
-      .subscribe(
-        /* happy path */ r => this.release = r,
-        /* error path */ e => this.errorMessage = e,
-        /* onComplete */ () => this.isLoading = false);
   }
 
   goBack(): void {
     this.location.back();
   }
+
+  private setInRelease() {
+    this.resourceService
+      .getLatestForRelease(this.resource.id, this.resource.releases.find((release) => release.release === this.releaseName)['id'])
+      .subscribe(
+        /* happy path */ (r) => this.release = r,
+        /* error path */ (e) => this.errorMessage = e,
+        /* onComplete */ () => this.isLoading = false);
+  }
+
 }

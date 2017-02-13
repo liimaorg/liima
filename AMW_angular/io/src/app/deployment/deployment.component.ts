@@ -14,6 +14,7 @@ import { Environment } from './environment';
 import { DeploymentRequest } from './deployment-request';
 import { AppWithVersion } from './app-with-version';
 import { Subscription } from 'rxjs';
+import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
@@ -33,7 +34,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   // these are valid for all (loaded ony once)
   appservers: Resource[] = [];
   environments: Environment[] = [];
-  groupedEnvironments: { [key: string] : Environment[] } = {};
+  groupedEnvironments: { [key: string]: Environment[] } = {};
   deploymentParameters: DeploymentParameter[] = [];
   defaultResourceTag: ResourceTag = <ResourceTag> {label: 'HEAD'};
 

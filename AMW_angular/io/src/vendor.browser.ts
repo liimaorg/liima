@@ -14,18 +14,23 @@ import '@angular/forms';
 import '@angular/http';
 import '@angular/router';
 
-// AngularClass
-import '@angularclass/hmr';
-
 // RxJS
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 
+// basics
+import 'lodash/lodash';
+import 'jquery';
+import 'moment';
+
+// bootstrap
+import 'bootstrap-sass/assets/javascripts/bootstrap/transition';
+
+// custom
+import 'eonasdan-bootstrap-datetimepicker';
+
 if ('production' === ENV) {
   // Production
-
-
 } else {
   // Development
-
 }

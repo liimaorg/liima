@@ -166,7 +166,7 @@ describe('DeploymentComponent', () => {
     let groups: string[] = deploymentComponent.getEnvironmentGroups();
     // then
     expect(groups.length).toBe(2);
-    expect(groups).toContain('DEV','PROD');
+    expect(groups).toContain('DEV', 'PROD');
   }));
 
   it('should keep environments selected on onChangeAppserver',
@@ -279,7 +279,7 @@ describe('DeploymentComponent', () => {
     deploymentComponent.appsWithVersion = [<AppWithVersion> {applicationId: 4, applicationName: 'testApp', version: '1.2.3'}, <AppWithVersion> {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'}];
     deploymentComponent.selectedResourceTag = <ResourceTag> {id: 5, tagDate: 1485378084103};
     deploymentComponent.transDeploymentParameters = [ <DeploymentParameter> {key: 'atest', value: 'foo'}, <DeploymentParameter> {key: 'btest', value: 'bar'} ];
-    let deploymentRequest: DeploymentRequest = <DeploymentRequest> { appServerName: 'testServer', contextIds: [2,3],
+    let deploymentRequest: DeploymentRequest = <DeploymentRequest> { appServerName: 'testServer', contextIds: [2, 3],
       releaseName: 'testRelease', simulate: deploymentComponent.simulate, sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
       neighbourhoodTest: false, requestOnly: false,  appsWithVersion: deploymentComponent.appsWithVersion,
       stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentParameters: deploymentComponent.transDeploymentParameters};

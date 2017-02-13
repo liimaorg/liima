@@ -20,6 +20,10 @@ module.exports = function(config) {
     // list of files to exclude
     exclude: [ ],
 
+    client: {
+      captureConsole: false
+    },
+
     /*
      * list of files / patterns to load in the browser
      *
@@ -47,7 +51,16 @@ module.exports = function(config) {
     },
 
     // Webpack please don't spam the console when running in karma!
-    webpackMiddleware: { stats: 'errors-only'},
+    webpackMiddleware: {
+      // webpack-dev-middleware configuration
+      // i.e.
+      noInfo: true,
+      // and use stats to turn off verbose output
+      stats: {
+        // options i.e.
+        chunks: false
+      }
+    },
 
     /*
      * test results reporter to use
