@@ -76,6 +76,7 @@
                       <nodeVersion>v6.9.1</nodeVersion>
                       <npmVersion>3.10.8</npmVersion>
                       <workingDirectory>io</workingDirectory>
+                      <installDirectory>io</installDirectory>
                 </configuration>
             </plugin>
         </plugins>
