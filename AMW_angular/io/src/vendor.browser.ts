@@ -31,7 +31,7 @@ import 'bootstrap-sass/assets/javascripts/bootstrap/transition';
 
 // custom
 import 'eonasdan-bootstrap-datetimepicker';
-import 'assets/js/main.min.js';
+//import 'assets/js/main.min.js';
 
 if ('production' === ENV) {
   // Production

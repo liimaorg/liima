@@ -71,7 +71,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
               private appState: AppState) {
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
 
     this.appState.set('navTitle', 'Deployments');
     this.appState.set('pageTitle', 'Create new deployment');
@@ -90,7 +90,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.initEnvironments();
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
     // we dont need this right away
     this.loadDeploymentParameters();

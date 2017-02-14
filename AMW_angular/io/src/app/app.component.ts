@@ -1,8 +1,10 @@
 /*
  * Angular 2 decorators and services
  */
-import { Component, ViewEncapsulation, OnInit } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, AfterViewInit } from '@angular/core';
 import { AppState } from './app.service';
+
+declare var $: any;
 
 /*
  * App Component
@@ -16,22 +18,16 @@ import { AppState } from './app.service';
   ],
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   name = 'Angular 2';
 
   constructor(public appState: AppState) {
   }
 
-  ngOnInit() {
-    console.log('Initial App State', this.appState.state);
+  ngOnInit() {}
+
+  ngAfterViewInit() {
+    $('.navbar-lower').affix({offset:{top:50}});
   }
 
 }
-
-/*
- * Please review the https://github.com/AngularClass/angular2-examples/ repo for
- * more angular app examples that you may copy/paste
- * (The examples may not be updated as quickly. Please open an issue on github for us to update it)
- * For help or questions please contact us at @AngularClass on twitter
- * or our chat on Slack at https://AngularClass.com/slack-join
- */
