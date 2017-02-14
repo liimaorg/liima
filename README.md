@@ -9,7 +9,6 @@ with various versions, including the automated deployment of those apps.
 
 Liima Docs are available under https://github.com/liimaorg/docs
 
-
 ## Build and create Release 
 Build the Liima ear
 

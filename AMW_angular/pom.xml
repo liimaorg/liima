@@ -43,10 +43,6 @@
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>1.1</version>
-                <configuration>
-                    <workingDirectory>io</workingDirectory>
-                </configuration>
-
                 <executions>
                     <execution>
                         <id>install node and npm</id>
@@ -54,13 +50,10 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
-                        <configuration>
-                            <nodeVersion>v6.9.1</nodeVersion>
-                            <npmVersion>3.10.8</npmVersion>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>npm install</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -78,18 +71,12 @@
                             <arguments>run build</arguments>
                         </configuration>
                     </execution>
-                    <!--<execution>-->
-                    <!--<id>javascript tests</id>-->
-                    <!--<goals>-->
-                    <!--<goal>karma</goal>-->
-                    <!--</goals>-->
-                    <!--<phase>test</phase>-->
-                    <!--<configuration>-->
-                    <!--<karmaConfPath>karma.conf.js</karmaConfPath>-->
-                    <!--</configuration>-->
-                    <!--</execution>-->
-
                 </executions>
+                <configuration>
+                      <nodeVersion>v6.9.1</nodeVersion>
+                      <npmVersion>3.10.8</npmVersion>
+                      <workingDirectory>io</workingDirectory>
+                </configuration>
             </plugin>
         </plugins>
     </build>
