@@ -292,7 +292,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private goTo(destination: string) {
-    this.location.go('deployment/' + destination);
+    this.location.go('/deployment/' + destination);
   }
 
 }

@@ -1,5 +1,6 @@
-@import '~bootstrap-sass';
-@import '~bootstrap-tagsinput';
+$icon-font-path: 'assets/fonts/';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap';
+@import '~bootstrap-tagsinput/dist/bootstrap-tagsinput';
 @import '~eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker';
 
 /* add styles here */

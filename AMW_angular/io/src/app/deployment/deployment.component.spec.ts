@@ -110,16 +110,15 @@ describe('DeploymentComponent', () => {
     expect(deploymentComponent.groupedEnvironments['DEV'].length).toBe(1);
   }));
 
-  // TODO should work as soon as jQuery and bootstrap-datetimepicker are integrated
-  // it('should call deploymentService on ngAfterViewInit', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
-  //   // given
-  //   spyOn(deploymentService, 'getAllDeploymentParameterKeys').and.returnValue(Observable.of([]));
-  //   expect(deploymentService.getAllDeploymentParameterKeys).not.toHaveBeenCalled();
-  //   // when
-  //   deploymentComponent.ngAfterViewInit()
-  //   // then
-  //   expect(deploymentService.getAllDeploymentParameterKeys).toHaveBeenCalled();
-  // }));
+  it('should call deploymentService on ngAfterViewInit', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+    // given
+    spyOn(deploymentService, 'getAllDeploymentParameterKeys').and.returnValue(Observable.of([]));
+    expect(deploymentService.getAllDeploymentParameterKeys).not.toHaveBeenCalled();
+    // when
+    deploymentComponent.ngAfterViewInit();
+    // then
+    expect(deploymentService.getAllDeploymentParameterKeys).toHaveBeenCalled();
+  }));
 
   it('should set selectedAppserver and selectedRelease', inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
     // given

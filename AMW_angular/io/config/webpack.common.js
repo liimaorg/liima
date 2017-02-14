@@ -17,7 +17,6 @@ const HtmlElementsPlugin = require('./html-elements-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
-require('url-loader')
 
 /*
  * Webpack Constants
@@ -163,10 +162,9 @@ module.exports = function (options) {
          */
         {
           test: /\.scss$/,
-          use: ['style-loader',
-            'css-loader',
-            'resolve-url-loader',
-            'sass-loader?source-map-loader']
+          //use: [ 'style-loader', 'css-loader', 'sass-loader' ], // creates style nodes from JS strings // translates CSS into CommonJS // compiles Sass to CSS
+          use: [ 'raw-loader', 'sass-loader?source-map-loader' ],
+          exclude: [helpers.root('src', 'styles')]
         },
         // {
         //   test: /\.css$/,
@@ -186,12 +184,19 @@ module.exports = function (options) {
           exclude: [helpers.root('src/index.html')]
         },
 
-        /* File loader support for fonts and images
+        /* File loader for supporting images, for example, in CSS files. (defunct)
          */
-        {
-          test: /\.woff2?$|\.ttf$|\.eot$|\.svg$|\.png|\.gif|\.jpg/,
-          use: 'file-loader'
-        },
+        // {
+        //   test: /\.(jpg|png|gif)$/,
+        //   use: 'file-loader'
+        // },
+
+        /* File loader for supporting fonts, for example, in CSS files. (defunct)
+         */
+        // {
+        //   test: /\.(eot|woff2?|svg|ttf)([\?]?.*)$/,
+        //   use: 'file-loader'
+        // },
 
         // /* Expose window._ and window.lodash
         //  */
@@ -282,6 +287,9 @@ module.exports = function (options) {
       new CopyWebpackPlugin([{
         from: 'src/assets',
         to: 'assets',
+      }, {
+        from: 'node_modules/bootstrap-sass/assets/fonts/bootstrap',
+        to: 'assets/fonts',
       }, {
         from: 'src/meta',
       },]),

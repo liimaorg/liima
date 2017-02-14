@@ -29,7 +29,10 @@ module.exports = function(config) {
      *
      * we are building the test environment in ./spec-bundle.js
      */
-    files: [ { pattern: './config/spec-bundle.js', watched: false } ],
+    files: [ { pattern: './config/spec-bundle.js', watched: false },
+      { pattern: './node_modules/jquery/dist/jquery.min.js', watched: false },
+      { pattern: './node_modules/moment/min/moment.min.js', watched: false },
+      { pattern: './node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js', watched: false }],
 
     /*
      * preprocess matching files before serving them to the browser

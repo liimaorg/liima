@@ -24,10 +24,14 @@ import 'jquery';
 import 'moment';
 
 // bootstrap
+import 'bootstrap-sass/assets/javascripts/bootstrap/affix';
+import 'bootstrap-sass/assets/javascripts/bootstrap/tooltip';
+import 'bootstrap-sass/assets/javascripts/bootstrap/popover';
 import 'bootstrap-sass/assets/javascripts/bootstrap/transition';
 
 // custom
 import 'eonasdan-bootstrap-datetimepicker';
+import 'assets/js/main.min.js';
 
 if ('production' === ENV) {
   // Production
