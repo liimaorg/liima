@@ -77,6 +77,12 @@ The Sonar properties must be confiured in ~/.m2/settings.xml
      </profiles>
 </settings>
 ```
+## Toggle Angular
+
+The Angular-UI can be enabled by setting the following property to true
+```
+amw.feature.angularGuiCreateDeployment
+``` 
 
 ## Copying
 
