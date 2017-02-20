@@ -49,6 +49,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   appsWithVersion: AppWithVersion[] = [];
   transDeploymentParameter: DeploymentParameter = <DeploymentParameter> {};
   transDeploymentParameters: DeploymentParameter[] = [];
+  deploymentResponse: any = {};
 
   simulate: boolean = false;
   requestOnly: boolean = false;
@@ -242,9 +243,13 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       deploymentRequest.deploymentParameters = this.transDeploymentParameters;
     }
     this.deploymentService.createDeployment(deploymentRequest).subscribe(
-      /* happy path */ (r) => r, // => this.relations = r,
+      /* happy path */ (r) => this.deploymentResponse = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.successMessage = 'Successfully deployed '+this.selectedAppserver.name);
+      /* onComplete */ () => this.composeSuccessMessage());
+  }
+
+  private composeSuccessMessage() {
+    this.successMessage = 'Successfully deployed ' + this.selectedAppserver.name + '. <strong>Tracking id: ' + this.deploymentResponse.trackingId + '</strong>';
   }
 
   private initEnvironments() {

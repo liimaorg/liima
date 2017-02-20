@@ -27,7 +27,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   ngOnInit() {}
 
   ngAfterViewInit() {
-    $('.navbar-lower').affix({offset:{top:50}});
+    $('.navbar-lower').affix({offset: {top:50} });
   }
 
 }
