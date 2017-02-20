@@ -75,6 +75,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
 
+    this.appState.set('navShow', false);
     this.appState.set('navTitle', 'Deployments');
     this.appState.set('pageTitle', 'Create new deployment');
 

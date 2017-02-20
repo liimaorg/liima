@@ -31,20 +31,11 @@
   </div>
 </nav>
 
-
-<!--<div class="row page-header">
-  <div class="col-md-4">
-    <h1>Komponenten-Bibliothek</h1>
-  </div>
-</div>-->
-
-
-<div class="col-sm-3 col-md-2 sidebar">
+<div *ngIf="appState.get('navShow')" class="col-sm-3 col-md-2 sidebar">
   <ul class="nav nav-sidebar">
     <li class="active"><a href="#">{{appState.get('navTitle')}}<span class="sr-only">(current)</span></a></li>
   </ul>
 </div>
-
 
 <main>
   <router-outlet></router-outlet>
