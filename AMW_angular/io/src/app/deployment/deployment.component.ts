@@ -250,7 +250,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private composeSuccessMessage() {
-    this.successMessage = 'Successfully deployed ' + this.selectedAppserver.name + '. <strong>Tracking id: ' + this.deploymentResponse.trackingId + '</strong>';
+    let link: string = '<a href="/AMW_web/pages/deploy.xhtml?tracking_id=' + this.deploymentResponse.trackingId + '">Tracking id: ' + this.deploymentResponse.trackingId + '</a>';
+    this.successMessage = 'Successfully deployed ' + this.selectedAppserver.name + '. <strong>' + link + '</strong>';
   }
 
   private initEnvironments() {
