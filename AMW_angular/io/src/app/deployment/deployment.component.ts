@@ -61,6 +61,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   appsWithoutVersion: string[] = [];
 
   errorMessage: string = '';
+  successMessage: string = '';
   isLoading: boolean = false;
 
   constructor(private resourceService: ResourceService,
@@ -193,6 +194,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private resetVars() {
+    this.errorMessage = '';
+    this.successMessage = '';
     this.selectedRelease = null;
     this.bestForSelectedRelease = null;
     this.resourceTags = [this.defaultResourceTag];
@@ -216,6 +219,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private createDeploymentRequest(contextIds: number[]) {
+    this.errorMessage = '';
+    this.successMessage = '';
     let deploymentRequest: DeploymentRequest = <DeploymentRequest> {};
     deploymentRequest.appServerName = this.selectedAppserver.name;
     deploymentRequest.releaseName = this.selectedRelease.release;
@@ -238,7 +243,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     }
     this.deploymentService.createDeployment(deploymentRequest).subscribe(
       /* happy path */ (r) => r, // => this.relations = r,
-      /* error path */ (e) => this.errorMessage = e);
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => this.successMessage = 'Successfully deployed '+this.selectedAppserver.name);
   }
 
   private initEnvironments() {
