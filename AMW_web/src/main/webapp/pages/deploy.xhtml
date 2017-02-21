@@ -210,8 +210,7 @@
                                             <a4j:commandLink render="deployments" onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('STATE')}">
-                                                <i
-                                                        class="${deployScreenDataProvider.getSortingIconForCol('STATE')} inlineBlockMiddle"></i>
+                                                <i class="${deployScreenDataProvider.getSortingIconForCol('STATE')} inlineBlockMiddle"></i>
                                             </a4j:commandLink>
                                         </f:facet>
                                         <div class="deploymentInfo nowrap">
@@ -224,8 +223,7 @@
                                                     render="deploymentDetailPopupFacet, deploymentDetailPopupPanelGroup"
                                                     title="Show details about this deployment"
                                                     styleClass="simpleInfo">
-                                                <i
-                                                        class="icon icon-info inlineBlockMiddle marginLeft10 height16"></i>
+                                                <i class="icon icon-info inlineBlockMiddle marginLeft10 height16"></i>
                                                 <a4j:param
                                                         assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
                                                         value="${deployment.id}"></a4j:param>
@@ -278,8 +276,7 @@
                                             <a4j:commandLink render="deployments" onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('RELEASE')}">
-                                                <i
-                                                        class="${deployScreenDataProvider.getSortingIconForCol('RELEASE')} inlineBlockMiddle"></i>
+                                                <i class="${deployScreenDataProvider.getSortingIconForCol('RELEASE')} inlineBlockMiddle"></i>
                                             </a4j:commandLink>
                                         </f:facet>
 
@@ -293,8 +290,7 @@
                                             <a4j:commandLink render="deployments" onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('ENV')}">
-                                                <i
-                                                        class="${deployScreenDataProvider.getSortingIconForCol('ENV')} inlineBlockMiddle"></i>
+                                                <i class="${deployScreenDataProvider.getSortingIconForCol('ENV')} inlineBlockMiddle"></i>
                                             </a4j:commandLink>
                                         </f:facet>
 
@@ -308,8 +304,7 @@
                                             <a4j:commandLink render="deployments" onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('DEPLOY_TIME')}">
-                                                <i
-                                                        class="${deployScreenDataProvider.getSortingIconForCol('DEPLOY_TIME')} inlineBlockMiddle"></i>
+                                                <i class="${deployScreenDataProvider.getSortingIconForCol('DEPLOY_TIME')} inlineBlockMiddle"></i>
 
                                             </a4j:commandLink>
                                         </f:facet>
@@ -327,8 +322,7 @@
                                                     title="change the deployment date">
                                                 <h:outputText
                                                         value="#{deployScreenDataProvider.formatDate(deployment.deploymentDate)}"
-                                                        styleClass="#{deployScreenDataProvider.getDeploymentDelayedClass(deployment)} inlineBlock"
-                                                />
+                                                        styleClass="#{deployScreenDataProvider.getDeploymentDelayedClass(deployment)} inlineBlock"/>
                                                 <a4j:param
                                                         assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
                                                         value="${deployment.id}"></a4j:param>
@@ -375,11 +369,18 @@
                                         </a4j:commandLink>
 
                                         <h:link outcome="redeploy"
-                                                rendered="#{deployScreenDataProvider.isRedeployPossible(deployment)}"
+                                                rendered="#{deployScreenDataProvider.isRedeployPossible(deployment)
+                                                and !deployScreenDataProvider.isAngularEnabled()}"
                                                 styleClass="black deployment-action">
                                             <i class="icon icon-redeploy height20 inlineBlockMiddle">Redeploy</i>
                                             <f:param name="deploymentIdArray" value="#{deployment.id}"/>
                                         </h:link>
+                                        <h:outputLink value="/AMW_angular/#/deployment/#{deployment.id}"
+                                                      rendered="#{deployScreenDataProvider.isRedeployPossible(deployment)
+                                                      and deployScreenDataProvider.isAngularEnabled()}"
+                                                      styleClass="black deployment-action">
+                                            <i class="icon icon-redeploy height20 inlineBlockMiddle">Redeploy</i>
+                                        </h:outputLink>
 
                                         <h:link rendered="${deployScreenDataProvider.hasLogFiles(deployment.id)}"
                                                 styleClass="deployment-action"

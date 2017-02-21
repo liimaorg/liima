@@ -7,6 +7,7 @@ import { ResourceTag } from '../resource/resource-tag';
 import { Resource } from '../resource/resource';
 import { Release } from '../resource/release';
 import { Relation } from '../resource/relation';
+import { Deployment } from './deployment';
 import { DeploymentParameter } from './deployment-parameter';
 import { DeploymentService } from './deployment.service';
 import { EnvironmentService } from './environment.service';
@@ -30,6 +31,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   // from url
   appserverName: string = '';
   releaseName: string = '';
+  // redeploy only
+  deploymentId: number;
 
   // these are valid for all (loaded ony once)
   appservers: Resource[] = [];
@@ -37,6 +40,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   groupedEnvironments: { [key: string]: Environment[] } = {};
   deploymentParameters: DeploymentParameter[] = [];
   defaultResourceTag: ResourceTag = <ResourceTag> {label: 'HEAD'};
+  isRedeployment: boolean = false;
 
   // per appserver/deployment request
   selectedAppserver: Resource = null;
@@ -50,6 +54,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   transDeploymentParameter: DeploymentParameter = <DeploymentParameter> {};
   transDeploymentParameters: DeploymentParameter[] = [];
   deploymentResponse: any = {};
+
+  // redeploy only
+  selectedDeployment: Deployment = <Deployment> {};
+  redeploymentAppserverDisplayName: string = '';
 
   simulate: boolean = false;
   requestOnly: boolean = false;
@@ -77,7 +85,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
     this.appState.set('navShow', false);
     this.appState.set('navTitle', 'Deployments');
-    this.appState.set('pageTitle', 'Create new deployment');
 
     this.activatedRoute.params.subscribe(
       (param: any) => {
@@ -85,11 +92,20 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
         console.log('appserverName from param: ' + this.appserverName);
         this.releaseName = param['releaseName'];
         console.log('releaseName from param: ' + this.releaseName);
+        this.deploymentId = param['deploymentId'];
+        console.log('deploymentId from param: ' + this.deploymentId);
       });
 
     console.log('hello `Deployment` component');
 
-    this.initAppservers();
+    if (this.deploymentId) {
+      this.appState.set('pageTitle', 'Redeploy');
+      this.isRedeployment = true;
+      this.getDeployment();
+    } else {
+      this.appState.set('pageTitle', 'Create new deployment');
+      this.initAppservers();
+    }
     this.initEnvironments();
   }
 
@@ -123,7 +139,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   onChangeEnvironment() {
-    this.getAppVersions();
+    if (!this.isRedeployment) {
+      this.getAppVersions();
+    }
   }
 
   onAddParam() {
@@ -154,6 +172,35 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   getEnvironmentGroups() {
     return Object.keys(this.groupedEnvironments);
+  }
+
+  private getDeployment() {
+    this.isLoading = true;
+    return this.deploymentService.getById(this.deploymentId).subscribe(
+      /* happy path */ (r) => this.selectedDeployment = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => this.initRedeploymentValues());
+  }
+
+  private initRedeploymentValues() {
+    this.isLoading = false;
+    this.composeRedeploymentAppserverDisplayName();
+    this.setPreSelectedEnvironment();
+    this.appsWithVersion = this.selectedDeployment.appsWithVersion;
+    this.selectedRelease = <Release> { release: this.selectedDeployment.releaseName };
+    this.selectedAppserver = <Resource> { name: this.selectedDeployment.appServerName };
+  }
+
+  private composeRedeploymentAppserverDisplayName() {
+    this.redeploymentAppserverDisplayName = this.redeploymentAppserverDisplayName.concat('<h5>', this.selectedDeployment.appServerName, ' (', this.selectedDeployment.releaseName, ')', '</h5>');
+    this.selectedDeployment.appsWithVersion.forEach((appWithVersion) => { this.redeploymentAppserverDisplayName =
+      this.redeploymentAppserverDisplayName.concat('<h6>', appWithVersion.applicationName, ' (', appWithVersion.version, ')', '</h6>');
+    });
+  }
+
+  private setPreSelectedEnvironment() {
+    let env = _.find(this.environments, {name: this.selectedDeployment.environmentName});
+    if (env) { env.selected = true; }
   }
 
   private setSelectedRelease(): Subscription {
@@ -233,7 +280,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     deploymentRequest.neighbourhoodTest = this.doNeighbourhoodTest;
     deploymentRequest.requestOnly = this.requestOnly;
     deploymentRequest.appsWithVersion = this.appsWithVersion;
-    deploymentRequest.stateToDeploy = (this.selectedResourceTag && this.selectedResourceTag.tagDate) ? this.selectedResourceTag.tagDate : new Date().getTime();
+    if (!this.isRedeployment) {
+      deploymentRequest.stateToDeploy = (this.selectedResourceTag && this.selectedResourceTag.tagDate) ? this.selectedResourceTag.tagDate : new Date().getTime();
+    }
     if (this.deploymentDate) {
       let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
       if (dateTime && dateTime.isValid()) {

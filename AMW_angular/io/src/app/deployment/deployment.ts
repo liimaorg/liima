@@ -9,7 +9,7 @@ export interface Deployment {
   deploymentDate: Date,
   appServerName: string,
   appsWithVersion: AppWithVersion[];
-  deploymentParams: DeploymentParameter[];
+  deploymentParameters: DeploymentParameter[];
   environmentName: string;
   releaseName: string;
   runtimeName: string;

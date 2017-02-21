@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { inject, TestBed } from '@angular/core/testing';
 import { BaseRequestOptions, ConnectionBackend, Http } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
@@ -25,7 +26,7 @@ import { AppWithVersion } from './app-with-version';
 class DummyComponent {
 }
 
-describe('DeploymentComponent', () => {
+describe('DeploymentComponent (create deployment)', () => {
   // provide our implementations or mocks to the dependency injector
   beforeEach(() => TestBed.configureTestingModule({
     imports: [
@@ -57,7 +58,9 @@ describe('DeploymentComponent', () => {
     // given when then
     expect(deploymentComponent.appserverName).toEqual('');
     expect(deploymentComponent.releaseName).toEqual('');
+    expect(deploymentComponent.deploymentId).toBeUndefined();
     expect(deploymentComponent.isLoading).toBeFalsy();
+    expect(deploymentComponent.isRedeployment).toBeFalsy();
   }));
 
   it('should log ngOnInit', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
@@ -67,6 +70,7 @@ describe('DeploymentComponent', () => {
     // when
     deploymentComponent.ngOnInit();
     // then
+    expect(deploymentComponent.isRedeployment).toBeFalsy();
     expect(console.log).toHaveBeenCalled();
   }));
 
@@ -260,11 +264,12 @@ describe('DeploymentComponent', () => {
       releaseName: 'testRelease', simulate: false, sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
       neighbourhoodTest: false, requestOnly: true,  appsWithVersion: deploymentComponent.appsWithVersion,
       stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentDate: 1483354800000, deploymentParameters: deploymentComponent.transDeploymentParameters};
-    spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment> {}));
+    spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment> { trackingId: 910 }));
     // when
     deploymentComponent.requestDeployment();
     // then
     expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
+    expect(deploymentComponent.successMessage).toContain('tracking_id=910');
   }));
 
   it('should call the deploymentService with the right values on createDeployment',
@@ -282,11 +287,144 @@ describe('DeploymentComponent', () => {
       releaseName: 'testRelease', simulate: deploymentComponent.simulate, sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
       neighbourhoodTest: false, requestOnly: false,  appsWithVersion: deploymentComponent.appsWithVersion,
       stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentParameters: deploymentComponent.transDeploymentParameters};
-    spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment> {}));
+    spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment> { trackingId: 911 }));
     // when
     deploymentComponent.createDeployment();
     // then
     expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
+    expect(deploymentComponent.successMessage).toContain('tracking_id=911');
   }));
+
+});
+
+describe('DeploymentComponent (create deployment with params)', () => {
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [
+      CommonModule,
+      RouterTestingModule.withRoutes([
+        {path: 'deployment', component: DummyComponent}
+      ])
+    ],
+    providers: [
+      BaseRequestOptions, {
+        provide: ActivatedRoute,
+        useValue: {
+          params: Observable.of({appserverName: 'aServer', releaseName: 'aRelease'})
+        },
+      },
+      MockBackend,
+      {
+        provide: Http,
+        useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+          return new Http(backend, defaultOptions);
+        },
+        deps: [MockBackend, BaseRequestOptions]
+      },
+      EnvironmentService,
+      DeploymentService,
+      ResourceService,
+      DeploymentComponent,
+      AppState,
+    ],
+    declarations: [DummyComponent],
+  }));
+
+  it('should init vars with route params on ngOnInit', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+    // given // when
+    deploymentComponent.ngOnInit();
+    // then
+    expect(deploymentComponent.appserverName).toEqual('aServer');
+    expect(deploymentComponent.releaseName).toEqual('aRelease');
+    expect(deploymentComponent.deploymentId).toBeUndefined();
+    expect(deploymentComponent.isRedeployment).toBeFalsy();
+  }));
+
+});
+
+describe('DeploymentComponent (redeployment)', () => {
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [
+      CommonModule,
+      RouterTestingModule.withRoutes([
+        {path: 'deployment', component: DummyComponent}
+      ])
+    ],
+    providers: [
+      BaseRequestOptions, {
+        provide: ActivatedRoute,
+        useValue: {
+          params: Observable.of({ deploymentId: 123 })
+        },
+      },
+      MockBackend,
+      {
+        provide: Http,
+        useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+          return new Http(backend, defaultOptions);
+        },
+        deps: [MockBackend, BaseRequestOptions]
+      },
+      EnvironmentService,
+      DeploymentService,
+      ResourceService,
+      DeploymentComponent,
+      AppState,
+    ],
+    declarations: [DummyComponent],
+  }));
+
+  it('should call deploymentService on ngOnInit', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+    // given
+    let deployment: Deployment = <Deployment> { appsWithVersion: [] };
+    spyOn(deploymentService, 'getById').and.returnValue(Observable.of(deployment));
+    expect(deploymentService.getById).not.toHaveBeenCalled();
+    // when
+    deploymentComponent.ngOnInit();
+    // then
+    expect(deploymentService.getById).toHaveBeenCalledWith(123)
+  }));
+
+  it('should initRedeploymentValues ngOnInit', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+    // given
+    deploymentComponent.environments = [ <Environment> {name: 'X'}, <Environment> {name: 'Y'} ];
+    let appsWithVersion: AppWithVersion[] = [<AppWithVersion> {applicationId: 4, applicationName: 'testApp', version: '1.2.3'}, <AppWithVersion> {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'}];
+    let deployment: Deployment = <Deployment> { appsWithVersion: appsWithVersion, deploymentParameters: [], releaseName: 'testRelease', appServerName: 'testServer', environmentName: 'Y' };
+    spyOn(deploymentService, 'getById').and.returnValue(Observable.of(deployment));
+    // when
+    deploymentComponent.ngOnInit();
+    // then
+    expect(deploymentComponent.isRedeployment).toBeTruthy();
+    expect(deploymentComponent.selectedRelease.release).toEqual('testRelease');
+    expect(deploymentComponent.selectedAppserver.name).toEqual('testServer');
+    expect(deploymentComponent.appsWithVersion).toEqual(appsWithVersion);
+    expect(deploymentComponent.redeploymentAppserverDisplayName).toContain('testServer');
+    expect(deploymentComponent.redeploymentAppserverDisplayName).toContain('testRelease');
+    expect(deploymentComponent.environments[0].selected).toBeFalsy();
+    expect(deploymentComponent.environments[1].selected).toBeTruthy();
+  }));
+
+  it('should call the deploymentService with the right values on createDeployment',
+    inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+      // given
+      deploymentComponent.environments = [ <Environment> {name: 'X', id: 1}, <Environment> {name: 'Y', id: 2} ];
+      let appsWithVersion: AppWithVersion[] = [<AppWithVersion> {applicationId: 4, applicationName: 'testApp',
+        version: '1.2.3'}, <AppWithVersion> {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'}];
+      let deployment: Deployment = <Deployment> { appsWithVersion: appsWithVersion, deploymentParameters: [],
+        releaseName: 'testRelease', appServerName: 'testServer', environmentName: 'Y' };
+      // DeploymentParameter added by 'user'
+      deploymentComponent.transDeploymentParameters = [ <DeploymentParameter> {key: 'atest', value: 'foo'} ];
+      spyOn(deploymentService, 'getById').and.returnValue(Observable.of(deployment));
+      let deploymentRequest: DeploymentRequest = <DeploymentRequest> { appServerName: 'testServer',
+        releaseName: 'testRelease', contextIds: [2], simulate: false, sendEmail: false, executeShakedownTest: false,
+        neighbourhoodTest: false, requestOnly: false,  appsWithVersion: appsWithVersion,
+        deploymentParameters: deploymentComponent.transDeploymentParameters };
+      spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment> { trackingId: 911 }));
+      // when
+      deploymentComponent.ngOnInit();
+      deploymentComponent.createDeployment();
+      // then
+      expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
+      expect(deploymentComponent.successMessage).toContain('tracking_id=911');
+    }));
 
 });

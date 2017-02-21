@@ -17,7 +17,7 @@
         <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade in" role="alert"><span [innerHTML]="successMessage"></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
         <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert">{{errorMessage}}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
 
-        <div class="form-group" *ngIf="appservers">
+        <div class="form-group" *ngIf="appservers.length > 0">
           <label for="selectApplicationserver" class="col-sm-2 control-label">Applicationserver</label>
           <div class="col-sm-10 col-md-5">
             <select id="selectApplicationserver" class="form-control input-sm" [(ngModel)]="selectedAppserver" (ngModelChange)="onChangeAppserver($event)">
@@ -26,7 +26,14 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" *ngIf="isRedeployment">
+          <label for="selectApplicationserver" class="col-sm-2 control-label">Applicationserver</label>
+          <div class="col-sm-10 col-md-5">
+            <span class="environments-title" [innerHTML]="redeploymentAppserverDisplayName"></span>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="!isRedeployment">
           <label for="selectRelease" class="col-sm-2 control-label">Release</label>
           <div class="col-sm-10 col-md-5">
             <select *ngIf="selectedAppserver" id="selectRelease" class="form-control input-sm" [(ngModel)]="selectedRelease" (ngModelChange)="onChangeRelease($event)">
@@ -47,7 +54,7 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" *ngIf="!isRedeployment">
           <label class="col-sm-2 control-label">Applications</label>
           <div class="col-sm-10 col-md-5">
 
@@ -68,14 +75,14 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" *ngIf="!isRedeployment">
           <label class="col-sm-2 control-label">Runtime</label>
           <div class="col-sm-10 col-md-5">
             <h5 class="environments-title" *ngIf="runtime">{{runtime.identifier}}</h5>
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" *ngIf="!isRedeployment">
           <label for="selectState" class="col-sm-2 control-label">State</label>
           <div class="col-sm-10 col-md-5" *ngIf="bestForSelectedRelease">
             <select id="selectState" class="form-control input-sm" [(ngModel)]="selectedResourceTag">

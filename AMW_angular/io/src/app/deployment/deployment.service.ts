@@ -20,6 +20,14 @@ export class DeploymentService {
     return resource$;
   }
 
+  getById(deploymentId: number): Observable<Deployment> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/${deploymentId}`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   createDeployment(deploymentRequest: DeploymentRequest): Observable<Deployment> {
     console.log('createDeployment: ' + deploymentRequest);
     return this.http.post(`${this.baseUrl}/deployments`, deploymentRequest, {headers: this.postHeaders()}).map((res: Response) => res.json())
