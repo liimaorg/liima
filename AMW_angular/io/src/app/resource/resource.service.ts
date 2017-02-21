@@ -9,7 +9,7 @@ import { AppWithVersion } from '../deployment/app-with-version';
 
 @Injectable()
 export class ResourceService {
-  private baseUrl: string = 'http://localhost:8080/AMW_rest/resources';
+  private baseUrl: string = '/AMW_rest/resources';
 
   constructor(private http: Http) {
   }

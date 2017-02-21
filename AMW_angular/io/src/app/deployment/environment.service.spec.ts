@@ -26,7 +26,7 @@ describe('EnvironmentService', () => {
   it('should request data from the right endpoint when getAll is called', inject([EnvironmentService, MockBackend, Http], (environmentService: EnvironmentService, mockBackend: MockBackend, http: Http) => {
     // given
     mockBackend.connections.subscribe((connection) => {
-      expect(connection.request.url).toMatch('http://localhost:8080/AMW_rest/resources/environments');
+      expect(connection.request.url).toMatch('/AMW_rest/resources/environments');
       let mockResponse = new Response(new ResponseOptions({
         body: [{id: 1, name: 'test'}]
       }));
