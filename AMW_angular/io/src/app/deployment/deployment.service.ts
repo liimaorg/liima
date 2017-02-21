@@ -20,7 +20,7 @@ export class DeploymentService {
     return resource$;
   }
 
-  getById(deploymentId: number): Observable<Deployment> {
+  get(deploymentId: number): Observable<Deployment> {
     let resource$ = this.http
       .get(`${this.baseUrl}/deployments/${deploymentId}`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())

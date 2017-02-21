@@ -176,7 +176,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private getDeployment() {
     this.isLoading = true;
-    return this.deploymentService.getById(this.deploymentId).subscribe(
+    return this.deploymentService.get(this.deploymentId).subscribe(
       /* happy path */ (r) => this.selectedDeployment = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.initRedeploymentValues());

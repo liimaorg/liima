@@ -59,4 +59,19 @@ describe('DeploymentService', () => {
     });
   }));
 
+  it('should request data from the right endpoint when get is called', inject([DeploymentService, MockBackend, Http], (deploymentService: DeploymentService, mockBackend: MockBackend, http: Http) => {
+    // given
+    mockBackend.connections.subscribe((connection) => {
+      expect(connection.request.url).toMatch('http://localhost:8080/AMW_rest/resources/deployments/123');
+      let mockResponse = new Response(new ResponseOptions({
+        body: [{id: 123}]
+      }));
+      connection.mockRespond(mockResponse);
+    });
+    // when then
+    deploymentService.get(123).subscribe((response) => {
+      expect(response).toEqual([{id: 123}]);
+    });
+  }));
+
 });
