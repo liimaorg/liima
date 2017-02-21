@@ -381,14 +381,15 @@ describe('DeploymentComponent (redeployment)', () => {
     // when
     deploymentComponent.ngOnInit();
     // then
-    expect(deploymentService.getById).toHaveBeenCalledWith(123)
+    expect(deploymentService.getById).toHaveBeenCalledWith(123);
   }));
 
   it('should initRedeploymentValues ngOnInit', inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
     // given
     deploymentComponent.environments = [ <Environment> {name: 'X'}, <Environment> {name: 'Y'} ];
     let appsWithVersion: AppWithVersion[] = [<AppWithVersion> {applicationId: 4, applicationName: 'testApp', version: '1.2.3'}, <AppWithVersion> {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'}];
-    let deployment: Deployment = <Deployment> { appsWithVersion: appsWithVersion, deploymentParameters: [], releaseName: 'testRelease', appServerName: 'testServer', environmentName: 'Y' };
+    let deploymentParameter: DeploymentParameter = <DeploymentParameter> {key: 'atest', value: 'foo'};
+    let deployment: Deployment = <Deployment> { appsWithVersion: appsWithVersion, deploymentParameters: [deploymentParameter], releaseName: 'testRelease', appServerName: 'testServer', environmentName: 'Y' };
     spyOn(deploymentService, 'getById').and.returnValue(Observable.of(deployment));
     // when
     deploymentComponent.ngOnInit();
@@ -397,6 +398,7 @@ describe('DeploymentComponent (redeployment)', () => {
     expect(deploymentComponent.selectedRelease.release).toEqual('testRelease');
     expect(deploymentComponent.selectedAppserver.name).toEqual('testServer');
     expect(deploymentComponent.appsWithVersion).toEqual(appsWithVersion);
+    expect(deploymentComponent.transDeploymentParameters).toEqual([deploymentParameter]);
     expect(deploymentComponent.redeploymentAppserverDisplayName).toContain('testServer');
     expect(deploymentComponent.redeploymentAppserverDisplayName).toContain('testRelease');
     expect(deploymentComponent.environments[0].selected).toBeFalsy();
@@ -409,15 +411,15 @@ describe('DeploymentComponent (redeployment)', () => {
       deploymentComponent.environments = [ <Environment> {name: 'X', id: 1}, <Environment> {name: 'Y', id: 2} ];
       let appsWithVersion: AppWithVersion[] = [<AppWithVersion> {applicationId: 4, applicationName: 'testApp',
         version: '1.2.3'}, <AppWithVersion> {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'}];
-      let deployment: Deployment = <Deployment> { appsWithVersion: appsWithVersion, deploymentParameters: [],
+      let deploymentParameters: DeploymentParameter[] = [ <DeploymentParameter> {key: 'atest', value: 'foo'},
+        <DeploymentParameter> {key: 'btest', value: 'bar'} ];
+      let deployment: Deployment = <Deployment> { appsWithVersion: appsWithVersion, deploymentParameters: deploymentParameters,
         releaseName: 'testRelease', appServerName: 'testServer', environmentName: 'Y' };
-      // DeploymentParameter added by 'user'
-      deploymentComponent.transDeploymentParameters = [ <DeploymentParameter> {key: 'atest', value: 'foo'} ];
       spyOn(deploymentService, 'getById').and.returnValue(Observable.of(deployment));
       let deploymentRequest: DeploymentRequest = <DeploymentRequest> { appServerName: 'testServer',
         releaseName: 'testRelease', contextIds: [2], simulate: false, sendEmail: false, executeShakedownTest: false,
         neighbourhoodTest: false, requestOnly: false,  appsWithVersion: appsWithVersion,
-        deploymentParameters: deploymentComponent.transDeploymentParameters };
+        deploymentParameters: deploymentParameters };
       spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment> { trackingId: 911 }));
       // when
       deploymentComponent.ngOnInit();

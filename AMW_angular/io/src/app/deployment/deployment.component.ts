@@ -186,6 +186,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.isLoading = false;
     this.composeRedeploymentAppserverDisplayName();
     this.setPreSelectedEnvironment();
+    this.transDeploymentParameters = this.selectedDeployment.deploymentParameters;
     this.appsWithVersion = this.selectedDeployment.appsWithVersion;
     this.selectedRelease = <Release> { release: this.selectedDeployment.releaseName };
     this.selectedAppserver = <Resource> { name: this.selectedDeployment.appServerName };
