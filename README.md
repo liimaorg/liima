@@ -79,9 +79,9 @@ The Sonar properties must be confiured in ~/.m2/settings.xml
 ```
 ## Toggle Angular
 
-The Angular-UI can be enabled by setting the following property to true
+The Angular-UI can be disabled by setting the following property to true
 ```
-amw.feature.angularGuiCreateDeployment
+amw.feature.disableAngularGui
 ``` 
 
 ## Copying

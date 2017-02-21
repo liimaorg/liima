@@ -150,7 +150,7 @@ public class DeployScreenDataProvider implements Serializable {
     private SortingDirectionType sortingDirection = SortingDirectionType.DESC;
     private deployscreenColDescriptor sortingColumn = deployscreenColDescriptor.DEPLOY_TIME;
 
-    private static final boolean useAngular = Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_ANGULAR_GUI_CREATE_DEPLOYMENT));
+    private static final boolean useAngular = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_GUI));
 
     @Getter
     @Setter
