@@ -36,6 +36,7 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
 import ch.puzzle.itc.mobiliar.common.util.CustomFilter.ComperatorFilterOption;
+import ch.puzzle.itc.mobiliar.common.util.CustomFilter.FilterType;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import ch.puzzle.itc.mobiliar.presentation.common.ContextDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.common.ReleaseSelectionDataProvider;
@@ -284,7 +285,7 @@ public class DeployScreenDataProvider implements Serializable {
                 CustomFilter filter;
 
                 filter = new CustomFilter(selectedFilter.getFilterDisplayName(), selectedFilter.getFilterTabColumnName(), selectedFilter.getFilterTableJoining(), selectedFilter.getFilterType());
-                if (selectedFilter.equals(DeploymentFilterTypes.TRACKING_ID)) {
+                if (selectedFilter.getFilterType().equals(FilterType.IntegerType)) {
                     filter.setComperatorSelection(ComperatorFilterOption.equals);
                 } else {
                     filter.setComperatorSelection(getTypedComperatorSelectionList(filter).isEmpty() ? null : getTypedComperatorSelectionList(filter).get(0));
