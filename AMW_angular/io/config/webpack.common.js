@@ -23,7 +23,7 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
  */
 //const HMR = helpers.hasProcessFlag('hot');
 const METADATA = {
-  title: 'AMW',
+  title: 'Liima',
 //  baseUrl: '/AMW_angular/',
   isDevServer: helpers.isWebpackDevServer()
 };
