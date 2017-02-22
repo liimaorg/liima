@@ -53,9 +53,6 @@ body {
  */
 .navbar-fixed-top {
   border: 0;
-  .navbar-brand {
-    color: #ffffff;
-  }
   .navbar-nav li > a {
     color: #ccc;
   }
@@ -63,6 +60,14 @@ body {
     color: #ccc;
     margin-top: 6px;
   }
+}
+
+/*
+ * Logo as background
+ * Instead of a.navbar-brand
+ */
+.navbar-inverse {
+  background: #222 url("assets/images/Liima.png") no-repeat 20px;
 }
 
 /*
