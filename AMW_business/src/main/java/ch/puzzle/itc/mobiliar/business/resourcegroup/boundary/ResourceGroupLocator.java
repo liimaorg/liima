@@ -50,6 +50,10 @@ public class ResourceGroupLocator {
 	public ResourceGroupEntity getResourceGroupByName(String name)  {
 		return resourceGroupControl.getResourceGroupByName(name);
 	}
+
+	public ResourceGroupEntity getResourceGroupById(Integer groupId)  {
+		return resourceGroupControl.getResourceGroupById(groupId);
+	}
 	
 	public ResourceGroupEntity getResourceGroupForCreateDeploy(Integer groupeId) {
 		return resourceGroupControl.getResourceGroupForCreateDeploy(groupeId);

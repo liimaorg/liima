@@ -21,6 +21,7 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
@@ -123,7 +124,7 @@ public class ResourcesRestTest {
         resourceGroupEntities.add(createResourceGroupEntity(groupName, typeName));
         resourceGroupEntities.add(createResourceGroupEntity("name2", "type2"));
 
-        Mockito.when(resourceGroupLocatorMock.getResourceGroups()).thenReturn(resourceGroupEntities);
+        Mockito.when(resourceGroupLocatorMock.getGroupsForType(typeName, Collections.EMPTY_LIST, true, true)).thenReturn(resourceGroupEntities);
 
         // when
         List<ResourceDTO> resourcesResult = rest.getResources(typeName);
@@ -143,7 +144,7 @@ public class ResourcesRestTest {
         resourceGroupEntities.add(createResourceGroupEntity("otherName", "otherType"));
         resourceGroupEntities.add(createResourceGroupEntity("otherName2", "otherType2"));
 
-        Mockito.when(resourceGroupLocatorMock.getResourceGroups()).thenReturn(resourceGroupEntities);
+        Mockito.when(resourceGroupLocatorMock.getGroupsForType(typeName, Collections.EMPTY_LIST, true, true)).thenReturn(resourceGroupEntities);
 
         // when
         List<ResourceDTO> resourcesResult = rest.getResources(typeName);
@@ -206,7 +207,7 @@ public class ResourcesRestTest {
         String env = "V";
         Integer type = 2305;
         List<ServerTuple> list = new ArrayList<>();
-        Mockito.when(serverViewMock.getServers(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.eq(true))).thenReturn(list);
+        Mockito.when(serverViewMock.getServers(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(list);
         
         // when
         BatchJobInventoryDTO result = rest.getBatchJobInventar(env, type, null, null, null, null, null);

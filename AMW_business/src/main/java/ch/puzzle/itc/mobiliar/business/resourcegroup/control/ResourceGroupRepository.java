@@ -20,19 +20,17 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class ResourceGroupRepository {
 
@@ -48,18 +46,23 @@ public class ResourceGroupRepository {
         return entityManager.createQuery("select r from ResourceGroupEntity r where LOWER(r.name)=:name", ResourceGroupEntity.class).setParameter(
                 "name", name).getSingleResult();
     }
+
+    public ResourceGroupEntity getResourceGroupById(Integer groupId){
+        return entityManager.createQuery("select r from ResourceGroupEntity r where r.id=:groupId", ResourceGroupEntity.class).setParameter(
+                "groupId", groupId).getSingleResult();
+    }
     
     /**
      * Fetches the resourceGroup as required for the create deployment popup of the deploy screen
      */
-	public ResourceGroupEntity getResourceGroupForCreateDeploy(Integer groupeId) {
+	public ResourceGroupEntity getResourceGroupForCreateDeploy(Integer groupId) {
 		TypedQuery<ResourceGroupEntity> q = entityManager.createQuery("select r from ResourceGroupEntity r"
         		+ " left join fetch r.resources res"
         		+ " left join fetch res.consumedMasterRelations"
         		+ " left join fetch res.resourceTags"
         		+ " where r.id=:id",
         		ResourceGroupEntity.class);
-		q.setParameter("id", groupeId);
+		q.setParameter("id", groupId);
 		return q.getSingleResult();
 	}
 	

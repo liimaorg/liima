@@ -49,9 +49,9 @@
         <module>AMW_commons</module>
         <module>AMW_ear</module>
         <module>AMW_web</module>
+        <module>AMW_angular</module>
         <module>AMW_rest</module>
         <module>AMW_maia_federation</module>
-        
         <module>AMW_db_scripts</module>
     </modules>
 
@@ -289,6 +289,15 @@
                 <type>war</type>
                 <scope>compile</scope>
             </dependency>
+
+            <dependency>
+                <groupId>ch.puzzle.itc.mobiliar</groupId>
+                <artifactId>AMW_angular</artifactId>
+                <version>1.12.2-SNAPSHOT</version>
+                <type>war</type>
+                <scope>compile</scope>
+            </dependency>
+
 
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>

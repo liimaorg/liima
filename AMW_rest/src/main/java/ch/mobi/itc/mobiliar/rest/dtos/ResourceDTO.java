@@ -36,6 +36,8 @@ import lombok.Setter;
 public class ResourceDTO {
 
     @Getter @Setter
+    private Integer id;
+    @Getter @Setter
     private String name;
     @Getter @Setter
     private String type;
@@ -45,6 +47,7 @@ public class ResourceDTO {
     ResourceDTO(){}
 
     public ResourceDTO(ResourceGroupEntity resourceGroup, List<ReleaseDTO> releases){
+        this.id = resourceGroup.getId();
         this.name = resourceGroup.getName();
         this.type = resourceGroup.getResourceType() != null ? resourceGroup.getResourceType().getName(): null;
         if(releases!=null && !releases.isEmpty()){

@@ -38,6 +38,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,6 +85,24 @@ public class ResourceLocator {
             return null;
         }
 	}
+
+    /**
+     * @param groupId id of resource group
+     * @param releaseId release id
+     * @return
+     * @throws ValidationException thrown if one of the arguments is either empty or null
+     */
+    public ResourceEntity getResourceByGroupIdAndRelease(@NotNull Integer groupId, @NotNull Integer releaseId)
+            throws ValidationException {
+
+        ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
+        try {
+            return resourceRepository.getResourceByGroupIdAndRelease(groupId, release);
+        }
+        catch (NoResultException e) {
+            return null;
+        }
+    }
 
 	/**
 	 * @param name

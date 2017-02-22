@@ -26,6 +26,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentsRest;
+import ch.mobi.itc.mobiliar.rest.environments.EnvironmentsRest;
 import ch.mobi.itc.mobiliar.rest.exceptions.IllegalArgumentExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.exceptions.IllegalStateExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.exceptions.NoResultExceptionMapper;
@@ -66,6 +67,7 @@ public class RESTApplication extends Application {
         resources.add(ResourceRelationTemplatesRest.class);
         resources.add(HostNamesRest.class);
         resources.add(DeploymentsRest.class);
+        resources.add(EnvironmentsRest.class);
         resources.add(NoResultExceptionMapper.class);
         resources.add(IllegalStateExceptionMapper.class);
         resources.add(NotAuthorizedExceptionMapper.class);

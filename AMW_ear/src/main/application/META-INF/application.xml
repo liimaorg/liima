@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd" id="Application_ID" version="6">
+             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd"
+             id="Application_ID" version="6">
     <display-name>AMW_ear</display-name>
     <module>
         <web>
             <web-uri>AMW_web.war</web-uri>
             <context-root>AMW_web</context-root>
+        </web>
+    </module>
+    <module>
+        <web>
+            <web-uri>AMW_angular.war</web-uri>
+            <context-root>AMW_angular</context-root>
         </web>
     </module>
     <module>

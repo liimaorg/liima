@@ -9,7 +9,6 @@ with various versions, including the automated deployment of those apps.
 
 Liima Docs are available under https://github.com/liimaorg/docs
 
-
 ## Build and create Release 
 Build the Liima ear
 
@@ -78,6 +77,12 @@ The Sonar properties must be confiured in ~/.m2/settings.xml
      </profiles>
 </settings>
 ```
+## Toggle Angular
+
+The Angular-UI can be disabled by setting the following property to true
+```
+amw.feature.disableAngularGui
+``` 
 
 ## Copying
 

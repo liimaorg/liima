@@ -31,19 +31,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "relations")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter @Setter
+@Getter
+@Setter
 public class ResourceRelationDTO {
 
     private String relatedResourceName;
     private String relatedResourceRelease;
     private String identifier;
+    private String type;
     private List<TemplateDTO> templates;
 
-    ResourceRelationDTO(){}
+    ResourceRelationDTO() {
+    }
 
-    public ResourceRelationDTO(ConsumedResourceRelationEntity relation){
+    public ResourceRelationDTO(ConsumedResourceRelationEntity relation) {
         relatedResourceName = relation.getSlaveResource().getName();
         relatedResourceRelease = relation.getSlaveResource().getRelease().getName();
         identifier = relation.buildIdentifer();
+        type = relation.getResourceRelationType().getResourceTypeB().getName();
     }
 }

@@ -1,0 +1,66 @@
+<div class="row page-header">
+  <div class="col-md-4">
+    <h1>{{appState.get('pageTitle')}}</h1>
+  </div>
+</div>
+
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <h3 class="panel-title pull-left">{{appState.get('pageTitle')}}</h3>
+    </div>
+    <div class="panel-body">
+
+<section>
+  <section *ngIf="isLoading && !errorMessage">
+    Retrieving data...
+  </section>
+  <section *ngIf="errorMessage">
+    {{errorMessage}}
+  </section>
+  <section *ngIf="!isLoading">
+    <a routerLink="/resource">Alle laden</a>
+    <a href="#" (click)="goBack()">Zurück</a><br>
+  </section>
+  <section *ngIf="release">
+    <h3>{{titleLabel}}</h3>
+    <ul>
+      <li *ngFor="let relation of release.relations">Relation:
+        <ul>
+          <li>relatedResourceName: {{relation.relatedResourceName}}</li>
+          <li>relatedResourceRelease: {{relation.relatedResourceRelease}}</li>
+          <li>identifier: {{relation.identifier}}</li>
+        </ul>
+      </li>
+    </ul>
+    <ul>
+      <li *ngFor="let property of release.properties">Property:
+        <ul>
+          <li>name: {{property.name}}</li>
+          <li>value: {{property.value}}</li>
+          <li>replacedValue: {{property.replacedValue}}</li>
+          <li>generalComment: {{property.generalComment}}</li>
+          <li>valueComment: {{property.valueComment}}</li>
+          <li>context: {{property.context}}</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+  <section *ngIf="!release && resource">
+    <h3>{{titleLabel}}</h3>
+    <amw-resource [resource]="resource" (notifyType)='byType($event)'></amw-resource>
+  </section>
+  <section *ngIf="!release && resources.length > 0">
+    <h3>{{titleLabel}}</h3>
+    <ul>
+      <li *ngFor="let resource of resources">
+        <amw-resource [resource]="resource" (notifyType)='byType($event)'></amw-resource>
+      </li>
+    </ul>
+  </section>
+</section>
+
+    </div>
+  </div>
+</div>
