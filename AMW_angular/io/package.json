@@ -50,15 +50,15 @@
     "webpack": "webpack"
   },
   "dependencies": {
-    "@angular/common": "2.4.6",
-    "@angular/compiler": "2.4.6",
-    "@angular/core": "2.4.6",
-    "@angular/forms": "2.4.6",
-    "@angular/http": "2.4.6",
-    "@angular/platform-browser": "2.4.6",
-    "@angular/platform-browser-dynamic": "2.4.6",
-    "@angular/platform-server": "2.4.6",
-    "@angular/router": "3.4.6",
+    "@angular/common": "2.4.8",
+    "@angular/compiler": "2.4.8",
+    "@angular/core": "2.4.8",
+    "@angular/forms": "2.4.8",
+    "@angular/http": "2.4.8",
+    "@angular/platform-browser": "2.4.8",
+    "@angular/platform-browser-dynamic": "2.4.8",
+    "@angular/platform-server": "2.4.8",
+    "@angular/router": "3.4.8",
     "bootstrap-sass": "3.3.7",
     "bootstrap-tagsinput": "0.7.1",
     "bootstrap-3-typeahead": "4.0.2",
@@ -70,8 +70,8 @@
     "lodash": "4.17.4",
     "moment": "2.17.1",
     "resolve-url-loader": "1.6.1",
-    "rxjs": "5.0.3",
-    "zone.js": "0.7.4"
+    "rxjs": "5.2.0",
+    "zone.js": "0.7.6"
   },
   "devDependencies": {
     "@types/bootstrap": "3.3.32",
@@ -86,8 +86,8 @@
     "@types/webpack": "2.1.0",
     "angular2-template-loader": "0.6.0",
     "assets-webpack-plugin": "3.5.1",
-    "awesome-typescript-loader": "3.0.0-beta.18",
-    "codelyzer": "2.0.0-beta.4",
+    "awesome-typescript-loader": "3.0.8",
+    "codelyzer": "2.0.1",
     "compression-webpack-plugin": "0.3.2",
     "copy-webpack-plugin": "4.0.1",
     "css-loader": "0.26.1",
@@ -120,20 +120,20 @@
     "style-loader": "0.13.1",
     "to-string-loader": "1.1.4",
     "ts-helpers": "1.1.2",
-    "ts-node": "2.0.0",
+    "ts-node": "2.1.0",
     "tslint": "4.4.2",
-    "tslint-loader": "3.3.0",
+    "tslint-loader": "3.4.2",
     "typedoc": "0.5.3",
     "typescript": "2.1.6",
     "url-loader": "0.5.7",
-    "webpack": "2.2.0",
+    "webpack": "2.2.1",
     "webpack-dev-middleware": "1.10.0",
     "webpack-dev-server": "2.3.0",
     "webpack-md5-hash": "0.0.5",
     "webpack-merge": "2.6.1"
   },
   "engines": {
-    "node": ">= 4.2.1",
-    "npm": ">= 3"
+    "node": ">= 6.9.1",
+    "npm": ">= 3.10.8"
   }
 }
