@@ -89,11 +89,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.activatedRoute.params.subscribe(
       (param: any) => {
         this.appserverName = param['appserverName'];
-        console.log('appserverName from param: ' + this.appserverName);
         this.releaseName = param['releaseName'];
-        console.log('releaseName from param: ' + this.releaseName);
         this.deploymentId = param['deploymentId'];
-        console.log('deploymentId from param: ' + this.deploymentId);
       });
 
     console.log('hello `Deployment` component');

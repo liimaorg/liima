@@ -63,11 +63,20 @@ body {
 }
 
 /*
- * Logo as background
- * Instead of a.navbar-brand
+ * Liima logo
  */
-.navbar-inverse {
-  background: #222 url("assets/images/Liima.png") no-repeat 15px 15px;
+.navbar-header {
+  .navbar-brand {
+    color: #ffffff;
+    margin-left: 0;
+    padding-top: 8px;
+  }
+}
+@media (min-width: 768px) {
+  .navbar-brand {
+    margin-left: -15px;
+    padding-top: 10px;
+  }
 }
 
 /*

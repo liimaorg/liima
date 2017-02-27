@@ -9,6 +9,7 @@
     "sourceMap": true,
     "noEmitHelpers": true,
     "strictNullChecks": false,
+    "inlineSources": true,
     "baseUrl": "./src",
     "paths": {
     },

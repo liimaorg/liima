@@ -203,10 +203,6 @@ div.templateDiff, div.templateDiff .descriptionGap {
     margin-top: 6px;
 }
 
-.marginTop7 {
-    margin-top: 7px;
-}
-
 .marginRight10 {
     margin-right: 10px;
 }
@@ -1935,4 +1931,9 @@ div a:hover {
 
 .hidden {
     visibility: hidden;
+}
+
+.liimaLogo {
+    width: 72px;
+    margin: 2px 0 0 -4px;
 }
