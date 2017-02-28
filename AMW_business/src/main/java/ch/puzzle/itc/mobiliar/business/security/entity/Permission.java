@@ -182,11 +182,14 @@ public enum Permission {
     STP_MANAGEMENT_PAGE("Path: Settings -> select STP Management"),
     EDIT_STP("Path: Settings -> select STP Management -> Edit"),
     DELETE_STP("Path: Settings -> select STP Management -> Edit"),
-    ADD_STP("Path: Settings -> select STP Management -> Add new STP");
+    ADD_STP("Path: Settings -> select STP Management -> Add new STP"),
+
+    //NEW PERMISSIONS
+    DEPLOYMENT("The right to deploy");
 
     private String info;
 
-    private Permission(String info) {
+    Permission(String info) {
         this.info = info;
     }
 

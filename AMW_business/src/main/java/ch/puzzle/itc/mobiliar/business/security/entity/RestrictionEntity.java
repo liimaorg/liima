@@ -21,57 +21,51 @@
 package ch.puzzle.itc.mobiliar.business.security.entity;
 
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
-@Table(name="TAMW_role")
-public class RoleEntity implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
+@Table(name="TAMW_restriction")
+public class RestrictionEntity {
 
-	@Getter
-	@Setter
-	@TableGenerator(name = "roleIdGen", table = Constants.GENERATORTABLE, pkColumnName = Constants.GENERATORPKCOLUMNNAME, 
-			valueColumnName = Constants.GENERATORVALUECOLUMNNAME, pkColumnValue = "roleId")
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "roleIdGen")
-	@Id
-	@Column(unique = true, nullable = false)
-	private Integer id;
-	
-	@Getter
-	@Version
-	private long v;
-	
-	@Setter
-	@Getter
-	private String name;
-	
-	@Setter
-	@Getter
-	private boolean deployable;
-	
-	@Setter
-	@Getter
-	private boolean deletable;
+    private static final long serialVersionUID = 1L;
+    @Getter
+    @Setter
+    @TableGenerator(name = "restrictionIdGen", table = Constants.GENERATORTABLE, pkColumnName = Constants.GENERATORPKCOLUMNNAME,
+            valueColumnName = Constants.GENERATORVALUECOLUMNNAME, pkColumnValue = "restrictionId")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "restrictionIdGen")
+    @Id
+    @Column(unique = true, nullable = false)
+    private Integer id;
 
-	@Getter
-	@Setter
-	@NotAudited
-	@ManyToMany
-	@JoinTable(name="TAMW_role_permission")
-	private Set<PermissionEntity> permissions = new HashSet<PermissionEntity>();
+    @Getter
+    @Version
+    private long v;
 
-	@Getter
-	@Setter
-	@NotAudited
-	@OneToMany(mappedBy="role")
-	private Set<RestrictionEntity> restrictions = new HashSet<>();
-	
+    @Getter
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private RoleEntity role;
+
+    @Getter
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "permission_id")
+    private PermissionEntity permission;
+
+    @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private Action action;
+
+    @Getter
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "context_id")
+    private ContextEntity context;
+
 }

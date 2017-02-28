@@ -55,6 +55,7 @@ public class PermissionEntity implements Serializable
 	@Version
 	private long v;
 
+	// TODO migrate to RestrictionEntity
 	@Getter
 	@Setter
 	@ManyToOne
@@ -67,6 +68,10 @@ public class PermissionEntity implements Serializable
 	@NotAudited
 	private Set<RoleEntity> roles = new HashSet<RoleEntity>();
 
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "permission")
+	private Set<RestrictionEntity> restrictions = new HashSet<>();
 
 	public String getInfo() {
 		try {

@@ -97,6 +97,7 @@ public class PermissionService implements Serializable {
             Map<String, List<String>> tmpRolesAndPermissions = new HashMap<>();
             if (permissionRepository.rolesPermissionsList() != null
                     && !permissionRepository.rolesPermissionsList().isEmpty()) {
+                // TODO map old to new
                 for (Object[] o : permissionRepository.rolesPermissionsList()) {
                     if (o != null && o.length == 2) {
                         String permission = (String) o[0];
@@ -203,6 +204,7 @@ public class PermissionService implements Serializable {
 
     public boolean hasPermission(String value) {
         boolean hasRole = false;
+        // TODO inverse => role > permission (with restriction)
         List<String> roles = getPermissions().get(value);
         if (roles == null || sessionContext == null) {
             return false;
