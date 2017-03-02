@@ -52,7 +52,8 @@ public class RoleEntity implements Serializable {
 	@Setter
 	@Getter
 	private String name;
-	
+
+	// TODO migrate to RestrictionEntity
 	@Setter
 	@Getter
 	private boolean deployable;
@@ -66,7 +67,7 @@ public class RoleEntity implements Serializable {
 	@NotAudited
 	@ManyToMany
 	@JoinTable(name="TAMW_role_permission")
-	private Set<PermissionEntity> permissions = new HashSet<PermissionEntity>();
+	private Set<PermissionEntity> permissions = new HashSet<>();
 
 	@Getter
 	@Setter

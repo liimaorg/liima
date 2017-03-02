@@ -50,13 +50,13 @@ public class HasPermissionInterceptor implements Serializable {
 			return context.proceed();
 		}
 		if (hasAnnotation.permission() != null
-				&& permissionService.hasPermission(hasAnnotation.permission().name())) {
+				&& permissionService.hasPermission(hasAnnotation.permission())) {
 			return context.proceed();
 		}
 		if (hasAnnotation.oneOfPermission() != null && hasAnnotation.oneOfPermission().length > 0) {
 			Permission[] permissions = hasAnnotation.oneOfPermission();
 			for (int i = 0; i < permissions.length; i++) {
-				if (permissionService.hasPermission(permissions[i].name())) {
+				if (permissionService.hasPermission(permissions[i])) {
 					return context.proceed();
 				}
 			}

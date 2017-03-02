@@ -25,8 +25,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.Deployment
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import ch.puzzle.itc.mobiliar.common.exception.CheckedNotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
@@ -51,8 +50,8 @@ public class PermissionService implements Serializable {
     @Inject
     SessionContext sessionContext;
 
-    protected static Map<String, List<String>> rolesAndPermissions;
-    protected static List<RoleEntity> deployableRoles;
+    static List<RoleEntity> deployableRoles;
+    static Map<String, List<RestrictionDTO>> rolesWithRestrictions;
 
     private List<RoleEntity> getDeployableRoles() {
         boolean isReload = permissionRepository.isReloadDeploybleRoleList();
@@ -89,43 +88,60 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * @return Map key=permission, value=role
+     * @return Map key=Role.name, value=restrictionDTOs
      */
-    private Map<String, List<String>> getPermissions() {
+    private Map<String, List<RestrictionDTO>> getPermissions() {
         boolean isReload = permissionRepository.isReloadRolesAndPermissionsList();
-        if (rolesAndPermissions == null || isReload) {
-            Map<String, List<String>> tmpRolesAndPermissions = new HashMap<>();
-            if (permissionRepository.rolesPermissionsList() != null
-                    && !permissionRepository.rolesPermissionsList().isEmpty()) {
-                // TODO map old to new
-                for (Object[] o : permissionRepository.rolesPermissionsList()) {
-                    if (o != null && o.length == 2) {
-                        String permission = (String) o[0];
-                        String role = (String) o[1];
-
-                        if (tmpRolesAndPermissions.containsKey(permission)) {
-                            tmpRolesAndPermissions.get(permission).add(role);
-                        } else {
-                            ArrayList<String> roles = new ArrayList<>();
-                            roles.add(role);
-                            tmpRolesAndPermissions.put(permission, roles);
-                        }
-
-                    }
+        if (rolesWithRestrictions == null || isReload) {
+            Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions = new HashMap<>();
+            // map old permissions to new permissions with restriction
+            if (permissionRepository.getRolesWithPermissions() != null) {
+                for (RoleEntity role : permissionRepository.getRolesWithPermissions()) {
+                    addLegacyPermission(tmpRolesWithRestrictions, role);
+                }
+            }
+            // add new permissions with restriction
+            if (permissionRepository.getRolesWithRestrictions() != null) {
+                for (RoleEntity role : permissionRepository.getRolesWithRestrictions()) {
+                    addPermission(tmpRolesWithRestrictions, role);
                 }
             }
             //make immutable
-            for (String permission : tmpRolesAndPermissions.keySet()) {
-                List<String> roles = tmpRolesAndPermissions.get(permission);
-                tmpRolesAndPermissions.put(permission, Collections.unmodifiableList(roles));
+            for (String roleName : tmpRolesWithRestrictions.keySet()) {
+                List<RestrictionDTO> restrictions = tmpRolesWithRestrictions.get(roleName);
+                tmpRolesWithRestrictions.put(roleName, Collections.unmodifiableList(restrictions));
             }
-            rolesAndPermissions = Collections.unmodifiableMap(tmpRolesAndPermissions);
+            rolesWithRestrictions = Collections.unmodifiableMap(tmpRolesWithRestrictions);
 
             if (isReload) {
                 permissionRepository.setReloadRolesAndPermissionsList(false);
             }
         }
-        return rolesAndPermissions;
+        return rolesWithRestrictions;
+    }
+
+    private void addLegacyPermission(Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions, RoleEntity role) {
+        String roleName = role.getName();
+        if (!tmpRolesWithRestrictions.containsKey(roleName)) {
+            List<RestrictionDTO> restrictions = new ArrayList<>();
+            tmpRolesWithRestrictions.put(roleName, restrictions);
+        }
+        for (PermissionEntity perm : role.getPermissions()) {
+            // convert permission to restriction
+            tmpRolesWithRestrictions.get(roleName).add(new RestrictionDTO(perm));
+        }
+    }
+
+    private void addPermission(Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions, RoleEntity role) {
+        String roleName = role.getName();
+        if (!tmpRolesWithRestrictions.containsKey(roleName)) {
+            List<RestrictionDTO> restrictions = new ArrayList<>();
+            tmpRolesWithRestrictions.put(roleName, restrictions);
+        }
+        for (RestrictionEntity res : role.getRestrictions()) {
+            // add restriction
+            tmpRolesWithRestrictions.get(roleName).add(new RestrictionDTO(res));
+        }
     }
 
     public boolean hasPermission(Permission permission) {
@@ -202,25 +218,44 @@ public class PermissionService implements Serializable {
         return hasPermissionForDeploymentOnContext(context);
     }
 
-    public boolean hasPermission(String value) {
-        boolean hasRole = false;
-        // TODO inverse => role > permission (with restriction)
-        List<String> roles = getPermissions().get(value);
-        if (roles == null || sessionContext == null) {
+    // TODO add action and context
+    public boolean hasPermission(String permissionName) {
+        Set<String> roles = new HashSet<>();
+        Set<Map.Entry<String, List<RestrictionDTO>>> entries = getPermissions().entrySet();
+
+        for (Map.Entry<String, List<RestrictionDTO>> entry : entries) {
+            matchPermissions(permissionName, roles, entry);
+        }
+
+        if (roles.isEmpty() || sessionContext == null) {
             return false;
         }
 
         for (String roleName : roles) {
-            hasRole = hasRole || sessionContext.isCallerInRole(roleName);
+            if (sessionContext.isCallerInRole(roleName)) {
+                return true;
+            }
         }
-        return hasRole;
+        return false;
+    }
+
+    private void matchPermissions(String permissionName, Set<String> roles, Map.Entry<String, List<RestrictionDTO>> entry) {
+        String roleName = entry.getKey();
+        for (RestrictionDTO restrictionDTO : entry.getValue()) {
+            if (restrictionDTO.getPermissionName().equals(permissionName)) {
+                // TODO check action and context
+                if (restrictionDTO.getRestriction().getAction().equals(Action.A)) {
+                    roles.add(roleName);
+                }
+            }
+        }
     }
 
     /**
      * The Properties of ResourceType are modifiable only by the config_admin
      */
     public boolean hasPermissionToEditResourceTypeProperties() {
-        return hasPermission(Permission.EDIT_NOT_DEFAULT_RES_OF_RESTYPE.name());
+        return hasPermission(Permission.EDIT_NOT_DEFAULT_RES_OF_RESTYPE);
     }
 
     /**
@@ -228,7 +263,7 @@ public class PermissionService implements Serializable {
      * APPLICATIONSERVER or NODE) is not modifiable.
      */
     public boolean hasPermissionToRenameResourceType(ResourceTypeEntity resType) {
-        return resType != null && hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME.name())
+        return resType != null && hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME)
                 && !resType.isDefaultResourceType();
     }
 
@@ -241,10 +276,10 @@ public class PermissionService implements Serializable {
      */
     public boolean hasPermissionToEditPropertiesOfResource(ResourceTypeEntity parentResourceTypeOfResource) {
         // config_admin
-        if (hasPermission(Permission.EDIT_ALL_PROPERTIES.name())) {
+        if (hasPermission(Permission.EDIT_ALL_PROPERTIES)) {
             return true;
         } else if (parentResourceTypeOfResource != null
-                && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP.name())
+                && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP)
                 && DefaultResourceTypeDefinition.APPLICATION.name().equals(
                 parentResourceTypeOfResource.getName())) {
             return true;
@@ -292,9 +327,9 @@ public class PermissionService implements Serializable {
         // Check that the resource is an instance of DefaultResourceType.
         // Permitted to server_admin
         if (isDefaultResourceType
-                && hasPermission(Permission.DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE.name())) {
+                && hasPermission(Permission.DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE)) {
             return true;
-        } else if (hasPermission(Permission.DELETE_RES.name())) {
+        } else if (hasPermission(Permission.DELETE_RES)) {
             return true;
         }
         return false;
@@ -311,12 +346,12 @@ public class PermissionService implements Serializable {
      */
     public boolean hasPermissionToEditPropertiesByResource(ResourceEntity resource, boolean isTestingMode) {
         // the config_admin can edit/add/delete all properites
-        if (hasPermission(Permission.EDIT_ALL_PROPERTIES.name())) {
+        if (hasPermission(Permission.EDIT_ALL_PROPERTIES)) {
             return true;
         } else if (resource != null && resource.getResourceType().isApplicationResourceType()
-                && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP.name())) {
+                && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP)) {
             return true;
-        } else if (hasPermission(Permission.SHAKEDOWN_TEST_MODE.name()) && isTestingMode) {
+        } else if (hasPermission(Permission.SHAKEDOWN_TEST_MODE) && isTestingMode) {
             return true;
         }
 
@@ -334,13 +369,13 @@ public class PermissionService implements Serializable {
     public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, boolean provided) {
         if (resourceEntity != null && resourceEntity.getResourceType() != null) {
             // Check that the user is config_admin
-            if (hasPermission(Permission.ADD_EVERY_RELATED_RESOURCE.name())) {
+            if (hasPermission(Permission.ADD_EVERY_RELATED_RESOURCE)) {
                 return true;
             } else if (resourceEntity.getResourceType().isApplicationServerResourceType()
-                    && hasPermission(Permission.ADD_NODE_RELATION.name())) {
+                    && hasPermission(Permission.ADD_NODE_RELATION)) {
                 return true;
             } else if (resourceEntity.getResourceType().isApplicationResourceType()
-                    && hasPermission(Permission.ADD_RELATED_RESOURCE.name())) {
+                    && hasPermission(Permission.ADD_RELATED_RESOURCE)) {
                 return (!provided && hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE))
                         || (provided && hasPermission(Permission.ADD_AS_PROVIDED_RESOURCE));
             }
@@ -401,13 +436,13 @@ public class PermissionService implements Serializable {
      */
     public boolean hasPermissionToTemplateModify(ResourceTypeEntity resourceType, boolean isTestingMode) {
         // check that the user is config_admin
-        if (hasPermission(Permission.SAVE_RESTYPE_TEMPLATE.name())) {
+        if (hasPermission(Permission.SAVE_RESTYPE_TEMPLATE)) {
             return true;
         }// check that the user is app_developer
         else if (isApplicationResourceType(resourceType)) {
-            return hasPermission(Permission.SAVE_RES_TEMPLATE.name());
+            return hasPermission(Permission.SAVE_RES_TEMPLATE);
         }// check that the user is shakedown_admin
-        else if (resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE.name())) {
+        else if (resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE)) {
             return true;
         }
         return false;
@@ -424,13 +459,13 @@ public class PermissionService implements Serializable {
      */
     public boolean hasPermissionToTemplateModify(ResourceEntity resource, boolean isTestingMode) {
         // check that the user is config_admin
-        if (hasPermission(Permission.SAVE_RESTYPE_TEMPLATE.name())) {
+        if (hasPermission(Permission.SAVE_RESTYPE_TEMPLATE)) {
             return true;
         }// check that the user is app_developer
         else if (isResourceEntityWithApplicationResourceType(resource)) {
-            return hasPermission(Permission.SAVE_RES_TEMPLATE.name());
+            return hasPermission(Permission.SAVE_RES_TEMPLATE);
         }// check that the user is shakedown_admin
-        else if (resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE.name())) {
+        else if (resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE)) {
             return true;
         }
         return false;

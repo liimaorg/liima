@@ -56,11 +56,14 @@ public class PermissionRepository {
 		return result == null ? new ArrayList<RoleEntity>() : result;
 	}
 
-	//TODO: better return entities here?
-	public List<Object[]> rolesPermissionsList() {
-		TypedQuery<Object[]> query = entityManager.createQuery("select distinct p.value, r.name from PermissionEntity p left join p.roles r", Object[].class);
-		List<Object[]> result = query.getResultList();
-		return result == null ? new ArrayList<Object[]>() : result;
+	public List<RoleEntity> getRolesWithPermissions() {
+		TypedQuery<RoleEntity> query = entityManager.createQuery("select r from RoleEntity r left join fetch r.permissions", RoleEntity.class);
+		return query.getResultList();
+	}
+
+	public List<RoleEntity> getRolesWithRestrictions() {
+		TypedQuery<RoleEntity> query = entityManager.createQuery("select r from RoleEntity r left join fetch r.restrictions", RoleEntity.class);
+		return query.getResultList();
 	}
 
 	public boolean isReloadDeploybleRoleList() {
