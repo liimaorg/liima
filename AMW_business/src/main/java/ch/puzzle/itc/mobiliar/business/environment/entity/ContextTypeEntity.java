@@ -42,9 +42,9 @@ import static javax.persistence.CascadeType.ALL;
 @NamedQuery(name= ContextTypeEntity.LOAD_CONTEXT_TYPE_BY_NAME_QUERY_NAME, query="select c from ContextTypeEntity c left join fetch c.contexts where c.name=:name", cacheable=true)
 
 @AssociationOverrides({
-	@AssociationOverride(name="properties", joinTable=@JoinTable(name="TAMW_contextType_prop")),
-	@AssociationOverride(name="propertyDescriptors", joinTable=@JoinTable(name="TAMW_contextType_propDesc")),
-	@AssociationOverride(name="templates", joinTable=@JoinTable(name="TAMW_contextType_tmplDesc"))
+	@AssociationOverride(name="properties", joinTable=@JoinTable(name="TAMW_contextType_prop", joinColumns = @JoinColumn(name="TAMW_CONTEXTTYPE_ID", referencedColumnName="ID"))),
+	@AssociationOverride(name="propertyDescriptors", joinTable=@JoinTable(name="TAMW_contextType_propDesc", joinColumns = @JoinColumn(name="TAMW_CONTEXTTYPE_ID", referencedColumnName="ID"))),
+	@AssociationOverride(name="templates", joinTable=@JoinTable(name="TAMW_contextType_tmplDesc", joinColumns = @JoinColumn(name="TAMW_CONTEXTTYPE_ID", referencedColumnName="ID")))
 })
 public class ContextTypeEntity extends AbstractContext implements Identifiable, Serializable {
     public static final String LOAD_CONTEXT_TYPE_BY_NAME_QUERY_NAME = "loadContextTypeByName";

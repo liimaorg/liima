@@ -203,7 +203,7 @@ public class EditPropertyView implements Serializable {
 	@Setter
 	Integer propertyTypeId;
 
-	public Integer propertyTypeId() {
+	public Integer getPropertyTypeId() {
 		return propertyDescriptor != null && propertyDescriptor.getPropertyTypeEntity() != null ? propertyDescriptor
 				.getPropertyTypeEntity().getId() : null;
 	}
