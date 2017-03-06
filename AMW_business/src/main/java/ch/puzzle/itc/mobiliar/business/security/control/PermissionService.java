@@ -90,7 +90,7 @@ public class PermissionService implements Serializable {
     /**
      * @return Map key=Role.name, value=restrictionDTOs
      */
-    private Map<String, List<RestrictionDTO>> getPermissions() {
+    Map<String, List<RestrictionDTO>> getPermissions() {
         boolean isReload = permissionRepository.isReloadRolesAndPermissionsList();
         if (rolesWithRestrictions == null || isReload) {
             Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions = new HashMap<>();
@@ -123,8 +123,7 @@ public class PermissionService implements Serializable {
     private void addLegacyPermission(Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions, RoleEntity role) {
         String roleName = role.getName();
         if (!tmpRolesWithRestrictions.containsKey(roleName)) {
-            List<RestrictionDTO> restrictions = new ArrayList<>();
-            tmpRolesWithRestrictions.put(roleName, restrictions);
+            tmpRolesWithRestrictions.put(roleName, new ArrayList<RestrictionDTO>());
         }
         for (PermissionEntity perm : role.getPermissions()) {
             // convert permission to restriction
@@ -135,8 +134,7 @@ public class PermissionService implements Serializable {
     private void addPermission(Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions, RoleEntity role) {
         String roleName = role.getName();
         if (!tmpRolesWithRestrictions.containsKey(roleName)) {
-            List<RestrictionDTO> restrictions = new ArrayList<>();
-            tmpRolesWithRestrictions.put(roleName, restrictions);
+            tmpRolesWithRestrictions.put(roleName, new ArrayList<RestrictionDTO>());
         }
         for (RestrictionEntity res : role.getRestrictions()) {
             // add restriction
@@ -486,9 +484,7 @@ public class PermissionService implements Serializable {
      * @return
      */
     public String getCurrentUserName() {
-        String currentUserName;
-        currentUserName = sessionContext.getCallerPrincipal().toString();
-        return currentUserName;
+        return sessionContext.getCallerPrincipal().toString();
     }
 
 }

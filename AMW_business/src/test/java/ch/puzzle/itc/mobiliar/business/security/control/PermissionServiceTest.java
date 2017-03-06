@@ -20,11 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.security.control;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.ejb.SessionContext;
 import javax.persistence.EntityManager;
@@ -48,7 +44,9 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
-import static org.mockito.Mockito.when;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static org.mockito.Mockito.*;
 
 
 @SuppressWarnings("static-access")
@@ -338,7 +336,7 @@ public class PermissionServiceTest {
 		ResourceTypeEntity databaseResTypeEntity = new ResourceTypeEntity();
 		databaseResTypeEntity.setName("database");
 		ResourceType notDefaultDatabaseResType = new ResourceType();
-		notDefaultDatabaseResType.wrap(databaseResTypeEntity);;
+		notDefaultDatabaseResType.wrap(databaseResTypeEntity);
 		//End create notDefaultResource
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
 		myRoles = new HashMap<>();
@@ -1093,7 +1091,7 @@ public class PermissionServiceTest {
 		
 		when(sessionContext.isCallerInRole(ROLE_NOT_DEPLOY)).thenReturn(true);
 		
-		deployableRoles = new ArrayList<RoleEntity>();
+		deployableRoles = new ArrayList<>();
 		deployableRoles.add(roleToDeployEnvC);
 		
 		permissionService.deployableRoles = deployableRoles;
@@ -1108,7 +1106,7 @@ public class PermissionServiceTest {
 	@Test
 	public void hasPermissionToDeployWhenEmptyList(){
 		//given
-		List<RoleEntity>deployableRoles = new ArrayList<RoleEntity>();
+		List<RoleEntity>deployableRoles = new ArrayList<>();
 		EntityManager entityManager = Mockito.mock(EntityManager.class);
 		Query value = Mockito.mock(Query.class);
 		when(entityManager.createQuery("from RoleEntity r where r.deployable=1")).thenReturn(value);
@@ -1124,7 +1122,7 @@ public class PermissionServiceTest {
 	@Test
 	public void hasPermissionToDeployWhenUserIsDeployable(){
 		//given
-		List<RoleEntity>deployableRoles = new ArrayList<RoleEntity>();
+		List<RoleEntity>deployableRoles = new ArrayList<>();
 		RoleEntity deployableRole = new RoleEntity();
 		deployableRole.setName(TEST_DEPLOYER);
 		deployableRoles.add(deployableRole);
@@ -1386,6 +1384,67 @@ public class PermissionServiceTest {
 		
 		//Then
 		Assert.assertFalse(result);
+	}
+
+	@Test
+	public void shouldOnlyReloadWhenNeeded() {
+		//Given
+		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(FALSE);
+
+		//When
+		permissionService.getPermissions();
+
+		//Then
+		verify(permissionService.permissionRepository, never()).getRolesWithPermissions();
+		verify(permissionService.permissionRepository, never()).getRolesWithRestrictions();
+	}
+
+	@Test
+	public void shouldObtainLegacyRolesWithPermissionsAndRolesWithPestrictions() {
+		//Given
+		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(TRUE);
+		when(permissionService.permissionRepository.getRolesWithPermissions()).thenReturn(null);
+		when(permissionService.permissionRepository.getRolesWithRestrictions()).thenReturn(null);
+
+		//When
+		permissionService.getPermissions();
+
+		//Then
+		verify(permissionService.permissionRepository, times(1)).getRolesWithPermissions();
+		verify(permissionService.permissionRepository, times(1)).getRolesWithRestrictions();
+	}
+
+	@Test
+	public void shouldCombineLegacyRolesWithPermissionsAndRolesWithPestrictions() {
+		//Given
+		RoleEntity legacyRole = new RoleEntity();
+		legacyRole.setName("aLegacyTestRole");
+		PermissionEntity pe = new PermissionEntity();
+		pe.setValue("aTestPermission");
+		PermissionEntity pe2 = new PermissionEntity();
+		pe2.setValue("anotherTestPermission");
+		Set<PermissionEntity> permissions = new HashSet<>(Arrays.asList(pe,pe2));
+		legacyRole.setPermissions(permissions);
+
+		RoleEntity newRole = new RoleEntity();
+		newRole.setName("aNewTestRole");
+		RestrictionEntity re = new RestrictionEntity();
+		re.setPermission(pe);
+		Set<RestrictionEntity> restrictions = new HashSet<>(Arrays.asList(re));
+		newRole.setRestrictions(restrictions);
+
+		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(TRUE);
+		when(permissionService.permissionRepository.getRolesWithPermissions()).thenReturn(Arrays.asList(legacyRole));
+		when(permissionService.permissionRepository.getRolesWithRestrictions()).thenReturn(Arrays.asList(newRole));
+
+		//When
+		Map<String, List<RestrictionDTO>> result = permissionService.getPermissions();
+
+		//Then
+		Assert.assertEquals(2, result.size());
+		Assert.assertEquals(2, result.get("aLegacyTestRole").size());
+		Assert.assertEquals(1, result.get("aNewTestRole").size());
+		Assert.assertEquals("aTestPermission", result.get("aNewTestRole").get(0).getPermissionName());
 	}
 	
 }
