@@ -30,9 +30,26 @@ public enum Action {
     D("delete");
 
     @Getter
-    private String name;
+    private String label;
 
-    Action(String name) {
-        this.name = name;
+    Action(String label) {
+        this.label = label;
     }
+
+    public boolean canCreate() {
+        return this.equals(A) || this.equals(C);
+    }
+
+    public boolean canUpdate() {
+        return this.equals(A) || this.equals(U);
+    }
+
+    public boolean canRead() {
+        return this.equals(A) || this.equals(R);
+    }
+
+    public boolean canDelete() {
+        return this.equals(A) || this.equals(D);
+    }
+
 }

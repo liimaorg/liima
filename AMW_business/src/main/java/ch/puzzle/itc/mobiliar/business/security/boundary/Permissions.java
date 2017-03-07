@@ -81,8 +81,9 @@ public class Permissions implements Serializable {
 
     }
 
-    public boolean hasPermission(String role) {
-        return permissionService.hasPermission(role);
+    public boolean hasPermission(String permissionName) {
+        Permission permission = Permission.valueOf(permissionName);
+        return permission != null && permissionService.hasPermission(permission);
     }
 
     public boolean hasPermission(Permission permission) {

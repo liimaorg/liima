@@ -197,7 +197,8 @@
                                         </f:facet>
                                         <h:panelGroup class="nowrap">
                                             <h:selectBooleanCheckbox class="deploy-checkbox"
-                                                                     value="#{deployScreenDataProvider.checkedDeployments[deployment.id]}">
+                                                                     value="#{deployScreenDataProvider.checkedDeployments[deployment.id]}"
+                                                                     disabled="#{!deployScreenDataProvider.isRedeployPossible(deployment)}">
                                                 <a4j:ajax render="deployments"/>
                                             </h:selectBooleanCheckbox>
                                             <h:outputText value="#{deployment.trackingId}"/>

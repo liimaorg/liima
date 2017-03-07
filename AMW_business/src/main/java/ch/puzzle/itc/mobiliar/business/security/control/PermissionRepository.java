@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
 
 @Stateless
@@ -53,6 +54,13 @@ public class PermissionRepository {
 		List<RoleEntity> result = entityManager
 				.createQuery("from RoleEntity r where r.deployable=:deployable", RoleEntity.class)
 				.setParameter("deployable", Boolean.TRUE).getResultList();
+		return result == null ? new ArrayList<RoleEntity>() : result;
+	}
+
+	public List<RoleEntity> getDeployableRoles() {
+		List<RoleEntity> result = entityManager
+				.createQuery("from RoleEntity r left join fetch r.restrictions res where res.permission.value =:deployment", RoleEntity.class)
+				.setParameter("deployment", Permission.DEPLOYMENT.name()).getResultList();
 		return result == null ? new ArrayList<RoleEntity>() : result;
 	}
 

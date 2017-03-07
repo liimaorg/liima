@@ -44,7 +44,7 @@ public class RestrictionDTOTest {
 
         //then
         Assert.assertEquals(per.getValue(), resDTO.getPermissionName());
-        Assert.assertEquals(Action.A.getName(), resDTO.getRestriction().getAction().getName());
+        Assert.assertEquals(Action.A.getLabel(), resDTO.getRestriction().getAction().getLabel());
     }
 
     @Test

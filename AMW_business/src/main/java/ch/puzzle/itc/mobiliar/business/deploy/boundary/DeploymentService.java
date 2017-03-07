@@ -445,9 +445,7 @@ public class DeploymentService {
                 deployment.setCreateTestForNeighborhoodAfterDeployment(false);
             }
 
-            boolean hasPermission = permissionService
-                    .hasPermission(context.getName());
-            if (!requestOnly && hasPermission) {
+            if (!requestOnly && permissionService.hasPermissionForDeploymentOnContext(context)) {
                 deployment.confirm(permissionService.getCurrentUserName());
             } else {
                 deployment.setDeploymentState(DeploymentState.requested);

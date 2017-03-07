@@ -50,26 +50,36 @@ public class PermissionService implements Serializable {
     @Inject
     SessionContext sessionContext;
 
-    static List<RoleEntity> deployableRoles;
+    static Map<String, List<RestrictionDTO>> deployableRolesWithRestrictions;
     static Map<String, List<RestrictionDTO>> rolesWithRestrictions;
 
-    private List<RoleEntity> getDeployableRoles() {
+    Map<String, List<RestrictionDTO>> getDeployableRoles() {
         boolean isReload = permissionRepository.isReloadDeploybleRoleList();
-        if (deployableRoles == null || isReload) {
-            List<RoleEntity> tmpDeployableRoles = permissionRepository.getDoployableRole();
-            deployableRoles = Collections.unmodifiableList(tmpDeployableRoles);
+        if (deployableRolesWithRestrictions == null || isReload) {
+            Map<String, List<RestrictionDTO>> tmpDeployableRolesWithRestrictions = new HashMap<>();
+            // get legacy roles (with permissions)
+            for (RoleEntity role : permissionRepository.getDoployableRole()) {
+                addLegacyPermission(tmpDeployableRolesWithRestrictions, role);
+            }
+            // add new roles (with restrictions)
+            for (RoleEntity role : permissionRepository.getDeployableRoles()) {
+                addPermission(tmpDeployableRolesWithRestrictions, role);
+            }
+            deployableRolesWithRestrictions = Collections.unmodifiableMap(tmpDeployableRolesWithRestrictions);
             if (isReload) {
                 permissionRepository.setReloadDeploybleRoleList(false);
             }
         }
-        return deployableRoles;
+        return deployableRolesWithRestrictions;
     }
 
     /**
      * @return the List of RoleEntity read from DB
      */
     public List<RoleEntity> getDeployableRolesNonCached() {
-        return permissionRepository.getDoployableRole();
+        List<RoleEntity> roles = permissionRepository.getDoployableRole();
+        roles.addAll(permissionRepository.getDeployableRoles());
+        return roles;
     }
 
     /**
@@ -79,8 +89,13 @@ public class PermissionService implements Serializable {
      * @return
      */
     public boolean hasPermissionToDeploy() {
-        for (RoleEntity role : getDeployableRoles()) {
-            if (sessionContext.isCallerInRole(role.getName())) {
+        // TODO review (it does not check if a user can deploy something on a specific environment)
+        // => hasPermissionForDeployment(DeploymentEntity deployment)
+        // DeployScreenDataProvider.canRedeploy()
+        // DeployScreenDataProvider.canEditDeployments()
+        // SecurityController.hasPermissionToDeploy()
+        for (Map.Entry<String, List<RestrictionDTO>> entry : getDeployableRoles().entrySet()) {
+            if (sessionContext.isCallerInRole(entry.getKey())) {
                 return true;
             }
         }
@@ -196,14 +211,65 @@ public class PermissionService implements Serializable {
         } else if (hasPermissionForDeployment(deployment) && deployment.getDeploymentState() != DeploymentState.requested) {
             return true;
         }
-
         return false;
     }
 
-    private boolean hasPermissionForDeploymentOnContext(ContextEntity context) {
-        return context != null && hasPermission(context.getName());
+    /**
+     * Checks if the caller is allowed to deploy on the specific environment
+     *
+     * @param context
+     * @return
+     */
+    public boolean hasPermissionForDeploymentOnContext(ContextEntity context) {
+        if (context != null) {
+            List<String> allowedRoles = new ArrayList<>();
+            for (Map.Entry<String, List<RestrictionDTO>> entry : deployableRolesWithRestrictions.entrySet()) {
+                matchDeploymentPermissions(context, allowedRoles, entry);
+            }
+
+            if (allowedRoles.isEmpty() || sessionContext == null) {
+                return false;
+            }
+
+            for (String roleName : allowedRoles) {
+                if (sessionContext.isCallerInRole(roleName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
+    /**
+     * Checks whether a role is allowed to create a deployment on a specific context (or its parent)
+     * If so, it adds the role to the list of the allowed roles
+     *
+     * @param context
+     * @param allowedRoles
+     * @param entry
+     */
+    private void matchDeploymentPermissions(ContextEntity context, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
+        for (RestrictionDTO restrictionDTO : entry.getValue()) {
+            if (restrictionDTO.getRestriction().getAction().canCreate()) {
+                if (restrictionDTO.getRestriction().getContext() == null) {
+                    allowedRoles.add(entry.getKey());
+                } else {
+                    // check if user may deploy on the requested context or on the parent of the requested
+                    checkDeploymentContext(context, allowedRoles, entry, restrictionDTO);
+                }
+            }
+        }
+    }
+
+    private void checkDeploymentContext(ContextEntity context, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry, RestrictionDTO restrictionDTO) {
+        if (context.getName().equals(restrictionDTO.getRestriction().getContext().getName())) {
+            allowedRoles.add(entry.getKey());
+        } else if (context.getParent() != null) {
+            checkDeploymentContext(context.getParent(), allowedRoles, entry, restrictionDTO);
+        }
+    }
+
+    // TODO Review used by GeneratorDomainServiceWithAppServerRelations.omitTemplateForLackingPermissions
     public boolean hasPermissionForDeploymentOnContextOrSubContext(ContextEntity context) {
         Set<ContextEntity> children = context.getChildren();
         if (children != null && !children.isEmpty()) {
@@ -216,8 +282,8 @@ public class PermissionService implements Serializable {
         return hasPermissionForDeploymentOnContext(context);
     }
 
-    // TODO add action and context
-    public boolean hasPermission(String permissionName) {
+    // TODO add required action and context
+    private boolean hasPermission(String permissionName) {
         Set<String> roles = new HashSet<>();
         Set<Map.Entry<String, List<RestrictionDTO>>> entries = getPermissions().entrySet();
 

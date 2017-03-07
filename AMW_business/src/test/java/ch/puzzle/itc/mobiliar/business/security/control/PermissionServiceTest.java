@@ -26,8 +26,10 @@ import javax.ejb.SessionContext;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import ch.puzzle.itc.mobiliar.builders.ContextEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.RestrictionDTOBuilder;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import org.junit.Assert;
@@ -44,8 +46,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
+import static java.util.Collections.EMPTY_LIST;
 import static org.mockito.Mockito.*;
 
 
@@ -67,6 +68,11 @@ public class PermissionServiceTest {
     private ResourceEntityBuilder resourceEntityBuilder = new ResourceEntityBuilder();
 //	private ResourceTypeEntityBuilder resourceTypeEntityBuilder = new ResourceTypeEntityBuilder();
 
+	private ContextEntity global;
+	private ContextEntity parent;
+	private ContextEntity envC;
+	private ContextEntity envZ;
+
     @Before
 	public void setUp(){
 		permissionService = new PermissionService();
@@ -74,6 +80,11 @@ public class PermissionServiceTest {
 		permissionService.sessionContext = sessionContext;
 		permissionRepository = Mockito.mock(PermissionRepository.class);
 		permissionService.permissionRepository = permissionRepository;
+
+		global = new ContextEntityBuilder().buildContextEntity("GLOBAL", null, new HashSet<ContextEntity>(), false);
+		parent = new ContextEntityBuilder().buildContextEntity("TEST", global, new HashSet<ContextEntity>(), false);
+		envC = new ContextEntityBuilder().buildContextEntity("C", parent, new HashSet<ContextEntity>(), false);
+		envZ = new ContextEntityBuilder().buildContextEntity("Z", parent, new HashSet<ContextEntity>(), false);
 	}
 	
 	@Test
@@ -1080,8 +1091,8 @@ public class PermissionServiceTest {
         Assert.assertFalse(result);
     }
 
-	
-	List<RoleEntity> deployableRoles;
+
+	Map<String, List<RestrictionDTO>> deployableRolesWithRestrictions;
 	@Test
 	public void hasPermissionToDeployWhenRoleIsNotDeployable(){
 		//given
@@ -1090,11 +1101,13 @@ public class PermissionServiceTest {
 		roleToDeployEnvC.setDeployable(true);
 		
 		when(sessionContext.isCallerInRole(ROLE_NOT_DEPLOY)).thenReturn(true);
+
+		PermissionEntity pe = new PermissionEntity();
+		pe.setValue("aTestPermission");
+		deployableRolesWithRestrictions = new HashMap<>();
+		deployableRolesWithRestrictions.put(roleToDeployEnvC.getName(), Arrays.asList(new RestrictionDTO(pe)));
 		
-		deployableRoles = new ArrayList<>();
-		deployableRoles.add(roleToDeployEnvC);
-		
-		permissionService.deployableRoles = deployableRoles;
+		permissionService.deployableRolesWithRestrictions = deployableRolesWithRestrictions;
 		
 		//When
 		boolean result = permissionService.hasPermissionToDeploy();
@@ -1161,95 +1174,157 @@ public class PermissionServiceTest {
 		roleToDeployEnvC.setName(TEST_DEPLOYER);
 		roleToDeployEnvC.setDeployable(true);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
-		deployableRoles = new ArrayList<>();
-		deployableRoles.add(roleToDeployEnvC);
-		permissionService.deployableRoles = deployableRoles;
+
+		PermissionEntity pe = new PermissionEntity();
+		pe.setValue("aTestPermission");
+		deployableRolesWithRestrictions = new HashMap<>();
+		deployableRolesWithRestrictions.put(roleToDeployEnvC.getName(), Arrays.asList(new RestrictionDTO(pe)));
+
+		permissionService.deployableRolesWithRestrictions = deployableRolesWithRestrictions;
 		
 		//When
 		boolean result = permissionService.hasPermissionToDeploy();
 		//then
 		Assert.assertTrue(result);
 	}
-	
+
 	@Test
-	public void hasPermissionToDeployEnvCTest(){
+	public void hasPermissionToDeployOnAllEnvironmentsIfHasLegcyPermission(){
 		//given
+		ContextEntity test = new ContextEntityBuilder().buildContextEntity("TEST", global, new HashSet<ContextEntity>(), false);
 		RoleEntity roleToDeployEnvC = new RoleEntity();
 		roleToDeployEnvC.setName(TEST_DEPLOYER);
 		roleToDeployEnvC.setDeployable(true);
-		PermissionEntity permissionToDeployC = new PermissionEntity();
-		permissionToDeployC.setValue("C");
-		roleToDeployEnvC.getPermissions().add(permissionToDeployC);
+		PermissionEntity permissionToDeployX = new PermissionEntity();
+		permissionToDeployX.setValue("X");
+		roleToDeployEnvC.getPermissions().add(permissionToDeployX);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		myRoles = new HashMap<>();
-		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.A);
-		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(permissionToDeployC, res)));
-		permissionService.rolesWithRestrictions = myRoles;
-		
+
+		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(permissionToDeployX)));
+		permissionService.deployableRolesWithRestrictions = myRoles;
+		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(false);
+
 		//When
-		boolean result = permissionService.hasPermission(permissionToDeployC.getValue());
+		boolean result = permissionService.hasPermissionForDeploymentOnContext(test);
 
 		//Then
 		Assert.assertTrue(result);
 	}
+
 	@Test
-	public void hasNotPermissionToDeployEnvZTest(){
+	public void hasPermissionToDeployOnEnvironmentCTest(){
 		//given
-		//Create deployable role
-		RoleEntity roleToDeployEnvC = new RoleEntity();
-		roleToDeployEnvC.setName(TEST_DEPLOYER);
-		roleToDeployEnvC.setDeployable(true);
-		//Create permission Z and not assign to deployable role
-		PermissionEntity permissionToDeployZ = new PermissionEntity();
-		permissionToDeployZ.setValue("Z");
-		//End create permissin Z
-		//Create Permission "C" and assign to role
-		PermissionEntity permissionToDeployC = new PermissionEntity();
-		permissionToDeployC.setValue("C");
-		roleToDeployEnvC.getPermissions().add(permissionToDeployC);
-		//End create permission "C"
+		RoleEntity roleTestDeployer = new RoleEntity();
+		roleTestDeployer.setName(TEST_DEPLOYER);
+		PermissionEntity permissionToDeploy = new PermissionEntity();
+		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
+		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		myRoles = new HashMap<>();
+		//assign restriction allowing all on environment "c"
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.A);
-		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(permissionToDeployC, res)));
-		permissionService.rolesWithRestrictions = myRoles;
+		res.setContext(envC);
+		res.setPermission(permissionToDeploy);
+		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
+		permissionService.deployableRolesWithRestrictions = myRoles;
+		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(false);
+
 		//When
-		boolean result = permissionService.hasPermission(permissionToDeployZ.getValue());
+		boolean result = permissionService.hasPermissionForDeploymentOnContext(envC);
 
 		//Then
-		Assert.assertFalse(result);
+		Assert.assertTrue(result);
 	}
-	
+
 	@Test
-	public void hasPermissionToDeployEnvCAndHasNotPermissionToDeployEnvZ(){
+	public void hasNoPermissionToDeployOnEnvironmentZTest(){
 		//given
-		RoleEntity roleToDeployEnvC = new RoleEntity();
-		roleToDeployEnvC.setName(TEST_DEPLOYER);
-		roleToDeployEnvC.setDeployable(true);
-		PermissionEntity permissionToDeployC = new PermissionEntity();
-		permissionToDeployC.setValue("C");
-		roleToDeployEnvC.getPermissions().add(permissionToDeployC);
-		
-		PermissionEntity permissionToDeployZ = new PermissionEntity();
-		permissionToDeployZ.setValue("Z");
-	
+		RoleEntity roleTestDeployer = new RoleEntity();
+		roleTestDeployer.setName(TEST_DEPLOYER);
+		PermissionEntity permissionToDeploy = new PermissionEntity();
+		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
+		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		myRoles = new HashMap<>();
+		//assign restriction allowing all on environment "c"
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.A);
-		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(permissionToDeployC, res)));
-		permissionService.rolesWithRestrictions = myRoles;
+		res.setContext(envC);
+		res.setPermission(permissionToDeploy);
+		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
+		permissionService.deployableRolesWithRestrictions = myRoles;
+		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(false);
+
 		//When
-		boolean canDeploy = permissionService.hasPermission(permissionToDeployC.getValue());
-		boolean canNotDeploy = permissionService.hasPermission(permissionToDeployZ.getValue());
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ);
 
 		//Then
-		Assert.assertTrue(canDeploy);
-		Assert.assertFalse(canNotDeploy);
+		Assert.assertTrue(resC);
+		Assert.assertFalse(resZ);
 	}
 
+	@Test
+	public void hasPermissionToDeployOnChildsIfHasPermissionForParentTest(){
+		//given
+		RoleEntity roleTestDeployer = new RoleEntity();
+		roleTestDeployer.setName(TEST_DEPLOYER);
+		PermissionEntity permissionToDeploy = new PermissionEntity();
+		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
+		roleTestDeployer.getPermissions().add(permissionToDeploy);
+		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
+		myRoles = new HashMap<>();
+		//assign restriction allowing all on environment "c"
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.A);
+		res.setContext(parent);
+		res.setPermission(permissionToDeploy);
+		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
+		permissionService.deployableRolesWithRestrictions = myRoles;
+		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(false);
+
+		//When
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ);
+
+		//Then
+		Assert.assertTrue(resC);
+		Assert.assertTrue(resZ);
+	}
+
+	@Test
+	public void hasPermissionToDeployOnAllEnvironmentsIfHasPermissionForGlobalTest(){
+		//given
+		RoleEntity roleTestDeployer = new RoleEntity();
+		roleTestDeployer.setName(TEST_DEPLOYER);
+		PermissionEntity permissionToDeploy = new PermissionEntity();
+		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
+		roleTestDeployer.getPermissions().add(permissionToDeploy);
+		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
+		myRoles = new HashMap<>();
+		//assign restriction allowing all on environment "c"
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.A);
+		res.setContext(global);
+		res.setPermission(permissionToDeploy);
+		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
+		permissionService.deployableRolesWithRestrictions = myRoles;
+		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(false);
+
+		//When
+		boolean resGlobal = permissionService.hasPermissionForDeploymentOnContext(global);
+		boolean resParent = permissionService.hasPermissionForDeploymentOnContext(parent);
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ);
+
+		//Then
+		Assert.assertTrue(resGlobal);
+		Assert.assertTrue(resParent);
+		Assert.assertTrue(resC);
+		Assert.assertTrue(resZ);
+	}
 
 	@Test
 	public void hasPermissionToTemplateModifyResourceTypeWhenUserIsShakedownAdminAndIsTestingMode() {
@@ -1389,7 +1464,7 @@ public class PermissionServiceTest {
 	@Test
 	public void shouldOnlyReloadWhenNeeded() {
 		//Given
-		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(FALSE);
+		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(false);
 
 		//When
 		permissionService.getPermissions();
@@ -1402,7 +1477,7 @@ public class PermissionServiceTest {
 	@Test
 	public void shouldObtainLegacyRolesWithPermissionsAndRolesWithPestrictions() {
 		//Given
-		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(TRUE);
+		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(true);
 		when(permissionService.permissionRepository.getRolesWithPermissions()).thenReturn(null);
 		when(permissionService.permissionRepository.getRolesWithRestrictions()).thenReturn(null);
 
@@ -1433,7 +1508,7 @@ public class PermissionServiceTest {
 		Set<RestrictionEntity> restrictions = new HashSet<>(Arrays.asList(re));
 		newRole.setRestrictions(restrictions);
 
-		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(TRUE);
+		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(true);
 		when(permissionService.permissionRepository.getRolesWithPermissions()).thenReturn(Arrays.asList(legacyRole));
 		when(permissionService.permissionRepository.getRolesWithRestrictions()).thenReturn(Arrays.asList(newRole));
 
@@ -1445,6 +1520,35 @@ public class PermissionServiceTest {
 		Assert.assertEquals(2, result.get("aLegacyTestRole").size());
 		Assert.assertEquals(1, result.get("aNewTestRole").size());
 		Assert.assertEquals("aTestPermission", result.get("aNewTestRole").get(0).getPermissionName());
+	}
+
+	@Test
+	public void shouldObtainDeployableRolesOnGetDeployableRolesNonCached() {
+		//Given
+		when(permissionService.permissionRepository.getDoployableRole()).thenReturn(EMPTY_LIST);
+		when(permissionService.permissionRepository.getDeployableRoles()).thenReturn(EMPTY_LIST);
+
+		//When
+		permissionService.getDeployableRolesNonCached();
+
+		//Then
+		verify(permissionService.permissionRepository, times(1)).getDoployableRole();
+		verify(permissionService.permissionRepository, times(1)).getDeployableRoles();
+	}
+
+	@Test
+	public void shouldObtainDeployableRolesOnGetDeployableRolesWhenNeeded() {
+		//Given
+		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(true);
+		when(permissionService.permissionRepository.getDoployableRole()).thenReturn(EMPTY_LIST);
+		when(permissionService.permissionRepository.getDeployableRoles()).thenReturn(EMPTY_LIST);
+
+		//When
+		permissionService.getDeployableRoles();
+
+		//Then
+		verify(permissionService.permissionRepository, times(1)).getDoployableRole();
+		verify(permissionService.permissionRepository, times(1)).getDeployableRoles();
 	}
 	
 }
