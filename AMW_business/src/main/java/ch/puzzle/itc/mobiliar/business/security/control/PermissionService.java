@@ -141,8 +141,11 @@ public class PermissionService implements Serializable {
             tmpRolesWithRestrictions.put(roleName, new ArrayList<RestrictionDTO>());
         }
         for (PermissionEntity perm : role.getPermissions()) {
-            // convert permission to restriction
-            tmpRolesWithRestrictions.get(roleName).add(new RestrictionDTO(perm));
+            // check needed as long as roles can have a direct relation to restriction and permission simultaneously
+            if (perm.getRestrictions().isEmpty()) {
+                // convert permission to restriction
+                tmpRolesWithRestrictions.get(roleName).add(new RestrictionDTO(perm));
+            }
         }
     }
 

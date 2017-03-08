@@ -65,12 +65,12 @@ public class PermissionRepository {
 	}
 
 	public List<RoleEntity> getRolesWithPermissions() {
-		TypedQuery<RoleEntity> query = entityManager.createQuery("select r from RoleEntity r left join fetch r.permissions", RoleEntity.class);
+		TypedQuery<RoleEntity> query = entityManager.createQuery("select distinct r from RoleEntity r left join fetch r.permissions", RoleEntity.class);
 		return query.getResultList();
 	}
 
 	public List<RoleEntity> getRolesWithRestrictions() {
-		TypedQuery<RoleEntity> query = entityManager.createQuery("select r from RoleEntity r left join fetch r.restrictions", RoleEntity.class);
+		TypedQuery<RoleEntity> query = entityManager.createQuery("select distinct r from RoleEntity r left join fetch r.restrictions", RoleEntity.class);
 		return query.getResultList();
 	}
 

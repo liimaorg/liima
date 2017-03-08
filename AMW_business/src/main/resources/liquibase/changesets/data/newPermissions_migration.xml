@@ -1,0 +1,28 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/newPermissions_migration.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="newPermissions_migration" >
+        <comment>
+            migrating existing deployable roles and permissions with context to restrictions
+        </comment>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, context_id, action, v) SELECT TAMW_permission.id AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, TAMW_permission.context_id AS context_id, 'A', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_role.deployable = '1' AND TAMW_role_permission.roles_id = TAMW_role.id AND TAMW_permission.context_id IS NOT NULL;</sql>
+
+        <update tableName="TAMW_role">
+            <column name="deployable" type="INTEGER" valueNumeric="0" />
+        </update>
+
+        <update tableName="TAMW_permission">
+            <column name="context_id" type="INTEGER" />
+        </update>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+        <rollback></rollback>
+    </changeSet>
+</databaseChangeLog>
