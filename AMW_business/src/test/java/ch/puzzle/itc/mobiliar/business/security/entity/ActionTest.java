@@ -30,7 +30,7 @@ public class ActionTest {
     
     @Test
     public void allCanEverything() throws Exception {
-        action = Action.A;
+        action = Action.ALL;
         assertTrue(action.canCreate());
         assertTrue(action.canRead());
         assertTrue(action.canUpdate());
@@ -39,7 +39,7 @@ public class ActionTest {
 
     @Test
     public void readCanOnlyCreate() throws Exception {
-        action = Action.C;
+        action = Action.CREATE;
         assertTrue(action.canCreate());
         assertFalse(action.canRead());
         assertFalse(action.canUpdate());
@@ -48,7 +48,7 @@ public class ActionTest {
 
     @Test
     public void readCanOnlyRead() throws Exception {
-        action = Action.R;
+        action = Action.READ;
         assertFalse(action.canCreate());
         assertTrue(action.canRead());
         assertFalse(action.canUpdate());
@@ -57,7 +57,7 @@ public class ActionTest {
 
     @Test
     public void updateCanOnlyUpdate() throws Exception {
-        action = Action.U;
+        action = Action.UPDATE;
         assertFalse(action.canCreate());
         assertFalse(action.canRead());
         assertTrue(action.canUpdate());
@@ -66,25 +66,11 @@ public class ActionTest {
 
     @Test
     public void deleteCanOnlyDelete() throws Exception {
-        action = Action.D;
+        action = Action.DELETE;
         assertFalse(action.canCreate());
         assertFalse(action.canRead());
         assertFalse(action.canUpdate());
         assertTrue(action.canDelete());
-    }
-
-    @Test
-    public void getExpectedName() throws Exception {
-        action = Action.A;
-        assertEquals("all", action.getLabel());
-        action = Action.C;
-        assertEquals("create", action.getLabel());
-        action = Action.R;
-        assertEquals("read", action.getLabel());
-        action = Action.U;
-        assertEquals("update", action.getLabel());
-        action = Action.D;
-        assertEquals("delete", action.getLabel());
     }
 
 }

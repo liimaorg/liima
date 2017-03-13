@@ -27,7 +27,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 import java.util.logging.Logger;
 
 @Stateless

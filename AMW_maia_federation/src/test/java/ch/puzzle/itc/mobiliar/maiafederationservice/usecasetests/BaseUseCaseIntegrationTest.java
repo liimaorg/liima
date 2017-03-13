@@ -37,7 +37,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;

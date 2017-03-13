@@ -20,36 +20,28 @@
 
 package ch.puzzle.itc.mobiliar.business.security.entity;
 
-import lombok.Getter;
 
 public enum Action {
-    A("all"),
-    C("create"),
-    R("read"),
-    U("update"),
-    D("delete");
-
-    @Getter
-    private String label;
-
-    Action(String label) {
-        this.label = label;
-    }
+    ALL,
+    CREATE,
+    READ,
+    UPDATE,
+    DELETE;
 
     public boolean canCreate() {
-        return this.equals(A) || this.equals(C);
+        return this.equals(ALL) || this.equals(CREATE);
     }
 
     public boolean canUpdate() {
-        return this.equals(A) || this.equals(U);
+        return this.equals(ALL) || this.equals(UPDATE);
     }
 
     public boolean canRead() {
-        return this.equals(A) || this.equals(R);
+        return this.equals(ALL) || this.equals(READ);
     }
 
     public boolean canDelete() {
-        return this.equals(A) || this.equals(D);
+        return this.equals(ALL) || this.equals(DELETE);
     }
 
 }

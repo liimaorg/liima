@@ -32,7 +32,7 @@ public class RestrictionDTO {
     public RestrictionDTO(PermissionEntity pe) {
         if (pe.getRestrictions().isEmpty()) {
             RestrictionEntity res = new RestrictionEntity();
-            res.setAction(Action.A);
+            res.setAction(Action.ALL);
             this.restriction = res;
             this.permissionName = pe.getValue();
         }

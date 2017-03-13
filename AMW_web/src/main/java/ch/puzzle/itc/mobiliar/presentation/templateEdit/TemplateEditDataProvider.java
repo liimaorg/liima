@@ -22,9 +22,8 @@ package ch.puzzle.itc.mobiliar.presentation.templateEdit;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -38,7 +37,6 @@ import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
-import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
@@ -46,9 +44,7 @@ import lombok.Setter;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,7 +59,7 @@ public class TemplateEditDataProvider implements Serializable {
 	TemplatesScreenDomainService templatesService;
 
 	@Inject
-	Permissions permission;
+    PermissionBoundary permission;
 
 	@Inject
 	SessionContext context;

@@ -181,7 +181,7 @@ public class EnvironmentsController implements Serializable {
 			if (ex.getExistingObjectClass() == PermissionEntity.class) {
 				errorMessage = "An permission with the name " + ex.getExistingObjectName() + " already exists.";
 			}else if(ex.getExistingObjectClass() == ContextEntity.class){
-				errorMessage = "A Context with the name " + ex.getExistingObjectName() + " already exists"; 
+				errorMessage = "A Context with the name " + ex.getExistingObjectName() + " already exists";
 			} else{
 				errorMessage = "An object ("+ex.getExistingObjectClass().getSimpleName()+") already exists";
 			}

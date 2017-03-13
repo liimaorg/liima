@@ -18,24 +18,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.puzzle.itc.mobiliar.business.environment.control;
+package ch.puzzle.itc.mobiliar.test.Entity;
 
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import lombok.Getter;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
+import javax.persistence.*;
 
-public class ContextRepository {
+@Entity
+public class Color {
 
-    @Inject
-    EntityManager entityManager;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "color_seq")
+    @SequenceGenerator(name = "color_seq", sequenceName = "color_seq", allocationSize = 1)
+    private Long id;
 
-    public ContextEntity getContextByName(String name){
-        try {
-            return entityManager.createQuery("select c from ContextEntity c where LOWER(c.name)=:name", ContextEntity.class).setParameter("name", name.toLowerCase()).getSingleResult();
-        } catch (NoResultException ne) {
-            return null;
-        }
+    private String name;
+
+    @Version
+    private long v;
+
+    private Color() {
+        // used by JPA
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public long getVersion() {
+        return v;
+    }
+
+    public Color(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

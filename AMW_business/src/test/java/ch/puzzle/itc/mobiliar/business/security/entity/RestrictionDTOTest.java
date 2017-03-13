@@ -44,7 +44,7 @@ public class RestrictionDTOTest {
 
         //then
         Assert.assertEquals(per.getValue(), resDTO.getPermissionName());
-        Assert.assertEquals(Action.A.getLabel(), resDTO.getRestriction().getAction().getLabel());
+        Assert.assertEquals(Action.ALL, resDTO.getRestriction().getAction());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class RestrictionDTOTest {
     public void constructedWithRestrictionItShouldHaveRightAction(){
         //given
         RestrictionEntity res = new RestrictionEntity();
-        res.setAction(Action.R);
+        res.setAction(Action.READ);
         res.setPermission(per);
 
         //when
@@ -78,7 +78,7 @@ public class RestrictionDTOTest {
         RoleEntity rol = new RoleEntity();
         rol.setName("testRole");
         RestrictionEntity res = new RestrictionEntity();
-        res.setAction(Action.C);
+        res.setAction(Action.CREATE);
         res.setContext(new ContextEntityBuilder().buildContextEntity("TEST", null, Collections.EMPTY_SET,false));
         res.setPermission(per);
         res.setRole(rol);

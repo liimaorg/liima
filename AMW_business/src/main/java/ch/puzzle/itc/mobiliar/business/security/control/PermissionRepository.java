@@ -26,10 +26,10 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.*;
 
 @Stateless
 public class PermissionRepository {
@@ -72,6 +72,24 @@ public class PermissionRepository {
 	public List<RoleEntity> getRolesWithRestrictions() {
 		TypedQuery<RoleEntity> query = entityManager.createQuery("select distinct r from RoleEntity r left join fetch r.restrictions", RoleEntity.class);
 		return query.getResultList();
+	}
+
+	public PermissionEntity getPermissionByName(String permissionName) {
+		try {
+			return entityManager.createQuery("from PermissionEntity p where LOWER(p.value) =:permission", PermissionEntity.class)
+					.setParameter("permission", permissionName.toLowerCase()).getSingleResult();
+		} catch (NoResultException ne) {
+			return null;
+		}
+	}
+
+	public RoleEntity getRoleByName(String roleName) {
+		try {
+		return entityManager.createQuery("from RoleEntity r where LOWER(r.name) =:role", RoleEntity.class)
+				.setParameter("role", roleName.toLowerCase()).getSingleResult();
+		} catch (NoResultException ne) {
+			return null;
+		}
 	}
 
 	public boolean isReloadDeploybleRoleList() {

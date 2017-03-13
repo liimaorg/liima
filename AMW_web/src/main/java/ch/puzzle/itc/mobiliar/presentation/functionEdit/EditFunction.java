@@ -30,7 +30,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import lombok.Getter;
 import lombok.Setter;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -38,7 +37,7 @@ import ch.puzzle.itc.mobiliar.business.function.boundary.FunctionsBoundary;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
@@ -73,7 +72,7 @@ public class EditFunction implements Serializable {
 		FunctionsBoundary functionsBoundary;
 
 		@Inject
-		Permissions permissionsBoundary;
+        PermissionBoundary permissionBoundary;
 
 		@Setter
 		private Integer resourceId;
@@ -232,8 +231,8 @@ public class EditFunction implements Serializable {
 
 		private void refreshPermissions() {
 
-			canShowInstanceFunctions = permissionsBoundary.hasPermission(Permission.VIEW_AMW_FUNCTIONS);
-			canShowSuperTypeFunctions = permissionsBoundary.hasPermission(Permission.VIEW_AMW_FUNCTIONS);
+			canShowInstanceFunctions = permissionBoundary.hasPermission(Permission.VIEW_AMW_FUNCTIONS);
+			canShowSuperTypeFunctions = permissionBoundary.hasPermission(Permission.VIEW_AMW_FUNCTIONS);
 		}
 
 	public boolean isCanAdd(){
@@ -250,9 +249,9 @@ public class EditFunction implements Serializable {
 	}
 
 	private boolean canManageFunctions(){
-		if(permissionsBoundary.hasPermission(Permission.MANAGE_AMW_FUNCTIONS)) {
+		if(permissionBoundary.hasPermission(Permission.MANAGE_AMW_FUNCTIONS)) {
 			return true;
-		} else if(permissionsBoundary.hasPermission(Permission.MANAGE_AMW_APP_INSTANCE_FUNCTIONS) && isCurrentFocusOnResourceFromTypeApp()){
+		} else if(permissionBoundary.hasPermission(Permission.MANAGE_AMW_APP_INSTANCE_FUNCTIONS) && isCurrentFocusOnResourceFromTypeApp()){
 			return true;
 		}
 		return false;

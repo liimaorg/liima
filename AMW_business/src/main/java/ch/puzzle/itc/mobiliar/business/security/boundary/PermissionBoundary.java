@@ -20,11 +20,14 @@
 
 package ch.puzzle.itc.mobiliar.business.security.boundary;
 
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
+import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.CheckedNotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
@@ -35,19 +38,26 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * A boundary for checking permissions of view elements
+ * ALL boundary for checking permissions of view elements
  */
 @Stateless
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class Permissions implements Serializable {
+public class PermissionBoundary implements Serializable {
 
     @Inject
     EntityManager entityManager;
 
     @Inject
     PermissionService permissionService;
+
+    @Inject
+    RestrictionRepository restrictionRepository;
+
+    @Inject
+    PermissionRepository permissionRepository;
 
     @Inject
     ResourceTypeProvider resourceTypeProvider;
@@ -241,5 +251,34 @@ public class Permissions implements Serializable {
 
     public boolean hasPermissionToDeploy() {
         return permissionService.hasPermissionToDeploy();
+    }
+
+    /**
+     * Creates a new RestrictionEntity and returns its id
+     *
+     * @param role
+     * @param permission
+     * @param context
+     * @param action
+     * @return Id of the newly created RestrictionEntity
+     */
+    public Integer createRestriction(RoleEntity role, PermissionEntity permission, ContextEntity context, Action action) {
+        return restrictionRepository.create(role, permission, context, action);
+    }
+
+    public RoleEntity getRoleByName(String roleName) {
+        return permissionRepository.getRoleByName(roleName);
+    }
+
+    public PermissionEntity getPermissionByName(String permissionName) {
+        return permissionRepository.getPermissionByName(permissionName);
+    }
+
+    public RestrictionEntity findRestriction(Integer id) {
+        return restrictionRepository.find(id);
+    }
+
+    public List<RestrictionEntity> findAll() {
+        return restrictionRepository.findAll();
     }
 }

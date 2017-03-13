@@ -42,7 +42,7 @@ import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyTagEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
@@ -61,7 +61,7 @@ public class EditPropertyView implements Serializable {
     PropertyTagEditor propertyTagEditor;
 
 	@Inject
-	Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
 	@Inject
 	ForeignableBoundary foreignableBoundary;

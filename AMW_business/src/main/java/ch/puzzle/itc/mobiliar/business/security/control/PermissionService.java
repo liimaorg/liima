@@ -89,11 +89,6 @@ public class PermissionService implements Serializable {
      * @return
      */
     public boolean hasPermissionToDeploy() {
-        // TODO review (it does not check if a user can deploy something on a specific environment)
-        // => hasPermissionForDeployment(DeploymentEntity deployment)
-        // DeployScreenDataProvider.canRedeploy()
-        // DeployScreenDataProvider.canEditDeployments()
-        // SecurityController.hasPermissionToDeploy()
         for (Map.Entry<String, List<RestrictionDTO>> entry : getDeployableRoles().entrySet()) {
             if (sessionContext.isCallerInRole(entry.getKey())) {
                 return true;
@@ -258,31 +253,18 @@ public class PermissionService implements Serializable {
                     allowedRoles.add(entry.getKey());
                 } else {
                     // check if user may deploy on the requested context or on the parent of the requested
-                    checkDeploymentContext(context, allowedRoles, entry, restrictionDTO);
+                    checkContext(context, allowedRoles, entry, restrictionDTO);
                 }
             }
         }
     }
 
-    private void checkDeploymentContext(ContextEntity context, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry, RestrictionDTO restrictionDTO) {
+    private void checkContext(ContextEntity context, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry, RestrictionDTO restrictionDTO) {
         if (context.getName().equals(restrictionDTO.getRestriction().getContext().getName())) {
             allowedRoles.add(entry.getKey());
         } else if (context.getParent() != null) {
-            checkDeploymentContext(context.getParent(), allowedRoles, entry, restrictionDTO);
+            checkContext(context.getParent(), allowedRoles, entry, restrictionDTO);
         }
-    }
-
-    // TODO Review used by GeneratorDomainServiceWithAppServerRelations.omitTemplateForLackingPermissions
-    public boolean hasPermissionForDeploymentOnContextOrSubContext(ContextEntity context) {
-        Set<ContextEntity> children = context.getChildren();
-        if (children != null && !children.isEmpty()) {
-            for (ContextEntity c : children) {
-                if (hasPermissionForDeploymentOnContextOrSubContext(c)) {
-                    return true;
-                }
-            }
-        }
-        return hasPermissionForDeploymentOnContext(context);
     }
 
     // TODO add required action and context
@@ -311,7 +293,7 @@ public class PermissionService implements Serializable {
         for (RestrictionDTO restrictionDTO : entry.getValue()) {
             if (restrictionDTO.getPermissionName().equals(permissionName)) {
                 // TODO check action and context
-                if (restrictionDTO.getRestriction().getAction().equals(Action.A)) {
+                if (restrictionDTO.getRestriction().getAction().equals(Action.ALL)) {
                     roles.add(roleName);
                 }
             }

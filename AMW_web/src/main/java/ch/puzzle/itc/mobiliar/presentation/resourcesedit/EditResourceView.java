@@ -32,7 +32,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
@@ -61,7 +61,7 @@ public class EditResourceView implements Serializable {
     ResourceLocator resourceLocator;
 
     @Inject
-    Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
     @Inject
     Event<ResourceTypeEntity> resourceTypeEvent;

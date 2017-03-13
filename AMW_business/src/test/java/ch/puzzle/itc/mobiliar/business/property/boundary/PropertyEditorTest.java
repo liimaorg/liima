@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +58,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -76,7 +76,7 @@ public class PropertyEditorTest {
 	PropertyValueService propertyValueServiceMock;
 
 	@Mock
-    Permissions permissionBoundaryMock;
+    PermissionBoundary permissionBoundaryMock;
 
 	@Mock
 	ResourceLocator resourceLocatorMock;

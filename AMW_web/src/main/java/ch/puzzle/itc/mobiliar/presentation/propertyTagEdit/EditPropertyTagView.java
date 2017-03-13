@@ -22,7 +22,7 @@ package ch.puzzle.itc.mobiliar.presentation.propertyTagEdit;
 
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyTagEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,7 +42,7 @@ public class EditPropertyTagView {
     PropertyTagEditor propertyTagEditor;
 
     @Inject
-    Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
     @Getter
     @Setter

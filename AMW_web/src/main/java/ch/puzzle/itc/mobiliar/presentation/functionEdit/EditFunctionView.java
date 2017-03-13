@@ -34,7 +34,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ch.puzzle.itc.mobiliar.business.function.boundary.FunctionsBoundary;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -72,7 +72,7 @@ public class EditFunctionView implements Serializable {
     FunctionsBoundary functionsBoundary;
 
     @Inject
-    Permissions permissionsBoundary;
+    PermissionBoundary permissionBoundary;
 
     @Getter
     private Integer resourceIdViewParam;
@@ -199,9 +199,9 @@ public class EditFunctionView implements Serializable {
      * Defines if the current user has the rights to modify the function
      */
     public boolean canModifyFunction() {
-        if(permissionsBoundary.hasPermission(Permission.MANAGE_AMW_FUNCTIONS)) {
+        if(permissionBoundary.hasPermission(Permission.MANAGE_AMW_FUNCTIONS)) {
             return true;
-        } else if(permissionsBoundary.hasPermission(Permission.MANAGE_AMW_APP_INSTANCE_FUNCTIONS) && isEditResource()){
+        } else if(permissionBoundary.hasPermission(Permission.MANAGE_AMW_APP_INSTANCE_FUNCTIONS) && isEditResource()){
             return true;
         }
         return false;

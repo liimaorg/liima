@@ -31,7 +31,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.control.SecurityScreenDomainService.PermissionToRole;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
@@ -73,7 +73,7 @@ public class SecurityDataProvider implements Serializable{
 	SecurityController controller;
 
 	@Inject
-	Permissions permissionBoundary;
+	PermissionBoundary permissionBoundary;
 	
 	@PostConstruct
 	protected void initView(){
@@ -181,7 +181,7 @@ public class SecurityDataProvider implements Serializable{
 	}
 
 	/**
-	 * Use {@link ch.puzzle.itc.mobiliar.business.security.boundary.Permissions#hasPermission(Permission)} instead
+	 * Use {@link PermissionBoundary#hasPermission(Permission)} instead
 	 * @param permissionValue
 	 * @return
 	 */
