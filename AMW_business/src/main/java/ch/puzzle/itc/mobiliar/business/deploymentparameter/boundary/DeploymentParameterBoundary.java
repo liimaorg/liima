@@ -54,7 +54,7 @@ public class DeploymentParameterBoundary {
 
 
     public List<Key> findAllKeys() {
-        return keyRepository.findAllKeys();
+        return keyRepository.findAll();
     }
 
     public List<DeploymentParameter> findAllDeploymentParameterFor(Integer deploymentId) {
@@ -64,17 +64,17 @@ public class DeploymentParameterBoundary {
 
     @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER)
     public void deleteDeployParameterKey(Key keyToDelete) {
-        Key attachedKeyToDelete = keyRepository.getKeyById(Objects.requireNonNull(keyToDelete, "Must not be null").getId());
-        keyRepository.deleteDeployParameterKey(attachedKeyToDelete);
+        Key attachedKeyToDelete = keyRepository.find(Objects.requireNonNull(keyToDelete, "Must not be null").getId());
+        keyRepository.remove(attachedKeyToDelete);
     }
 
     @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER)
     public void changeDeployParameterKey(Integer keyToDeleteId, String changedName) throws ValidationException {
         if (changedName != null && !changedName.trim().isEmpty()) {
-            Key attachedKeyToChange = keyRepository.getKeyById(Objects.requireNonNull(keyToDeleteId, "Must not be null"));
+            Key attachedKeyToChange = keyRepository.find(Objects.requireNonNull(keyToDeleteId, "Must not be null"));
 
             attachedKeyToChange.setName(changedName);
-            keyRepository.changeDeployParameterKey(attachedKeyToChange);
+            keyRepository.merge(attachedKeyToChange);
         } else {
             throw new ValidationException("invalid empty name", changedName);
         }

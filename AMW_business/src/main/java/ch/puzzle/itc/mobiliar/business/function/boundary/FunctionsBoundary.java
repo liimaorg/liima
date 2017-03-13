@@ -37,7 +37,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
@@ -57,7 +57,7 @@ public class FunctionsBoundary {
 	EntityManager entityManager;
 
 	@Inject
-	Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
 	@Inject
 	ResourceRepository resourceRepository;
@@ -152,7 +152,7 @@ public class FunctionsBoundary {
 	@HasPermission(permission = Permission.MANAGE_AMW_APP_INSTANCE_FUNCTIONS)
 	public void deleteFunction(Integer selectedFunctionIdToBeRemoved) throws ValidationException {
 		Objects.requireNonNull(selectedFunctionIdToBeRemoved, "Resource Type Entity must not be null");
-		AmwFunctionEntity functionToDelete = functionRepository.getFunctionById(selectedFunctionIdToBeRemoved);
+		AmwFunctionEntity functionToDelete = functionRepository.find(selectedFunctionIdToBeRemoved);
 
 		if(functionToDelete.getResource() == null && functionToDelete.getResourceType() != null){
 			permissionBoundary.checkPermissionAndFireException(Permission.MANAGE_AMW_FUNCTIONS, "missing Permission to delete ResourceType functions");
@@ -175,7 +175,7 @@ public class FunctionsBoundary {
 	 */
 	@HasPermission(oneOfPermission = Permission.MANAGE_AMW_APP_INSTANCE_FUNCTIONS)
 	public AmwFunctionEntity createNewResourceFunction(AmwFunctionEntity amwFunction, Integer resourceId, Set<String> functionMikNames) throws ValidationException, AMWException {
-		ResourceEntity resource = resourceRepository.findById(resourceId);
+		ResourceEntity resource = resourceRepository.find(resourceId);
 
 		// search for already existing functions with this name on functiontree
 		List<AmwFunctionEntity> allFunctionsWithName = functionService.findFunctionsByNameInNamespace(resource, amwFunction.getName());
@@ -195,7 +195,7 @@ public class FunctionsBoundary {
 	 */
 	@HasPermission(permission = Permission.MANAGE_AMW_FUNCTIONS)
 	public AmwFunctionEntity createNewResourceTypeFunction(AmwFunctionEntity amwFunction, Integer resourceTypeId, Set<String> functionMikNames) throws ValidationException, AMWException {
-        ResourceTypeEntity resourceType = resourceTypeRepository.findById(resourceTypeId);
+        ResourceTypeEntity resourceType = resourceTypeRepository.find(resourceTypeId);
 
 		// search for already existing functions with this name on functiontree
         List<AmwFunctionEntity> allFunctionsWithName = functionService.findFunctionsByNameInNamespace(resourceType, amwFunction.getName());
@@ -222,7 +222,7 @@ public class FunctionsBoundary {
     @HasPermission(permission = Permission.MANAGE_AMW_APP_INSTANCE_FUNCTIONS)
     public AmwFunctionEntity overwriteResourceFunction(String functionBody, Integer resourceId, Integer functionToOverwriteId) throws AMWException {
         AmwFunctionEntity functionToOverwrite = functionRepository.getFunctionByIdWithChildFunctions(functionToOverwriteId);
-        ResourceEntity resource = resourceRepository.findById(resourceId);
+        ResourceEntity resource = resourceRepository.find(resourceId);
         if (functionToOverwrite != null && resource != null) {
 			AmwFunctionEntity overwritingFunction = functionService.overwriteResourceFunction(functionBody, functionToOverwrite, resource);
             freemarkerValidator.validateFreemarkerSyntax(overwritingFunction.getDecoratedImplementation());
@@ -236,7 +236,7 @@ public class FunctionsBoundary {
     @HasPermission(permission = Permission.MANAGE_AMW_FUNCTIONS)
     public AmwFunctionEntity overwriteResourceTypeFunction(String functionBody, Integer resourceTypeId, Integer functionToOverwriteId) throws AMWException {
         AmwFunctionEntity functionToOverwrite = functionRepository.getFunctionByIdWithChildFunctions(functionToOverwriteId);
-        ResourceTypeEntity resourceType = resourceTypeRepository.findById(resourceTypeId);
+        ResourceTypeEntity resourceType = resourceTypeRepository.find(resourceTypeId);
 
         if (functionToOverwrite != null && resourceType != null) {
 			AmwFunctionEntity overwritingFunction =  functionService.overwriteResourceTypeFunction(functionBody, functionToOverwrite, resourceType);

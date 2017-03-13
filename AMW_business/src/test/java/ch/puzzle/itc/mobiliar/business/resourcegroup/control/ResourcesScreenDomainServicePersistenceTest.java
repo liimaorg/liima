@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -80,7 +80,7 @@ public class ResourcesScreenDomainServicePersistenceTest {
 	ReleaseMgmtPersistenceService releaseService;
 
 	@Mock
-	Permissions permissionBoundry;
+    PermissionBoundary permissionBoundary;
 
 	@InjectMocks
 	ResourcesScreenDomainService service;
@@ -117,7 +117,7 @@ public class ResourcesScreenDomainServicePersistenceTest {
 		when(releaseService.getById(release2.getId())).thenReturn(release2);
 		when(commonService.getResourceTypeEntityById(appType.getId()))
 		.thenReturn(appType);
-		when(permissionBoundry.canCreateResourceInstance(appType)).thenReturn(Boolean.TRUE);
+		when(permissionBoundary.canCreateResourceInstance(appType)).thenReturn(Boolean.TRUE);
 
 		// when
 		when(

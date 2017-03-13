@@ -66,7 +66,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelatio
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
@@ -77,7 +77,7 @@ import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 
 /**
- * A boundary for property editing
+ * ALL boundary for property editing
  */
 @Stateless
 @Interceptors(HasPermissionInterceptor.class)
@@ -114,7 +114,7 @@ public class PropertyEditor {
 	ContextDomainService contextService;
 
 	@Inject
-	Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
 	@Inject
 	ResourceLocator resourceLocator;
@@ -296,7 +296,7 @@ public class PropertyEditor {
 	}
 
     private ResourceEntity verifyAndSaveResource(Integer resourceId, ForeignableOwner changingOwner, String resourceName, String softlinkId) throws ForeignableOwnerViolationException, AMWException {
-        ResourceEntity resource = resourceRepository.findById(resourceId);
+        ResourceEntity resource = resourceRepository.find(resourceId);
         int beforeChangeForeignableHashCode = resource.foreignableFieldHashCode();
 
         verifyAndSetResourceName(resourceName, resource);

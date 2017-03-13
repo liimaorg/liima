@@ -39,7 +39,7 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolat
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
@@ -83,7 +83,7 @@ public class ResourcesScreenDomainService {
     private ForeignableService foreignableService;
 
     @Inject
-    private Permissions permissionBoundry;
+    private PermissionBoundary permissionBoundary;
 
     /**
      * Create new instance resourceType (all resourceType): permitted to
@@ -95,7 +95,7 @@ public class ResourcesScreenDomainService {
 
         ResourceTypeEntity resourceTypeEntity = commonService.getResourceTypeEntityById(resourceTypeId);
 
-        if(!permissionBoundry.canCreateResourceInstance(resourceTypeEntity)){
+        if(!permissionBoundary.canCreateResourceInstance(resourceTypeEntity)){
             throw new NotAuthorizedException("Permission Denied");
         }
 
@@ -354,7 +354,7 @@ public class ResourcesScreenDomainService {
     public Application createNewUniqueApplicationForAppServer(ForeignableOwner creatingOwner, String applicationName, Integer asGroupId, Integer appReleaseId, Integer asReleaseId)
             throws ElementAlreadyExistsException, ResourceNotFoundException, ResourceTypeNotFoundException {
 
-        if(!permissionBoundry.canCreateAppAndAddToAppServer()){
+        if(!permissionBoundary.canCreateAppAndAddToAppServer()){
             throw new NotAuthorizedException("Missing Permission");
         }
 
