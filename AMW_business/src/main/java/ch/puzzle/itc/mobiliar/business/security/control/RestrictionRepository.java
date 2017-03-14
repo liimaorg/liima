@@ -20,11 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.security.control;
 
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.Action;
-import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
 import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
 
 import javax.ejb.Stateless;
@@ -40,18 +36,10 @@ public class RestrictionRepository extends BaseRepository<RestrictionEntity> {
     /**
      * Persists a new RestrictionEntity and returns its id
      *
-     * @param role
-     * @param permission
-     * @param context
-     * @param action
+     * @param restriction
      * @return Id of the newly created RestrictionEntity
      */
-    public Integer create(RoleEntity role, PermissionEntity permission, ContextEntity context, Action action) {
-        RestrictionEntity restriction = new RestrictionEntity();
-        restriction.setRole(role);
-        restriction.setPermission(permission);
-        restriction.setContext(context);
-        restriction.setAction(action);
+    public Integer create(RestrictionEntity restriction) {
         entityManager.persist(restriction);
         entityManager.flush();
         return restriction.getId();

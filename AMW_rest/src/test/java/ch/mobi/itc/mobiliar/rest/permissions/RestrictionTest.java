@@ -21,13 +21,10 @@
 package ch.mobi.itc.mobiliar.rest.permissions;
 
 import ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO;
-import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.business.security.entity.Action;
-import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.*;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -36,8 +33,13 @@ import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.core.Response;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.ALL;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Permission.ADD_APP;
+import static java.util.Collections.EMPTY_LIST;
 import static javax.ws.rs.core.Response.Status.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -48,8 +50,6 @@ public class RestrictionTest {
     RestrictionsRest rest;
     @Mock
     PermissionBoundary permissionBoundary;
-    @Mock
-    ContextLocator contextLocator;
 
     @Before
     public void setup() {
@@ -70,7 +70,7 @@ public class RestrictionTest {
     }
 
     @Test
-    public void shouldReturnStateARestrictionDTOIfRestrictionHasBeenFound() {
+    public void shouldReturnARestrictionDTOIfRestrictionHasBeenFound() {
         // given
         Integer restrictionId = 7;
         PermissionEntity permission = new PermissionEntity();
@@ -84,6 +84,7 @@ public class RestrictionTest {
         restriction.setPermission(permission);
         restriction.setContext(context);
         restriction.setRole(role);
+
         when(rest.permissionBoundary.findRestriction(restrictionId)).thenReturn(restriction);
 
         // when
@@ -93,6 +94,47 @@ public class RestrictionTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals("RestrictionDTO", response.getEntity().getClass().getSimpleName());
     }
+
+    @Test
+    public void shouldReturnStateOKIfNoRestrictionsHaveBeenFound() {
+        // given
+        when(rest.permissionBoundary.findAllRestrictions()).thenReturn(EMPTY_LIST);
+
+        // when
+        Response response = rest.getAllRestriction();
+
+        // then
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        List<RestrictionDTO> restrictions = (ArrayList<RestrictionDTO>) response.getEntity();
+        assertEquals(0, restrictions.size());
+    }
+
+    @Test
+    public void shouldReturnListOfRestrictionDTOsIfRestrictionsHaveBeenFound() {
+        // given
+        PermissionEntity permission = new PermissionEntity();
+        permission.setValue(ADD_APP.name());
+        ContextEntity context = new ContextEntity();
+        context.setName("testContext");
+        RoleEntity role = new RoleEntity();
+        role.setName("testRole");
+        RestrictionEntity restriction = new RestrictionEntity();
+        restriction.setAction(ALL);
+        restriction.setPermission(permission);
+        restriction.setContext(context);
+        restriction.setRole(role);
+
+        when(rest.permissionBoundary.findAllRestrictions()).thenReturn(Arrays.asList(restriction));
+
+        // when
+        Response response = rest.getAllRestriction();
+
+        // then
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        List<RestrictionDTO> restrictions = (ArrayList<RestrictionDTO>) response.getEntity();
+        assertEquals("testRole", restrictions.get(0).getRoleName());
+    }
+
 
     @Test
     public void shouldReturnStateBadRequestIfIdIsSet() {
@@ -107,9 +149,10 @@ public class RestrictionTest {
     }
 
     @Test
-    public void shouldReturnStateBadRequestIfRoleNameIsMissing() {
+    public void shouldReturnStateBadRequestIfRoleNameIsMissing() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, null, null, null, null);
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, null, ADD_APP, null, null);
+        when(rest.permissionBoundary.createRestriction(null, ADD_APP.name(), null, null)).thenThrow(new AMWException("bad"));
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
@@ -119,74 +162,16 @@ public class RestrictionTest {
     }
 
     @Test
-    public void shouldReturnStateBadRequestIfRoleNameIsInvalid() {
+    public void shouldReturnStateBadRequestIfRoleNameIsInvalid() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "invalid", null, null, null);
-        when(rest.permissionBoundary.getRoleByName("invalid")).thenReturn(null);
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "invalid", ADD_APP, null, null);
+        when(rest.permissionBoundary.createRestriction("invalid", ADD_APP.name(), null, null)).thenThrow(new AMWException("bad"));
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());;
-    }
-
-    @Test
-    public void shouldReturnStateBadRequestIfPermissionNameIsMissing() {
-        // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", null, null, null);
-        when(rest.permissionBoundary.getRoleByName("valid")).thenReturn(new RoleEntity());
-
-        // when
-        Response response = rest.addRestriction(restrictionDTO);
-
-        // then
-        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());;
-    }
-
-    @Test
-    public void shouldReturnStateBadRequestIfPermissionNameIsInvalid() {
-        // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", ADD_APP, null, null);
-        when(rest.permissionBoundary.getRoleByName("valid")).thenReturn(new RoleEntity());
-        when(rest.permissionBoundary.getPermissionByName(ADD_APP.name())).thenReturn(null);
-
-        // when
-        Response response = rest.addRestriction(restrictionDTO);
-
-        // then
-        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());;
-    }
-
-    @Test
-    public void shouldReturnStateBadRequestIfContextNameIsInvalid() {
-        // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", ADD_APP, "invalid", null);
-        when(rest.permissionBoundary.getRoleByName("valid")).thenReturn(new RoleEntity());
-        when(rest.permissionBoundary.getPermissionByName(ADD_APP.name())).thenReturn(new PermissionEntity());
-        when(rest.contextLocator.getContextByName("invalid")).thenReturn(null);
-
-        // when
-        Response response = rest.addRestriction(restrictionDTO);
-
-        // then
-        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());;
-    }
-
-    @Test
-    public void shouldReturnStateCreatedIfContextNameAndActionAreNull() {
-        // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", ADD_APP, null, null);
-        when(rest.permissionBoundary.getRoleByName("valid")).thenReturn(new RoleEntity());
-        when(rest.permissionBoundary.getPermissionByName(ADD_APP.name())).thenReturn(new PermissionEntity());
-        when(rest.permissionBoundary.createRestriction(any(RoleEntity.class), any(PermissionEntity.class),
-                any(ContextEntity.class), any(Action.class))).thenReturn(anyInt());
-
-        // when
-        Response response = rest.addRestriction(restrictionDTO);
-
-        // then
-        assertEquals(CREATED.getStatusCode(), response.getStatus());
     }
 
 }

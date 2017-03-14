@@ -23,30 +23,22 @@ package ch.mobi.itc.mobiliar.rest.permissions;
 import ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.business.security.entity.Action;
-import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.*;
 
 @Stateless
 @Path("/permissions/restrictions")
@@ -65,52 +57,18 @@ public class RestrictionsRest {
      * @return the new RestrictionDTO
      **/
     @POST
-    @ApiOperation(value = "adds a Restriction")
+    @ApiOperation(value = "Add a Restriction")
     public Response addRestriction(@ApiParam("Add a Restriction") RestrictionDTO request) {
-        RoleEntity roleEntity;
-        PermissionEntity permissionEntity;
-        ContextEntity contextEntity;
-        Action action;
-
-        if (request.getRoleName() != null) {
-            roleEntity = permissionBoundary.getRoleByName(request.getRoleName());
-            if (roleEntity == null) {
-                return Response.status(BAD_REQUEST).entity(new ExceptionDto("Role " + request
-                        .getRoleName() + " not found.")).build();
-            }
-        } else {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Missing RoleName")).build();
+        Integer id;
+        if (request.getId() != null) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
         }
-
-        if (request.getPermission() != null) {
-            permissionEntity = permissionBoundary.getPermissionByName(request.getPermission().name());
-            if (permissionEntity == null) {
-                return Response.status(BAD_REQUEST).entity(new ExceptionDto("Permission " + request
-                        .getPermission() + " not found.")).build();
-            }
-        } else {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Missing PermissionName")).build();
+        try {
+            id = permissionBoundary.createRestriction(request.getRoleName(), request.getPermission().name(), request.getContextName(), request.getAction());
+        } catch (AMWException e) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
-
-        if (request.getContextName() != null) {
-            contextEntity = contextLocator.getContextByName(request.getContextName());
-            if (contextEntity == null) {
-                return Response.status(BAD_REQUEST).entity(new ExceptionDto("Context " + request
-                        .getContextName() + " not found.")).build();
-            }
-        } else {
-            contextEntity = null;
-        }
-
-        if (request.getAction() != null) {
-            action = request.getAction();
-        } else {
-            action = Action.ALL;
-        }
-
-        Integer id = permissionBoundary.createRestriction(roleEntity, permissionEntity, contextEntity, action);
-        return Response.status(Response.Status.CREATED).header("Location", "/permissions/restrictions/" + id).build();
-
+        return Response.status(CREATED).header("Location", "/permissions/restrictions/" + id).build();
     }
 
     /**
@@ -122,7 +80,7 @@ public class RestrictionsRest {
     @GET
     @Path("/{id : \\d+}")
     // support digit only
-    @ApiOperation(value = "get Restriction by id")
+    @ApiOperation(value = "Get Restriction by id")
     public Response getRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id) {
         RestrictionEntity restriction = permissionBoundary.findRestriction(id);
         if (restriction == null) {
@@ -138,13 +96,29 @@ public class RestrictionsRest {
      */
     @GET
     @Path("/")
-    @ApiOperation(value = "get all Restrictions")
+    @ApiOperation(value = "Get all Restrictions")
     public Response getAllRestriction() {
         List<RestrictionDTO> restrictions = new ArrayList<>();
-        for (RestrictionEntity restrictionEntity : permissionBoundary.findAll()) {
+        for (RestrictionEntity restrictionEntity : permissionBoundary.findAllRestrictions()) {
             restrictions.add(new RestrictionDTO(restrictionEntity));
         }
         return Response.status(OK).entity(restrictions).build();
+    }
+
+    /**
+     * Update a Restriction
+     */
+    @PUT
+    @Path("/{id : \\d+}")
+    // support digit only
+    @ApiOperation(value = "Update a Restriction")
+    public Response updateRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id, RestrictionDTO request) {
+        try {
+            permissionBoundary.updateRestriction(id, request.getRoleName(), request.getPermission().name(), request.getContextName(), request.getAction());
+        } catch (AMWException e) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
+        }
+        return Response.status(OK).build();
     }
 
 }

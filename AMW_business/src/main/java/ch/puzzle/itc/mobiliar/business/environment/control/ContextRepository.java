@@ -24,7 +24,6 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 
 public class ContextRepository {
 
@@ -32,10 +31,6 @@ public class ContextRepository {
     EntityManager entityManager;
 
     public ContextEntity getContextByName(String name){
-        try {
-            return entityManager.createQuery("select c from ContextEntity c where LOWER(c.name)=:name", ContextEntity.class).setParameter("name", name.toLowerCase()).getSingleResult();
-        } catch (NoResultException ne) {
-            return null;
-        }
+        return entityManager.createQuery("select c from ContextEntity c where LOWER(c.name)=:name", ContextEntity.class).setParameter("name", name.toLowerCase()).getSingleResult();
     }
 }

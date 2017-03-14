@@ -26,7 +26,6 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
@@ -75,21 +74,13 @@ public class PermissionRepository {
 	}
 
 	public PermissionEntity getPermissionByName(String permissionName) {
-		try {
-			return entityManager.createQuery("from PermissionEntity p where LOWER(p.value) =:permission", PermissionEntity.class)
-					.setParameter("permission", permissionName.toLowerCase()).getSingleResult();
-		} catch (NoResultException ne) {
-			return null;
-		}
+		return entityManager.createQuery("from PermissionEntity p where LOWER(p.value) =:permission", PermissionEntity.class)
+				.setParameter("permission", permissionName.toLowerCase()).getSingleResult();
 	}
 
 	public RoleEntity getRoleByName(String roleName) {
-		try {
 		return entityManager.createQuery("from RoleEntity r where LOWER(r.name) =:role", RoleEntity.class)
 				.setParameter("role", roleName.toLowerCase()).getSingleResult();
-		} catch (NoResultException ne) {
-			return null;
-		}
 	}
 
 	public boolean isReloadDeploybleRoleList() {
