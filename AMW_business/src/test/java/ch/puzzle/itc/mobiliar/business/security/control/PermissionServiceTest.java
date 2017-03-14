@@ -1189,7 +1189,8 @@ public class PermissionServiceTest {
 	}
 
 	@Test
-	public void hasPermissionToDeployOnAllEnvironmentsIfHasLegcyPermission(){
+	// TODO remove as soon as the the legacy deployment permissions (like I, T, P etc.) are migrated
+	public void hasPermissionToDeployOnAllEnvironmentsIfHasLegacyPermission(){
 		//given
 		ContextEntity test = new ContextEntityBuilder().buildContextEntity("TEST", global, new HashSet<ContextEntity>(), false);
 		RoleEntity roleToDeployEnvC = new RoleEntity();
@@ -1475,7 +1476,7 @@ public class PermissionServiceTest {
 	}
 
 	@Test
-	public void shouldObtainLegacyRolesWithPermissionsAndRolesWithPestrictions() {
+	public void shouldObtainLegacyRolesWithPermissionsAndRolesWithRestrictions() {
 		//Given
 		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(true);
 		when(permissionService.permissionRepository.getRolesWithPermissions()).thenReturn(null);
@@ -1490,7 +1491,7 @@ public class PermissionServiceTest {
 	}
 
 	@Test
-	public void shouldCombineLegacyRolesWithPermissionsAndRolesWithPestrictions() {
+	public void shouldCombineLegacyRolesWithPermissionsAndRolesWithRestrictions() {
 		//Given
 		RoleEntity legacyRole = new RoleEntity();
 		legacyRole.setName("aLegacyTestRole");

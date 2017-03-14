@@ -20,10 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.builders;
 
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO;
-import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.*;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,12 +33,4 @@ public class RestrictionDTOBuilder {
         when(mock.getRestriction()).thenReturn(restrictionEntity);
         return mock;
     }
-
-    public RestrictionDTO mockRestrictionDTO(PermissionEntity permissionEntity, RestrictionEntity restrictionEntity) {
-        RestrictionDTO mock = mock(RestrictionDTO.class);
-        when(mock.getPermissionName()).thenReturn(permissionEntity.getValue());
-        when(mock.getRestriction()).thenReturn(restrictionEntity);
-        return mock;
-    }
-
 }

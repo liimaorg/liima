@@ -38,6 +38,8 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Logger;
 
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.ALL;
+
 @Stateless
 public class PermissionService implements Serializable {
 
@@ -156,7 +158,15 @@ public class PermissionService implements Serializable {
     }
 
     public boolean hasPermission(Permission permission) {
-        return hasPermission(permission.name());
+        return hasPermission(permission.name(), null, null);
+    }
+
+    public boolean hasPermissionForContext(Permission permission, ContextEntity context) {
+        return hasPermission(permission.name(), context, null);
+    }
+
+    public boolean hasPermissionForContextAndAction(Permission permission, ContextEntity context, Action action) {
+        return hasPermission(permission.name(), context, action);
     }
 
     /**
@@ -221,14 +231,15 @@ public class PermissionService implements Serializable {
     public boolean hasPermissionForDeploymentOnContext(ContextEntity context) {
         if (context != null) {
             List<String> allowedRoles = new ArrayList<>();
+            String permissionName = Permission.DEPLOYMENT.name();
             for (Map.Entry<String, List<RestrictionDTO>> entry : deployableRolesWithRestrictions.entrySet()) {
+                matchPermissionsAndContext(permissionName, null, context, allowedRoles, entry);
+                // TODO remove next line as soon as the the legacy deployment permissions (like I, T, P etc.) are migrated
                 matchDeploymentPermissions(context, allowedRoles, entry);
             }
-
             if (allowedRoles.isEmpty() || sessionContext == null) {
                 return false;
             }
-
             for (String roleName : allowedRoles) {
                 if (sessionContext.isCallerInRole(roleName)) {
                     return true;
@@ -246,41 +257,28 @@ public class PermissionService implements Serializable {
      * @param allowedRoles
      * @param entry
      */
+    @Deprecated
     private void matchDeploymentPermissions(ContextEntity context, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
         for (RestrictionDTO restrictionDTO : entry.getValue()) {
-            if (restrictionDTO.getRestriction().getAction().canCreate()) {
-                if (restrictionDTO.getRestriction().getContext() == null) {
-                    allowedRoles.add(entry.getKey());
-                } else {
-                    // check if user may deploy on the requested context or on the parent of the requested
-                    checkContext(context, allowedRoles, entry, restrictionDTO);
-                }
-            }
+            checkContextAndAction(context, Action.ALL, allowedRoles, entry, restrictionDTO);
         }
     }
 
-    private void checkContext(ContextEntity context, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry, RestrictionDTO restrictionDTO) {
-        if (context.getName().equals(restrictionDTO.getRestriction().getContext().getName())) {
-            allowedRoles.add(entry.getKey());
-        } else if (context.getParent() != null) {
-            checkContext(context.getParent(), allowedRoles, entry, restrictionDTO);
-        }
-    }
-
-    // TODO add required action and context
-    private boolean hasPermission(String permissionName) {
-        Set<String> roles = new HashSet<>();
+    private boolean hasPermission(String permissionName, ContextEntity context, Action action) {
+        List<String> allowedRoles = new ArrayList<>();
         Set<Map.Entry<String, List<RestrictionDTO>>> entries = getPermissions().entrySet();
 
         for (Map.Entry<String, List<RestrictionDTO>> entry : entries) {
-            matchPermissions(permissionName, roles, entry);
+            if (context == null) {
+                matchPermissions(permissionName, action, allowedRoles, entry);
+            } else {
+                matchPermissionsAndContext(permissionName, action, context, allowedRoles, entry);
+            }
         }
-
-        if (roles.isEmpty() || sessionContext == null) {
+        if (allowedRoles.isEmpty() || sessionContext == null) {
             return false;
         }
-
-        for (String roleName : roles) {
+        for (String roleName : allowedRoles) {
             if (sessionContext.isCallerInRole(roleName)) {
                 return true;
             }
@@ -288,15 +286,62 @@ public class PermissionService implements Serializable {
         return false;
     }
 
-    private void matchPermissions(String permissionName, Set<String> roles, Map.Entry<String, List<RestrictionDTO>> entry) {
+    /**
+     * Checks whether a Role has the Permission perform a certain Action
+     * If so, it adds the role to the list of the allowed roles
+     *
+     * @param permissionName
+     * @param action
+     * @param allowedRoles
+     * @param entry
+     */
+    private void matchPermissions(String permissionName, Action action, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
         String roleName = entry.getKey();
         for (RestrictionDTO restrictionDTO : entry.getValue()) {
-            if (restrictionDTO.getPermissionName().equals(permissionName)) {
-                // TODO check action and context
-                if (restrictionDTO.getRestriction().getAction().equals(Action.ALL)) {
-                    roles.add(roleName);
-                }
+            if (restrictionDTO.getPermissionName().equals(permissionName) &&
+                    (action == null || restrictionDTO.getRestriction().getAction().equals(action) ||
+                    restrictionDTO.getRestriction().getAction().equals(ALL))) {
+                allowedRoles.add(roleName);
             }
+        }
+    }
+
+    /**
+     * Checks whether a Role has the Permission perform a certain Action on a specific Context (or on its parent)
+     * If so, it adds the role to the list of the allowed roles
+     *
+     * @param permissionName
+     * @param action
+     * @param context
+     * @param allowedRoles
+     * @param entry
+     */
+    private void matchPermissionsAndContext(String permissionName, Action action, ContextEntity context, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
+        for (RestrictionDTO restrictionDTO : entry.getValue()) {
+            if (restrictionDTO.getPermissionName().equals(permissionName)) {
+                checkContextAndAction(context, action, allowedRoles, entry, restrictionDTO);
+            }
+        }
+    }
+
+    /**
+     * Checks if a Role is allowed to perform a certain Action on a specific Context (or on its parent)
+     * If so, it adds the role to the list of the allowed roles
+     *
+     * @param context
+     * @param action
+     * @param allowedRoles
+     * @param entry
+     * @param restrictionDTO
+     */
+    private void checkContextAndAction(ContextEntity context, Action action, List<String> allowedRoles,
+                                       Map.Entry<String, List<RestrictionDTO>> entry, RestrictionDTO restrictionDTO) {
+        // RestrictionDTOs created with legacy Permissions have a null Context
+        if ((restrictionDTO.getRestriction().getContext() == null || context.getName().equals(restrictionDTO.getRestriction().getContext().getName())) &&
+                (action == null || restrictionDTO.getRestriction().getAction().equals(action) || restrictionDTO.getRestriction().getAction().equals(ALL))) {
+            allowedRoles.add(entry.getKey());
+        } else if (context.getParent() != null) {
+            checkContextAndAction(context.getParent(), action, allowedRoles, entry, restrictionDTO);
         }
     }
 
