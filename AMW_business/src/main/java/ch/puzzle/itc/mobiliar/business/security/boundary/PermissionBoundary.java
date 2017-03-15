@@ -43,7 +43,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * ALL boundary for checking permissions of view elements
+ * A boundary for checking permissions of view elements
  */
 @Stateless
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

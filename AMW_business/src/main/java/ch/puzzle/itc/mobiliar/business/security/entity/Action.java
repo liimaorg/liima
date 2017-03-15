@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.business.security.entity;
 
 
 public enum Action {
+    NULL,
     ALL,
     CREATE,
     READ,

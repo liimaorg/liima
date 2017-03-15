@@ -161,6 +161,10 @@ public class PermissionService implements Serializable {
         return hasPermission(permission.name(), null, null);
     }
 
+    public boolean hasPermissionAndAction(Permission permission, Action action) {
+        return hasPermission(permission.name(), null, action);
+    }
+
     public boolean hasPermissionForContext(Permission permission, ContextEntity context) {
         return hasPermission(permission.name(), context, null);
     }
@@ -234,8 +238,6 @@ public class PermissionService implements Serializable {
             String permissionName = Permission.DEPLOYMENT.name();
             for (Map.Entry<String, List<RestrictionDTO>> entry : deployableRolesWithRestrictions.entrySet()) {
                 matchPermissionsAndContext(permissionName, null, context, allowedRoles, entry);
-                // TODO remove next line as soon as the the legacy deployment permissions (like I, T, P etc.) are migrated
-                matchDeploymentPermissions(context, allowedRoles, entry);
             }
             if (allowedRoles.isEmpty() || sessionContext == null) {
                 return false;
@@ -247,21 +249,6 @@ public class PermissionService implements Serializable {
             }
         }
         return false;
-    }
-
-    /**
-     * Checks whether a role is allowed to create a deployment on a specific context (or its parent)
-     * If so, it adds the role to the list of the allowed roles
-     *
-     * @param context
-     * @param allowedRoles
-     * @param entry
-     */
-    @Deprecated
-    private void matchDeploymentPermissions(ContextEntity context, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
-        for (RestrictionDTO restrictionDTO : entry.getValue()) {
-            checkContextAndAction(context, Action.ALL, allowedRoles, entry, restrictionDTO);
-        }
     }
 
     private boolean hasPermission(String permissionName, ContextEntity context, Action action) {

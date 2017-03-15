@@ -38,6 +38,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.DELETE;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
+
 @Stateless
 @Interceptors(HasPermissionInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -61,14 +65,13 @@ public class DeploymentParameterBoundary {
         return deploymentParameterRepository.findByDeploymentId(deploymentId);
     }
 
-
-    @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER)
+    @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER, action = DELETE)
     public void deleteDeployParameterKey(Key keyToDelete) {
         Key attachedKeyToDelete = keyRepository.find(Objects.requireNonNull(keyToDelete, "Must not be null").getId());
         keyRepository.remove(attachedKeyToDelete);
     }
 
-    @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER)
+    @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER, action = UPDATE)
     public void changeDeployParameterKey(Integer keyToDeleteId, String changedName) throws ValidationException {
         if (changedName != null && !changedName.trim().isEmpty()) {
             Key attachedKeyToChange = keyRepository.find(Objects.requireNonNull(keyToDeleteId, "Must not be null"));
@@ -80,7 +83,7 @@ public class DeploymentParameterBoundary {
         }
     }
 
-    @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER)
+    @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER, action = CREATE)
     public void createDeployParameterKey(String deployParameterKeyName) throws ValidationException {
         if (deployParameterKeyName != null && !deployParameterKeyName.trim().isEmpty()) {
             Key newKey = new Key(deployParameterKeyName.trim());

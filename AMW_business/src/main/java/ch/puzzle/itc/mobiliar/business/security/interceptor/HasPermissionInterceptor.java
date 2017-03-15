@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.security.interceptor;
 
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 
 import javax.inject.Inject;
@@ -28,6 +29,8 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Interceptor
@@ -42,25 +45,67 @@ public class HasPermissionInterceptor implements Serializable {
 	@Inject
 	PermissionService permissionService;
 
-	@AroundInvoke
-	public Object roleCall(InvocationContext context) throws Exception {
-		HasPermission hasAnnotation = context.getMethod().getAnnotation(HasPermission.class);
+	private static List<Permission> getRequiredPermission(InvocationContext context) {
+		HasPermission permissionMethodAnnotation = getMethodPermissionAnnotation(context);
 
-		if (hasAnnotation == null) {
-			return context.proceed();
-		}
-		if (hasAnnotation.permission() != null
-				&& permissionService.hasPermission(hasAnnotation.permission())) {
-			return context.proceed();
-		}
-		if (hasAnnotation.oneOfPermission() != null && hasAnnotation.oneOfPermission().length > 0) {
-			Permission[] permissions = hasAnnotation.oneOfPermission();
-			for (int i = 0; i < permissions.length; i++) {
-				if (permissionService.hasPermission(permissions[i])) {
-					return context.proceed();
+		List<Permission> permissions = new ArrayList<>();
+		if (permissionMethodAnnotation != null) {
+			if (permissionMethodAnnotation.permission() != null) {
+				permissions.add(permissionMethodAnnotation.permission());
+			}
+			if (permissionMethodAnnotation.oneOfPermission() != null && permissionMethodAnnotation.oneOfPermission().length > 0) {
+				for (Permission permission : permissionMethodAnnotation.oneOfPermission()) {
+					permissions.add(permission);
 				}
 			}
 		}
+		return permissions;
+	}
+
+	private static List<Action> getRequiredAction(InvocationContext context) {
+		HasPermission permissionMethodAnnotation = getMethodPermissionAnnotation(context);
+
+		List<Action> actions = new ArrayList<>();
+		if (permissionMethodAnnotation != null) {
+			if (permissionMethodAnnotation.action() != null && !permissionMethodAnnotation.action().equals(Action.NULL)) {
+				actions.add(permissionMethodAnnotation.action());
+			}
+			if (permissionMethodAnnotation.oneOfAction() != null && permissionMethodAnnotation.oneOfAction().length > 0) {
+				for (Action action : permissionMethodAnnotation.oneOfAction()) {
+					actions.add(action);
+				}
+			}
+		}
+		return actions;
+	}
+
+	private static HasPermission getMethodPermissionAnnotation(InvocationContext context) {
+		return context.getMethod().getAnnotation(HasPermission.class);
+	}
+
+	@AroundInvoke
+	public Object roleCall(InvocationContext context) throws Exception {
+		List<Permission> permissions = getRequiredPermission(context);
+		List<Action> actions = getRequiredAction(context);
+
+		if (permissions.isEmpty()) {
+			return context.proceed();
+		} else {
+			for (Permission permission : permissions) {
+				if (actions.isEmpty()) {
+					if (permissionService.hasPermissionAndAction(permission, null)) {
+						return context.proceed();
+					}
+				} else {
+					for (Action action : actions) {
+						if (permissionService.hasPermissionAndAction(permission, action)) {
+							return context.proceed();
+						}
+					}
+				}
+			}
+		}
+
 		permissionService.throwNotAuthorizedException(null);
 		return null;
 	}

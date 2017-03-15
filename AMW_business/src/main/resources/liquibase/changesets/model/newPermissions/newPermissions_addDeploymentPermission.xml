@@ -14,7 +14,7 @@
         <insert tableName="TAMW_RESTRICTION">
             <column name="id" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'restrictionId')" />
             <column name="permission_id" valueComputed="(SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'DEPLOYMENT')" />
-            <column name="role_id" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'server_admin')" />
+            <column name="role_id" valueComputed="(SELECT ID FROM TAMW_ROLE WHERE NAME = 'config_admin')" />
             <column name="action" value="ALL"></column>
             <column name="v" valueNumeric="0" />
         </insert>

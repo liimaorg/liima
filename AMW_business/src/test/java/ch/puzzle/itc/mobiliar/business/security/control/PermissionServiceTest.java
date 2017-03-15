@@ -1032,7 +1032,6 @@ public class PermissionServiceTest {
         Assert.assertFalse(result);
     }
 
-
     @Test
     public void hasPermissionToTemplateModifyWhenUserIsConfigAdminAndIsNotTestingMode() {
         //Given
@@ -1091,7 +1090,6 @@ public class PermissionServiceTest {
         Assert.assertFalse(result);
     }
 
-
 	Map<String, List<RestrictionDTO>> deployableRolesWithRestrictions;
 	@Test
 	public void hasPermissionToDeployWhenRoleIsNotDeployable(){
@@ -1131,7 +1129,6 @@ public class PermissionServiceTest {
 		Assert.assertFalse(result);
 	}
 	
-	
 	@Test
 	public void hasPermissionToDeployWhenUserIsDeployable(){
 		//given
@@ -1165,8 +1162,7 @@ public class PermissionServiceTest {
 		//then	
 		Assert.assertTrue(result);
 	}
-	
-	//TODO: controllare
+
 	@Test
 	public void hasPermissionToDeployWhenRoleIsDeployable(){
 		//given
@@ -1185,31 +1181,6 @@ public class PermissionServiceTest {
 		//When
 		boolean result = permissionService.hasPermissionToDeploy();
 		//then
-		Assert.assertTrue(result);
-	}
-
-	@Test
-	// TODO remove as soon as the the legacy deployment permissions (like I, T, P etc.) are migrated
-	public void hasPermissionToDeployOnAllEnvironmentsIfHasLegacyPermission(){
-		//given
-		ContextEntity test = new ContextEntityBuilder().buildContextEntity("TEST", global, new HashSet<ContextEntity>(), false);
-		RoleEntity roleToDeployEnvC = new RoleEntity();
-		roleToDeployEnvC.setName(TEST_DEPLOYER);
-		roleToDeployEnvC.setDeployable(true);
-		PermissionEntity permissionToDeployX = new PermissionEntity();
-		permissionToDeployX.setValue("X");
-		roleToDeployEnvC.getPermissions().add(permissionToDeployX);
-		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
-		myRoles = new HashMap<>();
-
-		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(permissionToDeployX)));
-		permissionService.deployableRolesWithRestrictions = myRoles;
-		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(false);
-
-		//When
-		boolean result = permissionService.hasPermissionForDeploymentOnContext(test);
-
-		//Then
 		Assert.assertTrue(result);
 	}
 
@@ -1364,7 +1335,6 @@ public class PermissionServiceTest {
 		//Then
 		Assert.assertFalse(result);
 	}
-
 
 	@Test
 	public void hasPermissionToTemplateModifyResourceTypeWhenUserIsConfigAdminAndIsNotTestingMode() {
