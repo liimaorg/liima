@@ -45,17 +45,10 @@ public class PermissionRepository {
 	}
 
 	/**
-	 * Diese Methode sucht die Rollen die Deployoperation können machen.
-	 * 
+	 * Returns Roles which are allowed to deploy
+	 *
 	 * @return
 	 */
-	public List<RoleEntity> getDoployableRole() {
-		List<RoleEntity> result = entityManager
-				.createQuery("from RoleEntity r where r.deployable=:deployable", RoleEntity.class)
-				.setParameter("deployable", Boolean.TRUE).getResultList();
-		return result == null ? new ArrayList<RoleEntity>() : result;
-	}
-
 	public List<RoleEntity> getDeployableRoles() {
 		List<RoleEntity> result = entityManager
 				.createQuery("from RoleEntity r left join fetch r.restrictions res where res.permission.value =:deployment", RoleEntity.class)

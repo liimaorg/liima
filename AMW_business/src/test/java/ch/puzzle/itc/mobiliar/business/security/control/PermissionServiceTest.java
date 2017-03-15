@@ -1496,14 +1496,12 @@ public class PermissionServiceTest {
 	@Test
 	public void shouldObtainDeployableRolesOnGetDeployableRolesNonCached() {
 		//Given
-		when(permissionService.permissionRepository.getDoployableRole()).thenReturn(EMPTY_LIST);
 		when(permissionService.permissionRepository.getDeployableRoles()).thenReturn(EMPTY_LIST);
 
 		//When
 		permissionService.getDeployableRolesNonCached();
 
 		//Then
-		verify(permissionService.permissionRepository, times(1)).getDoployableRole();
 		verify(permissionService.permissionRepository, times(1)).getDeployableRoles();
 	}
 
@@ -1511,14 +1509,12 @@ public class PermissionServiceTest {
 	public void shouldObtainDeployableRolesOnGetDeployableRolesWhenNeeded() {
 		//Given
 		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(true);
-		when(permissionService.permissionRepository.getDoployableRole()).thenReturn(EMPTY_LIST);
 		when(permissionService.permissionRepository.getDeployableRoles()).thenReturn(EMPTY_LIST);
 
 		//When
 		permissionService.getDeployableRoles();
 
 		//Then
-		verify(permissionService.permissionRepository, times(1)).getDoployableRole();
 		verify(permissionService.permissionRepository, times(1)).getDeployableRoles();
 	}
 	

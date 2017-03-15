@@ -59,11 +59,7 @@ public class PermissionService implements Serializable {
         boolean isReload = permissionRepository.isReloadDeploybleRoleList();
         if (deployableRolesWithRestrictions == null || isReload) {
             Map<String, List<RestrictionDTO>> tmpDeployableRolesWithRestrictions = new HashMap<>();
-            // get legacy roles (with permissions)
-            for (RoleEntity role : permissionRepository.getDoployableRole()) {
-                addLegacyPermission(tmpDeployableRolesWithRestrictions, role);
-            }
-            // add new roles (with restrictions)
+            // get roles (with restrictions with deployment permission)
             for (RoleEntity role : permissionRepository.getDeployableRoles()) {
                 addPermission(tmpDeployableRolesWithRestrictions, role);
             }
@@ -79,8 +75,7 @@ public class PermissionService implements Serializable {
      * @return the List of RoleEntity read from DB
      */
     public List<RoleEntity> getDeployableRolesNonCached() {
-        List<RoleEntity> roles = permissionRepository.getDoployableRole();
-        roles.addAll(permissionRepository.getDeployableRoles());
+        List<RoleEntity> roles = permissionRepository.getDeployableRoles();
         return roles;
     }
 
