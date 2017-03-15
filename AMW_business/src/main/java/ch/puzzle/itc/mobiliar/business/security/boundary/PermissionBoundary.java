@@ -41,6 +41,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A boundary for checking permissions of view elements
@@ -310,6 +311,15 @@ public class PermissionBoundary implements Serializable {
             throw new AMWException("Restriction not found");
         }
         restrictionRepository.remove(id);
+    }
+
+    /**
+     * Returns all available roles with their restrictions
+     *
+     * @return Map key=Role.name, value=restrictionDTOs
+     */
+    public Map<String, List<RestrictionDTO>> getAllPermissions() {
+        return permissionService.getPermissions();
     }
 
     private void validateRestriction(String roleName, String permissionName, String contextName, Action action, RestrictionEntity restriction) throws AMWException {

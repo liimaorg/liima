@@ -66,7 +66,6 @@ public class PermissionServiceTest {
 	private PermissionRepository permissionRepository;
 	private Map<String, List<RestrictionDTO>> myRoles;
     private ResourceEntityBuilder resourceEntityBuilder = new ResourceEntityBuilder();
-//	private ResourceTypeEntityBuilder resourceTypeEntityBuilder = new ResourceTypeEntityBuilder();
 
 	private ContextEntity global;
 	private ContextEntity parent;
@@ -1103,7 +1102,7 @@ public class PermissionServiceTest {
 		PermissionEntity pe = new PermissionEntity();
 		pe.setValue("aTestPermission");
 		deployableRolesWithRestrictions = new HashMap<>();
-		deployableRolesWithRestrictions.put(roleToDeployEnvC.getName(), Arrays.asList(new RestrictionDTO(pe)));
+		deployableRolesWithRestrictions.put(roleToDeployEnvC.getName(), Arrays.asList(new RestrictionDTO(pe, roleToDeployEnvC)));
 		
 		permissionService.deployableRolesWithRestrictions = deployableRolesWithRestrictions;
 		
@@ -1174,7 +1173,7 @@ public class PermissionServiceTest {
 		PermissionEntity pe = new PermissionEntity();
 		pe.setValue("aTestPermission");
 		deployableRolesWithRestrictions = new HashMap<>();
-		deployableRolesWithRestrictions.put(roleToDeployEnvC.getName(), Arrays.asList(new RestrictionDTO(pe)));
+		deployableRolesWithRestrictions.put(roleToDeployEnvC.getName(), Arrays.asList(new RestrictionDTO(pe, roleToDeployEnvC)));
 
 		permissionService.deployableRolesWithRestrictions = deployableRolesWithRestrictions;
 		

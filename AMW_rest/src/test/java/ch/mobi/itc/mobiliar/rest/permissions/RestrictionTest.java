@@ -33,9 +33,7 @@ import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.core.Response;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.ALL;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Permission.ADD_APP;
@@ -193,6 +191,34 @@ public class RestrictionTest {
 
         // then
         assertEquals(NO_CONTENT.getStatusCode(), response.getStatus());;
+    }
+
+    @Test
+    public void shouldReturnAMapOfListOfRestrictionDTOsIfRolesHaveBeenFound() {
+        // given
+        PermissionEntity permission = new PermissionEntity();
+        permission.setValue(ADD_APP.name());
+        RoleEntity role = new RoleEntity();
+        role.setName("testRole");
+        RoleEntity anotherRole = new RoleEntity();
+        anotherRole.setName("anotherTestRole");
+        ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO businessRestrictionDTO =
+                new ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO(permission, role);
+        Map<String, List<ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO>> map = new HashMap<>();
+        map.put(role.getName(), Arrays.asList(businessRestrictionDTO));
+        businessRestrictionDTO = new ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO(permission, anotherRole);
+        map.put(anotherRole.getName(), Arrays.asList(businessRestrictionDTO));
+        when(rest.permissionBoundary.getAllPermissions()).thenReturn(map);
+
+        // when
+        Response response = rest.getAllRoles();
+
+        // then
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        Map<String, List<RestrictionDTO>> restrictions = (Map<String, List<RestrictionDTO>>) response.getEntity();
+        assertEquals(role.getName(), restrictions.get(role.getName()).get(0).getRoleName());
+        assertEquals(ADD_APP, restrictions.get(role.getName()).get(0).getPermission());
+        assertEquals(anotherRole.getName(), restrictions.get(anotherRole.getName()).get(0).getRoleName());
     }
 
 }

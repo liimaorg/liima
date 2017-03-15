@@ -29,18 +29,21 @@ import java.util.Collections;
 
 public class RestrictionDTOTest {
 
+    private RoleEntity rol;
     private PermissionEntity per;
 
     @Before
     public void setUp(){
+        rol = new RoleEntity();
+        rol.setName("testRole");
         per = new PermissionEntity();
-        per.setValue("test");
+        per.setValue("testPermission");
     }
 
     @Test
-    public void constructedWithLegacyPermissionItShouldHaveActionA(){
+    public void constructedWithLegacyPermissionItShouldHaveActionALL(){
         //given //when
-        RestrictionDTO resDTO = new RestrictionDTO(per);
+        RestrictionDTO resDTO = new RestrictionDTO(per, rol);
 
         //then
         Assert.assertEquals(per.getValue(), resDTO.getPermissionName());
@@ -50,7 +53,7 @@ public class RestrictionDTOTest {
     @Test
     public void constructedWithLegacyPermissionItShouldHaveNoContext(){
         //given //when
-        RestrictionDTO resDTO = new RestrictionDTO(per);
+        RestrictionDTO resDTO = new RestrictionDTO(per, rol);
 
         //then
         Assert.assertEquals(per.getValue(), resDTO.getPermissionName());
@@ -75,8 +78,6 @@ public class RestrictionDTOTest {
     @Test
     public void constructedWithRestrictionItShouldHaveRightContext(){
         //given
-        RoleEntity rol = new RoleEntity();
-        rol.setName("testRole");
         RestrictionEntity res = new RestrictionEntity();
         res.setAction(Action.CREATE);
         res.setContext(new ContextEntityBuilder().buildContextEntity("TEST", null, Collections.EMPTY_SET,false));

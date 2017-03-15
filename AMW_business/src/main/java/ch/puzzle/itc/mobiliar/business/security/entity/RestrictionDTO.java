@@ -29,9 +29,18 @@ public class RestrictionDTO {
     @Getter
     private String permissionName;
 
-    public RestrictionDTO(PermissionEntity pe) {
+    /**
+     * RestrictionDTOs created with a legacy permission and role
+     * have no context (=unrestricted) and Action.ALL set
+     *
+     * @param pe
+     * @param ro
+     */
+    public RestrictionDTO(PermissionEntity pe, RoleEntity ro) {
         if (pe.getRestrictions().isEmpty()) {
             RestrictionEntity res = new RestrictionEntity();
+            res.setPermission(pe);
+            res.setRole(ro);
             res.setAction(Action.ALL);
             this.restriction = res;
             this.permissionName = pe.getValue();

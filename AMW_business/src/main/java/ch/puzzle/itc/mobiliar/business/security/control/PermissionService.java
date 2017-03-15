@@ -95,9 +95,12 @@ public class PermissionService implements Serializable {
     }
 
     /**
+     * Returns all available roles with their restrictions
+     * Legacy Permissions are mapped to the new Permission/Restriction model
+     *
      * @return Map key=Role.name, value=restrictionDTOs
      */
-    Map<String, List<RestrictionDTO>> getPermissions() {
+    public Map<String, List<RestrictionDTO>> getPermissions() {
         boolean isReload = permissionRepository.isReloadRolesAndPermissionsList();
         if (rolesWithRestrictions == null || isReload) {
             Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions = new HashMap<>();
@@ -136,7 +139,7 @@ public class PermissionService implements Serializable {
             // check needed as long as roles can have a direct relation to restriction and permission simultaneously
             if (perm.getRestrictions().isEmpty()) {
                 // convert permission to restriction
-                tmpRolesWithRestrictions.get(roleName).add(new RestrictionDTO(perm));
+                tmpRolesWithRestrictions.get(roleName).add(new RestrictionDTO(perm, role));
             }
         }
     }

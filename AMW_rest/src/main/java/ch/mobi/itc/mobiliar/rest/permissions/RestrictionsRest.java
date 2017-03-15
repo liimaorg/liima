@@ -36,7 +36,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static javax.ws.rs.core.Response.Status.*;
 
@@ -139,6 +141,28 @@ public class RestrictionsRest {
         return Response.status(NO_CONTENT).build();
     }
 
-
+    /**
+     * Find all Roles with their permissions/restrictions
+     *
+     * @return Map<RoleName, List<RestrictionDTO>>
+     */
+    @GET
+    @Path("/roles/")
+    @ApiOperation(value = "Get all Roles with restrictions")
+    public Response getAllRoles() {
+        Map<String, List<RestrictionDTO>> rolesMap = new HashMap<>();
+        final Map<String, List<ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO>> allRoles = permissionBoundary.getAllPermissions();
+        // converting business RestrictionDTOs to rest RestrictionDTOs
+        for (Map.Entry<String, List<ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO>> roleRestrictionList : allRoles.entrySet()) {
+            String roleName = roleRestrictionList.getKey();
+            if (!rolesMap.containsKey(roleName)) {
+                rolesMap.put(roleName, new ArrayList<RestrictionDTO>());
+            }
+            for (ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO restrictionDTO : roleRestrictionList.getValue()) {
+                rolesMap.get(roleName).add(new RestrictionDTO(restrictionDTO.getRestriction()));
+            }
+        }
+        return Response.status(OK).entity(rolesMap).build();
+    }
 
 }
