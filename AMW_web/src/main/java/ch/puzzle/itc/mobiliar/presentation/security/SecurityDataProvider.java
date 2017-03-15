@@ -56,7 +56,6 @@ public class SecurityDataProvider implements Serializable{
 	private String roleSelectedName;
 	private List<RoleEntity> roles;
 	private List<RoleEntity> rolesWithoutRoleSelected;
-	private boolean isDeployable;
 
 	private Integer permissionSelected;
 	private Integer assignedPermissionSelected;
@@ -107,7 +106,7 @@ public class SecurityDataProvider implements Serializable{
 	}
 	
 	private void setDefaultSelectedPermission(){
-		for(PermissionEntity p : controller.getPermissiosByRoleId(roleSelectedId)){
+		for(PermissionEntity p : controller.getPermissionsByRoleId(roleSelectedId)){
 			if(p!=null){
 				displaySelectedPermission = p.getValue();
 				assignedPermissionSelected = p.getId();
@@ -130,9 +129,8 @@ public class SecurityDataProvider implements Serializable{
 	}
 	
 	public void createRole() {
-		controller.createRole(roleName, isDeployable);
+		controller.createRole(roleName);
 		roleName=null;
-		isDeployable=false;
 		roles = getAllRoleWithoutDefaultContainer();
 	}
 	
@@ -152,7 +150,7 @@ public class SecurityDataProvider implements Serializable{
 	public void setRoleSelectedId(Integer roleSelectedId) {
 		this.roleSelectedId = roleSelectedId;
 		setDefaultSelectedPermission();
-		currentPermissions = controller.getPermissiosByRoleId(roleSelectedId);
+		currentPermissions = controller.getPermissionsByRoleId(roleSelectedId);
 		permissionSelected = null;
 	}
 
@@ -166,18 +164,6 @@ public class SecurityDataProvider implements Serializable{
 	
 	public List<PermissionEntity> getPermissionsByRoleId() {
 		return currentPermissions;
-	}
-
-	public boolean isDeployable() {
-		return isDeployable;
-	}
-
-	public void setDeployable(boolean isDeployable) {
-		this.isDeployable = isDeployable;
-	}
-	
-	public List<RoleEntity> getDeplopyableRoles() {
-		return controller.getAllDeployableRoles();
 	}
 
 	/**
@@ -233,7 +219,7 @@ public class SecurityDataProvider implements Serializable{
 		if(controller.addPermissionToRole(roleSelectedId,permissionSelected)){
 			assignedPermissionSelected = permissionSelected;
 			permissionSelected = null;
-			currentPermissions = controller.getPermissiosByRoleId(roleSelectedId);
+			currentPermissions = controller.getPermissionsByRoleId(roleSelectedId);
 		}
 	}
 	
@@ -241,7 +227,7 @@ public class SecurityDataProvider implements Serializable{
 		if(controller.assignPermissionToRole(selectedOldRole,permissionSelected,roleSelectedId)){
 			assignedPermissionSelected = permissionSelected;
 			permissionSelected = null;
-			currentPermissions = controller.getPermissiosByRoleId(roleSelectedId);
+			currentPermissions = controller.getPermissionsByRoleId(roleSelectedId);
 			allPermissionAndRole = controller.getAllPermissionsAndRoles(roleSelectedId);
 			
 		}
@@ -251,7 +237,7 @@ public class SecurityDataProvider implements Serializable{
 		if(controller.removeAndAssignPermissionToRole(roleSelectedId, assignedPermissionSelected,selectedRoleIdToAssignPermission)){
 			permissionSelected = assignedPermissionSelected;
 			assignedPermissionSelected = null;
-			currentPermissions = controller.getPermissiosByRoleId(roleSelectedId);
+			currentPermissions = controller.getPermissionsByRoleId(roleSelectedId);
 			allPermissionAndRole = controller.getAllPermissionsAndRoles(roleSelectedId);
 			setSelectedOldRole(selectedRoleIdToAssignPermission);
 		}
@@ -262,7 +248,7 @@ public class SecurityDataProvider implements Serializable{
 			
 			permissionSelected = assignedPermissionSelected;
 			assignedPermissionSelected = null;
-			currentPermissions = controller.getPermissiosByRoleId(roleSelectedId);
+			currentPermissions = controller.getPermissionsByRoleId(roleSelectedId);
 			allPermissionAndRole = controller.getAllPermissionsAndRoles(roleSelectedId);
 			setSelectedOldRole(controller.getDefaultPermissionsContainer());
 		}
@@ -323,10 +309,6 @@ public class SecurityDataProvider implements Serializable{
 	public void setSelectedRoleIdToAssignPermission(
 			Integer selectedRoleIdToAssignPermission) {
 		this.selectedRoleIdToAssignPermission = selectedRoleIdToAssignPermission;
-	}
-	
-	public boolean isPermissionDeployable(){
-		return controller.isPermissionDeployable(selectedDeployPermission);
 	}
 
 	public Integer getSelectedDeployPermission() {

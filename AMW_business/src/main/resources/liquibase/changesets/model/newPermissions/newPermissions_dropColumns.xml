@@ -1,0 +1,13 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/newPermissions/newPermissions_dropColumns.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="rgalante" id="newPermissionsDropColumns">
+
+        <dropColumn tableName="TAMW_permission" columnName="context_id" />
+        <dropColumn tableName="TAMW_role" columnName="deployable" />
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -21,7 +21,6 @@
 package ch.puzzle.itc.mobiliar.business.security.control;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,12 +36,10 @@ import javax.persistence.criteria.Root;
 
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.RenameException;
 import ch.puzzle.itc.mobiliar.common.exception.RoleNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.RolePermissionContainer;
 
@@ -70,9 +67,7 @@ public class SecurityScreenDomainService {
      * @return List<RoleEntity>
      */
     public List<RoleEntity> getAllRole() {
-        
-        List<RoleEntity> roles = new ArrayList<RoleEntity>();
-        
+        List<RoleEntity> roles = new ArrayList<>();
         try {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaQuery<RoleEntity> r = cb.createQuery(RoleEntity.class);
@@ -82,8 +77,7 @@ public class SecurityScreenDomainService {
         } catch (NoResultException nre) {
             String message = "Keine Rolle existiert auf der DB";
             log.log(Level.WARNING, message);
-        } 
-        
+        }
         return roles;
     }
 
@@ -93,7 +87,7 @@ public class SecurityScreenDomainService {
      * @param roleName
      * @return roleEntity
      */
-    public RoleEntity getUniqueRoleByName(String roleName) {
+    private RoleEntity getUniqueRoleByName(String roleName) {
         RoleEntity roleEntity = null;
         try {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -102,8 +96,7 @@ public class SecurityScreenDomainService {
             r.where(cb.equal(root.get("name"), roleName));
             roleEntity = entityManager.createQuery(r).getSingleResult();
         } catch (NoResultException nre) {
-            String message = "Die Rolle: " + roleName
-                    + " existiert nicht auf der DB";
+            String message = "Die Rolle: " + roleName + " existiert nicht auf der DB";
             log.log(Level.WARNING, message);
         } 
         return roleEntity;
@@ -119,8 +112,7 @@ public class SecurityScreenDomainService {
     public RoleEntity getRoleById(int id) throws RoleNotFoundException {
         RoleEntity roleEntity = entityManager.find(RoleEntity.class, id);
         if (roleEntity == null) {
-            String message = "Die Rolle mit der Id: " + id
-                    + " existiert nicht auf der DB";
+            String message = "Die Rolle mit der Id: " + id + " existiert nicht auf der DB";
             log.info(message);
             throw new RoleNotFoundException(message);
         }
@@ -137,24 +129,16 @@ public class SecurityScreenDomainService {
     @HasPermission(permission = Permission.DELETE_ROLE)
     public void deleteRoleById(int id) throws RoleNotFoundException {
         RoleEntity roleEntity = getRoleById(id);
-        if (roleEntity == null) {
-            String message = "Die zu löeschende Role ist nicht vorhanden";
-            log.info(message);
-            throw new RoleNotFoundException(message);
-        }
-        List<PermissionEntity> permissions = getPermissionListByRoleId(roleEntity
-                .getId());
+        List<PermissionEntity> permissions = getPermissionListByRoleId(roleEntity.getId());
         if (permissions.size() > 0) {
             RoleEntity containerPermissionRole = createOrGetPermissionWithoutAssignedRole();
             for (PermissionEntity p : permissions) {
                 p.getRoles().add(containerPermissionRole);
             }
         }
-
         entityManager.remove(roleEntity);
         permissionRepository.setReloadDeployableRoleList(true);
         log.info("Role mit der Id: " + id + " wurde aus der DB gelöscht");
-        
     }
 
     /**
@@ -163,7 +147,7 @@ public class SecurityScreenDomainService {
      * @param permissionValue
      * @return permissionEntity
      */
-    public PermissionEntity getUniquePermissionByName(String permissionValue) {
+    private PermissionEntity getUniquePermissionByName(String permissionValue) {
         PermissionEntity permissionEntity = null;
         try {
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -180,26 +164,6 @@ public class SecurityScreenDomainService {
         return permissionEntity;
     }
 
-    public List<PermissionEntity> getAllPermissions() {
-        
-        List<PermissionEntity> permissions = new ArrayList<PermissionEntity>();
-        
-        try {
-                CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-                CriteriaQuery<PermissionEntity> r = cb
-                        .createQuery(PermissionEntity.class);
-                Root<PermissionEntity> root = r.from(PermissionEntity.class);
-                r.orderBy(cb.asc(root.get("value").as(String.class)));
-                permissions = entityManager.createQuery(r).getResultList();
-                permissions = Collections.unmodifiableList(permissions);
-        } catch (NoResultException nre) {
-            String message = "Keine Erlaubnisse existiert auf der DB";
-            log.log(Level.WARNING, message);
-        } 
-        
-        return permissions;
-    }
-
     /**
      * Diese Methode sucht eine Berechtigung durch einen ID
      * 
@@ -207,21 +171,12 @@ public class SecurityScreenDomainService {
      * @return
      */
     public PermissionEntity getUniquePermissionById(Integer permissionId) {
-        PermissionEntity permissionEntity = null;
-        try {
-            permissionEntity = entityManager.find(PermissionEntity.class,
-                    permissionId);
-            if (permissionEntity == null) {
-                String message = "Die Erlaubnis mit der id:" + permissionId
-                        + " ist nicht vorhanden";
-                log.info(message);
-            }
-        } catch (NoResultException nre) {
-            String message = "Die Erlaubnis mit der Id: " + permissionId
-                    + " existiert nicht auf der DB";
-            log.log(Level.WARNING, message);
-        } 
-        
+        PermissionEntity permissionEntity = entityManager.find(PermissionEntity.class, permissionId);
+        if (permissionEntity == null) {
+            String message = "Die Erlaubnis mit der id:" + permissionId
+                    + " ist nicht vorhanden";
+            log.info(message);
+        }
         return permissionEntity;
     }
 
@@ -230,19 +185,16 @@ public class SecurityScreenDomainService {
      * Deployable oder nicht sein
      * 
      * @param roleName
-     * @param isDeployable
      * @return
      * @throws ElementAlreadyExistsException
      */
     @HasPermission(permission = Permission.CREATE_ROLE)
-    public RoleEntity createRoleByName(String roleName, boolean isDeployable)
-            throws ElementAlreadyExistsException {
+    public RoleEntity createRoleByName(String roleName) throws ElementAlreadyExistsException {
         RoleEntity newRoleEntity = getUniqueRoleByName(roleName);
-        RoleEntity result = null;
+        RoleEntity result;
         if (newRoleEntity == null) {
             result = new RoleEntity();
             result.setName(roleName);
-            result.setDeployable(isDeployable);
             result.setDeletable(true);
             entityManager.persist(result);
             log.info("Rolle " + roleName + " in DB persist");
@@ -251,67 +203,9 @@ public class SecurityScreenDomainService {
             String message = "Die Rolle mit dem Namen: " + roleName
                     + " ist bereits vorhanden und kann nicht erstellen werden";
             log.info(message);
-            throw new ElementAlreadyExistsException(message, RoleEntity.class,
-                    roleName);
+            throw new ElementAlreadyExistsException(message, RoleEntity.class, roleName);
         }
         return result;
-    }
-
-    /**
-     * Diese Methode erstellt eine neue Berechtigung für eine Rolle. Diese
-     * Berechtigung ist eine Deployberechtigung.
-     * 
-     * @param permissionValue
-     * @param roleId
-     * @param context
-     * @return
-     * @throws RoleNotFoundException
-     * @throws ElementAlreadyExistsException
-     */
-    public PermissionEntity createPermissionForRole(String permissionValue,
-            Integer roleId, ContextEntity context)
-            throws RoleNotFoundException, ElementAlreadyExistsException {
-        RoleEntity role = getRoleById(roleId);
-        PermissionEntity p = getUniquePermissionByName(permissionValue);
-
-        PermissionEntity permissionEntity = null;
-        if (role == null) {
-            String errorMessage = "Die rolle mir der Id: " + roleId
-                    + " existiert nicht auf der DB";
-            log.log(Level.WARNING, errorMessage);
-            throw new RoleNotFoundException(errorMessage);
-        } else if (p != null) {
-            String message = "Die Erlaubnis mit dem Namen: " + permissionValue
-                    + " ist bereits vorhanden und kann nicht erstellen werden";
-            log.info(message);
-            throw new ElementAlreadyExistsException(message,
-                    PermissionEntity.class, permissionValue);
-        } else if (role != null && p == null) {
-            permissionEntity = new PermissionEntity();
-            permissionEntity.setValue(permissionValue);
-            permissionEntity.setContext(context);
-            entityManager.persist(permissionEntity);
-            role.getPermissions().add(permissionEntity);
-            entityManager.persist(role);
-            log.info("Die Erlaubnis " + permissionValue + " für die Rolle "
-                    + role.getName() + " in DB Persist.");
-
-            permissionRepository.setReloadRolesAndPermissionsList(true);
-        }
-        return permissionEntity;
-    }
-
-    public void renameRole(int id, String roleName)
-            throws RoleNotFoundException, RenameException {
-        RoleEntity roleEntity = getRoleById(id);
-        RoleEntity roleByName = getUniqueRoleByName(roleName);
-
-        if (roleByName != null
-                && !roleByName.getId().equals(roleEntity.getId())) {
-            String message = "Der Name wird bereits für eine Rolle verwendet.";
-            throw new RenameException(message);
-        }
-        roleEntity.setName(roleName);
     }
 
     /**
@@ -320,20 +214,14 @@ public class SecurityScreenDomainService {
      * @param permissionValue
      * @param newPermissionValue
      */
-    public void renamePermissionByName(String permissionValue,
-            String newPermissionValue)  {
-        PermissionEntity permissionEntity;
-
-            permissionEntity = getUniquePermissionByName(permissionValue);
-            if (permissionEntity == null) {
-                String message = "Die Erlaubnis mit dem Name:"
-                        + permissionValue + " ist nicht vorhanden";
-                log.info(message);
-            }
-            if (permissionEntity != null) {
-                permissionEntity.setValue(newPermissionValue);
-            }
-
+    public void renamePermissionByName(String permissionValue, String newPermissionValue)  {
+        PermissionEntity permissionEntity = getUniquePermissionByName(permissionValue);
+        if (permissionEntity == null) {
+            String message = "Die Erlaubnis mit dem Namen:" + permissionValue + " ist nicht vorhanden";
+            log.info(message);
+        } else {
+            permissionEntity.setValue(newPermissionValue);
+        }
     }
 
     /**
@@ -343,11 +231,10 @@ public class SecurityScreenDomainService {
      * @return
      */
     public List<PermissionEntity> getPermissionListByRoleId(Integer roleId) {
-        List<PermissionEntity> result = null;
+        List<PermissionEntity> result = new ArrayList<>();
         try {
-            result = entityManager
-                    .createQuery(
-                            "select p from PermissionEntity p join p.roles r left join fetch p.context c left join fetch c.contextType left join fetch c.parent where r.id=:roleId order by p.value", PermissionEntity.class)
+            result = entityManager.createQuery(
+                            "select p from PermissionEntity p join p.roles r where r.id=:roleId order by p.value", PermissionEntity.class)
                     .setParameter("roleId", roleId).getResultList();
         } catch (NoResultException nre) {
             String message = "Die Rolle mit der Id: " + roleId
@@ -355,32 +242,6 @@ public class SecurityScreenDomainService {
             log.log(Level.WARNING, message);
         }
         return result;
-    }
-
-    public List<Object[]> rolesPermissionsList() {
-        List<Object[]> result = entityManager
-                .createQuery(
-                        "select distinct p.value, r.name from PermissionEntity p left join p.roles r")
-                .getResultList();
-        return result == null ? new ArrayList<Object[]>() : result;
-    }
-
-    
-
-    /**
-     * Diese Methode sucht die alle Berechtigungen ausser die Berechtigungen von
-     * die Rolle mit der ID = roleId
-     * 
-     * @param roleId
-     * @return
-     */
-    public List<PermissionEntity> getAllPermissionsWithoutPermissionsOfRoleSelected(
-            Integer roleId) {
-        List<PermissionEntity> result = entityManager
-                .createQuery(
-                        "select p from PermissionEntity p join p.roles r where r.id!=:roleId order by r.name,p.value", PermissionEntity.class)
-                .setParameter("roleId", roleId).getResultList();
-        return result == null ? new ArrayList<PermissionEntity>() : result;
     }
 
     /**
@@ -393,48 +254,41 @@ public class SecurityScreenDomainService {
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public boolean addPermissionToRole(Integer roleId, Integer permissionId) throws RoleNotFoundException{
-        boolean isSuccesfully = false;
-        RoleEntity roleEntity = null;
+        RoleEntity roleEntity;
         PermissionEntity permissionEntity = getUniquePermissionById(permissionId);
-
-            if (roleId == 0) {
-                roleEntity = createOrGetPermissionWithoutAssignedRole();
-                if (roleEntity.getPermissions().contains(permissionEntity)) {
-                    isSuccesfully = false;
-                } else {
-                    roleEntity.getPermissions().add(permissionEntity);
-                    entityManager.persist(roleEntity);
-                    isSuccesfully = true;
-                    permissionRepository.setReloadRolesAndPermissionsList(true);
-                }
+        if (roleId == 0) {
+            roleEntity = createOrGetPermissionWithoutAssignedRole();
+            if (roleEntity.getPermissions().contains(permissionEntity)) {
+                return false;
             } else {
-                roleEntity = getRoleById(roleId);
-                if (roleEntity.getPermissions().contains(permissionEntity)) {
-                    isSuccesfully = false;
-                } else {
-                    if (permissionEntity != null && roleEntity != null) {
-                        roleEntity.getPermissions().add(permissionEntity);
-                        entityManager.persist(roleEntity);
-                        isSuccesfully = true;
-                        permissionRepository.setReloadRolesAndPermissionsList(true);
-                    }
-                }
+                roleEntity.getPermissions().add(permissionEntity);
+                entityManager.persist(roleEntity);
+                permissionRepository.setReloadRolesAndPermissionsList(true);
+                return true;
             }
-
-        return isSuccesfully;
+        } else {
+            roleEntity = getRoleById(roleId);
+            if (roleEntity.getPermissions().contains(permissionEntity)) {
+                return false;
+            } else if (permissionEntity != null) {
+                roleEntity.getPermissions().add(permissionEntity);
+                entityManager.persist(roleEntity);
+                permissionRepository.setReloadRolesAndPermissionsList(true);
+                return true;
+            }
+        }
+        return false;
     }
 
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public boolean assignPermissionToRole(Integer oldRoleId,
             Integer permissionId, Integer newRoleId) throws RoleNotFoundException {
-        boolean isSuccesfully = false;
         RoleEntity oldRole = getRoleById(oldRoleId);
-        RoleEntity newRole = null;
+        RoleEntity newRole;
         PermissionEntity permissionEntity = getUniquePermissionById(permissionId);
 
         if (newRoleId == 0) {
             newRole = createOrGetPermissionWithoutAssignedRole();
-
             // permission must always be assigned to at least one role
             if (permissionEntity.getRoles().size() > 1) {
                 oldRole.getPermissions().remove(permissionEntity);
@@ -444,8 +298,7 @@ public class SecurityScreenDomainService {
             }
         } else {
             newRole = getRoleById(newRoleId);
-            if (permissionEntity != null && newRole != null
-                    && oldRole != null) {
+            if (permissionEntity != null && newRole != null && oldRole != null) {
                 oldRole.getPermissions().remove(permissionEntity);
                 newRole.getPermissions().add(permissionEntity);
             }
@@ -453,10 +306,9 @@ public class SecurityScreenDomainService {
 
         entityManager.persist(oldRole);
         entityManager.persist(newRole);
-        isSuccesfully = true;
         permissionRepository.setReloadRolesAndPermissionsList(true);
 
-        return isSuccesfully;
+        return true;
     }
 
     public static class PermissionToRole {
@@ -485,29 +337,14 @@ public class SecurityScreenDomainService {
      * @return
      */
     public RoleEntity createOrGetPermissionWithoutAssignedRole() {
-        RoleEntity roleEntity = null;
-            roleEntity = getUniqueRoleByName(RolePermissionContainer.ROLEPERMISSIONCONTAINER
-                    .getDisplayName());
-            if (roleEntity == null) {
-                roleEntity = new RoleEntity();
-                roleEntity
-                        .setName(RolePermissionContainer.ROLEPERMISSIONCONTAINER
-                                .getDisplayName());
-                roleEntity.setDeployable(false);
-                roleEntity.setDeletable(false);
-                entityManager.persist(roleEntity);
-
-            }
-
+        RoleEntity roleEntity = getUniqueRoleByName(RolePermissionContainer.ROLEPERMISSIONCONTAINER.getDisplayName());
+        if (roleEntity == null) {
+            roleEntity = new RoleEntity();
+            roleEntity.setName(RolePermissionContainer.ROLEPERMISSIONCONTAINER.getDisplayName());
+            roleEntity.setDeletable(false);
+            entityManager.persist(roleEntity);
+        }
         return roleEntity;
-    }
-
-    public RoleEntity getPermissionByRole(Integer roleId, Integer permissionId) {
-        return (RoleEntity) entityManager
-                .createQuery(
-                        "select r from RoleEntity r join r.permissions p where r.id=:roleId and p.id=:permissionId")
-                .setParameter("roleId", roleId)
-                .setParameter("permissionId", permissionId).getSingleResult();
     }
 
     /**
@@ -517,46 +354,41 @@ public class SecurityScreenDomainService {
      * @return
      * 
      */
-    public List<RoleEntity> getRolesByPermission(String permissionValue) {
-        List<RoleEntity> result = entityManager
-                .createQuery(
-                        "select r from RoleEntity r join r.permissions p where p.value=:permissionValue", RoleEntity.class)
-                .setParameter("permissionValue", permissionValue)
-                .getResultList();
+    private List<RoleEntity> getRolesByPermission(String permissionValue) {
+        List<RoleEntity> result = entityManager.createQuery(
+            "select r from RoleEntity r join r.permissions p where p.value=:permissionValue", RoleEntity.class)
+            .setParameter("permissionValue", permissionValue)
+            .getResultList();
         return result == null ? new ArrayList<RoleEntity>() : result;
     }
 
     public void deletePermissionFromRoles(String permissionValue) {
-
-            List<RoleEntity> roles = getRolesByPermission(permissionValue);
-            PermissionEntity permissionEntity = null;
-            if (roles != null) {
-                for (RoleEntity r : roles) {
-                    permissionEntity = getUniquePermissionByName(permissionValue);
-                    if (r.getPermissions().contains(permissionEntity)
-                            && permissionEntity.getRoles().contains(r)) {
-                        r.getPermissions().remove(permissionEntity);
-                    }
-                }
-                if (permissionEntity != null) {
-                    entityManager.remove(permissionEntity);
+        List<RoleEntity> roles = getRolesByPermission(permissionValue);
+        PermissionEntity permissionEntity = null;
+        if (roles != null) {
+            for (RoleEntity r : roles) {
+                permissionEntity = getUniquePermissionByName(permissionValue);
+                if (r.getPermissions().contains(permissionEntity) && permissionEntity.getRoles().contains(r)) {
+                    r.getPermissions().remove(permissionEntity);
                 }
             }
+            if (permissionEntity != null) {
+                entityManager.remove(permissionEntity);
+            }
+        }
     }
 
     public List<PermissionToRole> permissionAndRole(Integer roleSelectedId) {
-        List<PermissionToRole> result = new ArrayList<SecurityScreenDomainService.PermissionToRole>();
-            PermissionToRole permissionToRole = null;
-            for (RoleEntity role : getAllRole()) {
-                if (!role.getId().equals(roleSelectedId)) {
-                    for (PermissionEntity permission : getPermissionListByRoleId(role
-                            .getId())) {
-                        permissionToRole = new PermissionToRole(permission,
-                                role);
-                        result.add(permissionToRole);
-                    }
+        List<PermissionToRole> result = new ArrayList<>();
+        PermissionToRole permissionToRole;
+        for (RoleEntity role : getAllRole()) {
+            if (!role.getId().equals(roleSelectedId)) {
+                for (PermissionEntity permission : getPermissionListByRoleId(role.getId())) {
+                    permissionToRole = new PermissionToRole(permission, role);
+                    result.add(permissionToRole);
                 }
             }
+        }
         return result;
     }
 

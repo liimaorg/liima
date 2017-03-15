@@ -37,8 +37,6 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
@@ -104,7 +102,6 @@ public class PermissionServiceTest {
 		Assert.assertFalse(result);
 	}
 
-
 	@Test
 	public void hasPermissionToEditPropertiesWhenUserIsConfigAdminAndResTypeIsNotDefault(){
 		//Given
@@ -121,7 +118,6 @@ public class PermissionServiceTest {
 		//Then
 		Assert.assertTrue(result);
 	}
-
 
 	@Test
 	public void hasPermissionToRenameResourceTypeWhenResTypeIsNotDefaultResTypeTest(){
@@ -566,8 +562,7 @@ public class PermissionServiceTest {
 		Assert.assertFalse(result);
 		
 	}
-	
-	
+
 	@Test
 	public void hasPermissionToRemoveDefaultInstanceOfResTypeWhenUserIsConfigAdmin(){
 		//Given
@@ -1089,13 +1084,12 @@ public class PermissionServiceTest {
         Assert.assertFalse(result);
     }
 
-	Map<String, List<RestrictionDTO>> deployableRolesWithRestrictions;
 	@Test
 	public void hasPermissionToDeployWhenRoleIsNotDeployable(){
 		//given
+		Map<String, List<RestrictionDTO>> deployableRolesWithRestrictions;
 		RoleEntity roleToDeployEnvC = new RoleEntity();
 		roleToDeployEnvC.setName(TEST_DEPLOYER);
-		roleToDeployEnvC.setDeployable(true);
 		
 		when(sessionContext.isCallerInRole(ROLE_NOT_DEPLOY)).thenReturn(true);
 
@@ -1126,61 +1120,6 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDeploy();
 		//then
 		Assert.assertFalse(result);
-	}
-	
-	@Test
-	public void hasPermissionToDeployWhenUserIsDeployable(){
-		//given
-		List<RoleEntity>deployableRoles = new ArrayList<>();
-		RoleEntity deployableRole = new RoleEntity();
-		deployableRole.setName(TEST_DEPLOYER);
-		deployableRoles.add(deployableRole);
-		EntityManager entityManager = Mockito.mock(EntityManager.class);
-
-		Query value = Mockito.mock(Query.class);
-		when(entityManager.createQuery("from RoleEntity r where r.deployable=1")).thenReturn(value);
-		when(value.getResultList()).thenReturn(deployableRoles);
-
-		
-		when(sessionContext.isCallerInRole(Mockito.anyString())).thenAnswer(new Answer<Boolean>() {
-
-			@Override
-			public Boolean answer(InvocationOnMock invocation) throws Throwable {
-				Object[] arguments = invocation.getArguments();
-				if(arguments[0].equals(TEST_DEPLOYER)){
-					return true;
-				}else{
-					return false;
-				}
-				
-			}
-		});
-		
-		//When
-		boolean result = permissionService.hasPermissionToDeploy();
-		//then	
-		Assert.assertTrue(result);
-	}
-
-	@Test
-	public void hasPermissionToDeployWhenRoleIsDeployable(){
-		//given
-		RoleEntity roleToDeployEnvC = new RoleEntity();
-		roleToDeployEnvC.setName(TEST_DEPLOYER);
-		roleToDeployEnvC.setDeployable(true);
-		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
-
-		PermissionEntity pe = new PermissionEntity();
-		pe.setValue("aTestPermission");
-		deployableRolesWithRestrictions = new HashMap<>();
-		deployableRolesWithRestrictions.put(roleToDeployEnvC.getName(), Arrays.asList(new RestrictionDTO(pe, roleToDeployEnvC)));
-
-		permissionService.deployableRolesWithRestrictions = deployableRolesWithRestrictions;
-		
-		//When
-		boolean result = permissionService.hasPermissionToDeploy();
-		//then
-		Assert.assertTrue(result);
 	}
 
 	@Test

@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.security.entity;
 
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,13 +53,6 @@ public class PermissionEntity implements Serializable
 	@Getter
 	@Version
 	private long v;
-
-	// TODO migrate to RestrictionEntity
-	@Getter
-	@Setter
-	@ManyToOne
-	@NotAudited
-	private ContextEntity context;
 
 	@Getter
 	@Setter

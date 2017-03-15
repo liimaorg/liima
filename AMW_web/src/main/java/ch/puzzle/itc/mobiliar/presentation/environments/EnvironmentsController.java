@@ -30,12 +30,10 @@ import javax.inject.Named;
 import ch.puzzle.itc.mobiliar.business.environment.control.EnvironmentsScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.security.control.SecurityScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.RoleNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.SavePropertyException;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
@@ -74,7 +72,6 @@ public class EnvironmentsController implements Serializable {
 	}
 
 	public boolean doSave(Integer contextId, String contextName) {
-		boolean isSuccessful = false;
 		try {
 			if (contextId == null) {
 				String message = "No context selected.";
@@ -89,7 +86,7 @@ public class EnvironmentsController implements Serializable {
 					envScreenService.saveEnvironment(contextId, contextName);
 					String message = "Changes successfully saved.";
 					GlobalMessageAppender.addSuccessMessage(message);
-					isSuccessful = true;
+					return true;
 				}catch(EJBException e){
 					if(e.getCause() instanceof NotAuthorizedException) {
 						GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
@@ -105,12 +102,11 @@ public class EnvironmentsController implements Serializable {
 			String message = "Error while saving the changes.";
 			GlobalMessageAppender.addErrorMessage(message);
 		} 
-		return isSuccessful;
+		return false;
 	}
 	
 
-	public boolean doCreateContext(String newContextName, Integer superContextId, Integer roleId) {
-		boolean isSuccessful = false;
+	public boolean doCreateContext(String newContextName, Integer superContextId) {
 		try {
 			if (newContextName == null) {
 				String message = "Could not read name for new context.";
@@ -126,11 +122,8 @@ public class EnvironmentsController implements Serializable {
 				GlobalMessageAppender.addErrorMessage(message);
 			}else {
 				try{
-				     ContextEntity newContext = envScreenService.createContextByName(newContextName, superContextId);
-				     if(newContext.isEnvironment()) {
-					    doCreateNewPermissionToDeployEnviroments(newContextName, roleId, newContext);
-					}
-					isSuccessful = true;
+					envScreenService.createContextByName(newContextName, superContextId);
+					return true;
 				}catch(EJBException e){
 					if(e.getCause() instanceof NotAuthorizedException) {
 						GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
@@ -143,57 +136,16 @@ public class EnvironmentsController implements Serializable {
 			String message = "The selected context can not be found.";
 			GlobalMessageAppender.addErrorMessage(message);
 		} catch (ElementAlreadyExistsException e) {
-			ElementAlreadyExistsException ex = (ElementAlreadyExistsException) e;
 			String errorMessage = null;
-			if(ex.getExistingObjectClass() == ContextEntity.class){
-				errorMessage = " Context with the name " + ex.getExistingObjectName() + " already exists"; 
+			if(e.getExistingObjectClass() == ContextEntity.class){
+				errorMessage = " Context with the name " + e.getExistingObjectName() + " already exists";
 			}
 			GlobalMessageAppender.addErrorMessage(errorMessage);
 		}
-		
-		return isSuccessful;
-	}
-
-	private boolean doCreateNewPermissionToDeployEnviroments(String newContextName, Integer roleId, ContextEntity context) {
-		boolean isSuccessful = false;
-		try {
-			if(context == null){
-				String message = "Could not context find";
-				GlobalMessageAppender.addErrorMessage(message);
-			}else if(roleId == null){
-				String message = "No role selected";
-				GlobalMessageAppender.addErrorMessage(message);
-			}else if(roleId==0){
-				securityScreenDomainService.createPermissionForRole(newContextName, securityScreenDomainService.createOrGetPermissionWithoutAssignedRole().getId(), context);
-				String message = "Context " + newContextName + " successfully created (" + securityScreenDomainService.getRoleById(securityScreenDomainService.createOrGetPermissionWithoutAssignedRole().getId()).getName() +" )";
-				GlobalMessageAppender.addSuccessMessage(message);
-			}else{
-				securityScreenDomainService.createPermissionForRole(newContextName, roleId, context);
-				String message = "Context " + newContextName + " successfully created ( Assigned to role:" + securityScreenDomainService.getRoleById(roleId).getName() +" )";
-				GlobalMessageAppender.addSuccessMessage(message);
-			}
-		} catch (RoleNotFoundException e) {
-			String message = "Could not role find";
-			GlobalMessageAppender.addErrorMessage(message);
-		} catch (ElementAlreadyExistsException e) {
-			ElementAlreadyExistsException ex = (ElementAlreadyExistsException) e;
-				String errorMessage = null;
-			if (ex.getExistingObjectClass() == PermissionEntity.class) {
-				errorMessage = "An permission with the name " + ex.getExistingObjectName() + " already exists.";
-			}else if(ex.getExistingObjectClass() == ContextEntity.class){
-				errorMessage = "A Context with the name " + ex.getExistingObjectName() + " already exists";
-			} else{
-				errorMessage = "An object ("+ex.getExistingObjectClass().getSimpleName()+") already exists";
-			}
-			GlobalMessageAppender.addErrorMessage(errorMessage);
-		}
-		return isSuccessful;
-		
+		return false;
 	}
 
 	public boolean doRemoveContext(Integer contextId) {
-		boolean isSuccessful = false;
-		String deletedContextName=null;
 		try {
 			if (contextId == null){
 				String message = "No context selected.";
@@ -201,10 +153,10 @@ public class EnvironmentsController implements Serializable {
 			} else {
 				try{
 
-					deletedContextName =  envScreenService.deleteContext(contextId);
+					String deletedContextName =  envScreenService.deleteContext(contextId);
 					String message = "Context and Permission: " + deletedContextName + " successfully removed";
 					GlobalMessageAppender.addSuccessMessage(message);
-					isSuccessful = true;
+					return true;
 				}catch(EJBException e){
 					if(e.getCause() instanceof NotAuthorizedException) {
 						GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
@@ -217,7 +169,7 @@ public class EnvironmentsController implements Serializable {
 			String message = "Could not remove context.";
 			GlobalMessageAppender.addErrorMessage(message);
 		} 
-		return isSuccessful;
+		return false;
 	}
 
 }

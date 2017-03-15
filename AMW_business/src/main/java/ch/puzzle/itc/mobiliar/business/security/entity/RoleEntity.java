@@ -52,11 +52,6 @@ public class RoleEntity implements Serializable {
 	@Setter
 	@Getter
 	private String name;
-
-	// TODO migrate to RestrictionEntity
-	@Setter
-	@Getter
-	private boolean deployable;
 	
 	@Setter
 	@Getter

@@ -345,17 +345,6 @@
 							<h:inputText id="contextName"
 								value="#{environmentsDataProvider.newName}" />
 						</div>
-						<div>
-							<h:panelGroup
-								rendered="#{!contextDataProvider.isGlobal and !environmentsDataProvider.isEnv}">
-								<h:outputText value="Assign to " />
-								<h:selectOneMenu value="#{securityDataProvider.roleSelectedId}">
-									<f:selectItem itemLabel="None" itemValue="${null}" />
-									<f:selectItems value="#{securityDataProvider.deplopyableRoles}"
-										var="role" itemLabel="#{role.name}" itemValue="#{role.id}" />
-								</h:selectOneMenu>
-							</h:panelGroup>
-						</div>
 						<a4j:commandLink value="OK" styleClass="btn primary right"
 							render="environments"
 							action="#{environmentsDataProvider.createContext()}"

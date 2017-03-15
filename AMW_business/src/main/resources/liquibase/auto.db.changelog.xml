@@ -74,5 +74,6 @@
     <include file="changesets/model/newPermissions/newPermissions_addDeploymentPermission.xml" relativeToChangelogFile="true"/>
 
     <include file="changesets/data/newPermissions_migration.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/newPermissions/newPermissions_dropColumns.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
