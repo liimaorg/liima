@@ -1201,7 +1201,7 @@ public class PermissionServiceTest {
 		res.setPermission(permissionToDeploy);
 		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.deployableRolesWithRestrictions = myRoles;
-		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(false);
+		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
 		boolean result = permissionService.hasPermissionForDeploymentOnContext(envC);
@@ -1227,7 +1227,7 @@ public class PermissionServiceTest {
 		res.setPermission(permissionToDeploy);
 		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.deployableRolesWithRestrictions = myRoles;
-		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(false);
+		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
 		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC);
@@ -1255,7 +1255,7 @@ public class PermissionServiceTest {
 		res.setPermission(permissionToDeploy);
 		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.deployableRolesWithRestrictions = myRoles;
-		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(false);
+		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
 		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC);
@@ -1283,7 +1283,7 @@ public class PermissionServiceTest {
 		res.setPermission(permissionToDeploy);
 		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.deployableRolesWithRestrictions = myRoles;
-		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(false);
+		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
 		boolean resGlobal = permissionService.hasPermissionForDeploymentOnContext(global);
@@ -1508,7 +1508,7 @@ public class PermissionServiceTest {
 	@Test
 	public void shouldObtainDeployableRolesOnGetDeployableRolesWhenNeeded() {
 		//Given
-		when(permissionService.permissionRepository.isReloadDeploybleRoleList()).thenReturn(true);
+		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(true);
 		when(permissionService.permissionRepository.getDeployableRoles()).thenReturn(EMPTY_LIST);
 
 		//When

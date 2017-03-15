@@ -56,7 +56,7 @@ public class PermissionService implements Serializable {
     static Map<String, List<RestrictionDTO>> rolesWithRestrictions;
 
     Map<String, List<RestrictionDTO>> getDeployableRoles() {
-        boolean isReload = permissionRepository.isReloadDeploybleRoleList();
+        boolean isReload = permissionRepository.isReloadDeployableRoleList();
         if (deployableRolesWithRestrictions == null || isReload) {
             Map<String, List<RestrictionDTO>> tmpDeployableRolesWithRestrictions = new HashMap<>();
             // get roles (with restrictions with deployment permission)
@@ -65,7 +65,7 @@ public class PermissionService implements Serializable {
             }
             deployableRolesWithRestrictions = Collections.unmodifiableMap(tmpDeployableRolesWithRestrictions);
             if (isReload) {
-                permissionRepository.setReloadDeploybleRoleList(false);
+                permissionRepository.setReloadDeployableRoleList(false);
             }
         }
         return deployableRolesWithRestrictions;

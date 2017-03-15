@@ -36,11 +36,11 @@ public class PermissionRepository {
 	private EntityManager entityManager;
 
 	// FIXME: Remove to Singleton Bean or make static
-	private boolean reloadDeploybleRoleList;
+	private boolean reloadDeployableRoleList;
 	private boolean reloadRolesAndPermissionsList;
 
 	public PermissionRepository() {
-		this.reloadDeploybleRoleList = false;
+		this.reloadDeployableRoleList = false;
 		this.reloadRolesAndPermissionsList = false;
 	}
 
@@ -76,12 +76,12 @@ public class PermissionRepository {
 				.setParameter("role", roleName.toLowerCase()).getSingleResult();
 	}
 
-	public boolean isReloadDeploybleRoleList() {
-		return reloadDeploybleRoleList;
+	public boolean isReloadDeployableRoleList() {
+		return reloadDeployableRoleList;
 	}
 
-	public void setReloadDeploybleRoleList(boolean reloadDeploybleRoleList) {
-		this.reloadDeploybleRoleList = reloadDeploybleRoleList;
+	public void setReloadDeployableRoleList(boolean reloadDeployableRoleList) {
+		this.reloadDeployableRoleList = reloadDeployableRoleList;
 	}
 
 	public boolean isReloadRolesAndPermissionsList() {

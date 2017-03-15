@@ -152,7 +152,7 @@ public class SecurityScreenDomainService {
         }
 
         entityManager.remove(roleEntity);
-        permissionRepository.setReloadDeploybleRoleList(true);
+        permissionRepository.setReloadDeployableRoleList(true);
         log.info("Role mit der Id: " + id + " wurde aus der DB gelöscht");
         
     }
@@ -246,7 +246,7 @@ public class SecurityScreenDomainService {
             result.setDeletable(true);
             entityManager.persist(result);
             log.info("Rolle " + roleName + " in DB persist");
-            permissionRepository.setReloadDeploybleRoleList(true);
+            permissionRepository.setReloadDeployableRoleList(true);
         } else {
             String message = "Die Rolle mit dem Namen: " + roleName
                     + " ist bereits vorhanden und kann nicht erstellen werden";
