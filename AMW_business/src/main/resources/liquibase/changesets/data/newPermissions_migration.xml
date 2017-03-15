@@ -22,11 +22,11 @@
         <sql>UPDATE TAMW_restriction SET permission_id = (SELECT permission_id FROM TAMW_restriction WHERE id = 1)</sql>
 
         <delete tableName="TAMW_role_permission">
-            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE context_id IS NOT NULL)</where>
+            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE context_id IS NOT NULL OR value = 'ADD_APP_AND_APPSERVER')</where>
         </delete>
 
         <delete tableName="TAMW_permission">
-            <where>context_id IS NOT NULL</where>
+            <where>context_id IS NOT NULL OR value = 'ADD_APP_AND_APPSERVER'</where>
         </delete>
 
         <rollback></rollback>

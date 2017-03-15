@@ -28,7 +28,6 @@ public enum Permission {
     NEW_RES("New resource button. You can find this button in APPLICATIONSERVER/NODE/NOT DEFAULT RESOURCETYPE."),
     ADD_APPSERVER("Add application server. Path: Apps"),
     ADD_APP("Add new application and/or application server. Path: Apps"),
-    //ADD_APP_AND_APPSERVER("Add new application AND application server. Path: Apps"),
     ADD_NEW_RES_OF_DEFAULT_RESTYPE("New application or/and application server. Path: Resources -> select APPLICATION tab"),
     DELETE_RES("Delete Resource. In all resource type screen. Path -> Resources -> select one Resource Type."),
     DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE("WARNING: DON'T CHANGE THIS PERMISSION"),
