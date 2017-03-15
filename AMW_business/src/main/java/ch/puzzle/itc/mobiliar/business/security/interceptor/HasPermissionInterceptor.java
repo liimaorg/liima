@@ -30,6 +30,7 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -50,13 +51,9 @@ public class HasPermissionInterceptor implements Serializable {
 
 		List<Permission> permissions = new ArrayList<>();
 		if (permissionMethodAnnotation != null) {
-			if (permissionMethodAnnotation.permission() != null) {
-				permissions.add(permissionMethodAnnotation.permission());
-			}
-			if (permissionMethodAnnotation.oneOfPermission() != null && permissionMethodAnnotation.oneOfPermission().length > 0) {
-				for (Permission permission : permissionMethodAnnotation.oneOfPermission()) {
-					permissions.add(permission);
-				}
+			permissions.add(permissionMethodAnnotation.permission());
+			if (permissionMethodAnnotation.oneOfPermission().length > 0) {
+				Collections.addAll(permissions, permissionMethodAnnotation.oneOfPermission());
 			}
 		}
 		return permissions;
@@ -67,13 +64,11 @@ public class HasPermissionInterceptor implements Serializable {
 
 		List<Action> actions = new ArrayList<>();
 		if (permissionMethodAnnotation != null) {
-			if (permissionMethodAnnotation.action() != null && !permissionMethodAnnotation.action().equals(Action.NULL)) {
+			if (!permissionMethodAnnotation.action().equals(Action.NULL)) {
 				actions.add(permissionMethodAnnotation.action());
 			}
-			if (permissionMethodAnnotation.oneOfAction() != null && permissionMethodAnnotation.oneOfAction().length > 0) {
-				for (Action action : permissionMethodAnnotation.oneOfAction()) {
-					actions.add(action);
-				}
+			if (permissionMethodAnnotation.oneOfAction().length > 0) {
+				Collections.addAll(actions, permissionMethodAnnotation.oneOfAction());
 			}
 		}
 		return actions;

@@ -108,7 +108,7 @@ public abstract class BaseRepository<T> {
      * @param id id of the entity to delete.
      * @return true if the entity to delete was found - otherwise false.
      */
-    public boolean remove(long id) {
+    public boolean remove(Number id) {
         T entity = find(id);
         if (entity == null) {
             return false;

@@ -304,6 +304,14 @@ public class PermissionBoundary implements Serializable {
         restrictionRepository.merge(restriction);
     }
 
+    public void removeRestriction(Integer id) throws AMWException {
+        RestrictionEntity restriction = restrictionRepository.find(id);
+        if (restriction == null) {
+            throw new AMWException("Restriction not found");
+        }
+        restrictionRepository.remove(id);
+    }
+
     private void validateRestriction(String roleName, String permissionName, String contextName, Action action, RestrictionEntity restriction) throws AMWException {
         if (roleName != null) {
             try {
@@ -339,4 +347,5 @@ public class PermissionBoundary implements Serializable {
             restriction.setAction(Action.ALL);
         }
     }
+
 }

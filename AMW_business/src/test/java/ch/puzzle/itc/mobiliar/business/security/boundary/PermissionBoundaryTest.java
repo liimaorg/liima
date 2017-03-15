@@ -172,4 +172,22 @@ public class PermissionBoundaryTest {
         verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
     }
 
+    @Test(expected=AMWException.class)
+    public void shouldThrowAMWExceptionIfRestrictionToBeDeletedCanNotBeFound() throws AMWException {
+        // given // when // then
+        permissionBoundary.removeRestriction(21);
+    }
+
+    @Test(expected=AMWException.class)
+    public void shouldRemoveRestrictionToBeDeleted() throws AMWException {
+        // given
+        when(restrictionRepository.find(42)).thenReturn(new RestrictionEntity());
+        // when
+        permissionBoundary.removeRestriction(21);
+        // then
+        verify(restrictionRepository, times(1)).remove(42);
+    }
+
+
+
 }

@@ -107,6 +107,7 @@ public class RestrictionsRest {
 
     /**
      * Update a Restriction
+     * @param id
      */
     @PUT
     @Path("/{id : \\d+}")
@@ -120,5 +121,24 @@ public class RestrictionsRest {
         }
         return Response.status(OK).build();
     }
+
+    /**
+     * Remove a Restriction
+     * @param id
+     */
+    @DELETE
+    @Path("/{id : \\d+}")
+    // support digit only
+    @ApiOperation(value = "Remove a Restriction")
+    public Response deleteRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id) {
+        try {
+            permissionBoundary.removeRestriction(id);
+        } catch (AMWException e) {
+            return Response.status(NOT_FOUND).entity(new ExceptionDto(e.getMessage())).build();
+        }
+        return Response.status(NO_CONTENT).build();
+    }
+
+
 
 }

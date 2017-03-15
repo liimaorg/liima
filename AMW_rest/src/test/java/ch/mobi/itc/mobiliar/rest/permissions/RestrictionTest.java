@@ -174,4 +174,25 @@ public class RestrictionTest {
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());;
     }
 
+    @Test
+    public void shouldReturnStateNotFoundIfRestrictionToBeDeletedWasNotFound() throws AMWException {
+        // given
+        doThrow(new AMWException("bad")).when(rest.permissionBoundary).removeRestriction(1);
+
+        // when
+        Response response = rest.deleteRestriction(1);
+
+        // then
+        assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());;
+    }
+
+    @Test
+    public void shouldReturnStateNoContentIfRestrictionHasBeenDeletedSuccessfully() throws AMWException {
+        // given // when
+        Response response = rest.deleteRestriction(1);
+
+        // then
+        assertEquals(NO_CONTENT.getStatusCode(), response.getStatus());;
+    }
+
 }
