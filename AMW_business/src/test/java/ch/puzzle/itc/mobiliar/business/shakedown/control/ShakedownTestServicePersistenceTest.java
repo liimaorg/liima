@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,6 +80,9 @@ public class ShakedownTestServicePersistenceTest {
 	@Mock
 	ResourceTypeProvider resourceTypeProvider;
 
+	@Mock
+	ResourceTypeRepository resourceTypeRepository;
+
 	@InjectMocks
 	ShakedownTestService service;
 
@@ -121,7 +125,7 @@ public class ShakedownTestServicePersistenceTest {
 		appServer.setRelease(release);
 		entityManager.persist(appServer);
 
-		when(resourceTypeProvider.getFromDB(type.getName())).thenReturn(type);
+		when(resourceTypeRepository.getByName(type.getName())).thenReturn(type);
 
 		ShakedownTestOrder order = ShakedownTestOrderBuilder.mockShakedownTestOrder(context, release,
 				Collections.singletonList(appServer.getResourceGroup()));

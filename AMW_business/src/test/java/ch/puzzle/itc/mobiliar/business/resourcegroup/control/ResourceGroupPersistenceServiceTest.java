@@ -25,8 +25,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.FavoriteResourceEntity;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
@@ -70,6 +68,9 @@ public class ResourceGroupPersistenceServiceTest {
 
 	@InjectMocks
 	ResourceTypeProvider resourceTypeProvider;
+
+	@Mock
+	ResourceTypeRepository resourceTypeRepository;
 
 	@Mock
 	CommonDomainService commonService;

@@ -21,7 +21,9 @@
 package ch.puzzle.itc.mobiliar.business.security.boundary;
 
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
@@ -66,7 +68,13 @@ public class PermissionBoundary implements Serializable {
     ContextLocator contextLocator;
 
     @Inject
+    ResourceRepository resourceRepository;
+
+    @Inject
     ResourceTypeProvider resourceTypeProvider;
+
+    @Inject
+    ResourceTypeRepository resourceTypeRepository;
 
     /**
      * Check that the user is config_admin, app_developer or shakedown_admin: shakedown_admin: can edit all
@@ -272,14 +280,17 @@ public class PermissionBoundary implements Serializable {
      *
      * @param roleName
      * @param permissionName
+     * @param resourceId
+     * @param resourceTypeName
      * @param contextName
      * @param action
-     * @throws AMWException
      * @return Id of the newly created RestrictionEntity
+     * @throws AMWException
      */
-    public Integer createRestriction(String roleName, String permissionName, String contextName, Action action) throws AMWException {
+    public Integer createRestriction(String roleName, String permissionName, Integer resourceId, String resourceTypeName,
+                                     String contextName, Action action) throws AMWException {
         RestrictionEntity restriction = new RestrictionEntity();
-        validateRestriction(roleName, permissionName, contextName, action, restriction);
+        validateRestriction(roleName, permissionName, resourceId, resourceTypeName, contextName, action, restriction);
         return restrictionRepository.create(restriction);
     }
 
@@ -293,7 +304,8 @@ public class PermissionBoundary implements Serializable {
      * @param action
      * @throws AMWException
      */
-    public void updateRestriction(Integer id, String roleName, String permissionName, String contextName, Action action) throws AMWException {
+    public void updateRestriction(Integer id, String roleName, String permissionName, Integer resourceId,
+                                  String resourceTypeName,String contextName, Action action) throws AMWException {
         if (id == null) {
             throw new AMWException("Id must not be null");
         }
@@ -301,7 +313,7 @@ public class PermissionBoundary implements Serializable {
         if (restriction == null) {
             throw new AMWException("Restriction not found");
         }
-        validateRestriction(roleName, permissionName, contextName, action, restriction);
+        validateRestriction(roleName, permissionName, resourceId, resourceTypeName, contextName, action, restriction);
         restrictionRepository.merge(restriction);
     }
 
@@ -322,7 +334,8 @@ public class PermissionBoundary implements Serializable {
         return permissionService.getPermissions();
     }
 
-    private void validateRestriction(String roleName, String permissionName, String contextName, Action action, RestrictionEntity restriction) throws AMWException {
+    private void validateRestriction(String roleName, String permissionName, Integer resourceId, String resourceTypeName,
+                                     String contextName, Action action, RestrictionEntity restriction) throws AMWException {
         if (roleName != null) {
             try {
                 restriction.setRole(permissionRepository.getRoleByName(roleName));
@@ -341,6 +354,22 @@ public class PermissionBoundary implements Serializable {
             }
         } else {
             throw new AMWException("Missing PermissionName");
+        }
+
+        if (resourceId != null) {
+            ResourceEntity resource = resourceRepository.find(resourceId);
+            if (resource == null) {
+                throw new AMWException("Resource with id " + resourceId +  " not found.");
+            }
+            restriction.setResource(resource);
+        }
+
+        if (resourceTypeName != null) {
+            ResourceTypeEntity resourceType = resourceTypeRepository.getByName(resourceTypeName);
+            if (resourceType == null) {
+                throw new AMWException("ResourceType " + resourceTypeName +  " not found.");
+            }
+            restriction.setResourceType(resourceType);
         }
 
         if (contextName != null) {

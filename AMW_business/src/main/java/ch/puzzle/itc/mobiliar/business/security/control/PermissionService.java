@@ -75,8 +75,7 @@ public class PermissionService implements Serializable {
      * @return the List of RoleEntity read from DB
      */
     public List<RoleEntity> getDeployableRolesNonCached() {
-        List<RoleEntity> roles = permissionRepository.getDeployableRoles();
-        return roles;
+        return permissionRepository.getDeployableRoles();
     }
 
     /**
@@ -390,11 +389,8 @@ public class PermissionService implements Serializable {
             return true;
         }
         // TODO do we have to check ResourceType from parent of parent as well?
-        if (resource.getResourceType() != null && resource.getResourceType().getParentResourceType() != null &&
-                restrictionDTO.getRestriction().getResourceType().equals(resource.getResourceType().getParentResourceType())) {
-            return true;
-        }
-        return false;
+        return resource.getResourceType() != null && resource.getResourceType().getParentResourceType() != null &&
+                restrictionDTO.getRestriction().getResourceType().equals(resource.getResourceType().getParentResourceType());
     }
 
     /**

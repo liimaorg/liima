@@ -45,16 +45,22 @@ public class RestrictionDTO {
     @ApiModelProperty(required = true)
     private Permission permission;
     @Getter @Setter
+    private Integer resourceId;
+    @Getter @Setter
+    private String resourceTypeName;
+    @Getter @Setter
     private String contextName;
     @Getter @Setter
     private Action action;
 
     RestrictionDTO(){}
 
-    public RestrictionDTO(Integer id, String roleName, Permission permission, String contextName, Action action) {
+    public RestrictionDTO(Integer id, String roleName, Permission permission, Integer resourceId, String resourceTypeName, String contextName, Action action) {
         this.id = id;
         this.roleName = roleName;
         this.permission = permission;
+        this.resourceId = resourceId;
+        this.resourceTypeName = resourceTypeName;
         this.contextName = contextName;
         this.action = action;
     }
@@ -63,6 +69,8 @@ public class RestrictionDTO {
         this.id = restrictionEntity.getId();
         this.roleName = restrictionEntity.getRole().getName();
         this.permission = Permission.valueOf(restrictionEntity.getPermission().getValue());
+        this.resourceId = restrictionEntity.getResource() != null ? restrictionEntity.getResource().getId() : null;
+        this.resourceTypeName = restrictionEntity.getResourceType() != null ? restrictionEntity.getResourceType().getName() : null;
         this.contextName = restrictionEntity.getContext() != null ? restrictionEntity.getContext().getName() : null;
         this.action = restrictionEntity.getAction();
     }
