@@ -185,6 +185,7 @@ public enum Permission {
 
     //NEW PERMISSIONS
     DEPLOYMENT("The right to deploy");
+    // COPY_FROM_RESOURCE
 
     private String info;
 

@@ -258,8 +258,7 @@ public class PermissionService implements Serializable {
 
         for (Map.Entry<String, List<RestrictionDTO>> entry : entries) {
             if (context == null) {
-                // TODO add resource as well (?)
-                matchPermissions(permissionName, action, allowedRoles, entry);
+                matchPermissions(permissionName, action, resource, allowedRoles, entry);
             } else {
                 matchPermissionsAndContext(permissionName, action, context, resource, allowedRoles, entry);
             }
@@ -284,10 +283,11 @@ public class PermissionService implements Serializable {
      * @param allowedRoles
      * @param entry
      */
-    private void matchPermissions(String permissionName, Action action, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
+    private void matchPermissions(String permissionName, Action action, ResourceEntity resource, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
         String roleName = entry.getKey();
         for (RestrictionDTO restrictionDTO : entry.getValue()) {
-            if (restrictionDTO.getPermissionName().equals(permissionName) && hasPermissionForAction(restrictionDTO, action)) {
+            if (restrictionDTO.getPermissionName().equals(permissionName) && hasPermissionForAction(restrictionDTO, action)
+                    && hasPermissionForResource(restrictionDTO, resource) && hasPermissionForResourceType(restrictionDTO, resource)) {
                 allowedRoles.add(roleName);
             }
         }
