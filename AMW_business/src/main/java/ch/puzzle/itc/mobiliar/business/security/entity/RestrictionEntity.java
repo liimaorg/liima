@@ -22,6 +22,9 @@ package ch.puzzle.itc.mobiliar.business.security.entity;
 
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -67,5 +70,17 @@ public class RestrictionEntity {
     @ManyToOne
     @JoinColumn(name = "context_id")
     private ContextEntity context;
+
+    @Getter
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "resourcetype_id")
+    private ResourceTypeEntity resourceType;
+
+    @Getter
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "resource_id")
+    private ResourceEntity resource;
 
 }
