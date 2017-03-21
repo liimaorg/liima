@@ -77,5 +77,6 @@
     <include file="changesets/model/newPermissions/newPermissions_dropColumns.xml" relativeToChangelogFile="true"/>
 
     <include file="changesets/model/newPermissions/newPermissions_extendRestrictionEntity.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationCopyFromResource.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

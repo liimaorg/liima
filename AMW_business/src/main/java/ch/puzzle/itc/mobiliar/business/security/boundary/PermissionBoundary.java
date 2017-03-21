@@ -249,7 +249,11 @@ public class PermissionBoundary implements Serializable {
         if (resourceEntity == null || resourceEntity.getResourceType() == null) {
             return false;
         }
-        if (resourceEntity.getResourceType().isApplicationServerResourceType()) {
+        // TODO review
+        return permissionService.hasPermissionForContextAndActionAndResource(Permission.COPY_FROM_RESOURCE, null,
+                Action.UPDATE, resourceEntity);
+
+/*        if (resourceEntity.getResourceType().isApplicationServerResourceType()) {
             return permissionService.hasPermission(Permission.COPY_FROM_RESOURCE_APPSERVER);
         }
         if (resourceEntity.getResourceType().isApplicationResourceType()) {
@@ -260,6 +264,7 @@ public class PermissionBoundary implements Serializable {
         }
 
         return permissionService.hasPermission(Permission.COPY_FROM_RESOURCE);
+*/
 
     }
 

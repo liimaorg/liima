@@ -97,10 +97,10 @@ public class CopyResourceDataProvider implements Serializable {
 	 */
 	public List<ResourceGroup> getResourcesForSelectedResourceType() {
 		if (resourceGroupMap == null) {
-			return new ArrayList<ResourceGroup>();
+			return new ArrayList<>();
 		}
-		SortedSet<ResourceGroup> groups = new TreeSet<ResourceGroup>(resourceGroupMap.values());
-		return new ArrayList<ResourceGroup>(groups);
+		SortedSet<ResourceGroup> groups = new TreeSet<>(resourceGroupMap.values());
+		return new ArrayList<>(groups);
 	}
 
 	/**
@@ -108,8 +108,8 @@ public class CopyResourceDataProvider implements Serializable {
 	 * 
 	 * @throws GeneralDBException
 	 */
-	private void refreshResourceList() throws GeneralDBException {
-		resourceGroupMap = new HashMap<Integer, ResourceGroup>();
+	private void refreshResourceList() {
+		resourceGroupMap = new HashMap<>();
 		if (loadList) {
 			List<ResourceGroup> freshGroupList = copyResource.loadResourceGroupsForType(
 					resource.getResourceType().getId(),
@@ -141,16 +141,9 @@ public class CopyResourceDataProvider implements Serializable {
 		try {
 			copyFromResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup)
 					.getSelectedResourceId());
-		}
-		catch (ResourceNotFoundException e) {
-			GlobalMessageAppender.addErrorMessage(e.getMessage());
-		}
-        catch (ForeignableOwnerViolationException e) {
+		} catch (ForeignableOwnerViolationException e) {
             GlobalMessageAppender.addErrorMessage("Owner "+e.getViolatingOwner()+" is not allowed to copy from selected resource because of violating "+e.getViolatedForeignableObject().getForeignableObjectName()+" with id "+ ((Identifiable)e.getViolatedForeignableObject()).getId());
         }
-		catch (GeneralDBException e) {
-			GlobalMessageAppender.addErrorMessage(e.getErrorMessage());
-		}
 		catch (AMWException e){
 			GlobalMessageAppender.addErrorMessage(e.getMessage());
 		}
@@ -158,21 +151,7 @@ public class CopyResourceDataProvider implements Serializable {
 	}
 
 	public String copyFromPredecessorResource(Integer selectedGroup) {
-		try {
-			copyFromPredecessorResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup));
-		}
-		catch (ResourceNotFoundException e) {
-			GlobalMessageAppender.addErrorMessage(e.getMessage());
-		}
-		catch (ForeignableOwnerViolationException e) {
-			GlobalMessageAppender.addErrorMessage("Owner "+e.getViolatingOwner()+" is not allowed to copy from selected resource because of violating "+e.getViolatedForeignableObject().getForeignableObjectName()+" with id "+ ((Identifiable)e.getViolatedForeignableObject()).getId());
-		}
-		catch (GeneralDBException e) {
-			GlobalMessageAppender.addErrorMessage(e.getErrorMessage());
-		}
-		catch (AMWException e){
-			GlobalMessageAppender.addErrorMessage(e.getMessage());
-		}
+		copyFromPredecessorResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup));
 		return NavigationUtils.getRefreshOutcome();
 	}
 
@@ -184,7 +163,7 @@ public class CopyResourceDataProvider implements Serializable {
 	 * @throws ResourceNotFoundException
 	 */
 	private boolean copyFromResourceAction(ResourceEntity resourceToOverwrite, Integer copyFromResourceId)
-			throws AMWException, GeneralDBException, ForeignableOwnerViolationException {
+			throws AMWException, ForeignableOwnerViolationException {
 		if (resourceToOverwrite == null) {
 			String message = "No resource selected.";
 			GlobalMessageAppender.addErrorMessage(message);
@@ -214,8 +193,7 @@ public class CopyResourceDataProvider implements Serializable {
 	 * @throws GeneralDBException
 	 * @throws ResourceNotFoundException
 	 */
-	private boolean copyFromPredecessorResourceAction(ResourceEntity resourceToOverwrite, ResourceGroup predecessor)
-			throws AMWException, GeneralDBException, ForeignableOwnerViolationException {
+	private boolean copyFromPredecessorResourceAction(ResourceEntity resourceToOverwrite, ResourceGroup predecessor) {
 		if (resourceToOverwrite == null) {
 			String message = "No resource selected.";
 			GlobalMessageAppender.addErrorMessage(message);
@@ -249,7 +227,7 @@ public class CopyResourceDataProvider implements Serializable {
 	 * @throws GeneralDBException
 	 */
 	public List<ResourceGroup> loadResourcesForSelectedType(Integer resourceTypeId,
-			List<Integer> excludedList) throws GeneralDBException {
+			List<Integer> excludedList) {
 		return copyResource.loadResourceGroupsForType(resourceTypeId, resource.getResource());
 	}
 

@@ -60,10 +60,11 @@ public enum Permission {
 
     CHANGE_RESOURCE_RELEASE("With this permission the viewer can view releases"),
 
-    COPY_FROM_RESOURCE("With this permission the config admin can copy the configuration from one non default resource into an other."),
-    COPY_FROM_RESOURCE_APP("With this permission the config admin can copy the configuration from one app into an other."),
-    COPY_FROM_RESOURCE_APPSERVER("With this permission the config admin can copy the configuration from one appserver into an other."),
-    COPY_FROM_RESOURCE_NODE("With this permission the config admin can copy the configuration from one node into an other."),
+    //ALREADY MIGRATED TO NEW PERMISSION MODEL
+    // COPY_FROM_RESOURCE("With this permission the config admin can copy the configuration from one non default resource into an other."),
+    // COPY_FROM_RESOURCE_APP("With this permission the config admin can copy the configuration from one app into an other."),
+    // COPY_FROM_RESOURCE_APPSERVER("With this permission the config admin can copy the configuration from one appserver into an other."),
+    // COPY_FROM_RESOURCE_NODE("With this permission the config admin can copy the configuration from one node into an other."),
 
 
     TEST_GENERATION("With this permission the user can test the generation of an Applicationserver"),
@@ -184,8 +185,8 @@ public enum Permission {
     ADD_STP("Path: Settings -> select STP Management -> Add new STP"),
 
     //NEW PERMISSIONS
-    DEPLOYMENT("The right to deploy");
-    // COPY_FROM_RESOURCE
+    DEPLOYMENT("The right to deploy."),
+    COPY_FROM_RESOURCE("The right to copy the configuration from one resource into an other.");
 
     private String info;
 
