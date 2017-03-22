@@ -18,37 +18,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.puzzle.itc.mobiliar.business.security.interceptor;
+package ch.puzzle.itc.mobiliar.test;
 
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 
-import javax.enterprise.util.Nonbinding;
-import javax.interceptor.InterceptorBinding;
-import javax.persistence.Inheritance;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+public class TestBoundary {
 
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.NULL;
-import static ch.puzzle.itc.mobiliar.business.security.entity.Permission.DEFAULT;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+    public void noPermissionNeeded() {
 
-@InterceptorBinding
-@Retention(RUNTIME)
-@Target({METHOD, TYPE})
-@Inheritance
-public @interface HasPermission {
-	@Nonbinding
-	Permission permission() default DEFAULT;
-	
-	@Nonbinding
-	Permission[] oneOfPermission() default {};
+    }
 
-	@Nonbinding
-	Action action() default NULL;
+    @HasPermission(permission = Permission.DEPLOYMENT)
+    public void deployPermissionNeeded() {
 
-	@Nonbinding
-	Action[] oneOfAction() default {};
+    }
+
+    @HasPermission(permission = Permission.DEPLOYMENT, action = Action.CREATE)
+    public void deployPermissionActionCreateNeeded() {
+
+    }
+
+    @HasPermission(permission = Permission.DEPLOYMENT, oneOfAction = { Action.CREATE, Action.UPDATE} )
+    public void deployPermissionActionCreateOrUpdateNeeded() {
+
+    }
+
+    @HasPermission(oneOfPermission = { Permission.COPY_FROM_RESOURCE, Permission.DEPLOYMENT }, oneOfAction = { Action.CREATE, Action.UPDATE} )
+    public void deployOrCopyFromPermissionActionCreateOrUpdateNeeded() {
+
+    }
 }

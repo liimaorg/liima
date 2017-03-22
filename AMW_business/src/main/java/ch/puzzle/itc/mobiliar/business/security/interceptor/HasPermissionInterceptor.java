@@ -51,7 +51,9 @@ public class HasPermissionInterceptor implements Serializable {
 
 		List<Permission> permissions = new ArrayList<>();
 		if (permissionMethodAnnotation != null) {
-			permissions.add(permissionMethodAnnotation.permission());
+			if (!permissionMethodAnnotation.permission().equals(Permission.DEFAULT)) {
+				permissions.add(permissionMethodAnnotation.permission());
+			}
 			if (permissionMethodAnnotation.oneOfPermission().length > 0) {
 				Collections.addAll(permissions, permissionMethodAnnotation.oneOfPermission());
 			}
