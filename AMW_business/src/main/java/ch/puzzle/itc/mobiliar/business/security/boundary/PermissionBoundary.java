@@ -30,6 +30,8 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.CheckedNotAuthorizedException;
@@ -39,6 +41,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
@@ -49,6 +52,7 @@ import java.util.Map;
  * A boundary for checking permissions of view elements
  */
 @Stateless
+@Interceptors(HasPermissionInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class PermissionBoundary implements Serializable {
 
@@ -110,8 +114,18 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermission(permission);
     }
 
+    public boolean hasPermission(String permissionName, String actionName) {
+        Permission permission = Permission.valueOf(permissionName);
+        Action action = Action.valueOf(actionName);
+        return permissionService.hasPermissionAndAction(permission, action);
+    }
+
     public boolean hasPermission(Permission permission) {
         return permissionService.hasPermission(permission);
+    }
+
+    public boolean hasPermission(Permission permission, Action action) {
+        return permissionService.hasPermissionAndAction(permission, action);
     }
 
     /**
@@ -250,7 +264,7 @@ public class PermissionBoundary implements Serializable {
             return false;
         }
         // TODO review
-        return permissionService.hasPermissionForContextAndActionAndResource(Permission.COPY_FROM_RESOURCE, null,
+        return permissionService.hasPermission(Permission.COPY_FROM_RESOURCE, null,
                 Action.UPDATE, resourceEntity);
 
 /*        if (resourceEntity.getResourceType().isApplicationServerResourceType()) {

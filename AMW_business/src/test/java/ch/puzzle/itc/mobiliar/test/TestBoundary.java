@@ -31,22 +31,17 @@ public class TestBoundary {
     }
 
     @HasPermission(permission = Permission.DEPLOYMENT)
-    public void deployPermissionNeeded() {
-
-    }
+    public void deployPermissionNeeded() {}
 
     @HasPermission(permission = Permission.DEPLOYMENT, action = Action.CREATE)
-    public void deployPermissionActionCreateNeeded() {
-
-    }
+    public void deployPermissionActionCreateNeeded() {}
 
     @HasPermission(permission = Permission.DEPLOYMENT, oneOfAction = { Action.CREATE, Action.UPDATE} )
-    public void deployPermissionActionCreateOrUpdateNeeded() {
-
-    }
+    public void deployPermissionActionCreateOrUpdateNeeded() {}
 
     @HasPermission(oneOfPermission = { Permission.COPY_FROM_RESOURCE, Permission.DEPLOYMENT }, oneOfAction = { Action.CREATE, Action.UPDATE} )
-    public void deployOrCopyFromPermissionActionCreateOrUpdateNeeded() {
+    public void deployOrCopyFromPermissionActionCreateOrUpdateNeeded() {}
 
-    }
+    @HasPermission(permission = Permission.DEPLOYMENT, action = Action.CREATE, resourceSpecific = true)
+    public void deployPermissionActionCreateForSpecificResourceNeeded() {}
 }

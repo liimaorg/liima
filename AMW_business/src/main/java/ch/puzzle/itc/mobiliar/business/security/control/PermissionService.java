@@ -155,23 +155,23 @@ public class PermissionService implements Serializable {
     }
 
     public boolean hasPermission(Permission permission) {
-        return hasPermission(permission.name(), null, null, null);
+        return hasRole(permission.name(), null, null, null);
     }
 
     public boolean hasPermissionAndAction(Permission permission, Action action) {
-        return hasPermission(permission.name(), null, action, null);
+        return hasRole(permission.name(), null, action, null);
     }
 
     public boolean hasPermissionForContext(Permission permission, ContextEntity context) {
-        return hasPermission(permission.name(), context, null, null);
+        return hasRole(permission.name(), context, null, null);
     }
 
-    public boolean hasPermissionForContextAndAction(Permission permission, ContextEntity context, Action action) {
-        return hasPermission(permission.name(), context, action, null);
+    public boolean hasPermission(Permission permission, ContextEntity context, Action action) {
+        return hasRole(permission.name(), context, action, null);
     }
 
-    public boolean hasPermissionForContextAndActionAndResource(Permission permission, ContextEntity context, Action action, ResourceEntity resource) {
-        return hasPermission(permission.name(), context, action, resource);
+    public boolean hasPermission(Permission permission, ContextEntity context, Action action, ResourceEntity resource) {
+        return hasRole(permission.name(), context, action, resource);
     }
 
     /**
@@ -252,7 +252,7 @@ public class PermissionService implements Serializable {
         return false;
     }
 
-    private boolean hasPermission(String permissionName, ContextEntity context, Action action, ResourceEntity resource) {
+    private boolean hasRole(String permissionName, ContextEntity context, Action action, ResourceEntity resource) {
         List<String> allowedRoles = new ArrayList<>();
         Set<Map.Entry<String, List<RestrictionDTO>>> entries = getPermissions().entrySet();
 
@@ -443,19 +443,9 @@ public class PermissionService implements Serializable {
         if (res.getResourceType() == null) {
             return false;
         }
-
         // Abwärtskompatibilität: RENAME_INSTANCE_DEFAULT_RESOURCE
-        if (res.getResourceType().isApplicationResourceType()) {
-            return hasPermission(Permission.RENAME_APP) || hasPermission(Permission.RENAME_INSTANCE_DEFAULT_RESOURCE);
-        }
-        if (res.getResourceType().isApplicationServerResourceType()) {
-            return hasPermission(Permission.RENAME_APPSERVER) || hasPermission(Permission.RENAME_INSTANCE_DEFAULT_RESOURCE);
-        }
-        if (res.getResourceType().isNodeResourceType()) {
-            return hasPermission(Permission.RENAME_NODE) || hasPermission(Permission.RENAME_INSTANCE_DEFAULT_RESOURCE);
-        }
-
-        return hasPermission(Permission.RENAME_RES);
+        return hasPermission(Permission.RENAME_RESOURCE, null, null, res) ||
+                hasPermission(Permission.RENAME_INSTANCE_DEFAULT_RESOURCE);
     }
 
     /**

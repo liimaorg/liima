@@ -65,7 +65,7 @@
 					</h:link></li>
 				<li class="${param['mode']== 'releases' ? 'current' : ''}"><h:link
 						value="Releases"
-						rendered="#{securityDataProvider.hasPermission('VIEW_RELEASE')}">
+						rendered="#{securityDataProvider.hasPermission('RELEASE','READ')}">
 						<f:param name="mode" value="releases" />
 					</h:link></li>
 

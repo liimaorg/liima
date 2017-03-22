@@ -39,12 +39,6 @@ public enum Permission {
     EDIT_NOT_DEFAULT_RES_OF_RESTYPE("With this permission the config admin can rename the NOT DEFAULT RESOURCE AND RESOURCE TYPE. The DEAFULT RESOURCE TYPE are: APPLICATION, APPLICATION SERVER and NODE"),
     RENAME_INSTANCE_DEFAULT_RESOURCE("With this permission it is possible to rename all instances of default resource types. This permission has only effect if it is not combined with EDIT_RES_OR_RESTYPE_NAME since it is more restrictive. WARNING: DON'T CHANGE THIS PERMISSION"),
 
-    RENAME_APPSERVER("With this permission it is possible to rename all AppServer instances."),
-    RENAME_APP("With this permission it is possible to rename all APP instances."),
-    RENAME_NODE("With this permission it is possible to rename all NODE instances."),
-    RENAME_RES("With this permission it is possible to rename everthing else."),
-
-
     INSTANCE_TEMP_LIST("Instance template list. You can find this list in all Resource and Resource Type screen."),
     DELETE_RES_TEMPLATE("Delete instance template. You can find this link in all Templates/Relationship Templates panel in all Resource/Resource screen."),
     EDIT_RES_TEMP("Permission to edit the template of a resource"),
@@ -52,20 +46,6 @@ public enum Permission {
     TAG_CURRENT_STATE("Tag current state. You can find this select one menu in application instance screen and in all not default resource screen. "),
 
     EXCLUDE_APP_FROM_NODE("Exclude application from node. You find can this checkbox in all instances of applications server"),
-
-    CREATE_RELEASE("With this permission the config admin can create releases."),
-    EDIT_RELEASE("With this permission the config admin can edit releases."),
-    DELETE_RELEASE("With this permission the config admin can delete releases."),
-    VIEW_RELEASE("With this permission the viewer can view releases"),
-
-    CHANGE_RESOURCE_RELEASE("With this permission the viewer can view releases"),
-
-    //ALREADY MIGRATED TO NEW PERMISSION MODEL
-    // COPY_FROM_RESOURCE("With this permission the config admin can copy the configuration from one non default resource into an other."),
-    // COPY_FROM_RESOURCE_APP("With this permission the config admin can copy the configuration from one app into an other."),
-    // COPY_FROM_RESOURCE_APPSERVER("With this permission the config admin can copy the configuration from one appserver into an other."),
-    // COPY_FROM_RESOURCE_NODE("With this permission the config admin can copy the configuration from one node into an other."),
-
 
     TEST_GENERATION("With this permission the user can test the generation of an Applicationserver"),
 
@@ -86,7 +66,7 @@ public enum Permission {
     DELETE_APP_TO_APP_SERVER("Delete application to application server. You can find this list in all instances of application server"),
     APP_LIST_ADDED_APPSERVER("The Applications added to applicationserver. Path: Resource -> APPLICATIONSERVER -> Edit"),
 
-    MODIFY_APPSERVER_RELATION("With this permission the config admin can make modifications in the appServerRelations screen."),
+    //MODIFY_APPSERVER_RELATION("With this permission the config admin can make modifications in the appServerRelations screen."),
 
     //RESOURCE TYPE PERMISSIONS
     NEW_RESTYPE("New resource type button. Path: Resources"),
@@ -186,7 +166,22 @@ public enum Permission {
 
     //NEW PERMISSIONS
     DEPLOYMENT("The right to deploy."),
-    COPY_FROM_RESOURCE("The right to copy the configuration from one resource into an other.");
+    COPY_FROM_RESOURCE("The right to copy the configuration from one resource into an other."),
+    // COPY_FROM_RESOURCE("With this permission the config admin can copy the configuration from one non default resource into an other."),
+    // COPY_FROM_RESOURCE_APP("With this permission the config admin can copy the configuration from one app into an other."),
+    // COPY_FROM_RESOURCE_APPSERVER("With this permission the config admin can copy the configuration from one appserver into an other."),
+    // COPY_FROM_RESOURCE_NODE("With this permission the config admin can copy the configuration from one node into an other."),
+    RENAME_RESOURCE("The right to rename resources"),
+    // RENAME_APPSERVER("With this permission it is possible to rename all AppServer instances."),
+    // RENAME_APP("With this permission it is possible to rename all APP instances."),
+    // RENAME_NODE("With this permission it is possible to rename all NODE instances."),
+    // RENAME_RES("With this permission it is possible to rename everthing else."),
+    RELEASE("The right to create, read, update or delete releases");
+    // CREATE_RELEASE("With this permission the config admin can create releases."),
+    // EDIT_RELEASE("With this permission the config admin can edit releases."),
+    // DELETE_RELEASE("With this permission the config admin can delete releases."),
+    // VIEW_RELEASE("With this permission the viewer can view releases"),
+    // CHANGE_RESOURCE_RELEASE("With this permission the viewer can view releases"),
 
     private String info;
 

@@ -51,4 +51,7 @@ public @interface HasPermission {
 
 	@Nonbinding
 	Action[] oneOfAction() default {};
+
+	@Nonbinding
+	boolean resourceSpecific() default false;
 }

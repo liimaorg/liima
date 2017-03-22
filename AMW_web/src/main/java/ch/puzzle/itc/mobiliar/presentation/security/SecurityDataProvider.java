@@ -176,6 +176,10 @@ public class SecurityDataProvider implements Serializable{
 		return permissionBoundary.hasPermission(permissionValue);
 	}
 
+	public boolean hasPermission(String permissionValue, String actionValue){
+		return permissionBoundary.hasPermission(permissionValue, actionValue);
+	}
+
 	public Integer getPermissionSelected() {
 		return permissionSelected;
 	}

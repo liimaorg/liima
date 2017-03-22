@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.security.interceptor;
 
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
@@ -76,6 +77,11 @@ public class HasPermissionInterceptor implements Serializable {
 		return actions;
 	}
 
+	private static boolean hasResourceSpecific(InvocationContext context) {
+		HasPermission permissionMethodAnnotation = getMethodPermissionAnnotation(context);
+		return permissionMethodAnnotation != null && permissionMethodAnnotation.resourceSpecific();
+	}
+
 	private static HasPermission getMethodPermissionAnnotation(InvocationContext context) {
 		return context.getMethod().getAnnotation(HasPermission.class);
 	}
@@ -84,18 +90,29 @@ public class HasPermissionInterceptor implements Serializable {
 	public Object roleCall(InvocationContext context) throws Exception {
 		List<Permission> permissions = getRequiredPermission(context);
 		List<Action> actions = getRequiredAction(context);
+		boolean resourceSpecific = hasResourceSpecific(context);
+		ResourceEntity resource = null;
 
 		if (permissions.isEmpty()) {
 			return context.proceed();
 		} else {
+			// TODO review
+			if (resourceSpecific && context.getParameters().length > 0) {
+				for (Object o : context.getParameters()) {
+					if (o instanceof ResourceEntity) {
+						resource = (ResourceEntity) o;
+						break;
+					}
+				}
+			}
 			for (Permission permission : permissions) {
 				if (actions.isEmpty()) {
-					if (permissionService.hasPermissionAndAction(permission, null)) {
+					if (permissionService.hasPermission(permission, null, null, resource)) {
 						return context.proceed();
 					}
 				} else {
 					for (Action action : actions) {
-						if (permissionService.hasPermissionAndAction(permission, action)) {
+						if (permissionService.hasPermission(permission, null, action, resource)) {
 							return context.proceed();
 						}
 					}
