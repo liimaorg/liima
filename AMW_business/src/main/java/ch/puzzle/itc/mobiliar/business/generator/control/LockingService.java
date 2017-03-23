@@ -58,15 +58,17 @@ public class LockingService
 	 */
 	public DeploymentEntity lockDeployment(Integer id) {
 		int count = 0;
+		int backoff = 300;
 		
-		log.info("Locking deployment " + id);
+		log.fine("Locking deployment " + id);
 		for(; count <= lockRetries; count++) {
 			try {
 				return entityManager.find(DeploymentEntity.class, id, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
 			} catch (LockTimeoutException e) {
-				log.info("Retrying to lock in 200 ms");
+				backoff = getBackoff(backoff);
+				log.info("Retring to lock deployment " + id + " in " + backoff + " ms");
 				try {
-					Thread.sleep(200);
+					Thread.sleep(backoff);
 				} catch (InterruptedException e1) {
 					throw new AMWRuntimeException("Exception while waiting to lock deployment " + id, e1);
 				}
@@ -85,9 +87,8 @@ public class LockingService
 	 * @param generationModus
 	 * @return true if the deployment has been locked for this application server and can be executed, false otherwise
 	 */
-	//TODO: better move deployment state change to separate methods so no if/else is needed?
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public boolean lockDeploymentForExecution(Integer id, GenerationModus generationModus){
+	public boolean markDeploymentAsRunning(Integer id, GenerationModus generationModus){
 		DeploymentEntity d = lockDeployment(id);
 		
 		if(d == null) {
@@ -124,7 +125,7 @@ public class LockingService
 	 * @return true if the test has successfully been locked and can be executed, false otherwise
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public boolean lockShakedownTestForTesting(Integer id){
+	public boolean markShakedownTestAsRunning(Integer id){
 		if (id != null) {
 			try {
 				boolean success = false;
@@ -147,5 +148,12 @@ public class LockingService
 		return false;
 	}
 	
-
+	/**
+	 * Calculates a new backoff based on the previous backoff. Loosely based on
+	 * a logarithmic algorithm.
+	 */
+	private int getBackoff(int currentBackofflMillis) {
+	    double delta = 0.3d * currentBackofflMillis;
+	    return (int) (1.5 * currentBackofflMillis + (Math.random() * (delta + 1)));
+	  }
 }

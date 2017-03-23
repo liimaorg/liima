@@ -74,36 +74,25 @@ public class DeploymentExecuterService {
 	 */
 	@Asynchronous
 	public void generateConfigurationAndExecuteDeployment(Integer deploymentId, GenerationModus generationModus) {
-		DeploymentEntity deployment = deploymentService.getDeploymentById(deploymentId);
-
-		if (deployment != null) {
-			// lock Deployment
-			boolean lockSuccessful = lockingService.lockDeploymentForExecution(deployment.getId(), generationModus);
-			if (lockSuccessful) {
-				// Reload the entity because it has been changed by another
-				// transaction within the locking mechanism.
-				entityManager.clear();
-				deployment = entityManager.find(DeploymentEntity.class, deployment.getId());
-
-				// generate Config
-				GenerationResult result = null;
-				
-				try{
-					log.info("Generating deployment " + deployment.getId());
-					result = generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(deployment, generationModus);
-				// catch all Exceptions during Generation
-				}catch (Exception e) {
-					log.log(Level.SEVERE, "Deployment not successful: " + deploymentId, e);
-					deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, null, e);
-				}
-
-				if (result != null && !result.hasErrors()) {
-					deploymentAsynchronousExecuter.executeDeployment(result, deployment, generationModus);
-				}
-			}
+		GenerationResult result = null;
+		// lock Deployment
+		boolean isLocked = lockingService.markDeploymentAsRunning(deploymentId, generationModus);
+		//failed lock
+		if (!isLocked) {
+			return;
 		}
-		else {
-			log.log(Level.SEVERE, "No deployment found for deploymentId " + deploymentId);
+		DeploymentEntity deployment = deploymentService.getDeploymentById(deploymentId);
+		try {
+			log.info("Generating deployment " + deployment.getId());
+			result = generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(deployment, generationModus);
+			// catch all Exceptions during Generation
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Deployment not successful: " + deploymentId, e);
+			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, null, e);
+		}
+
+		if (result != null && !result.hasErrors()) {
+			deploymentAsynchronousExecuter.executeDeployment(result, deployment, generationModus);
 		}
 	}
 }

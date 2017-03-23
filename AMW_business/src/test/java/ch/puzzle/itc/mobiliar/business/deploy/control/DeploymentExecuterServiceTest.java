@@ -127,7 +127,6 @@ public class DeploymentExecuterServiceTest {
 	@Test
 	public void test_executeDeployment_No_DeploymentFound() {
 		// given
-
 		when(deploymentService.getDeploymentById(Integer.valueOf(1))).thenReturn(null);
 
 		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenReturn(null);
@@ -136,13 +135,10 @@ public class DeploymentExecuterServiceTest {
 		deploymentExecuterService.generateConfigurationAndExecuteDeployment(Integer.valueOf(1), GenerationModus.DEPLOY);
 
 		// then
-		verify(deploymentService, times(1)).getDeploymentById(Integer.valueOf(1));
 		verify(generatorDomainServiceWithAppServerRelations, times(0)).generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class));
 		verify(deploymentAsynchronousExecuter, times(0))
 		.executeDeployment(any(GenerationResult.class), any(DeploymentEntity.class), any(GenerationModus.class));
-		verify(locking, times(0)).lockDeploymentForExecution(any(Integer.class), any(GenerationModus.class));
-		verify(log, times(1)).log(any(Level.class), anyString());
-
+		verify(locking, times(1)).markDeploymentAsRunning(any(Integer.class), any(GenerationModus.class));
 	}
 
 	@Test
@@ -150,17 +146,17 @@ public class DeploymentExecuterServiceTest {
 		// given
 		when(deploymentService.getDeploymentById(deployment.getId())).thenReturn(deployment);
 
-		when(locking.lockDeploymentForExecution(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(false);
+		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(false);
 
 		// when
 		deploymentExecuterService.generateConfigurationAndExecuteDeployment(deployment.getId(), GenerationModus.DEPLOY);
 
 		// then
-		verify(deploymentService, times(1)).getDeploymentById(deployment.getId());
+		verify(deploymentService, times(0)).getDeploymentById(deployment.getId());
 		verify(generatorDomainServiceWithAppServerRelations, times(0)).generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class));
 		verify(deploymentAsynchronousExecuter, times(0))
 		.executeDeployment(any(GenerationResult.class), any(DeploymentEntity.class), any(GenerationModus.class));
-		verify(locking, times(1)).lockDeploymentForExecution(deployment.getId(), GenerationModus.DEPLOY);
+		verify(locking, times(1)).markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY);
 		verify(log, times(0)).log(any(Level.class), anyString());
 
 	}
@@ -172,7 +168,7 @@ public class DeploymentExecuterServiceTest {
 
 		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenReturn(null);
 
-		when(locking.lockDeploymentForExecution(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(true);
+		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(true);
 		when(entityManager.find(DeploymentEntity.class, deployment.getId())).thenReturn(deployment);
 
 		// when
@@ -184,7 +180,7 @@ public class DeploymentExecuterServiceTest {
 		verify(generatorDomainServiceWithAppServerRelations, times(1)).generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class));
 		verify(deploymentAsynchronousExecuter, times(0))
 		.executeDeployment(any(GenerationResult.class), any(DeploymentEntity.class), any(GenerationModus.class));
-		verify(locking, times(1)).lockDeploymentForExecution(deployment.getId(), GenerationModus.DEPLOY);
+		verify(locking, times(1)).markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY);
 		verify(log, times(0)).log(any(Level.class), anyString());
 
 	}
@@ -197,7 +193,7 @@ public class DeploymentExecuterServiceTest {
 
 		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenReturn(result);
 
-		when(locking.lockDeploymentForExecution(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(true);
+		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(true);
 		when(entityManager.find(DeploymentEntity.class, deployment.getId())).thenReturn(deployment);
 
 		// when
@@ -207,7 +203,7 @@ public class DeploymentExecuterServiceTest {
 		verify(deploymentService, times(1)).getDeploymentById(deployment.getId());
 		verify(generatorDomainServiceWithAppServerRelations, times(1)).generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class));
 		verify(deploymentAsynchronousExecuter, times(1)).executeDeployment(result, deployment, GenerationModus.DEPLOY);
-		verify(locking, times(1)).lockDeploymentForExecution(deployment.getId(), GenerationModus.DEPLOY);
+		verify(locking, times(1)).markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY);
 		verify(log, times(0)).log(any(Level.class), anyString());
 	}
 
@@ -219,7 +215,7 @@ public class DeploymentExecuterServiceTest {
 
 		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenThrow(e);
 
-		when(locking.lockDeploymentForExecution(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(true);
+		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(true);
 		when(entityManager.find(DeploymentEntity.class, deployment.getId())).thenReturn(deployment);
 
 		// when
@@ -230,7 +226,7 @@ public class DeploymentExecuterServiceTest {
 		verify(generatorDomainServiceWithAppServerRelations, times(1)).generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class));
 		verify(deploymentAsynchronousExecuter, times(0)).executeDeployment(any(GenerationResult.class), any(DeploymentEntity.class), any(GenerationModus.class));
 		verify(deploymentExecutionResultHandler, times(1)).handleUnSuccessfulDeployment(GenerationModus.DEPLOY, deployment,null, e);
-		verify(locking, times(1)).lockDeploymentForExecution(deployment.getId(), GenerationModus.DEPLOY);
+		verify(locking, times(1)).markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY);
 	}
 
 	@Test
@@ -242,7 +238,7 @@ public class DeploymentExecuterServiceTest {
 
 		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenReturn(result);
 
-		when(locking.lockDeploymentForExecution(deployment.getId(), GenerationModus.SIMULATE)).thenReturn(true);
+		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.SIMULATE)).thenReturn(true);
 		when(entityManager.find(DeploymentEntity.class, deployment.getId())).thenReturn(deployment);
 
 		// when
@@ -252,7 +248,7 @@ public class DeploymentExecuterServiceTest {
 		verify(deploymentService, times(1)).getDeploymentById(deployment.getId());
 		verify(generatorDomainServiceWithAppServerRelations, times(1)).generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class));
 		verify(deploymentAsynchronousExecuter, times(1)).executeDeployment(result, deployment, GenerationModus.SIMULATE);
-		verify(locking, times(1)).lockDeploymentForExecution(deployment.getId(), GenerationModus.SIMULATE);
+		verify(locking, times(1)).markDeploymentAsRunning(deployment.getId(), GenerationModus.SIMULATE);
 		verify(log, times(0)).log(any(Level.class), anyString());
 	}
 
@@ -266,7 +262,7 @@ public class DeploymentExecuterServiceTest {
 
 		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenReturn(result);
 
-		when(locking.lockDeploymentForExecution(deployment.getId(), GenerationModus.SIMULATE)).thenReturn(true);
+		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.SIMULATE)).thenReturn(true);
 		when(entityManager.find(DeploymentEntity.class, deployment.getId())).thenReturn(deployment);
 
 		// when
@@ -276,7 +272,7 @@ public class DeploymentExecuterServiceTest {
 		verify(deploymentService, times(1)).getDeploymentById(deployment.getId());
 		verify(generatorDomainServiceWithAppServerRelations, times(1)).generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class));
 		verify(deploymentAsynchronousExecuter, times(0)).executeDeployment(result, deployment, GenerationModus.SIMULATE);
-		verify(locking, times(1)).lockDeploymentForExecution(deployment.getId(), GenerationModus.SIMULATE);
+		verify(locking, times(1)).markDeploymentAsRunning(deployment.getId(), GenerationModus.SIMULATE);
 		verify(log, times(0)).log(any(Level.class), anyString());
 	}
 }

@@ -100,7 +100,7 @@ public class ShakedownTestExecuterServiceTest {
 		ShakedownTestGenerationResult generationResult = ShakedownTestGenerationResultBuilder.buildGenerationResultSuccess(resultShakedownTestEntity, null);
 
 		when(shakedownTestService.getShakedownTestById(test.getId())).thenReturn(test);
-		when(locking.lockShakedownTestForTesting(test.getId())).thenReturn(true);
+		when(locking.markShakedownTestAsRunning(test.getId())).thenReturn(true);
 		when(entityManager.find(ShakedownTestEntity.class, test.getId())).thenReturn(test);
 		when(shakedownTestGeneratorDomainService.generateConfigurationForShakedownTest(test)).thenReturn(generationResult);
 
@@ -122,7 +122,7 @@ public class ShakedownTestExecuterServiceTest {
 		ShakedownTestGenerationResult generationResult = ShakedownTestGenerationResultBuilder.mockGenerationResultWithErrors(test, null);
 
 		when(shakedownTestService.getShakedownTestById(test.getId())).thenReturn(test);
-		when(locking.lockShakedownTestForTesting(test.getId())).thenReturn(true);
+		when(locking.markShakedownTestAsRunning(test.getId())).thenReturn(true);
 		when(entityManager.find(ShakedownTestEntity.class, test.getId())).thenReturn(test);
 		when(shakedownTestGeneratorDomainService.generateConfigurationForShakedownTest(test)).thenReturn(generationResult);
 
@@ -142,7 +142,7 @@ public class ShakedownTestExecuterServiceTest {
 		test.setContext(contextEntity);
 
 		when(shakedownTestService.getShakedownTestById(test.getId())).thenReturn(test);
-		when(locking.lockShakedownTestForTesting(test.getId())).thenReturn(true);
+		when(locking.markShakedownTestAsRunning(test.getId())).thenReturn(true);
 		when(entityManager.find(ShakedownTestEntity.class, test.getId())).thenReturn(test);
 		when(shakedownTestGeneratorDomainService.generateConfigurationForShakedownTest(test)).thenReturn(null);
 
