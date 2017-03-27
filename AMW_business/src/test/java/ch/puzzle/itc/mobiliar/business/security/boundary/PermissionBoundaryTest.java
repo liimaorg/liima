@@ -21,7 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.security.boundary;
 
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
@@ -56,7 +56,7 @@ public class PermissionBoundaryTest {
     @Mock
     ResourceTypeRepository resourceTypeRepository;
     @Mock
-    ResourceRepository resourceRepository;
+    ResourceGroupRepository resourceGroupRepository;
 
     @Before
     public void setup() {
@@ -69,8 +69,8 @@ public class PermissionBoundaryTest {
         permissionBoundary.contextLocator = contextLocator;
         resourceTypeRepository = Mockito.mock(ResourceTypeRepository.class);
         permissionBoundary.resourceTypeRepository = resourceTypeRepository;
-        resourceRepository = Mockito.mock(ResourceRepository.class);
-        permissionBoundary.resourceRepository = resourceRepository;
+        resourceGroupRepository = Mockito.mock(ResourceGroupRepository.class);
+        permissionBoundary.resourceGroupRepository = resourceGroupRepository;
     }
 
     @Test(expected=AMWException.class)
@@ -198,7 +198,7 @@ public class PermissionBoundaryTest {
         // given
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
         when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
-        when(resourceRepository.find(7)).thenReturn(null);
+        when(resourceGroupRepository.find(7)).thenReturn(null);
         // when // then
         permissionBoundary.createRestriction("existing", "good", 7, null, null, null);
     }
@@ -218,7 +218,5 @@ public class PermissionBoundaryTest {
         // then
         verify(restrictionRepository, times(1)).remove(42);
     }
-
-
 
 }

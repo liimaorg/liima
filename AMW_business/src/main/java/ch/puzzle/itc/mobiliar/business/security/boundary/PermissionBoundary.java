@@ -21,16 +21,16 @@
 package ch.puzzle.itc.mobiliar.business.security.boundary;
 
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -72,7 +72,7 @@ public class PermissionBoundary implements Serializable {
     ContextLocator contextLocator;
 
     @Inject
-    ResourceRepository resourceRepository;
+    ResourceGroupRepository resourceGroupRepository;
 
     @Inject
     ResourceTypeProvider resourceTypeProvider;
@@ -299,17 +299,17 @@ public class PermissionBoundary implements Serializable {
      *
      * @param roleName
      * @param permissionName
-     * @param resourceId
+     * @param resourceGroupId
      * @param resourceTypeName
      * @param contextName
      * @param action
      * @return Id of the newly created RestrictionEntity
      * @throws AMWException
      */
-    public Integer createRestriction(String roleName, String permissionName, Integer resourceId, String resourceTypeName,
+    public Integer createRestriction(String roleName, String permissionName, Integer resourceGroupId, String resourceTypeName,
                                      String contextName, Action action) throws AMWException {
         RestrictionEntity restriction = new RestrictionEntity();
-        validateRestriction(roleName, permissionName, resourceId, resourceTypeName, contextName, action, restriction);
+        validateRestriction(roleName, permissionName, resourceGroupId, resourceTypeName, contextName, action, restriction);
         return restrictionRepository.create(restriction);
     }
 
@@ -353,7 +353,7 @@ public class PermissionBoundary implements Serializable {
         return permissionService.getPermissions();
     }
 
-    private void validateRestriction(String roleName, String permissionName, Integer resourceId, String resourceTypeName,
+    private void validateRestriction(String roleName, String permissionName, Integer resourceGroupId, String resourceTypeName,
                                      String contextName, Action action, RestrictionEntity restriction) throws AMWException {
         if (roleName != null) {
             try {
@@ -375,12 +375,12 @@ public class PermissionBoundary implements Serializable {
             throw new AMWException("Missing PermissionName");
         }
 
-        if (resourceId != null) {
-            ResourceEntity resource = resourceRepository.find(resourceId);
-            if (resource == null) {
-                throw new AMWException("Resource with id " + resourceId +  " not found.");
+        if (resourceGroupId != null) {
+            ResourceGroupEntity resourceGroup = resourceGroupRepository.find(resourceGroupId);
+            if (resourceGroup == null) {
+                throw new AMWException("ResourceGroup with id " + resourceGroupId +  " not found.");
             }
-            restriction.setResource(resource);
+            restriction.setResourceGroup(resourceGroup);
         }
 
         if (resourceTypeName != null) {

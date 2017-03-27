@@ -31,6 +31,7 @@ import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.RestrictionDTOBuilder;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntityBuilder;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import org.junit.Assert;
 import org.hamcrest.CoreMatchers;
@@ -38,10 +39,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import static java.util.Collections.EMPTY_LIST;
@@ -1142,7 +1139,7 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean result = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceEntity());
+		boolean result = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceGroupEntity());
 
 		//Then
 		Assert.assertTrue(result);
@@ -1168,8 +1165,8 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceEntity());
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceEntity());
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceGroupEntity());
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceGroupEntity());
 
 		//Then
 		Assert.assertTrue(resC);
@@ -1179,7 +1176,8 @@ public class PermissionServiceTest {
 	@Test
 	public void hasPermissionToDeployOnlySpecificResourceOnEnvironmentCTest(){
 		//given
-		ResourceEntity allowedResource = new ResourceEntityBuilder().withId(42).build();
+		ResourceGroupEntity allowedResourceGroup = new ResourceGroupEntity();
+		allowedResourceGroup.setId(42);
 		RoleEntity roleTestDeployer = new RoleEntity();
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
@@ -1191,16 +1189,16 @@ public class PermissionServiceTest {
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
 		res.setContext(envC);
-		res.setResource(allowedResource);
+		res.setResourceGroup(allowedResourceGroup);
 		res.setPermission(permissionToDeploy);
 		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.deployableRolesWithRestrictions = myRoles;
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceEntity());
-		boolean resCAllowed = permissionService.hasPermissionForDeploymentOnContext(envC, allowedResource);
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, allowedResource);
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceGroupEntity());
+		boolean resCAllowed = permissionService.hasPermissionForDeploymentOnContext(envC, allowedResourceGroup);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, allowedResourceGroup);
 
 		//Then
 		Assert.assertFalse(resC);
@@ -1212,8 +1210,9 @@ public class PermissionServiceTest {
 	public void hasPermissionToDeployOnlySpecificResourceTypeOnEnvironmentZTest(){
 		//given
 		ResourceTypeEntity allowedResourceType = new ResourceTypeEntityBuilder().id(7).build();
-		ResourceEntity resource = new ResourceEntityBuilder().withId(42).build();
-		resource.setResourceType(allowedResourceType);
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(42);
+		resourceGroup.setResourceType(allowedResourceType);
 		RoleEntity roleTestDeployer = new RoleEntity();
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
@@ -1232,9 +1231,9 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceEntity());
-		boolean resZAllowed = permissionService.hasPermissionForDeploymentOnContext(envZ, resource);
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, resource);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceGroupEntity());
+		boolean resZAllowed = permissionService.hasPermissionForDeploymentOnContext(envZ, resourceGroup);
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, resourceGroup);
 
 		//Then
 		Assert.assertFalse(resZ);
@@ -1246,8 +1245,9 @@ public class PermissionServiceTest {
 	public void hasPermissionToDeployOnlySpecificResourceTypeOnAllEnvironmentsTest(){
 		//given
 		ResourceTypeEntity allowedResourceType = new ResourceTypeEntityBuilder().id(7).build();
-		ResourceEntity resource = new ResourceEntityBuilder().withId(42).build();
-		resource.setResourceType(allowedResourceType);
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(42);
+		resourceGroup.setResourceType(allowedResourceType);
 		RoleEntity roleTestDeployer = new RoleEntity();
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
@@ -1265,9 +1265,9 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceEntity());
-		boolean resZAllowed = permissionService.hasPermissionForDeploymentOnContext(envZ, resource);
-		boolean resCAllowed = permissionService.hasPermissionForDeploymentOnContext(envC, resource);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceGroupEntity());
+		boolean resZAllowed = permissionService.hasPermissionForDeploymentOnContext(envZ, resourceGroup);
+		boolean resCAllowed = permissionService.hasPermissionForDeploymentOnContext(envC, resourceGroup);
 
 		//Then
 		Assert.assertFalse(resZ);
@@ -1295,8 +1295,8 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceEntity());
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceEntity());
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceGroupEntity());
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceGroupEntity());
 
 		//Then
 		Assert.assertTrue(resC);
@@ -1323,10 +1323,10 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean resGlobal = permissionService.hasPermissionForDeploymentOnContext(global, new ResourceEntity());
-		boolean resParent = permissionService.hasPermissionForDeploymentOnContext(parent, new ResourceEntity());
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceEntity());
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceEntity());
+		boolean resGlobal = permissionService.hasPermissionForDeploymentOnContext(global, new ResourceGroupEntity());
+		boolean resParent = permissionService.hasPermissionForDeploymentOnContext(parent, new ResourceGroupEntity());
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceGroupEntity());
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceGroupEntity());
 
 		//Then
 		Assert.assertTrue(resGlobal);

@@ -66,7 +66,7 @@ public class RestrictionsRest {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
         }
         try {
-            id = permissionBoundary.createRestriction(request.getRoleName(), request.getPermission().name(), request.getResourceId(),
+            id = permissionBoundary.createRestriction(request.getRoleName(), request.getPermission().name(), request.getResourceGroupId(),
                     request.getResourceTypeName(), request.getContextName(), request.getAction());
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
@@ -119,7 +119,7 @@ public class RestrictionsRest {
     public Response updateRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id, RestrictionDTO request) {
         try {
             permissionBoundary.updateRestriction(id, request.getRoleName(), request.getPermission().name(),
-                    request.getResourceId(), request.getResourceTypeName(), request.getContextName(), request.getAction());
+                    request.getResourceGroupId(), request.getResourceTypeName(), request.getContextName(), request.getAction());
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }

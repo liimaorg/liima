@@ -30,6 +30,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.ALL;
+
 @Entity
 @Table(name = "TAMW_permission")
 public class PermissionEntity implements Serializable
@@ -62,7 +64,7 @@ public class PermissionEntity implements Serializable
 
 	@Getter
 	@Setter
-	@OneToMany(mappedBy = "permission")
+	@OneToMany(mappedBy = "permission", cascade = ALL, orphanRemoval = true)
 	private Set<RestrictionEntity> restrictions = new HashSet<>();
 
 	public String getInfo() {

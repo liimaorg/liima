@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.business.generator.control;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     public void testDoNotOmitTemplateWithPermission() throws Exception {
         //given
         Mockito.when(permissionService.hasPermissionForDeploymentOnContext(any(
-                  ContextEntity.class), any(ResourceEntity.class))).thenReturn(true);
+                  ContextEntity.class), any(ResourceGroupEntity.class))).thenReturn(true);
 
         //when
         service.omitTemplateForLackingPermissions(new ContextEntity(), new ResourceEntity(), result);
@@ -67,7 +68,7 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     public void testOmitTemplateForLackingPermissions() throws Exception {
         //given
         Mockito.when(permissionService.hasPermissionForDeploymentOnContext(any(
-                  ContextEntity.class), any(ResourceEntity.class))).thenReturn(false);
+                  ContextEntity.class), any(ResourceGroupEntity.class))).thenReturn(false);
 
         //when
         service.omitTemplateForLackingPermissions(new ContextEntity(), new ResourceEntity(), result);

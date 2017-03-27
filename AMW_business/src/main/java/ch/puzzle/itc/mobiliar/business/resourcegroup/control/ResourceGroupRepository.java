@@ -129,4 +129,8 @@ public class ResourceGroupRepository {
 
 	}
 
+    public ResourceGroupEntity find(Integer resourceGroupId) {
+        return entityManager.find(ResourceGroupEntity.class, resourceGroupId);
+    }
+
 }

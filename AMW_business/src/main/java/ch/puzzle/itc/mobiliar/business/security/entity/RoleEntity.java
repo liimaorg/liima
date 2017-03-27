@@ -30,6 +30,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.ALL;
+
 @Entity
 @Table(name="TAMW_role")
 public class RoleEntity implements Serializable {
@@ -67,7 +69,7 @@ public class RoleEntity implements Serializable {
 	@Getter
 	@Setter
 	@NotAudited
-	@OneToMany(mappedBy="role")
+	@OneToMany(mappedBy="role", cascade = ALL, orphanRemoval = true)
 	private Set<RestrictionEntity> restrictions = new HashSet<>();
 	
 }

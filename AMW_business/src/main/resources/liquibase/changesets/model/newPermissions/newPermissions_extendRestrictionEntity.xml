@@ -6,7 +6,7 @@
     <changeSet author="rgalante" id="newPermissionsExtendRestrictionEntity">
 
         <addColumn tableName="TAMW_restriction">
-            <column name="resource_id" type="INTEGER">
+            <column name="resourcegroup_id" type="INTEGER">
                 <constraints nullable="true"/>
             </column>
             <column name="resourcetype_id" type="INTEGER">
@@ -14,9 +14,9 @@
             </column>
         </addColumn>
 
-        <addForeignKeyConstraint baseColumnNames="resource_id"
+        <addForeignKeyConstraint baseColumnNames="resourcegroup_id"
                                  baseTableName="TAMW_restriction" constraintName="FK_restriction_04"
-                                 referencedColumnNames="id" referencedTableName="TAMW_resource" />
+                                 referencedColumnNames="id" referencedTableName="TAMW_resourceGroup" />
 
         <addForeignKeyConstraint baseColumnNames="resourcetype_id"
                                  baseTableName="TAMW_restriction" constraintName="FK_restriction_05"

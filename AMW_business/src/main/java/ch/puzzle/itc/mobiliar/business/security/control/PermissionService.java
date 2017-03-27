@@ -24,6 +24,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import ch.puzzle.itc.mobiliar.common.exception.CheckedNotAuthorizedException;
@@ -179,7 +180,11 @@ public class PermissionService implements Serializable {
     }
 
     public boolean hasPermission(Permission permission, ContextEntity context, Action action, ResourceEntity resource) {
-        return hasRole(permission.name(), context, action, resource);
+        if (resource != null) {
+            return hasRole(permission.name(), context, action, resource.getResourceGroup());
+        } else {
+            return hasRole(permission.name(), context, action, null);
+        }
     }
 
     /**
@@ -223,7 +228,7 @@ public class PermissionService implements Serializable {
     }
 
     public boolean hasPermissionForDeployment(DeploymentEntity deployment) {
-        return deployment != null && hasPermissionForDeploymentOnContext(deployment.getContext(), deployment.getResource());
+        return deployment != null && hasPermissionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup());
     }
 
     public boolean hasPermissionForCancelDeployment(DeploymentEntity deployment) {
@@ -236,17 +241,17 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * Checks if the caller is allowed to deploy a specific Resource on the specific Environment
+     * Checks if the caller is allowed to deploy a specific ResourceGroup on the specific Environment
      *
      * @param context
      * @return
      */
-    public boolean hasPermissionForDeploymentOnContext(ContextEntity context, ResourceEntity resource) {
+    public boolean hasPermissionForDeploymentOnContext(ContextEntity context, ResourceGroupEntity resourceGroup) {
         if (context != null) {
             List<String> allowedRoles = new ArrayList<>();
             String permissionName = Permission.DEPLOYMENT.name();
             for (Map.Entry<String, List<RestrictionDTO>> entry : deployableRolesWithRestrictions.entrySet()) {
-                matchPermissionsAndContext(permissionName, null, context, resource, allowedRoles, entry);
+                matchPermissionsAndContext(permissionName, null, context, resourceGroup, allowedRoles, entry);
             }
             if (allowedRoles.isEmpty() || sessionContext == null) {
                 return false;
@@ -260,15 +265,15 @@ public class PermissionService implements Serializable {
         return false;
     }
 
-    private boolean hasRole(String permissionName, ContextEntity context, Action action, ResourceEntity resource) {
+    private boolean hasRole(String permissionName, ContextEntity context, Action action, ResourceGroupEntity resourceGroup) {
         List<String> allowedRoles = new ArrayList<>();
         Set<Map.Entry<String, List<RestrictionDTO>>> entries = getPermissions().entrySet();
 
         for (Map.Entry<String, List<RestrictionDTO>> entry : entries) {
             if (context == null) {
-                matchPermissions(permissionName, action, resource, allowedRoles, entry);
+                matchPermissions(permissionName, action, resourceGroup, allowedRoles, entry);
             } else {
-                matchPermissionsAndContext(permissionName, action, context, resource, allowedRoles, entry);
+                matchPermissionsAndContext(permissionName, action, context, resourceGroup, allowedRoles, entry);
             }
         }
         if (allowedRoles.isEmpty() || sessionContext == null) {
@@ -291,38 +296,38 @@ public class PermissionService implements Serializable {
      * @param allowedRoles
      * @param entry
      */
-    private void matchPermissions(String permissionName, Action action, ResourceEntity resource, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
+    private void matchPermissions(String permissionName, Action action, ResourceGroupEntity resourceGroup, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
         String roleName = entry.getKey();
         for (RestrictionDTO restrictionDTO : entry.getValue()) {
             if (restrictionDTO.getPermissionName().equals(permissionName) && hasPermissionForAction(restrictionDTO, action)
-                    && hasPermissionForResource(restrictionDTO, resource) && hasPermissionForResourceType(restrictionDTO, resource)) {
+                    && hasPermissionForResource(restrictionDTO, resourceGroup) && hasPermissionForResourceType(restrictionDTO, resourceGroup)) {
                 allowedRoles.add(roleName);
             }
         }
     }
 
     /**
-     * Checks whether a Role has the Permission perform a certain Action with a specific Resource on a specific Context (or on its parent)
+     * Checks whether a Role has the Permission perform a certain Action with a specific ResourceGroup on a specific Context (or on its parent)
      * If so, it adds the role to the list of the allowed roles
      *
      * @param permissionName
      * @param action
      * @param context
-     * @param resource
+     * @param resourceGroup
      * @param allowedRoles
      * @param entry
      */
     private void matchPermissionsAndContext(String permissionName, Action action, ContextEntity context,
-                                            ResourceEntity resource, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
+                                            ResourceGroupEntity resourceGroup, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
         for (RestrictionDTO restrictionDTO : entry.getValue()) {
             if (restrictionDTO.getPermissionName().equals(permissionName)) {
-                checkContextAndActionAndResource(context, action, resource, allowedRoles, entry, restrictionDTO);
+                checkContextAndActionAndResource(context, action, resourceGroup, allowedRoles, entry, restrictionDTO);
             }
         }
     }
 
     /**
-     * Checks if a Role is allowed to perform a certain Action with a specific Resource on a specific Context (or on its parent)
+     * Checks if a Role is allowed to perform a certain Action with a specific ResourceGroup on a specific Context (or on its parent)
      * If so, it adds the role to the list of the allowed roles
      *
      * @param context
@@ -331,7 +336,7 @@ public class PermissionService implements Serializable {
      * @param entry
      * @param restrictionDTO
      */
-    private void checkContextAndActionAndResource(ContextEntity context, Action action, ResourceEntity resource,
+    private void checkContextAndActionAndResource(ContextEntity context, Action action, ResourceGroupEntity resource,
                                                   List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry,
                                                   RestrictionDTO restrictionDTO) {
         // RestrictionDTOs created with legacy Permissions have a null Context
@@ -369,16 +374,16 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * Checks if a Restriction gives permission for a specific Resource
-     * No Resource on Restriction means all Resources are allowed
+     * Checks if a Restriction gives permission for a specific ResourceGroup
+     * No Resource on Restriction means all ResourceGroups are allowed
      *
      * @param restrictionDTO
-     * @param resource
+     * @param resourceGroup
      * @return
      */
-    private boolean hasPermissionForResource(RestrictionDTO restrictionDTO, ResourceEntity resource) {
-        return resource == null || restrictionDTO.getRestriction().getResource() == null ||
-                restrictionDTO.getRestriction().getResource().equals(resource);
+    private boolean hasPermissionForResource(RestrictionDTO restrictionDTO, ResourceGroupEntity resourceGroup) {
+        return resourceGroup == null || restrictionDTO.getRestriction().getResourceGroup() == null ||
+                restrictionDTO.getRestriction().getResourceGroup().equals(resourceGroup);
     }
 
     /**
@@ -386,19 +391,19 @@ public class PermissionService implements Serializable {
      * No ResourceType on Restriction means all ResourceTypes are allowed
      *
      * @param restrictionDTO
-     * @param resource
+     * @param resourceGroup
      * @return
      */
-    private boolean hasPermissionForResourceType(RestrictionDTO restrictionDTO, ResourceEntity resource) {
-        if (resource == null || restrictionDTO.getRestriction().getResourceType() == null) {
+    private boolean hasPermissionForResourceType(RestrictionDTO restrictionDTO, ResourceGroupEntity resourceGroup) {
+        if (resourceGroup == null || restrictionDTO.getRestriction().getResourceType() == null) {
             return true;
         }
-        if (restrictionDTO.getRestriction().getResourceType().equals(resource.getResourceType())) {
+        if (restrictionDTO.getRestriction().getResourceType().equals(resourceGroup.getResourceType())) {
             return true;
         }
         // TODO do we have to check ResourceType from parent of parent as well?
-        return resource.getResourceType() != null && resource.getResourceType().getParentResourceType() != null &&
-                restrictionDTO.getRestriction().getResourceType().equals(resource.getResourceType().getParentResourceType());
+        return resourceGroup.getResourceType() != null && resourceGroup.getResourceType().getParentResourceType() != null &&
+                restrictionDTO.getRestriction().getResourceType().equals(resourceGroup.getResourceType().getParentResourceType());
     }
 
     /**

@@ -96,7 +96,6 @@ public class HasPermissionInterceptor implements Serializable {
 		if (permissions.isEmpty()) {
 			return context.proceed();
 		} else {
-			// TODO review
 			if (resourceSpecific && context.getParameters().length > 0) {
 				for (Object o : context.getParameters()) {
 					if (o instanceof ResourceEntity) {
