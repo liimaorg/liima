@@ -154,6 +154,14 @@ public class PermissionService implements Serializable {
         }
     }
 
+    /**
+     * Checks if a user has a role with a certain Permission no matter for which Actions
+     * Useful for displaying/hiding navigation elements in views
+     * The specific Action required has to be checked when the action is involved (button)
+     *
+     * @param permission
+     * @return
+     */
     public boolean hasPermission(Permission permission) {
         return hasRole(permission.name(), null, null, null);
     }

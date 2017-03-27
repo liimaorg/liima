@@ -158,11 +158,6 @@ public enum Permission {
     CREATE_ROLE("Create Role. Path: Settings -> select Roles and Permissions tab"),
     ASSIGN_REMOVE_PERMISSION("Assign/Remove/Add Permission. WARNING: if you remove this permission to config_admin role you can't modify role and permission."),
 
-    //STP
-    STP_MANAGEMENT_PAGE("Path: Settings -> select STP Management"),
-    EDIT_STP("Path: Settings -> select STP Management -> Edit"),
-    DELETE_STP("Path: Settings -> select STP Management -> Edit"),
-    ADD_STP("Path: Settings -> select STP Management -> Add new STP"),
 
     //NEW PERMISSIONS
     DEPLOYMENT("The right to deploy."),
@@ -176,12 +171,17 @@ public enum Permission {
     // RENAME_APP("With this permission it is possible to rename all APP instances."),
     // RENAME_NODE("With this permission it is possible to rename all NODE instances."),
     // RENAME_RES("With this permission it is possible to rename everthing else."),
-    RELEASE("The right to create, read, update or delete releases");
+    RELEASE("The right to create, read, update or delete releases"),
     // CREATE_RELEASE("With this permission the config admin can create releases."),
     // EDIT_RELEASE("With this permission the config admin can edit releases."),
     // DELETE_RELEASE("With this permission the config admin can delete releases."),
     // VIEW_RELEASE("With this permission the viewer can view releases"),
     // CHANGE_RESOURCE_RELEASE("With this permission the viewer can view releases"),
+    SHAKEDOWNTEST("The right to create, read, update or delete shakedown tests");
+    // STP_MANAGEMENT_PAGE("Path: Settings -> select STP Management"),
+    // EDIT_STP("Path: Settings -> select STP Management -> Edit"),
+    // DELETE_STP("Path: Settings -> select STP Management -> Edit"),
+    // ADD_STP("Path: Settings -> select STP Management -> Add new STP"),
 
     private String info;
 

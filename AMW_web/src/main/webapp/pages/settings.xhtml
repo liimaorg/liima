@@ -60,12 +60,12 @@
 					</h:link></li>
 				<li class="${param['mode']== 'STP' ? 'current' : ''}"><h:link
 						value="STP Management"
-						rendered="#{securityDataProvider.hasPermission('STP_MANAGEMENT_PAGE')}">
+						rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST')}">
 						<f:param name="mode" value="STP" />
 					</h:link></li>
 				<li class="${param['mode']== 'releases' ? 'current' : ''}"><h:link
 						value="Releases"
-						rendered="#{securityDataProvider.hasPermission('RELEASE','READ')}">
+						rendered="#{securityDataProvider.hasPermission('RELEASE')}">
 						<f:param name="mode" value="releases" />
 					</h:link></li>
 
@@ -219,7 +219,7 @@
 								<nav class="actionbar"> <a4j:commandLink
 									styleClass="btn light right"
 									oncomplete="#{rich:component('addNewSTPPopupPanel')}.show(); return false;"
-									rendered="#{securityDataProvider.hasPermission('ADD_STP')}"
+									rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}"
 									action="#{shakedownStpDataProvider.clearArguments()}"
 									render="argumentsTabel,addNewSTPPopupPanel">
 									<i class="icon icon-add" /> Add new STP</a4j:commandLink> </nav>
@@ -266,7 +266,7 @@
 										oncomplete="#{rich:component('editSTPPopupPanel')}.show(); return false;"
 										title="Edit current STP"
 										render="editSTPPopupPanel, argumentsTabelEdit"
-										rendered="#{securityDataProvider.hasPermission('EDIT_STP')}"
+										rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'UPDATE')}"
 										action="#{shakedownStpDataProvider.createTempArgumentToEditPopupPanel()}">
 										<a4j:param
 											assignTo="#{shakedownStpDataProvider.selectedSTPId}"
@@ -284,7 +284,7 @@
 									<a4j:commandLink id="cancelCommandLink" value="Delete"
 										oncomplete="#{rich:component('cancelSTPConfirmationPopup')}.show(); return false;"
 										title="Cancel current STP" render="cancelSTPConfirmationPopup"
-										rendered="#{securityDataProvider.hasPermission('DELETE_STP')}">
+										rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'DELETE')}">
 										<a4j:param
 											assignTo="#{shakedownStpDataProvider.selectedSTPId}"
 											value="${s.id}" />
