@@ -20,12 +20,17 @@
 
 package ch.puzzle.itc.mobiliar.business.environment.control;
 
+import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
+import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.util.List;
 
-public class ContextRepository {
+public class ContextRepository extends BaseRepository<ContextEntity> {
 
     @Inject
     EntityManager entityManager;
@@ -33,4 +38,19 @@ public class ContextRepository {
     public ContextEntity getContextByName(String name){
         return entityManager.createQuery("select c from ContextEntity c where LOWER(c.name)=:name", ContextEntity.class).setParameter("name", name.toLowerCase()).getSingleResult();
     }
+
+    /**
+     * Returns all Environments
+     *
+     * @return
+     * @throws GeneralDBException
+     */
+    public List<ContextEntity> getEnvironments() {
+        return QueryUtils.fetch(ContextEntity.class, fetchAllContexts(), 0, -1);
+    }
+
+    protected Query fetchAllContexts() {
+        return entityManager.createQuery("select n from ContextEntity n left join fetch n.children as c left join fetch n.contextType left join fetch c.contextType order by n.name asc");
+    }
+
 }

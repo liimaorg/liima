@@ -66,6 +66,7 @@ public class PermissionServiceTest {
 	private ContextEntity parent;
 	private ContextEntity envC;
 	private ContextEntity envZ;
+	private ResourceGroupEntity anotherResourceGroup;
 
     @Before
 	public void setUp(){
@@ -75,10 +76,15 @@ public class PermissionServiceTest {
 		permissionRepository = Mockito.mock(PermissionRepository.class);
 		permissionService.permissionRepository = permissionRepository;
 
-		global = new ContextEntityBuilder().buildContextEntity("GLOBAL", null, new HashSet<ContextEntity>(), false);
-		parent = new ContextEntityBuilder().buildContextEntity("TEST", global, new HashSet<ContextEntity>(), false);
-		envC = new ContextEntityBuilder().buildContextEntity("C", parent, new HashSet<ContextEntity>(), false);
-		envZ = new ContextEntityBuilder().buildContextEntity("Z", parent, new HashSet<ContextEntity>(), false);
+		global = new ContextEntityBuilder().id(1).buildContextEntity("GLOBAL", null, new HashSet<ContextEntity>(), false);
+		parent = new ContextEntityBuilder().id(5).buildContextEntity("TEST", global, new HashSet<ContextEntity>(), false);
+		envC = new ContextEntityBuilder().id(10).buildContextEntity("C", parent, new HashSet<ContextEntity>(), false);
+		envZ = new ContextEntityBuilder().id(11).buildContextEntity("Z", parent, new HashSet<ContextEntity>(), false);
+
+		// APPLICATION
+		anotherResourceGroup = new ResourceGroupEntity();
+		anotherResourceGroup.setId(321);
+		anotherResourceGroup.setResourceType(new ResourceTypeEntityBuilder().id(1).parentResourceType(null).build());
 	}
 	
 	@Test
@@ -561,37 +567,38 @@ public class PermissionServiceTest {
 	}
 
 	@Test
-	public void hasPermissionToRemoveDefaultInstanceOfResTypeWhenUserIsConfigAdmin(){
+	public void shouldNotAllowToRemoveDefaultInstanceOfResTypeIfHasPermissionForResourcesOnly(){
 		//Given
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_RES, res)));
+		res.setAction(Action.DELETE);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 		//When
-		boolean result = permissionService.hasPermissionToRemoveDefaultInstanceOfResType(true);
-		//Then
-		Assert.assertTrue(result);
-	}
-	
-	@Test
-	public void hasPermissionToRemoveDefaultInstanceOfResTypeWhenUserIsServerAdminAndIsNotDefaultResourceType(){
-		//Given
-		when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
-		myRoles = new HashMap<>();
-		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE, res)));
-		permissionService.rolesWithRestrictions = myRoles;
-		//When
-		boolean result = permissionService.hasPermissionToRemoveDefaultInstanceOfResType(false);
+		boolean result = permissionService.hasPermissionToRemoveDefaultInstanceOfResType();
 		//Then
 		Assert.assertFalse(result);
 	}
 	
 	@Test
-	public void hasPermissionToRemoveDefaultInstanceOfResTypeWhenUserIsServerAdminAndIsDefaultResourceType(){
+	public void shouldNotAllowToRemoveInstanceOfNonDefaultResTypeIfHasPermissionToDeleteInstancesOfDefaultResourceTypeOnly(){
+		//Given
+		when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE, res)));
+		permissionService.rolesWithRestrictions = myRoles;
+        ResourceTypeEntity resType = new ResourceTypeEntity();
+		//When
+		boolean result = permissionService.hasPermissionToRemoveInstanceOfResType(resType);
+		//Then
+		Assert.assertFalse(result);
+	}
+	
+	@Test
+	public void shouldAllowToRemoveDefaultInstanceOfResTypeIfHasPermissionToDeleteInstancesOfDefaultResourceType(){
 		//Given
 		when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
 		myRoles = new HashMap<>();
@@ -600,7 +607,7 @@ public class PermissionServiceTest {
 		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 		//When
-		boolean result = permissionService.hasPermissionToRemoveDefaultInstanceOfResType(true);
+		boolean result = permissionService.hasPermissionToRemoveDefaultInstanceOfResType();
 		//Then
 		Assert.assertTrue(result);
 	}
@@ -1178,6 +1185,7 @@ public class PermissionServiceTest {
 		//given
 		ResourceGroupEntity allowedResourceGroup = new ResourceGroupEntity();
 		allowedResourceGroup.setId(42);
+		allowedResourceGroup.setResourceType(new ResourceTypeEntityBuilder().id(2).build());
 		RoleEntity roleTestDeployer = new RoleEntity();
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
@@ -1196,7 +1204,7 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceGroupEntity());
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, anotherResourceGroup);
 		boolean resCAllowed = permissionService.hasPermissionForDeploymentOnContext(envC, allowedResourceGroup);
 		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, allowedResourceGroup);
 
@@ -1231,7 +1239,7 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceGroupEntity());
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, anotherResourceGroup);
 		boolean resZAllowed = permissionService.hasPermissionForDeploymentOnContext(envZ, resourceGroup);
 		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, resourceGroup);
 
@@ -1265,7 +1273,7 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceGroupEntity());
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, anotherResourceGroup);
 		boolean resZAllowed = permissionService.hasPermissionForDeploymentOnContext(envZ, resourceGroup);
 		boolean resCAllowed = permissionService.hasPermissionForDeploymentOnContext(envC, resourceGroup);
 
@@ -1295,8 +1303,8 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceGroupEntity());
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceGroupEntity());
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, anotherResourceGroup);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, anotherResourceGroup);
 
 		//Then
 		Assert.assertTrue(resC);
@@ -1323,10 +1331,10 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		//When
-		boolean resGlobal = permissionService.hasPermissionForDeploymentOnContext(global, new ResourceGroupEntity());
-		boolean resParent = permissionService.hasPermissionForDeploymentOnContext(parent, new ResourceGroupEntity());
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, new ResourceGroupEntity());
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, new ResourceGroupEntity());
+		boolean resGlobal = permissionService.hasPermissionForDeploymentOnContext(global, anotherResourceGroup);
+		boolean resParent = permissionService.hasPermissionForDeploymentOnContext(parent, anotherResourceGroup);
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, anotherResourceGroup);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, anotherResourceGroup);
 
 		//Then
 		Assert.assertTrue(resGlobal);

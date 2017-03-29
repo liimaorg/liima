@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesDTO;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -314,13 +315,15 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 	}
 
     public boolean canShowDeleteApp(ResourceEntity app){
-        return permissionBoundary.hasPermission(Permission.DELETE_APP) && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), app);
+		// TODO add context check
+        return permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.DELETE, app, null) && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), app);
     }
 
     public boolean canShowDeleteAppServer(ResourceWithRelations appServer){
         ResourceEntity appserverResource = appServer.getResource();
 
-        return appserverResource.isDeletable() && permissionBoundary.hasPermission(Permission.DELETE_APPSERVER) && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), appserverResource);
+		// TODO add context check
+        return appserverResource.isDeletable() && permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.DELETE, appserverResource, null) && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), appserverResource);
     }
 
     public ForeignableAttributesDTO getForeignableAttributes(ResourceEntity app){

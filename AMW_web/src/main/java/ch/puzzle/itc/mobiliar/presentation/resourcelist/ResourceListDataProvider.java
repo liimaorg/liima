@@ -239,10 +239,13 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 	}
 
 	public boolean getCanRemoveDefaultInstanceOfResType() {
-		return permissionService.hasPermissionToRemoveDefaultInstanceOfResType(isDefaultResourceType());
+		if (isDefaultResourceType()) {
+			return permissionService.hasPermissionToRemoveDefaultInstanceOfResType();
+		} else if (getSelectedResourceType() != null) {
+			return permissionService.hasPermissionToRemoveInstanceOfResType(getSelectedResourceType().getEntity());
+		}
+		return false;
 	}
-
-
 
 	public SelectEditResourceType getSelectEditResourceTypeComp() {
 		if (selectEditResourceTypeComp == null) {

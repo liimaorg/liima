@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
+import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -46,8 +47,12 @@ public class ContextDataProvider implements Serializable {
 
     @Inject
     private ContextDomainService domainService;
+
     @Inject
     private CommonDomainService commonService;
+
+    @Inject
+    ContextLocator contextLocator;
 
     /**
      * Initial so soll der Globale Context selektiert werden!
@@ -169,7 +174,7 @@ public class ContextDataProvider implements Serializable {
     }
 
     public void loadContexts() {
-        contexts = Collections.unmodifiableList(domainService.getEnvironments());
+        contexts = Collections.unmodifiableList(contextLocator.getAllEnvironments());
     }
 
     public void loadTargetPlatforms() {

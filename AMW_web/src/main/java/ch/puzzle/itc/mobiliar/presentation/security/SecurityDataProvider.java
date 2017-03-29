@@ -176,8 +176,34 @@ public class SecurityDataProvider implements Serializable{
 		return permissionBoundary.hasPermission(permissionValue);
 	}
 
+	/**
+	 * @param permissionValue Name of the Permission (must be mappable to the Permission ENUM)
+	 * @param actionValue Name of the Action (must be mappable to the Action ENUM)
+	 * @return
+	 */
 	public boolean hasPermission(String permissionValue, String actionValue){
 		return permissionBoundary.hasPermission(permissionValue, actionValue);
+	}
+
+	/**
+	 * @param permissionValue Name of the Permission (must be mappable to the Permission ENUM)
+	 * @param actionValue Name of the Action (must be mappable to the Action ENUM)
+	 * @param resourceTypeValue Name of a valid ResourceTypeEntity
+	 * @return
+	 */
+	public boolean hasPermissionForResourceType(String permissionValue, String actionValue, String resourceTypeValue){
+		return permissionBoundary.hasPermissionForResourceType(permissionValue, actionValue, resourceTypeValue);
+	}
+
+	/**
+	 * @param permissionValue Name of the Permission (must be mappable to the Permission ENUM)
+	 * @param actionValue Name of the Action (must be mappable to the Action ENUM)
+	 * @param resourceTypeValue Name of a valid ResourceTypeEntity
+	 * @param contextId Id of the actual Context
+	 * @return
+	 */
+	public boolean hasPermissionForResourceType(String permissionValue, String actionValue, String resourceTypeValue, Integer contextId){
+		return permissionBoundary.hasPermissionForResourceType(permissionValue, actionValue, resourceTypeValue, contextId);
 	}
 
 	public Integer getPermissionSelected() {
@@ -362,4 +388,5 @@ public class SecurityDataProvider implements Serializable{
 	public void setSelectedAgainRoleId(Integer selectedAgainRoleId) {
 		this.selectedAgainRoleId = selectedAgainRoleId;
 	}
+
 }

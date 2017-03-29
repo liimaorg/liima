@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.security.interceptor;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
@@ -91,7 +92,7 @@ public class HasPermissionInterceptor implements Serializable {
 		List<Permission> permissions = getRequiredPermission(context);
 		List<Action> actions = getRequiredAction(context);
 		boolean resourceSpecific = hasResourceSpecific(context);
-		ResourceEntity resource = null;
+		ResourceGroupEntity resourceGroup = null;
 
 		if (permissions.isEmpty()) {
 			return context.proceed();
@@ -99,19 +100,20 @@ public class HasPermissionInterceptor implements Serializable {
 			if (resourceSpecific && context.getParameters().length > 0) {
 				for (Object o : context.getParameters()) {
 					if (o instanceof ResourceEntity) {
-						resource = (ResourceEntity) o;
+						ResourceEntity resource = (ResourceEntity) o;
+						resourceGroup = resource.getResourceGroup();
 						break;
 					}
 				}
 			}
 			for (Permission permission : permissions) {
 				if (actions.isEmpty()) {
-					if (permissionService.hasPermission(permission, null, null, resource)) {
+					if (permissionService.hasPermission(permission, null, null, resourceGroup, null)) {
 						return context.proceed();
 					}
 				} else {
 					for (Action action : actions) {
-						if (permissionService.hasPermission(permission, null, action, resource)) {
+						if (permissionService.hasPermission(permission, null, action, resourceGroup, null)) {
 							return context.proceed();
 						}
 					}

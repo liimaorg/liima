@@ -90,14 +90,14 @@
 									</div>
 								</li>
 								<li><a4j:commandLink styleClass="btn light"
-										rendered="#{securityDataProvider.hasPermission('ADD_APPSERVER')}"
+													 rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'CREATE', 'APPSERVER')}"
 										onclick="#{rich:component('addAppServerPopupPanel')}.show();">
 										<i class="icon icon-add"></i>
 										<h:outputText value="New Application Server" />
 									</a4j:commandLink></li>
 								<li><h:commandLink id="createAppButton" type="button"
 										styleClass="btn light right"
-										rendered="#{securityDataProvider.hasPermission('ADD_APP')}"
+										rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'CREATE', 'APPLICATION')}"
 										onclick="showLoader();">
 										<i class="icon icon-add" /> New Application	
 									<a4j:ajax render="createApplicationForAsPopup"
@@ -118,11 +118,11 @@
 							</f:facet>
 
 							<h:panelGroup rendered="#{appServer.resource.deletable}">
-								<mobi:editResourceLink resId="#{appServer.resource.id}" linkLabel="#{appServer.resource.name}" editPermission="EDIT_APP_SERVER"/>
+								<mobi:editResourceLink resId="#{appServer.resource.id}" linkLabel="#{appServer.resource.name}" editPermission="RESOURCE" resourceType="APPSERVER"/>
 								<ui:repeat var="app"
 									value="${appServer.relatedResources}">
 									<h:panelGroup styleClass="paddingLeft20" layout="block">
-										<mobi:editResourceLink resId="#{app.id}" linkLabel="#{app.name}" editPermission="EDIT_APP"/>
+										<mobi:editResourceLink resId="#{app.id}" linkLabel="#{app.name}" editPermission="RESOURCE" resourceType="APPLICATION"/>
                                         <mobi:foreignableOwnerTooltip foreignableAttributes="#{applistView.getForeignableAttributes(app)}"/>
 									</h:panelGroup>
 								</ui:repeat>
@@ -134,7 +134,7 @@
 								<ui:repeat var="app"
 									value="${appServer.relatedResources}">
 									<h:panelGroup styleClass="paddingLeft20" layout="block">
-										<mobi:editResourceLink resId="#{app.id}" linkLabel="#{app.name}" editPermission="EDIT_APP"/>
+										<mobi:editResourceLink resId="#{app.id}" linkLabel="#{app.name}" editPermission="RESOURCE" resourceType="APPLICATION"/>
                                         <mobi:foreignableOwnerTooltip foreignableAttributes="#{applistView.getForeignableAttributes(app)}"/>
 									</h:panelGroup>
 								</ui:repeat>
@@ -162,7 +162,7 @@
 							<h:panelGroup rendered="#{appServer.resource.deletable}">
 								<h:link outcome="editResourceView" value="Edit"
 									onclick="showLoader();"
-									rendered="${securityDataProvider.hasPermission('EDIT_APP_SERVER')}">
+									rendered="${securityDataProvider.hasPermissionForResourceType('RESOURCE', 'READ', 'APPSERVER')}">
 									<f:param name="id" value="#{appServer.resource.id}" />
 									<f:param name="ctx"
 										value="${contextDataProvider.globalContextId}" />
@@ -174,7 +174,7 @@
 									<br />
 									<h:link outcome="editResourceView" value="Edit"
 										onclick="showLoader();"
-										rendered="#{securityDataProvider.hasPermission('EDIT_APP')}">
+										rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'READ', 'APPLICATION')}">
 										<f:param name="id" value="${app.id}" />
 										<f:param name="ctx"
 											value="${contextDataProvider.globalContextId}" />
@@ -183,7 +183,7 @@
 							</ui:repeat>
 						</h:column>
 						<h:column
-							rendered="#{securityDataProvider.hasPermission('DELETE_APP') or securityDataProvider.hasPermission('DELETE_APPSERVER')}">
+							rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'DELETE', 'APPLICATION') or securityDataProvider.hasPermissionForResourceType('RESOURCE', 'DELETE', 'APPSERVER')}">
 							<f:facet name="header">
 								<h:outputText value="Delete" />
 							</f:facet>

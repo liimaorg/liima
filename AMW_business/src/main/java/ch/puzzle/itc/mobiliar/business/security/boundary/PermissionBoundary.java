@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.security.boundary;
 
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
@@ -31,7 +32,6 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.CheckedNotAuthorizedException;
@@ -41,7 +41,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
@@ -52,7 +51,6 @@ import java.util.Map;
  * A boundary for checking permissions of view elements
  */
 @Stateless
-@Interceptors(HasPermissionInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class PermissionBoundary implements Serializable {
 
@@ -117,7 +115,22 @@ public class PermissionBoundary implements Serializable {
     public boolean hasPermission(String permissionName, String actionName) {
         Permission permission = Permission.valueOf(permissionName);
         Action action = Action.valueOf(actionName);
-        return permissionService.hasPermissionAndAction(permission, action);
+        return permissionService.hasPermission(permission, action);
+    }
+
+    public boolean hasPermissionForResourceType(String permissionName, String actionName, String resourceTypeName) {
+        Permission permission = Permission.valueOf(permissionName);
+        Action action = Action.valueOf(actionName);
+        final ResourceTypeEntity resourceType = resourceTypeRepository.getByName(resourceTypeName);
+        return resourceType != null && permissionService.hasPermission(permission, action, resourceType);
+    }
+
+    public boolean hasPermissionForResourceType(String permissionName, String actionName, String resourceTypeName, Integer contextId) {
+        Permission permission = Permission.valueOf(permissionName);
+        Action action = Action.valueOf(actionName);
+        final ResourceTypeEntity resourceType = resourceTypeRepository.getByName(resourceTypeName);
+        final ContextEntity context = contextLocator.getContextById(contextId);
+        return resourceType != null && permissionService.hasPermission(permission, context, action, null, resourceType);
     }
 
     public boolean hasPermission(Permission permission) {
@@ -125,7 +138,11 @@ public class PermissionBoundary implements Serializable {
     }
 
     public boolean hasPermission(Permission permission, Action action) {
-        return permissionService.hasPermissionAndAction(permission, action);
+        return permissionService.hasPermission(permission, action);
+    }
+
+    public boolean hasPermission(Permission permission, ContextEntity context, Action action, ResourceEntity resource, ResourceTypeEntity resourceType) {
+        return permissionService.hasPermission(permission, context, action, resource.getResourceGroup(), resourceType);
     }
 
     /**
@@ -151,6 +168,17 @@ public class PermissionBoundary implements Serializable {
      */
     public void checkPermissionAndFireException(Permission permission, String extraInfo) {
         permissionService.checkPermissionAndFireException(permission, extraInfo);
+    }
+
+    /**
+     * Checks if given permission is available. If not a checked exception is thrown with error message
+     * containing extraInfo part.
+     *
+     * @param permission
+     * @param extraInfo
+     */
+    public void checkPermissionActionAndFireException(Permission permission, Action action, String extraInfo) {
+        permissionService.checkPermissionActionAndFireException(permission, action, extraInfo);
     }
 
     /**
@@ -204,8 +232,11 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermissionToAddRelation(mergedResource, isProvided);
     }
 
-    public boolean hasPermissionToRemoveDefaultInstanceOfResType(boolean isDefaultResourceType) {
-        return permissionService.hasPermissionToRemoveDefaultInstanceOfResType(isDefaultResourceType);
+    public boolean hasPermissionToRemoveInstanceOfResType(ResourceTypeEntity resourceType) {
+        if (resourceType.isDefaultResourceType()) {
+            return permissionService.hasPermissionToRemoveDefaultInstanceOfResType();
+        }
+        return permissionService.hasPermissionToRemoveInstanceOfResType(resourceType);
     }
 
     /**
@@ -235,24 +266,15 @@ public class PermissionBoundary implements Serializable {
      * @return
      */
     public boolean canCreateResourceInstance(ResourceTypeEntity type) {
-
         // Abwärtskompatibilität: ADD_NEW_RES_OF_DEFAULT_RESTYPE
-
-        if (type.isApplicationResourceType()) {
-            return permissionService.hasPermission(Permission.ADD_APP) || permissionService.hasPermission(Permission.ADD_NEW_RES_OF_DEFAULT_RESTYPE);
+        if (type.isApplicationResourceType() || type.isNodeResourceType() || type.isApplicationServerResourceType()) {
+            return permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, type) || permissionService.hasPermission(Permission.ADD_NEW_RES_OF_DEFAULT_RESTYPE);
         }
-        if (type.isNodeResourceType()) {
-            return permissionService.hasPermission(Permission.ADD_NODE) || permissionService.hasPermission(Permission.ADD_NEW_RES_OF_DEFAULT_RESTYPE);
-        }
-        if (type.isApplicationServerResourceType()) {
-            return permissionService.hasPermission(Permission.ADD_APPSERVER) || permissionService.hasPermission(Permission.ADD_NEW_RES_OF_DEFAULT_RESTYPE);
-        }
-
-        return permissionService.hasPermission(Permission.NEW_RES);
+        return permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, type);
     }
 
-    public boolean canCreateAppAndAddToAppServer() {
-        return permissionService.hasPermission(Permission.ADD_APP) && permissionService.hasPermission(Permission.ADD_APP_TO_APP_SERVER);
+    public boolean canCreateAppAndAddToAppServer(ResourceEntity resource) {
+        return permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, resource.getResourceType()) && permissionService.hasPermission(Permission.ADD_APP_TO_APP_SERVER);
     }
 
     /**
@@ -260,26 +282,7 @@ public class PermissionBoundary implements Serializable {
      * @return
      */
     public boolean canCopyFromResource(ResourceEntity resourceEntity) {
-        if (resourceEntity == null || resourceEntity.getResourceType() == null) {
-            return false;
-        }
-        // TODO review
-        return permissionService.hasPermission(Permission.COPY_FROM_RESOURCE, null,
-                Action.UPDATE, resourceEntity);
-
-/*        if (resourceEntity.getResourceType().isApplicationServerResourceType()) {
-            return permissionService.hasPermission(Permission.COPY_FROM_RESOURCE_APPSERVER);
-        }
-        if (resourceEntity.getResourceType().isApplicationResourceType()) {
-            return permissionService.hasPermission(Permission.COPY_FROM_RESOURCE_APP);
-        }
-        if (resourceEntity.getResourceType().isNodeResourceType()) {
-            return permissionService.hasPermission(Permission.COPY_FROM_RESOURCE_NODE);
-        }
-
-        return permissionService.hasPermission(Permission.COPY_FROM_RESOURCE);
-*/
-
+        return !(resourceEntity == null || resourceEntity.getResourceType() == null) && permissionService.hasPermission(Permission.COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
     }
 
     public boolean hasPermissionToDeploy() {

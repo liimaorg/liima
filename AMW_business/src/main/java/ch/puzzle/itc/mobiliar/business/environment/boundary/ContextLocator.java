@@ -27,15 +27,11 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import java.util.logging.Logger;
+import java.util.List;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class ContextLocator {
-
-	// TODO add permission check
-	@Inject
-	protected Logger log;
 
 	@Inject
 	ContextRepository contextRepository;
@@ -47,4 +43,18 @@ public class ContextLocator {
 	public ContextEntity getContextByName(String name) {
 		return contextRepository.getContextByName(name);
 	}
+
+	public ContextEntity getContextById(Integer id) {
+		return contextRepository.find(id);
+	}
+
+	/**
+	 * Returns all Environments
+	 *
+	 * @return
+	 */
+	public List<ContextEntity> getAllEnvironments() {
+		return contextRepository.getEnvironments();
+	}
+
 }

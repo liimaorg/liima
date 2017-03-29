@@ -36,7 +36,7 @@ public class ResourceTypeEntityBuilder {
     private ResourceTypeEntity parentResourceType;
 
 	public static final ResourceTypeEntity APPLICATION_TYPE = new ResourceTypeEntityBuilder()
-			.id(Integer.valueOf(2)).name(DefaultResourceTypeDefinition.APPLICATION.name()).build();
+			.id(Integer.valueOf(1)).name(DefaultResourceTypeDefinition.APPLICATION.name()).build();
 
 	public static final ResourceTypeEntity APPLICATION_SERVER_TYPE = new ResourceTypeEntityBuilder()
 			.id(Integer.valueOf(2)).name(DefaultResourceTypeDefinition.APPLICATIONSERVER.name()).build();

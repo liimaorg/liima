@@ -55,7 +55,7 @@
 				<f:facet name="header">
 					<h:outputText value="Resource Name" />
 				</f:facet>
-				<mobi:editResourceLink resId="#{group.selectedResourceId}" linkLabel="#{group.name}" editPermission="EDIT_RES"/>
+				<mobi:editResourceLink resId="#{group.selectedResourceId}" linkLabel="#{group.name}" editPermission="RESOURCE" resourceType="#{resourceInstanceListImpl.selectedResourceType.name}"/>
                 <mobi:foreignableOwnerTooltip foreignableAttributes="#{resourceInstanceListImpl.getForeignableAttribute(group,group.selectedReleaseId)}"/>
 			</h:column>
 			<h:column rendered="#{securityDataProvider.hasPermission('RESOURCE_LIST')}">
@@ -77,7 +77,7 @@
 					</a4j:ajax>
 				</h:selectBooleanCheckbox>
 			</h:column>
-			<h:column rendered="#{securityDataProvider.hasPermission('EDIT_RES')}">
+			<h:column rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'READ', resourceInstanceListImpl.selectedResourceType.name)}">
 				<f:facet name="header">
 					<h:outputText value="Edit" />
 				</f:facet>

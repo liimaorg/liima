@@ -29,7 +29,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import lombok.Getter;
 import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -230,12 +229,12 @@ public class ReleasingDataProvider implements Serializable {
 	}
 
     public boolean isCanChangeRelease() {
-        return currentSelectedResource != null && permissionBoundary.hasPermission(Permission.RELEASE, Action.UPDATE)
+        return permissionBoundary.hasPermission(Permission.CHANGE_RESOURCE_RELEASE) && currentSelectedResource != null
 				&& foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource);
     }
 
     public boolean isCanRemoveRelease() {
-        return currentSelectedResource != null && permissionBoundary.hasPermissionToRemoveDefaultInstanceOfResType(currentSelectedResource.getResourceType().isDefaultResourceType())
+        return currentSelectedResource != null && permissionBoundary.hasPermissionToRemoveInstanceOfResType(currentSelectedResource.getResourceType())
 				&& foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource);
     }
 }

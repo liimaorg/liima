@@ -33,6 +33,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
@@ -158,7 +159,7 @@ public class EditResourceView implements Serializable {
      * To be called by JSF (by viewParameter)
      */
     public void setResourceIdFromParam(Integer resourceIdFromParam) {
-        permissionBoundary.checkPermissionAndFireException(Permission.EDIT_RES, "edit resources");
+        permissionBoundary.checkPermissionActionAndFireException(Permission.RESOURCE, Action.READ, "edit resources");
         this.resourceIdFromParam = resourceIdFromParam;
         if (resource == null || !resource.getId().equals(resourceIdFromParam)) {
             resource = resourceLocator.getResourceWithGroupAndRelatedResources(resourceIdFromParam);
@@ -278,11 +279,14 @@ public class EditResourceView implements Serializable {
     public boolean canSaveChanges() {
         boolean canSaveChanges = permissionBoundary.hasPermission(Permission.SAVE_ALL_CHANGES)
                 || permissionBoundary.hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
+        // isEditResource() means Resource
         if (isEditResource()) {
-            return canSaveChanges || permissionBoundary
-                    .hasPermissionToEditPropertiesOfResource(getResourceType().getId())
-                    || permissionBoundary.hasPermissionToRenameResource(this.resource);
+            return canSaveChanges
+                    || permissionBoundary.hasPermissionToEditPropertiesOfResource(getResourceType().getId())
+                    || permissionBoundary.hasPermission(Permission.RESOURCE, sessionContext.getCurrentContext(),
+                    Action.UPDATE, resource, getResourceType());
         }
+        // !isEditResource() means ResourceType
         return canSaveChanges;
     }
 
@@ -376,11 +380,7 @@ public class EditResourceView implements Serializable {
         if (isEditResource() && resource.getResourceType().isApplicationServerResourceType()) {
             return true;
         }
-        if (getRelativeApplicationServerId() != null) {
-            return true;
-        }
-
-        return false;
+        return getRelativeApplicationServerId() != null;
     }
 
     public String getApplicationName() {

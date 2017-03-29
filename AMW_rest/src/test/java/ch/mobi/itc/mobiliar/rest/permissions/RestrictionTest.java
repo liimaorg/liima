@@ -36,7 +36,7 @@ import javax.ws.rs.core.Response;
 import java.util.*;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.ALL;
-import static ch.puzzle.itc.mobiliar.business.security.entity.Permission.ADD_APP;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Permission.RESOURCE;
 import static java.util.Collections.EMPTY_LIST;
 import static javax.ws.rs.core.Response.Status.*;
 import static org.junit.Assert.assertEquals;
@@ -72,7 +72,7 @@ public class RestrictionTest {
         // given
         Integer restrictionId = 7;
         PermissionEntity permission = new PermissionEntity();
-        permission.setValue(ADD_APP.name());
+        permission.setValue(RESOURCE.name());
         ContextEntity context = new ContextEntity();
         context.setName("testContext");
         RoleEntity role = new RoleEntity();
@@ -111,7 +111,7 @@ public class RestrictionTest {
     public void shouldReturnListOfRestrictionDTOsIfRestrictionsHaveBeenFound() {
         // given
         PermissionEntity permission = new PermissionEntity();
-        permission.setValue(ADD_APP.name());
+        permission.setValue(RESOURCE.name());
         ContextEntity context = new ContextEntity();
         context.setName("testContext");
         RoleEntity role = new RoleEntity();
@@ -149,8 +149,8 @@ public class RestrictionTest {
     @Test
     public void shouldReturnStateBadRequestIfRoleNameIsMissing() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, null, ADD_APP, null, null, null, null);
-        when(rest.permissionBoundary.createRestriction(null, ADD_APP.name(), null, null, null, null)).thenThrow(new AMWException("bad"));
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, null, RESOURCE, null, null, null, null);
+        when(rest.permissionBoundary.createRestriction(null, RESOURCE.name(), null, null, null, null)).thenThrow(new AMWException("bad"));
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
@@ -162,8 +162,8 @@ public class RestrictionTest {
     @Test
     public void shouldReturnStateBadRequestIfRoleNameIsInvalid() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "invalid", ADD_APP, null, null, null, null);
-        when(rest.permissionBoundary.createRestriction("invalid", ADD_APP.name(), null, null, null, null)).thenThrow(new AMWException("bad"));
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "invalid", RESOURCE, null, null, null, null);
+        when(rest.permissionBoundary.createRestriction("invalid", RESOURCE.name(), null, null, null, null)).thenThrow(new AMWException("bad"));
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
@@ -175,8 +175,8 @@ public class RestrictionTest {
     @Test
     public void shouldReturnStateBadRequestIfResourceIdIsInvalid() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", ADD_APP, 1, null, null, null);
-        when(rest.permissionBoundary.createRestriction("valid", ADD_APP.name(), 1, null, null, null)).thenThrow(new AMWException("bad"));
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", RESOURCE, 1, null, null, null);
+        when(rest.permissionBoundary.createRestriction("valid", RESOURCE.name(), 1, null, null, null)).thenThrow(new AMWException("bad"));
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
@@ -188,8 +188,8 @@ public class RestrictionTest {
     @Test
     public void shouldReturnStateBadRequestIfResourceTypeNameIsInvalid() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", ADD_APP, null, "invalid", null, null);
-        when(rest.permissionBoundary.createRestriction("valid", ADD_APP.name(), null, "invalid", null, null)).thenThrow(new AMWException("bad"));
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", RESOURCE, null, "invalid", null, null);
+        when(rest.permissionBoundary.createRestriction("valid", RESOURCE.name(), null, "invalid", null, null)).thenThrow(new AMWException("bad"));
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
@@ -202,8 +202,8 @@ public class RestrictionTest {
     @Test
     public void shouldReturnStateBadRequestIfUpdateRestrictionFails() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(1, "valid", ADD_APP, 8, null, null, null);
-        doThrow(new AMWException("bad")).when(rest.permissionBoundary).updateRestriction(1,"valid", ADD_APP.name(), 8, null, null, null);
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(1, "valid", RESOURCE, 8, null, null, null);
+        doThrow(new AMWException("bad")).when(rest.permissionBoundary).updateRestriction(1,"valid", RESOURCE.name(), 8, null, null, null);
 
         // when
         Response response = rest.updateRestriction(1, restrictionDTO);
@@ -237,7 +237,7 @@ public class RestrictionTest {
     public void shouldReturnAMapOfListOfRestrictionDTOsIfRolesHaveBeenFound() {
         // given
         PermissionEntity permission = new PermissionEntity();
-        permission.setValue(ADD_APP.name());
+        permission.setValue(RESOURCE.name());
         RoleEntity role = new RoleEntity();
         role.setName("testRole");
         RoleEntity anotherRole = new RoleEntity();
@@ -257,7 +257,7 @@ public class RestrictionTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         Map<String, List<RestrictionDTO>> restrictions = (Map<String, List<RestrictionDTO>>) response.getEntity();
         assertEquals(role.getName(), restrictions.get(role.getName()).get(0).getRoleName());
-        assertEquals(ADD_APP, restrictions.get(role.getName()).get(0).getPermission());
+        assertEquals(RESOURCE, restrictions.get(role.getName()).get(0).getPermission());
         assertEquals(anotherRole.getName(), restrictions.get(anotherRole.getName()).get(0).getRoleName());
     }
 

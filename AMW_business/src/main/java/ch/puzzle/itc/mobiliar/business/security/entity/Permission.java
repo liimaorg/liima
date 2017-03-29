@@ -25,17 +25,8 @@ public enum Permission {
     DEFAULT(""),
 
     //RESOURCE PERMISSIONS
-    NEW_RES("New resource button. You can find this button in APPLICATIONSERVER/NODE/NOT DEFAULT RESOURCETYPE."),
-    ADD_APPSERVER("Add application server. Path: Apps"),
-    ADD_APP("Add new application and/or application server. Path: Apps"),
     ADD_NEW_RES_OF_DEFAULT_RESTYPE("New application or/and application server. Path: Resources -> select APPLICATION tab"),
-    DELETE_RES("Delete Resource. In all resource type screen. Path -> Resources -> select one Resource Type."),
     DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE("WARNING: DON'T CHANGE THIS PERMISSION"),
-    DELETE_APPSERVER("Delete application server. Path: Apps"),
-    DELETE_APP("Delete application. Path: Apps"),
-    EDIT_RES("With this permission you can see the edit link"),
-    EDIT_APP("Edit application. Path: Apps"),
-    EDIT_APP_SERVER("Edit application server. Path: Apps"),
     EDIT_NOT_DEFAULT_RES_OF_RESTYPE("With this permission the config admin can rename the NOT DEFAULT RESOURCE AND RESOURCE TYPE. The DEAFULT RESOURCE TYPE are: APPLICATION, APPLICATION SERVER and NODE"),
     RENAME_INSTANCE_DEFAULT_RESOURCE("With this permission it is possible to rename all instances of default resource types. This permission has only effect if it is not combined with EDIT_RES_OR_RESTYPE_NAME since it is more restrictive. WARNING: DON'T CHANGE THIS PERMISSION"),
 
@@ -46,6 +37,8 @@ public enum Permission {
     TAG_CURRENT_STATE("Tag current state. You can find this select one menu in application instance screen and in all not default resource screen. "),
 
     EXCLUDE_APP_FROM_NODE("Exclude application from node. You find can this checkbox in all instances of applications server"),
+
+    CHANGE_RESOURCE_RELEASE("With this permission the viewer can view releases"),
 
     TEST_GENERATION("With this permission the user can test the generation of an Applicationserver"),
 
@@ -59,7 +52,6 @@ public enum Permission {
     DELETE_EVERY_RELATED_RESOURCE("WARNING: DON'T CHANGE THIS PERMISSION"),
     DELETE_CONS_OR_PROVIDED_RELATION("Delete Consumed or Provided relation. You can find this button in all resource instance except in Applicationserver instance and node instance"),
     SELECT_RUNTIME("Select runtime. You can find this button in all instances of Application Server"),
-    ADD_NODE("Add a new node to an application server. Path_1: Apps -> Edit(application server) -> Add Node; Path_2: Resources -> APPLICATIONSERVER -> Edit -> Add Node"),
     ADD_NODE_RELATION("Add Node to Application Server. Path: Resources -> select one instance of Applicaiton Server "),
     DELETE_NODE_RELATION("Delete Node Relation button. Path: Resources -> select APPLICATIONSERVER tab -> select one instance of application server list "),
     ADD_APP_TO_APP_SERVER("Add an application to an application server. Path_1: Apps -> Edit(application server) -> Add application ; Path_2 Resources -> APPLICATIONSERVER -> Edit -> Add application"),
@@ -162,6 +154,7 @@ public enum Permission {
     //NEW PERMISSIONS
     DEPLOYMENT("The right to deploy."),
     COPY_FROM_RESOURCE("The right to copy the configuration from one resource into an other."),
+    // TODO ist: ALLE soll: ALLE WELCHE NICHT DEFAULT TYPEN
     // COPY_FROM_RESOURCE("With this permission the config admin can copy the configuration from one non default resource into an other."),
     // COPY_FROM_RESOURCE_APP("With this permission the config admin can copy the configuration from one app into an other."),
     // COPY_FROM_RESOURCE_APPSERVER("With this permission the config admin can copy the configuration from one appserver into an other."),
@@ -170,18 +163,33 @@ public enum Permission {
     // RENAME_APPSERVER("With this permission it is possible to rename all AppServer instances."),
     // RENAME_APP("With this permission it is possible to rename all APP instances."),
     // RENAME_NODE("With this permission it is possible to rename all NODE instances."),
+    // TODO ist: ALLE soll: ALLE WELCHE NICHT DEFAULT TYPEN
     // RENAME_RES("With this permission it is possible to rename everthing else."),
     RELEASE("The right to create, read, update or delete releases"),
     // CREATE_RELEASE("With this permission the config admin can create releases."),
     // EDIT_RELEASE("With this permission the config admin can edit releases."),
     // DELETE_RELEASE("With this permission the config admin can delete releases."),
     // VIEW_RELEASE("With this permission the viewer can view releases"),
-    // CHANGE_RESOURCE_RELEASE("With this permission the viewer can view releases"),
-    SHAKEDOWNTEST("The right to create, read, update or delete shakedown tests");
+    SHAKEDOWNTEST("The right to create, read, update or delete shakedown tests"),
     // STP_MANAGEMENT_PAGE("Path: Settings -> select STP Management"),
     // EDIT_STP("Path: Settings -> select STP Management -> Edit"),
     // DELETE_STP("Path: Settings -> select STP Management -> Edit"),
     // ADD_STP("Path: Settings -> select STP Management -> Add new STP"),
+    RESOURCE("The right to create, read, update or delete resources");
+    // NEW_RES("New resource button. You can find this button in APPLICATIONSERVER/NODE/NOT DEFAULT RESOURCETYPE."),
+    // ADD_APPSERVER("Add application server. Path: Apps"),
+    // ADD_APP("Add new application and/or application server. Path: Apps"),
+    // ADD_NODE("Add a new node to an application server. Path_1: Apps -> Edit(application server) -> Add Node; Path_2: Resources -> APPLICATIONSERVER -> Edit -> Add Node"),
+    // DELETE_RES("Delete Resource. In all resource type screen. Path -> Resources -> select one Resource Type."),
+    // DELETE_APPSERVER("Delete application server. Path: Apps"),
+    // DELETE_APP("Delete application. Path: Apps"),
+    // EDIT_RES("With this permission you can see the edit link"), > READ
+    // EDIT_APP("Edit application. Path: Apps"), > READ
+    // EDIT_APP_SERVER("Edit application server. Path: Apps"), > READ
+
+    // CANDIDATES (assigned only to config_admin)
+    // SAVE_ALL_CHANGES("Permission to persist all properties and the name of any resource or resource type. WARNING: DON'T CHANGE THIS PERMISSION"),
+    // EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen."),
 
     private String info;
 
