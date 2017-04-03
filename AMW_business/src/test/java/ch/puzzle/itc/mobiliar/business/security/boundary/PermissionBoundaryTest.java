@@ -20,14 +20,18 @@
 
 package ch.puzzle.itc.mobiliar.business.security.boundary;
 
+import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
-import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,10 +42,12 @@ import org.mockito.Mockito;
 import javax.persistence.NoResultException;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class PermissionBoundaryTest {
 
@@ -57,6 +63,8 @@ public class PermissionBoundaryTest {
     ResourceTypeRepository resourceTypeRepository;
     @Mock
     ResourceGroupRepository resourceGroupRepository;
+    @Mock
+    PermissionService permissionService;
 
     @Before
     public void setup() {
@@ -71,6 +79,8 @@ public class PermissionBoundaryTest {
         permissionBoundary.resourceTypeRepository = resourceTypeRepository;
         resourceGroupRepository = Mockito.mock(ResourceGroupRepository.class);
         permissionBoundary.resourceGroupRepository = resourceGroupRepository;
+        permissionService = Mockito.mock(PermissionService.class);
+        permissionBoundary.permissionService = permissionService;
     }
 
     @Test(expected=AMWException.class)
@@ -217,6 +227,205 @@ public class PermissionBoundaryTest {
         permissionBoundary.removeRestriction(21);
         // then
         verify(restrictionRepository, times(1)).remove(42);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceIfPermissionHasBeenFound() {
+        // given
+        when(permissionService.hasPermission(Permission.RESOURCE)).thenReturn(true);
+        // when
+        boolean result = permissionBoundary.hasPermission("RESOURCE");
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE);
+        assertTrue(result);
+    }
+
+    @Test
+    public void shouldDelegatePermissionCheckToPermissionService() {
+        // given
+        when(permissionService.hasPermission(Permission.RESOURCE)).thenReturn(true);
+        // when
+        boolean result = permissionBoundary.hasPermission(Permission.RESOURCE);
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE);
+        assertTrue(result);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceIfPermissionAndActionHaveBeenFound() {
+        // given
+        when(permissionService.hasPermission(Permission.RESOURCE, READ)).thenReturn(true);
+        // when
+        boolean result = permissionBoundary.hasPermission("RESOURCE", "READ");
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, READ);
+        assertTrue(result);
+    }
+
+    @Test
+    public void shouldDelegatePermissionAndActionCheckToPermissionService() {
+        // given
+        when(permissionService.hasPermission(Permission.RESOURCE, READ)).thenReturn(true);
+        // when
+        boolean result = permissionBoundary.hasPermission(Permission.RESOURCE, READ);
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, READ);
+        assertTrue(result);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void shouldThrowAnExceptionIfRequestedPermissionDoesNotExist() {
+        // given // when // then
+        boolean result = permissionBoundary.hasPermissionForResourceType("NotAPermission", "CREATE", "APP");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void shouldThrowAnExceptionIfRequestedActionDoesNotExist() {
+        // given // when // then
+        permissionBoundary.hasPermissionForResourceType("RESOURCE", "NADA", "APP");
+    }
+
+    @Test
+    public void shouldReturnFalseIfRequestedResourceTypeDoesNotExist() {
+        // given // when
+        boolean result = permissionBoundary.hasPermissionForResourceType("RESOURCE", "CREATE", "DAB");
+        // then
+        assertFalse(result);
+    }
+
+    @Test
+    public void shouldInvokeResourceTypeRepository() {
+        // given // when
+        permissionBoundary.hasPermissionForResourceType("RESOURCE", "CREATE", "APP");
+        // then
+        verify(resourceTypeRepository, times(1)).getByName("APP");
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceIfResourceTypeHasBeenFound() {
+        // given
+        ResourceTypeEntity resType = new ResourceTypeEntity();
+        when(resourceTypeRepository.getByName("APP")).thenReturn(resType);
+        when(permissionService.hasPermission(Permission.RESOURCE, CREATE, resType)).thenReturn(true);
+        // when
+        boolean result = permissionBoundary.hasPermissionForResourceType("RESOURCE", "CREATE", "APP");
+        // then
+        verify(resourceTypeRepository, times(1)).getByName("APP");
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, CREATE, resType);
+        assertTrue(result);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceIfResourceTypeAndContextHaveBeenFound() {
+        // given
+        ResourceTypeEntity resType = new ResourceTypeEntity();
+        ContextEntity context = new ContextEntity();
+        when(resourceTypeRepository.getByName("APP")).thenReturn(resType);
+        when(contextLocator.getContextById(1)).thenReturn(context);
+        when(permissionService.hasPermission(Permission.RESOURCE, context, CREATE, null, resType)).thenReturn(true);
+        // when
+        boolean result = permissionBoundary.hasPermissionForResourceType("RESOURCE", "CREATE", "APP", 1);
+        // then
+        verify(resourceTypeRepository, times(1)).getByName("APP");
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, context, CREATE, null, resType);
+        assertTrue(result);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceWithAllParams() {
+        // given
+        ResourceEntity resource = new ResourceEntityBuilder().build();
+        ResourceGroupEntity rg = new ResourceGroupEntity();
+        resource.setResourceGroup(rg);
+        ResourceTypeEntity type = new ResourceTypeEntity();
+        resource.setResourceType(type);
+        ContextEntity context = new ContextEntity();
+        when(permissionService.hasPermission(Permission.RESOURCE, context, CREATE, rg, type)).thenReturn(true);
+        // when
+        boolean result = permissionBoundary.hasPermission(Permission.RESOURCE, context, CREATE, resource, type);
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, context, CREATE, rg, type);
+        assertTrue(result);
+    }
+
+    @Test
+    public void shouldInvokeTheRightMethodOnPermissionServiceIfResourceTypeIsNotDefaultType() {
+        // given
+        ResourceTypeEntity resType = new ResourceTypeEntity();
+        // when
+        permissionBoundary.hasPermissionToRemoveInstanceOfResType(resType);
+        // then
+        verify(permissionService, times(1)).hasPermissionToRemoveInstanceOfResType(resType);
+    }
+
+    @Test
+    public void shouldInvokeTheRightMethodOnPermissionServiceIfResourceTypeIsDefaultType() {
+        // given
+        ResourceTypeEntity resType = Mockito.mock(ResourceTypeEntity.class);
+        when(resType.isDefaultResourceType()).thenReturn(true);
+        // when
+        permissionBoundary.hasPermissionToRemoveInstanceOfResType(resType);
+        // then
+        verify(permissionService, times(1)).hasPermissionToRemoveDefaultInstanceOfResType();
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceWithCorrectParametersOnCanCopyFromResource() {
+        // given
+        ResourceEntity resource = new ResourceEntityBuilder().build();
+        ResourceGroupEntity rg = new ResourceGroupEntity();
+        resource.setResourceGroup(rg);
+        ResourceTypeEntity type = new ResourceTypeEntity();
+        resource.setResourceType(type);
+        // when
+        permissionBoundary.canCopyFromResource(resource);
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.COPY_FROM_RESOURCE, null, UPDATE, rg, type);
+    }
+
+    @Test
+    public void shouldInvokeTheRightMethodOnPermissionServiceIfTheResourceTypeIsNotAppOrAppserverOrNode() {
+        // given
+        ResourceTypeEntity resType = Mockito.mock(ResourceTypeEntity.class);
+        // when
+        permissionBoundary.canCreateResourceInstance(resType);
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, CREATE, resType);
+        verify(permissionService, never()).hasPermission(Permission.ADD_NEW_RES_OF_DEFAULT_RESTYPE);
+    }
+
+    @Test
+    public void shouldInvokeTheRightMethodsOnPermissionServiceIfTheResourceTypeIsAppserver() {
+        // given
+        ResourceTypeEntity resType = Mockito.mock(ResourceTypeEntity.class);
+        when(resType.isApplicationServerResourceType()).thenReturn(true);
+        // when
+        permissionBoundary.canCreateResourceInstance(resType);
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, CREATE, resType);
+        verify(permissionService, times(1)).hasPermission(Permission.ADD_NEW_RES_OF_DEFAULT_RESTYPE);
+    }
+
+    @Test
+    public void shouldInvokeTheRightMethodsOnPermissionServiceToCheckIfCanCreateAppAndAddToAppServer() {
+        // given
+        ResourceEntity resource = new ResourceEntityBuilder().build();
+        ResourceTypeEntity type = new ResourceTypeEntity();
+        resource.setResourceType(type);
+        when(permissionService.hasPermission(Permission.RESOURCE, CREATE, type)).thenReturn(true);
+        // when
+        permissionBoundary.canCreateAppAndAddToAppServer(resource);
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, CREATE, type);
+        verify(permissionService, times(1)).hasPermission(Permission.ADD_APP_TO_APP_SERVER);
+    }
+
+    @Test
+    public void shouldObtainListOfPermissionsFromPermissionService() {
+        // given // when
+        permissionBoundary.getAllPermissions();
+        // then
+        verify(permissionService, times(1)).getPermissions();
     }
 
 }

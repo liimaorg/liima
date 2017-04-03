@@ -152,20 +152,6 @@ public class PermissionBoundary implements Serializable {
     /**
      * Checks if given permission is available. If not a checked exception is thrown with error message
      * containing extraInfo part.
-     * Replace with annotations - do not handle business permission exceptions on gui!!!
-     *
-     * @param permission
-     * @param extraInfo
-     */
-    @Deprecated
-    public void checkPermissionAndFireCheckedException(Permission permission, String extraInfo)
-            throws CheckedNotAuthorizedException {
-        permissionService.checkPermissionAndFireCheckedException(permission, extraInfo);
-    }
-
-    /**
-     * Checks if given permission is available. If not a checked exception is thrown with error message
-     * containing extraInfo part.
      *
      * @param permission
      * @param extraInfo
@@ -293,10 +279,12 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermissionToDeploy();
     }
 
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public RestrictionEntity findRestriction(Integer id) {
         return restrictionRepository.find(id);
     }
 
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public List<RestrictionEntity> findAllRestrictions() {
         return restrictionRepository.findAll();
     }
