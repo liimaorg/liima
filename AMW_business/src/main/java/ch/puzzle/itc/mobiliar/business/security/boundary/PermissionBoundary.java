@@ -32,6 +32,8 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.CheckedNotAuthorizedException;
@@ -41,6 +43,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
@@ -51,6 +54,7 @@ import java.util.Map;
  * A boundary for checking permissions of view elements
  */
 @Stateless
+@Interceptors(HasPermissionInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class PermissionBoundary implements Serializable {
 
@@ -309,6 +313,7 @@ public class PermissionBoundary implements Serializable {
      * @return Id of the newly created RestrictionEntity
      * @throws AMWException
      */
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.CREATE)
     public Integer createRestriction(String roleName, String permissionName, Integer resourceGroupId, String resourceTypeName,
                                      String contextName, Action action) throws AMWException {
         RestrictionEntity restriction = new RestrictionEntity();
@@ -326,6 +331,7 @@ public class PermissionBoundary implements Serializable {
      * @param action
      * @throws AMWException
      */
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.UPDATE)
     public void updateRestriction(Integer id, String roleName, String permissionName, Integer resourceId,
                                   String resourceTypeName,String contextName, Action action) throws AMWException {
         if (id == null) {
@@ -339,6 +345,7 @@ public class PermissionBoundary implements Serializable {
         restrictionRepository.merge(restriction);
     }
 
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.DELETE)
     public void removeRestriction(Integer id) throws AMWException {
         RestrictionEntity restriction = restrictionRepository.find(id);
         if (restriction == null) {
@@ -352,6 +359,7 @@ public class PermissionBoundary implements Serializable {
      *
      * @return Map key=Role.name, value=restrictionDTOs
      */
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public Map<String, List<RestrictionDTO>> getAllPermissions() {
         return permissionService.getPermissions();
     }
