@@ -44,7 +44,7 @@ import static javax.ws.rs.core.Response.Status.*;
 
 @Stateless
 @Path("/permissions/restrictions")
-@Api(value = "/permissions/restrictions", description = "Managing restrictions")
+@Api(value = "/permissions/restrictions", description = "Managing permissions")
 public class RestrictionsRest {
 
     @Inject

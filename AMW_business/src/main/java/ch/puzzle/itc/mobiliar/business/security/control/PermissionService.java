@@ -27,7 +27,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
-import ch.puzzle.itc.mobiliar.common.exception.CheckedNotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import org.apache.commons.lang.StringUtils;
@@ -171,10 +170,6 @@ public class PermissionService implements Serializable {
         return hasRole(permission.name(), null, action, null, null);
     }
 
-    public boolean hasPermission(Permission permission, ContextEntity context, Action action) {
-        return hasRole(permission.name(), context, action, null, null);
-    }
-
     public boolean hasPermission(Permission permission, Action action, ResourceTypeEntity resourceType) {
         return hasRole(permission.name(), null, action, null, resourceType);
     }
@@ -207,32 +202,12 @@ public class PermissionService implements Serializable {
         }
     }
 
-    /**
-     * Checks if given permission is available. If not a exception is created with error message containing extraInfo part.
-     *
-     * @param permission
-     * @param extraInfo
-     */
-    public void checkPermissionAndFireCheckedException(Permission permission, String extraInfo) throws CheckedNotAuthorizedException {
-        if (!hasPermission(permission)) {
-            throwCheckedNotAuthorizedException(extraInfo);
-        }
-    }
-
     public void throwNotAuthorizedException(String extraInfo) {
         String errorMessage = "Not Authorized!";
         if (StringUtils.isNotEmpty(extraInfo)) {
             errorMessage += " You're not allowed to " + extraInfo + "!";
         }
         throw new NotAuthorizedException(errorMessage);
-    }
-
-    public void throwCheckedNotAuthorizedException(String extraInfo) throws CheckedNotAuthorizedException {
-        String errorMessage = "Not Authorized!";
-        if (StringUtils.isNotEmpty(extraInfo)) {
-            errorMessage += " You're not allowed to " + extraInfo + "!";
-        }
-        throw new CheckedNotAuthorizedException(errorMessage);
     }
 
     public boolean hasPermissionForDeployment(DeploymentEntity deployment) {

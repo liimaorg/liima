@@ -25,18 +25,24 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Date;
+
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EditResourceViewTest {
@@ -45,17 +51,21 @@ public class EditResourceViewTest {
 	
 	@Mock
 	ResourceTypeEntity resourceType;
+
+	@Mock
+	PermissionBoundary permissionBoundary;
 	
 	@Before
 	public void setup(){
 		context.resourceType = resourceType;
+		context.permissionBoundary = permissionBoundary;
 	}
 	
 	
 	@Test
 	public void testGetDefaultResourceTypeCapitalizedName() {
-		Mockito.when(resourceType.getName()).thenReturn(DefaultResourceTypeDefinition.APPLICATION.name());
-		Mockito.when(resourceType.isDefaultResourceType()).thenReturn(true);
+		when(resourceType.getName()).thenReturn(DefaultResourceTypeDefinition.APPLICATION.name());
+		when(resourceType.isDefaultResourceType()).thenReturn(true);
 		String displayName = context.getCapitalizedResourceTypeName();
 		Assert.assertEquals("Application", displayName);
 	}
@@ -123,4 +133,45 @@ public class EditResourceViewTest {
 		Assert.assertTrue(context.existsForThisRelease(group));
 		
 	}
+
+	@Test
+	public void canSaveChangesShouldInvokeTheRightMethodsOfTheBoundaryWhenEditingResourceType(){
+		//given //when
+		context.canSaveChanges();
+		//then
+		verify(permissionBoundary, times(1)).hasPermission(Permission.SAVE_ALL_CHANGES);
+		verify(permissionBoundary, times(1)).hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
+	}
+
+	@Test
+	public void canSaveChangesShouldInvokeTheRightMethodsOfTheBoundaryWhenEditingResource(){
+		//given
+		ResourceGroupEntity group = new ResourceGroupEntity();
+		ResourceEntity r = ResourceFactory.createNewResource(group);
+		ResourceTypeEntity type = new ResourceTypeEntity();
+		type.setId(9);
+		r.setResourceType(type);
+		context.resource = r;
+		when(permissionBoundary.hasPermissionToEditPropertiesOfResource(anyInt())).thenReturn(true);
+		// when
+		context.canSaveChanges();
+		//then
+		verify(permissionBoundary, times(1)).hasPermission(Permission.SAVE_ALL_CHANGES);
+		verify(permissionBoundary, times(1)).hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
+		verify(permissionBoundary, times(1)).hasPermissionToEditPropertiesOfResource(anyInt());
+	}
+
+	@Test
+	public void shouldInvokePermissionBoundaryOnSetResourceIdFromParam() {
+		//given
+		ResourceGroupEntity group = new ResourceGroupEntity();
+		ResourceEntity r = ResourceFactory.createNewResource(group);
+		r.setId(7);
+		context.resource = r;
+		//when
+		context.setResourceIdFromParam(7);
+		//then
+		verify(permissionBoundary, times(1)).checkPermissionActionAndFireException(Permission.RESOURCE, READ, "edit resources");
+	}
+
 }
