@@ -323,11 +323,11 @@ public class DeploymentEntity implements Serializable {
         setDeploymentCancelDate(new Date());
     }
 
-    public void setDeploymentState(DeploymentState newDeploymentState) {
-        if (deploymentState != null && !deploymentState.isTransitionAllowed(newDeploymentState)) {
-            throw new DeploymentStateException("Can't set status: " + newDeploymentState + ". Allowed states: "
-                    + deploymentState.allowedTransitions);
-        }
+	public void setDeploymentState(DeploymentState newDeploymentState) {
+		if (deploymentState != null && !deploymentState.isTransitionAllowed(newDeploymentState)) {
+			throw new DeploymentStateException("Can't set status from " + deploymentState + " to " + newDeploymentState
+					+ " of deployment " + getId() + ". Allowed transitions: " + deploymentState.allowedTransitions);
+		}
 
         deploymentState = newDeploymentState;
     }
@@ -434,6 +434,9 @@ public class DeploymentEntity implements Serializable {
     }
 
 	public boolean isPredeploymentFinished() {
+		if (this.getNodeJobs().size() == 0) {
+			return false;
+		}
 		for (NodeJobEntity job : this.getNodeJobs()) {
 			if (NodeJobEntity.NodeJobStatus.RUNNING.equals(job.getStatus())) {
 				return false;
@@ -443,6 +446,9 @@ public class DeploymentEntity implements Serializable {
 	}
 
 	public boolean isPredeploymentSuccessful() {
+		if (this.getNodeJobs().size() == 0) {
+			return false;
+		}
 		for (NodeJobEntity job : this.getNodeJobs()) {
 			if (!NodeJobEntity.NodeJobStatus.SUCCESS.equals(job.getStatus())) {
 				return false;
