@@ -33,6 +33,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
@@ -157,7 +158,7 @@ public class PropertyEditDataProvider implements Serializable {
         filteredResourceProperties = new ArrayList<>();
         resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResourceType(
                 resourceTypeEntity.getId(), getContextId()));
-        editableProperties = permissionBoundary.hasPermission(Permission.EDIT_NOT_DEFAULT_RES_OF_RESTYPE);
+        editableProperties = permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.UPDATE, null, resourceTypeEntity);
         canChangeRuntime = false;
         group = null;
         resourceOrResourceType = resourceTypeEntity;

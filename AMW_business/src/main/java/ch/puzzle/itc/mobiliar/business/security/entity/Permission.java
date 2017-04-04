@@ -25,9 +25,6 @@ public enum Permission {
     DEFAULT(""),
 
     //RESOURCE PERMISSIONS
-    ADD_NEW_RES_OF_DEFAULT_RESTYPE("New application or/and application server. Path: Resources -> select APPLICATION tab"),
-    DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE("WARNING: DON'T CHANGE THIS PERMISSION"),
-    EDIT_NOT_DEFAULT_RES_OF_RESTYPE("With this permission the config admin can rename the NOT DEFAULT RESOURCE AND RESOURCE TYPE. The DEAFULT RESOURCE TYPE are: APPLICATION, APPLICATION SERVER and NODE"),
     RENAME_INSTANCE_DEFAULT_RESOURCE("With this permission it is possible to rename all instances of default resource types. This permission has only effect if it is not combined with EDIT_RES_OR_RESTYPE_NAME since it is more restrictive. WARNING: DON'T CHANGE THIS PERMISSION"),
 
     INSTANCE_TEMP_LIST("Instance template list. You can find this list in all Resource and Resource Type screen."),
@@ -186,6 +183,11 @@ public enum Permission {
     // EDIT_RES("With this permission you can see the edit link"), > READ
     // EDIT_APP("Edit application. Path: Apps"), > READ
     // EDIT_APP_SERVER("Edit application server. Path: Apps"), > READ
+    // PERMISSIONS FOR DEFAULT OR NON DEFAULT RESOURCETYPES ONLY
+    // ADD_NEW_RES_OF_DEFAULT_RESTYPE("New application or/and application server. Path: Resources -> select APPLICATION tab"),
+    // EDIT_NOT_DEFAULT_RES_OF_RESTYPE("With this permission the config admin can rename the NOT DEFAULT RESOURCE AND RESOURCE TYPE. The DEAFULT RESOURCE TYPE are: APPLICATION, APPLICATION SERVER and NODE"),
+    // DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE("WARNING: DON'T CHANGE THIS PERMISSION"),
+
 
     // CANDIDATES (assigned only to config_admin)
     // SAVE_ALL_CHANGES("Permission to persist all properties and the name of any resource or resource type. WARNING: DON'T CHANGE THIS PERMISSION"),

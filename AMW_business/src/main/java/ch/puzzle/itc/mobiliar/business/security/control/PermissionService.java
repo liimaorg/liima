@@ -289,7 +289,8 @@ public class PermissionService implements Serializable {
         String roleName = entry.getKey();
         for (RestrictionDTO restrictionDTO : entry.getValue()) {
             if (restrictionDTO.getPermissionName().equals(permissionName) && hasPermissionForAction(restrictionDTO, action)
-                    && hasPermissionForResource(restrictionDTO, resourceGroup) && hasPermissionForResourceType(restrictionDTO, resourceType)) {
+                    && hasPermissionForResource(restrictionDTO, resourceGroup) && hasPermissionForResourceType(restrictionDTO, resourceType)
+                    && hasPermissionForDefaultResourceType(restrictionDTO, resourceType)) {
                 allowedRoles.add(roleName);
             }
         }
@@ -332,7 +333,8 @@ public class PermissionService implements Serializable {
                                                   RestrictionDTO restrictionDTO) {
         // RestrictionDTOs created with legacy Permissions have a null Context
         if (hasPermissionForContext(restrictionDTO, context) && hasPermissionForAction(restrictionDTO, action) &&
-                hasPermissionForResource(restrictionDTO, resource) && hasPermissionForResourceType(restrictionDTO, resourceType)) {
+                hasPermissionForResource(restrictionDTO, resource) && hasPermissionForResourceType(restrictionDTO, resourceType)
+                && hasPermissionForDefaultResourceType(restrictionDTO, resourceType)) {
             allowedRoles.add(entry.getKey());
         } else if (context.getParent() != null) {
             checkContextAndActionAndResource(context.getParent(), action, resource, resourceType, allowedRoles, entry, restrictionDTO);
@@ -397,11 +399,35 @@ public class PermissionService implements Serializable {
     }
 
     /**
+     * Checks if a Restriction gives permission for a specific (Default)ResourceType
+     * No DefaultResourceType on Restriction means all ResourceTypes (including DefaultResourceTypes) are allowed
+     *
+     * @param restrictionDTO
+     * @param resourceType
+     * @return
+     */
+    private boolean hasPermissionForDefaultResourceType(RestrictionDTO restrictionDTO, ResourceTypeEntity resourceType) {
+        // Default and non DefaultTypes are allowed
+        if (resourceType == null || restrictionDTO.getRestriction().getDefaultResourceType() == null) {
+            return true;
+        }
+        // Only DefaultTypes are allowed
+        if (restrictionDTO.getRestriction().getDefaultResourceType() &&
+                DefaultResourceTypeDefinition.contains(resourceType.getName())) {
+            return true;
+        }
+        // Only non DefaultTypes are allowed
+        return !restrictionDTO.getRestriction().getDefaultResourceType() &&
+                !DefaultResourceTypeDefinition.contains(resourceType.getName());
+    }
+
+    /**
      * The Properties of ResourceType are modifiable only by the config_admin
      */
-    public boolean hasPermissionToEditResourceTypeProperties() {
-        return hasPermission(Permission.EDIT_NOT_DEFAULT_RES_OF_RESTYPE);
-    }
+//    UNUSED?!?
+//    public boolean hasPermissionToEditResourceTypeProperties() {
+//        return hasPermission(Permission.EDIT_NOT_DEFAULT_RES_OF_RESTYPE);
+//    }
 
     /**
      * The ResourceTypeName is modifiable by the config_admin. DefaultResourceType (APPLICATION,
@@ -452,17 +478,7 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * Check if the user can delete instances of Default ResourceType(APPLICATION,APPLICATIONSERVER,NODE)
-     * (legacy: server_admin or config_admin)
-     *
-     * @return
-     */
-    public boolean hasPermissionToRemoveDefaultInstanceOfResType() {
-        return hasPermission(Permission.DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE);
-    }
-
-    /**
-     * Check if the user can delete instances of non Default ResourceTypes
+     * Check if the user can delete instances of ResourceTypes
      * (legacy: config_admin)
      *
      * @param resourceType

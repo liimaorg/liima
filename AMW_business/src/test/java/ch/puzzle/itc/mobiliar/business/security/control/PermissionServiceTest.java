@@ -86,41 +86,6 @@ public class PermissionServiceTest {
 		anotherResourceGroup.setId(321);
 		anotherResourceGroup.setResourceType(new ResourceTypeEntityBuilder().id(1).parentResourceType(null).build());
 	}
-	
-	@Test
-	public void hasPermissionToEditPropertiesWhenIsApplicationResTypeAndAppDeveloperTest(){
-		//given
-		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
-		myRoles = new HashMap<>();
-		//Add permissions to app_developer
-		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_PROP_LIST_OF_INST_APP, res)));
-		permissionService.rolesWithRestrictions = myRoles;
-
-		//When
-		boolean result = permissionService.hasPermissionToEditResourceTypeProperties();
-		
-		//Then
-		Assert.assertFalse(result);
-	}
-
-	@Test
-	public void hasPermissionToEditPropertiesWhenUserIsConfigAdminAndResTypeIsNotDefault(){
-		//Given
-		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
-		myRoles = new HashMap<>();
-		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_NOT_DEFAULT_RES_OF_RESTYPE, res)));
-		permissionService.rolesWithRestrictions = myRoles;
-			
-		//When
-		boolean result = permissionService.hasPermissionToEditResourceTypeProperties();
-				
-		//Then
-		Assert.assertTrue(result);
-	}
 
 	@Test
 	public void hasPermissionToRenameResourceTypeWhenResTypeIsNotDefaultResTypeTest(){
@@ -260,7 +225,7 @@ public class PermissionServiceTest {
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_ALL_PROPERTIES, res)));
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().buildRestrictionDTO(Permission.EDIT_ALL_PROPERTIES, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 					
 		//When
@@ -569,14 +534,20 @@ public class PermissionServiceTest {
 	@Test
 	public void shouldNotAllowToRemoveDefaultInstanceOfResTypeIfHasPermissionForResourcesOnly(){
 		//Given
+		ResourceTypeEntity applicationResTypeEntity = new ResourceTypeEntity();
+		applicationResTypeEntity.setName(DefaultResourceTypeDefinition.APPLICATION.name());
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
 		myRoles = new HashMap<>();
+		PermissionEntity permission = new PermissionEntity();
+		permission.setValue(Permission.RESOURCE.name());
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.DELETE);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
+		res.setDefaultResourceType(false);
+		res.setPermission(permission);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.rolesWithRestrictions = myRoles;
 		//When
-		boolean result = permissionService.hasPermissionToRemoveDefaultInstanceOfResType();
+		boolean result = permissionService.hasPermissionToRemoveInstanceOfResType(applicationResTypeEntity);
 		//Then
 		Assert.assertFalse(result);
 	}
@@ -584,15 +555,19 @@ public class PermissionServiceTest {
 	@Test
 	public void shouldNotAllowToRemoveInstanceOfNonDefaultResTypeIfHasPermissionToDeleteInstancesOfDefaultResourceTypeOnly(){
 		//Given
+		ResourceTypeEntity nonDefaultResType = new ResourceTypeEntity();
 		when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
 		myRoles = new HashMap<>();
+		PermissionEntity permission = new PermissionEntity();
+		permission.setValue(Permission.RESOURCE.name());
 		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE, res)));
+		res.setAction(Action.DELETE);
+		res.setDefaultResourceType(true);
+		res.setPermission(permission);
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.rolesWithRestrictions = myRoles;
-        ResourceTypeEntity resType = new ResourceTypeEntity();
 		//When
-		boolean result = permissionService.hasPermissionToRemoveInstanceOfResType(resType);
+		boolean result = permissionService.hasPermissionToRemoveInstanceOfResType(nonDefaultResType);
 		//Then
 		Assert.assertFalse(result);
 	}
@@ -600,14 +575,20 @@ public class PermissionServiceTest {
 	@Test
 	public void shouldAllowToRemoveDefaultInstanceOfResTypeIfHasPermissionToDeleteInstancesOfDefaultResourceType(){
 		//Given
+		ResourceTypeEntity applicationResTypeEntity = new ResourceTypeEntity();
+		applicationResTypeEntity.setName(DefaultResourceTypeDefinition.APPLICATION.name());
 		when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
 		myRoles = new HashMap<>();
+		PermissionEntity permission = new PermissionEntity();
+		permission.setValue(Permission.RESOURCE.name());
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE, res)));
+		res.setDefaultResourceType(true);
+		res.setPermission(permission);
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.rolesWithRestrictions = myRoles;
 		//When
-		boolean result = permissionService.hasPermissionToRemoveDefaultInstanceOfResType();
+		boolean result = permissionService.hasPermissionToRemoveInstanceOfResType(applicationResTypeEntity);
 		//Then
 		Assert.assertTrue(result);
 	}

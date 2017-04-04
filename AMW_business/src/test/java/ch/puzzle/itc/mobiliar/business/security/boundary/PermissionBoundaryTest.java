@@ -349,24 +349,13 @@ public class PermissionBoundaryTest {
     }
 
     @Test
-    public void shouldInvokeTheRightMethodOnPermissionServiceIfResourceTypeIsNotDefaultType() {
+    public void shouldInvokeTheRightMethodOnPermissionServiceToCheckIfHasPermissionToRemoveInstanceOfResType() {
         // given
         ResourceTypeEntity resType = new ResourceTypeEntity();
         // when
         permissionBoundary.hasPermissionToRemoveInstanceOfResType(resType);
         // then
         verify(permissionService, times(1)).hasPermissionToRemoveInstanceOfResType(resType);
-    }
-
-    @Test
-    public void shouldInvokeTheRightMethodOnPermissionServiceIfResourceTypeIsDefaultType() {
-        // given
-        ResourceTypeEntity resType = Mockito.mock(ResourceTypeEntity.class);
-        when(resType.isDefaultResourceType()).thenReturn(true);
-        // when
-        permissionBoundary.hasPermissionToRemoveInstanceOfResType(resType);
-        // then
-        verify(permissionService, times(1)).hasPermissionToRemoveDefaultInstanceOfResType();
     }
 
     @Test
@@ -384,26 +373,13 @@ public class PermissionBoundaryTest {
     }
 
     @Test
-    public void shouldInvokeTheRightMethodOnPermissionServiceIfTheResourceTypeIsNotAppOrAppserverOrNode() {
+    public void shouldInvokeTheRightMethodOnPermissionServiceToCheckIfCanCreateResourceInstance() {
         // given
         ResourceTypeEntity resType = Mockito.mock(ResourceTypeEntity.class);
         // when
         permissionBoundary.canCreateResourceInstance(resType);
         // then
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, CREATE, resType);
-        verify(permissionService, never()).hasPermission(Permission.ADD_NEW_RES_OF_DEFAULT_RESTYPE);
-    }
-
-    @Test
-    public void shouldInvokeTheRightMethodsOnPermissionServiceIfTheResourceTypeIsAppserver() {
-        // given
-        ResourceTypeEntity resType = Mockito.mock(ResourceTypeEntity.class);
-        when(resType.isApplicationServerResourceType()).thenReturn(true);
-        // when
-        permissionBoundary.canCreateResourceInstance(resType);
-        // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, CREATE, resType);
-        verify(permissionService, times(1)).hasPermission(Permission.ADD_NEW_RES_OF_DEFAULT_RESTYPE);
     }
 
     @Test

@@ -33,4 +33,12 @@ public class RestrictionDTOBuilder {
         when(mock.getRestriction()).thenReturn(restrictionEntity);
         return mock;
     }
+
+    public RestrictionDTO buildRestrictionDTO(Permission permission, RestrictionEntity restrictionEntity) {
+        PermissionEntity pe = new PermissionEntity();
+        pe.setValue(permission.name());
+        restrictionEntity.setPermission(pe);
+        RestrictionDTO dto = new RestrictionDTO(restrictionEntity);
+        return dto;
+    }
 }

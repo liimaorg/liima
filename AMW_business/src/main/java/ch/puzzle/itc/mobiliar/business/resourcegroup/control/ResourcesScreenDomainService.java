@@ -260,10 +260,7 @@ public class ResourcesScreenDomainService {
             throw new ResourceNotFoundException(message);
         }
 
-        if (isDefaultResType && !permissionBoundary.hasPermission(Permission.DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE,
-                contextDomainService.getGlobalResourceContextEntity(), Action.DELETE, resourceEntity, resourceEntity.getResourceType())) {
-            throw new NotAuthorizedException();
-        } else if (!isDefaultResType && !permissionBoundary.hasPermission(Permission.RESOURCE,
+        if ( !permissionBoundary.hasPermission(Permission.RESOURCE,
                 contextDomainService.getGlobalResourceContextEntity(), Action.DELETE, resourceEntity, resourceEntity.getResourceType())) {
             throw new NotAuthorizedException();
         }

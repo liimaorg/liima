@@ -223,9 +223,6 @@ public class PermissionBoundary implements Serializable {
     }
 
     public boolean hasPermissionToRemoveInstanceOfResType(ResourceTypeEntity resourceType) {
-        if (resourceType.isDefaultResourceType()) {
-            return permissionService.hasPermissionToRemoveDefaultInstanceOfResType();
-        }
         return permissionService.hasPermissionToRemoveInstanceOfResType(resourceType);
     }
 
@@ -256,10 +253,6 @@ public class PermissionBoundary implements Serializable {
      * @return
      */
     public boolean canCreateResourceInstance(ResourceTypeEntity type) {
-        // Abwärtskompatibilität: ADD_NEW_RES_OF_DEFAULT_RESTYPE
-        if (type.isApplicationResourceType() || type.isNodeResourceType() || type.isApplicationServerResourceType()) {
-            return permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, type) || permissionService.hasPermission(Permission.ADD_NEW_RES_OF_DEFAULT_RESTYPE);
-        }
         return permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, type);
     }
 

@@ -239,9 +239,7 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 	}
 
 	public boolean getCanRemoveDefaultInstanceOfResType() {
-		if (isDefaultResourceType()) {
-			return permissionService.hasPermissionToRemoveDefaultInstanceOfResType();
-		} else if (getSelectedResourceType() != null) {
+		if (getSelectedResourceType() != null) {
 			return permissionService.hasPermissionToRemoveInstanceOfResType(getSelectedResourceType().getEntity());
 		}
 		return false;
