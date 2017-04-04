@@ -183,13 +183,6 @@ public abstract class CustomFilterComp {
 	
 	public abstract void addSelectedFilter();
 
-	public ComperatorFilterOption selectedComperator(CustomFilter filter) {
-		if (filter != null && filter.getComperatorSelection() != null) {
-			return filter.getComperatorSelection();
-		}
-
-		return null;
-	}
 
 	public ComperatorFilterOption getActualSelectedComperator() {
 		return selectedComperator;

@@ -66,7 +66,7 @@ public class ShakedownTestExecuterService {
 
 		if(shakedownTest != null){
 			// lock ShakedownTest
-			boolean lockSuccessful = lockingService.lockShakedownTestForTesting(shakeDownTestId);
+			boolean lockSuccessful = lockingService.markShakedownTestAsRunning(shakeDownTestId);
 			if (lockSuccessful) {
 				log.info("Locking of ShakedownTest " + shakedownTest.getId() + " successful");
 

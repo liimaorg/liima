@@ -27,7 +27,7 @@ import lombok.Getter;
 public class DeploymentEvent {
 	
 	public enum DeploymentEventType {
-		NEW, UPDATE;
+		NEW, UPDATE, NODE_JOB_UPDATE;
 	}
 	
 	private DeploymentEventType eventType;

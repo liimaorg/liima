@@ -93,7 +93,7 @@
                                     <div class="controls">
                                         <h:selectOneMenu style="width:auto;"
                                                          disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
-                                                         value="#{editPropertyView.propertyTypeId()}">
+                                                         value="#{editPropertyView.propertyTypeId}">
                                             <f:selectItems var="type" value="#{editPropertyView.propertyTypes}"
                                                            itemLabel="#{type.propertyTypeName}" itemValue="#{type.id}"/>
                                             <a4j:ajax event="change" execute="@this tokenfield"
