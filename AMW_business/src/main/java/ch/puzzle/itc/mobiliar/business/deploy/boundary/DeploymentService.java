@@ -523,16 +523,9 @@ public class DeploymentService {
      * @param nodeJobId
      * @param nodeJobStatus
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void updateNodeJobStatus(Integer deploymentId, Integer nodeJobId, NodeJobStatus nodeJobStatus) throws NotFoundExcption, DeploymentStateException {
-        DeploymentEntity deploymentEntity = lockingService.lockDeployment(deploymentId);
-        NodeJobEntity nodeJobEntity;
-
-        if (deploymentEntity == null) {
-            throw new AMWRuntimeException("Could not lock deployment " + deploymentId + " for update!");
-        }
-
-        nodeJobEntity = findNodeJobEntity(deploymentEntity, nodeJobId);
+        DeploymentEntity deployment = getDeploymentById(deploymentId);
+        NodeJobEntity nodeJobEntity = deployment.findNodeJobEntity(nodeJobId);
 
         if (nodeJobEntity == null) {
             throw new NotFoundExcption("NodeJob " + nodeJobId + " of deployment " + deploymentId + " not found!");
@@ -540,64 +533,37 @@ public class DeploymentService {
 
         nodeJobEntity.setStatus(nodeJobStatus);
         em.persist(nodeJobEntity);
-        if (NodeJobStatus.FAILED.equals(nodeJobStatus)) {
-            handleNodeJobStatusFailed(deploymentEntity, nodeJobEntity);
-        } else if (NodeJobStatus.SUCCESS.equals(nodeJobStatus)) {
-            handleNodeJobStatusSuccess(deploymentEntity, nodeJobEntity);
-        }
 
+        // The event decouples the transaction and leads to db commit.
+        // handleNodeJobUpdate needs a consistent view of the nodeJobs to detect the last nodeJob.
+        deploymentEvent.fire(new DeploymentEvent(DeploymentEventType.NODE_JOB_UPDATE, deploymentId, null));
     }
 
+    public void handleNodeJobUpdate(Integer deploymentId) {
+		DeploymentEntity deployment = getDeploymentById(deploymentId);
+		DeploymentState previousState = deployment.getDeploymentState();
 
-    private void handleNodeJobStatusSuccess(DeploymentEntity deploymentEntity,
-                                            NodeJobEntity nodeJobEntity) {
+		if (!deployment.isPredeploymentFinished()) {
+			return;
+		}
+		deployment = lockingService.lockDeployment(deploymentId);
+		if (deployment == null) {
+			return;
+		}
 
-        deploymentEntity.appendStateMessage("NodeJob (" + nodeJobEntity.getId() + ") result success at " + new Date());
-        log.info("NodeJob " + nodeJobEntity.getId() + " of deployment " + deploymentEntity.getId() + " result success");
-        em.persist(deploymentEntity);
-
-        // all NodeJobs on Success same deployment phase
-        boolean allSuccess = true;
-        for (NodeJobEntity nodeJob : deploymentEntity.getNodeJobs()) {
-            if (nodeJobEntity.getDeploymentState().equals(nodeJob.getDeploymentState())) {
-                if (!NodeJobStatus.SUCCESS.equals(nodeJob.getStatus())) {
-                    allSuccess = false;
-                }
-            }
+        if (deployment.isPredeploymentSuccessful()) {
+            deployment.setDeploymentState(DeploymentState.READY_FOR_DEPLOYMENT);
+            deployment.appendStateMessage("All NodeJobs successful, updated deployment state from " + previousState + " to " + deployment.getDeploymentState() + " at " + new Date());
+            log.info("All NodeJobs of deployment " + deployment.getId() + " successful, updated deployment state from " + previousState + " to " + deployment.getDeploymentState().name());
         }
-
-        if (allSuccess && deploymentEntity.getNodeJobs().size() > 0) {
-            String previousState = deploymentEntity.getDeploymentState().name();
-            if (DeploymentState.PRE_DEPLOYMENT.equals(deploymentEntity.getDeploymentState())) {
-                deploymentEntity.setDeploymentState(DeploymentState.READY_FOR_DEPLOYMENT);
-                deploymentEvent.fire(new DeploymentEvent(DeploymentEventType.UPDATE, deploymentEntity.getId(), deploymentEntity.getDeploymentState()));
-            } else if (DeploymentState.progress.equals(deploymentEntity.getDeploymentState())) {
-                deploymentEntity.setDeploymentState(DeploymentState.success);
-            }
-            deploymentEntity.appendStateMessage("All NodeJobs successful, updated deployment state from " + previousState + " to " + deploymentEntity.getDeploymentState().name() + " at " + new Date());
-            log.info("All NodeJobs of deployment " + deploymentEntity.getId() + " successful, updated deployment state from " + previousState + " to " + deploymentEntity.getDeploymentState().name());
-            em.persist(deploymentEntity);
+        else {
+            deployment.setDeploymentState(DeploymentState.failed);
+            deployment.appendStateMessage("Deployment (previous state : " + previousState + ") failed due to NodeJob failing at " + new Date());
+            log.info("Deployment " + deployment.getId() + " (previous state : " + previousState + ") failed due to NodeJob failing");
         }
+        em.persist(deployment);
+        deploymentEvent.fire(new DeploymentEvent(DeploymentEventType.UPDATE, deploymentId, deployment.getDeploymentState()));
     }
-
-    private void handleNodeJobStatusFailed(DeploymentEntity deploymentEntity,
-                                           NodeJobEntity nodeJobEntity) {
-        String previousState = deploymentEntity.getDeploymentState().name();
-        deploymentEntity.setDeploymentState(DeploymentState.failed);
-        deploymentEntity.appendStateMessage("Deployment (previous state : " + previousState + ") failed due to NodeJob (" + nodeJobEntity.getId() + ") failing at " + new Date());
-        log.info("Deployment " + deploymentEntity.getId() + " (previous state : " + previousState + ") failed due to NodeJob (" + nodeJobEntity.getId() + ") failing");
-        em.persist(deploymentEntity);
-    }
-
-    private NodeJobEntity findNodeJobEntity(DeploymentEntity deployment, Integer nodeJobId) {
-        for (NodeJobEntity nodeJob : deployment.getNodeJobs()) {
-            if (nodeJobId.equals(nodeJob.getId())) {
-                return nodeJob;
-            }
-        }
-        return null;
-    }
-
 
     // TODO test
     private String getVersion(ResourceEntity application, List<Integer> contextIds)
@@ -904,7 +870,6 @@ public class DeploymentService {
         }
 
         if (GenerationModus.DEPLOY.equals(generationModus)) {
-
             if (errorMessage == null) {
                 String nodeInfo = getNodeInfoForDeployment(generationResult);
                 deployment.appendStateMessage("Successfully deployed at " + new Date() + "\n" + nodeInfo);
@@ -914,9 +879,8 @@ public class DeploymentService {
                 deployment.setDeploymentState(DeploymentState.failed);
             }
         } else if (GenerationModus.PREDEPLOY.equals(generationModus)) {
-
             if (errorMessage == null) {
-                deployment.appendStateMessage("Predeploy script finished at " + new Date());
+                log.fine("Predeploy script finished at " + new Date());
             } else {
                 deployment.appendStateMessage(errorMessage);
                 deployment.setDeploymentState(DeploymentState.failed);

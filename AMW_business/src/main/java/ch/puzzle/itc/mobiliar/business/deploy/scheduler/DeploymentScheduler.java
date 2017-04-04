@@ -128,7 +128,6 @@ public class DeploymentScheduler {
 			executeSimulation();
 			executePreDeployments();
 			break;
-
 		case UPDATE:
 			switch(event.getNewState()) {
 			case READY_FOR_DEPLOYMENT:
@@ -139,9 +138,10 @@ public class DeploymentScheduler {
 				else{
 					executeDeployments();
 				}
-				
 				break;
 			}
+		case NODE_JOB_UPDATE:
+			deploymentService.handleNodeJobUpdate(event.getDeploymentId());
 		}
 	}
 	
@@ -209,7 +209,7 @@ public class DeploymentScheduler {
 		if (!deployments.isEmpty()) {
 			log.log(logLevel, deployments.size() + " deployments inProgress reached timeout");
 			int timeout = ConfigurationService.getPropertyAsInt(ConfigKey.DEPLOYMENT_IN_PROGRESS_TIMEOUT);
-			handleDeploymentsInProgress(deployments, GenerationModus.DEPLOY, timeout);
+			handleDeploymentsTimeout(deployments, GenerationModus.DEPLOY, timeout);
 		}
 		else {
 			log.log(Level.FINE, "No deployments inProgress have reached the timeout");
@@ -222,14 +222,14 @@ public class DeploymentScheduler {
 		if (!deployments.isEmpty()) {
 			log.log(logLevel, deployments.size() + " preDeployments inProgress reached timeout");
 			int timeout = ConfigurationService.getPropertyAsInt(ConfigKey.PREDEPLOYMENT_IN_PROGRESS_TIMEOUT);;
-			handleDeploymentsInProgress(deployments, GenerationModus.PREDEPLOY, timeout);
+			handleDeploymentsTimeout(deployments, GenerationModus.PREDEPLOY, timeout);
 		}
 		else {
 			log.log(Level.FINE, "No preDeployments inProgress have reached the timeout");
 		}
 	}
 
-	protected void handleDeploymentsInProgress(List<DeploymentEntity> deployments, GenerationModus generationModus, int timeout) {
+	protected void handleDeploymentsTimeout(List<DeploymentEntity> deployments, GenerationModus generationModus, int timeout) {
 		for (DeploymentEntity deployment : deployments) {
 			log.log(logLevel, "Deployment (" + deployment.getId()
 					+ ") was marked as failed because it reached the deplyoment timeout");

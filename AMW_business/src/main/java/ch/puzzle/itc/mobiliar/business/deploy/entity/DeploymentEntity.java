@@ -123,6 +123,11 @@ public class DeploymentEntity implements Serializable {
             return null;
         }
 
+		@Override
+		public String toString() {
+			return displayName;
+		}
+
     }
 
     // TODO: Redundant to deploymentState?
@@ -428,4 +433,30 @@ public class DeploymentEntity implements Serializable {
         deploymentParameters.add(deploymentParameter);
     }
 
+	public boolean isPredeploymentFinished() {
+		for (NodeJobEntity job : this.getNodeJobs()) {
+			if (NodeJobEntity.NodeJobStatus.RUNNING.equals(job.getStatus())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isPredeploymentSuccessful() {
+		for (NodeJobEntity job : this.getNodeJobs()) {
+			if (!NodeJobEntity.NodeJobStatus.SUCCESS.equals(job.getStatus())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public NodeJobEntity findNodeJobEntity(Integer nodeJobId) {
+		for (NodeJobEntity nodeJob : this.getNodeJobs()) {
+			if (nodeJobId.equals(nodeJob.getId())) {
+				return nodeJob;
+			}
+		}
+		return null;
+	}
 }
