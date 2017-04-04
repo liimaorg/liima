@@ -62,7 +62,7 @@
 					<div>
 						<h:panelGroup rendered="${!filter.specialFilterType}">
 							<h:selectOneMenu class="width80px"
-								value="#{customFilterImpl.selectedComperator(filter)}"
+								value="#{filter.comperatorSelection}"
 								disabled="${customFilterImpl.getTypedComperatorSelectionList(filter).size() == 1 }">
 								<f:selectItems
 									value="${customFilterImpl.getTypedComperatorSelectionList(filter)}"
