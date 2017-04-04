@@ -35,14 +35,8 @@ public class PermissionRepository {
 	@Inject
 	private EntityManager entityManager;
 
-	// FIXME: Remove to Singleton Bean or make static
-	private boolean reloadDeployableRoleList;
-	private boolean reloadRolesAndPermissionsList;
-
-	public PermissionRepository() {
-		this.reloadDeployableRoleList = false;
-		this.reloadRolesAndPermissionsList = false;
-	}
+	private static boolean reloadDeployableRoleList;
+	private static boolean reloadRolesAndPermissionsList;
 
 	/**
 	 * Returns Roles which are allowed to deploy
