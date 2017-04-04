@@ -217,10 +217,8 @@ public class PermissionService implements Serializable {
     public boolean hasPermissionForCancelDeployment(DeploymentEntity deployment) {
         if (getCurrentUserName().equals(deployment.getDeploymentRequestUser()) && deployment.getDeploymentState() == DeploymentState.requested) {
             return true;
-        } else if (hasPermissionForDeployment(deployment) && deployment.getDeploymentState() != DeploymentState.requested) {
-            return true;
         }
-        return false;
+        return hasPermissionForDeployment(deployment) && deployment.getDeploymentState() != DeploymentState.requested;
     }
 
     /**
@@ -408,26 +406,18 @@ public class PermissionService implements Serializable {
      */
     private boolean hasPermissionForDefaultResourceType(RestrictionDTO restrictionDTO, ResourceTypeEntity resourceType) {
         // Default and non DefaultTypes are allowed
-        if (resourceType == null || restrictionDTO.getRestriction().getDefaultResourceType() == null) {
+        if (resourceType == null || restrictionDTO.getRestriction().getResourceTypePermission().equals(ResourceTypePermission.ANY)) {
             return true;
         }
         // Only DefaultTypes are allowed
-        if (restrictionDTO.getRestriction().getDefaultResourceType() &&
-                DefaultResourceTypeDefinition.contains(resourceType.getName())) {
+        if (restrictionDTO.getRestriction().getResourceTypePermission().equals(ResourceTypePermission.DEFAULT_ONLY)
+                && DefaultResourceTypeDefinition.contains(resourceType.getName())) {
             return true;
         }
         // Only non DefaultTypes are allowed
-        return !restrictionDTO.getRestriction().getDefaultResourceType() &&
-                !DefaultResourceTypeDefinition.contains(resourceType.getName());
+        return restrictionDTO.getRestriction().getResourceTypePermission().equals(ResourceTypePermission.NON_DEFAULT_ONLY)
+                && !DefaultResourceTypeDefinition.contains(resourceType.getName());
     }
-
-    /**
-     * The Properties of ResourceType are modifiable only by the config_admin
-     */
-//    UNUSED?!?
-//    public boolean hasPermissionToEditResourceTypeProperties() {
-//        return hasPermission(Permission.EDIT_NOT_DEFAULT_RES_OF_RESTYPE);
-//    }
 
     /**
      * The ResourceTypeName is modifiable by the config_admin. DefaultResourceType (APPLICATION,
@@ -449,13 +439,9 @@ public class PermissionService implements Serializable {
         // config_admin
         if (hasPermission(Permission.EDIT_ALL_PROPERTIES)) {
             return true;
-        } else if (parentResourceTypeOfResource != null
-                && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP)
-                && DefaultResourceTypeDefinition.APPLICATION.name().equals(
-                parentResourceTypeOfResource.getName())) {
-            return true;
         }
-        return false;
+        return parentResourceTypeOfResource != null && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP)
+                && DefaultResourceTypeDefinition.APPLICATION.name().equals(parentResourceTypeOfResource.getName());
     }
 
     /**
@@ -479,7 +465,6 @@ public class PermissionService implements Serializable {
 
     /**
      * Check if the user can delete instances of ResourceTypes
-     * (legacy: config_admin)
      *
      * @param resourceType
      * @return
@@ -504,11 +489,8 @@ public class PermissionService implements Serializable {
         } else if (resource != null && resource.getResourceType().isApplicationResourceType()
                 && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP)) {
             return true;
-        } else if (hasPermission(Permission.SHAKEDOWN_TEST_MODE) && isTestingMode) {
-            return true;
         }
-
-        return false;
+        return hasPermission(Permission.SHAKEDOWN_TEST_MODE) && isTestingMode;
     }
 
     /**
@@ -532,10 +514,8 @@ public class PermissionService implements Serializable {
                 return (!provided && hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE))
                         || (provided && hasPermission(Permission.ADD_AS_PROVIDED_RESOURCE));
             }
-        } else {
-            return hasPermission(Permission.ADD_RELATED_RESOURCETYPE);
         }
-        return false;
+        return hasPermission(Permission.ADD_RELATED_RESOURCETYPE);
     }
 
     /**
@@ -563,10 +543,7 @@ public class PermissionService implements Serializable {
                     && resourceTypeEntity.isApplicationResourceType()) {
                 return true;
             }
-            if (hasPermission(Permission.SELECT_RUNTIME)
-                    && resourceTypeEntity.isRuntimeType()) {
-                return true;
-            }
+            return hasPermission(Permission.SELECT_RUNTIME) && resourceTypeEntity.isRuntimeType();
         }
         return false;
     }
@@ -595,10 +572,7 @@ public class PermissionService implements Serializable {
         else if (isApplicationResourceType(resourceType)) {
             return hasPermission(Permission.SAVE_RES_TEMPLATE);
         }// check that the user is shakedown_admin
-        else if (resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE)) {
-            return true;
-        }
-        return false;
+        return resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     /**
@@ -618,15 +592,11 @@ public class PermissionService implements Serializable {
         else if (isResourceEntityWithApplicationResourceType(resource)) {
             return hasPermission(Permission.SAVE_RES_TEMPLATE);
         }// check that the user is shakedown_admin
-        else if (resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE)) {
-            return true;
-        }
-        return false;
+        return resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     private boolean isApplicationResourceType(ResourceTypeEntity resourceType) {
         return resourceType != null && resourceType.isApplicationResourceType();
-
     }
 
     private boolean isResourceEntityWithApplicationResourceType(ResourceEntity resource) {

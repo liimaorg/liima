@@ -145,7 +145,10 @@ public class PermissionBoundary implements Serializable {
     }
 
     public boolean hasPermission(Permission permission, ContextEntity context, Action action, ResourceEntity resource, ResourceTypeEntity resourceType) {
-        return permissionService.hasPermission(permission, context, action, resource.getResourceGroup(), resourceType);
+        if (resource != null) {
+            return permissionService.hasPermission(permission, context, action, resource.getResourceGroup(), resourceType);
+        }
+        return permissionService.hasPermission(permission, context, action, null, resourceType);
     }
 
     /**

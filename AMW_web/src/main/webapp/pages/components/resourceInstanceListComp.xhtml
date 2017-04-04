@@ -29,7 +29,7 @@
 											oncomplete="hideLoader();#{rich:component('createApplicationForAsPopup')}.show();"></a4j:ajax>
 						</a4j:commandLink></li>
 					<li>
-					<h:link includeViewParams="true" styleClass="btn light" rendered="#{securityDataProvider.hasPermission('EDIT_RES_TYPE')}"
+					<h:link includeViewParams="true" styleClass="btn light" rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCETYPE', 'READ', resourceInstanceListImpl.selectedResourceType.name)}"
 								outcome="editResourceView" onclick="showLoader();" id="editResourceTypeButton">
                                     <i class="icon icon-edit"></i>Edit Resource Type
                                 <f:param name="id" value="${null}"/>
@@ -39,7 +39,7 @@
                             </h:link>
 					</li>
 					<li><a4j:commandLink type="button"
-							rendered="#{!resourceInstanceListImpl.defaultResourceType and !resourceInstanceListImpl.runtimeResourceType and securityDataProvider.hasPermission('DELETE_RESTYPE')}"
+							rendered="#{!resourceInstanceListImpl.defaultResourceType and !resourceInstanceListImpl.runtimeResourceType and securityDataProvider.hasPermissionForResourceType('RESOURCETYPE', 'DELETE', resourceInstanceListImpl.selectedResourceType.name)}"
 							styleClass="btn light" id="deleteResourceTypeButton"
 							render="deleteResourceTypePopupPanelHeader"
 							onclick="#{rich:component('confirmResourceTypeDeletePopupPanel')}.show();">

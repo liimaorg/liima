@@ -44,10 +44,7 @@ public class PermissionRepository {
 	 * @return
 	 */
 	public List<RoleEntity> getDeployableRoles() {
-		List<RoleEntity> result = entityManager
-				.createQuery("from RoleEntity r left join fetch r.restrictions res where res.permission.value =:deployment", RoleEntity.class)
-				.setParameter("deployment", Permission.DEPLOYMENT.name()).getResultList();
-		return result == null ? new ArrayList<RoleEntity>() : result;
+		return getRolesHavingRestrictionsWithPermission(Permission.DEPLOYMENT);
 	}
 
 	public List<RoleEntity> getRolesWithPermissions() {
@@ -84,6 +81,19 @@ public class PermissionRepository {
 
 	public void setReloadRolesAndPermissionsList(boolean reloadRolesAndPermissionsList) {
 		this.reloadRolesAndPermissionsList = reloadRolesAndPermissionsList;
+	}
+
+	/**
+	 * Returns Roles which have a Restriction matching the provided Permission
+	 *
+	 * @param permission Permission to match
+	 * @return
+	 */
+	private List<RoleEntity> getRolesHavingRestrictionsWithPermission(Permission permission) {
+		List<RoleEntity> result = entityManager
+				.createQuery("from RoleEntity r left join fetch r.restrictions res where res.permission.value =:permission", RoleEntity.class)
+				.setParameter("permission", permission.name()).getResultList();
+		return result == null ? new ArrayList<RoleEntity>() : result;
 	}
 
 }

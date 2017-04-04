@@ -124,7 +124,7 @@ public class EditResourceView implements Serializable {
 
     @PostConstruct
     public void init() {
-        this.canEditResourceType = permissionBoundary.hasPermission(Permission.EDIT_RES_TYPE);
+        this.canEditResourceType = permissionBoundary.hasPermission(Permission.RESOURCETYPE, Action.READ);
         this.canGenerateTestConfiguration = permissionBoundary.hasPermission(Permission.TEST_GENERATION);
     }
 
@@ -185,7 +185,7 @@ public class EditResourceView implements Serializable {
      * @param resourceTypeIdFromParam
      */
     public void setResourceTypeIdFromParam(Integer resourceTypeIdFromParam) {
-        permissionBoundary.checkPermissionAndFireException(Permission.EDIT_RES_TYPE,
+        permissionBoundary.checkPermissionActionAndFireException(Permission.RESOURCETYPE, Action.READ,
                 "edit resource types");
         this.resourceTypeIdFromParam = resourceTypeIdFromParam;
         // Only execute if resource has not been set...
@@ -277,17 +277,15 @@ public class EditResourceView implements Serializable {
     }
 
     public boolean canSaveChanges() {
-        boolean canSaveChanges = permissionBoundary.hasPermission(Permission.SAVE_ALL_CHANGES)
-                || permissionBoundary.hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
-        // isEditResource() means Resource
         if (isEditResource()) {
-            return canSaveChanges
-                    || permissionBoundary.hasPermissionToEditPropertiesOfResource(getResourceType().getId())
-                    || permissionBoundary.hasPermission(Permission.RESOURCE, sessionContext.getCurrentContext(),
+            // Resource
+           return permissionBoundary.hasPermission(Permission.RESOURCE, sessionContext.getCurrentContext(),
                     Action.UPDATE, resource, getResourceType());
+        } else {
+            // ResourceType
+            return permissionBoundary.hasPermission(Permission.RESOURCETYPE, sessionContext.getCurrentContext(),
+                    Action.UPDATE, null, getResourceType());
         }
-        // !isEditResource() means ResourceType
-        return canSaveChanges;
     }
 
     /**
@@ -306,11 +304,10 @@ public class EditResourceView implements Serializable {
 
     public boolean hasAddPropertyPermission() {
         if (isEditResource()) {
-            return permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam,
-                    isTesting());
+            return permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam, isTesting());
         } else {
-            return permissionBoundary.hasPermissionToEditPropertiesByResource(resourceTypeIdFromParam,
-                    isTesting());
+            // TODO check this
+            return permissionBoundary.hasPermissionToEditPropertiesByResource(resourceTypeIdFromParam, isTesting());
         }
     }
 

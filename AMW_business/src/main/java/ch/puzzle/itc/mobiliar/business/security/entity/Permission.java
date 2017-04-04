@@ -58,9 +58,6 @@ public enum Permission {
     //MODIFY_APPSERVER_RELATION("With this permission the config admin can make modifications in the appServerRelations screen."),
 
     //RESOURCE TYPE PERMISSIONS
-    NEW_RESTYPE("New resource type button. Path: Resources"),
-    DELETE_RESTYPE("Delete Resource Type. In all 'NOT DEFAULT RESOURCE TYPE'. Path -> Resources -> select a 'NOT DEFAULT RESOURCE TYPE'"),
-    EDIT_RES_TYPE("Edit resource type. You can find this panel in Resources screen. All Resource Type have this button. Path -> Resources"),
 
     ADD_RELATED_RESOURCETYPE("Add related resource type. Path: all Resource Type instance screen -> press button 'Add related resource Type.'"),
 
@@ -74,7 +71,10 @@ public enum Permission {
     EDIT_PROPERTIES_COMMENT_POPUP("Edit comments of property."),
     EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen."),
     RESET_PROP("Reset properties. You can find this list in all Resource/Resource Type screen."),
+
+
     EDIT_PROP_LIST_OF_INST_APP("Edit properties in resource / resource type screen."),
+
     PROP_LIST("This permission allows to list the properties in the edit screen."),
     CREATE_TEMPLATE("With this permission it can create a new template"),
     RES_RESTYPE_TEMPLATE_LIST("Allows to list the templates of resources and resource types"),
@@ -151,7 +151,6 @@ public enum Permission {
     //NEW PERMISSIONS
     DEPLOYMENT("The right to deploy."),
     COPY_FROM_RESOURCE("The right to copy the configuration from one resource into an other."),
-    // TODO ist: ALLE soll: ALLE WELCHE NICHT DEFAULT TYPEN
     // COPY_FROM_RESOURCE("With this permission the config admin can copy the configuration from one non default resource into an other."),
     // COPY_FROM_RESOURCE_APP("With this permission the config admin can copy the configuration from one app into an other."),
     // COPY_FROM_RESOURCE_APPSERVER("With this permission the config admin can copy the configuration from one appserver into an other."),
@@ -160,7 +159,6 @@ public enum Permission {
     // RENAME_APPSERVER("With this permission it is possible to rename all AppServer instances."),
     // RENAME_APP("With this permission it is possible to rename all APP instances."),
     // RENAME_NODE("With this permission it is possible to rename all NODE instances."),
-    // TODO ist: ALLE soll: ALLE WELCHE NICHT DEFAULT TYPEN
     // RENAME_RES("With this permission it is possible to rename everthing else."),
     RELEASE("The right to create, read, update or delete releases"),
     // CREATE_RELEASE("With this permission the config admin can create releases."),
@@ -172,7 +170,7 @@ public enum Permission {
     // EDIT_STP("Path: Settings -> select STP Management -> Edit"),
     // DELETE_STP("Path: Settings -> select STP Management -> Edit"),
     // ADD_STP("Path: Settings -> select STP Management -> Add new STP"),
-    RESOURCE("The right to create, read, update or delete resources");
+    RESOURCE("The right to create, read, update or delete resources"),
     // NEW_RES("New resource button. You can find this button in APPLICATIONSERVER/NODE/NOT DEFAULT RESOURCETYPE."),
     // ADD_APPSERVER("Add application server. Path: Apps"),
     // ADD_APP("Add new application and/or application server. Path: Apps"),
@@ -187,6 +185,11 @@ public enum Permission {
     // ADD_NEW_RES_OF_DEFAULT_RESTYPE("New application or/and application server. Path: Resources -> select APPLICATION tab"),
     // EDIT_NOT_DEFAULT_RES_OF_RESTYPE("With this permission the config admin can rename the NOT DEFAULT RESOURCE AND RESOURCE TYPE. The DEAFULT RESOURCE TYPE are: APPLICATION, APPLICATION SERVER and NODE"),
     // DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE("WARNING: DON'T CHANGE THIS PERMISSION"),
+    RESOURCETYPE("The right to create, read, update or delete resourcetypes");
+    // NEW_RESTYPE("New resource type button. Path: Resources"),
+    // EDIT_RES_TYPE("Edit resource type. You can find this panel in Resources screen. All Resource Type have this button. Path -> Resources"); > READ
+    // DELETE_RESTYPE("Delete Resource Type. In all 'NOT DEFAULT RESOURCE TYPE'. Path -> Resources -> select a 'NOT DEFAULT RESOURCE TYPE'"),
+
 
 
     // CANDIDATES (assigned only to config_admin)

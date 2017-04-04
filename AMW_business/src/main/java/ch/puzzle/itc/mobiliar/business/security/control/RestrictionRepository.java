@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.security.control;
 
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
 
@@ -43,6 +44,16 @@ public class RestrictionRepository extends BaseRepository<RestrictionEntity> {
         entityManager.persist(restriction);
         entityManager.flush();
         return restriction.getId();
+    }
+
+    /**
+     * Deletes all Restrictions matching a specific Context
+     *
+     * @param context ContextEntity to match
+     */
+    public void deleteAllWithContext(ContextEntity context) {
+        entityManager.createQuery("delete from RestrictionEntity r where r.context =:context")
+                .setParameter("context", context).executeUpdate();
     }
 
 }

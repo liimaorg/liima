@@ -6,8 +6,8 @@
     <changeSet author="rgalante" id="newPermissionsExtendRestrictionEntity">
 
         <addColumn tableName="TAMW_restriction">
-            <column name="defaultResourceType" type="NUMBER(1,0)">
-                <constraints nullable="true"/>
+            <column name="resourceTypePermission" type="VARCHAR(255)" defaultValue="ANY">
+                <constraints nullable="false"/>
             </column>
             <column name="resourcegroup_id" type="INTEGER">
                 <constraints nullable="true"/>

@@ -22,6 +22,7 @@ package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.entity.ResourceTypePermission;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -49,7 +50,7 @@ public class RestrictionDTO {
     @Getter @Setter
     private String resourceTypeName;
     @Getter @Setter
-    private Boolean defaultResourceType;
+    private ResourceTypePermission resourceTypePermission;
     @Getter @Setter
     private String contextName;
     @Getter @Setter
@@ -57,13 +58,13 @@ public class RestrictionDTO {
 
     RestrictionDTO(){}
 
-    public RestrictionDTO(Integer id, String roleName, Permission permission, Integer resourceGroupId, String resourceTypeName, Boolean defaultResourceType, String contextName, Action action) {
+    public RestrictionDTO(Integer id, String roleName, Permission permission, Integer resourceGroupId, String resourceTypeName, ResourceTypePermission resourceTypePermission, String contextName, Action action) {
         this.id = id;
         this.roleName = roleName;
         this.permission = permission;
         this.resourceGroupId = resourceGroupId;
         this.resourceTypeName = resourceTypeName;
-        this.defaultResourceType = defaultResourceType;
+        this.resourceTypePermission = resourceTypePermission;
         this.contextName = contextName;
         this.action = action;
     }
@@ -74,7 +75,7 @@ public class RestrictionDTO {
         this.permission = Permission.valueOf(restrictionEntity.getPermission().getValue());
         this.resourceGroupId = restrictionEntity.getResourceGroup() != null ? restrictionEntity.getResourceGroup().getId() : null;
         this.resourceTypeName = restrictionEntity.getResourceType() != null ? restrictionEntity.getResourceType().getName() : null;
-        this.defaultResourceType = restrictionEntity.getDefaultResourceType();
+        this.resourceTypePermission = restrictionEntity.getResourceTypePermission();
         this.contextName = restrictionEntity.getContext() != null ? restrictionEntity.getContext().getName() : null;
         this.action = restrictionEntity.getAction();
     }

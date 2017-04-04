@@ -34,6 +34,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import org.apache.commons.lang.StringUtils;
 
 import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
@@ -99,7 +100,7 @@ public class ResourceTypeDomainService {
 	 * @throws ElementAlreadyExistsException
 	 * @throws ResourceTypeNotFoundException
 	 */
-	@HasPermission(permission = Permission.NEW_RESTYPE)
+	@HasPermission(permission = Permission.RESOURCETYPE, action = Action.CREATE)
 	public ResourceType addResourceType(String newResourceTypeName, Integer parentId) throws ElementAlreadyExistsException, ResourceTypeNotFoundException {
 
 		ResourceType result = null;
@@ -156,7 +157,7 @@ public class ResourceTypeDomainService {
 	 * @throws ResourceNotFoundException
 	 * @throws ResourceTypeNotFoundException
 	 */
-	@HasPermission(permission = Permission.DELETE_RESTYPE)
+	@HasPermission(permission = Permission.RESOURCETYPE, action = Action.DELETE)
 	public void removeResourceType(Integer resourceTypeId) throws ResourceNotFoundException, ResourceTypeNotFoundException {
 		ResourceTypeEntity resourceTypeEntity = commonService.getResourceTypeEntityById(resourceTypeId);
 		removeResourceTypeEntity(resourceTypeEntity);

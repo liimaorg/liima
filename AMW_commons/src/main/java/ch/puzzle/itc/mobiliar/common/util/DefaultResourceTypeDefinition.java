@@ -35,7 +35,7 @@ public enum DefaultResourceTypeDefinition {
 	private final String displayName;
 	private final boolean exclude;
 
-	private DefaultResourceTypeDefinition(String displayName, boolean exclude) {
+	DefaultResourceTypeDefinition(String displayName, boolean exclude) {
 		this.displayName = displayName;
 		this.exclude = exclude;
 	}
@@ -50,8 +50,8 @@ public enum DefaultResourceTypeDefinition {
 
 	public static boolean contains(String name) {
 		DefaultResourceTypeDefinition[] values = values();
-		for (int i = 0; i < values.length; i++) {
-			if (values[i].name().equals(name)) {
+		for (DefaultResourceTypeDefinition value : values) {
+			if (value.name().equals(name)) {
 				return true;
 			}
 		}

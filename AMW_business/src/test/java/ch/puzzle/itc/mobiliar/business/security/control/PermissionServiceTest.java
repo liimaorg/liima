@@ -542,7 +542,7 @@ public class PermissionServiceTest {
 		permission.setValue(Permission.RESOURCE.name());
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.DELETE);
-		res.setDefaultResourceType(false);
+		res.setResourceTypePermission(ResourceTypePermission.NON_DEFAULT_ONLY);
 		res.setPermission(permission);
 		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.rolesWithRestrictions = myRoles;
@@ -562,7 +562,7 @@ public class PermissionServiceTest {
 		permission.setValue(Permission.RESOURCE.name());
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.DELETE);
-		res.setDefaultResourceType(true);
+		res.setResourceTypePermission(ResourceTypePermission.DEFAULT_ONLY);
 		res.setPermission(permission);
 		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.rolesWithRestrictions = myRoles;
@@ -583,7 +583,7 @@ public class PermissionServiceTest {
 		permission.setValue(Permission.RESOURCE.name());
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		res.setDefaultResourceType(true);
+		res.setResourceTypePermission(ResourceTypePermission.DEFAULT_ONLY);
 		res.setPermission(permission);
 		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.rolesWithRestrictions = myRoles;
@@ -1177,6 +1177,7 @@ public class PermissionServiceTest {
 		//assign restriction allowing all on environment "c"
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
+		res.setResourceTypePermission(ResourceTypePermission.ANY);
 		res.setContext(envC);
 		res.setResourceGroup(allowedResourceGroup);
 		res.setPermission(permissionToDeploy);
@@ -1212,6 +1213,7 @@ public class PermissionServiceTest {
 		//assign restriction allowing all on environment "c"
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
+		res.setResourceTypePermission(ResourceTypePermission.ANY);
 		res.setContext(envZ);
 		res.setResourceType(allowedResourceType);
 		res.setPermission(permissionToDeploy);
@@ -1247,6 +1249,7 @@ public class PermissionServiceTest {
 		//assign restriction allowing all on environment "c"
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
+		res.setResourceTypePermission(ResourceTypePermission.ANY);
 		res.setResourceType(allowedResourceType);
 		res.setPermission(permissionToDeploy);
 		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
@@ -1277,6 +1280,7 @@ public class PermissionServiceTest {
 		//assign restriction allowing all on environment "c"
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
+		res.setResourceTypePermission(ResourceTypePermission.ANY);
 		res.setContext(parent);
 		res.setPermission(permissionToDeploy);
 		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
@@ -1306,6 +1310,7 @@ public class PermissionServiceTest {
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
 		res.setContext(global);
+		res.setResourceTypePermission(ResourceTypePermission.ANY);
 		res.setPermission(permissionToDeploy);
 		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
 		permissionService.deployableRolesWithRestrictions = myRoles;

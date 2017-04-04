@@ -81,5 +81,6 @@
     <include file="changesets/data/newPermissions_migrationOfPermissions.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/newPermissions_migrationOfResourcePermissions.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/newPermissions_migrationOfDefaultResourcePermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfResourceTypePermissions.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

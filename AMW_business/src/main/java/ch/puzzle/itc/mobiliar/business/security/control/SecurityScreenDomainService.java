@@ -34,6 +34,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import ch.puzzle.itc.mobiliar.business.environment.control.ContextRepository;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
@@ -59,6 +61,9 @@ public class SecurityScreenDomainService {
     
     @Inject
     private PermissionRepository permissionRepository;
+
+    @Inject
+    private RestrictionRepository restrictionRepository;
 
 
     /**
@@ -264,6 +269,7 @@ public class SecurityScreenDomainService {
                 roleEntity.getPermissions().add(permissionEntity);
                 entityManager.persist(roleEntity);
                 permissionRepository.setReloadRolesAndPermissionsList(true);
+                permissionRepository.setReloadDeployableRoleList(true);
                 return true;
             }
         } else {
@@ -274,6 +280,7 @@ public class SecurityScreenDomainService {
                 roleEntity.getPermissions().add(permissionEntity);
                 entityManager.persist(roleEntity);
                 permissionRepository.setReloadRolesAndPermissionsList(true);
+                permissionRepository.setReloadDeployableRoleList(true);
                 return true;
             }
         }
@@ -307,6 +314,7 @@ public class SecurityScreenDomainService {
         entityManager.persist(oldRole);
         entityManager.persist(newRole);
         permissionRepository.setReloadRolesAndPermissionsList(true);
+        permissionRepository.setReloadDeployableRoleList(true);
 
         return true;
     }
@@ -347,35 +355,10 @@ public class SecurityScreenDomainService {
         return roleEntity;
     }
 
-    /**
-     * Gibt eine Liste von Rollen, die der angegebenen Berechtigung enthalten
-     * 
-     * @param permissionValue
-     * @return
-     * 
-     */
-    private List<RoleEntity> getRolesByPermission(String permissionValue) {
-        List<RoleEntity> result = entityManager.createQuery(
-            "select r from RoleEntity r join r.permissions p where p.value=:permissionValue", RoleEntity.class)
-            .setParameter("permissionValue", permissionValue)
-            .getResultList();
-        return result == null ? new ArrayList<RoleEntity>() : result;
-    }
-
-    public void deletePermissionFromRoles(String permissionValue) {
-        List<RoleEntity> roles = getRolesByPermission(permissionValue);
-        PermissionEntity permissionEntity = null;
-        if (roles != null) {
-            for (RoleEntity r : roles) {
-                permissionEntity = getUniquePermissionByName(permissionValue);
-                if (r.getPermissions().contains(permissionEntity) && permissionEntity.getRoles().contains(r)) {
-                    r.getPermissions().remove(permissionEntity);
-                }
-            }
-            if (permissionEntity != null) {
-                entityManager.remove(permissionEntity);
-            }
-        }
+    public void deleteRestrictionsWithContext(ContextEntity context) {
+        restrictionRepository.deleteAllWithContext(context);
+        permissionRepository.setReloadRolesAndPermissionsList(true);
+        permissionRepository.setReloadDeployableRoleList(true);
     }
 
     public List<PermissionToRole> permissionAndRole(Integer roleSelectedId) {
@@ -389,6 +372,8 @@ public class SecurityScreenDomainService {
                 }
             }
         }
+        permissionRepository.setReloadRolesAndPermissionsList(true);
+        permissionRepository.setReloadDeployableRoleList(true);
         return result;
     }
 

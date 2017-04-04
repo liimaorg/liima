@@ -67,14 +67,10 @@ public class RestrictionEntity {
     @Enumerated(EnumType.STRING)
     private Action action;
 
-    /**
-     * 0:    allow only non DefaultResourceTypes
-     * 1:    allow only DefaultResourceTypes
-     * null: allow both
-     */
     @Getter
     @Setter
-    private Boolean defaultResourceType;
+    @Enumerated(EnumType.STRING)
+    private ResourceTypePermission resourceTypePermission;
 
     @Getter
     @Setter

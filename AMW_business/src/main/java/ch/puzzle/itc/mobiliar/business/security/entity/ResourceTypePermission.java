@@ -20,37 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.security.entity;
 
-import lombok.Getter;
-
-public class RestrictionDTO {
-
-    @Getter
-    private RestrictionEntity restriction;
-    @Getter
-    private String permissionName;
-
-    /**
-     * RestrictionDTOs created with a legacy permission and role
-     * have no context (=unrestricted), Action.ALL and ResourceTypePermission.ANY set
-     *
-     * @param pe
-     * @param ro
-     */
-    public RestrictionDTO(PermissionEntity pe, RoleEntity ro) {
-        if (pe.getRestrictions().isEmpty()) {
-            RestrictionEntity res = new RestrictionEntity();
-            res.setPermission(pe);
-            res.setRole(ro);
-            res.setAction(Action.ALL);
-            res.setResourceTypePermission(ResourceTypePermission.ANY);
-            this.restriction = res;
-            this.permissionName = pe.getValue();
-        }
-    }
-
-    public RestrictionDTO(RestrictionEntity res) {
-        this.restriction = res;
-        this.permissionName = res.getPermission().getValue();
-    }
-
+public enum ResourceTypePermission {
+    ANY,
+    DEFAULT_ONLY,
+    NON_DEFAULT_ONLY
 }

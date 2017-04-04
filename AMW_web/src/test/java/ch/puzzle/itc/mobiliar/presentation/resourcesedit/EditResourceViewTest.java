@@ -20,14 +20,14 @@
 
 package ch.puzzle.itc.mobiliar.presentation.resourcesedit;
 
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,11 +54,15 @@ public class EditResourceViewTest {
 
 	@Mock
 	PermissionBoundary permissionBoundary;
+
+	@Mock
+	SessionContext sessionContext;
 	
 	@Before
 	public void setup(){
 		context.resourceType = resourceType;
 		context.permissionBoundary = permissionBoundary;
+		context.sessionContext = sessionContext;
 	}
 	
 	
@@ -136,11 +140,15 @@ public class EditResourceViewTest {
 
 	@Test
 	public void canSaveChangesShouldInvokeTheRightMethodsOfTheBoundaryWhenEditingResourceType(){
-		//given //when
+		//given
+		ResourceTypeEntity type = new ResourceTypeEntity();
+		context.resourceType = type;
+		ContextEntity ce = new ContextEntity();
+		when(sessionContext.getCurrentContext()).thenReturn(ce);
+		// when
 		context.canSaveChanges();
 		//then
-		verify(permissionBoundary, times(1)).hasPermission(Permission.SAVE_ALL_CHANGES);
-		verify(permissionBoundary, times(1)).hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
+		verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCETYPE, ce, Action.UPDATE, null, type);
 	}
 
 	@Test
@@ -152,13 +160,13 @@ public class EditResourceViewTest {
 		type.setId(9);
 		r.setResourceType(type);
 		context.resource = r;
+		ContextEntity ce = new ContextEntity();
+		when(sessionContext.getCurrentContext()).thenReturn(ce);
 		when(permissionBoundary.hasPermissionToEditPropertiesOfResource(anyInt())).thenReturn(true);
 		// when
 		context.canSaveChanges();
 		//then
-		verify(permissionBoundary, times(1)).hasPermission(Permission.SAVE_ALL_CHANGES);
-		verify(permissionBoundary, times(1)).hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
-		verify(permissionBoundary, times(1)).hasPermissionToEditPropertiesOfResource(anyInt());
+		verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCE, ce, Action.UPDATE, r, type);
 	}
 
 	@Test
