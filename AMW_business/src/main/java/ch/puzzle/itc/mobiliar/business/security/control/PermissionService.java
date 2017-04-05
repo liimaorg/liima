@@ -420,22 +420,6 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * Check that the user is app_developer or config_admin: app_developer: can edit properties of instances
-     * of APPLICATION config_admin: can edit all properties.
-     *
-     * @param
-     * @return
-     */
-    public boolean hasPermissionToEditPropertiesOfResource(ResourceTypeEntity parentResourceTypeOfResource) {
-        // config_admin
-        if (hasPermission(Permission.EDIT_ALL_PROPERTIES)) {
-            return true;
-        }
-        return parentResourceTypeOfResource != null && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP)
-                && DefaultResourceTypeDefinition.APPLICATION.name().equals(parentResourceTypeOfResource.getName());
-    }
-
-    /**
      * Check if the user can delete instances of ResourceTypes
      *
      * @param resourceType
@@ -444,27 +428,6 @@ public class PermissionService implements Serializable {
     public boolean hasPermissionToRemoveInstanceOfResType(ResourceTypeEntity resourceType) {
         return hasPermission(Permission.RESOURCE, Action.DELETE, resourceType);
     }
-
-    /**
-     * Check that the user is config_admin, app_developer or shakedown_admin: shakedown_admin: can edit all
-     * properties when TestingMode is true config_admin: can edit all properties. app_developer: can edit
-     * properties of instances of APPLICATION
-     *
-     * @param resource
-     * @param isTestingMode
-     * @return
-     */
-//    public boolean hasPermissionToEditPropertiesByResource(ResourceEntity resource, ContextEntity context, boolean isTestingMode) {
-//        // the config_admin can edit/add/delete all properites
-//        // TODO review check context?
-//        if (hasPermission(Permission.EDIT_ALL_PROPERTIES)) {
-//            return true;
-//        } else if (resource != null && resource.getResourceType().isApplicationResourceType()
-//                && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP)) {
-//            return true;
-//        }
-//        return hasPermission(Permission.SHAKEDOWN_TEST_MODE) && isTestingMode;
-//    }
 
     /**
      * Check that the user is config_admin, server_admin or app_developer : server_admin: can add node

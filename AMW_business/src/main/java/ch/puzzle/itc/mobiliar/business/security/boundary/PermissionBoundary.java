@@ -152,21 +152,6 @@ public class PermissionBoundary implements Serializable {
         return hasPermissionToEditPropertiesByResourceAndContext(resourceId, null, isTestingMode);
     }
 
-    /**
-     * Check that the user is app_developer or config_admin: app_developer: can edit properties of instances
-     * of APPLICATION config_admin: can edit all properties.
-     *
-     * @param
-     * @return
-     */
-    public boolean hasPermissionToEditPropertiesOfResource(Integer parentResourceTypeIdOfResource) {
-
-        ResourceTypeEntity resourceTypeEntity = entityManager.find(ResourceTypeEntity.class,
-                parentResourceTypeIdOfResource);
-        return permissionService.hasPermissionToEditPropertiesOfResource(resourceTypeEntity);
-
-    }
-
     public boolean hasPermission(String permissionName) {
         Permission permission = Permission.valueOf(permissionName);
         return permissionService.hasPermission(permission);

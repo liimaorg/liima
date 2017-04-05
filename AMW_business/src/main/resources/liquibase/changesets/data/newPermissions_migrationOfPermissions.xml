@@ -20,6 +20,22 @@
         <rollback></rollback>
     </changeSet>
 
+    <changeSet author="rgalante" id="newPermissions_removeEditAllProperties" >
+        <comment>
+            removing existing EDIT_ALL_PROPERTIES permissions
+        </comment>
+
+        <delete tableName="TAMW_role_permission">
+            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE value = 'EDIT_ALL_PROPERTIES')</where>
+        </delete>
+
+        <delete tableName="TAMW_permission">
+            <where>value = 'EDIT_ALL_PROPERTIES'</where>
+        </delete>
+
+        <rollback></rollback>
+    </changeSet>
+
     <changeSet author="rgalante" id="newPermissions_migrationManageRelease" >
         <comment>
             migrating existing CRUD_RELEASE permissions to restrictions

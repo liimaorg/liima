@@ -65,7 +65,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
@@ -301,8 +300,7 @@ public class PropertyEditor {
 		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
         ResourceEntity editedResource = verifyAndSaveResource(resourceId, changingOwner, resourceName, softlinkId, context);
 
-        if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, editedResource, editedResource.getResourceType())
-				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
+        if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, editedResource, editedResource.getResourceType())) {
 			propertyValueService.saveProperties(context, editedResource, resourceProperties);
 			if (relation != null) {
 				AbstractResourceRelationEntity resourceRelation = editedResource.getResourceRelation(relation);
@@ -324,8 +322,7 @@ public class PropertyEditor {
     }
 
     private void verifyAndSetResourceName(String resourceName, ResourceEntity resource, ContextEntity context) throws AMWException {
-		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)
-				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
+		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
             if (resourceName == null || !resourceName.equals(resource.getName())) {
                 resourceValidationService.validateResourceName(resourceName);
                 resource.setName(resourceName);
@@ -360,8 +357,7 @@ public class PropertyEditor {
 		ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 
 		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-		if (permissionBoundary.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType)
-				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
+		if (permissionBoundary.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType)) {
 			if (resourceTypeName == null || !resourceTypeName.equals(resourceType.getName())) {
 				resourceValidationService.validateResourceTypeName(resourceTypeName, resourceType.getName());
 				resourceType.setName(resourceTypeName);
@@ -394,8 +390,7 @@ public class PropertyEditor {
 	private void resetSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
 			Integer propertyDescriptorId) {
 		ResourceEntity resource = getRelevantResource(hasContexts);
-		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)
-				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
+		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
 			HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
 			ContextEntity contextMerged = entityManager.merge(context);
 			ContextDependency<?> contextDependency = hasContextMerged.getOrCreateContext(contextMerged);
@@ -410,8 +405,7 @@ public class PropertyEditor {
 	private void setSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
 			Integer propertyDescriptorId, String unobfuscatedValue) throws ValidationException {
 		ResourceEntity resource = getRelevantResource(hasContexts);
-		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)
-				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
+		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
 			HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
 			ContextEntity contextMerged = entityManager.merge(context);
 			ContextDependency<?> contextDependency = hasContextMerged.getOrCreateContext(contextMerged);

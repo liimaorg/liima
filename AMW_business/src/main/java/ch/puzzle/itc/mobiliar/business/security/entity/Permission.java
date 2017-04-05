@@ -70,17 +70,14 @@ public enum Permission {
     EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen."),
     RESET_PROP("Reset properties. You can find this list in all Resource/Resource Type screen."),
 
-
     EDIT_PROP_LIST_OF_INST_APP("Edit properties in resource / resource type screen."),
 
     PROP_LIST("This permission allows to list the properties in the edit screen."),
     CREATE_TEMPLATE("With this permission it can create a new template"),
     RES_RESTYPE_TEMPLATE_LIST("Allows to list the templates of resources and resource types"),
     DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value"),
-    EDIT_ALL_PROPERTIES("WARNING: DON'T CHANGE THIS PERMISSION"),
+
     SAVE_PROPERTY("With this permission it can modify the property"),
-    // TODO check, remove
-    SAVE_ALL_PROPERTIES("Permission to persist all properties of a resource or resource type excluding its name. WARNING: DON'T CHANGE THIS PERMISSION"),
 
     SET_SOFTLINK_ID_OR_REF("Allows to manually set a softlink id or a softlink reference respective"),
 
@@ -183,6 +180,7 @@ public enum Permission {
     // EDIT_RES_TYPE("Edit resource type. You can find this panel in Resources screen. All Resource Type have this button. Path -> Resources"); > READ
     // DELETE_RESTYPE("Delete Resource Type. In all 'NOT DEFAULT RESOURCE TYPE'. Path -> Resources -> select a 'NOT DEFAULT RESOURCE TYPE'"),
     // SAVE_ALL_CHANGES("Permission to persist all properties and the name of any resource or resource type. WARNING: DON'T CHANGE THIS PERMISSION"),
+    // SAVE_ALL_PROPERTIES("Permission to persist all properties of a resource or resource type excluding its name. WARNING: DON'T CHANGE THIS PERMISSION"),
 
     // CANDIDATES (assigned only to config_admin)
     // EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen."),
@@ -194,6 +192,7 @@ public enum Permission {
     // RENAME_NODE("With this permission it is possible to rename all NODE instances."), REMOVED
     // RENAME_RES("With this permission it is possible to rename everthing else."), REMOVED
     // MODIFY_APPSERVER_RELATION("With this permission the config admin can make modifications in the appServerRelations screen."), REMOVED
+    // EDIT_ALL_PROPERTIES("WARNING: DON'T CHANGE THIS PERMISSION"), REMOVED
 
 
     private String info;

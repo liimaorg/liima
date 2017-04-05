@@ -162,7 +162,6 @@ public class EditResourceViewTest {
 		context.resource = r;
 		ContextEntity ce = new ContextEntity();
 		when(sessionContext.getCurrentContext()).thenReturn(ce);
-		when(permissionBoundary.hasPermissionToEditPropertiesOfResource(anyInt())).thenReturn(true);
 		// when
 		context.canSaveChanges();
 		//then
