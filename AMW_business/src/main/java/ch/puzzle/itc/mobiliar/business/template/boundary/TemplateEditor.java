@@ -171,15 +171,16 @@ public class TemplateEditor {
 	   saveTemplate(template,  entityManager.find(ResourceTypeEntity.class, resourceTypeId));
     }
 
-    /**
-     * @param resourceId - null for resourceType templates
-     * @param testingMode - true if testing mode is activated
-     * @return
-     */
-    public boolean hasPermissionToModifyTemplate(Integer resourceId, boolean testingMode) {
-        ResourceEntity res = resourceId != null ? entityManager.find(ResourceEntity.class, resourceId) : null;
-        return permissions.hasPermissionToTemplateModify(res, testingMode);
-    }
+	public boolean hasPermissionToModifyResourceTypeTemplate(Integer resourceTypeId, boolean testingMode) {
+		ResourceTypeEntity type = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+		return permissions.hasPermissionToModifyResourceTypeTemplate(type, testingMode);
+	}
+
+	public boolean hasPermissionToModifyResourceTemplate(Integer resourceId, boolean testingMode) {
+		ResourceEntity res = entityManager.find(ResourceEntity.class, resourceId);
+		return permissions.hasPermissionToModifyResourceTemplate(res, testingMode);
+	}
+
 
     void saveTemplate(TemplateDescriptorEntity template, HasContexts<?> hasContext) throws AMWException {
 		if (StringUtils.isEmpty(template.getName())) {

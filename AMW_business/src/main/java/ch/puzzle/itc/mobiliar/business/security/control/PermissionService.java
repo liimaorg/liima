@@ -492,43 +492,33 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * Check that the user is config_admin, app_developer or shakedown_admin : shakedown_admin: can
-     * modify(add/edit/delete) all testing templates config_admin: can modify(add/edit/delete) all templates
-     * app_developer: can modify(add/edit/delete) only templates in instances of APPLICATION
+     * Checks if user may create or edit Templates of Resources
      *
-     * @param resourceType  - null for resourceType templates
-     * @param isTestingMode - true if testing mode is activated
+     * @param resource
+     * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToTemplateModify(ResourceTypeEntity resourceType, boolean isTestingMode) {
-        // check that the user is config_admin
-        if (hasPermission(Permission.SAVE_RESTYPE_TEMPLATE)) {
+    public boolean hasPermissionToModifyResourceTemplate(ResourceEntity resource, boolean isTestingMode) {
+        // ok if user has update permission on the Resource
+        if (hasPermission(Permission.RESOURCE, null, Action.UPDATE, resource.getResourceGroup(), null)) {
             return true;
-        }// check that the user is app_developer
-        else if (isApplicationResourceType(resourceType)) {
-            return hasPermission(Permission.SAVE_RES_TEMPLATE);
-        }// check that the user is shakedown_admin
-        return resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+        }
+        return resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     /**
-     * Check that the user is config_admin, app_developer or shakedown_admin : shakedown_admin: can
-     * modify(add/edit/delete) all testing templates config_admin: can modify(add/edit/delete) all templates
-     * app_developer: can modify(add/edit/delete) only templates in instances of APPLICATION
+     * Checks if user may create or edit Templates of ResourceTypes
      *
-     * @param resource      - null for resourceType templates
-     * @param isTestingMode - true if testing mode is activated
+     * @param resourceType
+     * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToTemplateModify(ResourceEntity resource, boolean isTestingMode) {
-        // check that the user is config_admin
-        if (hasPermission(Permission.SAVE_RESTYPE_TEMPLATE)) {
+    public boolean hasPermissionToModifyResourceTypeTemplate(ResourceTypeEntity resourceType, boolean isTestingMode) {
+        // ok if user has update permission on the ResourceType
+        if (hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceType)) {
             return true;
-        }// check that the user is app_developer
-        else if (isResourceEntityWithApplicationResourceType(resource)) {
-            return hasPermission(Permission.SAVE_RES_TEMPLATE);
-        }// check that the user is shakedown_admin
-        return resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+        }
+        return resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     private boolean isApplicationResourceType(ResourceTypeEntity resourceType) {

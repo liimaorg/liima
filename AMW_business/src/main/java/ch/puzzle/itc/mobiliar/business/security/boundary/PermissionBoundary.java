@@ -258,10 +258,10 @@ public class PermissionBoundary implements Serializable {
         if (resourceOrResourceTypeEntity != null) {
             if (resourceOrResourceTypeEntity instanceof ResourceEntity) {
                 ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, resourceOrResourceTypeEntity.getId());
-                return permissionService.hasPermissionToTemplateModify(mergedResource, isTestingMode);
+                return permissionService.hasPermissionToModifyResourceTemplate(mergedResource, isTestingMode);
             } else if (resourceOrResourceTypeEntity instanceof ResourceTypeEntity) {
                 ResourceTypeEntity mergedResourceType = entityManager.find(ResourceTypeEntity.class, resourceOrResourceTypeEntity.getId());
-                return permissionService.hasPermissionToTemplateModify(mergedResourceType, isTestingMode);
+                return permissionService.hasPermissionToModifyResourceTypeTemplate(mergedResourceType, isTestingMode);
             }
         }
         return false;
