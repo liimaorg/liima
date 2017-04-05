@@ -79,6 +79,7 @@ public enum Permission {
     DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value"),
     EDIT_ALL_PROPERTIES("WARNING: DON'T CHANGE THIS PERMISSION"),
     SAVE_PROPERTY("With this permission it can modify the property"),
+    // TODO check, remove
     SAVE_ALL_PROPERTIES("Permission to persist all properties of a resource or resource type excluding its name. WARNING: DON'T CHANGE THIS PERMISSION"),
 
     SET_SOFTLINK_ID_OR_REF("Allows to manually set a softlink id or a softlink reference respective"),

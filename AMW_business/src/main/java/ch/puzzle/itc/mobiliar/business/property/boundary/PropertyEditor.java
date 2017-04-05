@@ -65,6 +65,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
@@ -378,13 +379,21 @@ public class PropertyEditor {
 		}
 	}
 
+	private ResourceEntity getRelevantResource(HasContexts<?> hasContexts) {
+		if (hasContexts instanceof ResourceEntity) {
+			return (ResourceEntity) hasContexts;
+		}
+		if (hasContexts instanceof ConsumedResourceRelationEntity) {
+			ConsumedResourceRelationEntity relation = (ConsumedResourceRelationEntity) hasContexts;
+			return relation.getMasterResource();
+		}
+		log.warning("Unexpected Object "+hasContexts.getClass().getSimpleName());
+		return null;
+	}
+
 	private void resetSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
 			Integer propertyDescriptorId) {
-		ResourceEntity resource = null;
-		if (hasContexts instanceof ResourceEntity) {
-			resource = (ResourceEntity) hasContexts;
-		}
-		// TODO review: handle Resource and ResourceRelations differently?
+		ResourceEntity resource = getRelevantResource(hasContexts);
 		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)
 				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
 			HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
@@ -400,11 +409,7 @@ public class PropertyEditor {
 
 	private void setSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
 			Integer propertyDescriptorId, String unobfuscatedValue) throws ValidationException {
-		ResourceEntity resource = null;
-		if (hasContexts instanceof ResourceEntity) {
-			resource = (ResourceEntity) hasContexts;
-		}
-		// TODO review: handle Resource and ResourceRelations differently?
+		ResourceEntity resource = getRelevantResource(hasContexts);
 		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)
 				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
 			HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
