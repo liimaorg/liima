@@ -171,8 +171,7 @@ public class PermissionBoundaryTest {
         permissionBoundary.updateRestriction(1, "existing", "good", null, null, null, null);
         // then
         verify(restrictionRepository, times(1)).merge(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).setReloadDeployableRoleList(true);
-        verify(permissionRepository, times(1)).setReloadRolesAndPermissionsList(true);
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test(expected=AMWException.class)
@@ -209,8 +208,7 @@ public class PermissionBoundaryTest {
         permissionBoundary.createRestriction("existing", "good", null, null, null, null);
         // then
         verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).setReloadDeployableRoleList(true);
-        verify(permissionRepository, times(1)).setReloadRolesAndPermissionsList(true);
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test(expected=AMWException.class)

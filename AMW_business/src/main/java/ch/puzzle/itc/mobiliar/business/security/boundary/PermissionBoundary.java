@@ -338,7 +338,7 @@ public class PermissionBoundary implements Serializable {
         RestrictionEntity restriction = new RestrictionEntity();
         validateRestriction(roleName, permissionName, resourceGroupId, resourceTypeName, contextName, action, restriction);
         final Integer id = restrictionRepository.create(restriction);
-        forceRoleListReload();
+        permissionRepository.forceReloadingOfLists();
         return id;
     }
 
@@ -364,7 +364,7 @@ public class PermissionBoundary implements Serializable {
         }
         validateRestriction(roleName, permissionName, resourceId, resourceTypeName, contextName, action, restriction);
         restrictionRepository.merge(restriction);
-        forceRoleListReload();
+        permissionRepository.forceReloadingOfLists();
     }
 
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.DELETE)
@@ -374,7 +374,7 @@ public class PermissionBoundary implements Serializable {
             throw new AMWException("Restriction not found");
         }
         restrictionRepository.remove(id);
-        forceRoleListReload();
+        permissionRepository.forceReloadingOfLists();
     }
 
     /**
@@ -438,11 +438,6 @@ public class PermissionBoundary implements Serializable {
         } else {
             restriction.setAction(Action.ALL);
         }
-    }
-
-    private void forceRoleListReload() {
-        permissionRepository.setReloadRolesAndPermissionsList(true);
-        permissionRepository.setReloadDeployableRoleList(true);
     }
 
 }
