@@ -111,9 +111,6 @@ public class EditResourceView implements Serializable {
     private Integer contextIdViewParam;
 
     @Getter
-    private boolean canRenameResource = false;
-
-    @Getter
     private boolean canEditSoftlinkId = false;
 
     @Getter
@@ -170,7 +167,6 @@ public class EditResourceView implements Serializable {
             }
             resourceType = null;
 
-            canRenameResource = isResourceNameEditable(resource);
             canEditSoftlinkId = isSoftlinkEditable(resource);
             canShowSoftlinkField = sessionContext.getIsGlobal() && hasProvidableSoftlinkSuperType(resource);
             canShowDeploymentLink = isResourceOrTypeDeployable(resource.getResourceType());
@@ -193,7 +189,6 @@ public class EditResourceView implements Serializable {
             resource = null;
             resourceType = resourceTypeLocator.getResourceType(resourceTypeIdFromParam);
 
-            canRenameResource = permissionBoundary.hasPermissionToRenameResourceType(resourceType);
             canEditSoftlinkId = false;
             canShowSoftlinkField = false;
             canShowDeploymentLink = isResourceOrTypeDeployable(resourceType);
@@ -304,10 +299,9 @@ public class EditResourceView implements Serializable {
 
     public boolean hasAddPropertyPermission() {
         if (isEditResource()) {
-            return permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam, isTesting());
+            return permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceIdFromParam, isTesting(), contextIdViewParam);
         } else {
-            // TODO check this
-            return permissionBoundary.hasPermissionToEditPropertiesByResource(resourceTypeIdFromParam, isTesting());
+            return permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeIdFromParam, contextIdViewParam, isTesting());
         }
     }
 
@@ -325,11 +319,6 @@ public class EditResourceView implements Serializable {
 
     public boolean isGlobalContext() {
         return sessionContext.getIsGlobal();
-    }
-
-    private boolean isResourceNameEditable(ResourceEntity resourceEntity) {
-        return foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), resourceEntity)
-                && permissionBoundary.hasPermissionToRenameResource(resourceEntity);
     }
 
     private boolean isSoftlinkEditable(ResourceEntity resourceEntity) {

@@ -55,8 +55,6 @@ public enum Permission {
     DELETE_APP_TO_APP_SERVER("Delete application to application server. You can find this list in all instances of application server"),
     APP_LIST_ADDED_APPSERVER("The Applications added to applicationserver. Path: Resource -> APPLICATIONSERVER -> Edit"),
 
-    //MODIFY_APPSERVER_RELATION("With this permission the config admin can make modifications in the appServerRelations screen."),
-
     //RESOURCE TYPE PERMISSIONS
 
     ADD_RELATED_RESOURCETYPE("Add related resource type. Path: all Resource Type instance screen -> press button 'Add related resource Type.'"),
@@ -82,7 +80,6 @@ public enum Permission {
     EDIT_ALL_PROPERTIES("WARNING: DON'T CHANGE THIS PERMISSION"),
     SAVE_PROPERTY("With this permission it can modify the property"),
     SAVE_ALL_PROPERTIES("Permission to persist all properties of a resource or resource type excluding its name. WARNING: DON'T CHANGE THIS PERMISSION"),
-    SAVE_ALL_CHANGES("Permission to persist all properties and the name of any resource or resource type. WARNING: DON'T CHANGE THIS PERMISSION"),
 
     SET_SOFTLINK_ID_OR_REF("Allows to manually set a softlink id or a softlink reference respective"),
 
@@ -155,11 +152,6 @@ public enum Permission {
     // COPY_FROM_RESOURCE_APP("With this permission the config admin can copy the configuration from one app into an other."),
     // COPY_FROM_RESOURCE_APPSERVER("With this permission the config admin can copy the configuration from one appserver into an other."),
     // COPY_FROM_RESOURCE_NODE("With this permission the config admin can copy the configuration from one node into an other."),
-    RENAME_RESOURCE("The right to rename resources"),
-    // RENAME_APPSERVER("With this permission it is possible to rename all AppServer instances."),
-    // RENAME_APP("With this permission it is possible to rename all APP instances."),
-    // RENAME_NODE("With this permission it is possible to rename all NODE instances."),
-    // RENAME_RES("With this permission it is possible to rename everthing else."),
     RELEASE("The right to create, read, update or delete releases"),
     // CREATE_RELEASE("With this permission the config admin can create releases."),
     // EDIT_RELEASE("With this permission the config admin can edit releases."),
@@ -189,12 +181,19 @@ public enum Permission {
     // NEW_RESTYPE("New resource type button. Path: Resources"),
     // EDIT_RES_TYPE("Edit resource type. You can find this panel in Resources screen. All Resource Type have this button. Path -> Resources"); > READ
     // DELETE_RESTYPE("Delete Resource Type. In all 'NOT DEFAULT RESOURCE TYPE'. Path -> Resources -> select a 'NOT DEFAULT RESOURCE TYPE'"),
-
-
+    // SAVE_ALL_CHANGES("Permission to persist all properties and the name of any resource or resource type. WARNING: DON'T CHANGE THIS PERMISSION"),
 
     // CANDIDATES (assigned only to config_admin)
-    // SAVE_ALL_CHANGES("Permission to persist all properties and the name of any resource or resource type. WARNING: DON'T CHANGE THIS PERMISSION"),
     // EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen."),
+
+
+    // REMOVED
+    // RENAME_APPSERVER("With this permission it is possible to rename all AppServer instances."), REMOVED
+    // RENAME_APP("With this permission it is possible to rename all APP instances."), REMOVED
+    // RENAME_NODE("With this permission it is possible to rename all NODE instances."), REMOVED
+    // RENAME_RES("With this permission it is possible to rename everthing else."), REMOVED
+    // MODIFY_APPSERVER_RELATION("With this permission the config admin can make modifications in the appServerRelations screen."), REMOVED
+
 
     private String info;
 

@@ -420,15 +420,6 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * The ResourceTypeName is modifiable by the config_admin. DefaultResourceType (APPLICATION,
-     * APPLICATIONSERVER or NODE) is not modifiable.
-     */
-    public boolean hasPermissionToRenameResourceType(ResourceTypeEntity resType) {
-        return resType != null && hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME)
-                && !resType.isDefaultResourceType();
-    }
-
-    /**
      * Check that the user is app_developer or config_admin: app_developer: can edit properties of instances
      * of APPLICATION config_admin: can edit all properties.
      *
@@ -442,25 +433,6 @@ public class PermissionService implements Serializable {
         }
         return parentResourceTypeOfResource != null && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP)
                 && DefaultResourceTypeDefinition.APPLICATION.name().equals(parentResourceTypeOfResource.getName());
-    }
-
-    /**
-     * The ResourceName is modifiable by the config_admin or by the server_admin when the resource is
-     * instance's resource of deaultResourceType: APPLICATION/APPLICATIONSERVER/NODE's instance
-     *
-     * @param res
-     * @return
-     */
-    public boolean hasPermissionToRenameResource(ResourceEntity res) {
-        if (hasPermission(Permission.SAVE_ALL_CHANGES) || hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME)) {
-            return true;
-        }
-        if (res.getResourceGroup() == null || res.getResourceType() == null) {
-            return false;
-        }
-        // Abwärtskompatibilität: RENAME_INSTANCE_DEFAULT_RESOURCE
-        return hasPermission(Permission.RENAME_RESOURCE, null, null, res.getResourceGroup(), res.getResourceType()) ||
-                hasPermission(Permission.RENAME_INSTANCE_DEFAULT_RESOURCE);
     }
 
     /**
@@ -482,16 +454,17 @@ public class PermissionService implements Serializable {
      * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToEditPropertiesByResource(ResourceEntity resource, boolean isTestingMode) {
-        // the config_admin can edit/add/delete all properites
-        if (hasPermission(Permission.EDIT_ALL_PROPERTIES)) {
-            return true;
-        } else if (resource != null && resource.getResourceType().isApplicationResourceType()
-                && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP)) {
-            return true;
-        }
-        return hasPermission(Permission.SHAKEDOWN_TEST_MODE) && isTestingMode;
-    }
+//    public boolean hasPermissionToEditPropertiesByResource(ResourceEntity resource, ContextEntity context, boolean isTestingMode) {
+//        // the config_admin can edit/add/delete all properites
+//        // TODO review check context?
+//        if (hasPermission(Permission.EDIT_ALL_PROPERTIES)) {
+//            return true;
+//        } else if (resource != null && resource.getResourceType().isApplicationResourceType()
+//                && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP)) {
+//            return true;
+//        }
+//        return hasPermission(Permission.SHAKEDOWN_TEST_MODE) && isTestingMode;
+//    }
 
     /**
      * Check that the user is config_admin, server_admin or app_developer : server_admin: can add node

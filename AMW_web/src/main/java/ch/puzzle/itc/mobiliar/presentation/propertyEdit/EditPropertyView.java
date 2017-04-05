@@ -74,7 +74,8 @@ public class EditPropertyView implements Serializable {
 	public void setResourceTypeIdFromParam(Integer resourceTypeIdFromParam) {
 		this.resourceTypeIdFromParam = resourceTypeIdFromParam;
 		this.resourceIdFromParam = null;
-        canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResource(resourceTypeIdFromParam,
+		// TODO context?
+        canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceType(resourceTypeIdFromParam,
                 isTesting());
 
 	}
@@ -82,6 +83,7 @@ public class EditPropertyView implements Serializable {
 	public void setResourceIdFromParam(Integer resourceIdFromParam) {
 		this.resourceIdFromParam = resourceIdFromParam;
 		this.resourceTypeIdFromParam = null;
+		// TODO context?
         canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam,
                 isTesting());
 	}

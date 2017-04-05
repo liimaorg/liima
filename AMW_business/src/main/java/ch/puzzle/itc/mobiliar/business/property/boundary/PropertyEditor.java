@@ -67,6 +67,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
@@ -278,15 +279,29 @@ public class PropertyEditor {
 		return resourceEditService.loadResourceRelationTypesForEdit(resourceType);
 	}
 
-
+	/**
+	 * Persists changes made on a Resource
+	 *
+	 * @param changingOwner
+	 * @param contextId
+	 * @param resourceId
+	 * @param resourceProperties
+	 * @param relation
+	 * @param relationProperties
+	 * @param resourceName
+	 * @param softlinkId
+	 * @throws AMWException
+	 * @throws ValidationException
+	 * @throws ForeignableOwnerViolationException
+	 */
 	public void save(ForeignableOwner changingOwner, Integer contextId, Integer resourceId, List<ResourceEditProperty> resourceProperties,
 			ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String softlinkId) throws AMWException, ValidationException, ForeignableOwnerViolationException {
 
-        ResourceEntity editedResource = verifyAndSaveResource(resourceId, changingOwner, resourceName, softlinkId);
+		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
+        ResourceEntity editedResource = verifyAndSaveResource(resourceId, changingOwner, resourceName, softlinkId, context);
 
-        if (permissionBoundary.hasPermission(Permission.SAVE_ALL_CHANGES)
+        if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, editedResource, editedResource.getResourceType())
 				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
-			ContextEntity context = entityManager.find(ContextEntity.class, contextId);
 			propertyValueService.saveProperties(context, editedResource, resourceProperties);
 			if (relation != null) {
 				AbstractResourceRelationEntity resourceRelation = editedResource.getResourceRelation(relation);
@@ -295,11 +310,11 @@ public class PropertyEditor {
 		}
 	}
 
-    private ResourceEntity verifyAndSaveResource(Integer resourceId, ForeignableOwner changingOwner, String resourceName, String softlinkId) throws ForeignableOwnerViolationException, AMWException {
+    private ResourceEntity verifyAndSaveResource(Integer resourceId, ForeignableOwner changingOwner, String resourceName, String softlinkId, ContextEntity context) throws ForeignableOwnerViolationException, AMWException {
         ResourceEntity resource = resourceRepository.find(resourceId);
         int beforeChangeForeignableHashCode = resource.foreignableFieldHashCode();
 
-        verifyAndSetResourceName(resourceName, resource);
+        verifyAndSetResourceName(resourceName, resource, context);
         verifyAndSetSoftlinkId(softlinkId, resource);
 
         // check if owner can modify resource
@@ -307,8 +322,9 @@ public class PropertyEditor {
         return resource;
     }
 
-    private void verifyAndSetResourceName(String resourceName, ResourceEntity resource) throws AMWException {
-        if (permissionBoundary.hasPermissionToRenameResource(resource)) {
+    private void verifyAndSetResourceName(String resourceName, ResourceEntity resource, ContextEntity context) throws AMWException {
+		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)
+				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
             if (resourceName == null || !resourceName.equals(resource.getName())) {
                 resourceValidationService.validateResourceName(resourceName);
                 resource.setName(resourceName);
@@ -323,22 +339,32 @@ public class PropertyEditor {
         }
     }
 
+	/**
+	 * Persists changes made on a ResourceType
+	 *
+	 * @param contextId
+	 * @param resourceTypeId
+	 * @param resourceProperties
+	 * @param relation
+	 * @param relationProperties
+	 * @param resourceTypeName
+	 * @param typeRelationIdentifier
+	 * @throws AMWException
+	 * @throws ValidationException
+	 */
     public void savePropertiesForResourceType(Integer contextId, Integer resourceTypeId,
 			List<ResourceEditProperty> resourceProperties, ResourceEditRelation relation,
 			List<ResourceEditProperty> relationProperties, String resourceTypeName,
 			String typeRelationIdentifier) throws AMWException, ValidationException {
 		ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 
-		if (permissionBoundary.hasPermissionToRenameResourceType(resourceType)) {
+		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
+		if (permissionBoundary.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType)
+				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
 			if (resourceTypeName == null || !resourceTypeName.equals(resourceType.getName())) {
-				resourceValidationService.validateResourceTypeName(resourceTypeName,
-						resourceType.getName());
+				resourceValidationService.validateResourceTypeName(resourceTypeName, resourceType.getName());
 				resourceType.setName(resourceTypeName);
 			}
-		}
-		if (permissionBoundary.hasPermission(Permission.SAVE_ALL_CHANGES)
-				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
-			ContextEntity context = entityManager.find(ContextEntity.class, contextId);
 			propertyValueService.saveProperties(context, resourceType, resourceProperties);
 			if (relation != null && relation.getResRelTypeId() != null) {
 				ResourceRelationTypeEntity resourceRelationTypeEntity = entityManager.find(
@@ -354,7 +380,12 @@ public class PropertyEditor {
 
 	private void resetSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
 			Integer propertyDescriptorId) {
-		if (permissionBoundary.hasPermission(Permission.SAVE_ALL_CHANGES)
+		ResourceEntity resource = null;
+		if (hasContexts instanceof ResourceEntity) {
+			resource = (ResourceEntity) hasContexts;
+		}
+		// TODO review: handle Resource and ResourceRelations differently?
+		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)
 				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
 			HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
 			ContextEntity contextMerged = entityManager.merge(context);
@@ -369,7 +400,12 @@ public class PropertyEditor {
 
 	private void setSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
 			Integer propertyDescriptorId, String unobfuscatedValue) throws ValidationException {
-		if (permissionBoundary.hasPermission(Permission.SAVE_ALL_CHANGES)
+		ResourceEntity resource = null;
+		if (hasContexts instanceof ResourceEntity) {
+			resource = (ResourceEntity) hasContexts;
+		}
+		// TODO review: handle Resource and ResourceRelations differently?
+		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)
 				|| permissionBoundary.hasPermission(Permission.SAVE_ALL_PROPERTIES)) {
 			HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
 			ContextEntity contextMerged = entityManager.merge(context);

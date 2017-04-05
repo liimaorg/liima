@@ -82,17 +82,74 @@ public class PermissionBoundary implements Serializable {
     ResourceTypeRepository resourceTypeRepository;
 
     /**
-     * Check that the user is config_admin, app_developer or shakedown_admin: shakedown_admin: can edit all
-     * properties when TestingMode is true config_admin: can edit all properties. app_developer: can edit
-     * properties of instances of APPLICATION
+     * Checks if the user is allowed to edit the Properties of a ResourceType in a specific Context
+     *
+     * @param resourceTypeId
+     * @param contextId
+     * @param isTestingMode
+     * @return
+     */
+    public boolean hasPermissionToEditPropertiesByResourceTypeAndContext(Integer resourceTypeId, Integer contextId,
+                                                                         boolean isTestingMode) {
+        ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+        ContextEntity context = contextLocator.getContextById(contextId);
+        if (permissionService.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType)) {
+            return true;
+        }
+        return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE) && isTestingMode;
+    }
+
+    /**
+     * Checks if the user is allowed to edit the Properties of a ResourceType without checking its Context
+     *
+     * @param resourceTypeId
+     * @param isTestingMode
+     * @return
+     */
+    public boolean hasPermissionToEditPropertiesByResourceType(Integer resourceTypeId, boolean isTestingMode) {
+        return hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeId, null, isTestingMode);
+    }
+
+    /**
+     * Checks if the user is allowed to edit the Properties of a Resource in a specific Context
+     *
+     * @param resourceId
+     * @param context
+     * @param isTestingMode
+     * @return
+     */
+    public boolean hasPermissionToEditPropertiesByResourceAndContext(Integer resourceId, ContextEntity context,
+                                                                     boolean isTestingMode) {
+        ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
+        if (permissionService.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource.getResourceGroup(), null)) {
+            return true;
+        }
+        return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE) && isTestingMode;
+    }
+
+    /**
+     * Checks if the user is allowed to edit the Properties of a Resource in a specific Context
+     *
+     * @param resourceId
+     * @param contextId
+     * @param isTestingMode
+     * @return
+     */
+    public boolean hasPermissionToEditPropertiesByResourceAndContext(Integer resourceId, boolean isTestingMode,
+                                                                     Integer contextId) {
+        ContextEntity context = contextLocator.getContextById(contextId);
+        return hasPermissionToEditPropertiesByResourceAndContext(resourceId, context, isTestingMode);
+    }
+
+    /**
+     * Checks if the user is allowed to edit the Properties of a Resource without checking its Context
      *
      * @param resourceId
      * @param isTestingMode
      * @return
      */
     public boolean hasPermissionToEditPropertiesByResource(Integer resourceId, boolean isTestingMode) {
-        ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
-        return permissionService.hasPermissionToEditPropertiesByResource(resource, isTestingMode);
+        return hasPermissionToEditPropertiesByResourceAndContext(resourceId, null, isTestingMode);
     }
 
     /**
@@ -171,27 +228,6 @@ public class PermissionBoundary implements Serializable {
      */
     public void checkPermissionActionAndFireException(Permission permission, Action action, String extraInfo) {
         permissionService.checkPermissionActionAndFireException(permission, action, extraInfo);
-    }
-
-    /**
-     * The ResourceName is modifiable by the config_admin or by the server_admin when the resource is
-     * instance's resource of deaultResourceType: APPLICATION/APPLICATIONSERVER/NODE's instance
-     *
-     * @param res
-     * @return
-     */
-    public boolean hasPermissionToRenameResource(ResourceEntity res) {
-        ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, res.getId());
-        return permissionService.hasPermissionToRenameResource(mergedResource);
-    }
-
-    /**
-     * The ResourceTypeName is modifiable by the config_admin. DefaultResourceType (APPLICATION,
-     * APPLICATIONSERVER or NODE) is not modifiable.
-     */
-    public boolean hasPermissionToRenameResourceType(ResourceTypeEntity resType) {
-        ResourceTypeEntity mergedResourceType = entityManager.find(ResourceTypeEntity.class, resType.getId());
-        return permissionService.hasPermissionToRenameResourceType(mergedResourceType);
     }
 
     /**

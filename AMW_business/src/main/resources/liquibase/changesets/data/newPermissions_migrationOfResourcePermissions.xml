@@ -9,6 +9,17 @@
             migrating existing CRUD_RESOURCE permissions to restrictions (ADD_APP => RESOURCE)
         </comment>
 
+        <!--NEW_RES("New resource button. You can find this button in APPLICATIONSERVER/NODE/NOT DEFAULT RESOURCETYPE."),-->
+        <!--ADD_APPSERVER("Add application server. Path: Apps"),-->
+        <!--ADD_APP("Add new application and/or application server. Path: Apps"),-->
+        <!--ADD_NODE("Add a new node to an application server. Path_1: Apps -> Edit(application server) -> Add Node; Path_2: Resources -> APPLICATIONSERVER -> Edit -> Add Node"),-->
+        <!--DELETE_RES("Delete Resource. In all resource type screen. Path -> Resources -> select one Resource Type."),-->
+        <!--DELETE_APPSERVER("Delete application server. Path: Apps"),-->
+        <!--DELETE_APP("Delete application. Path: Apps"),-->
+        <!--EDIT_RES("With this permission you can see the edit link"), > READ-->
+        <!--EDIT_APP("Edit application. Path: Apps"), > READ-->
+        <!--EDIT_APP_SERVER("Edit application server. Path: Apps"), > READ-->
+
         <!-- APPSERVER -->
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+450) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'CREATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'ADD_APPSERVER' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+450) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'EDIT_APP_SERVER' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>

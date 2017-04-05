@@ -13,9 +13,16 @@
         <!--EDIT_RES_TYPE("Edit resource type. You can find this panel in Resources screen. All Resource Type have this button. Path -> Resources"); // > READ-->
         <!--DELETE_RESTYPE("Delete Resource Type. In all 'NOT DEFAULT RESOURCE TYPE'. Path -> Resources -> select a 'NOT DEFAULT RESOURCE TYPE'"),-->
 
+        <!--SAVE_ALL_CHANGES("Permission to persist all properties and the name of any resource or resource type. WARNING: DON'T CHANGE THIS PERMISSION"),-->
+
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+700) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'CREATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'NEW_RESTYPE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+700) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'EDIT_RES_TYPE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, resourceTypePermission, action, v) SELECT (TAMW_permission.id-TAMW_role.id+700) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'NON_DEFAULT_ONLY' ,'DELETE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'DELETE_RESTYPE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+
+        <!-- RESOURCETYPE -->
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+700) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'UPDATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'SAVE_ALL_CHANGES' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <!-- RESOURCE -->
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+705) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'UPDATE', 1 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'SAVE_ALL_CHANGES' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
 
         <update tableName="SAMW_SEQUENCES">
             <column name="NEXT_VAL" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
@@ -24,7 +31,13 @@
 
         <update tableName="TAMW_restriction">
             <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'NEW_RESTYPE')" />
-            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'EDIT_RES_TYPE' or value = 'DELETE_RESTYPE')</where>
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'EDIT_RES_TYPE' or value = 'DELETE_RESTYPE' or value = 'SAVE_ALL_CHANGES') AND v = 0</where>
+        </update>
+
+        <update tableName="TAMW_restriction">
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'RESOURCE')" />
+            <column name="v" type="INTEGER" value="0" />
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'SAVE_ALL_CHANGES') AND v = 1</where>
         </update>
 
         <update tableName="TAMW_permission">
@@ -33,11 +46,11 @@
         </update>
 
         <delete tableName="TAMW_role_permission">
-            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE value = 'RESOURCETYPE' OR value = 'EDIT_RES_TYPE' OR value = 'DELETE_RESTYPE')</where>
+            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE value = 'RESOURCETYPE' OR value = 'EDIT_RES_TYPE' OR value = 'DELETE_RESTYPE' or value = 'SAVE_ALL_CHANGES')</where>
         </delete>
 
         <delete tableName="TAMW_permission">
-            <where>value = 'EDIT_RES_TYPE' OR value = 'DELETE_RESTYPE'</where>
+            <where>value = 'EDIT_RES_TYPE' OR value = 'DELETE_RESTYPE' or value = 'SAVE_ALL_CHANGES'</where>
         </delete>
 
         <rollback></rollback>
