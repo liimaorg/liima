@@ -27,6 +27,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupReposi
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
@@ -39,6 +40,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
@@ -65,6 +67,8 @@ public class PermissionBoundaryTest {
     ResourceGroupRepository resourceGroupRepository;
     @Mock
     PermissionService permissionService;
+    @Mock
+    EntityManager entityManager;
 
     @Before
     public void setup() {
@@ -81,6 +85,8 @@ public class PermissionBoundaryTest {
         permissionBoundary.resourceGroupRepository = resourceGroupRepository;
         permissionService = Mockito.mock(PermissionService.class);
         permissionBoundary.permissionService = permissionService;
+        entityManager = Mockito.mock(EntityManager.class);
+        permissionBoundary.entityManager = entityManager;
     }
 
     @Test(expected=AMWException.class)
@@ -409,6 +415,38 @@ public class PermissionBoundaryTest {
         permissionBoundary.getAllPermissions();
         // then
         verify(permissionService, times(1)).getPermissions();
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceMethodsWithCorrectParametersForResourceType() {
+        // given
+        ResourceTypeEntity type = new ResourceTypeEntity();
+        ContextEntity context = new ContextEntity();
+        when(entityManager.find(type.getClass(), 21)).thenReturn(type);
+        when(contextLocator.getContextById(23)).thenReturn(context);
+        // when
+        permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(21, 23, true);
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, type);
+        verify(permissionService, times(1)).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceMethodWithCorrectParametersForResource() {
+        // given
+        ResourceEntity resource = new ResourceEntityBuilder().build();
+        ResourceGroupEntity rg = new ResourceGroupEntity();
+        ResourceTypeEntity type = new ResourceTypeEntity();
+        resource.setResourceGroup(rg);
+        resource.setResourceType(type);
+        ContextEntity context = new ContextEntity();
+        when(entityManager.find(resource.getClass(), 21)).thenReturn(resource);
+        when(contextLocator.getContextById(23)).thenReturn(context);
+        // when
+        permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(21, context, false);
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, context, Action.UPDATE, rg, null);
+        verify(permissionService, times(1)).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
 }

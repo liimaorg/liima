@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.security.control;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -37,6 +38,12 @@ public class PermissionRepository {
 
 	private static boolean reloadDeployableRoleList;
 	private static boolean reloadRolesAndPermissionsList;
+
+	@Schedule(hour = "*", minute = "*/20", persistent = false)
+	public void forceReloadingOfLists() {
+		reloadDeployableRoleList = true;
+		reloadRolesAndPermissionsList = true;
+	}
 
 	/**
 	 * Returns Roles which are allowed to deploy
