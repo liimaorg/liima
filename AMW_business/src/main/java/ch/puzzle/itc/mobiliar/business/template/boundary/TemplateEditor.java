@@ -169,14 +169,14 @@ public class TemplateEditor {
 	   saveTemplate(template,  entityManager.find(ResourceTypeEntity.class, resourceTypeId));
     }
 
-	public boolean hasPermissionToModifyResourceTypeTemplate(Integer resourceTypeId, ContextEntity context, boolean testingMode) {
+	public boolean hasPermissionToModifyResourceTypeTemplate(Integer resourceTypeId, boolean testingMode) {
 		ResourceTypeEntity type = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
-		return permissions.hasPermissionToModifyResourceTypeTemplate(type, context, testingMode);
+		return permissions.hasPermissionToModifyResourceTypeTemplate(type, testingMode);
 	}
 
-	public boolean hasPermissionToModifyResourceTemplate(Integer resourceId, ContextEntity context, boolean testingMode) {
+	public boolean hasPermissionToModifyResourceTemplate(Integer resourceId, boolean testingMode) {
 		ResourceEntity res = entityManager.find(ResourceEntity.class, resourceId);
-		return permissions.hasPermissionToModifyResourceTemplate(res, context, testingMode);
+		return permissions.hasPermissionToModifyResourceTemplate(res, testingMode);
 	}
 
 

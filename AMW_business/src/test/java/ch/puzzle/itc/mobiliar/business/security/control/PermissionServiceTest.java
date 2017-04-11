@@ -447,7 +447,7 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         //When
-        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, global, true);
+        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, true);
 
         //Then
         Assert.assertTrue(result);
@@ -466,7 +466,7 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         //When
-        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, global, true);
+        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, true);
 
         //Then
         Assert.assertFalse(result);
@@ -485,7 +485,7 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         //When
-        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, global, false);
+        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, false);
 
         //Then
         Assert.assertTrue(result);
@@ -504,7 +504,7 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, global, false);
+		boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, false);
 
 		//Then
 		Assert.assertTrue(result);
@@ -524,7 +524,7 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         //When
-        boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(app, global, false);
+        boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(app, false);
 
         //Then
         Assert.assertTrue(result);
@@ -544,7 +544,7 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(app, global, false);
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(app, false);
 
 		//Then
 		Assert.assertTrue(result);
@@ -563,7 +563,7 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         //When
-        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, global, false);
+        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, false);
 
         //Then
         Assert.assertFalse(result);
@@ -842,7 +842,7 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, global, true);
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, true);
 
 		//Then
 		Assert.assertTrue(result);
@@ -861,7 +861,7 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, global, true);
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, true);
 
 		//Then
 		Assert.assertFalse(result);
@@ -882,7 +882,7 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, global, false);
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, false);
 
 		//Then
 		Assert.assertTrue(result);
@@ -902,7 +902,7 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(app, global, false);
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(app, false);
 
 		//Then
 		Assert.assertTrue(result);
@@ -921,7 +921,7 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, global, false);
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, false);
 
 		//Then
 		Assert.assertFalse(result);

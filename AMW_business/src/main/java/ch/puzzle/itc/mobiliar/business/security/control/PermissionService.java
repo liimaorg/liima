@@ -498,10 +498,10 @@ public class PermissionService implements Serializable {
      * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToModifyResourceTemplate(ResourceEntity resource, ContextEntity context, boolean isTestingMode) {
-        // ok if user has update permission on the Resource
-        if (hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource.getResourceGroup(), null) ||
-                hasPermission(Permission.TEMPLATE_RESOURCE, context, Action.UPDATE, resource.getResourceGroup(), null)) {
+    public boolean hasPermissionToModifyResourceTemplate(ResourceEntity resource, boolean isTestingMode) {
+        // ok if user has update permission on the Resource, context is always global, so we set it to null to omit the check
+        if (hasPermission(Permission.RESOURCE, null, Action.UPDATE, resource.getResourceGroup(), null) ||
+                hasPermission(Permission.TEMPLATE_RESOURCE, null, Action.UPDATE, resource.getResourceGroup(), null)) {
             return true;
         }
         return resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
@@ -514,10 +514,10 @@ public class PermissionService implements Serializable {
      * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToModifyResourceTypeTemplate(ResourceTypeEntity resourceType, ContextEntity context, boolean isTestingMode) {
-        // ok if user has update permission on the ResourceType
-        if (hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType) ||
-                hasPermission(Permission.TEMPLATE_RESOURCETYPE, context, Action.UPDATE, null, resourceType)) {
+    public boolean hasPermissionToModifyResourceTypeTemplate(ResourceTypeEntity resourceType, boolean isTestingMode) {
+        // ok if user has update permission on the ResourceType, context is always global, so we set it to null to omit the check
+        if (hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceType) ||
+                hasPermission(Permission.TEMPLATE_RESOURCETYPE, null, Action.UPDATE, null, resourceType)) {
             return true;
         }
         return resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);

@@ -223,25 +223,26 @@ public class TemplateEditDataProvider implements Serializable {
 
 	private boolean canAdd() {
 		return context.getIsGlobal()
-				&& permission.hasPermissionToTemplateModify(resourceOrType, context.getCurrentContext(),
-				userSettings.isTestingMode());
+				&& permission.hasPermissionToTemplateModify(resourceOrType, userSettings.isTestingMode());
 	}
 
 	private boolean canDelete(ResourceTypeEntity resourceType) {
+		// context has to be global
 		return context.getIsGlobal()
 				&& (canAddEditOrDeleteShakedownTest() || (isEditResource() ? permission
-						.hasPermission(Permission.TEMPLATE_RESOURCE, context.getCurrentContext(), Action.DELETE,
+						.hasPermission(Permission.TEMPLATE_RESOURCE, null, Action.DELETE,
 								(ResourceEntity) resourceOrType, null) : permission
-						.hasPermission(Permission.TEMPLATE_RESOURCETYPE, context.getCurrentContext(), Action.DELETE,
+						.hasPermission(Permission.TEMPLATE_RESOURCETYPE, null, Action.DELETE,
 								null, resourceType)));
 	}
 
 	private boolean canEdit() {
+		// context has to be global
 		return context.getIsGlobal()
 				&& (canAddEditOrDeleteShakedownTest() || (isEditResource() ? permission
-						.hasPermission(Permission.TEMPLATE_RESOURCE, context.getCurrentContext(), Action.UPDATE,
+						.hasPermission(Permission.TEMPLATE_RESOURCE, null, Action.UPDATE,
 								(ResourceEntity) resourceOrType, null) : permission
-						.hasPermission(Permission.TEMPLATE_RESOURCETYPE, context.getCurrentContext(), Action.UPDATE,
+						.hasPermission(Permission.TEMPLATE_RESOURCETYPE, null, Action.UPDATE,
 								null, (ResourceTypeEntity) resourceOrType)));
 	}
 

@@ -93,4 +93,7 @@ public class RestrictionEntity {
     @JoinColumn(name = "resourcegroup_id")
     private ResourceGroupEntity resourceGroup;
 
+    public RestrictionEntity() {
+        resourceTypePermission = ResourceTypePermission.ANY;
+    }
 }
