@@ -447,7 +447,7 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         //When
-        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, true);
+        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, global, true);
 
         //Then
         Assert.assertTrue(result);
@@ -466,14 +466,14 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         //When
-        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, true);
+        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, global, true);
 
         //Then
         Assert.assertFalse(result);
     }
 
     @Test
-    public void hasPermissionToTemplateModifyWhenUserIsConfigAdminAndIsNotTestingMode() {
+    public void hasPermissionToTemplateModifyWhenUserHasPermissionToUpdateResourceAndIsResourceIsNotTestingMode() {
         //Given
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
@@ -485,14 +485,33 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         //When
-        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, false);
+        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, global, false);
 
         //Then
         Assert.assertTrue(result);
     }
 
+	@Test
+	public void hasPermissionToTemplateModifyWhenUserHasPermissionToUpdateTemplateResourceAndIsResourceIsNotTestingMode() {
+		//Given
+		ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
+
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.UPDATE);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.TEMPLATE_RESOURCE, res)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		//When
+		boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, global, false);
+
+		//Then
+		Assert.assertTrue(result);
+	}
+
     @Test
-    public void hasPermissionToTemplateModifyWhenUserIsAppDeveloperAndIsApplicationResTypeAndIsNotTestingMode() {
+    public void hasPermissionToTemplateModifyWhenUserHasPermissionToUpdateResourceTypeAndIsApplicationResTypeAndIsNotTestingMode() {
         //Given
 		ResourceTypeEntity app = ResourceTypeEntityBuilder.APPLICATION_TYPE;
 
@@ -505,11 +524,31 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         //When
-        boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(app, false);
+        boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(app, global, false);
 
         //Then
         Assert.assertTrue(result);
     }
+
+	@Test
+	public void hasPermissionToTemplateModifyWhenUserHasPermissionToUpdateTemplateResourceTypeAndIsApplicationResTypeAndIsNotTestingMode() {
+		//Given
+		ResourceTypeEntity app = ResourceTypeEntityBuilder.APPLICATION_TYPE;
+
+		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.UPDATE);
+		res.setResourceTypePermission(ResourceTypePermission.ANY);
+		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.TEMPLATE_RESOURCETYPE, res)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		//When
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(app, global, false);
+
+		//Then
+		Assert.assertTrue(result);
+	}
 
     @Test
     public void hasPermissionToTemplateModifyWhenUserIsShakedownAdminAndIsNotTestingMode() {
@@ -524,7 +563,7 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         //When
-        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, false);
+        boolean result = permissionService.hasPermissionToModifyResourceTemplate(as, global, false);
 
         //Then
         Assert.assertFalse(result);
@@ -803,7 +842,7 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, true);
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, global, true);
 
 		//Then
 		Assert.assertTrue(result);
@@ -822,7 +861,7 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, true);
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, global, true);
 
 		//Then
 		Assert.assertFalse(result);
@@ -839,11 +878,11 @@ public class PermissionServiceTest {
 		res.setAction(Action.ALL);
 		res.setResourceTypePermission(ResourceTypePermission.ANY);
 		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCETYPE, res),
-				new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_RESTYPE_TEMPLATE, res)));
+				new RestrictionDTOBuilder().mockRestrictionDTO(Permission.TEMPLATE_RESOURCETYPE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, false);
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, global, false);
 
 		//Then
 		Assert.assertTrue(result);
@@ -863,7 +902,7 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(app, false);
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(app, global, false);
 
 		//Then
 		Assert.assertTrue(result);
@@ -882,7 +921,7 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		//When
-		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, false);
+		boolean result = permissionService.hasPermissionToModifyResourceTypeTemplate(as, global, false);
 
 		//Then
 		Assert.assertFalse(result);

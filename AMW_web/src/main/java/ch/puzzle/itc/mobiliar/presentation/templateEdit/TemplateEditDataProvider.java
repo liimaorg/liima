@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.presentation.templateEdit;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -131,8 +132,8 @@ public class TemplateEditDataProvider implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		canListInstanceTemplates = permission.hasPermission(Permission.INSTANCE_TEMP_LIST);
-		canListResTypeTemplates = permission.hasPermission(Permission.RES_RESTYPE_TEMPLATE_LIST);
+		canListInstanceTemplates = permission.hasPermission(Permission.TEMPLATE_RESOURCE, Action.READ);
+		canListResTypeTemplates = permission.hasPermission(Permission.TEMPLATE_RESOURCETYPE, Action.READ);
 		canEdit = false;
 		canAdd = false;
 		canDelete = false;
@@ -222,22 +223,26 @@ public class TemplateEditDataProvider implements Serializable {
 
 	private boolean canAdd() {
 		return context.getIsGlobal()
-				&& permission.hasPermissionToTemplateModify(resourceOrType,
+				&& permission.hasPermissionToTemplateModify(resourceOrType, context.getCurrentContext(),
 				userSettings.isTestingMode());
 	}
 
 	private boolean canDelete(ResourceTypeEntity resourceType) {
 		return context.getIsGlobal()
 				&& (canAddEditOrDeleteShakedownTest() || (isEditResource() ? permission
-						.hasPermission(Permission.DELETE_RES_TEMPLATE) : permission
-						.hasPermission(Permission.DELETE_RESTYPE_TEMPLATE)));
+						.hasPermission(Permission.TEMPLATE_RESOURCE, context.getCurrentContext(), Action.DELETE,
+								(ResourceEntity) resourceOrType, null) : permission
+						.hasPermission(Permission.TEMPLATE_RESOURCETYPE, context.getCurrentContext(), Action.DELETE,
+								null, resourceType)));
 	}
 
 	private boolean canEdit() {
 		return context.getIsGlobal()
 				&& (canAddEditOrDeleteShakedownTest() || (isEditResource() ? permission
-						.hasPermission(Permission.EDIT_RES_TEMP) : permission
-						.hasPermission(Permission.EDIT_RESTYPE_TEMPLATE)));
+						.hasPermission(Permission.TEMPLATE_RESOURCE, context.getCurrentContext(), Action.UPDATE,
+								(ResourceEntity) resourceOrType, null) : permission
+						.hasPermission(Permission.TEMPLATE_RESOURCETYPE, context.getCurrentContext(), Action.UPDATE,
+								null, (ResourceTypeEntity) resourceOrType)));
 	}
 
 	private boolean canAddEditOrDeleteShakedownTest() {

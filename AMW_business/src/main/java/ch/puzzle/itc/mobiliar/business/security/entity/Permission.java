@@ -27,10 +27,6 @@ public enum Permission {
     //RESOURCE PERMISSIONS
     RENAME_INSTANCE_DEFAULT_RESOURCE("With this permission it is possible to rename all instances of default resource types. This permission has only effect if it is not combined with EDIT_RES_OR_RESTYPE_NAME since it is more restrictive. WARNING: DON'T CHANGE THIS PERMISSION"),
 
-    INSTANCE_TEMP_LIST("Instance template list. You can find this list in all Resource and Resource Type screen."),
-    DELETE_RES_TEMPLATE("Delete instance template. You can find this link in all Templates/Relationship Templates panel in all Resource/Resource screen."),
-    EDIT_RES_TEMP("Permission to edit the template of a resource"),
-    SAVE_RES_TEMPLATE("WARNING: DON'T CHANGE THIS PERMISSION"),
     TAG_CURRENT_STATE("Tag current state. You can find this select one menu in application instance screen and in all not default resource screen. "),
 
     EXCLUDE_APP_FROM_NODE("Exclude application from node. You find can this checkbox in all instances of applications server"),
@@ -61,10 +57,6 @@ public enum Permission {
 
     REL_RESTYPE_PANEL_LIST("Allows to show the related resource types"),
 
-    SAVE_RESTYPE_TEMPLATE("Permission to persist a template for a resource type. WARNING: DON'T CHANGE THIS PERMISSION"),
-    EDIT_RESTYPE_TEMPLATE("Edit resource type tempalte. This is the List of Resource Type Templates in Templates panel. You can find this panel in all Resource/ResourceType screen"),
-    DELETE_RESTYPE_TEMPLATE("Delete resource type template. You can find this link in all Templates/Relationship Templates panel in all Resource/ResourceType screen"),
-
     //RESOURCE AND RESOURCE TYPE PERMISSIONS
     EDIT_PROPERTIES_COMMENT_POPUP("Edit comments of property."),
     EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen."),
@@ -73,8 +65,10 @@ public enum Permission {
     EDIT_PROP_LIST_OF_INST_APP("Edit properties in resource / resource type screen."),
 
     PROP_LIST("This permission allows to list the properties in the edit screen."),
+
+    // NOT USED ANYMORE (but assigned to app_developer)
     CREATE_TEMPLATE("With this permission it can create a new template"),
-    RES_RESTYPE_TEMPLATE_LIST("Allows to list the templates of resources and resource types"),
+
     DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value"),
 
     SAVE_PROPERTY("With this permission it can modify the property"),
@@ -175,12 +169,25 @@ public enum Permission {
     // ADD_NEW_RES_OF_DEFAULT_RESTYPE("New application or/and application server. Path: Resources -> select APPLICATION tab"),
     // EDIT_NOT_DEFAULT_RES_OF_RESTYPE("With this permission the config admin can rename the NOT DEFAULT RESOURCE AND RESOURCE TYPE. The DEAFULT RESOURCE TYPE are: APPLICATION, APPLICATION SERVER and NODE"),
     // DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE("WARNING: DON'T CHANGE THIS PERMISSION"),
-    RESOURCETYPE("The right to create, read, update or delete resourcetypes");
+    RESOURCETYPE("The right to create, read, update or delete resourcetypes"),
     // NEW_RESTYPE("New resource type button. Path: Resources"),
     // EDIT_RES_TYPE("Edit resource type. You can find this panel in Resources screen. All Resource Type have this button. Path -> Resources"); > READ
     // DELETE_RESTYPE("Delete Resource Type. In all 'NOT DEFAULT RESOURCE TYPE'. Path -> Resources -> select a 'NOT DEFAULT RESOURCE TYPE'"),
     // SAVE_ALL_CHANGES("Permission to persist all properties and the name of any resource or resource type. WARNING: DON'T CHANGE THIS PERMISSION"),
     // SAVE_ALL_PROPERTIES("Permission to persist all properties of a resource or resource type excluding its name. WARNING: DON'T CHANGE THIS PERMISSION"),
+    TEMPLATE_RESOURCE("The right to create, read, update or delete templates of resources"),
+    // INSTANCE_TEMP_LIST("Instance template list. You can find this list in all Resource and Resource Type screen."), > READ
+    // DELETE_RES_TEMPLATE("Delete instance template. You can find this link in all Templates/Relationship Templates panel in all Resource/Resource screen."), > DELETE
+    // EDIT_RES_TEMP("Permission to edit the template of a resource"), > UPDATE
+    // SAVE_RES_TEMPLATE("WARNING: DON'T CHANGE THIS PERMISSION"), > CREATE & UPDATE
+    TEMPLATE_RESOURCETYPE("The right to create, read, update or delete templates of resourcestypes");
+    // RES_RESTYPE_TEMPLATE_LIST("Allows to list the templates of resources and resource types"), > READ
+    // DELETE_RESTYPE_TEMPLATE("Delete resource type template. You can find this link in all Templates/Relationship Templates panel in all Resource/ResourceType screen"), > DELETE
+    // EDIT_RESTYPE_TEMPLATE("Edit resource type tempalte. This is the List of Resource Type Templates in Templates panel. You can find this panel in all Resource/ResourceType screen"), UPDATE
+    // SAVE_RESTYPE_TEMPLATE("Permission to persist a template for a resource type. WARNING: DON'T CHANGE THIS PERMISSION"), > CREATE & UPDATE
+
+
+
 
     // CANDIDATES (assigned only to config_admin)
     // EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen."),

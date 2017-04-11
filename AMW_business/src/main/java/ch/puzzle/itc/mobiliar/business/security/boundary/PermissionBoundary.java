@@ -254,14 +254,14 @@ public class PermissionBoundary implements Serializable {
      * modify(add/edit/delete) all testing templates config_admin: can modify(add/edit/delete) all templates
      * app_developer: can modify(add/edit/delete) only templates in instances of APPLICATION
      */
-    public boolean hasPermissionToTemplateModify(Identifiable resourceOrResourceTypeEntity, boolean isTestingMode) {
+    public boolean hasPermissionToTemplateModify(Identifiable resourceOrResourceTypeEntity, ContextEntity context, boolean isTestingMode) {
         if (resourceOrResourceTypeEntity != null) {
             if (resourceOrResourceTypeEntity instanceof ResourceEntity) {
                 ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, resourceOrResourceTypeEntity.getId());
-                return permissionService.hasPermissionToModifyResourceTemplate(mergedResource, isTestingMode);
+                return permissionService.hasPermissionToModifyResourceTemplate(mergedResource, context, isTestingMode);
             } else if (resourceOrResourceTypeEntity instanceof ResourceTypeEntity) {
                 ResourceTypeEntity mergedResourceType = entityManager.find(ResourceTypeEntity.class, resourceOrResourceTypeEntity.getId());
-                return permissionService.hasPermissionToModifyResourceTypeTemplate(mergedResourceType, isTestingMode);
+                return permissionService.hasPermissionToModifyResourceTypeTemplate(mergedResourceType, context, isTestingMode);
             }
         }
         return false;

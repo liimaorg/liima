@@ -307,9 +307,11 @@ public class EditTemplateView implements Serializable {
 
 	public boolean canModifyTemplates() {
 		if (isEditResource()) {
-			return templateEditor.hasPermissionToModifyResourceTemplate(resourceId, settings.isTestingMode());
+			return templateEditor.hasPermissionToModifyResourceTemplate(resourceId, sessionContext.getCurrentContext(),
+					settings.isTestingMode());
 		} else {
-			return templateEditor.hasPermissionToModifyResourceTypeTemplate(resourceTypeId, settings.isTestingMode());
+			return templateEditor.hasPermissionToModifyResourceTypeTemplate(resourceTypeId, sessionContext.getCurrentContext(),
+					settings.isTestingMode());
 		}
 	}
 
