@@ -280,7 +280,8 @@ public class PermissionBoundary implements Serializable {
             if (resourceOrResourceTypeEntity instanceof ResourceEntity) {
                 ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, resourceOrResourceTypeEntity.getId());
                 return permissionService.hasPermissionToModifyResourceTemplate(mergedResource, isTestingMode);
-            } else if (resourceOrResourceTypeEntity instanceof ResourceTypeEntity) {
+            }
+            if (resourceOrResourceTypeEntity instanceof ResourceTypeEntity) {
                 ResourceTypeEntity mergedResourceType = entityManager.find(ResourceTypeEntity.class, resourceOrResourceTypeEntity.getId());
                 return permissionService.hasPermissionToModifyResourceTypeTemplate(mergedResourceType, isTestingMode);
             }
@@ -292,10 +293,9 @@ public class PermissionBoundary implements Serializable {
         if (resourceEntityId != null) {
             ResourceEntity resource = resourceRepository.find(resourceEntityId);
             return permissionService.hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, resource.getResourceGroup(), null);
-        } else {
-            ResourceTypeEntity type = resourceTypeRepository.find(resourceTypeEntityId);
-            return permissionService.hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, null, type);
         }
+        ResourceTypeEntity type = resourceTypeRepository.find(resourceTypeEntityId);
+        return permissionService.hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, null, type);
     }
 
     public boolean canCreateResourceInstance(DefaultResourceTypeDefinition type) {
@@ -352,9 +352,11 @@ public class PermissionBoundary implements Serializable {
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.CREATE)
     public Integer createRestriction(String roleName, String permissionName, Integer resourceGroupId, String resourceTypeName,
-                                     String contextName, Action action) throws AMWException {
+                                     ResourceTypePermission resourceTypePermission, String contextName, Action action)
+            throws AMWException {
         RestrictionEntity restriction = new RestrictionEntity();
-        validateRestriction(roleName, permissionName, resourceGroupId, resourceTypeName, contextName, action, restriction);
+        validateRestriction(roleName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
+                contextName, action, restriction);
         final Integer id = restrictionRepository.create(restriction);
         permissionRepository.forceReloadingOfLists();
         return id;
@@ -372,7 +374,8 @@ public class PermissionBoundary implements Serializable {
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.UPDATE)
     public void updateRestriction(Integer id, String roleName, String permissionName, Integer resourceId,
-                                  String resourceTypeName,String contextName, Action action) throws AMWException {
+                                  String resourceTypeName, ResourceTypePermission resourceTypePermission,
+                                  String contextName, Action action) throws AMWException {
         if (id == null) {
             throw new AMWException("Id must not be null");
         }
@@ -380,7 +383,8 @@ public class PermissionBoundary implements Serializable {
         if (restriction == null) {
             throw new AMWException("Restriction not found");
         }
-        validateRestriction(roleName, permissionName, resourceId, resourceTypeName, contextName, action, restriction);
+        validateRestriction(roleName, permissionName, resourceId, resourceTypeName, resourceTypePermission,
+                contextName, action, restriction);
         restrictionRepository.merge(restriction);
         permissionRepository.forceReloadingOfLists();
     }
@@ -406,7 +410,8 @@ public class PermissionBoundary implements Serializable {
     }
 
     private void validateRestriction(String roleName, String permissionName, Integer resourceGroupId, String resourceTypeName,
-                                     String contextName, Action action, RestrictionEntity restriction) throws AMWException {
+                                     ResourceTypePermission resourceTypePermission, String contextName, Action action,
+                                     RestrictionEntity restriction) throws AMWException {
         if (roleName != null) {
             try {
                 restriction.setRole(permissionRepository.getRoleByName(roleName));
@@ -441,6 +446,10 @@ public class PermissionBoundary implements Serializable {
                 throw new AMWException("ResourceType " + resourceTypeName +  " not found.");
             }
             restriction.setResourceType(resourceType);
+        }
+
+        if (resourceTypePermission != null) {
+            restriction.setResourceTypePermission(resourceTypePermission);
         }
 
         if (contextName != null) {

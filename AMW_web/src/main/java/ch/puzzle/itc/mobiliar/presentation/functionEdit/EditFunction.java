@@ -79,7 +79,6 @@ public class EditFunction implements Serializable {
     @Setter
     private Integer functionId;
 
-    @Getter
     boolean canShowInstanceFunctions;
     @Getter
     boolean canShowSuperTypeFunctions;
@@ -237,6 +236,10 @@ public class EditFunction implements Serializable {
 
     public boolean isCanDelete() {
         return currentContext.getIsGlobal() && canManageFunctions();
+    }
+
+    public boolean isCanShowInstanceFunctions() {
+        return currentContext.getIsGlobal() && canShowInstanceFunctions;
     }
 
     private boolean canManageFunctions() {
