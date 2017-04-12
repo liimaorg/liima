@@ -92,9 +92,6 @@ public enum Permission {
     EXECUTE_SHAKE_TEST_ORDER(""),
 
     // FUNCTIONS
-    MANAGE_AMW_FUNCTIONS("Create, edit and delete all AmwFunctions on Resource Types and Resource Instances"),
-    MANAGE_AMW_APP_INSTANCE_FUNCTIONS("Create, edit and delete all AmwFunctions on App Instances"),
-    VIEW_AMW_FUNCTIONS("Can see AmwFunctions"),
     MANAGE_GLOBAL_FUNCTIONS("Create, edit and delete GlobalFunctions"),
     VIEW_GLOBAL_FUNCTIONS("Can see GlobalFunctions"),
 
@@ -180,14 +177,15 @@ public enum Permission {
     // DELETE_RES_TEMPLATE("Delete instance template. You can find this link in all Templates/Relationship Templates panel in all Resource/Resource screen."), > DELETE
     // EDIT_RES_TEMP("Permission to edit the template of a resource"), > UPDATE
     // SAVE_RES_TEMPLATE("WARNING: DON'T CHANGE THIS PERMISSION"), > CREATE & UPDATE
-    TEMPLATE_RESOURCETYPE("The right to create, read, update or delete templates of resourcestypes");
+    TEMPLATE_RESOURCETYPE("The right to create, read, update or delete templates of resourcestypes"),
     // RES_RESTYPE_TEMPLATE_LIST("Allows to list the templates of resources and resource types"), > READ
     // DELETE_RESTYPE_TEMPLATE("Delete resource type template. You can find this link in all Templates/Relationship Templates panel in all Resource/ResourceType screen"), > DELETE
     // EDIT_RESTYPE_TEMPLATE("Edit resource type tempalte. This is the List of Resource Type Templates in Templates panel. You can find this panel in all Resource/ResourceType screen"), UPDATE
     // SAVE_RESTYPE_TEMPLATE("Permission to persist a template for a resource type. WARNING: DON'T CHANGE THIS PERMISSION"), > CREATE & UPDATE
-
-
-
+    AMWFUNCTION("The right to create, read, update or delete AmwFunctions");
+    // MANAGE_AMW_FUNCTIONS("Create, edit and delete all AmwFunctions on Resource Types and Resource Instances"),
+    // MANAGE_AMW_APP_INSTANCE_FUNCTIONS("Create, edit and delete all AmwFunctions on App Instances"),
+    // VIEW_AMW_FUNCTIONS("Can see AmwFunctions"),
 
     // CANDIDATES (assigned only to config_admin)
     // EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen."),

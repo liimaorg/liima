@@ -196,8 +196,26 @@ public class PermissionService implements Serializable {
      * @param permission
      * @param extraInfo
      */
-    public void checkPermissionActionAndFireException(Permission permission, Action action, String extraInfo) {
+    public void checkPermissionAndFireException(Permission permission, Action action, String extraInfo) {
         if (!hasPermission(permission, action)) {
+            throwNotAuthorizedException(extraInfo);
+        }
+    }
+
+    /**
+     * Checks if given permission is available. If not a exception is created with error message containing extraInfo part.
+     *
+     * @param permission
+     * @param context
+     * @param action
+     * @param resourceGroup
+     * @param resourceType
+     * @param extraInfo
+     */
+    public void checkPermissionAndFireException(Permission permission, ContextEntity context, Action action,
+                                                ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType,
+                                                String extraInfo) {
+        if (!hasPermission(permission, context, action, resourceGroup, resourceType)) {
             throwNotAuthorizedException(extraInfo);
         }
     }

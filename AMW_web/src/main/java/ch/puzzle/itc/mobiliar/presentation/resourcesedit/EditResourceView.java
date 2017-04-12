@@ -156,7 +156,7 @@ public class EditResourceView implements Serializable {
      * To be called by JSF (by viewParameter)
      */
     public void setResourceIdFromParam(Integer resourceIdFromParam) {
-        permissionBoundary.checkPermissionActionAndFireException(Permission.RESOURCE, Action.READ, "edit resources");
+        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "edit resources");
         this.resourceIdFromParam = resourceIdFromParam;
         if (resource == null || !resource.getId().equals(resourceIdFromParam)) {
             resource = resourceLocator.getResourceWithGroupAndRelatedResources(resourceIdFromParam);
@@ -181,7 +181,7 @@ public class EditResourceView implements Serializable {
      * @param resourceTypeIdFromParam
      */
     public void setResourceTypeIdFromParam(Integer resourceTypeIdFromParam) {
-        permissionBoundary.checkPermissionActionAndFireException(Permission.RESOURCETYPE, Action.READ,
+        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, Action.READ,
                 "edit resource types");
         this.resourceTypeIdFromParam = resourceTypeIdFromParam;
         // Only execute if resource has not been set...
@@ -299,8 +299,14 @@ public class EditResourceView implements Serializable {
 
     public boolean hasAddPropertyPermission() {
         if (isEditResource()) {
+            if (contextIdViewParam == null) {
+                return permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceIdFromParam, isTesting(), sessionContext.getCurrentContext().getId());
+            }
             return permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceIdFromParam, isTesting(), contextIdViewParam);
         } else {
+            if (contextIdViewParam == null) {
+                return permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeIdFromParam, sessionContext.getCurrentContext().getId(), isTesting());
+            }
             return permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeIdFromParam, contextIdViewParam, isTesting());
         }
     }

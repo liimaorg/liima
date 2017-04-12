@@ -83,5 +83,6 @@
     <include file="changesets/data/newPermissions_migrationOfDefaultResourcePermissions.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/newPermissions_migrationOfResourceTypePermissions.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/newPermissions_migrationOfTemplatePermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfAMWFunctionPermissions.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

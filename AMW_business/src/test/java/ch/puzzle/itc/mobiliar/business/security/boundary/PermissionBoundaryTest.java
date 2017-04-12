@@ -24,10 +24,10 @@ import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
@@ -66,6 +66,8 @@ public class PermissionBoundaryTest {
     @Mock
     ResourceGroupRepository resourceGroupRepository;
     @Mock
+    ResourceRepository resourceRepository;
+    @Mock
     PermissionService permissionService;
     @Mock
     EntityManager entityManager;
@@ -83,6 +85,8 @@ public class PermissionBoundaryTest {
         permissionBoundary.resourceTypeRepository = resourceTypeRepository;
         resourceGroupRepository = Mockito.mock(ResourceGroupRepository.class);
         permissionBoundary.resourceGroupRepository = resourceGroupRepository;
+        resourceRepository = Mockito.mock(ResourceRepository.class);
+        permissionBoundary.resourceRepository = resourceRepository;
         permissionService = Mockito.mock(PermissionService.class);
         permissionBoundary.permissionService = permissionService;
         entityManager = Mockito.mock(EntityManager.class);
@@ -445,6 +449,86 @@ public class PermissionBoundaryTest {
         // then
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, context, Action.UPDATE, rg, null);
         verify(permissionService, times(1)).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+    }
+
+    @Test
+    public void shouldDelegateCheckPermissionAndFireExceptionToPermissionServiceWithPermissionAndMessage() {
+        // given // when
+        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, "Message");
+        // then
+        verify(permissionService, times(1)).checkPermissionAndFireException(Permission.RESOURCE, "Message");
+    }
+
+    @Test
+    public void shouldDelegateCheckPermissionAndFireExceptionToPermissionServiceWithPermissionAndActionAndMessage() {
+        // given // when
+        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "Message");
+        // then
+        verify(permissionService, times(1)).checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "Message");
+    }
+
+    @Test
+    public void shouldDelegateHasPermissionToAddRelationToPermissionService() {
+        // given
+        ResourceEntity resource = new ResourceEntity();
+        resource.setId(7);
+        when(entityManager.find(ResourceEntity.class, 7)).thenReturn(resource);
+        // when
+        permissionBoundary.hasPermissionToAddRelation(resource, false);
+        // then
+        verify(permissionService, times(1)).hasPermissionToAddRelation(resource, false);
+    }
+
+    @Test
+    public void shouldInvokeTheRightMethodOfPermissionServiceToAskForResourceTemplateModifyPermission() {
+        // given
+        ResourceEntity resource = new ResourceEntity();
+        resource.setId(12);
+        when(entityManager.find(ResourceEntity.class, 12)).thenReturn(resource);
+        // when
+        permissionBoundary.hasPermissionToTemplateModify(resource, false);
+        // then
+        verify(permissionService, never()).hasPermissionToModifyResourceTypeTemplate((ResourceTypeEntity) anyObject(), anyBoolean());
+        verify(permissionService, times(1)).hasPermissionToModifyResourceTemplate(resource, false);
+    }
+
+    @Test
+    public void shouldInvokeTheRightMethodOfPermissionServiceToAskForResourceTypeTemplateModifyPermission() {
+        // given
+        ResourceTypeEntity type = new ResourceTypeEntity();
+        type.setId(23);
+        when(entityManager.find(ResourceTypeEntity.class, 23)).thenReturn(type);
+        // when
+        permissionBoundary.hasPermissionToTemplateModify(type, true);
+        // then
+        verify(permissionService, never()).hasPermissionToModifyResourceTemplate((ResourceEntity) anyObject(), anyBoolean());
+        verify(permissionService, times(1)).hasPermissionToModifyResourceTypeTemplate(type, true);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceWithRightParametersToAskForResourceTypeFunctionEditPermission() {
+        // given
+        ResourceTypeEntity type = new ResourceTypeEntity();
+        type.setId(23);
+        when(permissionBoundary.resourceTypeRepository.find(23)).thenReturn(type);
+        // when
+        permissionBoundary.canEditFunctionOfResourceOrResourceType(null, type.getId());
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, null, type);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceWithRightParametersToAskForResourceFunctionEditPermission() {
+        // given
+        ResourceGroupEntity rg = new ResourceGroupEntity();
+        ResourceEntity resource = new ResourceEntity();
+        resource.setId(12);
+        resource.setResourceGroup(rg);
+        when(permissionBoundary.resourceRepository.find(12)).thenReturn(resource);
+        // when
+        permissionBoundary.canEditFunctionOfResourceOrResourceType(resource.getId(), null);
+        // then
+        verify(permissionService, times(1)).hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, rg, null);
     }
 
 }

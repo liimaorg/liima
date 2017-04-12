@@ -131,11 +131,11 @@ public class TemplateEditor {
 		HasContexts<?> resourceRelation = null;
 		if (relationId != null) {
 			if (resourceEdit) {
-			     permissions.checkPermissionActionAndFireException(Permission.TEMPLATE_RESOURCE, Action.UPDATE, "save resource templates");
+			     permissions.checkPermissionAndFireException(Permission.TEMPLATE_RESOURCE, Action.UPDATE, "save resource templates");
 				resourceRelation = relationService.getResourceRelation(relationId);
 			}
 			else {
-			    permissions.checkPermissionActionAndFireException(Permission.TEMPLATE_RESOURCETYPE, Action.UPDATE, "save resource type templates");
+			    permissions.checkPermissionAndFireException(Permission.TEMPLATE_RESOURCETYPE, Action.UPDATE, "save resource type templates");
 			    resourceRelation = relationService.getResourceTypeRelation(relationId);
 			}
 		}

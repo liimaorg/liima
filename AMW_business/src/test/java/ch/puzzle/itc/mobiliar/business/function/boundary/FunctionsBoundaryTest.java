@@ -239,6 +239,7 @@ public class FunctionsBoundaryTest {
 
         // given
         functionA_ID_4.overwrite(functionA_ID_3);
+        functionA_ID_3.setResource(resource);
         assertTrue(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
         when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
 
@@ -258,6 +259,7 @@ public class FunctionsBoundaryTest {
 
         // given
         functionA_ID_4.overwrite(functionA_ID_3);
+        functionA_ID_3.setResource(resource);
         assertTrue(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
         when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
 
@@ -270,6 +272,7 @@ public class FunctionsBoundaryTest {
 
         // given
         functionA_ID_4.overwrite(functionA_ID_3);
+        functionA_ID_3.setResource(resource);
         assertTrue(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
         when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
 
@@ -278,7 +281,7 @@ public class FunctionsBoundaryTest {
             functionsBoundary.deleteFunction(functionA_ID_3.getId());
         } catch (ValidationException e){
             assertTrue(e.hasCausingObject());
-            assertEquals(functionA_ID_4, (AmwFunctionEntity)e.getCausingObject());
+            assertEquals(functionA_ID_4, e.getCausingObject());
         }
     }
 
@@ -286,25 +289,27 @@ public class FunctionsBoundaryTest {
     public void deleteFunctionWhenNotOverwrittenShouldDelegateDelete() throws ValidationException {
 
         // given
-        assertFalse(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
-        when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
+        AmwFunctionEntity resourceTypeFunction = new AmwFunctionEntityBuilder("resourceTypeFunction", 8).forResourceType(resourceType).build();
+        assertFalse(resourceTypeFunction.isOverwrittenBySubTypeOrResourceFunction());
+        when(functionRepositoryMock.find(8)).thenReturn(resourceTypeFunction);
 
         // when
-        functionsBoundary.deleteFunction(functionA_ID_3.getId());
+        functionsBoundary.deleteFunction(resourceTypeFunction.getId());
 
         // then
-        verify(functionServiceMock).deleteFunction(functionA_ID_3);
+        verify(functionServiceMock, times(1)).deleteFunction(resourceTypeFunction);
     }
 
     @Test
     public void deleteFunctionWhenNotOverwrittenShouldReturnTrue() throws ValidationException {
 
         // given
-        assertFalse(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
-        when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
+        AmwFunctionEntity resourceFunction = new AmwFunctionEntityBuilder("resourceFunction", 9).forResource(resource).build();
+        assertFalse(resourceFunction.isOverwrittenBySubTypeOrResourceFunction());
+        when(functionRepositoryMock.find(9)).thenReturn(resourceFunction);
 
         // when
-        functionsBoundary.deleteFunction(functionA_ID_3.getId());
+        functionsBoundary.deleteFunction(resourceFunction.getId());
 
         // then
         assertTrue("No exception thrown, thus function is deleted", true);
@@ -437,6 +442,9 @@ public class FunctionsBoundaryTest {
     @Test
     public void saveFunctionShouldDelegateToRepository() throws ValidationException, AMWException {
 
+        // given
+        functionA_ID_3.setResource(resource);
+
         // when
         functionsBoundary.saveFunction(functionA_ID_3);
 
@@ -450,6 +458,7 @@ public class FunctionsBoundaryTest {
         String functionContent = "freemarkerContent";
         AmwFunctionEntity function = createFunction("functionName", 1);
         function.setImplementation(functionContent);
+        function.setResourceType(resourceType);
 
         // when
         functionsBoundary.saveFunction(function);
@@ -464,6 +473,7 @@ public class FunctionsBoundaryTest {
         String functionContent = "freemarkerContent";
         AmwFunctionEntity function = createFunction("functionName", 1);
         function.setImplementation(functionContent);
+        function.setResource(resource);
         doThrow(new AMWException("not valid freemarker syntax")).when(freemarkerValidatorMock).validateFreemarkerSyntax(anyString());
 
         // when
@@ -485,7 +495,6 @@ public class FunctionsBoundaryTest {
     public void overwriteResourceFunctionWhenResourceForIdNotFoundShouldThrowException() throws ValidationException, AMWException {
 
         // given
-
         when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
         when(resourceRepositoryMock.find(resource.getId())).thenReturn(null);
 

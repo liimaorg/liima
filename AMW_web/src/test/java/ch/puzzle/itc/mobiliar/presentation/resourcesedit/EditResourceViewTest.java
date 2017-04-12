@@ -39,7 +39,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Date;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -178,7 +177,7 @@ public class EditResourceViewTest {
 		//when
 		context.setResourceIdFromParam(7);
 		//then
-		verify(permissionBoundary, times(1)).checkPermissionActionAndFireException(Permission.RESOURCE, READ, "edit resources");
+		verify(permissionBoundary, times(1)).checkPermissionAndFireException(Permission.RESOURCE, READ, "edit resources");
 	}
 
 }

@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.security.boundary;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -80,6 +81,9 @@ public class PermissionBoundary implements Serializable {
 
     @Inject
     ResourceTypeRepository resourceTypeRepository;
+
+    @Inject
+    ResourceRepository resourceRepository;
 
     /**
      * Checks if the user is allowed to edit the Properties of a ResourceType in a specific Context
@@ -211,8 +215,25 @@ public class PermissionBoundary implements Serializable {
      * @param permission
      * @param extraInfo
      */
-    public void checkPermissionActionAndFireException(Permission permission, Action action, String extraInfo) {
-        permissionService.checkPermissionActionAndFireException(permission, action, extraInfo);
+    public void checkPermissionAndFireException(Permission permission, Action action, String extraInfo) {
+        permissionService.checkPermissionAndFireException(permission, action, extraInfo);
+    }
+
+    /**
+     * Checks if given permission is available. If not a checked exception is thrown with error message
+     * containing extraInfo part.
+     *
+     * @param permission the required Permission
+     * @param context the affected ContextEntity
+     * @param action the required Action
+     * @param resourceGroup the affected ResourceGroupEntity
+     * @param resourceType the affected ResourceTypeEntity
+     * @param extraInfo the message for the exception
+     */
+    public void checkPermissionAndFireException(Permission permission, ContextEntity context, Action action,
+                                                ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType,
+                                                String extraInfo) {
+        permissionService.checkPermissionAndFireException(permission, context, action, resourceGroup, resourceType, extraInfo);
     }
 
     /**
@@ -267,6 +288,16 @@ public class PermissionBoundary implements Serializable {
         return false;
     }
 
+    public boolean canEditFunctionOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId) {
+        if (resourceEntityId != null) {
+            ResourceEntity resource = resourceRepository.find(resourceEntityId);
+            return permissionService.hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, resource.getResourceGroup(), null);
+        } else {
+            ResourceTypeEntity type = resourceTypeRepository.find(resourceTypeEntityId);
+            return permissionService.hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, null, type);
+        }
+    }
+
     public boolean canCreateResourceInstance(DefaultResourceTypeDefinition type) {
         return canCreateResourceInstance(resourceTypeProvider.getOrCreateDefaultResourceType(type));
     }
@@ -280,7 +311,8 @@ public class PermissionBoundary implements Serializable {
     }
 
     public boolean canCreateAppAndAddToAppServer(ResourceEntity resource) {
-        return permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, resource.getResourceType()) && permissionService.hasPermission(Permission.ADD_APP_TO_APP_SERVER);
+        return permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, resource.getResourceType()) &&
+                permissionService.hasPermission(Permission.ADD_APP_TO_APP_SERVER);
     }
 
     /**
@@ -288,7 +320,8 @@ public class PermissionBoundary implements Serializable {
      * @return
      */
     public boolean canCopyFromResource(ResourceEntity resourceEntity) {
-        return !(resourceEntity == null || resourceEntity.getResourceType() == null) && permissionService.hasPermission(Permission.COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
+        return !(resourceEntity == null || resourceEntity.getResourceType() == null) &&
+                permissionService.hasPermission(Permission.COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
     }
 
     public boolean hasPermissionToDeploy() {
