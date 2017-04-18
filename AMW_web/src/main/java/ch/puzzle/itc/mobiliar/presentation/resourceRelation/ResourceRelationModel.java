@@ -192,9 +192,9 @@ public class ResourceRelationModel implements Serializable {
 
     public void onChangedResource(@Observes ResourceEntity resourceEntity) throws GeneralDBException {
         allowedToSelectRuntime = permissionBoundary.hasPermission(Permission.SELECT_RUNTIME);
-        allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelation(resourceEntity);
-        canAddConsumedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, false);
-        canAddProvidedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, true);
+        allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelation(resourceEntity, sessionContext.getCurrentContext());
+        canAddConsumedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, false, sessionContext.getCurrentContext());
+        canAddProvidedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, true, sessionContext.getCurrentContext());
         allowedToAddRelations = canAddConsumedRelations || canAddProvidedRelations;
         currentSelectedResourceOrType = resourceEntity;
 

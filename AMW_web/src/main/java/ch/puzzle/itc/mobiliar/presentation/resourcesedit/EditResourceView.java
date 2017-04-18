@@ -272,15 +272,14 @@ public class EditResourceView implements Serializable {
     }
 
     public boolean canSaveChanges() {
+        // Resource (instance)
         if (isEditResource()) {
-            // Resource
            return permissionBoundary.hasPermission(Permission.RESOURCE, sessionContext.getCurrentContext(),
                     Action.UPDATE, resource, getResourceType());
-        } else {
-            // ResourceType
-            return permissionBoundary.hasPermission(Permission.RESOURCETYPE, sessionContext.getCurrentContext(),
-                    Action.UPDATE, null, getResourceType());
         }
+        // ResourceType
+        return permissionBoundary.hasPermission(Permission.RESOURCETYPE, sessionContext.getCurrentContext(),
+                    Action.UPDATE, null, getResourceType());
     }
 
     /**

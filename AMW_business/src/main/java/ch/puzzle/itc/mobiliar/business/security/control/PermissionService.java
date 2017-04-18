@@ -455,8 +455,12 @@ public class PermissionService implements Serializable {
      * @param
      * @return
      */
-    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, boolean provided) {
+    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, boolean provided, ContextEntity context) {
         if (resourceEntity != null && resourceEntity.getResourceType() != null) {
+            if (hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity.getResourceGroup(), null)) {
+                return true;
+            }
+            // TODO migrate existing Permissions to Restrictions (?)
             // Check that the user is config_admin
             if (hasPermission(Permission.ADD_EVERY_RELATED_RESOURCE)) {
                 return true;
@@ -480,8 +484,12 @@ public class PermissionService implements Serializable {
      * @param
      * @return
      */
-    public boolean hasPermissionToDeleteRelation(ResourceEntity resourceEntity) {
+    public boolean hasPermissionToDeleteRelation(ResourceEntity resourceEntity, ContextEntity context) {
         if (resourceEntity != null && resourceEntity.getResourceType() != null) {
+            if (hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity.getResourceGroup(), null)) {
+                return true;
+            }
+            // TODO migrate existing Permissions to Restrictions (?)
             ResourceTypeEntity resourceTypeEntity = resourceEntity.getResourceType();
             // Check that the user is config_admin
             if (hasPermission(Permission.DELETE_EVERY_RELATED_RESOURCE)) {
@@ -506,6 +514,10 @@ public class PermissionService implements Serializable {
      * Check that the user is config_admin: can delete all resourcetype relationship.
      */
     public boolean hasPermissionToDeleteRelationType(ResourceTypeEntity resourceTypeEntity) {
+        if (hasPermission(Permission.RESOURCE, null, Action.UPDATE, null, resourceTypeEntity)) {
+            return true;
+        }
+        // TODO migrate Permission to Restriction (?)
         return resourceTypeEntity != null && hasPermission(Permission.REMOVE_RELATED_RESOURCETYPE);
     }
 

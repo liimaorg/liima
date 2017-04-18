@@ -95,9 +95,11 @@ public class EditTemplateView implements Serializable {
 	Integer relationIdForTemplate;
 
 	@Getter
+	@Setter
 	Integer resourceId;
 
 	@Getter
+	@Setter
 	Integer resourceTypeId;
 
 	@Getter
@@ -208,20 +210,6 @@ public class EditTemplateView implements Serializable {
 		template = templateEditor.getTemplateById(templateId);
 		revisionInformations = Lists.reverse(templateEditor.getTemplateRevisions(templateId));
 		findSelectedStp();
-	}
-
-	/**
-	 * This is a viewParameter and is called by JSF!
-	 */
-	public void setResourceId(Integer resourceId) {
-		this.resourceId = resourceId;
-	}
-
-	/**
-	 * This is a viewParameter and is called by JSF!
-	 */
-	public void setResourceTypeId(Integer resourceTypeId) {
-		this.resourceTypeId = resourceTypeId;
 	}
 
 	public boolean isNewTemplate() {

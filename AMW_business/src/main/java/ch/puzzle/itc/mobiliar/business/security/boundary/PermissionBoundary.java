@@ -241,9 +241,9 @@ public class PermissionBoundary implements Serializable {
      * relationship config_admin: can delete all relationship. app_developer: can delete reletionship of
      * instances of APPLICATION
      */
-    public boolean hasPermissionToDeleteRelation(ResourceEntity resourceEntity) {
+    public boolean hasPermissionToDeleteRelation(ResourceEntity resourceEntity, ContextEntity context) {
         ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, resourceEntity.getId());
-        return permissionService.hasPermissionToDeleteRelation(mergedResource);
+        return permissionService.hasPermissionToDeleteRelation(mergedResource, context);
     }
 
     /**
@@ -261,9 +261,9 @@ public class PermissionBoundary implements Serializable {
      * relationship config_admin: can add all relationship. app_developer: can add reletionship of instances
      * of APPLICATION
      */
-    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, boolean isProvided) {
+    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, boolean isProvided, ContextEntity context) {
         ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, resourceEntity.getId());
-        return permissionService.hasPermissionToAddRelation(mergedResource, isProvided);
+        return permissionService.hasPermissionToAddRelation(mergedResource, isProvided, context);
     }
 
     public boolean hasPermissionToRemoveInstanceOfResType(ResourceTypeEntity resourceType) {
