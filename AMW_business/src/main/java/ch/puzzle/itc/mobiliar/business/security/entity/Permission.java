@@ -66,9 +66,6 @@ public enum Permission {
 
     PROP_LIST("This permission allows to list the properties in the edit screen."),
 
-    // NOT USED ANYMORE (but assigned to app_developer)
-    CREATE_TEMPLATE("With this permission it can create a new template"),
-
     DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value"),
 
     SAVE_PROPERTY("With this permission it can modify the property"),
@@ -198,6 +195,7 @@ public enum Permission {
     // RENAME_RES("With this permission it is possible to rename everthing else."), REMOVED
     // MODIFY_APPSERVER_RELATION("With this permission the config admin can make modifications in the appServerRelations screen."), REMOVED
     // EDIT_ALL_PROPERTIES("WARNING: DON'T CHANGE THIS PERMISSION"), REMOVED
+    // CREATE_TEMPLATE("With this permission it can create a new template"), REMOVED - UNUSED (but was assigned to app_developer)
 
 
     private String info;
