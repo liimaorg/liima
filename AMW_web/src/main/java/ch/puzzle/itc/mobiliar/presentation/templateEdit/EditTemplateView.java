@@ -95,11 +95,9 @@ public class EditTemplateView implements Serializable {
 	Integer relationIdForTemplate;
 
 	@Getter
-	@Setter
 	Integer resourceId;
 
 	@Getter
-	@Setter
 	Integer resourceTypeId;
 
 	@Getter
@@ -212,6 +210,20 @@ public class EditTemplateView implements Serializable {
 		findSelectedStp();
 	}
 
+	/**
+	 * This is a viewParameter and is called by JSF!
+	 */
+	public void setResourceId(Integer resourceId) {
+		this.resourceId = resourceId;
+	}
+
+	/**
+	 * This is a viewParameter and is called by JSF!
+	 */
+	public void setResourceTypeId(Integer resourceTypeId) {
+		this.resourceTypeId = resourceTypeId;
+	}
+
 	public boolean isNewTemplate() {
 		return template == null || template.getId() == null;
 	}
@@ -306,11 +318,12 @@ public class EditTemplateView implements Serializable {
 	}
 
 	public boolean canModifyTemplates() {
+		// Resource (Instance)
 		if (isEditResource()) {
 			return templateEditor.hasPermissionToModifyResourceTemplate(resourceId, settings.isTestingMode());
-		} else {
-			return templateEditor.hasPermissionToModifyResourceTypeTemplate(resourceTypeId, settings.isTestingMode());
 		}
+		// ResourceType
+		return templateEditor.hasPermissionToModifyResourceTypeTemplate(resourceTypeId, settings.isTestingMode());
 	}
 
 	private boolean canAdd() {
