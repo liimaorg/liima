@@ -1240,18 +1240,6 @@ public class PermissionServiceTest {
 	}
 
 	@Test
-	public void shouldObtainDeployableRolesOnGetDeployableRolesNonCached() {
-		//Given
-		when(permissionService.permissionRepository.getDeployableRoles()).thenReturn(EMPTY_LIST);
-
-		//When
-		permissionService.getDeployableRolesNonCached();
-
-		//Then
-		verify(permissionService.permissionRepository, times(1)).getDeployableRoles();
-	}
-
-	@Test
 	public void shouldObtainDeployableRolesOnGetDeployableRolesWhenNeeded() {
 		//Given
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(true);

@@ -46,7 +46,6 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
