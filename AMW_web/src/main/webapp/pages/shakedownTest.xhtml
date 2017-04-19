@@ -180,14 +180,14 @@
 
                                         <h:link value="#{sdtest.resourceGroup.name}"
                                                 outcome="editResourceView"
-                                                rendered="${securityDataProvider.hasPermissionForResourceType('RESOURCE','UPDATE','APPSERVER',contextDataProvider.globalContextId)}"
+                                                rendered="${securityDataProvider.hasPermissionForResourceType('RESOURCE','UPDATE','APPLICATIONSERVER',contextDataProvider.globalContextId)}"
                                                 styleClass="boldFont">
                                             <f:param name="id" value="#{sdtest.applicationServer.id}"/>
                                             <f:param name="ctx"
                                                      value="#{contextDataProvider.globalContextId}"/>
                                         </h:link>
                                         <h:outputText style="font-weight: bold;"
-                                                      rendered="${!securityDataProvider.hasPermissionForResourceType('RESOURCE','UPDATE','APPSERVER',contextDataProvider.globalContextId)}"
+                                                      rendered="${!securityDataProvider.hasPermissionForResourceType('RESOURCE','UPDATE','APPLICATIONSERVER',contextDataProvider.globalContextId)}"
                                                       value="#{sdtest.resourceGroup.name}"/>
 
                                         <ui:repeat var="appToShow"
