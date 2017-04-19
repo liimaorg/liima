@@ -43,6 +43,8 @@ import org.mockito.Mockito;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
+import java.util.Arrays;
+
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
@@ -96,7 +98,7 @@ public class PermissionBoundaryTest {
     @Test(expected=AMWException.class)
     public void shouldThrowAMWExceptionOnUpdateIfIdIsNull() throws AMWException {
         // given // when // then
-        permissionBoundary.updateRestriction(null, null, null, null, null, null, null, null);
+        permissionBoundary.updateRestriction(null,null, null, null, null, null, null, null, null);
     }
 
     @Test(expected=AMWException.class)
@@ -104,7 +106,7 @@ public class PermissionBoundaryTest {
         // given
         when(restrictionRepository.find(1)).thenReturn(null);
         // when // then
-        permissionBoundary.updateRestriction(1, null, null, null, null, null, null, null);
+        permissionBoundary.updateRestriction(1, null, null, null, null, null, null, null, null);
     }
 
     @Test(expected=AMWException.class)
@@ -112,7 +114,7 @@ public class PermissionBoundaryTest {
         // given
         when(restrictionRepository.find(1)).thenReturn(new RestrictionEntity());
         // when // then
-        permissionBoundary.updateRestriction(1, null, null, null, null, null, null, null);
+        permissionBoundary.updateRestriction(1, null, null, null, null, null, null, null, null);
     }
 
     @Test(expected=AMWException.class)
@@ -121,7 +123,7 @@ public class PermissionBoundaryTest {
         when(restrictionRepository.find(1)).thenReturn(new RestrictionEntity());
         when(permissionRepository.getRoleByName("notThere")).thenThrow(new NoResultException());
         // when // then
-        permissionBoundary.updateRestriction(1, "notThere", null, null, null, null, null, null);
+        permissionBoundary.updateRestriction(1, "notThere", null, null, null, null, null, null, null);
     }
 
     @Test(expected=AMWException.class)
@@ -130,7 +132,7 @@ public class PermissionBoundaryTest {
         when(restrictionRepository.find(1)).thenReturn(new RestrictionEntity());
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
         // when // then
-        permissionBoundary.updateRestriction(1, "existing", null, null, null, null, null, null);
+        permissionBoundary.updateRestriction(1, "existing", null, null, null, null, null, null, null);
     }
 
     @Test(expected=AMWException.class)
@@ -140,7 +142,7 @@ public class PermissionBoundaryTest {
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
         when(permissionRepository.getPermissionByName("invalid")).thenThrow(new NoResultException());
         // when // then
-        permissionBoundary.updateRestriction(1, "existing", "invalid", null, null, null, null, null);
+        permissionBoundary.updateRestriction(1, "existing", null, "invalid", null, null, null, null, null);
     }
 
     @Test(expected=AMWException.class)
@@ -151,7 +153,7 @@ public class PermissionBoundaryTest {
         when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
         when(contextLocator.getContextByName("bad")).thenThrow(new NoResultException());
         // when // then
-        permissionBoundary.updateRestriction(1, "existing", "good", null, null, null, "bad", null);
+        permissionBoundary.updateRestriction(1, "existing", null, "good", null, null, null, "bad", null);
     }
 
     @Test(expected=AMWException.class)
@@ -162,7 +164,7 @@ public class PermissionBoundaryTest {
         when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
         when(resourceTypeRepository.getByName("bad")).thenReturn(null);
         // when // then
-        permissionBoundary.updateRestriction(1, "existing", "good", null, "bad", null, null, null);
+        permissionBoundary.updateRestriction(1, "existing", null, "good", null, "bad", null, null, null);
     }
 
     @Test
@@ -172,16 +174,16 @@ public class PermissionBoundaryTest {
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
         when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
         // when
-        permissionBoundary.updateRestriction(1, "existing", "good", null, null, null, null, null);
+        permissionBoundary.updateRestriction(1, "existing", null, "good", null, null, null, null, null);
         // then
         verify(restrictionRepository, times(1)).merge(any(RestrictionEntity.class));
         verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test(expected=AMWException.class)
-    public void shouldThrowAMWExceptionOnCreateIfRolenameIsNull() throws AMWException {
+    public void shouldThrowAMWExceptionOnCreateIfRoleNameAndUserNameAreNull() throws AMWException {
         // given // when // then
-        permissionBoundary.createRestriction(null, null, null, null, null, null, null);
+        permissionBoundary.createRestriction(null, null, null, null, null, null, null, null);
     }
 
     @Test(expected=AMWException.class)
@@ -189,7 +191,43 @@ public class PermissionBoundaryTest {
         // given
         when(permissionRepository.getRoleByName("notThere")).thenThrow(new NoResultException());
         // when // then
-        permissionBoundary.createRestriction("notThere", null, null, null, null, null, null);
+        permissionBoundary.createRestriction("notThere", null, null, null, null, null, null, null);
+    }
+
+    @Test(expected=AMWException.class)
+    public void shouldThrowAMWExceptionOnCreateIfUserNameIsEmpty() throws AMWException {
+        // given // when // then
+        permissionBoundary.createRestriction(null, "", null, null, null, null, null, null);
+    }
+
+    @Test(expected=AMWException.class)
+    public void shouldThrowAMWExceptionOnCreateIfTrimmedUserNameIsEmpty() throws AMWException {
+        // given // when // then
+        permissionBoundary.createRestriction(null, " ", null, null, null, null, null, null);
+    }
+
+    @Test
+    public void shouldCreateUserRestrictionAndRestrictionIfUserNameIsNotNull() throws AMWException {
+        // given
+        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        // when
+        permissionBoundary.createRestriction(null, "hans", "good", null, null, null, null, null);
+        // then
+        verify(permissionRepository, times(1)).getUserRestrictionByName("hans");
+        verify(permissionRepository, times(1)).createUserRestriciton("hans");
+        verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldAssignUserRestrictionAndCreateRestrictionIfUserNameHasBeenFound() throws AMWException {
+        // given
+        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getUserRestrictionByName("fritz")).thenReturn(Arrays.asList(new UserRestrictionEntity()));
+        // when
+        permissionBoundary.createRestriction(null, "fritz", "good", null, null, null, null, null);
+        // then
+        verify(permissionRepository, never()).createUserRestriciton(anyString());
+        verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
     }
 
     @Test
@@ -198,7 +236,7 @@ public class PermissionBoundaryTest {
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
         when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
         // when
-        permissionBoundary.createRestriction("existing", "good", null, null, null, null, CREATE);
+        permissionBoundary.createRestriction("existing", null, "good", null, null, null, null, CREATE);
         // then
         verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
     }
@@ -209,7 +247,7 @@ public class PermissionBoundaryTest {
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
         when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
         // when
-        permissionBoundary.createRestriction("existing", "good", null, null, null, null, null);
+        permissionBoundary.createRestriction("existing", null, "good", null, null, null, null, null);
         // then
         verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
         verify(permissionRepository, times(1)).forceReloadingOfLists();
@@ -222,7 +260,7 @@ public class PermissionBoundaryTest {
         when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
         when(resourceGroupRepository.find(7)).thenReturn(null);
         // when // then
-        permissionBoundary.createRestriction("existing", "good", 7, null, null, null, null);
+        permissionBoundary.createRestriction("existing", null, "good", 7, null, null, null, null);
     }
 
     @Test(expected=AMWException.class)
@@ -231,17 +269,15 @@ public class PermissionBoundaryTest {
         permissionBoundary.removeRestriction(21);
     }
 
-    @Test(expected=AMWException.class)
+    @Test
     public void shouldRemoveRestrictionToBeDeleted() throws AMWException {
         // given
         when(restrictionRepository.find(42)).thenReturn(new RestrictionEntity());
         // when
-        permissionBoundary.removeRestriction(21);
+        permissionBoundary.removeRestriction(42);
         // then
         verify(restrictionRepository, times(1)).remove(42);
-        verify(permissionRepository, times(1)).setReloadDeployableRoleList(true);
-        verify(permissionRepository, times(1)).setReloadRolesAndPermissionsList(true);
-
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test
@@ -530,6 +566,14 @@ public class PermissionBoundaryTest {
         permissionBoundary.canEditFunctionOfResourceOrResourceType(resource.getId(), null);
         // then
         verify(permissionService, times(1)).hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, rg, null);
+    }
+
+    @Test
+    public void shouldDelegateGetAllUserRestrictionToPermissionService() {
+        // given // when
+        permissionBoundary.getAllUserRestriction();
+        // then
+        verify(permissionService, times(1)).getAllUserRestrictions();
     }
 
 }

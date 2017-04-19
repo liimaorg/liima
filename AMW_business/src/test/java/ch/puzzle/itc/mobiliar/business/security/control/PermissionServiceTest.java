@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.security.control;
 
+import java.security.Principal;
 import java.util.*;
 
 import javax.ejb.SessionContext;
@@ -34,7 +35,6 @@ import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntit
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import org.junit.Assert;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -68,6 +68,8 @@ public class PermissionServiceTest {
 	private ContextEntity envZ;
 	private ResourceGroupEntity anotherResourceGroup;
 
+	private Principal principal;
+
     @Before
 	public void setUp(){
 		permissionService = new PermissionService();
@@ -81,6 +83,13 @@ public class PermissionServiceTest {
 		envC = new ContextEntityBuilder().id(10).buildContextEntity("C", parent, new HashSet<ContextEntity>(), false);
 		envZ = new ContextEntityBuilder().id(11).buildContextEntity("Z", parent, new HashSet<ContextEntity>(), false);
 
+		principal = new Principal() {
+			@Override
+			public String getName() {
+				return "tester";
+			}
+		};
+
 		// APPLICATION
 		anotherResourceGroup = new ResourceGroupEntity();
 		anotherResourceGroup.setId(321);
@@ -92,7 +101,9 @@ public class PermissionServiceTest {
 		//Given
 		ResourceTypeEntity applicationResTypeEntity = new ResourceTypeEntity();
 		applicationResTypeEntity.setName(DefaultResourceTypeDefinition.APPLICATION.name());
+
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		PermissionEntity permission = new PermissionEntity();
 		permission.setValue(Permission.RESOURCE.name());
@@ -112,7 +123,9 @@ public class PermissionServiceTest {
 	public void shouldNotAllowToRemoveInstanceOfNonDefaultResTypeIfHasPermissionToDeleteInstancesOfDefaultResourceTypeOnly(){
 		//Given
 		ResourceTypeEntity nonDefaultResType = new ResourceTypeEntity();
+
 		when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		PermissionEntity permission = new PermissionEntity();
 		permission.setValue(Permission.RESOURCE.name());
@@ -133,7 +146,9 @@ public class PermissionServiceTest {
 		//Given
 		ResourceTypeEntity applicationResTypeEntity = new ResourceTypeEntity();
 		applicationResTypeEntity.setName(DefaultResourceTypeDefinition.APPLICATION.name());
+
 		when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		PermissionEntity permission = new PermissionEntity();
 		permission.setValue(Permission.RESOURCE.name());
@@ -155,6 +170,7 @@ public class PermissionServiceTest {
         ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
 		
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -174,6 +190,7 @@ public class PermissionServiceTest {
         ResourceEntity ws = resourceEntityBuilder.mockResourceEntity("ws", null, "webservice", null);
 
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -193,6 +210,7 @@ public class PermissionServiceTest {
         ResourceEntity resourceWithoutResourceType = ResourceFactory.createNewResource("Orphan");
 
         when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -215,6 +233,7 @@ public class PermissionServiceTest {
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
 		when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -234,6 +253,7 @@ public class PermissionServiceTest {
 		ResourceEntity node = resourceEntityBuilder.mockNodeEntity("node", null,null);
 
 		when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -253,6 +273,7 @@ public class PermissionServiceTest {
         ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -272,6 +293,7 @@ public class PermissionServiceTest {
 		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.UPDATE);
@@ -292,6 +314,7 @@ public class PermissionServiceTest {
 		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", anotherResourceGroup, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.UPDATE);
@@ -313,6 +336,7 @@ public class PermissionServiceTest {
 		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.UPDATE);
@@ -333,6 +357,7 @@ public class PermissionServiceTest {
 		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.UPDATE);
@@ -353,6 +378,7 @@ public class PermissionServiceTest {
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -372,6 +398,7 @@ public class PermissionServiceTest {
         ResourceEntity runtime = resourceEntityBuilder.mockRuntimeEntity("EAP6", null, null);
 
         when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -391,6 +418,7 @@ public class PermissionServiceTest {
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
         when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -414,6 +442,7 @@ public class PermissionServiceTest {
         //end Create resource without resourceType
 
         when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -435,6 +464,7 @@ public class PermissionServiceTest {
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
         when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -456,6 +486,7 @@ public class PermissionServiceTest {
         ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
 
         when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -477,6 +508,7 @@ public class PermissionServiceTest {
         ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -500,6 +532,7 @@ public class PermissionServiceTest {
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
         when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -521,6 +554,7 @@ public class PermissionServiceTest {
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
         when(sessionContext.isCallerInRole(SHAKEDOWN_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -540,6 +574,7 @@ public class PermissionServiceTest {
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
         when(sessionContext.isCallerInRole(VIEWER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -559,6 +594,7 @@ public class PermissionServiceTest {
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
         when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -578,6 +614,7 @@ public class PermissionServiceTest {
 		ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.UPDATE);
@@ -597,6 +634,7 @@ public class PermissionServiceTest {
 		ResourceTypeEntity app = ResourceTypeEntityBuilder.APPLICATION_TYPE;
 
         when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -617,6 +655,7 @@ public class PermissionServiceTest {
 		ResourceTypeEntity app = ResourceTypeEntityBuilder.APPLICATION_TYPE;
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.UPDATE);
@@ -637,6 +676,7 @@ public class PermissionServiceTest {
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
         when(sessionContext.isCallerInRole(SHAKEDOWN_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -658,6 +698,7 @@ public class PermissionServiceTest {
 		roleToDeployEnvC.setName(TEST_DEPLOYER);
 		
 		when(sessionContext.isCallerInRole(ROLE_NOT_DEPLOY)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 
 		PermissionEntity pe = new PermissionEntity();
 		pe.setValue("aTestPermission");
@@ -672,6 +713,39 @@ public class PermissionServiceTest {
 		//then
 		Assert.assertFalse(result);
 	}
+
+	@Test
+	public void hasPermissionToDeployWhenRoleIsNotDeployableButUserHasRequiredRestriction(){
+		//given
+		Map<String, List<RestrictionDTO>> deployableRolesWithRestrictions;
+		RoleEntity roleToDeployEnvC = new RoleEntity();
+		roleToDeployEnvC.setName(TEST_DEPLOYER);
+
+		when(sessionContext.isCallerInRole(ROLE_NOT_DEPLOY)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+
+		UserRestrictionEntity userRestriction = new UserRestrictionEntity(principal.getName());
+		userRestriction.setId(123);
+		PermissionEntity deploymentPermission =  new PermissionEntity();
+		deploymentPermission.setValue(Permission.DEPLOYMENT.name());
+		RestrictionEntity restriction = new RestrictionEntity();
+		restriction.setUser(userRestriction);
+		restriction.setPermission(deploymentPermission);
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(restriction));
+
+		PermissionEntity pe = new PermissionEntity();
+		pe.setValue("aTestPermission");
+		deployableRolesWithRestrictions = new HashMap<>();
+		deployableRolesWithRestrictions.put(roleToDeployEnvC.getName(), Arrays.asList(new RestrictionDTO(pe, roleToDeployEnvC)));
+
+		permissionService.deployableRolesWithRestrictions = deployableRolesWithRestrictions;
+
+		//When
+		boolean result = permissionService.hasPermissionToDeploy();
+
+		//then
+		Assert.assertTrue(result);
+	}
 	
 	@Test
 	public void hasPermissionToDeployWhenEmptyList(){
@@ -682,6 +756,7 @@ public class PermissionServiceTest {
 		when(entityManager.createQuery("from RoleEntity r where r.deployable=1")).thenReturn(value);
 		when(value.getResultList()).thenReturn(deployableRoles);
 		when(sessionContext.isCallerInRole(ROLE_NOT_DEPLOY)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		//When
 		boolean result = permissionService.hasPermissionToDeploy();
 		//then
@@ -697,6 +772,7 @@ public class PermissionServiceTest {
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
 		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		//assign restriction allowing all on environment "c"
 		RestrictionEntity res = new RestrictionEntity();
@@ -723,6 +799,7 @@ public class PermissionServiceTest {
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
 		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		//assign restriction allowing all on environment "c"
 		RestrictionEntity res = new RestrictionEntity();
@@ -754,8 +831,9 @@ public class PermissionServiceTest {
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
 		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
-		//assign restriction allowing all on environment "c"
+		//assign restriction allowing specific resourceGroup on environment "c"
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
 		res.setResourceTypePermission(ResourceTypePermission.ANY);
@@ -763,6 +841,49 @@ public class PermissionServiceTest {
 		res.setResourceGroup(allowedResourceGroup);
 		res.setPermission(permissionToDeploy);
 		myRoles.put(TEST_DEPLOYER, Arrays.asList(new RestrictionDTO(res)));
+		permissionService.deployableRolesWithRestrictions = myRoles;
+		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
+
+		//When
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, anotherResourceGroup);
+		boolean resCAllowed = permissionService.hasPermissionForDeploymentOnContext(envC, allowedResourceGroup);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, allowedResourceGroup);
+
+		//Then
+		Assert.assertFalse(resC);
+		Assert.assertTrue(resCAllowed);
+		Assert.assertFalse(resZ);
+	}
+
+	@Test
+	public void hasPermissionToDeployOnlySpecificResourceOnEnvironmentCTestGrantedByUserRestriction(){
+		//given
+		ResourceGroupEntity allowedResourceGroup = new ResourceGroupEntity();
+		allowedResourceGroup.setId(42);
+		allowedResourceGroup.setResourceType(new ResourceTypeEntityBuilder().id(2).build());
+		RoleEntity roleTestDeployer = new RoleEntity();
+		roleTestDeployer.setName(TEST_DEPLOYER);
+		PermissionEntity permissionToDeploy = new PermissionEntity();
+		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
+		roleTestDeployer.getPermissions().add(permissionToDeploy);
+		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		myRoles = new HashMap<>();
+
+		//assign user a restriction allowing specific resourceGroup on environment "c"
+		UserRestrictionEntity userRestriction = new UserRestrictionEntity(principal.getName());
+		userRestriction.setId(123);
+		PermissionEntity deploymentPermission =  new PermissionEntity();
+		deploymentPermission.setValue(Permission.DEPLOYMENT.name());
+		RestrictionEntity restriction = new RestrictionEntity();
+		restriction.setUser(userRestriction);
+		restriction.setPermission(deploymentPermission);
+		restriction.setResourceTypePermission(ResourceTypePermission.ANY);
+		restriction.setContext(envC);
+		restriction.setResourceGroup(allowedResourceGroup);
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(restriction));
+
+		myRoles.put(TEST_DEPLOYER, Collections.EMPTY_LIST);
 		permissionService.deployableRolesWithRestrictions = myRoles;
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
@@ -790,8 +911,9 @@ public class PermissionServiceTest {
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
 		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
-		//assign restriction allowing all on environment "c"
+		//assign restriction allowing specific resourcetype on environment "c"
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
 		res.setResourceTypePermission(ResourceTypePermission.ANY);
@@ -826,8 +948,9 @@ public class PermissionServiceTest {
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
 		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
-		//assign restriction allowing all on environment "c"
+		//assign restriction allowing specific resourcetype on environment "c"
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
 		res.setResourceTypePermission(ResourceTypePermission.ANY);
@@ -857,8 +980,9 @@ public class PermissionServiceTest {
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
 		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
-		//assign restriction allowing all on environment "c"
+		//assign restriction allowing all on parent environment
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
 		res.setResourceTypePermission(ResourceTypePermission.ANY);
@@ -886,8 +1010,9 @@ public class PermissionServiceTest {
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
 		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
-		//assign restriction allowing all on environment "c"
+		//assign restriction allowing all on global context
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
 		res.setContext(global);
@@ -916,6 +1041,7 @@ public class PermissionServiceTest {
 		ResourceTypeEntity as = ResourceTypeEntityBuilder.APPLICATION_SERVER_TYPE;
 
 		when(sessionContext.isCallerInRole(SHAKEDOWN_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -935,6 +1061,7 @@ public class PermissionServiceTest {
 		ResourceTypeEntity as = ResourceTypeEntityBuilder.APPLICATION_SERVER_TYPE;
 
 		when(sessionContext.isCallerInRole(VIEWER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -954,6 +1081,7 @@ public class PermissionServiceTest {
 		ResourceTypeEntity as = ResourceTypeEntityBuilder.APPLICATION_SERVER_TYPE;
 
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -975,6 +1103,7 @@ public class PermissionServiceTest {
 		ResourceTypeEntity app = ResourceTypeEntityBuilder.APPLICATION_TYPE;
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -995,6 +1124,7 @@ public class PermissionServiceTest {
 		ResourceTypeEntity as = ResourceTypeEntityBuilder.APPLICATION_SERVER_TYPE;
 
 		when(sessionContext.isCallerInRole(SHAKEDOWN_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -1013,6 +1143,7 @@ public class PermissionServiceTest {
 		//Given
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(false);
 		when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
@@ -1032,6 +1163,7 @@ public class PermissionServiceTest {
 		//Given
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(false);
 		when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(false);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);

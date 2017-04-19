@@ -59,6 +59,13 @@ public class RestrictionEntity {
     @Getter
     @Setter
     @ManyToOne
+    @OnDelete(action = CASCADE)
+    @JoinColumn(name = "user_id")
+    private UserRestrictionEntity user;
+
+    @Getter
+    @Setter
+    @ManyToOne
     @JoinColumn(name = "permission_id")
     private PermissionEntity permission;
 

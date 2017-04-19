@@ -60,13 +60,13 @@ public class RestrictionsRest {
      **/
     @POST
     @ApiOperation(value = "Add a Restriction")
-    public Response addRestriction(@ApiParam("Add a Restriction") RestrictionDTO request) {
+    public Response addRestriction(@ApiParam("Add a Restriction, either a role- or a userName must be set") RestrictionDTO request) {
         Integer id;
         if (request.getId() != null) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
         }
         try {
-            id = permissionBoundary.createRestriction(request.getRoleName(), request.getPermission().name(), request.getResourceGroupId(),
+            id = permissionBoundary.createRestriction(request.getRoleName(), request.getUserName(), request.getPermission().name(), request.getResourceGroupId(),
                     request.getResourceTypeName(), request.getResourceTypePermission(), request.getContextName(), request.getAction());
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
@@ -118,7 +118,7 @@ public class RestrictionsRest {
     @ApiOperation(value = "Update a Restriction")
     public Response updateRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id, RestrictionDTO request) {
         try {
-            permissionBoundary.updateRestriction(id, request.getRoleName(), request.getPermission().name(),
+            permissionBoundary.updateRestriction(id, request.getRoleName(), request.getUserName(), request.getPermission().name(),
                     request.getResourceGroupId(), request.getResourceTypeName(), request.getResourceTypePermission(),
                     request.getContextName(), request.getAction());
         } catch (AMWException e) {
@@ -166,6 +166,27 @@ public class RestrictionsRest {
             }
         }
         return Response.status(OK).entity(rolesMap).build();
+    }
+
+    /**
+     * Find all UserRestrictions with their Restrictions
+     *
+     * @return Map<UserRestriction, List<RestrictionDTO>>
+     */
+    @GET
+    @Path("/users/")
+    @ApiOperation(value = "Get all UserRestriction with their Restrictions")
+    public Response getAllUsers() {
+        Map<String, List<RestrictionDTO>> usersMap = new HashMap<>();
+        final List<RestrictionEntity> allUserRestrictions = permissionBoundary.getAllUserRestriction();
+        for (RestrictionEntity restriction : allUserRestrictions) {
+            String userName = restriction.getUser().getName();
+            if (!usersMap.containsKey(userName)) {
+                usersMap.put(userName, new ArrayList<RestrictionDTO>());
+            }
+            usersMap.get(userName).add(new RestrictionDTO(restriction));
+        }
+        return Response.status(OK).entity(usersMap).build();
     }
 
 }

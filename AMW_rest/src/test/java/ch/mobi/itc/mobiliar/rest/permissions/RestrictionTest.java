@@ -137,7 +137,7 @@ public class RestrictionTest {
     @Test
     public void shouldReturnStateBadRequestIfIdIsSet() {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(1, null, null, null, null, null, null, null);
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(1, null, null, null, null, null, null, null, null);
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
@@ -147,10 +147,10 @@ public class RestrictionTest {
     }
 
     @Test
-    public void shouldReturnStateBadRequestIfRoleNameIsMissing() throws AMWException {
+    public void shouldReturnStateBadRequestIfRoleNameAndUserNameAreMissing() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, null, RESOURCE, null, null, null, null, null);
-        when(rest.permissionBoundary.createRestriction(null, RESOURCE.name(), null, null, null, null, null)).thenThrow(new AMWException("bad"));
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, null, null, RESOURCE, null, null, null, null, null);
+        when(rest.permissionBoundary.createRestriction(null, null, RESOURCE.name(), null, null, null, null, null)).thenThrow(new AMWException("bad"));
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
@@ -162,8 +162,8 @@ public class RestrictionTest {
     @Test
     public void shouldReturnStateBadRequestIfRoleNameIsInvalid() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "invalid", RESOURCE, null, null, null, null, null);
-        when(rest.permissionBoundary.createRestriction("invalid", RESOURCE.name(), null, null, null, null, null)).thenThrow(new AMWException("bad"));
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "invalid", null, RESOURCE, null, null, null, null, null);
+        when(rest.permissionBoundary.createRestriction("invalid", null, RESOURCE.name(), null, null, null, null, null)).thenThrow(new AMWException("bad"));
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
@@ -173,10 +173,22 @@ public class RestrictionTest {
     }
 
     @Test
+    public void shouldSucceedIfRoleNameIsMissingButUserNameIsProvided() throws AMWException {
+        // given
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "fritz", null, RESOURCE, null, null, null, null, null);
+
+        // when
+        Response response = rest.addRestriction(restrictionDTO);
+
+        // then
+        assertEquals(CREATED.getStatusCode(), response.getStatus());;
+    }
+
+    @Test
     public void shouldReturnStateBadRequestIfResourceIdIsInvalid() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", RESOURCE, 1, null, null, null, null);
-        when(rest.permissionBoundary.createRestriction("valid", RESOURCE.name(), 1, null, null, null, null)).thenThrow(new AMWException("bad"));
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", null, RESOURCE, 1, null, null, null, null);
+        when(rest.permissionBoundary.createRestriction("valid", null, RESOURCE.name(), 1, null, null, null, null)).thenThrow(new AMWException("bad"));
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
@@ -188,8 +200,8 @@ public class RestrictionTest {
     @Test
     public void shouldReturnStateBadRequestIfResourceTypeNameIsInvalid() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", RESOURCE, null, "invalid", null, null, null);
-        when(rest.permissionBoundary.createRestriction("valid", RESOURCE.name(), null, "invalid", null, null, null)).thenThrow(new AMWException("bad"));
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(null, "valid", null, RESOURCE, null, "invalid", null, null, null);
+        when(rest.permissionBoundary.createRestriction("valid", null, RESOURCE.name(), null, "invalid", null, null, null)).thenThrow(new AMWException("bad"));
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
@@ -202,8 +214,8 @@ public class RestrictionTest {
     @Test
     public void shouldReturnStateBadRequestIfUpdateRestrictionFails() throws AMWException {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(1, "valid", RESOURCE, 8, null, null, null, null);
-        doThrow(new AMWException("bad")).when(rest.permissionBoundary).updateRestriction(1,"valid", RESOURCE.name(), 8, null, null, null, null);
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(1, "valid", null, RESOURCE, 8, null, null, null, null);
+        doThrow(new AMWException("bad")).when(rest.permissionBoundary).updateRestriction(1, "valid", null, RESOURCE.name(), 8, null, null, null, null);
 
         // when
         Response response = rest.updateRestriction(1, restrictionDTO);

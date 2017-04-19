@@ -46,6 +46,7 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -351,11 +352,11 @@ public class PermissionBoundary implements Serializable {
      * @throws AMWException
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.CREATE)
-    public Integer createRestriction(String roleName, String permissionName, Integer resourceGroupId, String resourceTypeName,
+    public Integer createRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
                                      ResourceTypePermission resourceTypePermission, String contextName, Action action)
             throws AMWException {
         RestrictionEntity restriction = new RestrictionEntity();
-        validateRestriction(roleName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
+        validateRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
                 contextName, action, restriction);
         final Integer id = restrictionRepository.create(restriction);
         permissionRepository.forceReloadingOfLists();
@@ -373,7 +374,7 @@ public class PermissionBoundary implements Serializable {
      * @throws AMWException
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.UPDATE)
-    public void updateRestriction(Integer id, String roleName, String permissionName, Integer resourceId,
+    public void updateRestriction(Integer id, String roleName, String userName, String permissionName, Integer resourceId,
                                   String resourceTypeName, ResourceTypePermission resourceTypePermission,
                                   String contextName, Action action) throws AMWException {
         if (id == null) {
@@ -383,7 +384,7 @@ public class PermissionBoundary implements Serializable {
         if (restriction == null) {
             throw new AMWException("Restriction not found");
         }
-        validateRestriction(roleName, permissionName, resourceId, resourceTypeName, resourceTypePermission,
+        validateRestriction(roleName, userName, permissionName, resourceId, resourceTypeName, resourceTypePermission,
                 contextName, action, restriction);
         restrictionRepository.merge(restriction);
         permissionRepository.forceReloadingOfLists();
@@ -400,26 +401,50 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
-     * Returns all available roles with their restrictions
+     * Returns all available Roles with their Restrictions
      *
-     * @return Map key=Role.name, value=restrictionDTOs
+     * @return Map key=Role.name, value=RestrictionDTOs
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public Map<String, List<RestrictionDTO>> getAllPermissions() {
         return permissionService.getPermissions();
     }
 
-    private void validateRestriction(String roleName, String permissionName, Integer resourceGroupId, String resourceTypeName,
+    /**
+     * Returns an uncached list of all available Restrictions assigned to UserRestriction (used by REST)
+     *
+     * @return List<RestrictionEntity>
+     */
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
+    public List<RestrictionEntity> getAllUserRestriction() {
+        return permissionService.getAllUserRestrictions();
+    }
+
+    private void validateRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
                                      ResourceTypePermission resourceTypePermission, String contextName, Action action,
                                      RestrictionEntity restriction) throws AMWException {
+        if (roleName == null && userName == null) {
+            throw new AMWException("Either a Role- or UserName is mandatory");
+        }
+
         if (roleName != null) {
             try {
                 restriction.setRole(permissionRepository.getRoleByName(roleName));
             } catch (NoResultException ne) {
                 throw new AMWException("Role " + roleName +  " not found.");
             }
-        } else {
-            throw new AMWException("Missing RoleName");
+        }
+
+        if (userName != null) {
+            if (userName.trim().isEmpty()) {
+                throw new AMWException("UserName must not be empty.");
+            }
+            List<UserRestrictionEntity> userList = permissionRepository.getUserRestrictionByName(userName);
+            if (!userList.isEmpty()) {
+                restriction.setUser(userList.get(0));
+            } else {
+                restriction.setUser(permissionRepository.createUserRestriciton(userName));
+            }
         }
 
         if (permissionName != null) {

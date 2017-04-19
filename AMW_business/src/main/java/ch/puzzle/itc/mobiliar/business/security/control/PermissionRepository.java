@@ -38,11 +38,13 @@ public class PermissionRepository {
 
 	private static boolean reloadDeployableRoleList;
 	private static boolean reloadRolesAndPermissionsList;
+	private static boolean reloadUserRestrictionsList;
 
 	@Schedule(hour = "*", minute = "*/20", persistent = false)
 	public void forceReloadingOfLists() {
 		reloadDeployableRoleList = true;
 		reloadRolesAndPermissionsList = true;
+		reloadUserRestrictionsList = true;
 	}
 
 	/**
@@ -57,6 +59,16 @@ public class PermissionRepository {
 	public List<RoleEntity> getRolesWithPermissions() {
 		TypedQuery<RoleEntity> query = entityManager.createQuery("select distinct r from RoleEntity r left join fetch r.permissions", RoleEntity.class);
 		return query.getResultList();
+	}
+
+	public List<RestrictionEntity> getUserWithRestrictions(String userName) {
+		TypedQuery<RestrictionEntity> query = entityManager.createQuery("select r from RestrictionEntity r where LOWER(r.user.name) =:userName", RestrictionEntity.class)
+				.setParameter("userName", userName.toLowerCase());
+		return query.getResultList();
+	}
+
+	public List<RestrictionEntity> getUsersWithRestrictions() {
+		return entityManager.createQuery("select r from RestrictionEntity r order by LOWER(r.user.name)", RestrictionEntity.class).getResultList();
 	}
 
 	public List<RoleEntity> getRolesWithRestrictions() {
@@ -74,6 +86,19 @@ public class PermissionRepository {
 				.setParameter("role", roleName.toLowerCase()).getSingleResult();
 	}
 
+	public List<UserRestrictionEntity> getUserRestrictionByName(String userName) {
+		List<UserRestrictionEntity> result =  entityManager.
+				createQuery("from UserRestrictionEntity u where LOWER(u.name) =:userName", UserRestrictionEntity.class)
+				.setParameter("userName", userName.toLowerCase()).getResultList();
+		return result == null ? new ArrayList<UserRestrictionEntity>() : result;
+	}
+
+	public UserRestrictionEntity createUserRestriciton(String userName) {
+		UserRestrictionEntity userRestrictionEntity = new UserRestrictionEntity(userName);
+		entityManager.persist(userRestrictionEntity);
+		return userRestrictionEntity;
+	}
+
 	public boolean isReloadDeployableRoleList() {
 		return reloadDeployableRoleList;
 	}
@@ -88,6 +113,14 @@ public class PermissionRepository {
 
 	public void setReloadRolesAndPermissionsList(boolean reloadRolesAndPermissionsList) {
 		this.reloadRolesAndPermissionsList = reloadRolesAndPermissionsList;
+	}
+
+	public boolean isReloadUserRestrictionsList() {
+		return reloadUserRestrictionsList;
+	}
+
+	public void setReloadUserRestrictionsList(boolean reloadUserRestrictionsList) {
+		this.reloadUserRestrictionsList = reloadUserRestrictionsList;
 	}
 
 	/**

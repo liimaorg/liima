@@ -40,8 +40,9 @@ public class RestrictionDTO {
     @Getter @Setter
     private Integer id;
     @Getter @Setter
-    @ApiModelProperty(required = true)
     private String roleName;
+    @Getter @Setter
+    private String userName;
     @Getter @Setter
     @ApiModelProperty(required = true)
     private Permission permission;
@@ -58,9 +59,10 @@ public class RestrictionDTO {
 
     RestrictionDTO(){}
 
-    public RestrictionDTO(Integer id, String roleName, Permission permission, Integer resourceGroupId, String resourceTypeName, ResourceTypePermission resourceTypePermission, String contextName, Action action) {
+    public RestrictionDTO(Integer id, String roleName, String  userName, Permission permission, Integer resourceGroupId, String resourceTypeName, ResourceTypePermission resourceTypePermission, String contextName, Action action) {
         this.id = id;
         this.roleName = roleName;
+        this.userName = userName;
         this.permission = permission;
         this.resourceGroupId = resourceGroupId;
         this.resourceTypeName = resourceTypeName;
@@ -71,7 +73,8 @@ public class RestrictionDTO {
 
     public RestrictionDTO(RestrictionEntity restrictionEntity) {
         this.id = restrictionEntity.getId();
-        this.roleName = restrictionEntity.getRole().getName();
+        this.roleName = restrictionEntity.getRole() != null ? restrictionEntity.getRole().getName() : null;
+        this.userName = restrictionEntity.getUser() != null ? restrictionEntity.getUser().getName() : null;
         this.permission = Permission.valueOf(restrictionEntity.getPermission().getValue());
         this.resourceGroupId = restrictionEntity.getResourceGroup() != null ? restrictionEntity.getResourceGroup().getId() : null;
         this.resourceTypeName = restrictionEntity.getResourceType() != null ? restrictionEntity.getResourceType().getName() : null;

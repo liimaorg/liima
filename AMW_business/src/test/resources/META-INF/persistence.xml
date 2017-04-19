@@ -40,6 +40,7 @@
                <class>ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity</class>
+               <class>ch.puzzle.itc.mobiliar.business.security.entity.UserRestrictionEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.database.entity.SequencesEntity</class>
