@@ -28,6 +28,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
@@ -462,11 +463,12 @@ public class PermissionBoundaryTest {
         ContextEntity context = new ContextEntity();
         when(entityManager.find(type.getClass(), 21)).thenReturn(type);
         when(contextLocator.getContextById(23)).thenReturn(context);
+        when(permissionService.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, type)).thenReturn(true);
         // when
-        permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(21, 23, true);
+        permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(21, 23, false);
         // then
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, type);
-        verify(permissionService, times(1)).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+        verify(permissionService, never()).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     @Test
@@ -480,10 +482,21 @@ public class PermissionBoundaryTest {
         ContextEntity context = new ContextEntity();
         when(entityManager.find(resource.getClass(), 21)).thenReturn(resource);
         when(contextLocator.getContextById(23)).thenReturn(context);
+        when(permissionService.hasPermission(Permission.RESOURCE, context, Action.UPDATE, rg, null)).thenReturn(false);
         // when
         permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(21, context, false);
         // then
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, context, Action.UPDATE, rg, null);
+        verify(permissionService, never()).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceMethodsWithCorrectParametersIfInTestingMode() {
+        // given // when
+        permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(21, 23, true);
+        // then
+        verify(permissionService, never()).hasPermission(any(Permission.class), any(ContextEntity.class),
+                any(Action.class), any(ResourceGroupEntity.class), any(ResourceTypeEntity.class));
         verify(permissionService, times(1)).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 

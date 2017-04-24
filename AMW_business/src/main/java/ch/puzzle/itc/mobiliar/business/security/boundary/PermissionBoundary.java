@@ -95,12 +95,13 @@ public class PermissionBoundary implements Serializable {
      */
     public boolean hasPermissionToEditPropertiesByResourceTypeAndContext(Integer resourceTypeId, Integer contextId,
                                                                          boolean isTestingMode) {
-        ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
-        ContextEntity context = contextLocator.getContextById(contextId);
-        if (permissionService.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType)) {
-            return true;
+        if (!isTestingMode) {
+            ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+            ContextEntity context = contextId == null ? null : contextLocator.getContextById(contextId);
+            return permissionService.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType);
         }
-        return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE) && isTestingMode;
+        // so we must be in TestingMode
+        return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     /**
@@ -124,11 +125,13 @@ public class PermissionBoundary implements Serializable {
      */
     public boolean hasPermissionToEditPropertiesByResourceAndContext(Integer resourceId, ContextEntity context,
                                                                      boolean isTestingMode) {
-        ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
-        if (permissionService.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource.getResourceGroup(), null)) {
-            return true;
+        if (!isTestingMode) {
+            ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
+            return permissionService.hasPermission(Permission.RESOURCE, context, Action.UPDATE,
+                    resource.getResourceGroup(), null);
         }
-        return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE) && isTestingMode;
+        // so we must be in TestingMode
+        return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     /**
