@@ -251,18 +251,22 @@ public class EditFunctionView implements Serializable {
      * Save function
      */
     public void saveFunction() {
-        switch (action){
-            case CREATE_NEW:
-                createNewFunction();
-                break;
-            case EDIT:
-                editFunction();
-                break;
-            case OVERWRITE:
-                overwriteFunction();
-                break;
+        if (amwFunction.getName() != null && !amwFunction.getName().isEmpty() && !amwFunction.getName().trim().isEmpty()) {
+            switch (action) {
+                case CREATE_NEW:
+                    createNewFunction();
+                    break;
+                case EDIT:
+                    editFunction();
+                    break;
+                case OVERWRITE:
+                    overwriteFunction();
+                    break;
+            }
+            refreshRevisionInformation(amwFunction.getId());
+        } else {
+            GlobalMessageAppender.addErrorMessage("Function name must not be empty");
         }
-        refreshRevisionInformation(amwFunction.getId());
     }
 
 
