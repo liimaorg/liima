@@ -159,14 +159,14 @@ public class TemplateEditor {
 		return false;
 	}
 
-    @HasPermission(permission = Permission.TEMPLATE_RESOURCE, action = Action.UPDATE)
+	@HasPermission(oneOfPermission = {Permission.TEMPLATE_RESOURCE, Permission.RESOURCE}, action = Action.UPDATE)
     public void saveTemplateForResource(TemplateDescriptorEntity template, Integer resourceId) throws AMWException {
-	   	saveTemplate(template,  entityManager.find(ResourceEntity.class, resourceId));
+		saveTemplate(template, entityManager.find(ResourceEntity.class, resourceId));
     }
 
-    @HasPermission(permission = Permission.TEMPLATE_RESOURCETYPE, action = Action.UPDATE)
+    @HasPermission(oneOfPermission = {Permission.TEMPLATE_RESOURCETYPE, Permission.RESOURCETYPE}, action = Action.UPDATE)
     public void saveTemplateForResourceType(TemplateDescriptorEntity template, Integer resourceTypeId) throws AMWException {
-	   saveTemplate(template,  entityManager.find(ResourceTypeEntity.class, resourceTypeId));
+		saveTemplate(template, entityManager.find(ResourceTypeEntity.class, resourceTypeId));
     }
 
 	public boolean hasPermissionToModifyResourceTypeTemplate(Integer resourceTypeId, boolean testingMode) {
