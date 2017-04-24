@@ -9,7 +9,7 @@
             migrating existing CRUD_RESOURCE permissions to restrictions (ADD_APP => RESOURCE)
         </comment>
 
-        <!--NEW_RES("New resource button. You can find this button in APPLICATIONSERVER/NODE/NOT DEFAULT RESOURCETYPE."),-->
+        <!--NEW_RES("New resource button. You can find this button in APPLICATIONSERVER/NODE/NOT DEFAULT RESOURCETYPE."), > CREATE for RESOURCES OF NON DEFAULT RESOURCETYPES -->
         <!--ADD_APPSERVER("Add application server. Path: Apps"),-->
         <!--ADD_APP("Add new application and/or application server. Path: Apps"),-->
         <!--ADD_NODE("Add a new node to an application server. Path_1: Apps -> Edit(application server) -> Add Node; Path_2: Resources -> APPLICATIONSERVER -> Edit -> Add Node"),-->
@@ -31,7 +31,7 @@
         <!-- NODE -->
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+550) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'CREATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'ADD_NODE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <!-- RES -->
-        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+600) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'CREATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'NEW_RES' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, resourceTypePermission, action, v) SELECT (TAMW_permission.id-TAMW_role.id+600) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'NON_DEFAULT_ONLY', 'CREATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'NEW_RES' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+600) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'EDIT_RES' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+600) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'DELETE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'DELETE_RES' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
 
