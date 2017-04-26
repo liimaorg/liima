@@ -36,6 +36,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.ALL;
@@ -133,7 +134,7 @@ public class PermissionService implements Serializable {
      */
     public List<RestrictionEntity> getUserRestrictions(String userName) {
         if (permissionRepository.isReloadUserRestrictionsList() || userRestrictions == null) {
-            userRestrictions = new HashMap<>();
+            userRestrictions = new ConcurrentHashMap<>();
         }
         if (!userRestrictions.containsKey(userName)) {
             userRestrictions.put(userName, Collections.unmodifiableList(permissionRepository.getUserWithRestrictions(userName)));
