@@ -125,16 +125,23 @@ public class PermissionService implements Serializable {
         return rolesWithRestrictions;
     }
 
-    private void getUserRestrictions() {
+    /**
+     * Returns a (cached) list of all Restrictions assigned to a specific UserRestriction
+     *
+     * @param userName
+     * @return
+     */
+    public List<RestrictionEntity> getUserRestrictions(String userName) {
         if (permissionRepository.isReloadUserRestrictionsList() || userRestrictions == null) {
             userRestrictions = new HashMap<>();
         }
-        if (!userRestrictions.containsKey(getCurrentUserName())) {
-            userRestrictions.put(getCurrentUserName(), Collections.unmodifiableList(permissionRepository.getUserWithRestrictions(getCurrentUserName())));
+        if (!userRestrictions.containsKey(userName)) {
+            userRestrictions.put(userName, Collections.unmodifiableList(permissionRepository.getUserWithRestrictions(userName)));
             if (permissionRepository.isReloadUserRestrictionsList()) {
                 permissionRepository.setReloadUserRestrictionsList(false);
             }
         }
+        return userRestrictions.get(userName);
     }
 
     /**
@@ -325,7 +332,7 @@ public class PermissionService implements Serializable {
         if (sessionContext == null) {
             return false;
         }
-        getUserRestrictions();
+        getUserRestrictions(getCurrentUserName());
         if (!userRestrictions.get(getCurrentUserName()).isEmpty()) {
             for (RestrictionEntity restrictionEntity : userRestrictions.get(getCurrentUserName())) {
                 if (restrictionEntity.getPermission().getValue().equals(permissionName)) {

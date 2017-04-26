@@ -189,4 +189,21 @@ public class RestrictionsRest {
         return Response.status(OK).entity(usersMap).build();
     }
 
+    /**
+     * Find a specific UserRestriction with its Restrictions identified by UserName
+     *
+     * @return List<RestrictionDTO>
+     */
+    @GET
+    @Path("/users/{userName}")
+    @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
+    public Response getUserRestriction(@ApiParam("UserName") @PathParam("userName") String userName) {
+        List<RestrictionDTO> restrictionList = new ArrayList<>();
+        final List<RestrictionEntity> restrictions = permissionBoundary.getRestrictionsByUserName(userName);
+        for (RestrictionEntity restriction : restrictions) {
+            restrictionList.add(new RestrictionDTO(restriction));
+        }
+        return Response.status(OK).entity(restrictionList).build();
+    }
+
 }

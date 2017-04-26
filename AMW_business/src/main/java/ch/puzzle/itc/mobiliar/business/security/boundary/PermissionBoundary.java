@@ -422,6 +422,16 @@ public class PermissionBoundary implements Serializable {
         return permissionService.getAllUserRestrictions();
     }
 
+    /**
+     * Returns a cached list of all Restrictions assigned to a specific UserRestriction (used by REST)
+     *
+     * @return List<RestrictionEntity>
+     */
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
+    public List<RestrictionEntity> getRestrictionsByUserName(String userName) {
+        return permissionService.getUserRestrictions(userName);
+    }
+
     private void validateRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
                                      ResourceTypePermission resourceTypePermission, String contextName, Action action,
                                      RestrictionEntity restriction) throws AMWException {
