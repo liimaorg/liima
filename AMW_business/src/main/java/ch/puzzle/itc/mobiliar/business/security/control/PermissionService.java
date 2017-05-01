@@ -588,7 +588,7 @@ public class PermissionService implements Serializable {
      * Check that the user is config_admin: can delete all resourcetype relationship.
      */
     public boolean hasPermissionToDeleteRelationType(ResourceTypeEntity resourceTypeEntity) {
-        if (hasPermission(Permission.RESOURCE, null, Action.UPDATE, null, resourceTypeEntity)) {
+        if (hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceTypeEntity)) {
             return true;
         }
         // TODO migrate Permission to Restriction (?)

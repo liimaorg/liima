@@ -239,12 +239,11 @@ public class TemplateEditDataProvider implements Serializable {
 	// edit in the reading sense of edit
 	private boolean canEdit() {
 		// context has to be global
-		return context.getIsGlobal()
-				&& (canAddEditOrDeleteShakedownTest() || (isEditResource() ? permission
-						.hasPermission(Permission.TEMPLATE_RESOURCE, null, Action.READ,
-								(ResourceEntity) resourceOrType, null) : permission
-						.hasPermission(Permission.TEMPLATE_RESOURCETYPE, null, Action.READ,
-								null, (ResourceTypeEntity) resourceOrType)));
+		return context.getIsGlobal() && (canAddEditOrDeleteShakedownTest() || (isEditResource() ?
+				(permission.hasPermission(Permission.TEMPLATE_RESOURCE, null, Action.READ, (ResourceEntity) resourceOrType, null) ||
+						permission.hasPermission(Permission.RESOURCE, null, Action.UPDATE, (ResourceEntity) resourceOrType, null)) :
+				(permission.hasPermission(Permission.TEMPLATE_RESOURCETYPE, null, Action.READ, null, (ResourceTypeEntity) resourceOrType) ||
+						permission.hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, (ResourceTypeEntity) resourceOrType))));
 	}
 
 	private boolean canAddEditOrDeleteShakedownTest() {
