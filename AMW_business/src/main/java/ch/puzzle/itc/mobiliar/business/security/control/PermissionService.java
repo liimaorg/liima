@@ -604,7 +604,7 @@ public class PermissionService implements Serializable {
      */
     public boolean hasPermissionToModifyResourceTemplate(ResourceEntity resource, boolean isTestingMode) {
         // ok if user has update permission on the Resource, context is always global, so we set it to null to omit the check
-        if (hasPermission(Permission.RESOURCE, null, Action.UPDATE, resource.getResourceGroup(), null) ||
+        if ( hasPermission(Permission.RESOURCE, null, Action.UPDATE, resource.getResourceGroup(), null) ||
                 hasPermission(Permission.TEMPLATE_RESOURCE, null, Action.UPDATE, resource.getResourceGroup(), null)) {
             return true;
         }

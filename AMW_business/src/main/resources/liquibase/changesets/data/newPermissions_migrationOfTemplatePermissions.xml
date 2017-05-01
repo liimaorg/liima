@@ -16,7 +16,7 @@
 
         <!--RES_RESTYPE_TEMPLATE_LIST("Allows to list the templates of resources and resource types"), > RESTYPE APP READ-->
         <!--EDIT_RESTYPE_TEMPLATE("Edit resource type tempalte. This is the List of Resource Type Templates in Templates panel. You can find this panel in all Resource/ResourceType screen"), READ-->
-        <!--SAVE_RESTYPE_TEMPLATE("Permission to persist a template for a resource type. WARNING: DON'T CHANGE THIS PERMISSION"), > UPDATE-->
+        <!--SAVE_RESTYPE_TEMPLATE("Permission to persist a template for a resource type. WARNING: DON'T CHANGE THIS PERMISSION"), > UPDATE APP -->
         <!--DELETE_RESTYPE_TEMPLATE("Delete resource type template. You can find this link in all Templates/Relationship Templates panel in all Resource/ResourceType screen"), > DELETE-->
         <!--CREATE_TEMPLATE("With this permission it can create a new template"), > RESOURCETYPE APP UPDATE (app_developer)-->
 
@@ -27,8 +27,8 @@
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+800) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'DELETE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'DELETE_RES_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
 
         <!-- RESOURCETYPE -->
-        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+830) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'RES_RESTYPE_TEMPLATE_LIST' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+830) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'EDIT_RESTYPE_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+830) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'RES_RESTYPE_TEMPLATE_LIST' AND TAMW_role_permission.roles_id = TAMW_role.id AND TAMW_role.id NOT IN (SELECT role_id FROM TAMW_restriction WHERE permission_id = (SELECT id FROM TAMW_permission WHERE value = 'EDIT_RESTYPE_TEMPLATE'));</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+830) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'UPDATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'SAVE_RESTYPE_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+830) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'UPDATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'CREATE_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT (TAMW_permission.id-TAMW_role.id+830) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'DELETE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'DELETE_RESTYPE_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
@@ -40,7 +40,13 @@
 
         <update tableName="TAMW_restriction">
             <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'INSTANCE_TEMP_LIST')" />
-            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'DELETE_RES_TEMPLATE' or value = 'EDIT_RES_TEMP' or value = 'SAVE_RES_TEMPLATE')</where>
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'DELETE_RES_TEMPLATE' or value = 'EDIT_RES_TEMP')</where>
+        </update>
+
+        <update tableName="TAMW_restriction">
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'INSTANCE_TEMP_LIST')" />
+            <column name="resourcetype_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_resourcetype WHERE name = 'APPLICATION')" />
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'SAVE_RES_TEMPLATE')</where>
         </update>
 
         <update tableName="TAMW_restriction">
