@@ -25,6 +25,7 @@ import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -166,6 +167,40 @@ public class RestrictionsRest {
             }
         }
         return Response.status(OK).entity(rolesMap).build();
+    }
+
+    /**
+     * Find a specific Role with its Restrictions identified by RoleName
+     *
+     * @return List<RestrictionDTO>
+     */
+    @GET
+    @Path("/roles/{roleName}")
+    @ApiOperation(value = "Get all Restrictions assigned to a specific Role")
+    public Response getRoleRestriction(@ApiParam("UserName") @PathParam("roleName") String roleName) {
+        List<RestrictionDTO> restrictionList = new ArrayList<>();
+        final List<RestrictionEntity> restrictions = permissionBoundary.getRestrictionsByRoleName(roleName);
+        for (RestrictionEntity restriction : restrictions) {
+            restrictionList.add(new RestrictionDTO(restriction));
+        }
+        return Response.status(OK).entity(restrictionList).build();
+    }
+
+    /**
+     * Get all available RoleNames
+     *
+     * @return List<String>
+     */
+    @GET
+    @Path("/roleNames/")
+    @ApiOperation(value = "Get all available RoleNames")
+    public Response getRoleNames() {
+        List<String> roleNameList = new ArrayList<>();
+        final List<RoleEntity> roles = permissionBoundary.getAllRoles();
+        for (RoleEntity role : roles) {
+            roleNameList.add(role.getName());
+        }
+        return Response.status(OK).entity(roleNameList).build();
     }
 
     /**

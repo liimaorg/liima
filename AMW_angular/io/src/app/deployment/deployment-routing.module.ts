@@ -9,7 +9,7 @@ import { PageNotFoundComponent } from '../not-found.component';
     {path: 'deployment/:deploymentId', component: DeploymentComponent},
     {path: 'deployment/:appserverName', component: DeploymentComponent},
     {path: 'deployment/:appserverName/:releaseName', component: DeploymentComponent},
-    {path: '**', component: PageNotFoundComponent},
+    // {path: '**', component: PageNotFoundComponent},
   ])],
   exports: [RouterModule]
 })

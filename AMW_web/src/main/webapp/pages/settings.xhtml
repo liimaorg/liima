@@ -74,6 +74,11 @@
 						rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
 						<f:param name="mode" value="rolPerm" />
 					</h:link></li>
+				<li class="${param['mode']=='perm' ? 'current': ''}"><h:outputLink
+						value="/AMW_angular/#/permission"
+						rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
+					Permissions
+					</h:outputLink></li>
 				<li class="${param['mode']=='appVersion' ? 'current': ''}"><h:link
 						value="Application Info">
 						<f:param name="mode" value="appVersion" />

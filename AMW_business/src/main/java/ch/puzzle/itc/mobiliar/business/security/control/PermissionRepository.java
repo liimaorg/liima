@@ -76,6 +76,16 @@ public class PermissionRepository {
 		return query.getResultList();
 	}
 
+	public List<RestrictionEntity> getRoleWithRestrictions(String roleName) {
+		return entityManager.createQuery("select r from RestrictionEntity r  where LOWER(r.role.name) =:roleName", RestrictionEntity.class)
+				.setParameter("roleName", roleName.toLowerCase()).getResultList();
+	}
+
+	public List<RoleEntity> getAllRoles() {
+		TypedQuery<RoleEntity> query = entityManager.createQuery("select r from RoleEntity r order by r.name", RoleEntity.class);
+		return query.getResultList();
+	}
+
 	public PermissionEntity getPermissionByName(String permissionName) {
 		return entityManager.createQuery("from PermissionEntity p where LOWER(p.value) =:permission", PermissionEntity.class)
 				.setParameter("permission", permissionName.toLowerCase()).getSingleResult();
