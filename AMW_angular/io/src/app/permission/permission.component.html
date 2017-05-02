@@ -26,10 +26,10 @@
         </div>
 
         <div class="form-group" *ngIf="restrictions.length > 0">
-          <label class="col-sm-2 control-label">Permissions</label>
+          <label class="col-sm-2 control-label"></label>
           <div class="col-sm-10 col-md-5">
               <ng-container *ngFor="let restriction of restrictions">
-                <amw-restriction [restriction]="restriction" (deleteRestriction)='removeRestriction($event)'></amw-restriction>
+                <amw-restriction [restriction]="restriction" [environments]="environments" [permissionNames]="permissionNames" [resourceGroups]="resourceGroups" [resourceTypes]="resourceTypes" (deleteRestriction)='removeRestriction($event)'></amw-restriction>
               </ng-container>
           </div>
         </div>

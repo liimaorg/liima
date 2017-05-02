@@ -72,8 +72,16 @@ public class ResourceTypeDomainService {
 	@Inject
 	private ResourcesScreenQueries queries;
 
+	public List<ResourceTypeEntity> getAllResourceTypesWithoutChildren() {
+		return entityManager.createQuery("select n from ResourceTypeEntity n order by n.name asc").getResultList();
+	}
+
 	public List<ResourceTypeEntity> getResourceTypes() {
 		return QueryUtils.fetch(ResourceTypeEntity.class, fetchAllResourceTypes(), 0, -1);
+	}
+
+	public ResourceTypeEntity getResourceType(Integer resourceTypeId) {
+		return entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 	}
 
 	public List<ResourceRelationTypeEntity> loadRelatedResourceTypeRelations(Integer resourceTypeId) {

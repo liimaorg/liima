@@ -19,6 +19,14 @@ export class PermissionService {
     return resource$;
   }
 
+  getAllPermissionNames(): Observable<string[]> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/permissions/restrictions/permissionNames`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   getRoleWithRestrictions(roleName: string): Observable<Restriction[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/roles/${roleName}`, {headers: this.getHeaders()})

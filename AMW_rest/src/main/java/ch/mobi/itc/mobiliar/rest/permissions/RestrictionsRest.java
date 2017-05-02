@@ -24,6 +24,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -201,6 +202,23 @@ public class RestrictionsRest {
             roleNameList.add(role.getName());
         }
         return Response.status(OK).entity(roleNameList).build();
+    }
+
+    /**
+     * Get all available PermissionNames
+     *
+     * @return List<String>
+     */
+    @GET
+    @Path("/permissionNames/")
+    @ApiOperation(value = "Get all available PermissionNames")
+    public Response getPermissionNames() {
+        List<String> permissionNameList = new ArrayList<>();
+        final List<Permission> permissions = permissionBoundary.getAllAvailablePermissions();
+        for (Permission permission : permissions) {
+            permissionNameList.add(permission.name());
+        }
+        return Response.status(OK).entity(permissionNameList).build();
     }
 
     /**

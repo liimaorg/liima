@@ -32,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
@@ -78,6 +79,9 @@ public class ResourcesRest {
 
     @Inject
     ResourceRelationsRest resourceRelations;
+
+    @Inject
+    ResourceTypeLocator resourceTypeLocator;
 
     @Inject
     ResourceRelationPropertiesRest resourceRelationProperties;
@@ -184,6 +188,18 @@ public class ResourcesRest {
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
     }
 
+    @Path("/resourceGroups")
+    @GET
+    @ApiOperation(value = "Get all available ResourceGroups - used by Angular")
+    public List<ResourceDTO> getAllResourceGroups() throws ValidationException {
+        List<ResourceGroupEntity> resourceGroups = resourceGroupLocator.getAllResourceGroupsByName();
+        List<ResourceDTO> resourceDTOs = new ArrayList<>();
+        for (ResourceGroupEntity resourceGroup : resourceGroups) {
+            resourceDTOs.add(new ResourceDTO(resourceGroup, null));
+        }
+        return resourceDTOs;
+    }
+
     @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}")
     @GET
     @ApiOperation(value = "Get resource in specific release - used by Angular")
@@ -253,6 +269,18 @@ public class ResourcesRest {
         SortedSet<ReleaseEntity> deployableReleases = new TreeSet(releaseMgmtService.getDeployableReleasesForResourceGroup(group));
         ReleaseDTO mostRelevant = new ReleaseDTO(resourceDependencyResolverService.findMostRelevantRelease(deployableReleases, null));
         return Response.ok(mostRelevant).build();
+    }
+
+    @Path("/resourceTypes")
+    @GET
+    @ApiOperation(value = "Get all available ResourceTypes - used by Angular")
+    public List<ResourceTypeDTO> getAllResourceTypes() throws ValidationException {
+        List<ResourceTypeEntity> resourceTypes = resourceTypeLocator.getAllResourceTypes();
+        List<ResourceTypeDTO> resourceTypeDTOs = new ArrayList<>();
+        for (ResourceTypeEntity resourceType : resourceTypes) {
+            resourceTypeDTOs.add(new ResourceTypeDTO(resourceType));
+        }
+        return resourceTypeDTOs;
     }
 
     // Fuer JavaBatch Monitor

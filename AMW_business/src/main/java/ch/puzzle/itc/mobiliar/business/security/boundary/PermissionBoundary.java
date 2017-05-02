@@ -47,6 +47,7 @@ import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -448,11 +449,21 @@ public class PermissionBoundary implements Serializable {
     /**
      * Returns a list of all Roles (used by REST)
      *
-     * @return List<Role>
+     * @return List<RoleEntity>
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public List<RoleEntity> getAllRoles() {
         return permissionRepository.getAllRoles();
+    }
+
+    /**
+     * Returns a list of all Permissions (used by REST)
+     *
+     * @return List<Permission>
+     */
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
+    public List<Permission> getAllAvailablePermissions() {
+        return Arrays.asList(Permission.values());
     }
 
     private void validateRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
