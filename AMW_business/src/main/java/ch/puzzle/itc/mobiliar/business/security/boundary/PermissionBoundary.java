@@ -503,21 +503,23 @@ public class PermissionBoundary implements Serializable {
             throw new AMWException("Missing PermissionName");
         }
 
+        ResourceGroupEntity resourceGroup = null;
         if (resourceGroupId != null) {
-            ResourceGroupEntity resourceGroup = resourceGroupRepository.find(resourceGroupId);
+            resourceGroup = resourceGroupRepository.find(resourceGroupId);
             if (resourceGroup == null) {
                 throw new AMWException("ResourceGroup with id " + resourceGroupId +  " not found.");
             }
-            restriction.setResourceGroup(resourceGroup);
         }
+        restriction.setResourceGroup(resourceGroup);
 
+        ResourceTypeEntity resourceType = null;
         if (resourceTypeName != null) {
-            ResourceTypeEntity resourceType = resourceTypeRepository.getByName(resourceTypeName);
+            resourceType = resourceTypeRepository.getByName(resourceTypeName);
             if (resourceType == null) {
                 throw new AMWException("ResourceType " + resourceTypeName +  " not found.");
             }
-            restriction.setResourceType(resourceType);
         }
+        restriction.setResourceType(resourceType);
 
         if (resourceTypePermission != null) {
             restriction.setResourceTypePermission(resourceTypePermission);
@@ -529,6 +531,8 @@ public class PermissionBoundary implements Serializable {
             } catch (Exception e) {
                 throw new AMWException("Context " + contextName +  " not found.");
             }
+        } else {
+            restriction.setContext(null);
         }
 
         if (action != null) {

@@ -8,8 +8,7 @@ import { AppState } from '../app.service';
 
 @Component({
   selector: 'amw-resource-list',
-  templateUrl: './resource-list.component.html',
-  providers: [ResourceService]
+  templateUrl: './resource-list.component.html'
 })
 export class ResourceListComponent implements OnInit {
   resource: Resource = null;

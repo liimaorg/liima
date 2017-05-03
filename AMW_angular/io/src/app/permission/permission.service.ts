@@ -14,7 +14,7 @@ export class PermissionService {
   getAllRoleNames(): Observable<string[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/roleNames`, {headers: this.getHeaders()})
-      .map((response: Response) => response.json())
+      .map(this.extractPayload)
       .catch(handleError);
     return resource$;
   }
@@ -22,7 +22,7 @@ export class PermissionService {
   getAllPermissionNames(): Observable<string[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/permissionNames`, {headers: this.getHeaders()})
-      .map((response: Response) => response.json())
+      .map(this.extractPayload)
       .catch(handleError);
     return resource$;
   }
@@ -30,7 +30,7 @@ export class PermissionService {
   getRoleWithRestrictions(roleName: string): Observable<Restriction[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/roles/${roleName}`, {headers: this.getHeaders()})
-      .map((response: Response) => response.json())
+      .map(this.extractPayload)
       .catch(handleError);
     return resource$;
   }
@@ -38,7 +38,7 @@ export class PermissionService {
   getUserWithRestrictions(userName: string): Observable<Restriction[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/users/${userName}`, {headers: this.getHeaders()})
-      .map((response: Response) => response.json())
+      .map(this.extractPayload)
       .catch(handleError);
     return resource$;
   }
@@ -46,9 +46,21 @@ export class PermissionService {
   removeRestriction(id: number) {
     let resource$ = this.http
       .delete(`${this.baseUrl}/permissions/restrictions/${id}`, {headers: this.getHeaders()})
-      .map((response: Response) => response.json())
+      .map(this.extractPayload)
       .catch(handleError);
     return resource$;
+  }
+
+  updateRestriction(restriction: Restriction): Observable<Restriction> {
+    return this.http.put(`${this.baseUrl}/permissions/restrictions/${restriction.id}`, restriction, {headers: this.postHeaders()})
+      .map(this.extractPayload)
+      .catch(handleError);
+  }
+
+  createRestriction(restriction: Restriction): Observable<Restriction> {
+    return this.http.post(`${this.baseUrl}/permissions/restrictions/`, restriction, {headers: this.postHeaders()})
+      .map(this.extractPayload)
+      .catch(handleError);
   }
 
   private getHeaders() {
@@ -63,12 +75,17 @@ export class PermissionService {
     headers.append('Accept', 'application/json');
     return headers;
   }
+
+  // to json without throwing an error if response is empty
+  private extractPayload(res: Response) {
+    return res.text() ? res.json() : {};
+  }
 }
 
 // this could also be a private method of the component class
 function handleError(error: any) {
   // log error
-  // could be something more sofisticated
+  // could be something more sofisticate
   let errorMsg = error.message || `Error retrieving your data`;
   console.error(errorMsg);
 

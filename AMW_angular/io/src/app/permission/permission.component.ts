@@ -11,8 +11,7 @@ import * as _ from 'lodash';
 
 @Component({
   selector: 'amw-permission',
-  templateUrl: './permission.component.html',
-  providers: [ PermissionService ]
+  templateUrl: './permission.component.html'
 })
 
 export class PermissionComponent implements OnInit {
@@ -20,13 +19,11 @@ export class PermissionComponent implements OnInit {
   // loaded only once
   roleNames: string[] = [];
   permissionNames: string[] = [];
-  anyEnvironment: Environment = { id: 0, name: '', parent: '', selected: false };
-  environments: Environment[] = [ this.anyEnvironment ];
-  resourceGroups: Resource[] = [];
-  resourceTypes: ResourceType[] = [];
+  environments: Environment[] = [ { id: null, name: null, parent: null, selected: false } ];
+  resourceGroups: Resource[] = [ { id: null, name: null, type: null, version: null, release: null, releases: [] } ];
+  resourceTypes: ResourceType[] = [ { id: null, name: null } ];
 
   restrictions: Restriction[] = [];
-
   selectedRoleName: string = '';
 
   errorMessage: string = '';
@@ -61,13 +58,22 @@ export class PermissionComponent implements OnInit {
 
   removeRestriction(id: number) {
     this.permissionService.removeRestriction(id).subscribe(
-      /* happy path */ (r) => this.successMessage = 'Successfuly removed '+id,
+      /* happy path */ (r) => this.successMessage = 'Successfuly removed ' + id,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.updateAssignedPermissions(id));
+      /* onComplete */ () => _.remove(this.restrictions, { id: id }));
   }
 
-  private updateAssignedPermissions(id: number) {
-    _.remove(this.restrictions, { id: id });
+  persistRestriction(restriction: Restriction) {
+    if (restriction.id != null) {
+      console.log('Updating '+restriction.id);
+      this.permissionService.updateRestriction(restriction).subscribe(
+        /* happy path */ (r) => this.successMessage = 'Successfuly updated ' + restriction.id,
+        /* error path */ (e) => this.errorMessage = e);
+    } else {
+      this.permissionService.createRestriction(restriction).subscribe(
+        /* happy path */ (r) => this.successMessage = 'Successfuly created ' + restriction.id,
+        /* error path */ (e) => this.errorMessage = e);
+    }
   }
 
   private getAllRoleNames() {
@@ -101,7 +107,7 @@ export class PermissionComponent implements OnInit {
     this.isLoading = true;
     this.resourceService
       .getAllResourceGroups().subscribe(
-      /* happy path */ (r) => this.resourceGroups = r,
+      /* happy path */ (r) => this.resourceGroups = this.resourceGroups.concat(r),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }
@@ -110,7 +116,7 @@ export class PermissionComponent implements OnInit {
     this.isLoading = true;
     this.resourceService
       .getAllResourceTypes().subscribe(
-      /* happy path */ (r) => this.resourceTypes = r,
+      /* happy path */ (r) => this.resourceTypes = this.resourceTypes.concat(r),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }
