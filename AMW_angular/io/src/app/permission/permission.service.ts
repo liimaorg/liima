@@ -59,7 +59,10 @@ export class PermissionService {
 
   createRestriction(restriction: Restriction): Observable<Restriction> {
     return this.http.post(`${this.baseUrl}/permissions/restrictions/`, restriction, {headers: this.postHeaders()})
-      .map(this.extractPayload)
+      .flatMap((res:Response) => {
+        //var location = res.headers.get('Location');
+        return this.http.get(this.baseUrl + res.headers.get('Location'));
+      }).map(this.extractPayload)
       .catch(handleError);
   }
 

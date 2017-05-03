@@ -24,7 +24,9 @@ export class PermissionComponent implements OnInit {
   resourceTypes: ResourceType[] = [ { id: null, name: null } ];
 
   restrictions: Restriction[] = [];
-  selectedRoleName: string = '';
+  selectedRoleName: string = null;
+  // new restriction
+  restriction: Restriction = null;
 
   errorMessage: string = '';
   successMessage: string = '';
@@ -40,6 +42,7 @@ export class PermissionComponent implements OnInit {
 
     this.appState.set('navShow', true);
     this.appState.set('navTitle', 'Roles');
+    this.appState.set('navItems', [ { title: 'Roles', target: '/permission/role' }, { title: 'Users', target: '/permission/user' } ]);
     this.appState.set('pageTitle', 'Permissions');
 
     console.log('hello `Permission` component');
@@ -54,13 +57,18 @@ export class PermissionComponent implements OnInit {
 
   onChangeRole() {
     this.getRoleWithRestrictions(this.selectedRoleName);
+    this.restriction = null;
   }
 
   removeRestriction(id: number) {
-    this.permissionService.removeRestriction(id).subscribe(
-      /* happy path */ (r) => this.successMessage = 'Successfuly removed ' + id,
-      /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => _.remove(this.restrictions, { id: id }));
+    if (id) {
+      this.permissionService.removeRestriction(id).subscribe(
+        /* happy path */ (r) => this.successMessage = 'Successfuly removed ' + id,
+        /* error path */ (e) => this.errorMessage = e,
+        /* onComplete */ () => _.remove(this.restrictions, {id: id}));
+    } else {
+      this.restriction = null;
+    }
   }
 
   persistRestriction(restriction: Restriction) {
@@ -71,9 +79,15 @@ export class PermissionComponent implements OnInit {
         /* error path */ (e) => this.errorMessage = e);
     } else {
       this.permissionService.createRestriction(restriction).subscribe(
-        /* happy path */ (r) => this.successMessage = 'Successfuly created ' + restriction.id,
-        /* error path */ (e) => this.errorMessage = e);
+        /* happy path */ (r) => this.restriction = r,
+        /* error path */ (e) => this.errorMessage = e,
+        /* onComplete */ () => this.successMessage = 'Successfuly created ' + this.restriction.id);
     }
+  }
+
+  addRestriction() {
+    this.restriction = { id: null, roleName: this.selectedRoleName, userName: null, permission: null,
+      resourceGroupId: null, resourceTypeName: null, resourceTypePermission: null, contextName: null, action: null };
   }
 
   private getAllRoleNames() {

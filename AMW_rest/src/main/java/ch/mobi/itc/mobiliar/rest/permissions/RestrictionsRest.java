@@ -67,6 +67,9 @@ public class RestrictionsRest {
         if (request.getId() != null) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
         }
+        if (request.getPermission() == null) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Permission must not be null")).build();
+        }
         try {
             id = permissionBoundary.createRestriction(request.getRoleName(), request.getUserName(), request.getPermission().name(), request.getResourceGroupId(),
                     request.getResourceTypeName(), request.getResourceTypePermission(), request.getContextName(), request.getAction());

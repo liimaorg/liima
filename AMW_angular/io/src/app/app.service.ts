@@ -34,4 +34,8 @@ export class AppState {
     // simple object clone
     return JSON.parse(JSON.stringify( object ));
   }
+
+  fixMe(val: any) {
+    return Array.from(val);
+  }
 }
