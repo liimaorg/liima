@@ -86,6 +86,11 @@ public class PermissionRepository {
 		return query.getResultList();
 	}
 
+	public List<String> getAllUserRestrictionNames() {
+		TypedQuery<String> query = entityManager.createQuery("select u.name from UserRestrictionEntity u order by u.name", String.class);
+		return query.getResultList();
+	}
+
 	public PermissionEntity getPermissionByName(String permissionName) {
 		return entityManager.createQuery("from PermissionEntity p where LOWER(p.value) =:permission", PermissionEntity.class)
 				.setParameter("permission", permissionName.toLowerCase()).getSingleResult();

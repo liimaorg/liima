@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { PermissionService } from  './permission.service';
 import { Environment } from '../deployment/environment';
 import { EnvironmentService } from '../deployment/environment.service';
@@ -14,17 +15,21 @@ import * as _ from 'lodash';
   templateUrl: './permission.component.html'
 })
 
-export class PermissionComponent implements OnInit {
+export class PermissionComponent implements OnInit, OnDestroy {
 
   // loaded only once
   roleNames: string[] = [];
+  userNames: string[] = [];
   permissionNames: string[] = [];
   environments: Environment[] = [ { id: null, name: null, parent: null, selected: false } ];
   resourceGroups: Resource[] = [ { id: null, name: null, type: null, version: null, release: null, releases: [] } ];
   resourceTypes: ResourceType[] = [ { id: null, name: null } ];
 
+  // role | user
+  restrictionType: string = 'role';
   restrictions: Restriction[] = [];
   selectedRoleName: string = null;
+  selectedUserName: string = null;
   // new restriction
   restriction: Restriction = null;
 
@@ -35,28 +40,41 @@ export class PermissionComponent implements OnInit {
   constructor(private permissionService: PermissionService,
               private environmentService: EnvironmentService,
               private resourceService: ResourceService,
+              private activatedRoute: ActivatedRoute,
               private appState: AppState) {
   }
 
   ngOnInit() {
+    console.log('hello `Permission` component');
 
     this.appState.set('navShow', true);
-    this.appState.set('navTitle', 'Roles');
     this.appState.set('navItems', [ { title: 'Roles', target: '/permission/role' }, { title: 'Users', target: '/permission/user' } ]);
     this.appState.set('pageTitle', 'Permissions');
 
-    console.log('hello `Permission` component');
+    this.activatedRoute.params.subscribe(
+      (param: any) => {
+        this.onChangeType(param['restrictionType']);
+    });
 
-    this.getAllRoleNames();
     this.getAllPermissionNames();
     this.getAllEnvironments();
     this.getAllResourceGroups();
     this.getAllResourceTypes();
+  }
 
+  ngOnDestroy() {
+    this.appState.set('navItems', null);
   }
 
   onChangeRole() {
+    console.log('onChangeRole');
     this.getRoleWithRestrictions(this.selectedRoleName);
+    this.restriction = null;
+  }
+
+  onChangeUser() {
+    console.log('onChangeUser');
+    this.getUserWithRestrictions(this.selectedUserName);
     this.restriction = null;
   }
 
@@ -73,7 +91,6 @@ export class PermissionComponent implements OnInit {
 
   persistRestriction(restriction: Restriction) {
     if (restriction.id != null) {
-      console.log('Updating '+restriction.id);
       this.permissionService.updateRestriction(restriction).subscribe(
         /* happy path */ (r) => this.successMessage = 'Successfuly updated ' + restriction.id,
         /* error path */ (e) => this.errorMessage = e);
@@ -86,8 +103,29 @@ export class PermissionComponent implements OnInit {
   }
 
   addRestriction() {
-    this.restriction = { id: null, roleName: this.selectedRoleName, userName: null, permission: null,
+    this.restriction = { id: null, roleName: this.selectedRoleName, userName: this.selectedUserName, permission: null,
       resourceGroupId: null, resourceTypeName: null, resourceTypePermission: null, contextName: null, action: null };
+  }
+
+  private onChangeType(type: string) {
+    console.log('onChangeType');
+    this.errorMessage = '';
+    this.successMessage= '';
+    this.restrictions = [];
+    this.restrictionType = (type === 'role' || type === 'user') ? type : 'role';
+    if (this.restrictionType === 'user') {
+      this.appState.set('navTitle', 'Users');
+      this.selectedRoleName = null;
+      if (this.userNames.length < 1) {
+        this.getAllUserNames();
+      }
+    } else {
+      this.appState.set('navTitle', 'Roles');
+      this.selectedUserName = null;
+      if (this.roleNames.length < 1) {
+        this.getAllRoleNames();
+      }
+    }
   }
 
   private getAllRoleNames() {
@@ -95,6 +133,15 @@ export class PermissionComponent implements OnInit {
     this.permissionService
       .getAllRoleNames().subscribe(
       /* happy path */ (r) => this.roleNames = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => this.isLoading = false);
+  }
+
+  private getAllUserNames() {
+    this.isLoading = true;
+    this.permissionService
+      .getAllUserRestrictionNames().subscribe(
+      /* happy path */ (r) => this.userNames = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }
@@ -139,6 +186,15 @@ export class PermissionComponent implements OnInit {
     this.isLoading = true;
     this.permissionService
       .getRoleWithRestrictions(roleName).subscribe(
+      /* happy path */ (r) => this.restrictions = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => this.isLoading = false);
+  }
+
+  private getUserWithRestrictions(userName: string) {
+    this.isLoading = true;
+    this.permissionService
+      .getUserWithRestrictions(userName).subscribe(
       /* happy path */ (r) => this.restrictions = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);

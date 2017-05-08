@@ -68,7 +68,7 @@ public enum Permission {
 
     DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value"),
 
-    SAVE_PROPERTY("With this permission it can modify the property"),
+    SAVE_PROPERTY("With this permission it can modify a property descriptor"),
 
     SET_SOFTLINK_ID_OR_REF("Allows to manually set a softlink id or a softlink reference respective"),
 
@@ -183,10 +183,6 @@ public enum Permission {
     // MANAGE_AMW_FUNCTIONS("Create, edit and delete all AmwFunctions on Resource Types and Resource Instances"),
     // MANAGE_AMW_APP_INSTANCE_FUNCTIONS("Create, edit and delete all AmwFunctions on App Instances"),
     // VIEW_AMW_FUNCTIONS("Can see AmwFunctions"),
-
-    // CANDIDATES (assigned only to config_admin)
-    // EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen."),
-
 
     // REMOVED
     // RENAME_APPSERVER("With this permission it is possible to rename all AppServer instances."), REMOVED

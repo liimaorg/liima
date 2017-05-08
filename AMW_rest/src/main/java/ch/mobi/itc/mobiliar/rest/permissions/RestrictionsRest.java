@@ -208,6 +208,18 @@ public class RestrictionsRest {
     }
 
     /**
+     * Get all available UserRestrictionNames
+     *
+     * @return List<String>
+     */
+    @GET
+    @Path("/userRestrictionNames/")
+    @ApiOperation(value = "Get all available userRestrictionNames")
+    public Response getUserNames() {
+        return Response.status(OK).entity(permissionBoundary.getAllUserRestrictionNames()).build();
+    }
+
+    /**
      * Get all available PermissionNames
      *
      * @return List<String>

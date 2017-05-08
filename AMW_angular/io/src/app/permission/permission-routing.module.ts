@@ -6,8 +6,7 @@ import { PageNotFoundComponent } from '../not-found.component';
 @NgModule({
   imports: [RouterModule.forChild([
     {path: 'permission', component: PermissionComponent},
-    {path: 'permission/role', component: PermissionComponent},
-    {path: 'permission/user', component: PermissionComponent},
+    {path: 'permission/:restrictionType', component: PermissionComponent},
     {path: '**', component: PageNotFoundComponent},
   ])],
   exports: [RouterModule]

@@ -38,12 +38,8 @@
     </ng-container>
     <ng-container *ngIf="appState.get('navItems')">
       <ng-container *ngFor="let item of appState.fixMe(appState.get('navItems'))">
-        <ng-container *ngIf="item.title === appState.get('navTitle')">
-          <li class="active"><a href="">{{item.title}}</a></li>
-        </ng-container>
-        <ng-container *ngIf="item.title != appState.get('navTitle')">
-          <li><a href="#{{item.target}}">{{item.title}}</a></li>
-        </ng-container>
+          <li [ngClass]="(item.title === appState.get('navTitle')) ? 'active' : ''">
+            <a href="#{{item.target}}" (click)="navigateTo(item)">{{item.title}}</a></li>
       </ng-container>
     </ng-container>
   </ul>

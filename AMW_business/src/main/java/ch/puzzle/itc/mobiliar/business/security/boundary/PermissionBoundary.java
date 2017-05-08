@@ -427,6 +427,16 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
+     * Returns an uncached list of all available UserRestriction names (used by REST)
+     *
+     * @return List<String> UserRestriction.name
+     */
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
+    public List<String> getAllUserRestrictionNames() {
+        return permissionRepository.getAllUserRestrictionNames();
+    }
+
+    /**
      * Returns a cached list of all Restrictions assigned to a specific UserRestriction (used by REST)
      *
      * @return List<RestrictionEntity>

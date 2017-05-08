@@ -19,6 +19,14 @@ export class PermissionService {
     return resource$;
   }
 
+  getAllUserRestrictionNames(): Observable<string[]> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/permissions/restrictions/userRestrictionNames`, {headers: this.getHeaders()})
+      .map(this.extractPayload)
+      .catch(handleError);
+    return resource$;
+  }
+
   getAllPermissionNames(): Observable<string[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/permissionNames`, {headers: this.getHeaders()})
@@ -59,7 +67,7 @@ export class PermissionService {
 
   createRestriction(restriction: Restriction): Observable<Restriction> {
     return this.http.post(`${this.baseUrl}/permissions/restrictions/`, restriction, {headers: this.postHeaders()})
-      .flatMap((res:Response) => {
+      .flatMap((res: Response) => {
         //var location = res.headers.get('Location');
         return this.http.get(this.baseUrl + res.headers.get('Location'));
       }).map(this.extractPayload)
