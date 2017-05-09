@@ -19,11 +19,11 @@ export class RestrictionComponent {
   @Input() environments: Environment[] = [];
   @Input() resourceGroups: Resource[] = [];
   @Input() resourceTypes: ResourceType[] = [];
-  @Output() deleteRestriction: EventEmitter<number> = new EventEmitter<number>();
+  @Output() cancelEdit: EventEmitter<Restriction> = new EventEmitter<Restriction>();
   @Output() saveRestriction: EventEmitter<Restriction> = new EventEmitter<Restriction>();
 
-  removeRestriction(id: number) {
-    this.deleteRestriction.emit(id);
+  cancel(restriction: Restriction) {
+    this.cancelEdit.emit(restriction);
   }
 
   persistRestriction(restriction: Restriction) {

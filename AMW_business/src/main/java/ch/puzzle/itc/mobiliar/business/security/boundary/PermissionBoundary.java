@@ -467,13 +467,13 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
-     * Returns a list of all Permissions (used by REST)
+     * Returns a list of all PermissionEntities (used by REST)
      *
-     * @return List<Permission>
+     * @return List<PermissionEntity>
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
-    public List<Permission> getAllAvailablePermissions() {
-        return Arrays.asList(Permission.values());
+    public List<PermissionEntity> getAllAvailablePermissions() {
+        return permissionRepository.getAllPermissions();
     }
 
     private void validateRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,

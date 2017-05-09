@@ -59,7 +59,7 @@ export class PermissionService {
     return resource$;
   }
 
-  updateRestriction(restriction: Restriction): Observable<Restriction> {
+  updateRestriction(restriction: Restriction) {
     return this.http.put(`${this.baseUrl}/permissions/restrictions/${restriction.id}`, restriction, {headers: this.postHeaders()})
       .map(this.extractPayload)
       .catch(handleError);

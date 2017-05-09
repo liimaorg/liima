@@ -30,8 +30,10 @@ export class PermissionComponent implements OnInit, OnDestroy {
   restrictions: Restriction[] = [];
   selectedRoleName: string = null;
   selectedUserName: string = null;
-  // new restriction
+  // edit or add restriction
   restriction: Restriction = null;
+  // backup for cancel
+  backupRestriction: Restriction = null;
 
   errorMessage: string = '';
   successMessage: string = '';
@@ -81,7 +83,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   removeRestriction(id: number) {
     if (id) {
       this.permissionService.removeRestriction(id).subscribe(
-        /* happy path */ (r) => this.successMessage = 'Successfuly removed ' + id,
+        /* happy path */ (r) => '',
         /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => _.remove(this.restrictions, {id: id}));
     } else {
@@ -89,16 +91,33 @@ export class PermissionComponent implements OnInit, OnDestroy {
     }
   }
 
-  persistRestriction(restriction: Restriction) {
-    if (restriction.id != null) {
-      this.permissionService.updateRestriction(restriction).subscribe(
-        /* happy path */ (r) => this.successMessage = 'Successfuly updated ' + restriction.id,
-        /* error path */ (e) => this.errorMessage = e);
+  cancel(restriction: Restriction) {
+    this.updatePermissions(this.backupRestriction);
+    this.restriction = null;
+    this.backupRestriction = null;
+  }
+
+  modifyRestriction(restriction: Restriction) {
+    this.backupRestriction = {...restriction};
+    this.restriction = restriction;
+  }
+
+  persistRestriction() {
+    if (this.restriction.id != null) {
+      this.permissionService.updateRestriction(this.restriction).subscribe(
+        /* happy path */ (r) => '',
+        /* error path */ (e) => this.errorMessage = e,
+        /* onComplete */ () => {
+          this.updatePermissions(this.restriction);
+          this.restriction = null;
+          this.backupRestriction = null; });
     } else {
-      this.permissionService.createRestriction(restriction).subscribe(
+      this.permissionService.createRestriction(this.restriction).subscribe(
         /* happy path */ (r) => this.restriction = r,
         /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */ () => this.successMessage = 'Successfuly created ' + this.restriction.id);
+        /* onComplete */ () => {
+          this.updatePermissions(this.restriction);
+          this.restriction = null; });
     }
   }
 
@@ -198,6 +217,15 @@ export class PermissionComponent implements OnInit, OnDestroy {
       /* happy path */ (r) => this.restrictions = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
+  }
+
+  private updatePermissions(restriction: Restriction) {
+    let i = _.findIndex(this.restrictions, _.pick(restriction, 'id'));
+    if( i !== -1) {
+      this.restrictions.splice(i, 1, restriction);
+    } else {
+      this.restrictions.push(restriction);
+    }
   }
 
 }

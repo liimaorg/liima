@@ -96,6 +96,11 @@ public class PermissionRepository {
 				.setParameter("permission", permissionName.toLowerCase()).getSingleResult();
 	}
 
+    public List<PermissionEntity> getAllPermissions() {
+        TypedQuery<PermissionEntity> query = entityManager.createQuery("select p from PermissionEntity p order by p.value", PermissionEntity.class);
+        return query.getResultList();
+    }
+
 	public RoleEntity getRoleByName(String roleName) {
 		return entityManager.createQuery("from RoleEntity r where LOWER(r.name) =:role", RoleEntity.class)
 				.setParameter("role", roleName.toLowerCase()).getSingleResult();
