@@ -94,16 +94,14 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   cancel() {
     // reset restriction list, rollback to the last persisted state
-    this.updatePermissions(this.backupRestriction);
+    this.resetPermissionList();
     this.restriction = null;
     this.backupRestriction = null;
   }
 
   modifyRestriction(restriction: Restriction) {
     // reset restriction list, discard unsaved changes
-    if (this.backupRestriction) {
-      this.updatePermissions(this.backupRestriction);
-    }
+    this.resetPermissionList();
     this.backupRestriction = {...restriction};
     this.restriction = restriction;
   }
@@ -223,6 +221,12 @@ export class PermissionComponent implements OnInit, OnDestroy {
       /* happy path */ (r) => this.restrictions = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
+  }
+
+  private resetPermissionList() {
+    if (this.backupRestriction) {
+      this.updatePermissions(this.backupRestriction);
+    }
   }
 
   private updatePermissions(restriction: Restriction) {

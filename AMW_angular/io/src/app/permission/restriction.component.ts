@@ -69,23 +69,20 @@ export class RestrictionComponent implements OnChanges {
   }
 
   private deSelectAllEnvironments() {
-    let groups: string[] = this.getEnvironmentGroups();
-    for (let i = 0; i < groups.length; i++) {
-      for (let j = 0; j < this.groupedEnvironments[groups[i]].length; j++) {
-        this.groupedEnvironments[groups[i]][j].selected = false;
-      }
-    }
+    this.getEnvironmentGroups().forEach((group) => {
+      this.groupedEnvironments[group].forEach((environment) => environment.selected = false);
+    });
   }
 
   private preSelectEnv(contextName: string) {
-    let groups: string[] = this.getEnvironmentGroups();
-    for (let i = 0; i < groups.length; i++) {
-      for (let j = 0; j < this.groupedEnvironments[groups[i]].length; j++) {
-        if (this.groupedEnvironments[groups[i]][j].name === contextName) {
-          this.groupedEnvironments[groups[i]][j].selected = true;
+    this.getEnvironmentGroups().forEach((group) => {
+      this.groupedEnvironments[group].forEach((environment) => {
+        if (environment.name === contextName) {
+          environment.selected = true;
           return;
         }
-      }
-    }
+      });
+    });
   }
+
 }
