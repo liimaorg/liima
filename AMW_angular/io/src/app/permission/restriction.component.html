@@ -26,7 +26,8 @@
         <ng-container *ngFor="let group of getEnvironmentGroups()">
           <h5 class="environments-title">{{group}}: </h5>
           <ng-container *ngFor="let env of groupedEnvironments[group]">
-            <label class="checkbox-inline"><input type="checkbox" [(ngModel)]="env.selected" (change)="checkUnique(env)">&nbsp;{{env.name}}</label>
+            <label class="checkbox-inline"><input type="checkbox" [(ngModel)]="env.selected"
+                                                  (change)="checkUnique(env)">&nbsp;{{env.name}}</label>
           </ng-container>
         </ng-container>
       </div>
@@ -44,9 +45,11 @@
     <div class="form-group" *ngIf="resourceTypes.length > 0">
       <label for="selectResourceType" class="col-sm-4 control-label">Resource Type</label>
       <div class="col-sm-8 col-md-8">
-        <select id="selectResourceType" class="form-control input-sm" [(ngModel)]="restriction.resourceTypeName">
-          <option [ngValue]="resourceType.name" *ngFor="let resourceType of resourceTypes">{{resourceType.name}}</option>
-        </select>
+        <input id="selectResourceType" class="form-control input-sm" list="resTypeList" type="text"
+               [ngClass]="{'ng-invalid':!checkType()}" [(ngModel)]="restriction.resourceTypeName">
+        <datalist id="resTypeList">
+            <option [ngValue]="resourceType.name" *ngFor="let resourceType of resourceTypes">{{resourceType.name}}</option>
+        </datalist>
       </div>
     </div>
 
@@ -62,7 +65,8 @@
     <div class="form-group">
       <label class="col-sm-4 control-label"></label>
       <div class="col-sm-8 col-md-8">
-        <button *ngIf="restriction.permission" type="button" class="btn btn-primary" (click)="persistRestriction()">
+        <button *ngIf="restriction.permission" type="button" class="btn btn-primary" [disabled]="!isValidForm()"
+                (click)="persistRestriction()">
           <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save
         </button>
         <button type="button" class="btn btn" (click)="cancel()">

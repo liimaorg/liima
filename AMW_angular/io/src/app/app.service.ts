@@ -30,12 +30,13 @@ export class AppState {
     return this._state[prop] = value;
   }
 
+  fixMe(val: any) {
+    return Array.from(val);
+  }
+
   private _clone(object: InternalStateType) {
     // simple object clone
     return JSON.parse(JSON.stringify( object ));
   }
 
-  fixMe(val: any) {
-    return Array.from(val);
-  }
 }

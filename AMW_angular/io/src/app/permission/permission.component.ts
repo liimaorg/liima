@@ -93,12 +93,17 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
+    // reset restriction list, rollback to the last persisted state
     this.updatePermissions(this.backupRestriction);
     this.restriction = null;
     this.backupRestriction = null;
   }
 
   modifyRestriction(restriction: Restriction) {
+    // reset restriction list, discard unsaved changes
+    if (this.backupRestriction) {
+      this.updatePermissions(this.backupRestriction);
+    }
     this.backupRestriction = {...restriction};
     this.restriction = restriction;
   }
@@ -130,7 +135,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private onChangeType(type: string) {
     console.log('onChangeType');
     this.errorMessage = '';
-    this.successMessage= '';
+    this.successMessage = '';
     this.restrictions = [];
     this.restrictionType = (type === 'role' || type === 'user') ? type : 'role';
     if (this.restrictionType === 'user') {
@@ -222,7 +227,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   private updatePermissions(restriction: Restriction) {
     let i = _.findIndex(this.restrictions, _.pick(restriction, 'id'));
-    if( i !== -1) {
+    if (i !== -1) {
       this.restrictions.splice(i, 1, restriction);
     } else {
       this.restrictions.push(restriction);

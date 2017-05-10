@@ -3,13 +3,14 @@ import { Restriction } from './restriction';
 import { Environment } from '../deployment/environment';
 import { Resource } from '../resource/resource';
 import { ResourceType } from '../resource/resource-type';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'amw-restriction',
   templateUrl: './restriction.component.html'
 })
 
-export class RestrictionComponent {
+export class RestrictionComponent implements OnChanges {
 
   actions: string[] = [ 'ALL', 'CREATE', 'READ', 'UPDATE', 'DELETE' ];
   resourceTypePermissions: string[] = [ 'ANY', 'DEFAULT_ONLY', 'NON_DEFAULT_ONLY' ];
@@ -36,11 +37,25 @@ export class RestrictionComponent {
   }
 
   persistRestriction() {
+    if (!this.restriction.resourceTypeName) {
+      this.restriction.resourceTypeName = null;
+    }
     this.saveRestriction.emit(this.restriction);
   }
 
   getEnvironmentGroups() {
     return Object.keys(this.groupedEnvironments);
+  }
+
+  isValidForm() {
+    return this.checkType();
+  }
+
+  checkType() {
+    if (this.restriction.resourceTypeName) {
+      return _.find(this.resourceTypes, {name: this.restriction.resourceTypeName}) ? true : false;
+    }
+    return true;
   }
 
   checkUnique(env: Environment) {
@@ -63,7 +78,6 @@ export class RestrictionComponent {
   }
 
   private preSelectEnv(contextName: string) {
-    console.log('PreSelecting');
     let groups: string[] = this.getEnvironmentGroups();
     for (let i = 0; i < groups.length; i++) {
       for (let j = 0; j < this.groupedEnvironments[groups[i]].length; j++) {
