@@ -23,7 +23,7 @@ export class RestrictionListComponent {
     this.editRestriction.emit(restriction);
   }
 
-  private getGroupName(id: number):string {
+  getGroupName(id: number): string {
     return _.find(this.resourceGroups, {id: id}).name;
   }
 }

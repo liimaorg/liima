@@ -47,7 +47,7 @@
                 </button>
               </ng-container>
               <ng-container *ngIf="restriction">
-                  <amw-restriction [restriction]="restriction" [environments]="environments" [permissionNames]="permissionNames" [resourceGroups]="resourceGroups" [resourceTypes]="resourceTypes" (cancelEdit)='cancel($event)' (saveRestriction)='persistRestriction($event)'></amw-restriction>
+                  <amw-restriction [restriction]="restriction" [groupedEnvironments]="groupedEnvironments" [permissionNames]="permissionNames" [resourceGroups]="resourceGroups" [resourceTypes]="resourceTypes" (cancelEdit)='cancel()' (saveRestriction)='persistRestriction()'></amw-restriction>
               </ng-container>
             </ng-container>
           </div>

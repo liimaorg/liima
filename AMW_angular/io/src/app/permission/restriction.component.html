@@ -1,6 +1,5 @@
 <div class="panel panel-default">
-  <div class="panel-heading" *ngIf="restriction.id">Edit</div>
-  <div class="panel-heading" *ngIf="!restriction.id">Create</div>
+  <div class="panel-heading">{{getTitle()}}</div>
   <div class="panel-body">
 
     <div class="form-group" *ngIf="permissionNames.length > 0">
@@ -21,12 +20,15 @@
       </div>
     </div>
 
-    <div class="form-group" *ngIf="environments.length > 0">
-      <label for="selectEnvironment" class="col-sm-4 control-label">Environment</label>
+    <div class="form-group">
+      <label class="col-sm-4 control-label">Environment</label>
       <div class="col-sm-8 col-md-8">
-        <select id="selectEnvironment" class="form-control input-sm" [(ngModel)]="restriction.contextName">
-          <option [ngValue]="environment.name" *ngFor="let environment of environments">{{environment.name}}</option>
-        </select>
+        <ng-container *ngFor="let group of getEnvironmentGroups()">
+          <h5 class="environments-title">{{group}}: </h5>
+          <ng-container *ngFor="let env of groupedEnvironments[group]">
+            <label class="checkbox-inline"><input type="checkbox" [(ngModel)]="env.selected" (change)="checkUnique(env)">&nbsp;{{env.name}}</label>
+          </ng-container>
+        </ng-container>
       </div>
     </div>
 
@@ -60,10 +62,10 @@
     <div class="form-group">
       <label class="col-sm-4 control-label"></label>
       <div class="col-sm-8 col-md-8">
-        <button *ngIf="restriction.permission" type="button" class="btn btn-primary" (click)="persistRestriction(restriction)">
+        <button *ngIf="restriction.permission" type="button" class="btn btn-primary" (click)="persistRestriction()">
           <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save
         </button>
-        <button type="button" class="btn btn-danger" (click)="cancel(restriction)">
+        <button type="button" class="btn btn" (click)="cancel()">
           <span class="glyphicon glyphicon" aria-hidden="true"></span>Cancel
         </button>
       </div>

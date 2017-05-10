@@ -21,7 +21,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
   roleNames: string[] = [];
   userNames: string[] = [];
   permissionNames: string[] = [];
-  environments: Environment[] = [ { id: null, name: null, parent: null, selected: false } ];
+  environments: Environment[] = [ { id: null, name: null, parent: 'All', selected: false } ];
+  groupedEnvironments: { [key: string]: Environment[] } = {};
   resourceGroups: Resource[] = [ { id: null, name: null, type: null, version: null, release: null, releases: [] } ];
   resourceTypes: ResourceType[] = [ { id: null, name: null } ];
 
@@ -91,7 +92,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     }
   }
 
-  cancel(restriction: Restriction) {
+  cancel() {
     this.updatePermissions(this.backupRestriction);
     this.restriction = null;
     this.backupRestriction = null;
@@ -180,7 +181,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
       .getAll().subscribe(
       /* happy path */ (r) => this.environments = this.environments.concat(r),
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.isLoading = false);
+      /* onComplete */ () => this.extractEnvironmentGroups());
   }
 
   private getAllResourceGroups() {
@@ -226,6 +227,17 @@ export class PermissionComponent implements OnInit, OnDestroy {
     } else {
       this.restrictions.push(restriction);
     }
+  }
+
+  private extractEnvironmentGroups() {
+    this.environments.forEach((environment) => {
+      environment.selected = false;
+      if (!this.groupedEnvironments[environment['parent']]) {
+        this.groupedEnvironments[environment['parent']] = [];
+      }
+      this.groupedEnvironments[environment['parent']].push(environment);
+    });
+    this.isLoading = false;
   }
 
 }
