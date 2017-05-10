@@ -44,7 +44,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
               private environmentService: EnvironmentService,
               private resourceService: ResourceService,
               private activatedRoute: ActivatedRoute,
-              private appState: AppState) {
+              public appState: AppState) {
   }
 
   ngOnInit() {

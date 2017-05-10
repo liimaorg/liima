@@ -25,7 +25,7 @@ export class ResourceListComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private router: Router,
               private location: Location,
-              private appState: AppState) {
+              public appState: AppState) {
   }
 
   ngOnInit(): void {

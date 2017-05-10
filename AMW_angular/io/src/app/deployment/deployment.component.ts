@@ -77,7 +77,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
               private deploymentService: DeploymentService,
               private activatedRoute: ActivatedRoute,
               private location: Location,
-              private appState: AppState) {
+              public appState: AppState) {
   }
 
   ngOnInit() {
