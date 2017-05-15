@@ -24,7 +24,6 @@ export class RestrictionComponent implements OnChanges {
   @Output() saveRestriction: EventEmitter<Restriction> = new EventEmitter<Restriction>();
 
   ngOnChanges() {
-    this.deSelectAllEnvironments();
     this.preSelectEnv(this.restriction.contextName);
   }
 
@@ -75,6 +74,7 @@ export class RestrictionComponent implements OnChanges {
   }
 
   private preSelectEnv(contextName: string) {
+    this.deSelectAllEnvironments();
     this.getEnvironmentGroups().forEach((group) => {
       this.groupedEnvironments[group].forEach((environment) => {
         if (environment.name === contextName) {

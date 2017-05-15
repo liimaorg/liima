@@ -30,7 +30,7 @@ export class AppState {
     return this._state[prop] = value;
   }
 
-  navItems() {
+  public navItems() {
     if (this.get('navItems')) {
       return Array.from(this.get('navItems'));
     }

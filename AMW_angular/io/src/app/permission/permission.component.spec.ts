@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { inject, TestBed } from '@angular/core/testing';
 import { BaseRequestOptions, ConnectionBackend, Http } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
@@ -9,9 +8,10 @@ import { PermissionComponent } from './permission.component';
 import { PermissionService } from './permission.service';
 import { EnvironmentService } from '../deployment/environment.service';
 import { ResourceService } from '../resource/resource.service';
-import { Environment } from './environment';
+import { Environment } from '../deployment/environment';
 import { AppState } from '../app.service';
 import { Restriction } from './restriction';
+import { Observable } from 'rxjs';
 
 @Component({
   template: ''
@@ -63,8 +63,11 @@ describe('PermissionComponent', () => {
     inject([PermissionComponent, PermissionService, EnvironmentService, ResourceService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService, environmentService: EnvironmentService, resourceService: ResourceService) => {
     // given
-    spyOn(permissionService, 'getAllPermissionNames').and.callThrough();
-    spyOn(environmentService, 'getAll').and.callThrough();
+    let permissionNames: string[] = ['RESOURCE', 'RESOURCE_TYPE'];
+    let environments: Environment[] = [ <Environment> { id: 1, name: 'U', parent: 'Dev' },
+      <Environment> { id: 2, name: 'V', parent: 'Dev' }, <Environment> { id: 3, name: 'T', parent: 'Test' } ];
+    spyOn(permissionService, 'getAllPermissionNames').and.returnValue(Observable.of(permissionNames));
+    spyOn(environmentService, 'getAll').and.returnValue(Observable.of(environments));
     spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
     spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
     // when
@@ -74,42 +77,54 @@ describe('PermissionComponent', () => {
     expect(environmentService.getAll).toHaveBeenCalled();
     expect(resourceService.getAllResourceGroups).toHaveBeenCalled();
     expect(resourceService.getAllResourceTypes).toHaveBeenCalled();
+    expect(permissionComponent.permissionNames).toEqual(permissionNames);
     expect(permissionComponent.restriction).toBeNull();
+    expect(permissionComponent.groupedEnvironments['All']).toContain({ id: null, name: null, parent: 'All', selected: false });
+    expect(permissionComponent.groupedEnvironments['Dev']).toContain({ id: 1, name: 'U', parent: 'Dev', selected: false },
+      { id: 2, name: 'V', parent: 'Dev', selected: false });
+    expect(permissionComponent.groupedEnvironments['Test']).toContain({ id: 3, name: 'T', parent: 'Test', selected: false });
   }));
 
   it('should invoke PermissionService on changeRole',
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
     // given
+    let restrictions: Restriction[] = [ <Restriction> { id: 21 }, <Restriction> { id: 22 } ];
     permissionComponent.selectedRoleName = 'TESTER';
-    spyOn(permissionService, 'getRoleWithRestrictions').and.callThrough();
+    spyOn(permissionService, 'getRoleWithRestrictions').and.returnValue(Observable.of(restrictions));
     // when
     permissionComponent.onChangeRole();
     // then
-    expect(permissionService.getRoleWithRestrictions).toHaveBeenCalledWith('TESTER')
+    expect(permissionService.getRoleWithRestrictions).toHaveBeenCalledWith('TESTER');
+    expect(permissionComponent.restrictions).toBe(restrictions);
   }));
 
   it('should invoke PermissionService on changeUser',
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
       // given
+      let restrictions: Restriction[] = [ <Restriction> { id: 31 }, <Restriction> { id: 32 } ];
       permissionComponent.selectedUserName = 'tester';
-      spyOn(permissionService, 'getUserWithRestrictions').and.callThrough();
+      spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(Observable.of(restrictions));
       // when
       permissionComponent.onChangeUser();
       // then
       expect(permissionService.getUserWithRestrictions).toHaveBeenCalledWith('tester');
+      expect(permissionComponent.restrictions).toBe(restrictions);
   }));
 
   it('should invoke PermissionService on removeRestriction',
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
       // given
+      permissionComponent.restrictions = [<Restriction> { id: 121, contextName: 'T' }, <Restriction> { id: 122, contextName: 'B' }];
+      permissionComponent.restriction = <Restriction> { id: 122, contextName: 'B' };
       spyOn(permissionService, 'removeRestriction').and.callThrough();
       // when
-      permissionComponent.removeRestriction(1);
+      permissionComponent.removeRestriction(122);
       // then
-      expect(permissionService.removeRestriction).toHaveBeenCalledWith(1);
+      expect(permissionService.removeRestriction).toHaveBeenCalledWith(122);
+      expect(permissionComponent.restrictions).toContain({ id: 121, contextName: 'T' });
   }));
 
   it('should reset the Restriction on cancel',
