@@ -30,8 +30,11 @@ export class AppState {
     return this._state[prop] = value;
   }
 
-  fixMe(val: any) {
-    return Array.from(val);
+  navItems() {
+    if (this.get('navItems')) {
+      return Array.from(this.get('navItems'));
+    }
+    return [];
   }
 
   private _clone(object: InternalStateType) {

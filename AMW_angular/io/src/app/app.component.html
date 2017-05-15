@@ -33,13 +33,13 @@
 
 <div *ngIf="appState.get('navShow')" class="col-sm-3 col-md-2 sidebar">
   <ul class="nav nav-sidebar">
-    <ng-container *ngIf="!appState.get('navItems')">
+    <ng-container *ngIf="!appState.navItems()">
       <li class="active"><a href="#">{{appState.get('navTitle')}}<span class="sr-only">(current)</span></a></li>
     </ng-container>
-    <ng-container *ngIf="appState.get('navItems')">
-      <ng-container *ngFor="let item of appState.fixMe(appState.get('navItems'))">
+    <ng-container *ngIf="appState.navItems()">
+      <ng-container *ngFor="let item of appState.navItems()">
           <li [ngClass]="(item.title === appState.get('navTitle')) ? 'active' : ''">
-            <a href="#{{item.target}}" (click)="navigateTo(item)">{{item.title}}</a></li>
+            <a href="#{{item.target}}" (mouseup)="navigateTo(item)">{{item.title}}</a></li>
       </ng-container>
     </ng-container>
   </ul>
