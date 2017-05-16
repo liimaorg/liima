@@ -1,7 +1,8 @@
 import { inject, TestBed } from '@angular/core/testing';
-import { Environment } from '../deployment/environment';
 import { RestrictionComponent } from './restriction.component';
 import { Restriction } from './restriction';
+import { Environment } from '../deployment/environment';
+import { Resource } from '../resource/resource';
 
 describe('RestrictionComponent', () => {
   // provide our implementations or mocks to the dependency injector
@@ -42,6 +43,25 @@ describe('RestrictionComponent', () => {
       expect(groups[0]).toBe('All');
       expect(groups[1]).toBe('Dev');
       expect(groups[2]).toBe('Test');
+  }));
+
+  it('should return false if ResourceGroup has a name which is not available',
+    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+      // given
+      restrictionComponent.resourceGroups = [ <Resource> { id: 21, name: 'Test' } ];
+      restrictionComponent.resourceGroup = <Resource> { id: null, name: 'West' };
+      // when then
+      expect(restrictionComponent.checkGroup()).toBeFalsy();
+  }));
+
+  it('should return true if ResourceGroup has a name which is available',
+    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+      // given
+      restrictionComponent.resourceGroups = [ <Resource> { id: 21, name: 'Test' }, <Resource> { id: 42, name: 'Rest' } ];
+      restrictionComponent.resourceGroup = <Resource> { id: null, name: 'rest' };
+      restrictionComponent.restriction = <Restriction> {};
+      // when then
+      expect(restrictionComponent.checkGroup()).toBeTruthy();
   }));
 
   it('should return invalid if ResourceType is not available',

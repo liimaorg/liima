@@ -54,7 +54,7 @@ describe('PermissionComponent', () => {
     expect(permissionComponent.userNames).toEqual([]);
     expect(permissionComponent.permissionNames).toEqual([]);
     expect(permissionComponent.environments).toEqual([ { id: null, name: null, parent: 'All', selected: false } ]);
-    expect(permissionComponent.resourceGroups).toEqual([ { id: null, name: null, type: null, version: null, release: null, releases: [] } ]);
+    expect(permissionComponent.resourceGroups).toEqual([]);
     expect(permissionComponent.resourceTypes).toEqual([ { id: null, name: null } ]);
     expect(permissionComponent.restrictionType).toEqual('role');
   }));

@@ -23,7 +23,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   permissionNames: string[] = [];
   environments: Environment[] = [ { id: null, name: null, parent: 'All', selected: false } ];
   groupedEnvironments: { [key: string]: Environment[] } = {};
-  resourceGroups: Resource[] = [ { id: null, name: null, type: null, version: null, release: null, releases: [] } ];
+  resourceGroups: Resource[] = [];
   resourceTypes: ResourceType[] = [ { id: null, name: null } ];
 
   // role | user
@@ -191,7 +191,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.resourceService
       .getAllResourceGroups().subscribe(
-      /* happy path */ (r) => this.resourceGroups = this.resourceGroups.concat(r),
+      /* happy path */ (r) => this.resourceGroups = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }

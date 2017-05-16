@@ -14,6 +14,7 @@ export class RestrictionComponent implements OnChanges {
 
   actions: string[] = [ 'ALL', 'CREATE', 'READ', 'UPDATE', 'DELETE' ];
   resourceTypePermissions: string[] = [ 'ANY', 'DEFAULT_ONLY', 'NON_DEFAULT_ONLY' ];
+  resourceGroup: Resource = <Resource> {};
 
   @Input() restriction: Restriction;
   @Input() permissionNames: string[] = [];
@@ -25,6 +26,11 @@ export class RestrictionComponent implements OnChanges {
 
   ngOnChanges() {
     this.preSelectEnv(this.restriction.contextName);
+    if (this.restriction.resourceGroupId) {
+      this.resourceGroup = {...this.resourceGroups.find((rg) => rg.id === this.restriction.resourceGroupId)};
+    } else {
+      this.resourceGroup = <Resource> {};
+    }
   }
 
   getTitle(): string {
@@ -47,13 +53,27 @@ export class RestrictionComponent implements OnChanges {
   }
 
   isValidForm() {
-    return this.checkType();
+    return this.checkType() && this.checkGroup();
   }
 
   checkType() {
     if (this.restriction.resourceTypeName) {
       return _.find(this.resourceTypes, {name: this.restriction.resourceTypeName}) ? true : false;
     }
+    return true;
+  }
+
+  checkGroup() {
+    if (this.resourceGroup.name) {
+      let selectedResource: Resource = this.resourceGroups.find((rg) => rg.name.toLowerCase() === this.resourceGroup.name.toLowerCase());
+      if (!selectedResource) {
+        return false;
+      }
+      this.resourceGroup = {...selectedResource};
+      this.restriction.resourceGroupId = this.resourceGroup.id;
+      return true;
+    }
+    this.restriction.resourceGroupId = null;
     return true;
   }
 

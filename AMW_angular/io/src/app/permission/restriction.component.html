@@ -38,9 +38,11 @@
       <div class="form-group" *ngIf="resourceGroups.length > 0">
         <label for="selectResourceGroup" class="col-sm-4 control-label">Resource Group</label>
         <div class="col-sm-8 col-md-8">
-          <select id="selectResourceGroup" class="form-control input-sm" [(ngModel)]="restriction.resourceGroupId">
-            <option [ngValue]="resource.id" *ngFor="let resource of resourceGroups">{{resource.name}}</option>
-          </select>
+          <input id="selectResourceGroup" class="form-control input-sm" list="resGroupList" type="text"
+                 [ngClass]="{'ng-invalid':!checkGroup()}" [(ngModel)]="resourceGroup.name">
+          <datalist id="resGroupList">
+            <option [ngValue]="resGroup.name" *ngFor="let resGroup of resourceGroups">{{resGroup.name}}</option>
+          </datalist>
         </div>
       </div>
 
@@ -50,7 +52,7 @@
           <input id="selectResourceType" class="form-control input-sm" list="resTypeList" type="text"
                  [ngClass]="{'ng-invalid':!checkType()}" [(ngModel)]="restriction.resourceTypeName">
           <datalist id="resTypeList">
-              <option [ngValue]="resourceType.name" *ngFor="let resourceType of resourceTypes">{{resourceType.name}}</option>
+              <option [ngValue]="resType.name" *ngFor="let resType of resourceTypes">{{resType.name}}</option>
           </datalist>
         </div>
       </div>
