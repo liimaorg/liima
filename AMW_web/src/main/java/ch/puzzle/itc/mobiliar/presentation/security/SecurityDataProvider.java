@@ -39,13 +39,9 @@ import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
  */
 @Named
 @SessionScoped // TODO do we need session scope or can we use view scope?
-@Deprecated
 public class SecurityDataProvider implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-
-	@Inject
-	SecurityController controller;
 
 	@Inject
 	PermissionBoundary permissionBoundary;
@@ -91,16 +87,11 @@ public class SecurityDataProvider implements Serializable{
 	}
 	
 	public boolean hasPermissionToDeploy(){
-		return controller.hasPermissionToDeploy();
-	}
-	
-	public boolean hasPermissionToCreateShakedownTest(){
-		// TODO: bsc: 13.11.2012: Permission muss erstellt werden hier
-		return true;
+		return permissionBoundary.hasPermissionToDeploy();
 	}
 
 	public String getUserName() {
-		return controller.getUserName();
+		return permissionBoundary.getUserName();
 	}
 
 	public void logout() throws IOException {

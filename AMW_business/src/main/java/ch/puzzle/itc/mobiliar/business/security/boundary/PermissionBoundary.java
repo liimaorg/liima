@@ -551,4 +551,8 @@ public class PermissionBoundary implements Serializable {
         }
     }
 
+    public String getUserName() {
+        return permissionService.getCurrentUserName();
+    }
+
 }
