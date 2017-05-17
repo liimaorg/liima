@@ -20,6 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.permissions;
 
+import ch.mobi.itc.mobiliar.rest.dtos.PermissionDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
@@ -72,7 +73,7 @@ public class RestrictionsRest {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Permission must not be null")).build();
         }
         try {
-            id = permissionBoundary.createRestriction(request.getRoleName(), request.getUserName(), request.getPermission().name(), request.getResourceGroupId(),
+            id = permissionBoundary.createRestriction(request.getRoleName(), request.getUserName(), request.getPermission().getName(), request.getResourceGroupId(),
                     request.getResourceTypeName(), request.getResourceTypePermission(), request.getContextName(), request.getAction());
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
@@ -125,7 +126,7 @@ public class RestrictionsRest {
     @ApiOperation(value = "Update a Restriction")
     public Response updateRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id, RestrictionDTO request) {
         try {
-            permissionBoundary.updateRestriction(id, request.getRoleName(), request.getUserName(), request.getPermission().name(),
+            permissionBoundary.updateRestriction(id, request.getRoleName(), request.getUserName(), request.getPermission().getName(),
                     request.getResourceGroupId(), request.getResourceTypeName(), request.getResourceTypePermission(),
                     request.getContextName(), request.getAction());
         } catch (AMWException e) {
@@ -222,18 +223,18 @@ public class RestrictionsRest {
     }
 
     /**
-     * Get all available PermissionNames
+     * Get all available PermissionEnum values
      *
-     * @return List<String>
+     * @return List<PermissionDTO>
      */
     @GET
-    @Path("/permissionNames/")
-    @ApiOperation(value = "Get all available PermissionNames")
-    public Response getPermissionNames() {
-        List<String> permissionNameList = new ArrayList<>();
+    @Path("/permissionEnumValues/")
+    @ApiOperation(value = "Get all available PermissionEnum values")
+    public Response getPermissionEnumValues() {
+        List<PermissionDTO> permissionNameList = new ArrayList<>();
         final List<PermissionEntity> permissions = permissionBoundary.getAllAvailablePermissions();
         for (PermissionEntity permission : permissions) {
-            permissionNameList.add(permission.getValue());
+            permissionNameList.add(new PermissionDTO(Permission.valueOf(permission.getValue())));
         }
         return Response.status(OK).entity(permissionNameList).build();
     }

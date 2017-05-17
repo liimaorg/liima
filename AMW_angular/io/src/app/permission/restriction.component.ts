@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { Restriction } from './restriction';
+import { Permission } from './permission';
 import { Environment } from '../deployment/environment';
 import { Resource } from '../resource/resource';
 import { ResourceType } from '../resource/resource-type';
@@ -17,7 +18,7 @@ export class RestrictionComponent implements OnChanges {
   resourceGroup: Resource = <Resource> {};
 
   @Input() restriction: Restriction;
-  @Input() permissionNames: string[] = [];
+  @Input() permissions: Permission[] = [];
   @Input() groupedEnvironments: { [key: string]: Environment[] } = {};
   @Input() resourceGroups: Resource[] = [];
   @Input() resourceTypes: ResourceType[] = [];
@@ -54,6 +55,19 @@ export class RestrictionComponent implements OnChanges {
 
   isValidForm() {
     return this.checkType() && this.checkGroup();
+  }
+
+  setOld() {
+    if (this.restriction.permission) {
+      this.restriction.permission = {...this.permissions.find((permission) => permission.name === this.restriction.permission.name)};
+      if (this.restriction.permission.old) {
+        this.restriction.action = 'ALL';
+        this.restriction.contextName = null;
+        this.restriction.resourceGroupId = null;
+        this.restriction.resourceTypeName = null;
+        this.restriction.resourceTypePermission = 'ANY';
+      }
+    }
   }
 
   checkType() {

@@ -3,6 +3,7 @@
   <table class="table table-xs" *ngIf="(restrictions.length > 0)">
     <tr>
       <th>Permission</th>
+      <th>Old</th>
       <th>Action</th>
       <th>Environment</th>
       <th>Res. Group</th>
@@ -11,7 +12,8 @@
       <th></th>
     </tr>
     <tr *ngFor="let restriction of restrictions">
-      <td>{{restriction.permission}}</td>
+      <td>{{restriction.permission.name}}</td>
+      <td><span *ngIf="restriction.permission.old" class="glyphicon glyphicon-exclamation-sign alert-danger" aria-hidden="true"></span></td>
       <td>{{restriction.action}}</td>
       <td>{{restriction.contextName}}</td>
       <td>{{getGroupName(restriction.resourceGroupId)}}</td>

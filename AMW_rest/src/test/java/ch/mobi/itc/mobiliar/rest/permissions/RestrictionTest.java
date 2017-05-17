@@ -137,7 +137,7 @@ public class RestrictionTest {
     @Test
     public void shouldReturnStateBadRequestIfIdIsSet() {
         // given
-        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(1, null, null, null, null, null, null, null, null);
+        ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO restrictionDTO = new RestrictionDTO(1, null, null, RESOURCE, null, null, null, null, null);
 
         // when
         Response response = rest.addRestriction(restrictionDTO);
@@ -269,7 +269,7 @@ public class RestrictionTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         Map<String, List<RestrictionDTO>> restrictions = (Map<String, List<RestrictionDTO>>) response.getEntity();
         assertEquals(role.getName(), restrictions.get(role.getName()).get(0).getRoleName());
-        assertEquals(RESOURCE, restrictions.get(role.getName()).get(0).getPermission());
+        assertEquals(RESOURCE.name(), restrictions.get(role.getName()).get(0).getPermission().getName());
         assertEquals(anotherRole.getName(), restrictions.get(anotherRole.getName()).get(0).getRoleName());
     }
 

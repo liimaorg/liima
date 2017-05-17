@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
-import { Environment } from './permission';
+import { Permission} from './permission';
 import { Restriction } from './restriction';
 
 @Injectable()
@@ -27,9 +27,9 @@ export class PermissionService {
     return resource$;
   }
 
-  getAllPermissionNames(): Observable<string[]> {
+  getAllPermissionEnumValues(): Observable<Permission[]> {
     let resource$ = this.http
-      .get(`${this.baseUrl}/permissions/restrictions/permissionNames`, {headers: this.getHeaders()})
+      .get(`${this.baseUrl}/permissions/restrictions/permissionEnumValues`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
     return resource$;

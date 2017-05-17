@@ -8,6 +8,7 @@ import { ResourceType } from '../resource/resource-type';
 import { ResourceService } from '../resource/resource.service';
 import { AppState } from '../app.service';
 import { Restriction } from './restriction';
+import { Permission } from './permission';
 import * as _ from 'lodash';
 
 @Component({
@@ -20,7 +21,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   // loaded only once
   roleNames: string[] = [];
   userNames: string[] = [];
-  permissionNames: string[] = [];
+  permissions: Permission[] = [];
   environments: Environment[] = [ { id: null, name: null, parent: 'All', selected: false } ];
   groupedEnvironments: { [key: string]: Environment[] } = {};
   resourceGroups: Resource[] = [];
@@ -59,7 +60,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
         this.onChangeType(param['restrictionType']);
     });
 
-    this.getAllPermissionNames();
+    this.getAllPermissions();
     this.getAllEnvironments();
     this.getAllResourceGroups();
     this.getAllResourceTypes();
@@ -126,7 +127,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   addRestriction() {
-    this.restriction = { id: null, roleName: this.selectedRoleName, userName: this.selectedUserName, permission: null,
+    this.restriction = { id: null, roleName: this.selectedRoleName, userName: this.selectedUserName, permission: <Permission> {},
       resourceGroupId: null, resourceTypeName: null, resourceTypePermission: null, contextName: null, action: null };
   }
 
@@ -169,11 +170,11 @@ export class PermissionComponent implements OnInit, OnDestroy {
       /* onComplete */ () => this.isLoading = false);
   }
 
-  private getAllPermissionNames() {
+  private getAllPermissions() {
     this.isLoading = true;
     this.permissionService
-      .getAllPermissionNames().subscribe(
-      /* happy path */ (r) => this.permissionNames = r,
+      .getAllPermissionEnumValues().subscribe(
+      /* happy path */ (r) => this.permissions = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }

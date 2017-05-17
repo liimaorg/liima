@@ -64,14 +64,14 @@ describe('PermissiontService', () => {
       // given
       mockBackend.connections.subscribe((connection) => {
         expect(connection.request.method).toBe(RequestMethod.Get);
-        expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/permissionNames');
+        expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/permissionEnumValues');
         let mockResponse = new Response(new ResponseOptions({
           body: [ 'RESOURCE' ]
         }));
         connection.mockRespond(mockResponse);
       });
       // when then
-      permissionService.getAllPermissionNames().subscribe((response) => {
+      permissionService.getAllPermissionEnumValues().subscribe((response) => {
         expect(response).toEqual(['RESOURCE']);
       });
     }));

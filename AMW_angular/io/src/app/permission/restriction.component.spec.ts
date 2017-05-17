@@ -3,6 +3,7 @@ import { RestrictionComponent } from './restriction.component';
 import { Restriction } from './restriction';
 import { Environment } from '../deployment/environment';
 import { Resource } from '../resource/resource';
+import {Permission} from "./permission";
 
 describe('RestrictionComponent', () => {
   // provide our implementations or mocks to the dependency injector
@@ -43,6 +44,14 @@ describe('RestrictionComponent', () => {
       expect(groups[0]).toBe('All');
       expect(groups[1]).toBe('Dev');
       expect(groups[2]).toBe('Test');
+  }));
+
+  it('should return the right title',
+    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+      // given
+      restrictionComponent.restriction = <Restriction> { id: 1 };
+      // when then
+      expect(restrictionComponent.getTitle()).toBe('Edit');
   }));
 
   it('should return false if ResourceGroup has a name which is not available',
@@ -90,6 +99,40 @@ describe('RestrictionComponent', () => {
       restrictionComponent.persistRestriction();
       // then
       expect(restrictionComponent.restriction.resourceTypeName).toBeNull();
+  }));
+
+  it('should preserve Restriction values if Permission is not old',
+    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+      // given
+      restrictionComponent.restriction = <Restriction> { action: 'CREATE', contextName: 'T', resourceGroupId: 9,
+        resourceTypeName: 'TEST', resourceTypePermission: 'DEFAULT_ONLY', permission: <Permission> { name: 'neo' }};
+      restrictionComponent.permissions = [ <Permission> { name: 'neo', old: false },
+        <Permission> { name: 'oldie', old: true }];
+      // when
+      restrictionComponent.setOld();
+      // then
+      expect(restrictionComponent.restriction.action).toBe('CREATE');
+      expect(restrictionComponent.restriction.contextName).toBe('T');
+      expect(restrictionComponent.restriction.resourceGroupId).toBe(9);
+      expect(restrictionComponent.restriction.resourceTypeName).toBe('TEST');
+      expect(restrictionComponent.restriction.resourceTypePermission).toBe('DEFAULT_ONLY');
+  }));
+
+  it('should reset Restriction values if Permission is old',
+    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+      // given
+      restrictionComponent.restriction = <Restriction> { action: 'CREATE', contextName: 'T', resourceGroupId: 9,
+        resourceTypeName: 'TEST', resourceTypePermission: 'DEFAULT_ONLY', permission: <Permission> { name: 'oldie' }};
+      restrictionComponent.permissions = [ <Permission> { name: 'neo', old: false },
+        <Permission> { name: 'oldie', old: true }];
+      // when
+      restrictionComponent.setOld();
+      // then
+      expect(restrictionComponent.restriction.action).toBe('ALL');
+      expect(restrictionComponent.restriction.contextName).toBeNull();
+      expect(restrictionComponent.restriction.resourceGroupId).toBeNull();
+      expect(restrictionComponent.restriction.resourceTypeName).toBeNull();
+      expect(restrictionComponent.restriction.resourceTypePermission).toBe('ANY');
   }));
 
 });

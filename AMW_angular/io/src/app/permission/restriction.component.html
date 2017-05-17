@@ -2,16 +2,17 @@
   <div class="panel-heading">{{getTitle()}}</div>
   <div class="panel-body">
 
-    <div class="form-group" *ngIf="permissionNames.length > 0">
+    <div class="form-group" *ngIf="permissions.length > 0">
       <label for="selectPermission" class="col-sm-4 control-label">Permission</label>
       <div class="col-sm-8 col-md-8">
-        <select id="selectPermission" class="form-control input-sm" [(ngModel)]="restriction.permission">
-          <option [ngValue]="permission" *ngFor="let permission of permissionNames">{{permission}}</option>
+        <select id="selectPermission" class="form-control input-sm" [(ngModel)]="restriction.permission.name"
+                (change)="setOld()">
+          <option [ngValue]="permission.name" *ngFor="let permission of permissions">{{permission.name}}</option>
         </select>
       </div>
     </div>
 
-    <ng-container *ngIf="restriction.permission">
+    <ng-container *ngIf="restriction.permission.name && ! restriction.permission.old">
 
       <div class="form-group">
         <label for="selectAction" class="col-sm-4 control-label">Action</label>
@@ -65,6 +66,10 @@
           </select>
         </div>
       </div>
+
+    </ng-container>
+
+    <ng-container *ngIf="restriction.permission.name">
 
       <div class="form-group">
         <label class="col-sm-4 control-label"></label>
