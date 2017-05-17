@@ -68,16 +68,10 @@
 						rendered="#{securityDataProvider.hasPermission('RELEASE')}">
 						<f:param name="mode" value="releases" />
 					</h:link></li>
-
-				<li class="${param['mode']=='rolPerm' ? 'current': ''}"><h:link
-						value="Roles and Permissions"
-						rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
-						<f:param name="mode" value="rolPerm" />
-					</h:link></li>
-				<li class="${param['mode']=='perm' ? 'current': ''}"><h:outputLink
+				<li class="${param['mode']=='rolePerm' ? 'current': ''}"><h:outputLink
 						value="/AMW_angular/#/permission"
 						rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
-					Permissions
+					Roles and Permissions
 					</h:outputLink></li>
 				<li class="${param['mode']=='appVersion' ? 'current': ''}"><h:link
 						value="Application Info">
@@ -304,13 +298,6 @@
 			<!-- Releases-->
 			<h:panelGroup rendered="${param['mode']=='releases'}">
 				<ui:include src="components/releasesScreenComp.xhtml" />
-			</h:panelGroup>
-
-
-			<!-- ROLES AND PERMISSIONS -->
-			<h:panelGroup rendered="${param['mode']=='rolPerm'}">
-				<ui:include src="components/rolesAndPermissionsComp.xhtml">
-				</ui:include>
 			</h:panelGroup>
 			
 			<!-- Application Version -->

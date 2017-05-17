@@ -56,11 +56,6 @@ public class PermissionRepository {
 		return getRolesHavingRestrictionsWithPermission(Permission.DEPLOYMENT);
 	}
 
-	public List<RoleEntity> getRolesWithPermissions() {
-		TypedQuery<RoleEntity> query = entityManager.createQuery("select distinct r from RoleEntity r left join fetch r.permissions", RoleEntity.class);
-		return query.getResultList();
-	}
-
 	public List<RestrictionEntity> getUserWithRestrictions(String userName) {
 		TypedQuery<RestrictionEntity> query = entityManager.createQuery("select r from RestrictionEntity r where LOWER(r.user.name) =:userName", RestrictionEntity.class)
 				.setParameter("userName", userName.toLowerCase());

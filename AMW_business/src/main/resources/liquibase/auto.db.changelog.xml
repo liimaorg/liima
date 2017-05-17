@@ -85,5 +85,6 @@
     <include file="changesets/data/newPermissions_migrationOfTemplatePermissions.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/newPermissions_migrationOfAMWFunctionPermissions.xml" relativeToChangelogFile="true"/>
     <include file="changesets/model/newPermissions/newPermissions_userRestrictionEntity.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfRemainingPermissions.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -41,26 +41,6 @@ public class RestrictionDTOTest {
     }
 
     @Test
-    public void constructedWithLegacyPermissionItShouldHaveActionALL(){
-        //given //when
-        RestrictionDTO resDTO = new RestrictionDTO(per, rol);
-
-        //then
-        Assert.assertEquals(per.getValue(), resDTO.getPermissionName());
-        Assert.assertEquals(Action.ALL, resDTO.getRestriction().getAction());
-    }
-
-    @Test
-    public void constructedWithLegacyPermissionItShouldHaveNoContext(){
-        //given //when
-        RestrictionDTO resDTO = new RestrictionDTO(per, rol);
-
-        //then
-        Assert.assertEquals(per.getValue(), resDTO.getPermissionName());
-        Assert.assertEquals(null, resDTO.getRestriction().getContext());
-    }
-
-    @Test
     public void constructedWithRestrictionItShouldHaveRightAction(){
         //given
         RestrictionEntity res = new RestrictionEntity();

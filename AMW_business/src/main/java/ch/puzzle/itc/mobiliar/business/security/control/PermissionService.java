@@ -100,12 +100,6 @@ public class PermissionService implements Serializable {
         boolean isReload = permissionRepository.isReloadRolesAndPermissionsList();
         if (rolesWithRestrictions == null || isReload) {
             Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions = new HashMap<>();
-            // map old permissions to new permissions with restriction
-            if (permissionRepository.getRolesWithPermissions() != null) {
-                for (RoleEntity role : permissionRepository.getRolesWithPermissions()) {
-                    addLegacyPermission(tmpRolesWithRestrictions, role);
-                }
-            }
             // add new permissions with restriction
             if (permissionRepository.getRolesWithRestrictions() != null) {
                 for (RoleEntity role : permissionRepository.getRolesWithRestrictions()) {
@@ -152,20 +146,6 @@ public class PermissionService implements Serializable {
      */
     public List<RestrictionEntity> getAllUserRestrictions() {
         return permissionRepository.getUsersWithRestrictions();
-    }
-
-    private void addLegacyPermission(Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions, RoleEntity role) {
-        String roleName = role.getName();
-        if (!tmpRolesWithRestrictions.containsKey(roleName)) {
-            tmpRolesWithRestrictions.put(roleName, new ArrayList<RestrictionDTO>());
-        }
-        for (PermissionEntity perm : role.getPermissions()) {
-            // check needed as long as roles can have a direct relation to restriction and permission simultaneously
-            if (perm.getRestrictions().isEmpty()) {
-                // convert permission to restriction
-                tmpRolesWithRestrictions.get(roleName).add(new RestrictionDTO(perm, role));
-            }
-        }
     }
 
     private void addPermission(Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions, RoleEntity role) {

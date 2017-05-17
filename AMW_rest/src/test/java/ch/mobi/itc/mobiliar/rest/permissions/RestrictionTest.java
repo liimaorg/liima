@@ -37,6 +37,7 @@ import java.util.*;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.ALL;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Permission.RESOURCE;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Permission.RESOURCETYPE;
 import static java.util.Collections.EMPTY_LIST;
 import static javax.ws.rs.core.Response.Status.*;
 import static org.junit.Assert.assertEquals;
@@ -248,17 +249,27 @@ public class RestrictionTest {
     @Test
     public void shouldReturnAMapOfListOfRestrictionDTOsIfRolesHaveBeenFound() {
         // given
-        PermissionEntity permission = new PermissionEntity();
-        permission.setValue(RESOURCE.name());
+        PermissionEntity resourcePermission = new PermissionEntity();
+        resourcePermission.setValue(RESOURCE.name());
         RoleEntity role = new RoleEntity();
         role.setName("testRole");
+        RestrictionEntity aRestriction = new RestrictionEntity();
+        aRestriction.setPermission(resourcePermission);
+        aRestriction.setRole(role);
+
+        PermissionEntity resourceTypePermission = new PermissionEntity();
+        resourceTypePermission.setValue(RESOURCETYPE.name());
         RoleEntity anotherRole = new RoleEntity();
         anotherRole.setName("anotherTestRole");
+        RestrictionEntity anotherRestriction = new RestrictionEntity();
+        anotherRestriction.setPermission(resourceTypePermission);
+        anotherRestriction.setRole(anotherRole);
+
         ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO businessRestrictionDTO =
-                new ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO(permission, role);
+                new ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO(aRestriction);
         Map<String, List<ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO>> map = new HashMap<>();
         map.put(role.getName(), Arrays.asList(businessRestrictionDTO));
-        businessRestrictionDTO = new ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO(permission, anotherRole);
+        businessRestrictionDTO = new ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO(anotherRestriction);
         map.put(anotherRole.getName(), Arrays.asList(businessRestrictionDTO));
         when(rest.permissionBoundary.getAllPermissions()).thenReturn(map);
 
