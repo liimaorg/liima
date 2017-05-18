@@ -35,7 +35,6 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.Deployment
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
-import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 
 @Stateless
 public class LockingService
@@ -47,38 +46,7 @@ public class LockingService
 	@Inject
 	Logger log;
 	
-	private int lockRetries = 3;
-	
-	
-	/**
-	 * Lock a deployment. Must be called in a transaction.
-	 * 
-	 * @param id Deployment id to lock
-	 * @return The locked Deployment entity or null if not possible
-	 */
-	public DeploymentEntity lockDeployment(Integer id) {
-		int count = 0;
-		int backoff = 300;
-		
-		log.fine("Locking deployment " + id);
-		for(; count <= lockRetries; count++) {
-			try {
-				return entityManager.find(DeploymentEntity.class, id, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
-			} catch (LockTimeoutException e) {
-				backoff = getBackoff(backoff);
-				log.info("Retring to lock deployment " + id + " in " + backoff + " ms");
-				try {
-					Thread.sleep(backoff);
-				} catch (InterruptedException e1) {
-					throw new AMWRuntimeException("Exception while waiting to lock deployment " + id, e1);
-				}
-			}
-		}
 
-		log.warning("Locking of deployments " + id + " not possible!");
-		return null;
-	}
-	
 	/**
 	 * Locks the deployment entity and updates it's status to make sure that the deployment is only executed once.
 	 * It requires a new transaction so the changes are committed to the database at the end of the method.
@@ -89,9 +57,13 @@ public class LockingService
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public boolean markDeploymentAsRunning(Integer id, GenerationModus generationModus){
-		DeploymentEntity d = lockDeployment(id);
+		DeploymentEntity d;
 		
-		if(d == null) {
+		log.fine("Locking deployment " + id);
+		try {
+			d = entityManager.find(DeploymentEntity.class, id, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+		} catch (LockTimeoutException e) {
+			log.warning("Locking of deployments " + id + " not possible!");
 			return false;
 		}
 		
@@ -126,34 +98,24 @@ public class LockingService
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public boolean markShakedownTestAsRunning(Integer id){
-		if (id != null) {
-			try {
-				boolean success = false;
-				ShakedownTestEntity s = entityManager.find(ShakedownTestEntity.class, id, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
-				
-				if (!s.isExecuted()) {
-					log.info("Test of ShakedownTest " + s.getId() + "...");
-					s.setExecuted(true);
-					s.setShakedownTestStateDisplayName(shakedownTest_state.inprogress);
-					entityManager.persist(s);
-					success=true;	
-				} else {
-					log.info("Test " + s.getId() + " was already executed.");
-				}
-				return success;
-			} catch (Exception e) {
-				log.info("Test " + id + " could not be locked.");
-			}
+		ShakedownTestEntity s;
+		log.fine("Locking ShakedownTest " + id);
+		try{
+			s = entityManager.find(ShakedownTestEntity.class, id, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
 		}
-		return false;
+		catch (LockTimeoutException e) {
+			log.warning("Locking of ShakedownTest " + id + " not possible!");
+			return false;
+		}
+
+		if (s.isExecuted()) {
+			log.info("Test " + s.getId() + " was already executed.");
+			return false;
+		}
+		
+		s.setExecuted(true);
+		s.setShakedownTestStateDisplayName(shakedownTest_state.inprogress);
+		entityManager.persist(s);
+		return true;	
 	}
-	
-	/**
-	 * Calculates a new backoff based on the previous backoff. Loosely based on
-	 * a logarithmic algorithm.
-	 */
-	private int getBackoff(int currentBackofflMillis) {
-	    double delta = 0.3d * currentBackofflMillis;
-	    return (int) (1.5 * currentBackofflMillis + (Math.random() * (delta + 1)));
-	  }
 }

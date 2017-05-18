@@ -20,6 +20,49 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.apache.commons.lang.StringUtils;
+
 import ch.puzzle.itc.mobiliar.business.database.control.SequencesService;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
@@ -29,8 +72,6 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent.DeploymentEventType;
-import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.DeploymentParameterRepository;
-import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
@@ -49,7 +90,12 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
-import ch.puzzle.itc.mobiliar.common.exception.*;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
+import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
+import ch.puzzle.itc.mobiliar.common.exception.MultipleVersionsForApplicationException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
@@ -57,29 +103,6 @@ import ch.puzzle.itc.mobiliar.common.util.CustomFilter.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.common.util.CustomFilter.FilterType;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
-import org.apache.commons.lang.StringUtils;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.io.*;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributeView;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Stateless
 public class DeploymentService {
@@ -201,12 +224,6 @@ public class DeploymentService {
 
     @Inject
     private LockingService lockingService;
-
-    @Inject
-    private KeyRepository keyRepository;
-
-    @Inject
-    private DeploymentParameterRepository deploymentParameterRepository;
 
     private PropertyDescriptorEntity mavenVersionProperty = null;
 
@@ -541,28 +558,37 @@ public class DeploymentService {
 
     public void handleNodeJobUpdate(Integer deploymentId) {
 		DeploymentEntity deployment = getDeploymentById(deploymentId);
-		DeploymentState previousState = deployment.getDeploymentState();
+		log.fine("handleNodeJobUpdate called state: " + deployment.getDeploymentState());
 
 		if (!deployment.isPredeploymentFinished()) {
 			return;
 		}
-		deployment = lockingService.lockDeployment(deploymentId);
-		if (deployment == null) {
+		if (!DeploymentState.PRE_DEPLOYMENT.equals(deployment.getDeploymentState())) {
 			return;
 		}
 
-        if (deployment.isPredeploymentSuccessful()) {
-            deployment.setDeploymentState(DeploymentState.READY_FOR_DEPLOYMENT);
-            deployment.appendStateMessage("All NodeJobs successful, updated deployment state from " + previousState + " to " + deployment.getDeploymentState() + " at " + new Date());
-            log.info("All NodeJobs of deployment " + deployment.getId() + " successful, updated deployment state from " + previousState + " to " + deployment.getDeploymentState().name());
-        }
+		if (deployment.isPredeploymentSuccessful()) {
+			try {
+				handlePreDeploymentSuccessful(deployment);
+			} catch (OptimisticLockException e) {
+				// If it fails the deployment will be retried by the scheduler
+				return;
+			}
+		}
         else {
-            deployment.setDeploymentState(DeploymentState.failed);
-            deployment.appendStateMessage("Deployment (previous state : " + previousState + ") failed due to NodeJob failing at " + new Date());
-            log.info("Deployment " + deployment.getId() + " (previous state : " + previousState + ") failed due to NodeJob failing");
+            updateDeploymentInfoAndSendNotification(GenerationModus.PREDEPLOY, deploymentId, "Deployment (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing at " + new Date(), deployment.getResource().getId(), null);
+            log.info("Deployment " + deployment.getId() + " (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing");
         }
-        em.persist(deployment);
-        deploymentEvent.fire(new DeploymentEvent(DeploymentEventType.UPDATE, deploymentId, deployment.getDeploymentState()));
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    private void handlePreDeploymentSuccessful(DeploymentEntity deployment) {
+		DeploymentState previousState = deployment.getDeploymentState();
+
+        deployment.setDeploymentState(DeploymentState.READY_FOR_DEPLOYMENT);
+        deployment.appendStateMessage("All NodeJobs successful, updated deployment state from " + previousState + " to " + deployment.getDeploymentState() + " at " + new Date());
+        log.info("All NodeJobs of deployment " + deployment.getId() + " successful, updated deployment state from " + previousState + " to " + deployment.getDeploymentState().name());
+        deploymentEvent.fire(new DeploymentEvent(DeploymentEventType.UPDATE, deployment.getId(), deployment.getDeploymentState()));
     }
 
     // TODO test
@@ -786,6 +812,22 @@ public class DeploymentService {
         return query.getResultList();
     }
 
+    /**
+     * Get Deployments that are in PRE_DEPLOYMENT but all of it's nodeJobs finished.
+     *
+     * @return List of DeploymentEntity
+     */
+    public List<DeploymentEntity> getFinishedPreDeployments() {
+        TypedQuery<DeploymentEntity> query = em.createQuery(
+                "select "+ DEPLOYMENT_QL_ALIAS +" from "+ DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS
+                + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentState = :deploymentState"
+                + " and exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where deploymentState = :deploymentState)"
+                + " and not exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where status = :running and deploymentState = :deploymentState)",
+                		DeploymentEntity.class)
+                .setParameter("deploymentState", DeploymentState.PRE_DEPLOYMENT)
+                .setParameter("running", NodeJobStatus.RUNNING);
+        return query.getResultList();
+    }
 
     /**
      * Returns all Deployment to be simulated
@@ -861,7 +903,13 @@ public class DeploymentService {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public DeploymentEntity updateDeploymentInfo(GenerationModus generationModus, final Integer deploymentId, final String errorMessage, final Integer resourceId,
                                                  final GenerationResult generationResult) {
-        DeploymentEntity deployment = em.find(DeploymentEntity.class, deploymentId, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+		// don't lock a deployment for predeployment as there is no need to update the deployment.
+		if (GenerationModus.PREDEPLOY.equals(generationModus) && errorMessage == null) {
+			log.fine("Predeploy script finished at " + new Date());
+			return em.find(DeploymentEntity.class, deploymentId);
+		}
+		DeploymentEntity deployment = em.find(DeploymentEntity.class, deploymentId,
+				LockModeType.PESSIMISTIC_FORCE_INCREMENT);
 
         // set as used for deployment
         if (resourceId != null) {
@@ -879,12 +927,8 @@ public class DeploymentService {
                 deployment.setDeploymentState(DeploymentState.failed);
             }
         } else if (GenerationModus.PREDEPLOY.equals(generationModus)) {
-            if (errorMessage == null) {
-                log.fine("Predeploy script finished at " + new Date());
-            } else {
-                deployment.appendStateMessage(errorMessage);
-                deployment.setDeploymentState(DeploymentState.failed);
-            }
+            deployment.appendStateMessage(errorMessage);
+            deployment.setDeploymentState(DeploymentState.failed);
         } else {
             if (errorMessage == null) {
                 String nodeInfo = getNodeInfoForDeployment(generationResult);

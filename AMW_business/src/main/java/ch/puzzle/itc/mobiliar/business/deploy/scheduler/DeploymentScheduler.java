@@ -84,11 +84,12 @@ public class DeploymentScheduler {
 			executeDeployments();
 			executeSimulation();
 			executeForTests();
+			checkForFinishedPredeploymentDeployments();
 		}
 	}
 
 	/**
-	 * Checks for Longrunning Deployments and marks them as failed
+	 * Checks for long running Deployments and marks them as failed
 	 */
 	@Schedule(hour = "*", minute = "*", second = "*/45", persistent = false)
 	public void checkForPendingDeploymentsAndTest() {
@@ -121,7 +122,7 @@ public class DeploymentScheduler {
 	 */
 	@Asynchronous
 	public void handleDeploymentEvent(@Observes(during=TransactionPhase.AFTER_SUCCESS) DeploymentEvent event) {
-		log.log(logLevel, "Deployment event fired for deplyoment " + event.getDeploymentId());
+		log.log(logLevel, "Deployment event " + event.getEventType() + " fired for deplyoment " + event.getDeploymentId());
 		
 		switch (event.getEventType()) {
 		case NEW:
@@ -138,8 +139,8 @@ public class DeploymentScheduler {
 				else{
 					executeDeployments();
 				}
-				break;
 			}
+			break;
 		case NODE_JOB_UPDATE:
 			deploymentService.handleNodeJobUpdate(event.getDeploymentId());
 		}
@@ -226,6 +227,20 @@ public class DeploymentScheduler {
 		}
 		else {
 			log.log(Level.FINE, "No preDeployments inProgress have reached the timeout");
+		}
+	}
+
+	protected synchronized void checkForFinishedPredeploymentDeployments() {
+		log.log(Level.FINE, "Checking for finished preDeployments");
+		List<DeploymentEntity> deployments = deploymentService.getFinishedPreDeployments();
+		if (!deployments.isEmpty()) {
+			log.log(logLevel, deployments.size() + " preDeployments finished");
+			for(DeploymentEntity d : deployments) {
+				deploymentService.handleNodeJobUpdate(d.getId());
+			}
+		}
+		else {
+			log.log(Level.FINE, "No finished preDeployments found");
 		}
 	}
 
