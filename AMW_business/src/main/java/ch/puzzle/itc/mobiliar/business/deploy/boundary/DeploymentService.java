@@ -818,15 +818,14 @@ public class DeploymentService {
      * @return List of DeploymentEntity
      */
     public List<DeploymentEntity> getFinishedPreDeployments() {
-        // throws a "Hexadecimal string with odd number of characters" if 'RUNNING' is set via parameter
         TypedQuery<DeploymentEntity> query = em.createQuery(
                 "select "+ DEPLOYMENT_QL_ALIAS +" from "+ DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS
-                + " join " + DEPLOYMENT_QL_ALIAS + ".nodeJobs nj"
-                + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentState = :deploymentState and nj.deploymentState = :deploymentState"
-                + " group by " + DEPLOYMENT_QL_ALIAS + ".id "
-                + " having count(case nj.status when 'RUNNING' then 1 else null end) = 0",
+                + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentState = :deploymentState"
+                + " and exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where deploymentState = :deploymentState)"
+                + " and not exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where status = :running and deploymentState = :deploymentState)",
                 		DeploymentEntity.class)
-                .setParameter("deploymentState", DeploymentState.PRE_DEPLOYMENT);
+                .setParameter("deploymentState", DeploymentState.PRE_DEPLOYMENT)
+                .setParameter("running", NodeJobStatus.RUNNING);
         return query.getResultList();
     }
 
