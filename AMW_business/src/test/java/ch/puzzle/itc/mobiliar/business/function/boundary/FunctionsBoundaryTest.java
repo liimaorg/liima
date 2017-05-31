@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +43,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
 import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -71,7 +71,7 @@ public class FunctionsBoundaryTest {
 	ResourceTypeRepository resourceTypeRepositoryMock;
 
 	@Mock
-	Permissions permissionBoundaryMock;
+    PermissionBoundary permissionBoundaryMock;
 
 	@Mock
 	FunctionService functionServiceMock;
@@ -87,8 +87,8 @@ public class FunctionsBoundaryTest {
 
     @Before
     public void setUp(){
-        when(resourceRepositoryMock.findById(resource.getId())).thenReturn(resource);
-        when(resourceTypeRepositoryMock.findById(resourceType.getId())).thenReturn(resourceType);
+        when(resourceRepositoryMock.find(resource.getId())).thenReturn(resource);
+        when(resourceTypeRepositoryMock.find(resourceType.getId())).thenReturn(resourceType);
     }
 
 
@@ -203,7 +203,7 @@ public class FunctionsBoundaryTest {
 
 		// given
 		Integer selectedFunctionIdToBeRemoved = 1;
-		when(functionRepositoryMock.getFunctionById(selectedFunctionIdToBeRemoved)).thenReturn(null);
+		when(functionRepositoryMock.find(selectedFunctionIdToBeRemoved)).thenReturn(null);
 
 		// when
 		functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
@@ -227,7 +227,7 @@ public class FunctionsBoundaryTest {
 
         // given
         Integer selectedFunctionIdToBeRemoved = 1;
-        when(functionRepositoryMock.getFunctionById(selectedFunctionIdToBeRemoved)).thenReturn(null);
+        when(functionRepositoryMock.find(selectedFunctionIdToBeRemoved)).thenReturn(null);
 
         // when
         functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
@@ -240,7 +240,7 @@ public class FunctionsBoundaryTest {
         // given
         functionA_ID_4.overwrite(functionA_ID_3);
         assertTrue(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
-        when(functionRepositoryMock.getFunctionById(ID_3)).thenReturn(functionA_ID_3);
+        when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
 
         // when
         try {
@@ -259,7 +259,7 @@ public class FunctionsBoundaryTest {
         // given
         functionA_ID_4.overwrite(functionA_ID_3);
         assertTrue(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
-        when(functionRepositoryMock.getFunctionById(ID_3)).thenReturn(functionA_ID_3);
+        when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
 
         // when
         functionsBoundary.deleteFunction(functionA_ID_3.getId());
@@ -271,7 +271,7 @@ public class FunctionsBoundaryTest {
         // given
         functionA_ID_4.overwrite(functionA_ID_3);
         assertTrue(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
-        when(functionRepositoryMock.getFunctionById(ID_3)).thenReturn(functionA_ID_3);
+        when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
 
         // when
         try {
@@ -287,7 +287,7 @@ public class FunctionsBoundaryTest {
 
         // given
         assertFalse(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
-        when(functionRepositoryMock.getFunctionById(ID_3)).thenReturn(functionA_ID_3);
+        when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
 
         // when
         functionsBoundary.deleteFunction(functionA_ID_3.getId());
@@ -301,7 +301,7 @@ public class FunctionsBoundaryTest {
 
         // given
         assertFalse(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
-        when(functionRepositoryMock.getFunctionById(ID_3)).thenReturn(functionA_ID_3);
+        when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
 
         // when
         functionsBoundary.deleteFunction(functionA_ID_3.getId());
@@ -487,7 +487,7 @@ public class FunctionsBoundaryTest {
         // given
 
         when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
-        when(resourceRepositoryMock.findById(resource.getId())).thenReturn(null);
+        when(resourceRepositoryMock.find(resource.getId())).thenReturn(null);
 
         // when
         functionsBoundary.overwriteResourceFunction("functionBody", resource.getId(), functionA_ID_3.getId());
@@ -550,7 +550,7 @@ public class FunctionsBoundaryTest {
 
         // given
         when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
-        when(resourceTypeRepositoryMock.findById(resourceType.getId())).thenReturn(null);
+        when(resourceTypeRepositoryMock.find(resourceType.getId())).thenReturn(null);
 
         // when
         functionsBoundary.overwriteResourceTypeFunction("functionBody", resourceType.getId(), functionA_ID_3.getId());

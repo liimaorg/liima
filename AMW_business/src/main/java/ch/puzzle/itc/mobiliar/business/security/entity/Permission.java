@@ -28,7 +28,6 @@ public enum Permission {
     NEW_RES("New resource button. You can find this button in APPLICATIONSERVER/NODE/NOT DEFAULT RESOURCETYPE."),
     ADD_APPSERVER("Add application server. Path: Apps"),
     ADD_APP("Add new application and/or application server. Path: Apps"),
-    //ADD_APP_AND_APPSERVER("Add new application AND application server. Path: Apps"),
     ADD_NEW_RES_OF_DEFAULT_RESTYPE("New application or/and application server. Path: Resources -> select APPLICATION tab"),
     DELETE_RES("Delete Resource. In all resource type screen. Path -> Resources -> select one Resource Type."),
     DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE("WARNING: DON'T CHANGE THIS PERMISSION"),
@@ -182,11 +181,14 @@ public enum Permission {
     STP_MANAGEMENT_PAGE("Path: Settings -> select STP Management"),
     EDIT_STP("Path: Settings -> select STP Management -> Edit"),
     DELETE_STP("Path: Settings -> select STP Management -> Edit"),
-    ADD_STP("Path: Settings -> select STP Management -> Add new STP");
+    ADD_STP("Path: Settings -> select STP Management -> Add new STP"),
+
+    //NEW PERMISSIONS
+    DEPLOYMENT("The right to deploy");
 
     private String info;
 
-    private Permission(String info) {
+    Permission(String info) {
         this.info = info;
     }
 

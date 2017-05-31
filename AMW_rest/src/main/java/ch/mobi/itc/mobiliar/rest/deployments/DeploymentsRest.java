@@ -205,7 +205,7 @@ public class DeploymentsRest {
     @ApiOperation(value = "returns the keys of all available DeploymentParameter")
     public Response getAllDeploymentParameterKeys() {
         List<DeploymentParameterDTO> deploymentParameters = new ArrayList<>();
-        for (Key key : keyRepository.findAllKeys()) {
+        for (Key key : keyRepository.findAll()) {
             deploymentParameters.add(new DeploymentParameterDTO(key.getName(), null));
         }
         return Response.status(Status.OK).entity(deploymentParameters).build();

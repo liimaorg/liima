@@ -28,6 +28,7 @@ import javax.ejb.EJBException;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesDTO;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,7 +44,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvide
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourcesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotDeletableException;
@@ -97,7 +97,7 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 	private ReleaseSelector filterReleaseSelector;
 
     @Inject
-    private Permissions permissionBoundary;
+    private PermissionBoundary permissionBoundary;
 
     @Inject
     private ForeignableBoundary foreignableBoundary;

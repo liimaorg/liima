@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.security.entity;
 
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,16 +56,14 @@ public class PermissionEntity implements Serializable
 
 	@Getter
 	@Setter
-	@ManyToOne
-	@NotAudited
-	private ContextEntity context;
-
-	@Getter
-	@Setter
 	@ManyToMany(mappedBy = "permissions")
 	@NotAudited
 	private Set<RoleEntity> roles = new HashSet<RoleEntity>();
 
+	@Getter
+	@Setter
+	@OneToMany(mappedBy = "permission")
+	private Set<RestrictionEntity> restrictions = new HashSet<>();
 
 	public String getInfo() {
 		try {

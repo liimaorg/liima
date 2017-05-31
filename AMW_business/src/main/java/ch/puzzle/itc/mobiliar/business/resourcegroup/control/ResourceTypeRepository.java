@@ -25,12 +25,11 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
 
 
-public class ResourceTypeRepository {
+public class ResourceTypeRepository extends BaseRepository<ResourceTypeEntity> {
 
     @Inject
     EntityManager entityManager;
@@ -43,11 +42,6 @@ public class ResourceTypeRepository {
                         "where r.id=:resTypeId", ResourceTypeEntity.class)
                 .setParameter("resTypeId", id).setMaxResults(1).getResultList();
         return entity.isEmpty() ? null : entity.get(0);
-    }
-
-
-    public ResourceTypeEntity findById(Integer resourceTypeId){
-        return entityManager.find(ResourceTypeEntity.class, resourceTypeId);
     }
 
 }

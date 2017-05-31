@@ -20,12 +20,16 @@
 
 package ch.puzzle.itc.mobiliar.business.security.boundary;
 
+import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
+import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.CheckedNotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
@@ -34,20 +38,32 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A boundary for checking permissions of view elements
  */
 @Stateless
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class Permissions implements Serializable {
+public class PermissionBoundary implements Serializable {
 
     @Inject
     EntityManager entityManager;
 
     @Inject
     PermissionService permissionService;
+
+    @Inject
+    RestrictionRepository restrictionRepository;
+
+    @Inject
+    PermissionRepository permissionRepository;
+
+    @Inject
+    ContextLocator contextLocator;
 
     @Inject
     ResourceTypeProvider resourceTypeProvider;
@@ -81,8 +97,9 @@ public class Permissions implements Serializable {
 
     }
 
-    public boolean hasPermission(String role) {
-        return permissionService.hasPermission(role);
+    public boolean hasPermission(String permissionName) {
+        Permission permission = Permission.valueOf(permissionName);
+        return permissionService.hasPermission(permission);
     }
 
     public boolean hasPermission(Permission permission) {
@@ -241,4 +258,104 @@ public class Permissions implements Serializable {
     public boolean hasPermissionToDeploy() {
         return permissionService.hasPermissionToDeploy();
     }
+
+    public RestrictionEntity findRestriction(Integer id) {
+        return restrictionRepository.find(id);
+    }
+
+    public List<RestrictionEntity> findAllRestrictions() {
+        return restrictionRepository.findAll();
+    }
+
+    /**
+     * Creates a new RestrictionEntity and returns its id
+     *
+     * @param roleName
+     * @param permissionName
+     * @param contextName
+     * @param action
+     * @throws AMWException
+     * @return Id of the newly created RestrictionEntity
+     */
+    public Integer createRestriction(String roleName, String permissionName, String contextName, Action action) throws AMWException {
+        RestrictionEntity restriction = new RestrictionEntity();
+        validateRestriction(roleName, permissionName, contextName, action, restriction);
+        return restrictionRepository.create(restriction);
+    }
+
+    /**
+     * Updates an existing RestrictionEntity
+     *
+     * @param id
+     * @param roleName
+     * @param permissionName
+     * @param contextName
+     * @param action
+     * @throws AMWException
+     */
+    public void updateRestriction(Integer id, String roleName, String permissionName, String contextName, Action action) throws AMWException {
+        if (id == null) {
+            throw new AMWException("Id must not be null");
+        }
+        RestrictionEntity restriction = restrictionRepository.find(id);
+        if (restriction == null) {
+            throw new AMWException("Restriction not found");
+        }
+        validateRestriction(roleName, permissionName, contextName, action, restriction);
+        restrictionRepository.merge(restriction);
+    }
+
+    public void removeRestriction(Integer id) throws AMWException {
+        RestrictionEntity restriction = restrictionRepository.find(id);
+        if (restriction == null) {
+            throw new AMWException("Restriction not found");
+        }
+        restrictionRepository.remove(id);
+    }
+
+    /**
+     * Returns all available roles with their restrictions
+     *
+     * @return Map key=Role.name, value=restrictionDTOs
+     */
+    public Map<String, List<RestrictionDTO>> getAllPermissions() {
+        return permissionService.getPermissions();
+    }
+
+    private void validateRestriction(String roleName, String permissionName, String contextName, Action action, RestrictionEntity restriction) throws AMWException {
+        if (roleName != null) {
+            try {
+                restriction.setRole(permissionRepository.getRoleByName(roleName));
+            } catch (NoResultException ne) {
+                throw new AMWException("Role " + roleName +  " not found.");
+            }
+        } else {
+            throw new AMWException("Missing RoleName");
+        }
+
+        if (permissionName != null) {
+            try {
+                restriction.setPermission(permissionRepository.getPermissionByName(permissionName));
+            } catch (NoResultException ne) {
+                throw new AMWException("Permission " + permissionName +  " not found.");
+            }
+        } else {
+            throw new AMWException("Missing PermissionName");
+        }
+
+        if (contextName != null) {
+            try {
+                restriction.setContext(contextLocator.getContextByName(contextName));
+            } catch (Exception e) {
+                throw new AMWException("Context " + contextName +  " not found.");
+            }
+        }
+
+        if (action != null) {
+            restriction.setAction(action);
+        } else {
+            restriction.setAction(Action.ALL);
+        }
+    }
+
 }

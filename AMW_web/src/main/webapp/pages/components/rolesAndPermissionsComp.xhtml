@@ -87,8 +87,6 @@
 													<a4j:param
 														assignTo="#{securityDataProvider.assignedPermissionSelected}"
 														value="${permis.id}" />
-													<h:outputText value="  (Deploy Enviroment)"
-														rendered="#{permis.context!=null}" />
 													<a4j:param
 														assignTo="#{securityDataProvider.displaySelectedPermission}"
 														value="${permis.value}" />
@@ -195,9 +193,6 @@
 													<a4j:param
 														assignTo="#{securityDataProvider.permissionSelected}"
 														value="${perm_to_role.permission.id}" />
-													<h:outputText id="deployPemrissionText"
-														value="  (Deploy Enviroment)"
-														rendered="#{perm_to_role.permission.context!=null}" />
 													<a4j:param
 														assignTo="#{securityDataProvider.selectedOldRole}"
 														value="${perm_to_role.role.id}" />
@@ -263,13 +258,6 @@
 					<div class="controls">
 						<h:inputText id="newRoleName"
 							value="#{securityDataProvider.roleName}" />
-					</div>
-					<label class="control-label"><h:outputLabel
-							value="Deployable" /></label>
-					<div class="controls">
-						<h:selectBooleanCheckbox
-							value="${securityDataProvider.deployable}" />
-
 					</div>
 				</div>
 			</h:panelGroup>
@@ -392,8 +380,7 @@
 					x
 					</h:outputLink>
 			</f:facet>
-			<h:panelGroup id="screenShotInfoImage"
-				rendered="#{!securityDataProvider.permissionDeployable}">
+			<h:panelGroup id="screenShotInfoImage">
 				<div class="control-group textCenter">
 					<h:outputText value="#{securityDataProvider.infoPermission}" />
 				</div>
@@ -402,16 +389,6 @@
 					<img
 						src="../${buildNumber}/images/permissionScreenshot/#{securityDataProvider.displaySelectedPermission}.jpeg"
 						class="width1600 height768px" />
-				</div>
-			</h:panelGroup>
-			<h:panelGroup id="textInfoDeployPermission"
-				rendered="#{securityDataProvider.permissionDeployable}">
-				<div>
-					<h:outputText
-						value="This is a deploy permission: #{securityDataProvider.displaySelectedPermission} " />
-					<div class="lineHeight30px">
-						<h:outputText value="Path: Settings -> Enviroments" />
-					</div>
 				</div>
 			</h:panelGroup>
 		</rich:popupPanel>

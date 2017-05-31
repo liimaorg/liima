@@ -114,11 +114,11 @@ public class ResourceRepository {
         return entity.isEmpty() ? null : entity.get(0);
     }
 
-    public ResourceEntity findById(Integer resourceId) {
+    public ResourceEntity find(Integer resourceId) {
         return entityManager.find(ResourceEntity.class, resourceId);
     }
 
-    public void removeResource(ResourceEntity resource) {
+    public void remove(ResourceEntity resource) {
         entityManager.remove(resource);
     }
 

@@ -99,11 +99,6 @@ public class ContextEntity extends AbstractContext implements Serializable {
     private Set<ResourceTypeContextEntity> resourceTypeContextEntities;
 
     @Getter
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "context")
-    @NotAudited
-    private Set<PermissionEntity> permissions;
-
-    @Getter
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "context")
     @NotAudited
     private Set<DeploymentEntity> deploys;

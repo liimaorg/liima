@@ -379,7 +379,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
 
 
     void omitTemplateForLackingPermissions(ContextEntity context, EnvironmentGenerationResult result) {
-        boolean omitTemplateContent = !permissionService.hasPermissionForDeploymentOnContextOrSubContext(context);
+        boolean omitTemplateContent = !permissionService.hasPermissionForDeploymentOnContext(context);
         if(omitTemplateContent) {
             result.omitAllTemplates();
         }

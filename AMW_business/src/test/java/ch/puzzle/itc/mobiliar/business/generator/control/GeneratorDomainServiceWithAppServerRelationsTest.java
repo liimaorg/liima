@@ -49,7 +49,7 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     @Test
     public void testDoNotOmitTemplateWithPermission() throws Exception {
         //given
-        Mockito.when(permissionService.hasPermissionForDeploymentOnContextOrSubContext(Mockito.any(
+        Mockito.when(permissionService.hasPermissionForDeploymentOnContext(Mockito.any(
                   ContextEntity.class))).thenReturn(true);
 
         //when
@@ -63,7 +63,7 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     @Test
     public void testOmitTemplateForLackingPermissions() throws Exception {
         //given
-        Mockito.when(permissionService.hasPermissionForDeploymentOnContextOrSubContext(Mockito.any(
+        Mockito.when(permissionService.hasPermissionForDeploymentOnContext(Mockito.any(
                   ContextEntity.class))).thenReturn(false);
 
         //when

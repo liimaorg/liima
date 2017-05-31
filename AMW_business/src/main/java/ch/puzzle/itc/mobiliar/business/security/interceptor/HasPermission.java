@@ -20,19 +20,23 @@
 
 package ch.puzzle.itc.mobiliar.business.security.interceptor;
 
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 import javax.persistence.Inheritance;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.NULL;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 @InterceptorBinding
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD,ElementType.TYPE})
+@Retention(RUNTIME)
+@Target({METHOD, TYPE})
 @Inheritance
 public @interface HasPermission {
 	@Nonbinding
@@ -40,4 +44,10 @@ public @interface HasPermission {
 	
 	@Nonbinding
 	Permission[] oneOfPermission() default Permission.DEFAULT;
+
+	@Nonbinding
+	Action action() default NULL;
+
+	@Nonbinding
+	Action[] oneOfAction() default {};
 }

@@ -31,8 +31,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CopyResource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
@@ -43,7 +42,6 @@ import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
 import lombok.Getter;
 
-import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -71,7 +69,7 @@ public class CopyResourceDataProvider implements Serializable {
 	private MaiaAmwFederationServicePredecessorHandler maiaAmwFederationServicePredecessorHandler;
 
 	@Inject
-    Permissions permissions;
+    PermissionBoundary permissionBoundary;
 
     @Inject
     ForeignableBoundary foreignableBoundary;
@@ -257,9 +255,9 @@ public class CopyResourceDataProvider implements Serializable {
 
 
     public boolean isCanCopyResource() {
-        return permissions.canCopyFromResource(resource.getResource()) && (resource.getResource() != null);
+        return permissionBoundary.canCopyFromResource(resource.getResource()) && (resource.getResource() != null);
     }
 	public boolean isCanCopyFromPredecessorResource() {
-		return permissions.canCopyFromResource(resource.getResource()) && (resource.getResource() != null);
+		return permissionBoundary.canCopyFromResource(resource.getResource()) && (resource.getResource() != null);
 	}
 }
