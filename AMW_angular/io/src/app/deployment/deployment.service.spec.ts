@@ -1,5 +1,5 @@
 import { inject, TestBed } from '@angular/core/testing';
-import { BaseRequestOptions, Response, ResponseOptions, Http } from '@angular/http';
+import { BaseRequestOptions, Response, ResponseOptions, Http, RequestMethod } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
 import { DeploymentService } from './deployment.service';
 import { DeploymentRequest } from './deployment-request';
@@ -20,18 +20,22 @@ describe('DeploymentService', () => {
     ]
   }));
 
-  it('should have a getAll method', inject([DeploymentService], (deploymentService: DeploymentService) => {
+  it('should have a getAll method',
+    inject([DeploymentService], (deploymentService: DeploymentService) => {
     expect(deploymentService.getAll()).toBeDefined();
   }));
 
-  it('should have a createDeployment method', inject([DeploymentService], (deploymentService: DeploymentService) => {
+  it('should have a createDeployment method',
+    inject([DeploymentService], (deploymentService: DeploymentService) => {
     let deploymentRequest: DeploymentRequest = <DeploymentRequest> {};
     expect(deploymentService.createDeployment(deploymentRequest)).toBeDefined();
   }));
 
-  it('should request data from the right endpoint when getAll is called', inject([DeploymentService, MockBackend, Http], (deploymentService: DeploymentService, mockBackend: MockBackend, http: Http) => {
+  it('should request data from the right endpoint when getAll is called',
+    inject([DeploymentService, MockBackend], (deploymentService: DeploymentService, mockBackend: MockBackend) => {
     // given
     mockBackend.connections.subscribe((connection) => {
+      expect(connection.request.method).toBe(RequestMethod.Get);
       expect(connection.request.url).toMatch('/AMW_rest/resources/deployments');
       let mockResponse = new Response(new ResponseOptions({
         body: [{id: 1}]
@@ -44,9 +48,11 @@ describe('DeploymentService', () => {
     });
   }));
 
-  it('should request data from the right endpoint when getAllDeploymentParameterKeys is called', inject([DeploymentService, MockBackend, Http], (deploymentService: DeploymentService, mockBackend: MockBackend, http: Http) => {
+  it('should request data from the right endpoint when getAllDeploymentParameterKeys is called',
+    inject([DeploymentService, MockBackend], (deploymentService: DeploymentService, mockBackend: MockBackend) => {
     // given
     mockBackend.connections.subscribe((connection) => {
+      expect(connection.request.method).toBe(RequestMethod.Get);
       expect(connection.request.url).toMatch('/AMW_rest/resources/deployments/deploymentParameterKeys');
       let mockResponse = new Response(new ResponseOptions({
         body: [{key: 1, value: 'test'}]
@@ -59,9 +65,11 @@ describe('DeploymentService', () => {
     });
   }));
 
-  it('should request data from the right endpoint when get is called', inject([DeploymentService, MockBackend, Http], (deploymentService: DeploymentService, mockBackend: MockBackend, http: Http) => {
+  it('should request data from the right endpoint when get is called',
+    inject([DeploymentService, MockBackend], (deploymentService: DeploymentService, mockBackend: MockBackend) => {
     // given
     mockBackend.connections.subscribe((connection) => {
+      expect(connection.request.method).toBe(RequestMethod.Get);
       expect(connection.request.url).toMatch('/AMW_rest/resources/deployments/123');
       let mockResponse = new Response(new ResponseOptions({
         body: [{id: 123}]

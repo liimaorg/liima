@@ -24,13 +24,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.criteria.*;
 
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
+import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 
-public class ResourceTypeRepository {
+public class ResourceTypeRepository extends BaseRepository<ResourceTypeEntity> {
 
     @Inject
     EntityManager entityManager;
@@ -45,9 +47,18 @@ public class ResourceTypeRepository {
         return entity.isEmpty() ? null : entity.get(0);
     }
 
-
-    public ResourceTypeEntity findById(Integer resourceTypeId){
-        return entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+    public ResourceTypeEntity getByName(String resourceTypeName) {
+        try {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<ResourceTypeEntity> criteriaQuery = criteriaBuilder.createQuery(ResourceTypeEntity.class);
+            Root<ResourceTypeEntity> srt = criteriaQuery.from(ResourceTypeEntity.class);
+            Path<String> name = srt.get("name");
+            Predicate namePredicate = criteriaBuilder.like(name, resourceTypeName);
+            criteriaQuery.where(namePredicate);
+            return entityManager.createQuery(criteriaQuery).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
 }

@@ -21,46 +21,33 @@
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
-import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
-import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class ResourceTypeLocator {
 
-    // TODO check permissions
-    // TODO use ResourceTypeProvider and ResourceTypeDomainService
-
     @Inject
-    EntityManager entityManager;
+    ResourceTypeDomainService resourceTypeDomainService;
 
-	@Inject
-	protected Logger log;
-
+    public ResourceTypeEntity getResourceType(Integer resourceTypeId) {
+        return resourceTypeDomainService.getResourceType(resourceTypeId);
+    }
 
     /**
-     * Move to service
-     * @param resourceTypeId
+     * Returns all available ResourceTypeEntities without children, ordered alphabetically
+     *
      * @return
      */
-    public ResourceTypeEntity getResourceType(Integer resourceTypeId) {
-        return entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+    public List<ResourceTypeEntity> getAllResourceTypes() {
+        return resourceTypeDomainService.getAllResourceTypesWithoutChildren();
     }
 
 }

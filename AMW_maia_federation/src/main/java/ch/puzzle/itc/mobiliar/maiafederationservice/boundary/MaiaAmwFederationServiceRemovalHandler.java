@@ -69,7 +69,7 @@ public class MaiaAmwFederationServiceRemovalHandler {
 
             if(isOneResourceMaiaOwned(resources)){
                 for (ResourceEntity resource : resources) {
-                    resourceRepository.removeResource(resource);
+                    resourceRepository.remove(resource);
                 }
                 resourceRepository.removeResourceGroup(resources.get(0).getResourceGroup());
                 resourceHelper.setProcessingState(ProcessingState.OK);

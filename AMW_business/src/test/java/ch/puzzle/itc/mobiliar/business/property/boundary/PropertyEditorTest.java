@@ -29,6 +29,8 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +59,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -76,7 +77,7 @@ public class PropertyEditorTest {
 	PropertyValueService propertyValueServiceMock;
 
 	@Mock
-    Permissions permissionBoundaryMock;
+    PermissionBoundary permissionBoundaryMock;
 
 	@Mock
 	ResourceLocator resourceLocatorMock;
@@ -173,8 +174,7 @@ public class PropertyEditorTest {
         when(resourceLocatorMock.getResourceByGroupNameAndRelease(resourceGroupName, releaseName)).thenReturn(createWithIdNameAndTypeName(1, resourceGroupName, typeName));
         when(contextLocatorMock.getContextByName(contextName)).thenReturn(contextMock);
         when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-
-        when(permissionBoundaryMock.hasPermission(Permission.SAVE_ALL_CHANGES)).thenReturn(false);
+        when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, null, null)).thenReturn(false);
 
         // when
         Assert.assertTrue(!properties.isEmpty());
@@ -200,8 +200,7 @@ public class PropertyEditorTest {
         when(resourceLocatorMock.getResourceByGroupNameAndRelease(resourceGroupName, releaseName)).thenReturn(resource);
         when(contextLocatorMock.getContextByName(contextName)).thenReturn(contextMock);
         when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-
-        when(permissionBoundaryMock.hasPermission(Permission.SAVE_ALL_CHANGES)).thenReturn(true);
+        when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, resource, null)).thenReturn(true);
 
         setupMocksForSinglePropertiesModificationsFor(resource);
 
@@ -277,8 +276,7 @@ public class PropertyEditorTest {
         when(resourceLocatorMock.getResourceByGroupNameAndRelease(resourceGroupName, releaseName)).thenReturn(createWithIdNameAndTypeName(1, resourceGroupName, typeName));
         when(contextLocatorMock.getContextByName(contextName)).thenReturn(contextMock);
         when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-
-        when(permissionBoundaryMock.hasPermission(Permission.SAVE_ALL_CHANGES)).thenReturn(false);
+        when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, null, null)).thenReturn(false);
 
         // when
         Assert.assertTrue(!properties.isEmpty());
@@ -304,8 +302,7 @@ public class PropertyEditorTest {
         when(resourceLocatorMock.getResourceByGroupNameAndRelease(resourceGroupName, releaseName)).thenReturn(resource);
         when(contextLocatorMock.getContextByName(contextName)).thenReturn(contextMock);
         when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-
-        when(permissionBoundaryMock.hasPermission(Permission.SAVE_ALL_CHANGES)).thenReturn(true);
+        when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, resource, null)).thenReturn(true);
 
         setupMocksForSinglePropertiesModificationsFor(resource);
 
@@ -346,7 +343,6 @@ public class PropertyEditorTest {
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
-        String typeName = "resourceGroupTypeName";
 
         List<ResourceEditProperty> properties = new ArrayList<>();
 
@@ -375,7 +371,6 @@ public class PropertyEditorTest {
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
-        String typeName = "resourceGroupTypeName";
 
         List<ResourceEditProperty> properties = new ArrayList<>();
         properties.add(new ResourceEditPropertyBuilder().withDisplayAndTechKeyName(propertyName).withValue(propertyValue).build());
@@ -387,8 +382,7 @@ public class PropertyEditorTest {
         when(entityManagerMock.find(ResourceEntity.class, 1)).thenReturn(mock(ResourceEntity.class));
         when(entityManagerMock.find(ResourceEntity.class, 2)).thenReturn(mock(ResourceEntity.class));
         when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-
-        when(permissionBoundaryMock.hasPermission(Permission.SAVE_ALL_CHANGES)).thenReturn(false);
+        when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, null, null)).thenReturn(false);
 
         // when
         Assert.assertTrue(!properties.isEmpty());
@@ -405,7 +399,6 @@ public class PropertyEditorTest {
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
-        String typeName = "resourceGroupTypeName";
 
         List<ResourceEditProperty> properties = new ArrayList<>();
         properties.add(new ResourceEditPropertyBuilder().withDisplayAndTechKeyName(propertyName).withValue(propertyValue).build());
@@ -418,8 +411,7 @@ public class PropertyEditorTest {
         when(entityManagerMock.find(ResourceEntity.class, 1)).thenReturn(mock(ResourceEntity.class));
         when(entityManagerMock.find(ResourceEntity.class, 2)).thenReturn(mock(ResourceEntity.class));
         when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-
-        when(permissionBoundaryMock.hasPermission(Permission.SAVE_ALL_CHANGES)).thenReturn(true);
+        when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, relation.getMasterResource(), null)).thenReturn(true);
         setupMocksForSinglePropertiesModificationsFor(relation);
 
         // when
@@ -500,8 +492,7 @@ public class PropertyEditorTest {
         when(entityManagerMock.find(ResourceEntity.class, 1)).thenReturn(mock(ResourceEntity.class));
         when(entityManagerMock.find(ResourceEntity.class, 2)).thenReturn(mock(ResourceEntity.class));
         when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-
-        when(permissionBoundaryMock.hasPermission(Permission.SAVE_ALL_CHANGES)).thenReturn(false);
+        when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, null, null)).thenReturn(false);
 
         // when
         Assert.assertTrue(!properties.isEmpty());
@@ -530,8 +521,7 @@ public class PropertyEditorTest {
         when(entityManagerMock.find(ResourceEntity.class, 1)).thenReturn(mock(ResourceEntity.class));
         when(entityManagerMock.find(ResourceEntity.class, 2)).thenReturn(mock(ResourceEntity.class));
         when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-
-        when(permissionBoundaryMock.hasPermission(Permission.SAVE_ALL_CHANGES)).thenReturn(true);
+        when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, relation.getMasterResource(), null)).thenReturn(true);
         setupMocksForSinglePropertiesModificationsFor(relation);
 
         // when
@@ -664,8 +654,7 @@ public class PropertyEditorTest {
         when(entityManagerMock.find(ResourceEntity.class, 1)).thenReturn(resource);
         when(entityManagerMock.find(ResourceEntity.class, 2)).thenReturn(relatedResource);
         when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-
-        when(permissionBoundaryMock.hasPermission(Permission.SAVE_ALL_CHANGES)).thenReturn(false);
+        when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, null, null)).thenReturn(false);
 
         setupMocksForSinglePropertiesModificationsFor(resource);
 
@@ -706,8 +695,7 @@ public class PropertyEditorTest {
         when(entityManagerMock.find(ResourceEntity.class, 1)).thenReturn(resource);
         when(entityManagerMock.find(ResourceEntity.class, 2)).thenReturn(relatedResource);
         when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-
-        when(permissionBoundaryMock.hasPermission(Permission.SAVE_ALL_CHANGES)).thenReturn(true);
+        when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, null, null)).thenReturn(false);
 
         // when
         Assert.assertTrue(!resourcesByGroupNameWithRelations.isEmpty());
@@ -749,8 +737,7 @@ public class PropertyEditorTest {
         when(entityManagerMock.find(ResourceEntity.class, 1)).thenReturn(resource);
         when(entityManagerMock.find(ResourceEntity.class, 2)).thenReturn(relatedResource);
         when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-
-        when(permissionBoundaryMock.hasPermission(Permission.SAVE_ALL_CHANGES)).thenReturn(true);
+        when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, resource, null)).thenReturn(true);
 
         setupMocksForSinglePropertiesModificationsFor(resource.getConsumedRelation(relatedResource));
 

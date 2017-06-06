@@ -22,22 +22,16 @@ package ch.puzzle.itc.mobiliar.business.function.control;
 
 
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
+import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-public class FunctionRepository {
+public class FunctionRepository extends BaseRepository<AmwFunctionEntity> {
 
     @Inject
     EntityManager entityManager;
-
-
-	public AmwFunctionEntity getFunctionById(Integer functionId) {
-		AmwFunctionEntity amwFunction;
-		amwFunction = entityManager.find(AmwFunctionEntity.class, functionId);
-		return amwFunction;
-	}
 
     public AmwFunctionEntity getFunctionByIdWithChildFunctions(Integer functionId) {
         List<AmwFunctionEntity> entity =  entityManager
@@ -59,8 +53,6 @@ public class FunctionRepository {
         return entity.isEmpty() ? null : entity.get(0);
     }
 
-
-
     public void persistOrMergeFunction(AmwFunctionEntity amwFunction) {
         if (amwFunction.getId() == null) {
             entityManager.persist(amwFunction);
@@ -68,9 +60,5 @@ public class FunctionRepository {
         else {
             entityManager.merge(amwFunction);
         }
-    }
-
-    public void remove(AmwFunctionEntity amwFunction){
-        entityManager.remove(amwFunction);
     }
 }

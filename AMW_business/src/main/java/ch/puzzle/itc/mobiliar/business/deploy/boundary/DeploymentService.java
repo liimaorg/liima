@@ -345,7 +345,7 @@ public class DeploymentService {
             successStateCheck = "and "
                     + DEPLOYMENT_QL_ALIAS
                     + ".deploymentState = '"
-                    + DeploymentEntity.DeploymentState.success + "'";
+                    + DeploymentState.success + "'";
         }
 
         return "select " + DEPLOYMENT_QL_ALIAS + " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentDate = "
@@ -462,9 +462,7 @@ public class DeploymentService {
                 deployment.setCreateTestForNeighborhoodAfterDeployment(false);
             }
 
-            boolean hasPermission = permissionService
-                    .hasPermission(context.getName());
-            if (!requestOnly && hasPermission) {
+            if (!requestOnly && permissionService.hasPermissionForDeploymentOnContext(context, group)) {
                 deployment.confirm(permissionService.getCurrentUserName());
             } else {
                 deployment.setDeploymentState(DeploymentState.requested);
@@ -716,7 +714,7 @@ public class DeploymentService {
                         + " left join fetch " + DEPLOYMENT_QL_ALIAS
                         + ".runtime where " + DEPLOYMENT_QL_ALIAS
                         + ".deploymentState = :deploymentState", DeploymentEntity.class)
-                .setParameter("deploymentState", DeploymentEntity.DeploymentState.READY_FOR_DEPLOYMENT)
+                .setParameter("deploymentState", DeploymentState.READY_FOR_DEPLOYMENT)
                 .setMaxResults(getDeploymentProcessingLimit())
                 .getResultList();
     }
@@ -734,7 +732,7 @@ public class DeploymentService {
                         + ".runtime where " + DEPLOYMENT_QL_ALIAS
                         + ".deploymentState = :deploymentState and " + DEPLOYMENT_QL_ALIAS
                         + ".deploymentDate<=:now", DeploymentEntity.class)
-                .setParameter("deploymentState", DeploymentEntity.DeploymentState.scheduled)
+                .setParameter("deploymentState", DeploymentState.scheduled)
                 .setParameter("now", new Date())
                 .setMaxResults(getDeploymentProcessingLimit())
                 .getResultList();

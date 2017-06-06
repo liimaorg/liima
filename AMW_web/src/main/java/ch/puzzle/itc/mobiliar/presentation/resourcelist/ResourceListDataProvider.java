@@ -26,7 +26,7 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.presentation.common.ApplicationCreatorDataProvider;
@@ -65,7 +65,7 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 	PermissionService permissionService;
 
 	@Inject
-	Permissions  permissionBoundry;
+    PermissionBoundary permissionBoundary;
 
 	@Inject
 	UserSettings userSettings;
@@ -234,15 +234,16 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 	}
 
 	public boolean getCanCreateResourceInstance() {
-		return permissionBoundry.canCreateResourceInstance(getSelectedResourceType().getEntity());
+		return permissionBoundary.canCreateResourceInstance(getSelectedResourceType().getEntity());
 
 	}
 
 	public boolean getCanRemoveDefaultInstanceOfResType() {
-		return permissionService.hasPermissionToRemoveDefaultInstanceOfResType(isDefaultResourceType());
+		if (getSelectedResourceType() != null) {
+			return permissionService.hasPermissionToRemoveInstanceOfResType(getSelectedResourceType().getEntity());
+		}
+		return false;
 	}
-
-
 
 	public SelectEditResourceType getSelectEditResourceTypeComp() {
 		if (selectEditResourceTypeComp == null) {

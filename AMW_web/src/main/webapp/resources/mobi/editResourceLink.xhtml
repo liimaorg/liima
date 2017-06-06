@@ -9,6 +9,7 @@
 	<composite:attribute name="resId" />
 	<composite:attribute name="linkLabel" />
 	<composite:attribute name="editPermission" />
+	<composite:attribute name="resourceType" />
 	<composite:attribute name="ctxId" default="#{contextDataProvider.globalContextId}" />
 </composite:interface>
 
@@ -16,12 +17,12 @@
 <composite:implementation>
 	<composite:implementation>
 		<h:link value="${cc.attrs.linkLabel}" outcome="editResourceView"
-			rendered="${securityDataProvider.hasPermission(cc.attrs.editPermission)}">
+			rendered="${securityDataProvider.hasPermissionForResourceType(cc.attrs.editPermission, 'READ', cc.attrs.resourceType)}">
 			<f:param name="id" value="${cc.attrs.resId}" />
 			<f:param name="ctx" value="#{cc.attrs.ctxId}" />
 		</h:link>
 		<h:outputText
-			rendered="${!securityDataProvider.hasPermission(cc.attrs.editPermission)}"
+			rendered="${!securityDataProvider.hasPermissionForResourceType(cc.attrs.editPermission, 'READ', cc.attrs.resourceType)}"
 			value="${cc.attrs.linkLabel}" />
 	</composite:implementation>
 </composite:implementation>

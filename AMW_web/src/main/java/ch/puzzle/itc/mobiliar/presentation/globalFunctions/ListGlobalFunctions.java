@@ -22,18 +22,15 @@ package ch.puzzle.itc.mobiliar.presentation.globalFunctions;
 
 import ch.puzzle.itc.mobiliar.business.globalfunction.boundary.GlobalFunctionsBoundary;
 import ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @CompositeBackingBean
 public class ListGlobalFunctions implements Serializable {
@@ -42,7 +39,7 @@ public class ListGlobalFunctions implements Serializable {
     GlobalFunctionsBoundary functionsBoundary;
 
     @Inject
-    Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
     private List<GlobalFunctionEntity> allGlobalFunctions;
 

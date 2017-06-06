@@ -48,9 +48,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupReposi
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
@@ -79,7 +77,7 @@ public class CopyResource {
 	private EntityManager entityManager;
 
 	@Inject
-	private Permissions permissionBoundry;
+	private PermissionBoundary permissionBoundary;
 
 	@Inject
 	CommonDomainService commonDomainService;
@@ -114,7 +112,7 @@ public class CopyResource {
 		ResourceEntity targetResource = commonDomainService.getResourceEntityById(targetResourceId);
 		ResourceEntity originResource = commonDomainService.getResourceEntityById(originResourceId);
 
-		if(!permissionBoundry.canCopyFromResource(originResource)){
+		if(!permissionBoundary.canCopyFromResource(originResource)){
 			throw new NotAuthorizedException("Permission Denied");
 		}
 
@@ -132,7 +130,7 @@ public class CopyResource {
 
 		ResourceEntity originResource = commonDomainService.getResourceEntityByGroupAndRelease(resourceGroup.getId(),
 					originRelease.getId());
-		if(!permissionBoundry.canCopyFromResource(originResource)){
+		if(!permissionBoundary.canCopyFromResource(originResource)){
 			throw new NotAuthorizedException("Permission Denied");
 		}
 		return copyResourceDomainService.createReleaseFromOriginResource(originResource, targetRelease, actingOwner);

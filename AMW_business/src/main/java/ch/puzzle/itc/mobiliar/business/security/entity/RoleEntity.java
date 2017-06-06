@@ -30,6 +30,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.ALL;
+
 @Entity
 @Table(name="TAMW_role")
 public class RoleEntity implements Serializable {
@@ -55,10 +57,6 @@ public class RoleEntity implements Serializable {
 	
 	@Setter
 	@Getter
-	private boolean deployable;
-	
-	@Setter
-	@Getter
 	private boolean deletable;
 
 	@Getter
@@ -66,6 +64,12 @@ public class RoleEntity implements Serializable {
 	@NotAudited
 	@ManyToMany
 	@JoinTable(name="TAMW_role_permission")
-	private Set<PermissionEntity> permissions = new HashSet<PermissionEntity>();
+	private Set<PermissionEntity> permissions = new HashSet<>();
+
+	@Getter
+	@Setter
+	@NotAudited
+	@OneToMany(mappedBy="role", cascade = ALL, orphanRemoval = true)
+	private Set<RestrictionEntity> restrictions = new HashSet<>();
 	
 }

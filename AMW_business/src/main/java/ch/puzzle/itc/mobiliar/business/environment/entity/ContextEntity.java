@@ -25,7 +25,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntit
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeContextEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 import lombok.Getter;
@@ -97,11 +96,6 @@ public class ContextEntity extends AbstractContext implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "context")
     @AuditMappedBy(mappedBy = "context")
     private Set<ResourceTypeContextEntity> resourceTypeContextEntities;
-
-    @Getter
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "context")
-    @NotAudited
-    private Set<PermissionEntity> permissions;
 
     @Getter
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "context")

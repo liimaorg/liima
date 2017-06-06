@@ -26,11 +26,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -50,6 +45,9 @@ public class ResourceTypeProvider {
 	@Inject
 	EntityManager entityManager;
 
+	@Inject
+	ResourceTypeRepository resourceTypeRepository;
+
 	public ResourceTypeEntity getOrCreateDefaultResourceType(DefaultResourceTypeDefinition definition) {
 		if (definition != null) {
 			return getOrCreateResourceType(definition.name());
@@ -59,7 +57,7 @@ public class ResourceTypeProvider {
 
 	public ResourceTypeEntity getOrCreateResourceType(String definition) {
 		if (definition != null) {
-			ResourceTypeEntity type = getFromDB(definition);
+			ResourceTypeEntity type = resourceTypeRepository.getByName(definition);
 			if (type == null) {
 				type = new ResourceTypeEntity();
 				type.setName(definition);
@@ -151,20 +149,6 @@ public class ResourceTypeProvider {
 			}
 			return null;
 
-		} catch (NoResultException e) {
-			return null;
-		}
-	}
-
-	public ResourceTypeEntity getFromDB(String resourceTypeName) {
-		try {
-			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-			CriteriaQuery<ResourceTypeEntity> criteriaQuery = criteriaBuilder.createQuery(ResourceTypeEntity.class);
-			Root<ResourceTypeEntity> srt = criteriaQuery.from(ResourceTypeEntity.class);
-			Path<String> name = srt.get("name");
-			Predicate namePredicate = criteriaBuilder.like(name, resourceTypeName);
-			criteriaQuery.where(namePredicate);
-			return entityManager.createQuery(criteriaQuery).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}

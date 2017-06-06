@@ -30,6 +30,8 @@ import static org.mockito.Mockito.when;
 
 public class ContextEntityBuilder extends BaseEntityBuilder {
 
+	private Integer id;
+
 	public ContextEntity mockContextEntity(String name, ContextEntity parent, Set<ContextEntity> children) {
 		ContextEntity mock = mock(ContextEntity.class);
 		Integer id = getNextId();
@@ -56,6 +58,7 @@ public class ContextEntityBuilder extends BaseEntityBuilder {
 
 	public ContextEntity buildContextEntity(String name, ContextEntity parent, Set<ContextEntity> children, boolean withId) {
 		ContextEntity entity = new ContextEntity();
+		entity.setId(this.id);
 
 		if (withId) {
 			Integer id = getNextId();
@@ -75,6 +78,11 @@ public class ContextEntityBuilder extends BaseEntityBuilder {
 		}
 
 		return entity;
+	}
+
+	public ContextEntityBuilder id(Integer id) {
+		this.id = id;
+		return this;
 	}
 
 }

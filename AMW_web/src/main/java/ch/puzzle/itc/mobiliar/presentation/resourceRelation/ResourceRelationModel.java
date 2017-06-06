@@ -32,7 +32,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
@@ -78,7 +79,7 @@ public class ResourceRelationModel implements Serializable {
     ResourceRelationService resourceRelationService;
 
     @Inject
-    Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
     @Inject
     ForeignableBoundary foreignableBoundary;
@@ -186,14 +187,14 @@ public class ResourceRelationModel implements Serializable {
         allowedToListProvidedRelations = permissionBoundary.hasPermission(Permission.PROVIDED_RES_LIST);
         allowedToListResourceTypeRelations = permissionBoundary
                 .hasPermission(Permission.REL_RESTYPE_PANEL_LIST);
-        allowedToJumpToRelatedResourceEditScreen = permissionBoundary.hasPermission(Permission.EDIT_RES);
+        allowedToJumpToRelatedResourceEditScreen = permissionBoundary.hasPermission(Permission.RESOURCE, Action.UPDATE);
     }
 
     public void onChangedResource(@Observes ResourceEntity resourceEntity) throws GeneralDBException {
         allowedToSelectRuntime = permissionBoundary.hasPermission(Permission.SELECT_RUNTIME);
-        allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelation(resourceEntity);
-        canAddConsumedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, false);
-        canAddProvidedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, true);
+        allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelation(resourceEntity, sessionContext.getCurrentContext());
+        canAddConsumedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, false, sessionContext.getCurrentContext());
+        canAddProvidedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, true, sessionContext.getCurrentContext());
         allowedToAddRelations = canAddConsumedRelations || canAddProvidedRelations;
         currentSelectedResourceOrType = resourceEntity;
 

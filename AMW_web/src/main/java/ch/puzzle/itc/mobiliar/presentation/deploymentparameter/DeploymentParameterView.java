@@ -22,7 +22,7 @@ package ch.puzzle.itc.mobiliar.presentation.deploymentparameter;
 
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary.DeploymentParameterBoundary;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
@@ -44,7 +44,7 @@ public class DeploymentParameterView {
     DeploymentParameterBoundary deploymentParameterBoundary;
 
     @Inject
-    Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
     @Getter
     @Setter

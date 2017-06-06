@@ -67,6 +67,9 @@ public class ResourceGroupRepositoryTest {
     @InjectMocks
     ResourceTypeProvider resourceTypeProvider;
 
+    @Mock
+    ResourceTypeRepository resourceTypeRepository;
+
 
     ResourceTypeEntity type1;
     ResourceTypeEntity type2;

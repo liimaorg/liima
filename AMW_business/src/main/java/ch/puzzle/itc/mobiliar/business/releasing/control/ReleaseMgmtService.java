@@ -51,6 +51,8 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
+
 @Stateless
 @Interceptors(HasPermissionInterceptor.class)
 public class ReleaseMgmtService {
@@ -73,8 +75,7 @@ public class ReleaseMgmtService {
 	/**
 	 * Load all releases
 	 * 
-	 * @param startIndex
-	 * @param length
+	 * @param sortDesc
 	 * @return
 	 */
 	public List<ReleaseEntity> loadAllReleases(boolean sortDesc) {
@@ -96,7 +97,7 @@ public class ReleaseMgmtService {
 	 * 
 	 * @return
 	 */
-	@HasPermission(permission = Permission.VIEW_RELEASE)
+	@HasPermission(permission = Permission.RELEASE, action = READ)
 	public List<ReleaseEntity> loadReleasesForMgmt(int startIndex, int length, boolean sortDesc) {
 		return persistenceService.loadReleaseEntities(startIndex, length, sortDesc);
 	}
@@ -105,7 +106,7 @@ public class ReleaseMgmtService {
 	 * @return a list with releaseEntities, excluding the one we want to copy from
 	 */
 	public Map<Integer, ReleaseEntity> loadReleasesForCreatingNewRelease(Set<ReleaseEntity> existingReleases) {
-		Map<Integer, ReleaseEntity> releases = new HashMap<Integer, ReleaseEntity>();
+		Map<Integer, ReleaseEntity> releases = new HashMap<>();
 		List<ReleaseEntity> allReleases = persistenceService.loadAllReleaseEntities(false);
 		for (ReleaseEntity rel : allReleases) {
 			if (!existingReleases.contains(rel)) {
@@ -118,7 +119,7 @@ public class ReleaseMgmtService {
 	/**
 	 * @return the number of existing releases
 	 */
-	@HasPermission(permission = Permission.VIEW_RELEASE)
+	@HasPermission(permission = Permission.RELEASE, action = READ)
 	public int countReleases(){
 		return persistenceService.count();
 	}
@@ -127,9 +128,9 @@ public class ReleaseMgmtService {
 	/**
 	 * Deletes the given release from the database
 	 * 
-	 * @param release
+	 * @param id of release
 	 */
-	@HasPermission(permission = Permission.DELETE_RELEASE)
+	@HasPermission(permission = Permission.RELEASE, action = DELETE)
 	public boolean delete(int id) {
 		return persistenceService.deleteReleaseEntity(id);
 	}
@@ -140,7 +141,7 @@ public class ReleaseMgmtService {
 	 * 
 	 * @param release
 	 */
-	@HasPermission(oneOfPermission = { Permission.EDIT_RELEASE, Permission.CREATE_RELEASE })
+	@HasPermission(permission = Permission.RELEASE, oneOfAction = { UPDATE, CREATE })
 	public boolean save(ReleaseEntity release) throws GeneralDBException {
 		return persistenceService.saveReleaseEntity(release);
 	}
@@ -155,7 +156,7 @@ public class ReleaseMgmtService {
 
 	
 	public Map<ReleaseEntity, Date> getDeployableReleasesForResourceGroupWithLatestDeploymentDate(ResourceGroupEntity resourceGroup, ContextEntity context){
-		Map<ReleaseEntity, Date> result = new LinkedHashMap<ReleaseEntity, Date>();
+		Map<ReleaseEntity, Date> result = new LinkedHashMap<>();
 		List<ReleaseEntity> releases = getDeployableReleasesForResourceGroup(resourceGroup);
 		for(ReleaseEntity rel : releases){
 			DeploymentEntity deployment = getLastSuccessfulDeploymentForResourceGroup(resourceGroup, rel, context);
@@ -186,14 +187,14 @@ public class ReleaseMgmtService {
 	
 	public List<ReleaseEntity> getDeployableReleasesForResourceGroup(ResourceGroupEntity rg) {
 
-		TreeSet<ReleaseEntity> releases = new TreeSet<ReleaseEntity>(loadAllReleases(false));
+		TreeSet<ReleaseEntity> releases = new TreeSet<>(loadAllReleases(false));
 		if(!em.contains(rg)){
 			rg = em.merge(rg);
 		}		
 		
-		if (releases != null && rg != null) {
+		if (rg != null) {
 			SortedSet<ReleaseEntity> groupReleases = rg.getReleases();
-			return new ArrayList<ReleaseEntity>(releases.tailSet(groupReleases.first()));
+			return new ArrayList<>(releases.tailSet(groupReleases.first()));
 		}
 		return Collections.<ReleaseEntity> emptyList();
 

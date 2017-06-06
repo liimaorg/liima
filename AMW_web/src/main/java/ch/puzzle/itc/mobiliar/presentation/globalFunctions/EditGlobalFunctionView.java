@@ -28,7 +28,7 @@ import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.globalfunction.boundary.GlobalFunctionsBoundary;
 import ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -46,7 +46,7 @@ public class EditGlobalFunctionView implements Serializable{
     GlobalFunctionsBoundary functionsBoundary;
 
     @Inject
-    Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
     @Getter
     private Integer functionIdViewParam;

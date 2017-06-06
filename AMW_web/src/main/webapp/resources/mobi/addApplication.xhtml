@@ -47,17 +47,17 @@
 							<h:outputText value="Application Name" />
 						</h:panelGroup>
 					</f:facet>
-					<mobi:editResourceLink resId="#{app.slaveId}" linkLabel="#{app.slaveName}" editPermission="EDIT_APP"/>
+					<mobi:editResourceLink resId="#{app.slaveId}" linkLabel="#{app.slaveName}" editPermission="RESOURCE" resourceType="APPLICATION"/>
 				</h:column>
 				<h:column
-					rendered="#{securityDataProvider.hasPermission('EDIT_APP')}">
+					rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE','READ','APPLICATION')}">
 					<f:facet name="header">
 						<h:outputText value="Edit" />
 					</f:facet>
 
 					<h:link outcome="editResourceView" value="Edit"
 						onclick="showLoader();"
-						rendered="#{securityDataProvider.hasPermission('EDIT_APP')}">
+						rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE','READ','APPLICATION')}">
 						<f:param name="id" value="${app.slaveId}" />
 						<f:param name="ctx"
 							value="${contextDataProvider.globalContextId}" />

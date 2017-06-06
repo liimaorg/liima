@@ -65,7 +65,6 @@ public class EnvironmentsScreenDomainService {
 	
 	@Inject
 	private SecurityScreenDomainService securityService;
-	
 
 	/**
 	 * Speichert die Änderungen auf einen Kontext.
@@ -111,11 +110,11 @@ public class EnvironmentsScreenDomainService {
 			}
 			if(context.getChildren()!=null){
 				for(ContextEntity c : context.getChildren()){
-					securityService.deletePermissionFromRoles(c.getName());
+					securityService.deleteRestrictionsWithContext(c);
 				}
 			}
-			
-			securityService.deletePermissionFromRoles(contextName);
+
+			securityService.deleteRestrictionsWithContext(context);
 			entityManager.remove(context);
 		} else {
 			throw new AMWException("Es wurde versucht den Kontext \"Global\" (id: "+contextId+" zu löschen.");

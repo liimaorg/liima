@@ -32,7 +32,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
@@ -66,7 +67,7 @@ public class PropertyEditDataProvider implements Serializable {
     PropertyEditor editor;
 
     @Inject
-    Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
     @Inject
     private UserSettings userSettings;
@@ -142,8 +143,8 @@ public class PropertyEditDataProvider implements Serializable {
         resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResource(
                 resourceEntity.getId(), getContextId()));
         filterHostNameAndActiveFromNode();
-        editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResource(resourceEntity.getId(),
-                userSettings.isTestingMode());
+        editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
+                currentContext, userSettings.isTestingMode());
         canChangeRuntime = permissionBoundary.hasPermission(Permission.SELECT_RUNTIME);
         group = ResourceGroup.createByResource(resourceEntity.getResourceGroup());
 
@@ -152,12 +153,12 @@ public class PropertyEditDataProvider implements Serializable {
         loadResourceRelationEditProperties();
     }
 
-    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity)
-            throws GeneralDBException {
+    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) throws GeneralDBException {
         filteredResourceProperties = new ArrayList<>();
         resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResourceType(
                 resourceTypeEntity.getId(), getContextId()));
-        editableProperties = permissionBoundary.hasPermission(Permission.EDIT_NOT_DEFAULT_RES_OF_RESTYPE);
+        editableProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE, currentContext, Action.UPDATE,
+                null, resourceTypeEntity);
         canChangeRuntime = false;
         group = null;
         resourceOrResourceType = resourceTypeEntity;
@@ -182,13 +183,11 @@ public class PropertyEditDataProvider implements Serializable {
         if (currentRelation != null) {
             if (currentRelation.isResourceTypeRelation()) {
                 currentRelationProperties = userSettings.filterTestingProperties(editor
-                        .getPropertiesForRelatedResourceType(currentRelation,
-                                getContextId()));
+                        .getPropertiesForRelatedResourceType(currentRelation, getContextId()));
                 typeRelationIdentifier = currentRelation.getDisplayName(); // TODO displayname!?
             } else {
                 currentRelationProperties = userSettings.filterTestingProperties(editor
-                        .getPropertiesForRelatedResource(getResourceId(), currentRelation,
-                                getContextId()));
+                        .getPropertiesForRelatedResource(getResourceId(), currentRelation, getContextId()));
                 filterHostNameAndActiveFromRelatedNode(currentRelation);
             }
         } else {
@@ -272,14 +271,12 @@ public class PropertyEditDataProvider implements Serializable {
 
     public boolean isApplicationServer() {
         return isCurrentFocusOnResource()
-                && ((ResourceEntity) resourceOrResourceType).getResourceType()
-                .isApplicationServerResourceType();
+                && ((ResourceEntity) resourceOrResourceType).getResourceType().isApplicationServerResourceType();
     }
 
     public boolean isApplication() {
         return isCurrentFocusOnResource()
-                && ((ResourceEntity) resourceOrResourceType).getResourceType()
-                .isApplicationResourceType();
+                && ((ResourceEntity) resourceOrResourceType).getResourceType().isApplicationResourceType();
     }
 
     public boolean isNode() {

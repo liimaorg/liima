@@ -368,7 +368,8 @@ public class GeneratorDomainServiceWithAppServerRelations {
         try {
             result = generateApplicationServerConfigurationForEnvironment(generationContext);
             //If we're in test mode and the user doesn't have the permission to see this template, we omit the content of the template to prevent the giveaway of sensitive information.
-            omitTemplateForLackingPermissions(context, result);
+            // TODO review: is appServer the correct ResourceEntity?
+            omitTemplateForLackingPermissions(context, appServer, result);
         }
         catch (GeneratorException e) {
             result = createFailureEnvironmentGenerationResult(e);
@@ -378,8 +379,8 @@ public class GeneratorDomainServiceWithAppServerRelations {
     }
 
 
-    void omitTemplateForLackingPermissions(ContextEntity context, EnvironmentGenerationResult result) {
-        boolean omitTemplateContent = !permissionService.hasPermissionForDeploymentOnContextOrSubContext(context);
+    void omitTemplateForLackingPermissions(ContextEntity context, ResourceEntity resource, EnvironmentGenerationResult result) {
+        boolean omitTemplateContent = !permissionService.hasPermissionForDeploymentOnContext(context, resource.getResourceGroup());
         if(omitTemplateContent) {
             result.omitAllTemplates();
         }

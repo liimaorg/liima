@@ -41,6 +41,10 @@ public class ResourceGroupRepository {
         return entityManager.createQuery("select r from ResourceGroupEntity r left join fetch r.resources res", ResourceGroupEntity.class).getResultList();
     }
 
+    public List<ResourceGroupEntity> getAllResourceGroupsByName(){
+        return entityManager.createQuery("select r from ResourceGroupEntity r order by r.name", ResourceGroupEntity.class).getResultList();
+    }
+
     public ResourceGroupEntity getResourceGroupByName(String name){
         name = name.toLowerCase();
         return entityManager.createQuery("select r from ResourceGroupEntity r where LOWER(r.name)=:name", ResourceGroupEntity.class).setParameter(
@@ -128,5 +132,9 @@ public class ResourceGroupRepository {
         return result;
 
 	}
+
+    public ResourceGroupEntity find(Integer resourceGroupId) {
+        return entityManager.find(ResourceGroupEntity.class, resourceGroupId);
+    }
 
 }

@@ -21,6 +21,8 @@
 package ch.puzzle.itc.mobiliar.business.generator.control;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +30,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import static org.mockito.Matchers.any;
 
 public class GeneratorDomainServiceWithAppServerRelationsTest {
 
@@ -49,11 +53,11 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     @Test
     public void testDoNotOmitTemplateWithPermission() throws Exception {
         //given
-        Mockito.when(permissionService.hasPermissionForDeploymentOnContextOrSubContext(Mockito.any(
-                  ContextEntity.class))).thenReturn(true);
+        Mockito.when(permissionService.hasPermissionForDeploymentOnContext(any(
+                  ContextEntity.class), any(ResourceGroupEntity.class))).thenReturn(true);
 
         //when
-        service.omitTemplateForLackingPermissions(new ContextEntity(), result);
+        service.omitTemplateForLackingPermissions(new ContextEntity(), new ResourceEntity(), result);
 
         //then
         Mockito.verify(result, Mockito.never()).omitAllTemplates();
@@ -63,11 +67,11 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     @Test
     public void testOmitTemplateForLackingPermissions() throws Exception {
         //given
-        Mockito.when(permissionService.hasPermissionForDeploymentOnContextOrSubContext(Mockito.any(
-                  ContextEntity.class))).thenReturn(false);
+        Mockito.when(permissionService.hasPermissionForDeploymentOnContext(any(
+                  ContextEntity.class), any(ResourceGroupEntity.class))).thenReturn(false);
 
         //when
-        service.omitTemplateForLackingPermissions(new ContextEntity(), result);
+        service.omitTemplateForLackingPermissions(new ContextEntity(), new ResourceEntity(), result);
 
         //then
         Mockito.verify(result).omitAllTemplates();
