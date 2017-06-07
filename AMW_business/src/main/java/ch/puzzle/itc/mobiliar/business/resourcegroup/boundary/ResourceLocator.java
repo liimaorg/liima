@@ -91,7 +91,7 @@ public class ResourceLocator {
 	}
 
     /**
-     * Obtains the requested release or the closest before the requested release
+     * Obtains the requested release or the closest past release before the requested one
      * @param name name of resource group
      * @param releaseName release name
      * @return ReleaseEntity
