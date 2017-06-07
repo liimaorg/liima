@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -55,6 +56,9 @@ public class ResourceLocator {
 	@Inject
 	ResourceRepository resourceRepository;
 
+    @Inject
+    ResourceGroupRepository resourceGroupRepository;
+
 	@Inject
 	ReleaseLocator releaseLocator;
 
@@ -85,6 +89,28 @@ public class ResourceLocator {
             return null;
         }
 	}
+
+    /**
+     * Obtains the requested release or the closest before the requested release
+     * @param name name of resource group
+     * @param releaseName release name
+     * @return ReleaseEntity
+     * @throws ValidationException thrown if one of the arguments is either empty or null
+     */
+    public ReleaseEntity getExactOrClosestPastReleaseByGroupNameAndRelease(String name, String releaseName)
+            throws ValidationException {
+        ValidationHelper.validateNotNullOrEmptyChecked(name, releaseName);
+
+        ReleaseEntity release = releaseLocator.getReleaseByName(releaseName);
+        ResourceGroupEntity resGroup = resourceGroupRepository.getResourceGroupByName(name);
+        try {
+            return resourceDependencyResolverService.findExactOrClosestPastRelease(resGroup.getReleases(),
+                    release.getInstallationInProductionAt());
+        }
+        catch (NoResultException e) {
+            return null;
+        }
+    }
 
     /**
      * @param groupId id of resource group

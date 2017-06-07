@@ -188,6 +188,19 @@ public class ResourcesRest {
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
     }
 
+    @Path("/{resourceGroupName}/lte/{releaseName}")
+    @GET
+    @ApiOperation(value = "Get exact or closest past release")
+    public ReleaseDTO getExactOrClosestPastRelease(@PathParam("resourceGroupName") String resourceGroupName,
+                                  @PathParam("releaseName") String releaseName,
+                                  @QueryParam("env") @DefaultValue("Global") String environment,
+                                  @QueryParam("type") String resourceType) throws ValidationException {
+        ReleaseEntity release = resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName);
+        return new ReleaseDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
+                releaseName, resourceType), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
+                environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
+    }
+
     @Path("/resourceGroups")
     @GET
     @ApiOperation(value = "Get all available ResourceGroups - used by Angular")
