@@ -104,22 +104,7 @@ public class ResourceDependencyResolverService {
      * @return Returns ReleaseEntity
      */
     public ReleaseEntity findMostRelevantRelease(SortedSet<ReleaseEntity> releases, Date currentDate) {
-        ReleaseEntity bestMatch = null;
-        long currentTime = currentDate != null ? currentDate.getTime() : (new Date()).getTime();
-
-        for (ReleaseEntity releaseEntity : releases) {
-
-            long releaseInstallationTime = releaseEntity.getInstallationInProductionAt().getTime();
-            Long bestMatchingReleaseTime = bestMatch != null ? bestMatch.getInstallationInProductionAt().getTime() : null;
-
-            if (isBestMatchingFutureReleaseTime(bestMatchingReleaseTime, releaseInstallationTime, currentTime)) {
-                bestMatch = releaseEntity;
-            }
-            if (isBestMatchingPastReleaseTime(bestMatchingReleaseTime, releaseInstallationTime, currentTime)) {
-                bestMatch = releaseEntity;
-            }
-        }
-        return bestMatch;
+        return findMostRelevantRelease(releases, currentDate, true);
     }
 
     /**
@@ -130,6 +115,10 @@ public class ResourceDependencyResolverService {
      * @return Returns ReleaseEntity
      */
     public ReleaseEntity findExactOrClosestPastRelease(SortedSet<ReleaseEntity> releases, Date currentDate) {
+        return findMostRelevantRelease(releases, currentDate, false);
+    }
+
+    private ReleaseEntity findMostRelevantRelease(SortedSet<ReleaseEntity> releases, Date currentDate, boolean includingFuture) {
         ReleaseEntity bestMatch = null;
         long currentTime = currentDate != null ? currentDate.getTime() : (new Date()).getTime();
 
@@ -138,6 +127,9 @@ public class ResourceDependencyResolverService {
             long releaseInstallationTime = releaseEntity.getInstallationInProductionAt().getTime();
             Long bestMatchingReleaseTime = bestMatch != null ? bestMatch.getInstallationInProductionAt().getTime() : null;
 
+            if (includingFuture && isBestMatchingFutureReleaseTime(bestMatchingReleaseTime, releaseInstallationTime, currentTime)) {
+                bestMatch = releaseEntity;
+            }
             if (isBestMatchingPastReleaseTime(bestMatchingReleaseTime, releaseInstallationTime, currentTime)) {
                 bestMatch = releaseEntity;
             }
