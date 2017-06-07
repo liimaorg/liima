@@ -30,25 +30,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @XmlRootElement(name = "release")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
+@Data
 public class ReleaseDTO {
 
-    @Getter @Setter
     private Integer id;
-    @Getter @Setter
     private String release;
-    @Getter @Setter      
     private List<ResourceRelationDTO> relations;
-    @Getter @Setter
     private List<PropertyDTO> properties;
-    @Getter @Setter
     private List<ResourceTagDTO> resourceTags;
-	@Getter @Setter
     private List<TemplateDTO> templates;
 
     ReleaseDTO(){}

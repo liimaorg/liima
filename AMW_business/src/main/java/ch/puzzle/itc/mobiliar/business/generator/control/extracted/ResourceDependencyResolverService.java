@@ -122,6 +122,29 @@ public class ResourceDependencyResolverService {
         return bestMatch;
     }
 
+    /**
+     * Returns best-matching Release. (nearest in past)
+     *
+     * @param releases    Sorted set of Releases
+     * @param currentDate
+     * @return Returns ReleaseEntity
+     */
+    public ReleaseEntity findExactOrClosestPastRelease(SortedSet<ReleaseEntity> releases, Date currentDate) {
+        ReleaseEntity bestMatch = null;
+        long currentTime = currentDate != null ? currentDate.getTime() : (new Date()).getTime();
+
+        for (ReleaseEntity releaseEntity : releases) {
+
+            long releaseInstallationTime = releaseEntity.getInstallationInProductionAt().getTime();
+            Long bestMatchingReleaseTime = bestMatch != null ? bestMatch.getInstallationInProductionAt().getTime() : null;
+
+            if (isBestMatchingPastReleaseTime(bestMatchingReleaseTime, releaseInstallationTime, currentTime)) {
+                bestMatch = releaseEntity;
+            }
+        }
+        return bestMatch;
+    }
+
     public boolean isBestMatchingPastReleaseTime(Long bestMatchingReleaseTime, long releaseInstallationTime, long currentTime) {
         boolean isMatchingPastRelease = false;
 

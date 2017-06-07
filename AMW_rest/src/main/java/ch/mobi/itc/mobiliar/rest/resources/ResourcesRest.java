@@ -32,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
@@ -78,6 +79,9 @@ public class ResourcesRest {
 
     @Inject
     ResourceRelationsRest resourceRelations;
+
+    @Inject
+    ResourceTypeLocator resourceTypeLocator;
 
     @Inject
     ResourceRelationPropertiesRest resourceRelationProperties;
@@ -182,6 +186,31 @@ public class ResourcesRest {
         return new ReleaseDTO(resourceByRelease, resourceRelations.getResourceRelations(resourceGroupName,
                 releaseName, resourceType), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
+    }
+
+    @Path("/{resourceGroupName}/lte/{releaseName}")
+    @GET
+    @ApiOperation(value = "Get exact or closest past release")
+    public ReleaseDTO getExactOrClosestPastRelease(@PathParam("resourceGroupName") String resourceGroupName,
+                                  @PathParam("releaseName") String releaseName,
+                                  @QueryParam("env") @DefaultValue("Global") String environment,
+                                  @QueryParam("type") String resourceType) throws ValidationException {
+        ReleaseEntity release = resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName);
+        return new ReleaseDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
+                releaseName, resourceType), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
+                environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
+    }
+
+    @Path("/resourceGroups")
+    @GET
+    @ApiOperation(value = "Get all available ResourceGroups - used by Angular")
+    public List<ResourceDTO> getAllResourceGroups() throws ValidationException {
+        List<ResourceGroupEntity> resourceGroups = resourceGroupLocator.getAllResourceGroupsByName();
+        List<ResourceDTO> resourceDTOs = new ArrayList<>();
+        for (ResourceGroupEntity resourceGroup : resourceGroups) {
+            resourceDTOs.add(new ResourceDTO(resourceGroup, null));
+        }
+        return resourceDTOs;
     }
 
     @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}")
