@@ -145,7 +145,7 @@ public class ResourceTypeProvider {
 					ResourceRelationTypeEntity.class).getResultList();
 			for (ResourceRelationTypeEntity res : resourceRelations) {
 				if (res.getResourceTypeA().getId().equals(a.getId()) && res.getResourceTypeB().getId().equals(b.getId())
-						&& (StringUtils.isEmpty(identifier) || identifier.equals(res.getIdentifier()))) {
+						&& (StringUtils.isEmpty(identifier) || identifier.equals(res.getIdentifierOrTypeBName()))) {
 					return res;
 				}
 			}
