@@ -395,7 +395,7 @@ public class ResourceRelationService implements Serializable{
 
 			boolean hasResourceIdentifier = !StringUtils.isEmpty(relation.getIdentifier());
 			boolean hasResourceTypeIdentifier = !StringUtils.isEmpty(relation.getResourceRelationType()
-					.getIdentifier());
+					.getIdentifierOrTypeBName());
 
 			for (AbstractResourceRelationEntity rel : relations) {
 				boolean matches = false;
@@ -404,13 +404,13 @@ public class ResourceRelationService implements Serializable{
 				}
 				else if (hasResourceTypeIdentifier
 						&& rel.getResourceRelationType() != null
-						&& relation.getResourceRelationType().getIdentifier()
-						.equals(rel.getResourceRelationType().getIdentifier())) {
+						&& relation.getResourceRelationType().getIdentifierOrTypeBName()
+						.equals(rel.getResourceRelationType().getIdentifierOrTypeBName())) {
 					matches = true;
 				}
 				else if (rel.getIdentifier() == null
 						&& (rel.getResourceRelationType() == null || rel.getResourceRelationType()
-						.getIdentifier() == null)) {
+						.getIdentifierOrTypeBName() == null)) {
 					matches = true;
 				}
 				if (matches) {
