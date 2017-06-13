@@ -20,22 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.scheduler;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.ejb.Asynchronous;
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
-import javax.enterprise.event.Observes;
-import javax.enterprise.event.TransactionPhase;
-import javax.inject.Inject;
-
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentExecuterService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent;
@@ -47,6 +32,16 @@ import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
 
+import javax.ejb.*;
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * The DeploymentScheduler is the Service wich triggers the Deployments and
  * Testexecution
@@ -56,7 +51,7 @@ import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
 public class DeploymentScheduler {
 
 	@Inject
-	private DeploymentService deploymentService;
+	private DeploymentBoundary deploymentBoundary;
 
 	@Inject
 	private ShakedownTestService shakedownTestService;
@@ -107,10 +102,10 @@ public class DeploymentScheduler {
 	public void cleanupDeploymentFiles() throws IOException {
 		// do no trigger if disabled
 		if (!ConfigurationService.getPropertyAsBoolean(ConfigKey.DEPLOYMENT_CLEANUP_SCHEDULER_DISABLED)) {
-			deploymentService.cleanupDeploymentFiles();
+			deploymentBoundary.cleanupDeploymentFiles();
 		}
 		if (!ConfigurationService.getPropertyAsBoolean(ConfigKey.LOGS_CLEANUP_SCHEDULER_DISABLED)) {
-			deploymentService.cleanupDeploymentLogs();
+			deploymentBoundary.cleanupDeploymentLogs();
 		}
 	}
 
@@ -142,7 +137,7 @@ public class DeploymentScheduler {
 			}
 			break;
 		case NODE_JOB_UPDATE:
-			deploymentService.handleNodeJobUpdate(event.getDeploymentId());
+			deploymentBoundary.handleNodeJobUpdate(event.getDeploymentId());
 		}
 	}
 	
@@ -154,9 +149,9 @@ public class DeploymentScheduler {
 	}
 
 	protected synchronized void executeSimulation() {
-		int deploymentSimulationLimit = deploymentService.getDeploymentSimulationLimit();
+		int deploymentSimulationLimit = deploymentBoundary.getDeploymentSimulationLimit();
 		log.log(Level.FINE, "Checking for simulations, max pro run " + deploymentSimulationLimit);
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToSimulate();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
 		if (!deployments.isEmpty()) {
 			log.log(logLevel, deployments.size() + " simulations found");
 			executeDeployments(deployments, GenerationModus.SIMULATE);
@@ -167,9 +162,9 @@ public class DeploymentScheduler {
 	}
 
 	protected synchronized void executeDeployments() {
-		int deploymentProcessingLimit = deploymentService.getDeploymentProcessingLimit();
+		int deploymentProcessingLimit = deploymentBoundary.getDeploymentProcessingLimit();
 		log.log(Level.FINE, "Checking for deployments, max pro run " + deploymentProcessingLimit);
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToExecute();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToExecute();
 		if (!deployments.isEmpty()) {
 			log.log(logLevel, deployments.size() + " deployments found");
 			executeDeployments(deployments, GenerationModus.DEPLOY);
@@ -180,9 +175,9 @@ public class DeploymentScheduler {
 	}
 	
 	protected synchronized void executePreDeployments() {
-		int preDeploymentProcessingLimit = deploymentService.getPreDeploymentProcessingLimit();
+		int preDeploymentProcessingLimit = deploymentBoundary.getPreDeploymentProcessingLimit();
 		log.log(Level.FINE, "Checking for preDeployments, max pro run " + preDeploymentProcessingLimit);
-		List<DeploymentEntity> deployments = deploymentService.getPreDeploymentsToExecute();
+		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsToExecute();
 		if (!deployments.isEmpty()) {
 			log.log(logLevel, deployments.size() + " Predeployments found");
 			executeDeployments(deployments, GenerationModus.PREDEPLOY);
@@ -206,7 +201,7 @@ public class DeploymentScheduler {
 
 	protected synchronized void checkForEndlessDeployments() {
 		log.log(Level.FINE, "Checking deployments inProgress which reached the timeout");
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsInProgressTimeoutReached();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsInProgressTimeoutReached();
 		if (!deployments.isEmpty()) {
 			log.log(logLevel, deployments.size() + " deployments inProgress reached timeout");
 			int timeout = ConfigurationService.getPropertyAsInt(ConfigKey.DEPLOYMENT_IN_PROGRESS_TIMEOUT);
@@ -219,7 +214,7 @@ public class DeploymentScheduler {
 	
 	protected synchronized void checkForEndlessPredeploymentDeployments() {
 		log.log(Level.FINE, "Checking preDeployments inprogress which reached the timeout");
-		List<DeploymentEntity> deployments = deploymentService.getPreDeploymentsInProgressTimeoutReached();
+		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsInProgressTimeoutReached();
 		if (!deployments.isEmpty()) {
 			log.log(logLevel, deployments.size() + " preDeployments inProgress reached timeout");
 			int timeout = ConfigurationService.getPropertyAsInt(ConfigKey.PREDEPLOYMENT_IN_PROGRESS_TIMEOUT);;
@@ -232,11 +227,11 @@ public class DeploymentScheduler {
 
 	protected synchronized void checkForFinishedPredeploymentDeployments() {
 		log.log(Level.FINE, "Checking for finished preDeployments");
-		List<DeploymentEntity> deployments = deploymentService.getFinishedPreDeployments();
+		List<DeploymentEntity> deployments = deploymentBoundary.getFinishedPreDeployments();
 		if (!deployments.isEmpty()) {
 			log.log(logLevel, deployments.size() + " preDeployments finished");
 			for(DeploymentEntity d : deployments) {
-				deploymentService.handleNodeJobUpdate(d.getId());
+				deploymentBoundary.handleNodeJobUpdate(d.getId());
 			}
 		}
 		else {
@@ -249,7 +244,7 @@ public class DeploymentScheduler {
 			log.log(logLevel, "Deployment (" + deployment.getId()
 					+ ") was marked as failed because it reached the deplyoment timeout");
 
-			deploymentService.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(),
+			deploymentBoundary.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(),
 					generationModus.getAction() + " was marked as failed because it reached the deplyoment timeout (" + timeout + " s) at " + new Date(),
 					deployment.getResource() != null ? deployment.getResource().getId() : null, null);
 		}

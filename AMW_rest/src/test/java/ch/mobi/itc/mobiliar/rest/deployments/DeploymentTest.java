@@ -24,7 +24,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.AppWithVersionDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentRequestDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
@@ -71,7 +71,7 @@ public class DeploymentTest {
 	@InjectMocks
 	private DeploymentsRest deploymentRestService;
 	@Mock
-	private DeploymentService deploymentService;
+	private DeploymentBoundary deploymentBoundary;
 	@Mock
 	private GeneratorDomainServiceWithAppServerRelations generatorDomainServiceWithAppServerRelations;
 	@Mock
@@ -197,7 +197,7 @@ public class DeploymentTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getDeploymentsBasic() {
-		when(deploymentService.getFilteredDeployments(true, null, null, new LinkedList<CustomFilter>(), null, null, null)).thenReturn(
+		when(deploymentBoundary.getFilteredDeployments(true, null, null, new LinkedList<CustomFilter>(), null, null, null)).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<DeploymentEntity>(), 0));
 
 		Response response = deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, null, null, false);
@@ -212,37 +212,37 @@ public class DeploymentTest {
 
 	@Test
 	public void verifyThatDeploymentServiceIsCalledWithNonEmptyFilterIfDeploymentParametersAreSet() {
-        when(deploymentService.getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
+        when(deploymentBoundary.getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
                 new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<DeploymentEntity>(), 0));
 		deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, Collections.singletonList("TEST"), null, false);
 
-        verify(deploymentService, never()).getFilteredDeployments(true, null, null, Collections.<CustomFilter>emptyList(), null, null, null);
-		verify(deploymentService, times(1)).getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+        verify(deploymentBoundary, never()).getFilteredDeployments(true, null, null, Collections.<CustomFilter>emptyList(), null, null, null);
+		verify(deploymentBoundary, times(1)).getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
 	}
 
 	@Test
 	public void verifyThatDeploymentServiceIsCalledWithNonEmptyFilterIfDeploymentParameterValuesAreSet() {
-		when(deploymentService.getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
+		when(deploymentBoundary.getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<DeploymentEntity>(), 0));
 		deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, null, Collections.singletonList("TESTVALUE"), false);
 
-		verify(deploymentService, never()).getFilteredDeployments(true, null, null, Collections.<CustomFilter>emptyList(), null, null, null);
-		verify(deploymentService, times(1)).getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+		verify(deploymentBoundary, never()).getFilteredDeployments(true, null, null, Collections.<CustomFilter>emptyList(), null, null, null);
+		verify(deploymentBoundary, times(1)).getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
 	}
 
 	@Test
 	public void verifyThatDeploymentServiceIsCalledWithNonEmptyFilterIfDeploymentParametersAndDeploymentParameterValuesAreSet() {
-		when(deploymentService.getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
+		when(deploymentBoundary.getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<DeploymentEntity>(), 0));
 		deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, Collections.singletonList("TEST"), Collections.singletonList("TESTVALUE"), false);
 
-		verify(deploymentService, never()).getFilteredDeployments(true, null, null, Collections.<CustomFilter>emptyList(), null, null, null);
-		verify(deploymentService, times(1)).getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+		verify(deploymentBoundary, never()).getFilteredDeployments(true, null, null, Collections.<CustomFilter>emptyList(), null, null, null);
+		verify(deploymentBoundary, times(1)).getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
 	}
 
 	@Test
 	public void getDeployment() {
-		when(deploymentService.getDeploymentById(deploymentEntity.getId())).thenReturn(deploymentEntity);
+		when(deploymentBoundary.getDeploymentById(deploymentEntity.getId())).thenReturn(deploymentEntity);
 
 		Response response = deploymentRestService.getDeployment(deploymentEntity.getId());
 		assertEquals(200, response.getStatus());
@@ -254,7 +254,7 @@ public class DeploymentTest {
 
 	@Test
 	public void getDeploymentNoResult() {
-		when(deploymentService.getDeploymentById(234)).thenThrow(new NoResultException());
+		when(deploymentBoundary.getDeploymentById(234)).thenThrow(new NoResultException());
 
 		Response response = deploymentRestService.getDeployment(234);
 		assertEquals(404, response.getStatus());
@@ -269,13 +269,13 @@ public class DeploymentTest {
 	public void addDeployment() throws GeneralDBException {
 		ReleaseEntity release = mockRelease();
 		when(
-				deploymentService.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
+				deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
 						any(LinkedList.class), any(ArrayList.class),
 						anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
 		
 		when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
 		when(
-				deploymentService.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
+				deploymentBoundary.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
 						any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
 		when(releaseService.findByName(anyString())).thenReturn(release);
@@ -297,13 +297,13 @@ public class DeploymentTest {
 	public void addDeployment_no_active_node() throws GeneralDBException {
 		ReleaseEntity release = mockRelease();
 		when(
-				deploymentService.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
+				deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
 						any(LinkedList.class), any(ArrayList.class),
 						anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
 		
 		when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
 		when(
-				deploymentService.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
+				deploymentBoundary.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
 						any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
 		when(releaseService.findByName(anyString())).thenReturn(release);
@@ -320,12 +320,12 @@ public class DeploymentTest {
 	public void addDeploymentWithOutRelease() throws GeneralDBException {
 		ReleaseEntity release = mockRelease();
 		when(
-				deploymentService.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
+				deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
 						any(LinkedList.class), any(ArrayList.class), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(
 				deploymentEntity.getTrackingId());
 		when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
 		when(
-				deploymentService.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
+				deploymentBoundary.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
 						any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
 		when(releaseService.findByName(null)).thenReturn(null);
@@ -352,12 +352,12 @@ public class DeploymentTest {
 		wrongdeploymentRequestDto.getAppsWithVersion().get(0).setApplicationName("wrong");
 		
 		when(
-				deploymentService.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
+				deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
 						any(LinkedList.class), any(ArrayList.class),
 						anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
 		when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
 		when(
-				deploymentService.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
+				deploymentBoundary.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
 						any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
 		when(releaseService.findByName(anyString())).thenReturn(release);
@@ -374,12 +374,12 @@ public class DeploymentTest {
 	public void addDeploymentNoAppInAs() throws GeneralDBException {
 		ReleaseEntity release = mockRelease();
 		when(
-				deploymentService.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
+				deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
 						any(LinkedList.class), any(ArrayList.class),
 						anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
 		when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
 		when(
-				deploymentService.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
+				deploymentBoundary.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
 						any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
 		//the as has no apps
@@ -404,12 +404,12 @@ public class DeploymentTest {
 		applications.add(application);
 
 		when(
-				deploymentService.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
+				deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
 						any(LinkedList.class), any(ArrayList.class),
 						anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
 		when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
 		when(
-				deploymentService.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
+				deploymentBoundary.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
 						any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
 		when(releaseService.findByName(anyString())).thenReturn(release);

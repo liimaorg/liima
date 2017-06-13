@@ -246,7 +246,7 @@ public class ShakedownTestService{
 		return orderTrackingId;
 	}
 
-	//TODO: move to DeploymentService
+	//TODO: move to DeploymentBoundary
 	private DeploymentEntity getLastSuccessDeploymentEntityForGroupReleaseAndContext(ResourceGroupEntity resourceGroup, ReleaseEntity releaseEntity, ContextEntity contextEntity) {	
 		Query query = em
 				.createQuery("from DeploymentEntity d where d.resourceGroup=:resourceGroup and d.context=:contextEntity and d.release=:releaseEntity and d.deploymentState is :successState order by d.deploymentDate desc");
@@ -263,7 +263,7 @@ public class ShakedownTestService{
 		return result.get(0);
 	}
 	
-	//TODO: move to DeploymentService
+	//TODO: move to DeploymentBoundary
 	private DeploymentEntity getLastSuccessDeploymentEntityForGroupAndContext(ResourceGroupEntity resourceGroup, ContextEntity contextEntity) {
 
 		TypedQuery<DeploymentEntity> query = em

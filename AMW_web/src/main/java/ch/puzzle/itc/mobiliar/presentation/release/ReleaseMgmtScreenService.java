@@ -32,7 +32,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -56,7 +56,7 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 	ReleaseMgmtService releaseMgmtService;
 
 	@Inject
-	DeploymentService deploymentService;
+    DeploymentBoundary deploymentBoundary;
 
 	private List<ReleaseEntity> releases = new ArrayList<ReleaseEntity>();
 
@@ -162,7 +162,7 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 			}
 			resourcesForCurrentRelease.get(r.getResourceType()).add(r);
 		}
-		deploymentsForCurrentRelease = deploymentService
+		deploymentsForCurrentRelease = deploymentBoundary
 				.getDeploymentsForRelease(releaseId);
 	}
 

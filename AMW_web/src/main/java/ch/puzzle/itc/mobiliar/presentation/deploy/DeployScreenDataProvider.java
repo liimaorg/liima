@@ -43,13 +43,13 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService.DeploymentFilterTypes;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
@@ -191,7 +191,7 @@ public class DeployScreenDataProvider implements Serializable {
     ContextDataProvider contextDataProvider;
 
     @Inject
-    DeploymentService deploymentService;
+    DeploymentBoundary deploymentBoundary;
 
     @Inject
     PermissionService permissionService;
@@ -490,7 +490,7 @@ public class DeployScreenDataProvider implements Serializable {
 
     public DeploymentEntity doConfirmAction(DeploymentEntity deployment, boolean reload) {
         try {
-            deployment = deploymentService.confirmDeployment(deployment.getId(), deployment.isSendEmailConfirmation(), deployment.isCreateTestAfterDeployment(),
+            deployment = deploymentBoundary.confirmDeployment(deployment.getId(), deployment.isSendEmailConfirmation(), deployment.isCreateTestAfterDeployment(),
                     deployment.isCreateTestForNeighborhoodAfterDeployment(), deployment.isSimulating());
             GlobalMessageAppender.addSuccessMessage("Deployment " + deployment.getId() + " confirmed");
 
@@ -577,7 +577,7 @@ public class DeployScreenDataProvider implements Serializable {
 
     public void doRejectAction(DeploymentEntity deployment, boolean reload) {
         try {
-            deploymentService.rejectDeployment(deployment.getId());
+            deploymentBoundary.rejectDeployment(deployment.getId());
             GlobalMessageAppender.addSuccessMessage("Deployment " + deployment.getId() + " rejeced");
             if (reload) {
                 reloadDeployments(true);
@@ -594,7 +594,7 @@ public class DeployScreenDataProvider implements Serializable {
 
     public void cancelDeployment(DeploymentEntity deployment, boolean reload) {
         try {
-            deploymentService.cancelDeployment(deployment.getId());
+            deploymentBoundary.cancelDeployment(deployment.getId());
             GlobalMessageAppender.addSuccessMessage("Deployment " + deployment.getId() + " canceled");
             if (reload) {
                 reloadDeployments(true);
@@ -611,7 +611,7 @@ public class DeployScreenDataProvider implements Serializable {
 
     public void changeDeploymentTime(DeploymentEntity deployment, boolean reload) {
         try {
-            deploymentService.changeDeploymentDate(deployment.getId(), deployment.getDeploymentDate());
+            deploymentBoundary.changeDeploymentDate(deployment.getId(), deployment.getDeploymentDate());
             GlobalMessageAppender.addSuccessMessage("Date of deployment " + deployment.getId() + " changed");
             if (reload) {
                 reloadDeployments(true);
@@ -627,19 +627,19 @@ public class DeployScreenDataProvider implements Serializable {
 
 
     public boolean isCancelPossible(DeploymentEntity deployment) {
-        return deploymentService.isCancelPossible(deployment).isPossible();
+        return deploymentBoundary.isCancelPossible(deployment).isPossible();
     }
 
     public boolean isConfirmPossible(DeploymentEntity deployment) {
-        return deploymentService.isConfirmPossible(deployment).isPossible();
+        return deploymentBoundary.isConfirmPossible(deployment).isPossible();
     }
 
     public boolean isRejectPossible(DeploymentEntity deployment) {
-        return deploymentService.isConfirmPossible(deployment).isPossible();
+        return deploymentBoundary.isConfirmPossible(deployment).isPossible();
     }
 
     public boolean isChangeDeploymentDatePossible(DeploymentEntity deployment) {
-        return deploymentService.isChangeDeploymentDatePossible(deployment).isPossible();
+        return deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible();
     }
 
     public boolean isRedeployPossible(DeploymentEntity deployment) {

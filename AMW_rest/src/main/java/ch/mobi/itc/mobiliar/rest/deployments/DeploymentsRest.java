@@ -25,8 +25,10 @@ import ch.mobi.itc.mobiliar.rest.dtos.DeploymentDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentParameterDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentRequestDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService.DeploymentFilterTypes;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary.DeploymentFilterTypes;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
@@ -46,8 +48,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import com.wordnik.swagger.annotations.Api;
@@ -70,7 +70,7 @@ import java.util.*;
 public class DeploymentsRest {
 
     @Inject
-    private DeploymentService deploymentService;
+    private DeploymentBoundary deploymentBoundary;
     @Inject
     private EnvironmentsScreenDomainService environmentsService;
     @Inject
@@ -165,7 +165,7 @@ public class DeploymentsRest {
             filters.add(createFilter(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV, null));
         }
 
-        Tuple<Set<DeploymentEntity>, Integer> result = deploymentService.getFilteredDeployments(true, offset, maxResults, filters, null, null, null);
+        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, offset, maxResults, filters, null, null, null);
 
         List<DeploymentDTO> deploymentDtos = new ArrayList<>();
 
@@ -192,7 +192,7 @@ public class DeploymentsRest {
         DeploymentEntity result;
 
         try {
-            result = deploymentService.getDeploymentById(id);
+            result = deploymentBoundary.getDeploymentById(id);
         } catch (RuntimeException e) {
             return catchNoResultException(e, "Deployment with id " + id + " not found.");
         }
@@ -310,14 +310,14 @@ public class DeploymentsRest {
                     .build();
         }
 
-        trackingId = deploymentService.createDeploymentReturnTrackingId(group.getId(), release.getId(), request.getDeploymentDate(),
+        trackingId = deploymentBoundary.createDeploymentReturnTrackingId(group.getId(), release.getId(), request.getDeploymentDate(),
                 request.getStateToDeploy(), contexts,
                 applicationsWithVersion, deployParams, request.getSendEmail(), request.getRequestOnly(), request.getSimulate(), request.getExecuteShakedownTest(),
                 request.getNeighbourhoodTest());
 
         // get the deployment from the tracking id
         filters.add(createFilter(DeploymentFilterTypes.TRACKING_ID, trackingId.toString(), ComperatorFilterOption.equals));
-        Tuple<Set<DeploymentEntity>, Integer> result = deploymentService.getFilteredDeployments(true, 0, 1, filters, null, null, null);
+        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 1, filters, null, null, null);
 
         DeploymentDTO deploymentDto = new DeploymentDTO(result.getA().iterator().next());
 
@@ -350,7 +350,7 @@ public class DeploymentsRest {
         }
 
         try {
-            deploymentService.updateDeploymentState(deploymentId, newState);
+            deploymentBoundary.updateDeploymentState(deploymentId, newState);
         } catch (RuntimeException e) {
             return catchDeploymentStateException(e);
         }
@@ -374,7 +374,7 @@ public class DeploymentsRest {
         }
 
         try {
-            deploymentService.updateNodeJobStatus(deploymentId, nodeJobId, status);
+            deploymentBoundary.updateNodeJobStatus(deploymentId, nodeJobId, status);
         } catch (NotFoundExcption e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ExceptionDto(e)).build();
         } catch (RuntimeException e) {
