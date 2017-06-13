@@ -83,9 +83,9 @@ public class CustomFilter {
 
     private boolean alwaysAutoComplete;
 
-    private List<String> dropDownItems = new ArrayList<String>();
+    private List<String> dropDownItems = new ArrayList<>();
 
-    private Map<String, String> dropDownItemsMap = new HashMap<String, String>();
+    private Map<String, String> dropDownItemsMap = new HashMap<>();
 
     public CustomFilter(String filterDisplayName, String deploymentTableColumnName, String joiningTableQuery,
             FilterType filterType) {
@@ -147,22 +147,6 @@ public class CustomFilter {
                 this.value = CustomFilter.convertStringToDate(filterValue);
             }
         }
-    }
-
-    // TODO: Remove, its not used anywhere
-    public String getValidationRegexp() {
-        String result = "";
-        if (isStringType()) {
-            result = ".*";
-        }
-        else if (isBooleanType()) {
-            result = "";
-        }
-        else if (isIntegerType()) {
-            result = "[0-9]*";
-        }
-
-        return result;
     }
 
     public Integer getIntegerValue() {
