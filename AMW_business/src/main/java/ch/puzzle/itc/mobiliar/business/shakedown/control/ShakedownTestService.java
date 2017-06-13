@@ -70,8 +70,8 @@ import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shak
 import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent;
 import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent.ShakedownTestEventType;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter.FilterType;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter.FilterType;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 

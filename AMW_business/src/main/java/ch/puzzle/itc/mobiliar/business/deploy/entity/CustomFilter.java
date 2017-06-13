@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.puzzle.itc.mobiliar.common.util;
+package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
 import static java.lang.Enum.valueOf;
 
