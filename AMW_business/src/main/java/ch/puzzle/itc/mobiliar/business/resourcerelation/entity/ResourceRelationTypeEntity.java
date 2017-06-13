@@ -77,6 +77,7 @@ public class ResourceRelationTypeEntity extends HasContexts<ResourceRelationType
 	private long v;
 
 	@Setter
+	@Getter
 	private String identifier;
 
 	@Override
@@ -102,7 +103,7 @@ public class ResourceRelationTypeEntity extends HasContexts<ResourceRelationType
 		return c;
 	}
 
-	public String getIdentifier() {
+	public String getIdentifierOrTypeBName() {
 		return StringUtils.isNotBlank(identifier) ? identifier : resourceTypeB.getName().toLowerCase();
 	}
 
