@@ -168,7 +168,7 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 				CustomFilter filter = null;
 
 				filter = new CustomFilter(selectedFilter.getFilterDisplayName(), selectedFilter.getFilterTabColumnName(), selectedFilter.getFilterType());
-				filter.setComperatorSelection(getTypedComperatorSelectionList(filter).isEmpty() ? null : getTypedComperatorSelectionList(filter).get(0));
+				filter.setComperatorSelection(filter.getTypedComperatorSelectionList().isEmpty() ? null : filter.getTypedComperatorSelectionList().get(0));
 				if (selectedFilter.equals(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV) && hasAlreadySpecialTypeFilter(getSelectedFilterList())) {
 					GlobalMessageAppender.addErrorMessage("This filter is already set.");
 				} else {

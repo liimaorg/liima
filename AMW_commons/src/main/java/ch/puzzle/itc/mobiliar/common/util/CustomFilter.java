@@ -31,6 +31,8 @@ public class CustomFilter {
 
     private Logger log = Logger.getLogger(CustomFilter.class.getSimpleName());
 
+    private List<ComperatorFilterOption> comperatorSelectionList;
+
     public enum FilterType {
         booleanType, StringType, IntegerType, DateType, SpecialFilterType, LabeledDateType, ENUM_TYPE
     }
@@ -44,7 +46,7 @@ public class CustomFilter {
         private String sqlBoolComperator;
         private String sqlStringComperator;
 
-        private ComperatorFilterOption(String displayName, String sqlNumComperator, String sqlStringComperator,
+        ComperatorFilterOption(String displayName, String sqlNumComperator, String sqlStringComperator,
                 String sqlBoolComperator) {
             this.displayName = displayName;
             this.sqlNumComperator = sqlNumComperator;
@@ -116,6 +118,34 @@ public class CustomFilter {
 
     public CustomFilter(String filterDisplayName, String deploymentTableColumnName, FilterType filterType) {
         this(filterDisplayName, deploymentTableColumnName, null, filterType);
+    }
+
+    public List<ComperatorFilterOption> getComperatorSelectionList() {
+        if (comperatorSelectionList == null) {
+            comperatorSelectionList = new ArrayList<>();
+            for (ComperatorFilterOption filterType : ComperatorFilterOption.values()) {
+                comperatorSelectionList.add(filterType);
+            }
+        }
+        return comperatorSelectionList;
+    }
+
+    public List<ComperatorFilterOption> getTypedComperatorSelectionList() {
+        List<ComperatorFilterOption> result = new ArrayList<>();
+        for (ComperatorFilterOption comperatorfilteroption : getComperatorSelectionList()) {
+            if (isBooleanType()) {
+                if (comperatorfilteroption.equals(ComperatorFilterOption.equals)) {
+                    result.add(comperatorfilteroption);
+                }
+            } else if (isStringType() || isEnumType()) {
+                if (comperatorfilteroption.equals(ComperatorFilterOption.equals)) {
+                    result.add(comperatorfilteroption);
+                }
+            } else {
+                result.add(comperatorfilteroption);
+            }
+        }
+        return result;
     }
 
     public void setAlwaysAutoComplete(boolean alwaysAutoComplete) {
