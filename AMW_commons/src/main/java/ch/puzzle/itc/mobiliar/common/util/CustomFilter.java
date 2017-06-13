@@ -31,14 +31,11 @@ import java.util.logging.Logger;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import org.apache.commons.lang.StringUtils;
 
 public class CustomFilter {
-
-    private Logger log = Logger.getLogger(CustomFilter.class.getSimpleName());
-
-    private List<ComperatorFilterOption> comperatorSelectionList;
 
     public enum FilterType {
         booleanType, StringType, IntegerType, DateType, SpecialFilterType, LabeledDateType, ENUM_TYPE
@@ -58,23 +55,51 @@ public class CustomFilter {
         private String sqlBoolComperator;
     }
 
-    private final Long filterIdentifikationNumber;
+    @Getter
     private String filterDisplayName;
+
+    @Getter
     private String deploymentTableColumnName;
 
+    @Getter
+    private boolean isNullableFilter = false;
+
+    @Setter
+    @Getter
     private String joiningTableQuery;
-    private Object value = null;
+
+    @Getter
     private FilterType filterType;
 
+    @Setter
+    @Getter
     private ComperatorFilterOption comperatorSelection;
 
+    @Setter
+    @Getter
     private boolean isSelected;
 
+    @Getter
     private boolean alwaysAutoComplete;
 
+    @Setter
+    @Getter
     private List<String> dropDownItems = new ArrayList<>();
 
+    @Setter
+    @Getter
     private Map<String, String> dropDownItemsMap = new HashMap<>();
+
+    @Setter
+    private Class<? extends Enum> enumType;
+
+    private Object value = null;
+
+    private final Long filterIdentifikationNumber;
+
+    private Logger log = Logger.getLogger(CustomFilter.class.getSimpleName());
+
+    private List<ComperatorFilterOption> comperatorSelectionList;
 
     public CustomFilter(String filterDisplayName, String deploymentTableColumnName, String joiningTableQuery,
             FilterType filterType) {
@@ -235,10 +260,6 @@ public class CustomFilter {
         return filterType.equals(FilterType.SpecialFilterType);
     }
 
-    public boolean isAlwaysAutoComplete() {
-        return alwaysAutoComplete;
-    }
-
     public String getValue() {
         if (value != null) {
             if (isLabeledDateType()) {
@@ -259,14 +280,6 @@ public class CustomFilter {
         return valueOf(enumType, value.toString());
     }
 
-    public FilterType getFilterType() {
-        return filterType;
-    }
-
-    public String getFilterDisplayName() {
-        return filterDisplayName;
-    }
-
     public String getSqlComperator() {
         String result = null;
         if (comperatorSelection != null) {
@@ -283,31 +296,9 @@ public class CustomFilter {
         return result;
     }
 
-    public ComperatorFilterOption getComperatorSelection() {
-        return comperatorSelection;
-    }
-
-    public void setComperatorSelection(ComperatorFilterOption comperatorSelection) {
-        this.comperatorSelection = comperatorSelection;
-    }
-
-    public String getDeploymentTableColumnName() {
-        return deploymentTableColumnName;
-    }
-
     public String getParameterName() {
         return this.filterDisplayName.replaceAll(" ", "");
     }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean isSelected) {
-        this.isSelected = isSelected;
-    }
-
-    private boolean isNullableFilter = false;
 
     public boolean hasValidNullValue() {
         return isNullableFilter && value == null;
@@ -319,42 +310,12 @@ public class CustomFilter {
                 && comperatorSelection != null);
     }
 
-    public List<String> getDropDownItems() {
-        return dropDownItems;
-    }
-
-    public void setDropDownItems(List<String> dropDownItems) {
-        this.dropDownItems = dropDownItems;
-    }
-
     public boolean hasDropDownItems() {
         return !dropDownItems.isEmpty();
     }
 
-    public Map<String, String> getDropDownItemsMap() {
-        return dropDownItemsMap;
-    }
-
-    public void setDropDownItems(Map<String, String> dropDownItemsMap) {
-        this.dropDownItemsMap = dropDownItemsMap;
-    }
-
-    public void setEnumType(Class<? extends Enum> enumType) {
-        this.enumType = enumType;
-    }
-
-    private Class<? extends Enum> enumType;
-
     public boolean hasDropDownItemsMap() {
         return !dropDownItemsMap.isEmpty();
-    }
-
-    public String getJoiningTableQuery() {
-        return joiningTableQuery;
-    }
-
-    public void setJoiningTableQuery(String joiningTableQuery) {
-        this.joiningTableQuery = joiningTableQuery;
     }
 
     @Override
@@ -394,10 +355,6 @@ public class CustomFilter {
     @Override
     public int hashCode() {
         return this.filterIdentifikationNumber.hashCode();
-    }
-
-    public boolean isNullableFilter() {
-        return isNullableFilter;
     }
 
     public void setNullableFilter(boolean isNullableFilter) {
