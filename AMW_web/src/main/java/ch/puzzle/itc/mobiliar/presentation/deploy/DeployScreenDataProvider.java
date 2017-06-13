@@ -371,14 +371,14 @@ public class DeployScreenDataProvider implements Serializable {
                 for (DeploymentState state : DeploymentState.values()) {
                     states.put(state.getDisplayName(), state.name());
                 }
-                filter.setDropDownItems(states);
+                filter.setDropDownItemsMap(states);
                 filter.setEnumType(DeploymentState.class);
             } else if (filter.getFilterDisplayName().equals(DeploymentFilterTypes.RELEASE.getFilterDisplayName())) {
                 Map<String, String> releaseMap = new LinkedHashMap<>();
                 for (ReleaseEntity r : getReleases()) {
                     releaseMap.put(r.getName(), CustomFilter.convertDateToString(r.getInstallationInProductionAt()));
                 }
-                filter.setDropDownItems(releaseMap);
+                filter.setDropDownItemsMap(releaseMap);
             } else if (filter.getFilterDisplayName().equals(DeploymentFilterTypes.DEPLOYMENT_PARAMETER.getFilterDisplayName())) {
                 filter.setDropDownItems(converToStringList(getAllDeployParamKeys()));
             }

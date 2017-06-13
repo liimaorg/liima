@@ -228,12 +228,12 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 			}
 			if (filter.getFilterDisplayName().equals(
 					ShakedownTestFilterTypes.APPSERVER_RELEASE.getFilterDisplayName())) {
-				Map<String, String> releaseMap = new LinkedHashMap<String, String>();
+				Map<String, String> releaseMap = new LinkedHashMap<>();
 				for (ReleaseEntity r : allReleases) {
 					releaseMap.put(r.getName(),
 							CustomFilter.convertDateToString(r.getInstallationInProductionAt()));
 				}
-				filter.setDropDownItems(releaseMap);
+				filter.setDropDownItemsMap(releaseMap);
 			}
 			return filter;
 		}
