@@ -20,10 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.FilterType;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,10 +67,10 @@ public class CommonFilterServicePersistenceTest {
         // given
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ") ;
         List<CustomFilter> filters = new ArrayList<>();
-        CustomFilter filter = new CustomFilter("State", "d.deploymentState", CustomFilter.FilterType.ENUM_TYPE);
+        CustomFilter filter = new CustomFilter("State", "d.deploymentState", FilterType.ENUM_TYPE);
         filter.setValue("success");
         filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(CustomFilter.ComperatorFilterOption.equals);
+        filter.setComperatorSelection(ComperatorFilterOption.equals);
         filter.setSelected(true);
         filters.add(filter);
         String colToSort = "d.deploymentDate";
@@ -88,16 +89,16 @@ public class CommonFilterServicePersistenceTest {
         // given
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ") ;
         List<CustomFilter> filters = new ArrayList<>();
-        CustomFilter filter = new CustomFilter("State", "d.deploymentState", CustomFilter.FilterType.ENUM_TYPE);
+        CustomFilter filter = new CustomFilter("State", "d.deploymentState", FilterType.ENUM_TYPE);
         filter.setValue("success");
         filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(CustomFilter.ComperatorFilterOption.equals);
+        filter.setComperatorSelection(ComperatorFilterOption.equals);
         filter.setSelected(true);
         filters.add(filter);
-        filter = new CustomFilter("Deployment parameter", "p.key", "join d.deploymentParameters p", CustomFilter.FilterType.StringType);
+        filter = new CustomFilter("Deployment parameter", "p.key", "join d.deploymentParameters p", FilterType.StringType);
         filter.setValue("test");
         filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(CustomFilter.ComperatorFilterOption.equals);
+        filter.setComperatorSelection(ComperatorFilterOption.equals);
         filter.setSelected(true);
         filters.add(filter);
 
@@ -118,14 +119,14 @@ public class CommonFilterServicePersistenceTest {
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d where d.deploymentDate = "+
                 "(select max(t.deploymentDate) from DeploymentEntity t where d.context = t.context and d.resourceGroup = t.resourceGroup) ");
         List<CustomFilter> filters = new ArrayList<>();
-        CustomFilter filter = new CustomFilter("Latest deployment job for App Server and Env", "", CustomFilter.FilterType.SpecialFilterType);
+        CustomFilter filter = new CustomFilter("Latest deployment job for App Server and Env", "", FilterType.SpecialFilterType);
         filter.setSelected(true);
         filters.add(filter);
 
-        filter = new CustomFilter("Deployment parameter", "p.key", "join d.deploymentParameters p", CustomFilter.FilterType.StringType);
+        filter = new CustomFilter("Deployment parameter", "p.key", "join d.deploymentParameters p", FilterType.StringType);
         filter.setValue("test");
         filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(CustomFilter.ComperatorFilterOption.equals);
+        filter.setComperatorSelection(ComperatorFilterOption.equals);
         filter.setSelected(true);
         filters.add(filter);
 

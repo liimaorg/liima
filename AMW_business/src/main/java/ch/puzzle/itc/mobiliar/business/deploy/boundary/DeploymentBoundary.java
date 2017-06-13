@@ -104,7 +104,7 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 @Stateless
-public class DeploymentService {
+public class DeploymentBoundary {
 
     private static final String DEPLOYMENT_ENTITY_NAME = "DeploymentEntity";
     private static final String DEPLOYMENT_QL_ALIAS = "d";

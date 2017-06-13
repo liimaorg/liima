@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorDomainServiceWithAppServerRelations;
 import ch.puzzle.itc.mobiliar.business.generator.control.LockingService;
@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 public class DeploymentExecuterService {
 
 	@Inject
-	private DeploymentService deploymentService;
+	private DeploymentBoundary deploymentBoundary;
 
 	@Inject
 	private GeneratorDomainServiceWithAppServerRelations generatorDomainServiceWithAppServerRelations;
@@ -81,7 +81,7 @@ public class DeploymentExecuterService {
 		if (!isLocked) {
 			return;
 		}
-		DeploymentEntity deployment = deploymentService.getDeploymentById(deploymentId);
+		DeploymentEntity deployment = deploymentBoundary.getDeploymentById(deploymentId);
 		try {
 			log.info("Generating deployment " + deployment.getId());
 			result = generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(deployment, generationModus);

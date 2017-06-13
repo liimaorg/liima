@@ -20,8 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.presentation.deploy;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService.DeploymentFilterTypes;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary.DeploymentParameterBoundary;
@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 public class DeployScreenController {
 
     @Inject
-    private DeploymentService deploymentService;
+    private DeploymentBoundary deploymentBoundary;
 
     @Inject
     private UserSettings userSettings;
@@ -113,7 +113,7 @@ public class DeployScreenController {
             }
         }
 
-        return deploymentService.getFilteredDeployments(count,
+        return deploymentBoundary.getFilteredDeployments(count,
                 startIndex, maxResults, filter, colToSort,
                 sortingDirection, userSettings.getMyAMWFilter());
     }
@@ -145,7 +145,7 @@ public class DeployScreenController {
     }
 
     public List<ApplicationWithVersion> getAppsWithVersion(ResourceEntity appServer, List<Integer> contexts, ReleaseEntity release) {
-        List<ApplicationWithVersion> apps = deploymentService.getVersions(appServer, contexts, release);
+        List<ApplicationWithVersion> apps = deploymentBoundary.getVersions(appServer, contexts, release);
 
         Collections.sort(apps, new Comparator<ApplicationWithVersion>() {
             @Override
@@ -170,7 +170,7 @@ public class DeployScreenController {
                                                     boolean sendEmail, boolean requestOnly,
                                                     boolean doSimulate, boolean doExecuteShakedownTest,
                                                     boolean doNeighbourhoodTest) {
-        return deploymentService.createDeploymentReturnTrackingId(appServerGroupId, releaseId,
+        return deploymentBoundary.createDeploymentReturnTrackingId(appServerGroupId, releaseId,
                         executionDate, stateDate, contextIds,
                         appsWithVersion, deployParams, sendEmail,
                         requestOnly, doSimulate,
@@ -185,7 +185,7 @@ public class DeployScreenController {
                                                     boolean sendEmail, boolean requestOnly,
                                                     boolean doSimulate, boolean doExecuteShakedownTest,
                                                     boolean doNeighbourhoodTest) {
-        return deploymentService
+        return deploymentBoundary
                 .createDeploymentsReturnTrackingId(selectedDeployments,
                         executionDate, stateDate, deployParams, contextIds,
                         sendEmail,
@@ -195,12 +195,12 @@ public class DeployScreenController {
     }
 
     public String getDeploymentLog(String logName) throws IllegalAccessException {
-        return deploymentService.getDeploymentLog(logName);
+        return deploymentBoundary.getDeploymentLog(logName);
     }
 
 
     public String[] getLogFileNames(int deploymentId) {
-        return deploymentService.getLogFileNames(deploymentId);
+        return deploymentBoundary.getLogFileNames(deploymentId);
     }
 
 }
