@@ -20,13 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.presentation.components.impl;
 
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter.ComperatorFilterOption;
 
 public abstract class CustomFilterComp {
 

@@ -18,16 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.puzzle.itc.mobiliar.common.util;
-
-import static org.junit.Assert.*;
-
-import java.util.Date;
+package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
 import org.junit.Test;
 
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter.ComperatorFilterOption;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter.FilterType;
+import java.util.Date;
+
+import static org.junit.Assert.*;
 
 public class CustomFilterTest {
 

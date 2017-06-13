@@ -20,40 +20,16 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
-import static java.lang.Enum.valueOf;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.apache.commons.lang.StringUtils;
 
+import java.util.*;
+import java.util.logging.Logger;
+
+import static java.lang.Enum.valueOf;
+
 public class CustomFilter {
-
-    public enum FilterType {
-        booleanType, StringType, IntegerType, DateType, SpecialFilterType, LabeledDateType, ENUM_TYPE
-    }
-
-    @AllArgsConstructor
-    @Getter
-    public enum ComperatorFilterOption {
-        smaller("<", " < ", null, null),
-        smallerequals("<=", " <= ", null, null),
-        equals("is", " = ", " like ", " is "),
-        greaterequals(">=", " >= ", null, null),
-        greater(">", " > ", null, null), notequal("is not", " != ", null, " is not ");
-        private String displayName;
-        private String sqlNumComperator;
-        private String sqlStringComperator;
-        private String sqlBoolComperator;
-    }
 
     @Getter
     private String filterDisplayName;
