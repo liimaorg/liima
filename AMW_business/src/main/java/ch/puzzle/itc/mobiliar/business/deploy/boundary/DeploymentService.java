@@ -211,9 +211,6 @@ public class DeploymentService {
     CommonFilterService commonFilterService;
 
     @Inject
-    private ResourceDependencyResolverService dependencyResolverService;
-
-    @Inject
     protected EntityManager em;
 
     @Inject
@@ -622,7 +619,7 @@ public class DeploymentService {
         //attache the appserver. without it getConsumedRelatedResourcesByResourceType
         //throws lazy load exception even if all relations of the appServer were loaded
         appServer = em.find(ResourceEntity.class, appServer.getId());
-        Set<ResourceEntity> apps = dependencyResolverService.getConsumedRelatedResourcesByResourceType(appServer, DefaultResourceTypeDefinition.APPLICATION, release);
+        Set<ResourceEntity> apps = dependencyResolver.getConsumedRelatedResourcesByResourceType(appServer, DefaultResourceTypeDefinition.APPLICATION, release);
         for (ResourceEntity app : apps) {
             String version = StringUtils.EMPTY;
 
