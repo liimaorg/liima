@@ -22,8 +22,15 @@ package ch.puzzle.itc.mobiliar.common.util;
 
 import static java.lang.Enum.valueOf;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -37,38 +44,18 @@ public class CustomFilter {
         booleanType, StringType, IntegerType, DateType, SpecialFilterType, LabeledDateType, ENUM_TYPE
     }
 
+    @AllArgsConstructor
+    @Getter
     public enum ComperatorFilterOption {
-        smaller("<", " < ", null, null), smallerequals("<=", " <= ", null, null), equals("is", " = ", " like ",
-                " is "), greaterequals(">=", " >= ", null,
-                        null), greater(">", " > ", null, null), notequal("is not", " != ", null, " is not ");
+        smaller("<", " < ", null, null),
+        smallerequals("<=", " <= ", null, null),
+        equals("is", " = ", " like ", " is "),
+        greaterequals(">=", " >= ", null, null),
+        greater(">", " > ", null, null), notequal("is not", " != ", null, " is not ");
         private String displayName;
         private String sqlNumComperator;
-        private String sqlBoolComperator;
         private String sqlStringComperator;
-
-        ComperatorFilterOption(String displayName, String sqlNumComperator, String sqlStringComperator,
-                String sqlBoolComperator) {
-            this.displayName = displayName;
-            this.sqlNumComperator = sqlNumComperator;
-            this.sqlStringComperator = sqlStringComperator;
-            this.sqlBoolComperator = sqlBoolComperator;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        private String getSqlNumComperator() {
-            return sqlNumComperator;
-        }
-
-        private String getSqlStringComperator() {
-            return sqlStringComperator;
-        }
-
-        private String getSqlBoolComperator() {
-            return sqlBoolComperator;
-        }
+        private String sqlBoolComperator;
     }
 
     private final Long filterIdentifikationNumber;
