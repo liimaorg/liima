@@ -45,7 +45,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -65,9 +64,12 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.puzzle.itc.mobiliar.business.database.control.SequencesService;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.FilterType;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent;
@@ -98,9 +100,6 @@ import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter.ComperatorFilterOption;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter.FilterType;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 

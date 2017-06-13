@@ -20,23 +20,12 @@
 
 package ch.puzzle.itc.mobiliar.presentation.shakedowntest;
 
-import java.io.Serializable;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.ejb.EJBException;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import lombok.Getter;
-import lombok.Setter;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService.DeploymentFilterTypes;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService.SortingDirectionType;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -47,12 +36,22 @@ import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestOrder;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import ch.puzzle.itc.mobiliar.presentation.common.ContextDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.components.impl.CustomFilterComp;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.ejb.EJBException;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.Serializable;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Named
 @SessionScoped // TODO: Migrate to new concept Be careful state of filter not kept in viewScoped
