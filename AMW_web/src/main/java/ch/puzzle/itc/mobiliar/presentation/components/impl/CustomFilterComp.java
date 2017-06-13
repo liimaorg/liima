@@ -32,8 +32,6 @@ public abstract class CustomFilterComp {
 
 	private List<CustomFilter> selectedFilterList;
 
-	private List<ComperatorFilterOption> comperatorSelectionList;
-
 	private ComperatorFilterOption selectedComperator;
 
 	private List<FilterSelectionItem> filterSelectionList;
@@ -115,37 +113,9 @@ public abstract class CustomFilterComp {
 
 	protected abstract CustomFilter setFilterDropDownOptions(CustomFilter filter);
 
-	public List<ComperatorFilterOption> getTypedComperatorSelectionList(CustomFilter filter) {
-		List<ComperatorFilterOption> result = new ArrayList<ComperatorFilterOption>();
-		if (filter != null) {
-			for (ComperatorFilterOption comperatorfilteroption : getComperatorSelectionList()) {
-				if (filter.isBooleanType()) {
-					if (comperatorfilteroption.equals(ComperatorFilterOption.equals)) {
-						result.add(comperatorfilteroption);
-					}
-				} else if (filter.isStringType() || filter.isEnumType()) {
-					if (comperatorfilteroption.equals(ComperatorFilterOption.equals)) {
-						result.add(comperatorfilteroption);
-					}
-				} else {
-					result.add(comperatorfilteroption);
-				}
-			}
-		} else {
-			return getComperatorSelectionList();
-		}
-		return result;
-	}
 
-	private List<ComperatorFilterOption> getComperatorSelectionList() {
-		if (comperatorSelectionList == null) {
-			comperatorSelectionList = new ArrayList<ComperatorFilterOption>();
-			for (ComperatorFilterOption filterType : ComperatorFilterOption.values()) {
-				comperatorSelectionList.add(filterType);
-			}
-		}
-		return comperatorSelectionList;
-	}
+
+
 
 	public void getSelectionComperatorChangeListener(CustomFilter filter) {
 		ComperatorFilterOption actualSelectedComperator = getSelectedComperator();

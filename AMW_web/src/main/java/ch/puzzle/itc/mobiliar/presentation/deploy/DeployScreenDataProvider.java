@@ -295,7 +295,10 @@ public class DeployScreenDataProvider implements Serializable {
                 if (selectedFilter.getFilterType().equals(FilterType.IntegerType)) {
                     filter.setComperatorSelection(ComperatorFilterOption.equals);
                 } else {
-                    filter.setComperatorSelection(getTypedComperatorSelectionList(filter).isEmpty() ? null : getTypedComperatorSelectionList(filter).get(0));
+                    ComperatorFilterOption comperatorSelection = filter.getTypedComperatorSelectionList().isEmpty() ?
+                            null :
+                            filter.getTypedComperatorSelectionList().get(0);
+                    filter.setComperatorSelection(comperatorSelection);
                 }
                 if (selectedFilter.equals(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV) && hasAlreadySpecialTypeFilter(getSelectedFilterList())) {
                     GlobalMessageAppender.addErrorMessage("This filter is already set.");
