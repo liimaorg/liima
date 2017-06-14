@@ -165,7 +165,10 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 			if (selectedFilter != null) {
 				CustomFilter filter = null;
 
-				filter = new CustomFilter(selectedFilter.getFilterDisplayName(), selectedFilter.getFilterTabColumnName(), selectedFilter.getFilterType());
+				filter = CustomFilter.builder(selectedFilter.getFilterType())
+						.filterDisplayName(selectedFilter.getFilterDisplayName())
+						.deploymentTableColumnName(selectedFilter.getFilterTabColumnName())
+						.build();
 				filter.setComperatorSelection(filter.getTypedComperatorSelectionList().isEmpty() ? null : filter.getTypedComperatorSelectionList().get(0));
 				if (selectedFilter.equals(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV) && hasAlreadySpecialTypeFilter(getSelectedFilterList())) {
 					GlobalMessageAppender.addErrorMessage("This filter is already set.");
@@ -348,8 +351,10 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 
 			getCustomFilterComp().removeAllFilter();
 			ShakedownTestFilterTypes filterType = ShakedownTestFilterTypes.TRACKING_ID;
-			CustomFilter filter = new CustomFilter(filterType.getFilterDisplayName(),
-					filterType.getFilterTabColumnName(), filterType.getFilterType());
+			CustomFilter filter = CustomFilter.builder(filterType.getFilterType())
+					.filterDisplayName(filterType.getFilterTabColumnName())
+					.deploymentTableColumnName(filterType.getFilterTabColumnName())
+					.build();
 			filter.setComperatorSelection(ComperatorFilterOption.equals);
 			filter.setValue(trackingIdFromLastCreatedOrder.toString());
 

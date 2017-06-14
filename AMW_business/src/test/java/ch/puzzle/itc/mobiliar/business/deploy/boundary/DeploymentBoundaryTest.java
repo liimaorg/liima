@@ -46,9 +46,10 @@ public class DeploymentBoundaryTest
 	
 	@InjectMocks
 	private DeploymentBoundary deploymentBoundary;
+
 	@Mock
 	private Logger log;
-	
+
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 	
