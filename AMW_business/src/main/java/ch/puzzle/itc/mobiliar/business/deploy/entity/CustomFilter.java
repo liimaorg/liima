@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Enum.valueOf;
 
-@Builder(builderMethodName = "hiddenBuilder")
+@Builder(builderClassName = "CustomFilterBuilder", builderMethodName = "internalBuilder")
 public class CustomFilter {
 
     @Getter
@@ -73,14 +73,48 @@ public class CustomFilter {
 
     private Object value = null;
 
-    private final Long filterIdentifikationNumber;
+    private Long filterIdentifikationNumber;
 
     private Logger log = Logger.getLogger(CustomFilter.class.getSimpleName());
 
     private List<ComperatorFilterOption> comperatorSelectionList;
 
     public static CustomFilterBuilder builder(FilterType filterType) {
-        return hiddenBuilder().filterType(filterType);
+        return new Builder().filterType(filterType);
+    }
+
+    public static class Builder extends CustomFilterBuilder {
+        Builder() {
+            super();
+        }
+        @Override
+        public CustomFilter build() {
+            CustomFilter filter = super.build();
+            filter.init();
+            return filter;
+        }
+    }
+
+    private void init() {
+        this.filterIdentifikationNumber = System.currentTimeMillis();
+        this.isSelected = true;
+        this.joiningTableQuery = joiningTableQuery == null ? "" : joiningTableQuery;
+        if (isIntegerType()) {
+            // value muss mit 0 initialisiert werden falls Integer type (sonst
+            // fkt rendering nicht!)
+            this.value = 0;
+        } else if (isBooleanType()) {
+            // value soll mit true initialisiert werden falls Boolean type
+            this.value = true;
+            this.dropDownItems.add("true");
+            this.dropDownItems.add("false");
+        }
+        else if (isDateType() || isLabeledDateType()) {
+            this.value = new Date();
+        }
+        else {
+            this.value = "";
+        }
     }
 
     public CustomFilter(String filterDisplayName, String deploymentTableColumnName, String joiningTableQuery,
