@@ -20,10 +20,10 @@
 
 package ch.puzzle.itc.mobiliar.presentation.shakedowntest;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService.SortingDirectionType;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;

@@ -20,9 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.utils.JpaWildcardConverter;
 
 import javax.ejb.Stateless;
@@ -131,7 +131,7 @@ public class CommonFilterService {
 				q.setParameter(parameter, f.getIntegerValue());
 				log.fine("name: " + parameter + " value: " + f.getIntegerValue());
 			} else if (f.isStringType()) {
-				if(DeploymentBoundary.DeploymentFilterTypes.APPLICATION_NAME.getFilterDisplayName().equals(f.getFilterDisplayName())) {
+				if(DeploymentFilterTypes.APPLICATION_NAME.getFilterDisplayName().equals(f.getFilterDisplayName())) {
 					//all app names are in a json structure so we have to search with %
 					q.setParameter(parameter, "%"+f.getStringValue()+"%");
 				}

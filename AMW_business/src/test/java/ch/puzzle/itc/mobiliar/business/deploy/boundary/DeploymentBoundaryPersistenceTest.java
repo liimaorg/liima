@@ -20,12 +20,12 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;

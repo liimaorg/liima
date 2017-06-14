@@ -21,9 +21,10 @@
 package ch.puzzle.itc.mobiliar.presentation.deploy;
 
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary.DeploymentFilterTypes;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary.DeploymentParameterBoundary;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
@@ -33,7 +34,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocat
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import ch.puzzle.itc.mobiliar.presentation.deploy.DeployScreenDataProvider.deployscreenColDescriptor;

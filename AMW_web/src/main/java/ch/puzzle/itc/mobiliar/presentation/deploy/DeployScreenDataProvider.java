@@ -20,41 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.presentation.deploy;
 
-import java.io.Serializable;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.logging.Logger;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
-import lombok.Getter;
-import lombok.Setter;
-
-import org.apache.commons.lang.StringUtils;
-
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary.DeploymentFilterTypes;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.FilterType;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService.SortingDirectionType;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -71,6 +39,19 @@ import ch.puzzle.itc.mobiliar.presentation.common.ContextDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.common.ReleaseSelectionDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.components.impl.CustomFilterComp;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
+
+import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.Serializable;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Logger;
 
 @Named
 @SessionScoped
