@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Builder;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -29,6 +30,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Enum.valueOf;
 
+@Builder(builderMethodName = "hiddenBuilder")
 public class CustomFilter {
 
     @Getter
@@ -76,6 +78,10 @@ public class CustomFilter {
     private Logger log = Logger.getLogger(CustomFilter.class.getSimpleName());
 
     private List<ComperatorFilterOption> comperatorSelectionList;
+
+    public static CustomFilterBuilder builder(FilterType filterType) {
+        return hiddenBuilder().filterType(filterType);
+    }
 
     public CustomFilter(String filterDisplayName, String deploymentTableColumnName, String joiningTableQuery,
             FilterType filterType) {
