@@ -20,6 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Builder;
@@ -30,6 +32,7 @@ import java.util.*;
 import static java.lang.Enum.valueOf;
 
 @Builder(builderClassName = "CustomFilterBuilder", builderMethodName = "internalBuilder")
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CustomFilter {
 
     @Getter
@@ -93,6 +96,7 @@ public class CustomFilter {
     }
 
     private void init() {
+
         this.dropDownItems = new ArrayList<>();
         this.filterIdentifikationNumber = System.currentTimeMillis();
         this.isSelected = true;
