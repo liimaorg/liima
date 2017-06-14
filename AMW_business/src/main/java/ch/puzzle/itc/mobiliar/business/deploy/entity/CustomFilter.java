@@ -26,7 +26,6 @@ import lombok.experimental.Builder;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 import static java.lang.Enum.valueOf;
 
@@ -75,8 +74,6 @@ public class CustomFilter {
 
     private Long filterIdentifikationNumber;
 
-    private Logger log = Logger.getLogger(CustomFilter.class.getSimpleName());
-
     private List<ComperatorFilterOption> comperatorSelectionList;
 
     public static CustomFilterBuilder builder(FilterType filterType) {
@@ -96,6 +93,7 @@ public class CustomFilter {
     }
 
     private void init() {
+        this.dropDownItems = new ArrayList<>();
         this.filterIdentifikationNumber = System.currentTimeMillis();
         this.isSelected = true;
         this.joiningTableQuery = joiningTableQuery == null ? "" : joiningTableQuery;
@@ -106,6 +104,7 @@ public class CustomFilter {
         } else if (isBooleanType()) {
             // value soll mit true initialisiert werden falls Boolean type
             this.value = true;
+
             this.dropDownItems.add("true");
             this.dropDownItems.add("false");
         }
@@ -115,37 +114,6 @@ public class CustomFilter {
         else {
             this.value = "";
         }
-    }
-
-    public CustomFilter(String filterDisplayName, String deploymentTableColumnName, String joiningTableQuery,
-            FilterType filterType) {
-        this.filterType = filterType;
-        this.filterDisplayName = filterDisplayName;
-        this.deploymentTableColumnName = deploymentTableColumnName;
-        this.isSelected = true;
-        this.filterIdentifikationNumber = System.currentTimeMillis();
-        this.joiningTableQuery = joiningTableQuery != null ? joiningTableQuery : "";
-        if (isIntegerType()) {
-            // value muss mit 0 initialisiert werden falls Integer type (sonst
-            // fkt rendering nicht!)
-            this.value = 0;
-        }
-        else if (isBooleanType()) {
-            // value soll mit true initialisiert werden falls Boolean type
-            this.value = true;
-            this.dropDownItems.add("true");
-            this.dropDownItems.add("false");
-        }
-        else if (isDateType() || isLabeledDateType()) {
-            this.value = new Date();
-        }
-        else {
-            this.value = "";
-        }
-    }
-
-    public CustomFilter(String filterDisplayName, String deploymentTableColumnName, FilterType filterType) {
-        this(filterDisplayName, deploymentTableColumnName, null, filterType);
     }
 
     public List<ComperatorFilterOption> getComperatorSelectionList() {
@@ -197,7 +165,6 @@ public class CustomFilter {
                 }
                 catch (NumberFormatException e) {
                     this.value = null;
-                    log.warning(filterValue + " is not a number");
                 }
             }
             // Date type is handled differently: The JSF component directly sets its value directly through setDateValue

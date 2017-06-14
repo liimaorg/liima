@@ -26,12 +26,9 @@ import ch.mobi.itc.mobiliar.rest.dtos.DeploymentParameterDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentRequestDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
@@ -444,10 +441,11 @@ public class DeploymentsRest {
     }
 
     private CustomFilter createFilter(DeploymentFilterTypes filterType, ComperatorFilterOption comperator) {
-        CustomFilter filter = new CustomFilter(filterType.getFilterDisplayName(), filterType.getFilterTabColumnName(), filterType.getFilterType());
-        filter.setComperatorSelection(comperator);
-
-        return filter;
+        return CustomFilter.builder(filterType.getFilterType())
+                .filterDisplayName(filterType.getFilterDisplayName())
+                .deploymentTableColumnName(filterType.getFilterTabColumnName())
+                .comperatorSelection(comperator)
+                .build();
     }
 
     CustomFilter createFilter(DeploymentFilterTypes filterType, String value, ComperatorFilterOption comperator) {

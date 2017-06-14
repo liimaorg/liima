@@ -251,11 +251,14 @@ public class DeployScreenDataProvider implements Serializable {
         return hasFilterViewParam(filterApplicationNameViewParam) || hasFilterViewParam(filterAppServerNameViewParam) || hasFilterViewParam(filterEnvironmentNameParam) || hasFilterViewParam(filterTrackingIdParam);
     }
 
-    private void creatAndAddNewFilter(DeploymentFilterTypes filterType, String value) {
-        CustomFilter filter = new CustomFilter(filterType.getFilterDisplayName(), filterType.getFilterTabColumnName(), filterType.getFilterTableJoining(), filterType.getFilterType());
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
+    private void creatAndAddNewFilter(DeploymentFilterTypes deploymentFilterType, String value) {
+        CustomFilter filter = CustomFilter.builder(deploymentFilterType.getFilterType())
+                .filterDisplayName(deploymentFilterType.getFilterDisplayName())
+                .deploymentTableColumnName(deploymentFilterType.getFilterTabColumnName())
+                .joiningTableQuery(deploymentFilterType.getFilterTableJoining())
+                .comperatorSelection(ComperatorFilterOption.equals)
+                .build();
         filter.setValue(value);
-
         getCustomFilterComp().getSelectedFilterList().add(filter);
     }
 
@@ -285,8 +288,11 @@ public class DeployScreenDataProvider implements Serializable {
 
             if (selectedFilter != null) {
                 CustomFilter filter;
-
-                filter = new CustomFilter(selectedFilter.getFilterDisplayName(), selectedFilter.getFilterTabColumnName(), selectedFilter.getFilterTableJoining(), selectedFilter.getFilterType());
+                filter = CustomFilter.builder(selectedFilter.getFilterType())
+                        .filterDisplayName(selectedFilter.getFilterDisplayName())
+                        .deploymentTableColumnName(selectedFilter.getFilterTabColumnName())
+                        .joiningTableQuery(selectedFilter.getFilterTableJoining())
+                        .build();
                 if (selectedFilter.getFilterType().equals(FilterType.IntegerType)) {
                     filter.setComperatorSelection(ComperatorFilterOption.equals);
                 } else {

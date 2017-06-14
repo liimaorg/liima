@@ -31,7 +31,11 @@ public class CustomFilterTest {
     @Test
     public void test_CustomFilter_Constructor_Integer() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.IntegerType);
+        CustomFilter c = CustomFilter.builder(FilterType.IntegerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+
         // when
 
         // then
@@ -51,7 +55,11 @@ public class CustomFilterTest {
     @Test
     public void test_CustomFilter_Constructor_Boolean() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.booleanType);
+        CustomFilter c = CustomFilter.builder(FilterType.booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+
         // when
 
         // then
@@ -72,14 +80,16 @@ public class CustomFilterTest {
     @Test
     public void test_CustomFilter_Constructor_Date() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.DateType);
+        CustomFilter c = CustomFilter.builder(FilterType.DateType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
 
         // then
         assertEquals(FilterType.DateType, c.getFilterType());
         assertTrue(c.isDateType());
         assertTrue(c.getDateValue() instanceof Date);
-        // TODO assert value
         assertEquals(0, c.getDropDownItems().size());
         assertEquals("filterDisplayName", c.getFilterDisplayName());
         assertEquals("deploymentTableColumnName", c.getDeploymentTableColumnName());
@@ -91,7 +101,10 @@ public class CustomFilterTest {
     @Test
     public void test_CustomFilter_Constructor_String() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
 
         // then
@@ -110,8 +123,10 @@ public class CustomFilterTest {
     @Test
     public void test_CustomFilter_Constructor_SpecialFiler() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName",
-                FilterType.SpecialFilterType);
+        CustomFilter c = CustomFilter.builder(FilterType.SpecialFilterType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
 
         // then
@@ -130,7 +145,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_boolean_true() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.booleanType);
+        CustomFilter c = CustomFilter.builder(FilterType.booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue("true");
         // then
@@ -145,7 +163,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_boolean_false() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.booleanType);
+        CustomFilter c = CustomFilter.builder(FilterType.booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue("false");
         // then
@@ -160,7 +181,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_boolean_null() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.booleanType);
+        CustomFilter c = CustomFilter.builder(FilterType.booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue(null);
         // then
@@ -175,7 +199,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_boolean_notBoolean() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.booleanType);
+        CustomFilter c = CustomFilter.builder(FilterType.booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue("test");
         // then
@@ -190,7 +217,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_boolean_notBoolean2() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.booleanType);
+        CustomFilter c = CustomFilter.builder(FilterType.booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue("1");
         // then
@@ -205,7 +235,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_String() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue("str");
         // then
@@ -220,7 +253,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_String_empty() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue("");
         // then
@@ -235,7 +271,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_String_null() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue(null);
         // then
@@ -250,7 +289,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_Integer() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.IntegerType);
+        CustomFilter c = CustomFilter.builder(FilterType.IntegerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue("2");
         // then
@@ -265,7 +307,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_Integer_0() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.IntegerType);
+        CustomFilter c = CustomFilter.builder(FilterType.IntegerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue("0");
         // then
@@ -280,7 +325,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_Integer_trailing_spaces() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.IntegerType);
+        CustomFilter c = CustomFilter.builder(FilterType.IntegerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue(" 3 ");
         // then
@@ -295,7 +343,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_Integer_null() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.IntegerType);
+        CustomFilter c = CustomFilter.builder(FilterType.IntegerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue(null);
         // then
@@ -310,7 +361,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_Integer_empty() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.IntegerType);
+        CustomFilter c = CustomFilter.builder(FilterType.IntegerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue("");
         // then
@@ -325,7 +379,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_Integer_noInt() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.IntegerType);
+        CustomFilter c = CustomFilter.builder(FilterType.IntegerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         // when
         c.setValue("asdf");
         // then
@@ -340,7 +397,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_Date() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.DateType);
+        CustomFilter c = CustomFilter.builder(FilterType.DateType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         Date d = new Date();
         String date = "" + d.toGMTString();
         // when
@@ -358,7 +418,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_LabeledDate() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.LabeledDateType);
+        CustomFilter c = CustomFilter.builder(FilterType.LabeledDateType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         Date d = new Date();
         String date = CustomFilter.convertDateToString(d);
         // when
@@ -376,8 +439,10 @@ public class CustomFilterTest {
     @Test
     public void test_setValue_SpecialFilter() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName",
-                FilterType.SpecialFilterType);
+        CustomFilter c = CustomFilter.builder(FilterType.SpecialFilterType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
 
         // when
         // does nothing still is ""
@@ -394,7 +459,10 @@ public class CustomFilterTest {
     @Test
     public void test_isNullableFilter() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
 
         // when
         boolean nullableFilter = c.isNullableFilter();
@@ -405,7 +473,10 @@ public class CustomFilterTest {
     @Test
     public void test_isNullableFilter_true() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
 
         c.setNullableFilter(true);
 
@@ -418,7 +489,10 @@ public class CustomFilterTest {
     @Test
     public void test_isNullableFilter_Integer() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.IntegerType);
+        CustomFilter c = CustomFilter.builder(FilterType.IntegerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
 
         c.setNullableFilter(true);
 
@@ -431,7 +505,10 @@ public class CustomFilterTest {
     @Test
     public void test_getSqlComperator_no_comperatorSelection() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
 
         // when
         String sqlComperator = c.getSqlComperator();
@@ -442,7 +519,10 @@ public class CustomFilterTest {
     @Test
     public void test_getSqlComperator_String() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         c.setComperatorSelection(ComperatorFilterOption.equals);
 
         // when
@@ -454,7 +534,10 @@ public class CustomFilterTest {
     @Test
     public void test_getSqlComperator_Integer() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.IntegerType);
+        CustomFilter c = CustomFilter.builder(FilterType.IntegerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         c.setComperatorSelection(ComperatorFilterOption.equals);
 
         // when
@@ -466,7 +549,10 @@ public class CustomFilterTest {
     @Test
     public void test_getSqlComperator_Boolean() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName", FilterType.booleanType);
+        CustomFilter c = CustomFilter.builder(FilterType.booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         c.setComperatorSelection(ComperatorFilterOption.equals);
 
         // when
@@ -478,8 +564,10 @@ public class CustomFilterTest {
     @Test
     public void test_getSqlComperator_Special() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName",
-                FilterType.SpecialFilterType);
+        CustomFilter c = CustomFilter.builder(FilterType.SpecialFilterType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         c.setComperatorSelection(ComperatorFilterOption.equals);
 
         // when
@@ -491,8 +579,10 @@ public class CustomFilterTest {
     @Test
     public void test_getParameterName() {
         // given
-        CustomFilter c = new CustomFilter("filterDisplayName", "deploymentTableColumnName",
-                FilterType.SpecialFilterType);
+        CustomFilter c = CustomFilter.builder(FilterType.SpecialFilterType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         c.setComperatorSelection(ComperatorFilterOption.equals);
 
         // when
@@ -504,8 +594,10 @@ public class CustomFilterTest {
     @Test
     public void test_getParameterName_empty() {
         // given
-        CustomFilter c = new CustomFilter("filter DisplayName", "deploymentTableColumnName",
-                FilterType.SpecialFilterType);
+        CustomFilter c = CustomFilter.builder(FilterType.SpecialFilterType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         c.setComperatorSelection(ComperatorFilterOption.equals);
 
         // when
@@ -517,8 +609,10 @@ public class CustomFilterTest {
     @Test
     public void test_isValidForSqlQuery_SpecialFilter() {
         // given
-        CustomFilter c = new CustomFilter("filter DisplayName", "deploymentTableColumnName",
-                FilterType.SpecialFilterType);
+        CustomFilter c = CustomFilter.builder(FilterType.SpecialFilterType)
+                .filterDisplayName("filter DisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
 
         // then
         assertFalse(c.isValidForSqlQuery());
@@ -527,7 +621,10 @@ public class CustomFilterTest {
     @Test
     public void test_isValidForSqlQuery_String() {
         // given
-        CustomFilter c = new CustomFilter("filter DisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filter DisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
 
         // then
         assertFalse(c.isValidForSqlQuery());
@@ -536,10 +633,12 @@ public class CustomFilterTest {
     @Test
     public void test_isValidForSqlQuery_String_ok() {
         // given
-        CustomFilter c = new CustomFilter("filter DisplayName", "deploymentTableColumnName", FilterType.StringType);
-        c.setComperatorSelection(ComperatorFilterOption.equals);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filter DisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .comperatorSelection(ComperatorFilterOption.equals)
+                .build();
         c.setValue("test");
-
         // then
         assertTrue(c.isValidForSqlQuery());
     }
@@ -547,7 +646,10 @@ public class CustomFilterTest {
     @Test
     public void test_isValidForSqlQuery_String_empty_value() {
         // given
-        CustomFilter c = new CustomFilter("filter DisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filter DisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         c.setComperatorSelection(ComperatorFilterOption.equals);
         c.setValue("");
 
@@ -558,7 +660,10 @@ public class CustomFilterTest {
     @Test
     public void test_isValidForSqlQuery_String_null() {
         // given
-        CustomFilter c = new CustomFilter("filter DisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filter DisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         c.setComperatorSelection(ComperatorFilterOption.equals);
         c.setValue(null);
 
@@ -569,7 +674,10 @@ public class CustomFilterTest {
     @Test
     public void test_isValidForSqlQuery_String_null_andNullable() {
         // given
-        CustomFilter c = new CustomFilter("filter DisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filter DisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         c.setComperatorSelection(ComperatorFilterOption.equals);
         c.setNullableFilter(true);
         c.setValue(null);
@@ -581,7 +689,10 @@ public class CustomFilterTest {
     @Test
     public void test_isValidForSqlQuery_String_val_andNullable() {
         // given
-        CustomFilter c = new CustomFilter("filter DisplayName", "deploymentTableColumnName", FilterType.StringType);
+        CustomFilter c = CustomFilter.builder(FilterType.StringType)
+                .filterDisplayName("filter DisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
         c.setComperatorSelection(ComperatorFilterOption.equals);
         c.setNullableFilter(true);
         c.setValue("test");
