@@ -20,7 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,9 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.CONFIRMATION_USER;
-import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.DEPLOYMENT_STATE;
-import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.LASTDEPLOYJOBFORASENV;
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -115,7 +114,6 @@ public class CommonFilterServicePersistenceTest {
     @Test
     public void test_addSpecialAndJoiningFilterAndCreateQuery(){
         // given
-
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d where d.deploymentDate = "+
                 "(select max(t.deploymentDate) from DeploymentEntity t where d.context = t.context and d.resourceGroup = t.resourceGroup) ");
         List<CustomFilter> filters = new ArrayList<>();
@@ -124,7 +122,7 @@ public class CommonFilterServicePersistenceTest {
                 .build();
         filters.add(filter);
 
-        filter = CustomFilter.builder(CONFIRMATION_USER)
+        filter = CustomFilter.builder(DEPLOYMENT_PARAMETER)
                 .isSelected(true)
                 .enumType(DeploymentEntity.DeploymentState.class)
                 .build();
