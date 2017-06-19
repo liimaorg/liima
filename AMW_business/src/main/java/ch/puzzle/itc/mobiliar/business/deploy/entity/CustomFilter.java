@@ -145,7 +145,7 @@ public class CustomFilter {
         return comparatorSelectionList;
     }
 
-    public List<ComparatorFilterOption> getTypedComperatorSelectionList() {
+    public List<ComparatorFilterOption> getTypedComparatorSelectionList() {
         List<ComparatorFilterOption> result = new ArrayList<>();
         for (ComparatorFilterOption comperatorfilteroption : getComparatorSelectionList()) {
             if (isBooleanType()) {
