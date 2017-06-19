@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -90,7 +90,7 @@ public class CustomFilter {
                 .comperatorSelection(defaultComperator);
     }
 
-    public static CustomFilterBuilder builder(ShakedownTestService.ShakedownTestFilterTypes shakedownTestFilterTypes) {
+    public static CustomFilterBuilder builder(ShakedownTestFilterTypes shakedownTestFilterTypes) {
         ComperatorFilterOption defaultComperator = ComperatorFilterOption.equals;
         return new Builder().filterType(shakedownTestFilterTypes.getFilterType())
                 .filterDisplayName(shakedownTestFilterTypes.getFilterDisplayName())

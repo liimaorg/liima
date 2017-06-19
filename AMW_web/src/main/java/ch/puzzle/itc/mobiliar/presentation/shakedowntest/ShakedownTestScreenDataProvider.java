@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.shakedowntest;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
@@ -31,9 +30,9 @@ import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService.ShakedownTestFilterTypes;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestOrder;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;

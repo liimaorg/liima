@@ -27,9 +27,9 @@ import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService.Sortin
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService.ShakedownTestFilterTypes;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestOrder;
 import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent;
 import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent.ShakedownTestEventType;
