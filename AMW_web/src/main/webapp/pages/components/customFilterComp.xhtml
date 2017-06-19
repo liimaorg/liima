@@ -68,9 +68,6 @@
 									value="${filter.typedComparatorSelectionList}"
 									var="comparator" itemLabel="${comparator.displayName}"
 									itemValue="${comparator}" />
-								<a4j:ajax
-									listener="#{customFilterImpl.getSelectionComparatorChangeListener(filter)}"
-									render="selectedFilter" />
 							</h:selectOneMenu>
 						</h:panelGroup>
 					</div>

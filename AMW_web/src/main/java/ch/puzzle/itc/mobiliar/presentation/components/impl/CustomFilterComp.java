@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.components.impl;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 
 import java.util.ArrayList;
@@ -31,8 +30,6 @@ import java.util.List;
 public abstract class CustomFilterComp {
 
 	private List<CustomFilter> selectedFilterList;
-
-	private ComparatorFilterOption selectedComperator;
 
 	private List<FilterSelectionItem> filterSelectionList;
 
@@ -60,7 +57,6 @@ public abstract class CustomFilterComp {
 	class FilterSelectionItemComparator implements Comparator<FilterSelectionItem> {
 		@Override
 		public int compare(FilterSelectionItem a, FilterSelectionItem b) {
-
 			return a.getDisplayName().compareTo(b.getDisplayName());
 		}
 	}
@@ -79,8 +75,8 @@ public abstract class CustomFilterComp {
 	}
 	
 	public List<CustomFilter> getUpdatedSelectedFilterList() {
-		List<CustomFilter> specialFilterAtEndOfList = new ArrayList<CustomFilter>();
-		List<CustomFilter> specialFilterType = new ArrayList<CustomFilter>();
+		List<CustomFilter> specialFilterAtEndOfList = new ArrayList<>();
+		List<CustomFilter> specialFilterType = new ArrayList<>();
 
 		for (CustomFilter filter : getSelectedFilterList()) {
 			
@@ -97,7 +93,6 @@ public abstract class CustomFilterComp {
 	}
 
 	public void removeFilter(CustomFilter filter) {
-
 		List<CustomFilter> removeSelection = getSelectedFilterList();
 		if (removeSelection.contains(filter)) {
 			removeSelection.remove(filter);
@@ -106,25 +101,13 @@ public abstract class CustomFilterComp {
 
 	public List<CustomFilter> getSelectedFilterList() {
 		if (selectedFilterList == null) {
-			selectedFilterList = new ArrayList<CustomFilter>();
+			selectedFilterList = new ArrayList<>();
 		}
 		return selectedFilterList;
 	}
 
 	protected abstract CustomFilter setFilterDropDownOptions(CustomFilter filter);
 
-
-
-
-
-	public void getSelectionComperatorChangeListener(CustomFilter filter) {
-		ComparatorFilterOption actualSelectedComperator = getSelectedComperator();
-		filter.setComparatorSelection(actualSelectedComperator);
-	}
-
-	public ComparatorFilterOption getSelectedComperator() {
-		return selectedComperator;
-	}
 	public List<FilterSelectionItem> getFilterSelectionList() {
 		if (filterSelectionList == null) {
 			loadFilterList();
@@ -136,7 +119,6 @@ public abstract class CustomFilterComp {
 
 	protected abstract void loadFilterList();
 
-	
 	public void setSelectedFilterItemEnumName(String selectedFilterEnumName) {
 		this.selectedFilterItemEnumName = selectedFilterEnumName;
 	}
@@ -149,18 +131,8 @@ public abstract class CustomFilterComp {
 		addSelectedFilter();
 		selectedFilterItemEnumName = null;
 	}
-
 	
 	public abstract void addSelectedFilter();
-
-
-	public ComparatorFilterOption getActualSelectedComperator() {
-		return selectedComperator;
-	}
-
-	public void setSelectedComperator(ComparatorFilterOption selectedComperator) {
-		this.selectedComperator = selectedComperator;
-	}
 
 	protected boolean hasAlreadySpecialTypeFilter(List<CustomFilter> selectedFilterList) {
 		for (CustomFilter deploymentFilter : selectedFilterList) {
