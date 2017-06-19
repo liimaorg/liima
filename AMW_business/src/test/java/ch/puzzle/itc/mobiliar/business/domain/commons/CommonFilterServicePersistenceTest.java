@@ -20,10 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.FilterType;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,12 +59,16 @@ public class CommonFilterServicePersistenceTest {
 	}
 
 
+	private DeploymentFilterTypes enumType = DeploymentFilterTypes.DEPLOYMENT_STATE;
+    private DeploymentFilterTypes stringType = DeploymentFilterTypes.CONFIRMATION_USER;
+    private DeploymentFilterTypes specialFilterType = DeploymentFilterTypes.LASTDEPLOYJOBFORASENV;
+
     @Test
     public void test_addFilterAndCreateQuery(){
         // given
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ") ;
         List<CustomFilter> filters = new ArrayList<>();
-        CustomFilter filter = CustomFilter.builder(FilterType.ENUM_TYPE)
+        CustomFilter filter = CustomFilter.builder(enumType)
                 .filterDisplayName("State")
                 .deploymentTableColumnName("d.deploymentState")
                 .build();
@@ -92,7 +93,7 @@ public class CommonFilterServicePersistenceTest {
         // given
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ") ;
         List<CustomFilter> filters = new ArrayList<>();
-        CustomFilter filter = CustomFilter.builder(FilterType.ENUM_TYPE)
+        CustomFilter filter = CustomFilter.builder(enumType)
                 .filterDisplayName("State")
                 .deploymentTableColumnName("d.deploymentState")
                 .build();
@@ -101,7 +102,7 @@ public class CommonFilterServicePersistenceTest {
         filter.setComperatorSelection(ComperatorFilterOption.equals);
         filter.setSelected(true);
         filters.add(filter);
-        filter = CustomFilter.builder(FilterType.StringType)
+        filter = CustomFilter.builder(stringType)
                 .filterDisplayName("Deployment parameter")
                 .deploymentTableColumnName("p.key")
                 .joiningTableQuery("join d.deploymentParameters p")
@@ -129,13 +130,13 @@ public class CommonFilterServicePersistenceTest {
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d where d.deploymentDate = "+
                 "(select max(t.deploymentDate) from DeploymentEntity t where d.context = t.context and d.resourceGroup = t.resourceGroup) ");
         List<CustomFilter> filters = new ArrayList<>();
-        CustomFilter filter = CustomFilter.builder(FilterType.SpecialFilterType)
+        CustomFilter filter = CustomFilter.builder(specialFilterType)
                 .filterDisplayName("Latest deployment job for App Server and Env")
                 .deploymentTableColumnName("")
                 .build();
         filter.setSelected(true);
         filters.add(filter);
-        filter = CustomFilter.builder(FilterType.StringType)
+        filter = CustomFilter.builder(stringType)
                 .filterDisplayName("Deployment parameter")
                 .deploymentTableColumnName("p.key")
                 .joiningTableQuery("join d.deploymentParameters p")

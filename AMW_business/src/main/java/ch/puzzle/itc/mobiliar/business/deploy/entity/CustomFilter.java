@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
+import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -79,8 +80,22 @@ public class CustomFilter {
 
     private List<ComperatorFilterOption> comperatorSelectionList;
 
-    public static CustomFilterBuilder builder(FilterType filterType) {
-        return new Builder().filterType(filterType);
+    public static CustomFilterBuilder builder(DeploymentFilterTypes deploymentFilterTypes) {
+        ComperatorFilterOption defaultComperator = ComperatorFilterOption.equals;
+
+        return new Builder().filterType(deploymentFilterTypes.getFilterType())
+                .filterDisplayName(deploymentFilterTypes.getFilterDisplayName())
+                .deploymentTableColumnName(deploymentFilterTypes.getFilterTabColumnName())
+                .joiningTableQuery(deploymentFilterTypes.getFilterTableJoining())
+                .comperatorSelection(defaultComperator);
+    }
+
+    public static CustomFilterBuilder builder(ShakedownTestService.ShakedownTestFilterTypes shakedownTestFilterTypes) {
+        ComperatorFilterOption defaultComperator = ComperatorFilterOption.equals;
+        return new Builder().filterType(shakedownTestFilterTypes.getFilterType())
+                .filterDisplayName(shakedownTestFilterTypes.getFilterDisplayName())
+                .deploymentTableColumnName(shakedownTestFilterTypes.getFilterTabColumnName())
+                .comperatorSelection(defaultComperator);
     }
 
     public static class Builder extends CustomFilterBuilder {

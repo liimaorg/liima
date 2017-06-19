@@ -200,14 +200,14 @@ public class DeploymentBoundary {
         LinkedList<CustomFilter> filters = new LinkedList<>();
 
         DeploymentFilterTypes filterType = DeploymentFilterTypes.LASTDEPLOYJOBFORASENV;
-        CustomFilter filter = CustomFilter.builder(filterType.getFilterType())
+        CustomFilter filter = CustomFilter.builder(filterType)
                 .filterDisplayName(filterType.getFilterDisplayName())
                 .deploymentTableColumnName(filterType.getFilterTabColumnName())
                 .build();
         filters.add(filter);
 
         filterType = DeploymentFilterTypes.APPSERVER_NAME;
-        filter = CustomFilter.builder(filterType.getFilterType())
+        filter = CustomFilter.builder(filterType)
                 .filterDisplayName(filterType.getFilterDisplayName())
                 .deploymentTableColumnName(filterType.getFilterTabColumnName())
                 .build();
@@ -216,7 +216,7 @@ public class DeploymentBoundary {
         filters.add(filter);
 
         filterType = DeploymentFilterTypes.ENVIRONMENT_NAME;
-        filter = CustomFilter.builder(filterType.getFilterType())
+        filter = CustomFilter.builder(filterType)
                 .filterDisplayName(filterType.getFilterDisplayName())
                 .deploymentTableColumnName(filterType.getFilterTabColumnName())
                 .build();
@@ -225,7 +225,7 @@ public class DeploymentBoundary {
         filters.add(filter);
 
         filterType = DeploymentFilterTypes.DEPLOYMENT_STATE;
-        filter = CustomFilter.builder(filterType.getFilterType())
+        filter = CustomFilter.builder(filterType)
                 .filterDisplayName(filterType.getFilterDisplayName())
                 .deploymentTableColumnName(filterType.getFilterTabColumnName())
                 .build();
@@ -235,7 +235,7 @@ public class DeploymentBoundary {
         filters.add(filter);
 
         filterType = DeploymentFilterTypes.DEPLOYMENT_STATE;
-        filter = CustomFilter.builder(filterType.getFilterType()).filterDisplayName(filterType.getFilterDisplayName()).deploymentTableColumnName(filterType.getFilterTabColumnName()).build();
+        filter = CustomFilter.builder(filterType).filterDisplayName(filterType.getFilterDisplayName()).deploymentTableColumnName(filterType.getFilterTabColumnName()).build();
         filter.setEnumType(DeploymentState.class);
         filter.setValue(DeploymentState.failed.name());
         filter.setComperatorSelection(ComperatorFilterOption.equals);
