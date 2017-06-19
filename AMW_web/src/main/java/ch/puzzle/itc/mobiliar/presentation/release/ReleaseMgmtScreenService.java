@@ -116,11 +116,6 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 	private SortedMap<ResourceTypeEntity, SortedSet<ResourceEntity>> resourcesForCurrentRelease;
 	private List<DeploymentEntity> deploymentsForCurrentRelease;
 
-	/**
-	 * Remove the release
-	 * 
-	 * @param id
-	 */
 	public void remove(){
 		if (releaseMgmtService.delete(currentRelease.getId().intValue())) {
 			GlobalMessageAppender.addSuccessMessage("Release " + currentRelease.getName()
@@ -155,7 +150,7 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 
 	public void loadResourcesAndDeploymentsForRelease(Integer releaseId) {
 		List<ResourceEntity> result = releaseMgmtService.getResourcesForRelease(releaseId);
-		resourcesForCurrentRelease = new TreeMap<ResourceTypeEntity, SortedSet<ResourceEntity>>();
+		resourcesForCurrentRelease = new TreeMap();
 		for (ResourceEntity r : result) {
 			if (!resourcesForCurrentRelease.containsKey(r.getResourceType())) {
 				resourcesForCurrentRelease.put(r.getResourceType(), new TreeSet<ResourceEntity>());
@@ -179,7 +174,7 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 
 	public List<ResourceTypeEntity> getResTypesForCurrentRelease() {
 		if (hasResourcesForCurrentRelease()) {
-			return new ArrayList<ResourceTypeEntity>(resourcesForCurrentRelease.keySet());
+			return new ArrayList<>(resourcesForCurrentRelease.keySet());
 		}
 		return null;
 	}
@@ -188,7 +183,7 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 		if (hasResourcesForCurrentRelease()) {
 			for (ResourceTypeEntity t : resourcesForCurrentRelease.keySet()) {
 				if (t.getId().equals(typeId)) {
-					return new ArrayList<ResourceEntity>(resourcesForCurrentRelease.get(t));
+					return new ArrayList<>(resourcesForCurrentRelease.get(t));
 				}
 			}
 		}

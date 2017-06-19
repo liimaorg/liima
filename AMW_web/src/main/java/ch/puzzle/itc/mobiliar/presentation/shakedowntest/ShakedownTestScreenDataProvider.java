@@ -261,11 +261,11 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 			}
 			else if (showOnlyDeployedAppServers) {
 				// deployed appServers
-				selectedAppServerGroups = new ArrayList<ResourceGroupEntity>(getDeployedAppServerGroups());
+				selectedAppServerGroups = new ArrayList<>(getDeployedAppServerGroups());
 			}
 			else {
 				// all appServers
-				selectedAppServerGroups = new ArrayList<ResourceGroupEntity>(asGroups.values());
+				selectedAppServerGroups = new ArrayList<>(asGroups.values());
 			}
 
 			ShakedownTestOrder shakedownTestOrder = new ShakedownTestOrder(context, selectedRelease, selectedAppServerGroups);
@@ -288,7 +288,7 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 		if (showOnlyDeployedAppServers) {
 			return getDeployedAppServerGroups();
 		}
-		List<ResourceGroupEntity> result = new ArrayList<ResourceGroupEntity>(asGroups.values());
+		List<ResourceGroupEntity> result = new ArrayList<>(asGroups.values());
 		Collections.sort(result);
 		return result;
 	}
@@ -335,7 +335,7 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 
 	public List<ShakedownTestOrder> getShakedownTestOrder() {
 		if (shakedownTestOrder == null) {
-			shakedownTestOrder = new ArrayList<ShakedownTestOrder>();
+			shakedownTestOrder = new ArrayList<>();
 		}
 		return shakedownTestOrder;
 	}
@@ -443,12 +443,12 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 			countAllShakedownTests = result.getB();
 		}
 
-		shakedownTests = new ArrayList<ShakedownTestEntity>(result.getA());
+		shakedownTests = new ArrayList<>(result.getA());
 	}
 
 	public List<CustomFilter> getAppliedFilterList() {
 
-		List<CustomFilter> appliedFilter = new ArrayList<CustomFilter>();
+		List<CustomFilter> appliedFilter = new ArrayList<>();
 
 		if (isShakedownTestViewSelected()) {
 
@@ -467,7 +467,7 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 	}
 
 	public List<Integer> availablePages() {
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 		list.add(0);
 		for (int i = 1; i < maxScreens(); i++) {
 			list.add(i);
@@ -525,7 +525,7 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 
 	public List<String> getShakedownTestPresetViewsOptions() {
 		if (shakedowntestPresetViewsOptions == null) {
-			shakedowntestPresetViewsOptions = new ArrayList<String>();
+			shakedowntestPresetViewsOptions = new ArrayList<>();
 			initShakedownTestPresetViewsOptions();
 		}
 
@@ -555,8 +555,8 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 	}
 
 	private void loadSuccessfulDeployments() {
-		contextIdMapWithSuccessfullLastDeployedAppServer = new HashMap<Integer, List<ResourceGroupEntity>>();
-		groupToDeploymentMap = new HashMap<Integer, DeploymentEntity>();
+		contextIdMapWithSuccessfullLastDeployedAppServer = new HashMap();
+		groupToDeploymentMap = new HashMap();
 
 		List<DeploymentEntity> deployments = controller.getAllLastSucessfullDeployments();
 
@@ -567,7 +567,7 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 				contextIdMapWithSuccessfullLastDeployedAppServer.get(contextId).add(group);
 			}
 			else {
-				List<ResourceGroupEntity> asList = new ArrayList<ResourceGroupEntity>();
+				List<ResourceGroupEntity> asList = new ArrayList<>();
 				asList.add(group);
 				contextIdMapWithSuccessfullLastDeployedAppServer.put(contextId, asList);
 			}
@@ -576,7 +576,7 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 	}
 
 	public void loadApplicationServerGroups() {
-		asGroups = new HashMap<Integer, ResourceGroupEntity>();
+		asGroups = new HashMap();
 		List<ResourceGroupEntity> asList = controller.loadAppServers();
 		// filter group
 		for (ResourceGroupEntity g : asList) {
@@ -615,13 +615,13 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 
 	public List<ShakedownTestEntity> getShakedownTests() {
 		if (shakedownTests == null) {
-			shakedownTests = new ArrayList<ShakedownTestEntity>();
+			shakedownTests = new ArrayList<>();
 		}
 		return shakedownTests;
 	}
 
 	public List<String> getAllAppServerNames() {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		if (asGroups != null) {
 			for(ResourceGroupEntity r : asGroups.values()){
 				result.add(r.getName());
@@ -668,7 +668,7 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 	}
 
 	public List<String> getAllEnvNames() {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		for (ContextEntity ctx : contextDataProvider.getEnvironments()) {
 			result.add(ctx.getName());
 		}
@@ -691,7 +691,7 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 	}
 
 	private List<String> getAllStates() {
-		List<String> statesDisplayNames = new ArrayList<String>();
+		List<String> statesDisplayNames = new ArrayList<>();
 		for (shakedownTest_state state : shakedownTest_state.values()) {
 			statesDisplayNames.add(state.getDisplayName());
 		}
@@ -714,7 +714,7 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 
 	private void loadAllReleases() {
 		allReleases = releaseMgmtService.loadAllReleases(false);
-		allReleasesMap = new HashMap<Integer, ReleaseEntity>();
+		allReleasesMap = new HashMap();
 		for (ReleaseEntity rel : allReleases) {
 			allReleasesMap.put(rel.getId(), rel);
 		}
@@ -735,7 +735,7 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 		else if (!showOnlyDeployedAppServers && selectedOrderAppServerGroupId != null
 				&& selectedOrderAppServerGroupId < 0) {
 			// add all releases
-			releasesForAs = new ArrayList<ReleaseEntity>(allReleases);
+			releasesForAs = new ArrayList<>(allReleases);
 		}
 		return releasesForAs;
 	}
