@@ -858,10 +858,7 @@ public class DeploymentBoundaryPersistenceTest
 		// when filtering >= releaseA
 		Tuple<Set<DeploymentEntity>, Integer> result;
 
-		CustomFilter filter = CustomFilter.builder(DeploymentFilterTypes.RELEASE.getFilterType()).
-				filterDisplayName(DeploymentFilterTypes.RELEASE.getFilterDisplayName())
-				.deploymentTableColumnName(DeploymentFilterTypes.RELEASE.getFilterTabColumnName())
-				.build();
+		CustomFilter filter = CustomFilter.builder(DeploymentFilterTypes.RELEASE).build();
 		filter.setComperatorSelection(ComperatorFilterOption.greaterequals);
 		filter.setValue(CustomFilter.convertDateToString(releaseA.getInstallationInProductionAt()));
 		result = deploymentBoundary.getFilteredDeployments(true, 0, 10, Collections.singletonList(filter),

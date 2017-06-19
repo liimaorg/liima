@@ -253,12 +253,7 @@ public class DeployScreenDataProvider implements Serializable {
     }
 
     private void creatAndAddNewFilter(DeploymentFilterTypes deploymentFilterType, String value) {
-        CustomFilter filter = CustomFilter.builder(deploymentFilterType.getFilterType())
-                .filterDisplayName(deploymentFilterType.getFilterDisplayName())
-                .deploymentTableColumnName(deploymentFilterType.getFilterTabColumnName())
-                .joiningTableQuery(deploymentFilterType.getFilterTableJoining())
-                .comperatorSelection(ComperatorFilterOption.equals)
-                .build();
+        CustomFilter filter = CustomFilter.builder(deploymentFilterType).build();
         filter.setValue(value);
         getCustomFilterComp().getSelectedFilterList().add(filter);
     }
@@ -289,11 +284,7 @@ public class DeployScreenDataProvider implements Serializable {
 
             if (selectedFilter != null) {
                 CustomFilter filter;
-                filter = CustomFilter.builder(selectedFilter.getFilterType())
-                        .filterDisplayName(selectedFilter.getFilterDisplayName())
-                        .deploymentTableColumnName(selectedFilter.getFilterTabColumnName())
-                        .joiningTableQuery(selectedFilter.getFilterTableJoining())
-                        .build();
+                filter = CustomFilter.builder(selectedFilter).build();
                 if (selectedFilter.getFilterType().equals(FilterType.IntegerType)) {
                     filter.setComperatorSelection(ComperatorFilterOption.equals);
                 } else {

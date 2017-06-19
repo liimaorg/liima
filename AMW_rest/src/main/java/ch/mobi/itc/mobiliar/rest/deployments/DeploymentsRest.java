@@ -441,9 +441,7 @@ public class DeploymentsRest {
     }
 
     private CustomFilter createFilter(DeploymentFilterTypes filterType, ComperatorFilterOption comperator) {
-        return CustomFilter.builder(filterType.getFilterType())
-                .filterDisplayName(filterType.getFilterDisplayName())
-                .deploymentTableColumnName(filterType.getFilterTabColumnName())
+        return CustomFilter.builder(filterType)
                 .comperatorSelection(comperator)
                 .build();
     }
