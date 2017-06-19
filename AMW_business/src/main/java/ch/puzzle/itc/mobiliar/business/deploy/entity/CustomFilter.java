@@ -54,7 +54,7 @@ public class CustomFilter {
 
     @Setter
     @Getter
-    private ComperatorFilterOption comperatorSelection;
+    private ComparatorFilterOption comparatorSelection;
 
     @Setter
     @Getter
@@ -78,24 +78,24 @@ public class CustomFilter {
 
     private Long filterIdentifikationNumber;
 
-    private List<ComperatorFilterOption> comperatorSelectionList;
+    private List<ComparatorFilterOption> comparatorSelectionList;
 
     public static CustomFilterBuilder builder(DeploymentFilterTypes deploymentFilterTypes) {
-        ComperatorFilterOption defaultComperator = ComperatorFilterOption.equals;
+        ComparatorFilterOption defaultComparator = ComparatorFilterOption.equals;
 
         return new Builder().filterType(deploymentFilterTypes.getFilterType())
                 .filterDisplayName(deploymentFilterTypes.getFilterDisplayName())
                 .deploymentTableColumnName(deploymentFilterTypes.getFilterTabColumnName())
                 .joiningTableQuery(deploymentFilterTypes.getFilterTableJoining())
-                .comperatorSelection(defaultComperator);
+                .comparatorSelection(defaultComparator);
     }
 
     public static CustomFilterBuilder builder(ShakedownTestFilterTypes shakedownTestFilterTypes) {
-        ComperatorFilterOption defaultComperator = ComperatorFilterOption.equals;
+        ComparatorFilterOption defaultComperator = ComparatorFilterOption.equals;
         return new Builder().filterType(shakedownTestFilterTypes.getFilterType())
                 .filterDisplayName(shakedownTestFilterTypes.getFilterDisplayName())
                 .deploymentTableColumnName(shakedownTestFilterTypes.getFilterTabColumnName())
-                .comperatorSelection(defaultComperator);
+                .comparatorSelection(defaultComperator);
     }
 
     public static class Builder extends CustomFilterBuilder {
@@ -135,25 +135,25 @@ public class CustomFilter {
         }
     }
 
-    public List<ComperatorFilterOption> getComperatorSelectionList() {
-        if (comperatorSelectionList == null) {
-            comperatorSelectionList = new ArrayList<>();
-            for (ComperatorFilterOption filterType : ComperatorFilterOption.values()) {
-                comperatorSelectionList.add(filterType);
+    public List<ComparatorFilterOption> getComparatorSelectionList() {
+        if (comparatorSelectionList == null) {
+            comparatorSelectionList = new ArrayList<>();
+            for (ComparatorFilterOption filterType : ComparatorFilterOption.values()) {
+                comparatorSelectionList.add(filterType);
             }
         }
-        return comperatorSelectionList;
+        return comparatorSelectionList;
     }
 
-    public List<ComperatorFilterOption> getTypedComperatorSelectionList() {
-        List<ComperatorFilterOption> result = new ArrayList<>();
-        for (ComperatorFilterOption comperatorfilteroption : getComperatorSelectionList()) {
+    public List<ComparatorFilterOption> getTypedComperatorSelectionList() {
+        List<ComparatorFilterOption> result = new ArrayList<>();
+        for (ComparatorFilterOption comperatorfilteroption : getComparatorSelectionList()) {
             if (isBooleanType()) {
-                if (comperatorfilteroption.equals(ComperatorFilterOption.equals)) {
+                if (comperatorfilteroption.equals(ComparatorFilterOption.equals)) {
                     result.add(comperatorfilteroption);
                 }
             } else if (isStringType() || isEnumType()) {
-                if (comperatorfilteroption.equals(ComperatorFilterOption.equals)) {
+                if (comperatorfilteroption.equals(ComparatorFilterOption.equals)) {
                     result.add(comperatorfilteroption);
                 }
             } else {
@@ -284,15 +284,15 @@ public class CustomFilter {
 
     public String getSqlComperator() {
         String result = null;
-        if (comperatorSelection != null) {
+        if (comparatorSelection != null) {
             if (this.isStringType()) {
-                result = comperatorSelection.getSqlStringComperator();
+                result = comparatorSelection.getSqlStringComperator();
             }
             else if (this.isBooleanType()) {
-                result = comperatorSelection.getSqlBoolComperator();
+                result = comparatorSelection.getSqlBoolComperator();
             }
             else {
-                result = comperatorSelection.getSqlNumComperator();
+                result = comparatorSelection.getSqlNumComperator();
             }
         }
         return result;
@@ -309,7 +309,7 @@ public class CustomFilter {
     public boolean isValidForSqlQuery() {
         return (!filterType.equals(FilterType.SpecialFilterType)
                 && (hasValidNullValue() || (value != null && !value.toString().trim().isEmpty()))
-                && comperatorSelection != null);
+                && comparatorSelection != null);
     }
 
     public boolean hasDropDownItems() {

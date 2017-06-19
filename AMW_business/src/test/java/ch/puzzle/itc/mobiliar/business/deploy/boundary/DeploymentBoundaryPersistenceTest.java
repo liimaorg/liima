@@ -21,7 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
@@ -857,7 +857,7 @@ public class DeploymentBoundaryPersistenceTest
 		Tuple<Set<DeploymentEntity>, Integer> result;
 
 		CustomFilter filter = CustomFilter.builder(DeploymentFilterTypes.RELEASE).build();
-		filter.setComperatorSelection(ComperatorFilterOption.greaterequals);
+		filter.setComparatorSelection(ComparatorFilterOption.greaterequals);
 		filter.setValue(CustomFilter.convertDateToString(releaseA.getInstallationInProductionAt()));
 		result = deploymentBoundary.getFilteredDeployments(true, 0, 10, Collections.singletonList(filter),
 				null, CommonFilterService.SortingDirectionType.ASC, null);
@@ -871,7 +871,7 @@ public class DeploymentBoundaryPersistenceTest
 		
 		// when filtering <= releaseC
 		filter.setValue(CustomFilter.convertDateToString(releaseC.getInstallationInProductionAt()));
-		filter.setComperatorSelection(ComperatorFilterOption.smallerequals);
+		filter.setComparatorSelection(ComparatorFilterOption.smallerequals);
 		result = deploymentBoundary.getFilteredDeployments(true, 0,
 				10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);
@@ -885,7 +885,7 @@ public class DeploymentBoundaryPersistenceTest
 
 		// when filtering == releaseB
 		filter.setValue(CustomFilter.convertDateToString(releaseB.getInstallationInProductionAt()));
-		filter.setComperatorSelection(ComperatorFilterOption.equals);
+		filter.setComparatorSelection(ComparatorFilterOption.equals);
 		result = deploymentBoundary.getFilteredDeployments(true, 0,
 				10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);

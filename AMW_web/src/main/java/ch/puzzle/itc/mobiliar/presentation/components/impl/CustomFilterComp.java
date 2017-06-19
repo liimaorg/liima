@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.presentation.components.impl;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public abstract class CustomFilterComp {
 
 	private List<CustomFilter> selectedFilterList;
 
-	private ComperatorFilterOption selectedComperator;
+	private ComparatorFilterOption selectedComperator;
 
 	private List<FilterSelectionItem> filterSelectionList;
 
@@ -118,11 +118,11 @@ public abstract class CustomFilterComp {
 
 
 	public void getSelectionComperatorChangeListener(CustomFilter filter) {
-		ComperatorFilterOption actualSelectedComperator = getSelectedComperator();
-		filter.setComperatorSelection(actualSelectedComperator);
+		ComparatorFilterOption actualSelectedComperator = getSelectedComperator();
+		filter.setComparatorSelection(actualSelectedComperator);
 	}
 
-	public ComperatorFilterOption getSelectedComperator() {
+	public ComparatorFilterOption getSelectedComperator() {
 		return selectedComperator;
 	}
 	public List<FilterSelectionItem> getFilterSelectionList() {
@@ -154,11 +154,11 @@ public abstract class CustomFilterComp {
 	public abstract void addSelectedFilter();
 
 
-	public ComperatorFilterOption getActualSelectedComperator() {
+	public ComparatorFilterOption getActualSelectedComperator() {
 		return selectedComperator;
 	}
 
-	public void setSelectedComperator(ComperatorFilterOption selectedComperator) {
+	public void setSelectedComperator(ComparatorFilterOption selectedComperator) {
 		this.selectedComperator = selectedComperator;
 	}
 

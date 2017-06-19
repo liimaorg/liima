@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComperatorFilterOption;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.utils.JpaWildcardConverter;
@@ -260,8 +260,8 @@ public class CommonFilterService {
 	}
 
 	protected void createQueryForBooleanTypeWithoutAddingParameterToParameterMap(StringBuilder query, CustomFilter deploymentFilter) {
-		if ((deploymentFilter.getComperatorSelection().equals(ComperatorFilterOption.notequal) && !deploymentFilter.getBooleanValue())
-				|| (deploymentFilter.getComperatorSelection().equals(ComperatorFilterOption.equals) && deploymentFilter.getBooleanValue())) {
+		if ((deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.notequal) && !deploymentFilter.getBooleanValue())
+				|| (deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.equals) && deploymentFilter.getBooleanValue())) {
 			query.append(deploymentFilter.getDeploymentTableColumnName()).append(" is true ");
 		} else {
 			query.append("(").append(deploymentFilter.getDeploymentTableColumnName()).append(" is null OR ");

@@ -109,51 +109,51 @@ public class DeploymentsRest {
         LinkedList<CustomFilter> filters = new LinkedList<>();
 
         if (trackingId != null) {
-            filters.add(createFilter(DeploymentFilterTypes.TRACKING_ID, trackingId.toString(), ComperatorFilterOption.equals));
+            filters.add(createFilter(DeploymentFilterTypes.TRACKING_ID, trackingId.toString(), ComparatorFilterOption.equals));
         }
         if (deploymentState != null) {
-            filters.add(createFilter(DeploymentFilterTypes.DEPLOYMENT_STATE, deploymentState, ComperatorFilterOption.equals));
+            filters.add(createFilter(DeploymentFilterTypes.DEPLOYMENT_STATE, deploymentState, ComparatorFilterOption.equals));
         }
         if (appServerNames != null) {
             for (String asName : appServerNames) {
-                filters.add(createFilter(DeploymentFilterTypes.APPSERVER_NAME, asName, ComperatorFilterOption.equals));
+                filters.add(createFilter(DeploymentFilterTypes.APPSERVER_NAME, asName, ComparatorFilterOption.equals));
             }
         }
         if (appNames != null) {
             for (String appName : appNames) {
-                filters.add(createFilter(DeploymentFilterTypes.APPLICATION_NAME, appName, ComperatorFilterOption.equals));
+                filters.add(createFilter(DeploymentFilterTypes.APPLICATION_NAME, appName, ComparatorFilterOption.equals));
             }
         }
         if (runtimeNames != null) {
             for (String runtimeName : runtimeNames) {
-                filters.add(createFilter(DeploymentFilterTypes.TARGETPLATFORM, runtimeName, ComperatorFilterOption.equals));
+                filters.add(createFilter(DeploymentFilterTypes.TARGETPLATFORM, runtimeName, ComparatorFilterOption.equals));
             }
         }
         if (fromDate != null) {
-            CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_DATE, ComperatorFilterOption.greaterequals);
+            CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_DATE, ComparatorFilterOption.greaterequals);
             filter.setDateValue(new Date(fromDate));
             filters.add(filter);
         }
         if (toDate != null) {
-            CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_DATE, ComperatorFilterOption.smallerequals);
+            CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_DATE, ComparatorFilterOption.smallerequals);
             filter.setDateValue(new Date(toDate));
             filters.add(filter);
         }
         if (environmentNames != null) {
             for (String envName : environmentNames) {
-                filters.add(createFilter(DeploymentFilterTypes.ENVIRONMENT_NAME, envName, ComperatorFilterOption.equals));
+                filters.add(createFilter(DeploymentFilterTypes.ENVIRONMENT_NAME, envName, ComparatorFilterOption.equals));
             }
         }
         if (deploymentParameters != null) {
             for (String deploymentParameter : deploymentParameters) {
-                CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_PARAMETER, deploymentParameter, ComperatorFilterOption.equals);
+                CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_PARAMETER, deploymentParameter, ComparatorFilterOption.equals);
                 filter.setJoiningTableQuery("join d.deploymentParameters p");
                 filters.add(filter);
             }
         }
         if (deploymentParameterValues != null) {
             for (String deploymentParameterValue : deploymentParameterValues) {
-                CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_PARAMETER_VALUE, deploymentParameterValue, ComperatorFilterOption.equals);
+                CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_PARAMETER_VALUE, deploymentParameterValue, ComparatorFilterOption.equals);
                 filter.setJoiningTableQuery("join d.deploymentParameters p");
                 filters.add(filter);
             }
@@ -313,7 +313,7 @@ public class DeploymentsRest {
                 request.getNeighbourhoodTest());
 
         // get the deployment from the tracking id
-        filters.add(createFilter(DeploymentFilterTypes.TRACKING_ID, trackingId.toString(), ComperatorFilterOption.equals));
+        filters.add(createFilter(DeploymentFilterTypes.TRACKING_ID, trackingId.toString(), ComparatorFilterOption.equals));
         Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 1, filters, null, null, null);
 
         DeploymentDTO deploymentDto = new DeploymentDTO(result.getA().iterator().next());
@@ -440,20 +440,20 @@ public class DeploymentsRest {
         return result;
     }
 
-    private CustomFilter createFilter(DeploymentFilterTypes filterType, ComperatorFilterOption comperator) {
+    private CustomFilter createFilter(DeploymentFilterTypes filterType, ComparatorFilterOption comperator) {
         return CustomFilter.builder(filterType)
                 .comperatorSelection(comperator)
                 .build();
     }
 
-    CustomFilter createFilter(DeploymentFilterTypes filterType, String value, ComperatorFilterOption comperator) {
+    CustomFilter createFilter(DeploymentFilterTypes filterType, String value, ComparatorFilterOption comperator) {
         CustomFilter filter = createFilter(filterType, comperator);
         filter.setValue(value);
 
         return filter;
     }
 
-    private CustomFilter createFilter(DeploymentFilterTypes filterType, DeploymentState value, ComperatorFilterOption comperator) {
+    private CustomFilter createFilter(DeploymentFilterTypes filterType, DeploymentState value, ComparatorFilterOption comperator) {
         CustomFilter filter = createFilter(filterType, comperator);
         filter.setEnumType(DeploymentState.class);
         filter.setValue(value.name());

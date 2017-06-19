@@ -212,7 +212,7 @@ public class DeploymentBoundary {
                 .deploymentTableColumnName(filterType.getFilterTabColumnName())
                 .build();
         filter.setValue(sourceDeployment.getResourceGroup().getName());
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
+        filter.setComparatorSelection(ComparatorFilterOption.equals);
         filters.add(filter);
 
         filterType = DeploymentFilterTypes.ENVIRONMENT_NAME;
@@ -221,7 +221,7 @@ public class DeploymentBoundary {
                 .deploymentTableColumnName(filterType.getFilterTabColumnName())
                 .build();
         filter.setValue(sourceDeployment.getContext().getName());
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
+        filter.setComparatorSelection(ComparatorFilterOption.equals);
         filters.add(filter);
 
         filterType = DeploymentFilterTypes.DEPLOYMENT_STATE;
@@ -231,14 +231,14 @@ public class DeploymentBoundary {
                 .build();
         filter.setEnumType(DeploymentState.class);
         filter.setValue(DeploymentState.success.name());
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
+        filter.setComparatorSelection(ComparatorFilterOption.equals);
         filters.add(filter);
 
         filterType = DeploymentFilterTypes.DEPLOYMENT_STATE;
         filter = CustomFilter.builder(filterType).filterDisplayName(filterType.getFilterDisplayName()).deploymentTableColumnName(filterType.getFilterTabColumnName()).build();
         filter.setEnumType(DeploymentState.class);
         filter.setValue(DeploymentState.failed.name());
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
+        filter.setComparatorSelection(ComparatorFilterOption.equals);
         filters.add(filter);
 
         Set<DeploymentEntity> prevDeployments = getFilteredDeployments(false, 0, null, filters, null, null, null).getA();
