@@ -644,7 +644,7 @@ public class CustomFilterTest {
         CustomFilter c = CustomFilter.builder(stringType)
                 .filterDisplayName("filter DisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
-                .comperatorSelection(ComparatorFilterOption.equals)
+                .comparatorSelection(ComparatorFilterOption.equals)
                 .build();
         c.setValue("test");
         // then
