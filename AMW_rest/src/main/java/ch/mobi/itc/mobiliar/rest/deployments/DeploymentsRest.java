@@ -31,6 +31,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
@@ -122,27 +123,6 @@ public class DeploymentsRest {
             deploymentStateFilter.setValue(deploymentState.name());
             filters.add(deploymentStateFilter);
         }
-        if (appServerNames != null) {
-            for (String asName : appServerNames) {
-                CustomFilter appServerNameFilter = CustomFilter.builder(APPSERVER_NAME).build();
-                appServerNameFilter.setValue(asName);
-                filters.add(appServerNameFilter);
-            }
-        }
-        if (appNames != null) {
-            for (String appName : appNames) {
-                CustomFilter appNameFilter = CustomFilter.builder(APPLICATION_NAME).build();
-                appNameFilter.setValue(appName);
-                filters.add(appNameFilter);
-            }
-        }
-        if (runtimeNames != null) {
-            for (String runtimeName : runtimeNames) {
-                CustomFilter runtimeNameFilter = CustomFilter.builder(TARGETPLATFORM).build();
-                runtimeNameFilter.setValue(runtimeName);
-                filters.add(runtimeNameFilter);
-            }
-        }
         if (fromDate != null) {
             CustomFilter deploymentDateFromFilter = CustomFilter.builder(DEPLOYMENT_DATE).comparatorSelection(ComparatorFilterOption.greaterequals).build();
             deploymentDateFromFilter.setDateValue(new Date(fromDate));
@@ -153,29 +133,26 @@ public class DeploymentsRest {
             deploymentDateFilter.setDateValue(new Date(toDate));
             filters.add(deploymentDateFilter);
         }
-        if (environmentNames != null) {
-            for (String envName : environmentNames) {
-                CustomFilter envNameFilter = CustomFilter.builder(ENVIRONMENT_NAME).build();
-                envNameFilter.setValue(envName);
-                filters.add(envNameFilter);
-            }
-        }
-        if (deploymentParameters != null) {
-            for (String deploymentParameter : deploymentParameters) {
-                CustomFilter deploymentParameterFilter = CustomFilter.builder(DEPLOYMENT_PARAMETER).build();
-                deploymentParameterFilter.setValue(deploymentParameter);
-                filters.add(deploymentParameterFilter);
-            }
-        }
-        if (deploymentParameterValues != null) {
-            for (String deploymentParameterValue : deploymentParameterValues) {
-                CustomFilter deploymentParameterValueFilter = CustomFilter.builder(DEPLOYMENT_PARAMETER).build();
-                deploymentParameterValueFilter.setValue(deploymentParameterValue);
-                filters.add(deploymentParameterValueFilter);
-            }
-        }
         if (onlyLatest) {
             filters.add(CustomFilter.builder(LASTDEPLOYJOBFORASENV).comparatorSelection(null).build());
+        }
+        if (appServerNames != null) {
+            createFiltersAndAddToList(APPSERVER_NAME, appServerNames, filters);
+        }
+        if (appNames != null) {
+            createFiltersAndAddToList(APPLICATION_NAME, appNames, filters);
+        }
+        if (runtimeNames != null) {
+            createFiltersAndAddToList(TARGETPLATFORM, runtimeNames, filters);
+        }
+        if (environmentNames != null) {
+            createFiltersAndAddToList(ENVIRONMENT_NAME, environmentNames, filters);
+        }
+        if (deploymentParameters != null) {
+            createFiltersAndAddToList(DEPLOYMENT_PARAMETER, deploymentParameters, filters);
+        }
+        if (deploymentParameterValues != null) {
+            createFiltersAndAddToList(DEPLOYMENT_PARAMETER, deploymentParameterValues, filters);
         }
 
         Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, offset, maxResults, filters, null, null, null);
@@ -187,6 +164,14 @@ public class DeploymentsRest {
         }
 
         return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDtos).build();
+    }
+
+    private void createFiltersAndAddToList(DeploymentFilterTypes deploymentFilterType, List<String> values, LinkedList<CustomFilter> filters) {
+        for (String value : values) {
+            CustomFilter deploymentParameterValueFilter = CustomFilter.builder(deploymentFilterType).build();
+            deploymentParameterValueFilter.setValue(value);
+            filters.add(deploymentParameterValueFilter);
+        }
     }
 
     /**
