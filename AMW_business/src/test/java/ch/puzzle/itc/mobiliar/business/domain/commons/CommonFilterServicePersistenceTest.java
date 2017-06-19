@@ -74,7 +74,7 @@ public class CommonFilterServicePersistenceTest {
                 .build();
         filter.setValue("success");
         filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
+        filter.setComparatorSelection(ComparatorFilterOption.equals);
         filter.setSelected(true);
         filters.add(filter);
         String colToSort = "d.deploymentDate";
@@ -99,7 +99,7 @@ public class CommonFilterServicePersistenceTest {
                 .build();
         filter.setValue("success");
         filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
+        filter.setComparatorSelection(ComparatorFilterOption.equals);
         filter.setSelected(true);
         filters.add(filter);
         filter = CustomFilter.builder(stringType)
@@ -109,7 +109,7 @@ public class CommonFilterServicePersistenceTest {
                 .build();
         filter.setValue("test");
         filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
+        filter.setComparatorSelection(ComparatorFilterOption.equals);
         filter.setSelected(true);
         filters.add(filter);
 
@@ -143,7 +143,7 @@ public class CommonFilterServicePersistenceTest {
                 .build();
         filter.setValue("test");
         filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
+        filter.setComparatorSelection(ComparatorFilterOption.equals);
         filter.setSelected(true);
         filters.add(filter);
 

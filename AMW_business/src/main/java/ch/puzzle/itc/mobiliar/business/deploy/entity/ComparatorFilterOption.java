@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum ComperatorFilterOption {
+public enum ComparatorFilterOption {
     smaller("<", " < ", null, null),
     smallerequals("<=", " <= ", null, null),
     equals("is", " = ", " like ", " is "),
