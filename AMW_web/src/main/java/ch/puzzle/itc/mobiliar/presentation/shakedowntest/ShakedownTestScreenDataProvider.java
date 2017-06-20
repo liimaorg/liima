@@ -119,7 +119,6 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 	@Getter
 	@Setter
 	private boolean showOnlyDeployedAppServers;
-	private Map<Integer, DeploymentEntity> groupToDeploymentMap;
 
 	// paging, sorting
 	@Getter
@@ -554,8 +553,9 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 
 	public void initCreateTestPopupPanel() {
 		renderCreateOrderDialog = true;
-		loadApplicationServerGroups();
-		// FIXME: loads way to much...
+		if (asGroups == null) {
+			loadApplicationServerGroups();
+		}
 		loadSuccessfulDeployments();
 		selectedOrderAppServerGroupId = null;
 		selectedOrderEnvironmentId = null;
@@ -563,13 +563,11 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 
 	private void loadSuccessfulDeployments() {
 		contextIdMapWithSuccessfullLastDeployedAppServer = new HashMap<Integer, List<ResourceGroupEntity>>();
-		groupToDeploymentMap = new HashMap<Integer, DeploymentEntity>();
+		List<Object[]> deployments = controller.getAllLastSucessfullDeployments();
 
-		List<DeploymentEntity> deployments = controller.getAllLastSucessfullDeployments();
-
-		for (DeploymentEntity deploymentEntity : deployments) {
-			Integer contextId = deploymentEntity.getContext().getId();
-			ResourceGroupEntity group = deploymentEntity.getResourceGroup();
+		for (Object[] deployment : deployments) {
+			Integer contextId = (Integer) deployment[0];
+			ResourceGroupEntity group = (ResourceGroupEntity) deployment[1];
 			if (contextIdMapWithSuccessfullLastDeployedAppServer.containsKey(contextId)) {
 				contextIdMapWithSuccessfullLastDeployedAppServer.get(contextId).add(group);
 			}
@@ -578,7 +576,6 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 				asList.add(group);
 				contextIdMapWithSuccessfullLastDeployedAppServer.put(contextId, asList);
 			}
-			groupToDeploymentMap.put(group.getId(), deploymentEntity);
 		}
 	}
 

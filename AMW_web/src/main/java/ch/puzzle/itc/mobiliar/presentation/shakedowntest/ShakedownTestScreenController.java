@@ -138,8 +138,8 @@ public class ShakedownTestScreenController{
 		return trackingId;
 	}
 
-	public List<DeploymentEntity> getAllLastSucessfullDeployments() {
-		return deploymentService.getListOfLastDeploymentsForAppServerAndContext(true);
+	public List<Object[]> getAllLastSucessfullDeployments() {
+		return deploymentService.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
 	}
 
 }
