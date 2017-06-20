@@ -4,7 +4,7 @@
   </div>
 </div>
 
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+<div class="col-sm-10 col-sm-offset-2 main">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <h3 class="panel-title pull-left">{{appState.get('pageTitle')}}</h3>
@@ -17,8 +17,8 @@
         <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert">{{errorMessage}}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
 
         <div class="form-group" *ngIf="restrictionType == 'role'">
-          <label for="selectRole" class="col-sm-2 control-label">Role</label>
-          <div class="col-sm-10 col-md-5">
+          <label for="selectRole" class="col-sm-1 control-label">Role</label>
+          <div class="col-sm-11 col-md-5">
             <select id="selectRole" class="form-control input-sm" [(ngModel)]="selectedRoleName" (ngModelChange)="onChangeRole($event)">
               <option [ngValue]="roleName" *ngFor="let roleName of roleNames">{{roleName}}</option>
             </select>
@@ -26,8 +26,8 @@
         </div>
 
         <div class="form-group" *ngIf="restrictionType == 'user'">
-          <label for="selectUser" class="col-sm-2 control-label">User</label>
-          <div class="col-sm-10 col-md-5">
+          <label for="selectUser" class="col-sm-1 control-label">User</label>
+          <div class="col-sm-11 col-md-5">
             <input id="selectUser" class="form-control input-sm" list="userList" type="text" [(ngModel)]="selectedUserName" (ngModelChange)="onChangeUser($event)">
             <datalist id="userList">
               <ng-container *ngIf="userNames.length > 0">
@@ -38,8 +38,8 @@
         </div>
 
         <div class="form-group">
-          <label class="col-sm-2 control-label"></label>
-          <div class="col-sm-10 col-md-10">
+          <label class="col-sm-1 control-label"></label>
+          <div class="col-sm-11">
             <ng-container *ngIf="(selectedRoleName || selectedUserName)">
               <ng-container *ngIf="!restriction">
                 <button type="button" class="btn btn-primary" (click)="addRestriction()">
@@ -54,8 +54,8 @@
         </div>
 
         <div class="form-group" *ngIf="restrictions.length > 0">
-          <label class="col-sm-2 control-label"></label>
-          <div class="col-sm-10 col-md-10">
+          <label class="col-sm-1 control-label"></label>
+          <div class="col-sm-11">
             <amw-restriction-list [restrictions]="restrictions" [resourceGroups]="resourceGroups" (deleteRestriction)='removeRestriction($event)' (editRestriction)='modifyRestriction($event)'></amw-restriction-list>
           </div>
         </div>

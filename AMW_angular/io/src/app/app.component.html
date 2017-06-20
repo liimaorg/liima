@@ -31,7 +31,7 @@
   </div>
 </nav>
 
-<div *ngIf="appState.get('navShow')" class="col-sm-3 col-md-2 sidebar">
+<div *ngIf="appState.get('navShow')" class="col-sm-2 col-md-2 sidebar">
   <ul class="nav nav-sidebar">
     <ng-container *ngIf="!appState.navItems()">
       <li class="active"><a href="#">{{appState.get('navTitle')}}<span class="sr-only">(current)</span></a></li>
