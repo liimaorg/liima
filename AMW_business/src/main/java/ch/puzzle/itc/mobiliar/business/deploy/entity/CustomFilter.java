@@ -25,7 +25,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Builder;
+import lombok.Builder;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
