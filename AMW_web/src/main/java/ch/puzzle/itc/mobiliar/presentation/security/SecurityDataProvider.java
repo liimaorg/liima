@@ -22,6 +22,8 @@ package ch.puzzle.itc.mobiliar.presentation.security;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -45,6 +47,14 @@ public class SecurityDataProvider implements Serializable{
 
 	@Inject
 	PermissionBoundary permissionBoundary;
+
+	private Map<String, Boolean> canEditResourceType = new HashMap<>();
+
+	private Map<String, Boolean> canDeleteResourceType = new HashMap<>();
+
+	private Map<String, Boolean> canEditResource = new HashMap<>();
+
+	private Map<String, Boolean> canDeleteResource = new HashMap<>();
 
 	/**
 	 * Use {@link PermissionBoundary#hasPermission(Permission)} instead
@@ -72,6 +82,8 @@ public class SecurityDataProvider implements Serializable{
 	 * @return
 	 */
 	public boolean hasPermissionForResourceType(String permissionValue, String actionValue, String resourceTypeValue){
+		Boolean can = hasPermission(permissionValue, actionValue, resourceTypeValue);
+		if (can != null) return can;
 		return permissionBoundary.hasPermissionForResourceType(permissionValue, actionValue, resourceTypeValue);
 	}
 
@@ -101,6 +113,34 @@ public class SecurityDataProvider implements Serializable{
 			throw new RuntimeException("Please define the property \""+ConfigKey.LOGOUT_URL+"\"");
 		}
 		FacesContext.getCurrentInstance().getExternalContext().redirect(logoutUrl);
+	}
+
+	private void buffer(String permissionValue, String actionValue, String resourceTypeValue, Map<String, Boolean> cache) {
+		if (!cache.containsKey(resourceTypeValue)) {
+			cache.put(resourceTypeValue, permissionBoundary.hasPermissionForResourceType(permissionValue,
+					actionValue, resourceTypeValue));
+		}
+	}
+
+	private Boolean hasPermission(String permissionValue, String actionValue, String resourceTypeValue) {
+		if (permissionValue.equals("RESOURCETYPE")) {
+			if (actionValue.equals("READ")) {
+				buffer(permissionValue, actionValue, resourceTypeValue, canEditResourceType);
+				return canEditResourceType.get(resourceTypeValue);
+			} else if (actionValue.equals("DELETE")) {
+				buffer(permissionValue, actionValue, resourceTypeValue, canDeleteResourceType);
+				return canDeleteResourceType.get(resourceTypeValue);
+			}
+		} else if (permissionValue.equals("RESOURCE")) {
+			if (actionValue.equals("READ")) {
+				buffer(permissionValue, actionValue, resourceTypeValue, canEditResource);
+				return canEditResource.get(resourceTypeValue);
+			} else if (actionValue.equals("DELETE")) {
+				buffer(permissionValue, actionValue, resourceTypeValue, canDeleteResource);
+				return canDeleteResource.get(resourceTypeValue);
+			}
+		}
+		return null;
 	}
 
 }
