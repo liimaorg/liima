@@ -1,7 +1,4 @@
-import {
-  Component, Input, Output, EventEmitter, OnChanges, ChangeDetectorRef, AfterContentChecked,
-  AfterViewChecked
-} from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { Restriction } from './restriction';
 import { Permission } from './permission';
 import { Environment } from '../deployment/environment';
