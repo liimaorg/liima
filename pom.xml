@@ -253,7 +253,7 @@
     <!-- URL to Git repository used by maven-release-plugin -->
     <scm>
         <developerConnection>scm:git:https://github.com/a-gogo/agogo.git</developerConnection>
-		    <version>1.12.3</version>
+		     <tag>v1.12.3</tag>
     </scm>
 
     <distributionManagement>
