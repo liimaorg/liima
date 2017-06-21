@@ -18,91 +18,112 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.puzzle.itc.mobiliar.common.util;
+package ch.puzzle.itc.mobiliar.business.deploy.entity;
+
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.*;
 
 import static java.lang.Enum.valueOf;
 
-import java.util.*;
-import java.util.logging.Logger;
-
-import org.apache.commons.lang.StringUtils;
-
+@Builder(builderClassName = "CustomFilterBuilder", builderMethodName = "internalBuilder")
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CustomFilter {
 
-    private Logger log = Logger.getLogger(CustomFilter.class.getSimpleName());
-
-    public enum FilterType {
-        booleanType, StringType, IntegerType, DateType, SpecialFilterType, LabeledDateType, ENUM_TYPE
-    }
-
-    public enum ComperatorFilterOption {
-        smaller("<", " < ", null, null), smallerequals("<=", " <= ", null, null), equals("is", " = ", " like ",
-                " is "), greaterequals(">=", " >= ", null,
-                        null), greater(">", " > ", null, null), notequal("is not", " != ", null, " is not ");
-        private String displayName;
-        private String sqlNumComperator;
-        private String sqlBoolComperator;
-        private String sqlStringComperator;
-
-        private ComperatorFilterOption(String displayName, String sqlNumComperator, String sqlStringComperator,
-                String sqlBoolComperator) {
-            this.displayName = displayName;
-            this.sqlNumComperator = sqlNumComperator;
-            this.sqlStringComperator = sqlStringComperator;
-            this.sqlBoolComperator = sqlBoolComperator;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        private String getSqlNumComperator() {
-            return sqlNumComperator;
-        }
-
-        private String getSqlStringComperator() {
-            return sqlStringComperator;
-        }
-
-        private String getSqlBoolComperator() {
-            return sqlBoolComperator;
-        }
-    }
-
-    private final Long filterIdentifikationNumber;
+    @Getter
     private String filterDisplayName;
+
+    @Getter
     private String deploymentTableColumnName;
 
+    @Getter
+    private boolean isNullableFilter = false;
+
+    @Setter
+    @Getter
     private String joiningTableQuery;
-    private Object value = null;
+
+    @Getter
     private FilterType filterType;
 
-    private ComperatorFilterOption comperatorSelection;
+    @Setter
+    @Getter
+    private ComparatorFilterOption comparatorSelection;
 
+    @Setter
+    @Getter
     private boolean isSelected;
 
+    @Getter
     private boolean alwaysAutoComplete;
 
-    private List<String> dropDownItems = new ArrayList<String>();
+    @Setter
+    @Getter
+    private List<String> dropDownItems = new ArrayList<>();
 
-    private Map<String, String> dropDownItemsMap = new HashMap<String, String>();
+    @Setter
+    @Getter
+    private Map<String, String> dropDownItemsMap = new HashMap<>();
 
-    public CustomFilter(String filterDisplayName, String deploymentTableColumnName, String joiningTableQuery,
-            FilterType filterType) {
-        this.filterType = filterType;
-        this.filterDisplayName = filterDisplayName;
-        this.deploymentTableColumnName = deploymentTableColumnName;
-        this.isSelected = true;
+    @Setter
+    private Class<? extends Enum> enumType;
+
+    private Object value = null;
+
+    private Long filterIdentifikationNumber;
+
+    private List<ComparatorFilterOption> comparatorSelectionList;
+
+    public static CustomFilterBuilder builder(DeploymentFilterTypes deploymentFilterTypes) {
+        ComparatorFilterOption defaultComparator = ComparatorFilterOption.equals;
+
+        return new Builder().filterType(deploymentFilterTypes.getFilterType())
+                .filterDisplayName(deploymentFilterTypes.getFilterDisplayName())
+                .deploymentTableColumnName(deploymentFilterTypes.getFilterTabColumnName())
+                .joiningTableQuery(deploymentFilterTypes.getFilterTableJoining())
+                .comparatorSelection(defaultComparator);
+    }
+
+    public static CustomFilterBuilder builder(ShakedownTestFilterTypes shakedownTestFilterTypes) {
+        ComparatorFilterOption defaultComperator = ComparatorFilterOption.equals;
+        return new Builder().filterType(shakedownTestFilterTypes.getFilterType())
+                .filterDisplayName(shakedownTestFilterTypes.getFilterDisplayName())
+                .deploymentTableColumnName(shakedownTestFilterTypes.getFilterTabColumnName())
+                .comparatorSelection(defaultComperator);
+    }
+
+    public static class Builder extends CustomFilterBuilder {
+        Builder() {
+            super();
+        }
+        @Override
+        public CustomFilter build() {
+            CustomFilter filter = super.build();
+            filter.init();
+            return filter;
+        }
+    }
+
+    private void init() {
+
+        this.dropDownItems = new ArrayList<>();
         this.filterIdentifikationNumber = System.currentTimeMillis();
-        this.joiningTableQuery = joiningTableQuery != null ? joiningTableQuery : "";
+        this.isSelected = true;
+        this.joiningTableQuery = joiningTableQuery == null ? "" : joiningTableQuery;
         if (isIntegerType()) {
             // value muss mit 0 initialisiert werden falls Integer type (sonst
             // fkt rendering nicht!)
             this.value = 0;
-        }
-        else if (isBooleanType()) {
+        } else if (isBooleanType()) {
             // value soll mit true initialisiert werden falls Boolean type
             this.value = true;
+
             this.dropDownItems.add("true");
             this.dropDownItems.add("false");
         }
@@ -114,8 +135,32 @@ public class CustomFilter {
         }
     }
 
-    public CustomFilter(String filterDisplayName, String deploymentTableColumnName, FilterType filterType) {
-        this(filterDisplayName, deploymentTableColumnName, null, filterType);
+    public List<ComparatorFilterOption> getComparatorSelectionList() {
+        if (comparatorSelectionList == null) {
+            comparatorSelectionList = new ArrayList<>();
+            for (ComparatorFilterOption filterType : ComparatorFilterOption.values()) {
+                comparatorSelectionList.add(filterType);
+            }
+        }
+        return comparatorSelectionList;
+    }
+
+    public List<ComparatorFilterOption> getTypedComparatorSelectionList() {
+        List<ComparatorFilterOption> result = new ArrayList<>();
+        for (ComparatorFilterOption comperatorfilteroption : getComparatorSelectionList()) {
+            if (isBooleanType()) {
+                if (comperatorfilteroption.equals(ComparatorFilterOption.equals)) {
+                    result.add(comperatorfilteroption);
+                }
+            } else if (isStringType() || isEnumType()) {
+                if (comperatorfilteroption.equals(ComparatorFilterOption.equals)) {
+                    result.add(comperatorfilteroption);
+                }
+            } else {
+                result.add(comperatorfilteroption);
+            }
+        }
+        return result;
     }
 
     public void setAlwaysAutoComplete(boolean alwaysAutoComplete) {
@@ -139,7 +184,6 @@ public class CustomFilter {
                 }
                 catch (NumberFormatException e) {
                     this.value = null;
-                    log.warning(filterValue + " is not a number");
                 }
             }
             // Date type is handled differently: The JSF component directly sets its value directly through setDateValue
@@ -147,22 +191,6 @@ public class CustomFilter {
                 this.value = CustomFilter.convertStringToDate(filterValue);
             }
         }
-    }
-
-    // TODO: Remove, its not used anywhere
-    public String getValidationRegexp() {
-        String result = "";
-        if (isStringType()) {
-            result = ".*";
-        }
-        else if (isBooleanType()) {
-            result = "";
-        }
-        else if (isIntegerType()) {
-            result = "[0-9]*";
-        }
-
-        return result;
     }
 
     public Integer getIntegerValue() {
@@ -234,10 +262,6 @@ public class CustomFilter {
         return filterType.equals(FilterType.SpecialFilterType);
     }
 
-    public boolean isAlwaysAutoComplete() {
-        return alwaysAutoComplete;
-    }
-
     public String getValue() {
         if (value != null) {
             if (isLabeledDateType()) {
@@ -258,55 +282,25 @@ public class CustomFilter {
         return valueOf(enumType, value.toString());
     }
 
-    public FilterType getFilterType() {
-        return filterType;
-    }
-
-    public String getFilterDisplayName() {
-        return filterDisplayName;
-    }
-
     public String getSqlComperator() {
         String result = null;
-        if (comperatorSelection != null) {
+        if (comparatorSelection != null) {
             if (this.isStringType()) {
-                result = comperatorSelection.getSqlStringComperator();
+                result = comparatorSelection.getSqlStringComperator();
             }
             else if (this.isBooleanType()) {
-                result = comperatorSelection.getSqlBoolComperator();
+                result = comparatorSelection.getSqlBoolComperator();
             }
             else {
-                result = comperatorSelection.getSqlNumComperator();
+                result = comparatorSelection.getSqlNumComperator();
             }
         }
         return result;
     }
 
-    public ComperatorFilterOption getComperatorSelection() {
-        return comperatorSelection;
-    }
-
-    public void setComperatorSelection(ComperatorFilterOption comperatorSelection) {
-        this.comperatorSelection = comperatorSelection;
-    }
-
-    public String getDeploymentTableColumnName() {
-        return deploymentTableColumnName;
-    }
-
     public String getParameterName() {
         return this.filterDisplayName.replaceAll(" ", "");
     }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean isSelected) {
-        this.isSelected = isSelected;
-    }
-
-    private boolean isNullableFilter = false;
 
     public boolean hasValidNullValue() {
         return isNullableFilter && value == null;
@@ -315,45 +309,19 @@ public class CustomFilter {
     public boolean isValidForSqlQuery() {
         return (!filterType.equals(FilterType.SpecialFilterType)
                 && (hasValidNullValue() || (value != null && !value.toString().trim().isEmpty()))
-                && comperatorSelection != null);
-    }
-
-    public List<String> getDropDownItems() {
-        return dropDownItems;
-    }
-
-    public void setDropDownItems(List<String> dropDownItems) {
-        this.dropDownItems = dropDownItems;
+                && comparatorSelection != null);
     }
 
     public boolean hasDropDownItems() {
         return !dropDownItems.isEmpty();
     }
 
-    public Map<String, String> getDropDownItemsMap() {
-        return dropDownItemsMap;
-    }
-
-    public void setDropDownItems(Map<String, String> dropDownItemsMap) {
-        this.dropDownItemsMap = dropDownItemsMap;
-    }
-
     public void setEnumType(Class<? extends Enum> enumType) {
         this.enumType = enumType;
     }
 
-    private Class<? extends Enum> enumType;
-
     public boolean hasDropDownItemsMap() {
         return !dropDownItemsMap.isEmpty();
-    }
-
-    public String getJoiningTableQuery() {
-        return joiningTableQuery;
-    }
-
-    public void setJoiningTableQuery(String joiningTableQuery) {
-        this.joiningTableQuery = joiningTableQuery;
     }
 
     @Override
@@ -393,10 +361,6 @@ public class CustomFilter {
     @Override
     public int hashCode() {
         return this.filterIdentifikationNumber.hashCode();
-    }
-
-    public boolean isNullableFilter() {
-        return isNullableFilter;
     }
 
     public void setNullableFilter(boolean isNullableFilter) {

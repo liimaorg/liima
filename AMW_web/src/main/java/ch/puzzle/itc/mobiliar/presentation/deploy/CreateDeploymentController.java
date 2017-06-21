@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.presentation.deploy;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary.DeploymentParameterBoundary;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
@@ -49,7 +49,7 @@ public class CreateDeploymentController {
 
 
     @Inject
-    private DeploymentService deploymentService;
+    private DeploymentBoundary deploymentBoundary;
 
     @Inject
     private ContextDomainService domainService;
@@ -115,7 +115,7 @@ public class CreateDeploymentController {
     }
 
     public List<DeploymentEntity.ApplicationWithVersion> getAppsWithVersion(ResourceEntity appServer, List<String> contexts, ReleaseEntity release) {
-        List<DeploymentEntity.ApplicationWithVersion> apps = deploymentService.getVersions(appServer, stringToIntegerList(contexts), release);
+        List<DeploymentEntity.ApplicationWithVersion> apps = deploymentBoundary.getVersions(appServer, stringToIntegerList(contexts), release);
 
         Collections.sort(apps, new Comparator<DeploymentEntity.ApplicationWithVersion>() {
             @Override
@@ -156,7 +156,7 @@ public class CreateDeploymentController {
                                                     boolean sendEmail, boolean requestOnly,
                                                     boolean doSimulate, boolean doExecuteShakedownTest,
                                                     boolean doNeighbourhoodTest) {
-        return deploymentService.createDeploymentReturnTrackingId(appServerGroupId, releaseId,
+        return deploymentBoundary.createDeploymentReturnTrackingId(appServerGroupId, releaseId,
                 executionDate, stateDate, stringToIntegerList(contextIds),
                 appsWithVersion, deployParams, sendEmail,
                 requestOnly, doSimulate,
@@ -171,7 +171,7 @@ public class CreateDeploymentController {
                                                     boolean sendEmail, boolean requestOnly,
                                                     boolean doSimulate, boolean doExecuteShakedownTest,
                                                     boolean doNeighbourhoodTest) {
-        return deploymentService
+        return deploymentBoundary
                 .createDeploymentsReturnTrackingId(selectedDeployments,
                         executionDate, stateDate, deployParams, stringToIntegerList(contextIds),
                         sendEmail,
@@ -184,7 +184,7 @@ public class CreateDeploymentController {
         List<DeploymentEntity> deployments = new ArrayList<>();
         List<String> idsAsString = (ids != null || ids.length > 0) ? Arrays.asList(ids) : new ArrayList<String>();
         for (String idString : idsAsString) {
-            deployments.add(deploymentService.getDeploymentById(Integer.valueOf(idString)));
+            deployments.add(deploymentBoundary.getDeploymentById(Integer.valueOf(idString)));
         }
         return filterNewestDeploymentForDuplicateAppServerDeployment(deployments);
     }
