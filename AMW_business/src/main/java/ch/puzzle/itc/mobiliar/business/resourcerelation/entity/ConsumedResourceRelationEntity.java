@@ -88,7 +88,7 @@ public class ConsumedResourceRelationEntity extends AbstractResourceRelationEnti
 	}
 
 	public String getRelationIdentifier() {
-		return getIdentifier() != null ? getIdentifier() : getResourceRelationType().getIdentifier();
+		return getIdentifier() != null ? getIdentifier() : getResourceRelationType().getIdentifierOrTypeBName();
 	}
 
 	public String getMasterRelease() {

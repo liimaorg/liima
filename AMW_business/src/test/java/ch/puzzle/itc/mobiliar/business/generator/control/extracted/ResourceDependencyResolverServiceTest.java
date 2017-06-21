@@ -20,8 +20,10 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.*;
 
@@ -166,7 +168,6 @@ public class ResourceDependencyResolverServiceTest {
 	@Test
 	public void findMostRelevantResource_after(){
 		// given
-
 		List<ResourceEntity> resources = new ArrayList<>();
 		resources.add(r1);
 		resources.add(r2);
@@ -176,8 +177,8 @@ public class ResourceDependencyResolverServiceTest {
 		Calendar cal = new GregorianCalendar();
 		cal.set(2004, Calendar.FEBRUARY, 1);
 		Date relevantDate = new Date(cal.getTimeInMillis());
-		// when
 
+		// when
 		ResourceEntity mostRelevantResource = service.findMostRelevantResource(resources, relevantDate);
 
 		// then
@@ -187,7 +188,6 @@ public class ResourceDependencyResolverServiceTest {
 	@Test
 	public void findMostRelevantResource_before(){
 		// given
-
 		List<ResourceEntity> resources = new ArrayList<>();
 		resources.add(r1);
 		resources.add(r2);
@@ -197,8 +197,8 @@ public class ResourceDependencyResolverServiceTest {
 		Calendar cal = new GregorianCalendar();
 		cal.set(1999, Calendar.FEBRUARY, 1);
 		Date relevantDate = new Date(cal.getTimeInMillis());
-		// when
 
+		// when
 		ResourceEntity mostRelevantResource = service.findMostRelevantResource(resources, relevantDate);
 
 		// then
@@ -208,7 +208,6 @@ public class ResourceDependencyResolverServiceTest {
 	@Test
 	public void findMostRelevantResource_nextRel(){
 		// given
-
 		List<ResourceEntity> resources = new ArrayList<>();
 		resources.add(r1);
 		resources.add(r2);
@@ -218,12 +217,72 @@ public class ResourceDependencyResolverServiceTest {
 		Calendar cal = new GregorianCalendar();
 		cal.set(2002, Calendar.FEBRUARY, 1);
 		Date relevantDate = new Date(cal.getTimeInMillis());
-		// when
 
+		// when
 		ResourceEntity mostRelevantResource = service.findMostRelevantResource(resources, relevantDate);
 
 		// then
 		assertEquals(r3,mostRelevantResource);
+	}
+
+	@Test
+	public void findExactOrClosestPastReleaseShouldReturnExactRelease(){
+		// given
+		SortedSet<ReleaseEntity> releases = new TreeSet<>();
+		releases.add(release1);
+		releases.add(release2);
+		releases.add(release3);
+		releases.add(release4);
+
+		Calendar cal = new GregorianCalendar();
+		cal.set(2002, Calendar.JANUARY, 1);
+		Date relevantDate = new Date(cal.getTimeInMillis());
+
+		// when
+		ReleaseEntity mostRelevantRelease = service.findExactOrClosestPastRelease(releases, relevantDate);
+
+		// then
+		assertThat(release2, is(mostRelevantRelease));
+	}
+
+	@Test
+	public void findExactOrClosestPastReleaseShouldReturnClosestPastRelease(){
+		// given
+		SortedSet<ReleaseEntity> releases = new TreeSet<>();
+		releases.add(release1);
+		releases.add(release2);
+		releases.add(release3);
+		releases.add(release4);
+
+		Calendar cal = new GregorianCalendar();
+		cal.set(2002, Calendar.JANUARY, 5);
+		Date relevantDate = new Date(cal.getTimeInMillis());
+
+		// when
+		ReleaseEntity mostRelevantRelease = service.findExactOrClosestPastRelease(releases, relevantDate);
+
+		// then
+		assertThat(release2, is(mostRelevantRelease));
+	}
+
+	@Test
+	public void findExactOrClosestPastReleaseShouldReturnNullIfNoPastReleaseHasBeenFound(){
+		// given
+		SortedSet<ReleaseEntity> releases = new TreeSet<>();
+		releases.add(release1);
+		releases.add(release2);
+		releases.add(release3);
+		releases.add(release4);
+
+		Calendar cal = new GregorianCalendar();
+		cal.set(2000, Calendar.DECEMBER, 31);
+		Date relevantDate = new Date(cal.getTimeInMillis());
+
+		// when
+		ReleaseEntity mostRelevantRelease = service.findExactOrClosestPastRelease(releases, relevantDate);
+
+		// then
+		assertNull(mostRelevantRelease);
 	}
 	
 	@Test
@@ -325,7 +384,6 @@ public class ResourceDependencyResolverServiceTest {
 	public void testGetResourceEntitiesByRelease() {
 		
 		//given
-		
 		/**
 		 * We create two releases and two resources both connected through a single resource group.
 		 */
