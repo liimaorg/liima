@@ -72,13 +72,21 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   onChangeRole() {
     console.log('onChangeRole');
-    this.getRoleWithRestrictions(this.selectedRoleName);
+    if (this.isExistingRole(this.selectedRoleName)) {
+      this.getRoleWithRestrictions(this.selectedRoleName);
+    } else {
+      this.restrictions = [];
+    }
     this.restriction = null;
   }
 
   onChangeUser() {
     console.log('onChangeUser');
-    this.getUserWithRestrictions(this.selectedUserName);
+    if (this.isExistingUser(this.selectedUserName)) {
+      this.getUserWithRestrictions(this.selectedUserName);
+    } else {
+      this.restrictions = [];
+    }
     this.restriction = null;
   }
 
@@ -114,6 +122,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
         /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => {
           this.updatePermissions(this.restriction);
+          this.updateNamesLists();
           this.restriction = null;
           this.backupRestriction = null; });
     } else {
@@ -122,6 +131,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
         /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => {
           this.updatePermissions(this.restriction);
+          this.updateNamesLists();
           this.restriction = null; });
     }
   }
@@ -129,6 +139,24 @@ export class PermissionComponent implements OnInit, OnDestroy {
   addRestriction() {
     this.restriction = { id: null, roleName: this.selectedRoleName, userName: this.selectedUserName, permission: <Permission> {},
       resourceGroupId: null, resourceTypeName: null, resourceTypePermission: null, contextName: null, action: null };
+  }
+
+  private updateNamesLists() {
+    if (this.restriction) {
+      if (this.restriction.roleName && !this.isExistingRole(this.restriction.roleName)) {
+        this.roleNames.push(this.restriction.roleName.toLowerCase());
+      } else if (this.restriction.userName && !this.isExistingUser(this.restriction.userName)) {
+        this.userNames.push(this.restriction.userName.toLowerCase());
+      }
+    }
+  }
+
+  private isExistingRole(roleName: string) {
+    return roleName !== null && this.roleNames.indexOf(roleName.toLowerCase()) > -1;
+  }
+
+  private isExistingUser(userName: string) {
+    return userName !== null && this.userNames.indexOf(userName.toLowerCase()) > -1;
   }
 
   private onChangeType(type: string) {

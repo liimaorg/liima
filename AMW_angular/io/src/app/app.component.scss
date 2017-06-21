@@ -76,6 +76,7 @@ body {
   .navbar-brand {
     margin-left: -15px;
     padding-top: 10px;
+    padding-right: 0;
   }
 }
 
@@ -136,6 +137,16 @@ body {
   }
 }
 
+@media (min-width: 768px) {
+  .navbar-nav {
+    li {
+      a {
+        padding-left: 5px;
+      }
+    }
+  }
+}
+
 
 /*
  * Main content
@@ -146,6 +157,11 @@ body {
   margin-top: 50px;
   padding: 20px;
 }
+
+.main-full {
+  width: 100%;
+}
+
 @media (min-width: 768px) {
   .main {
     padding-right: 40px;
@@ -180,6 +196,15 @@ body {
 
 }
 
+/*
+ * Table with small/er font
+ */
 .table-xs {
   font-size: x-small;
+}
+
+@media (min-width: 768px) {
+  .table-xs {
+    font-size: smaller;
+  }
 }

@@ -3,13 +3,15 @@ import { RestrictionComponent } from './restriction.component';
 import { Restriction } from './restriction';
 import { Environment } from '../deployment/environment';
 import { Resource } from '../resource/resource';
-import {Permission} from "./permission";
+import { Permission } from './permission';
+import { ChangeDetectorRef } from '@angular/core';
 
 describe('RestrictionComponent', () => {
   // provide our implementations or mocks to the dependency injector
   beforeEach(() => TestBed.configureTestingModule({
     providers: [
-      RestrictionComponent
+      RestrictionComponent,
+      ChangeDetectorRef
     ]
   }));
 
@@ -19,7 +21,7 @@ describe('RestrictionComponent', () => {
       let emptyEnvironment: Environment[] = [ { id: null, name: null, parent: 'All', selected: false } ];
       let devEnvironments: Environment[] = [ { id: 1, name: 'B', parent: 'Dev', selected: false },
         { id: 2, name: 'C', parent: 'Dev', selected: false } ];
-      restrictionComponent.groupedEnvironments =  { 'All': emptyEnvironment, 'Dev': devEnvironments };
+      restrictionComponent.groupedEnvironments =  { All: emptyEnvironment, Dev: devEnvironments };
       restrictionComponent.restriction = <Restriction> { contextName: 'C' };
       // when
       restrictionComponent.ngOnChanges();
@@ -37,7 +39,7 @@ describe('RestrictionComponent', () => {
         { id: 2, name: 'C', parent: 'Dev', selected: false } ];
       let testEnvironments: Environment[] = [ { id: 11, name: 'T', parent: 'Test', selected: false },
         { id: 12, name: 'S', parent: 'Test', selected: false } ];
-      restrictionComponent.groupedEnvironments =  { 'All': emptyEnvironment, 'Dev': devEnvironments, 'Test': testEnvironments };
+      restrictionComponent.groupedEnvironments =  { All: emptyEnvironment, Dev: devEnvironments, Test: testEnvironments };
       // when
       let groups: string[] = restrictionComponent.getEnvironmentGroups();
       // then
@@ -105,7 +107,7 @@ describe('RestrictionComponent', () => {
     inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
       // given
       restrictionComponent.restriction = <Restriction> { action: 'CREATE', contextName: 'T', resourceGroupId: 9,
-        resourceTypeName: 'TEST', resourceTypePermission: 'DEFAULT_ONLY', permission: <Permission> { name: 'neo' }};
+        resourceTypeName: null, resourceTypePermission: 'ANY', permission: <Permission> { name: 'neo' }};
       restrictionComponent.permissions = [ <Permission> { name: 'neo', old: false },
         <Permission> { name: 'oldie', old: true }];
       // when
@@ -114,15 +116,15 @@ describe('RestrictionComponent', () => {
       expect(restrictionComponent.restriction.action).toBe('CREATE');
       expect(restrictionComponent.restriction.contextName).toBe('T');
       expect(restrictionComponent.restriction.resourceGroupId).toBe(9);
-      expect(restrictionComponent.restriction.resourceTypeName).toBe('TEST');
-      expect(restrictionComponent.restriction.resourceTypePermission).toBe('DEFAULT_ONLY');
+      expect(restrictionComponent.restriction.resourceTypeName).toBeNull();
+      expect(restrictionComponent.restriction.resourceTypePermission).toBe('ANY');
   }));
 
   it('should reset Restriction values if Permission is old',
     inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
       // given
       restrictionComponent.restriction = <Restriction> { action: 'CREATE', contextName: 'T', resourceGroupId: 9,
-        resourceTypeName: 'TEST', resourceTypePermission: 'DEFAULT_ONLY', permission: <Permission> { name: 'oldie' }};
+        resourceTypeName: null, resourceTypePermission: 'ANY', permission: <Permission> { name: 'oldie' }};
       restrictionComponent.permissions = [ <Permission> { name: 'neo', old: false },
         <Permission> { name: 'oldie', old: true }];
       // when
@@ -133,6 +135,72 @@ describe('RestrictionComponent', () => {
       expect(restrictionComponent.restriction.resourceGroupId).toBeNull();
       expect(restrictionComponent.restriction.resourceTypeName).toBeNull();
       expect(restrictionComponent.restriction.resourceTypePermission).toBe('ANY');
+  }));
+
+  it('should allow to assign ResourceType if ResourceTypePermission is ANY and ResourceGroup is null',
+    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+      // given
+      restrictionComponent.restriction = <Restriction> { action: 'CREATE', contextName: 'T', resourceGroupId: null,
+        resourceTypeName: null, resourceTypePermission: 'ANY', permission: <Permission> { name: 'test' }};
+      // when
+      let possible: boolean = restrictionComponent.isResourceTypeAssignable();
+      // then
+      expect(possible).toBeTruthy();
+  }));
+
+  it('should not allow to assign ResourceType if ResourceGroup is not null',
+    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+      // given
+      restrictionComponent.restriction = <Restriction> { action: 'CREATE', contextName: 'T', resourceGroupId: 8,
+        resourceTypeName: null, resourceTypePermission: 'ANY', permission: <Permission> { name: 'test' }};
+      // when
+      let possible: boolean = restrictionComponent.isResourceTypeAssignable();
+      // then
+      expect(possible).toBeFalsy();
+  }));
+
+  it('should not allow to assign ResourceType if ResourceTypePermission is not ANY',
+    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+      // given
+      restrictionComponent.restriction = <Restriction> { action: 'CREATE', contextName: 'T', resourceGroupId: null,
+        resourceTypeName: null, resourceTypePermission: 'DEFAULT_ONLY', permission: <Permission> { name: 'test' }};
+      // when
+      let possible: boolean = restrictionComponent.isResourceTypeAssignable();
+      // then
+      expect(possible).toBeFalsy();
+  }));
+
+  it('should allow to assign ResourceGroup if ResourceTypePermission is ANY and ResourceTypeName is null',
+    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+      // given
+      restrictionComponent.restriction = <Restriction> { action: 'CREATE', contextName: 'T', resourceGroupId: null,
+        resourceTypeName: null, resourceTypePermission: 'ANY', permission: <Permission> { name: 'test' }};
+      // when
+      let possible: boolean = restrictionComponent.isResourceGroupAssignable();
+      // then
+      expect(possible).toBeTruthy();
+  }));
+
+  it('should not allow to assign ResourceGroup if ResourceTypeName is not null',
+    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+      // given
+      restrictionComponent.restriction = <Restriction> { action: 'CREATE', contextName: 'T', resourceGroupId: null,
+        resourceTypeName: 'test', resourceTypePermission: 'ANY', permission: <Permission> { name: 'test' }};
+      // when
+      let possible: boolean = restrictionComponent.isResourceGroupAssignable();
+      // then
+      expect(possible).toBeFalsy();
+  }));
+
+  it('should not allow to assign ResourceGroup if ResourceTypePermission is not ANY',
+    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+      // given
+      restrictionComponent.restriction = <Restriction> { action: 'CREATE', contextName: 'T', resourceGroupId: null,
+        resourceTypeName: null, resourceTypePermission: 'DEFAULT_ONLY', permission: <Permission> { name: 'test' }};
+      // when
+      let possible: boolean = restrictionComponent.isResourceGroupAssignable();
+      // then
+      expect(possible).toBeFalsy();
   }));
 
 });

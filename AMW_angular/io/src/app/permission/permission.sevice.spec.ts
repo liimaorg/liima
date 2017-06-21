@@ -137,7 +137,7 @@ describe('PermissiontService', () => {
       connection.mockRespond(mockResponse);
     });
     // when then
-    permissionService.updateRestriction(<Restriction>{ id: 2 }).subscribe((response) => {
+    permissionService.updateRestriction(<Restriction> { id: 2 }).subscribe((response) => {
       expect(response).toEqual({});
     });
   }));
@@ -146,7 +146,7 @@ describe('PermissiontService', () => {
     inject([PermissionService, MockBackend], (permissionService: PermissionService, mockBackend: MockBackend) => {
     // given
     mockBackend.connections.subscribe((connection) => {
-      if (connection.request.method == RequestMethod.Post) {
+      if (connection.request.method === RequestMethod.Post) {
         expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/');
         let locationHeaders = new Headers();
         locationHeaders.set('Location', '/permissions/restrictions/8');
@@ -165,7 +165,7 @@ describe('PermissiontService', () => {
       }
     });
     // when then
-    permissionService.createRestriction(<Restriction>{ roleName: 'TESTER' }).subscribe((response) => {
+    permissionService.createRestriction(<Restriction> { roleName: 'TESTER' }).subscribe((response) => {
       expect(response).toEqual({ id: 8, roleName: 'TESTER' });
     });
   }));
