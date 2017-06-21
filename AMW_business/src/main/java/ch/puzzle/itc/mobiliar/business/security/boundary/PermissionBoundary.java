@@ -516,6 +516,14 @@ public class PermissionBoundary implements Serializable {
             throw new AMWException("Missing PermissionName");
         }
 
+        if (resourceTypePermission == null || resourceTypePermission.equals(ResourceTypePermission.ANY)) {
+            if (resourceGroupId != null && resourceTypeName!= null) {
+                throw new AMWException("Only ResourceGroup OR ResourceType must be set");
+            }
+        } else if (resourceGroupId != null || resourceTypeName!= null) {
+            throw new AMWException("ResourceGroup AND ResourceType must not be set if ResourceTypePermission is not ANY");
+        }
+
         ResourceGroupEntity resourceGroup = null;
         if (resourceGroupId != null) {
             resourceGroup = resourceGroupRepository.find(resourceGroupId);

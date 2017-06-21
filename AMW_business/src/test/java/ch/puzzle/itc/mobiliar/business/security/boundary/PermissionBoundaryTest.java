@@ -49,6 +49,7 @@ import java.util.Arrays;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
+import static ch.puzzle.itc.mobiliar.business.security.entity.ResourceTypePermission.*;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
@@ -269,6 +270,33 @@ public class PermissionBoundaryTest {
         when(resourceGroupRepository.find(7)).thenReturn(null);
         // when // then
         permissionBoundary.createRestriction("existing", null, "good", 7, null, null, null, null);
+    }
+
+    @Test(expected=AMWException.class)
+    public void shouldThrowAMWExceptionOnCreateIfResourceGroupAndResourceTypeAreSet() throws AMWException {
+        // given
+        when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        // when // then
+        permissionBoundary.createRestriction("existing", null, "good", 7, "bad", null, null, null);
+    }
+
+    @Test(expected=AMWException.class)
+    public void shouldThrowAMWExceptionOnCreateIfResourceTypePermissionIsNotEmptyAndResourceGroupIsSet() throws AMWException {
+        // given
+        when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        // when // then
+        permissionBoundary.createRestriction("existing", null, "good", 7, null, DEFAULT_ONLY, null, null);
+    }
+
+    @Test(expected=AMWException.class)
+    public void shouldThrowAMWExceptionOnCreateIfResourceTypePermissionIsNotEmptyAndResourceTypeIsSet() throws AMWException {
+        // given
+        when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        // when // then
+        permissionBoundary.createRestriction("existing", null, "good", null, "bad", NON_DEFAULT_ONLY, null, null);
     }
 
     @Test(expected=AMWException.class)
