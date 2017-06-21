@@ -118,13 +118,16 @@ public class PermissionBoundaryTest {
         permissionBoundary.updateRestriction(1, null, null, null, null, null, null, null, null);
     }
 
-    @Test(expected=AMWException.class)
-    public void shouldThrowAMWExceptionOnUpdateIfRoleCanNotBeFound() throws AMWException {
+    @Test
+    public void shouldCreateRoleOnUpdateIfRoleCanNotBeFound() throws AMWException {
         // given
         when(restrictionRepository.find(1)).thenReturn(new RestrictionEntity());
-        when(permissionRepository.getRoleByName("notThere")).thenThrow(new NoResultException());
-        // when // then
-        permissionBoundary.updateRestriction(1, "notThere", null, null, null, null, null, null, null);
+        when(permissionRepository.getRoleByName("newRole")).thenReturn(null);
+        when(permissionRepository.getPermissionByName("valid")).thenReturn(new PermissionEntity());
+        // when
+        permissionBoundary.updateRestriction(1, "newRole", null, "valid", null, null, null, null, null);
+        // then
+        verify(permissionRepository, times(1)).createRole("newRole");
     }
 
     @Test(expected=AMWException.class)
@@ -188,14 +191,6 @@ public class PermissionBoundaryTest {
     }
 
     @Test(expected=AMWException.class)
-    public void shouldThrowAMWExceptionOnCreateIfRoleCanNotBeFound() throws AMWException {
-        // given
-        when(permissionRepository.getRoleByName("notThere")).thenThrow(new NoResultException());
-        // when // then
-        permissionBoundary.createRestriction("notThere", null, null, null, null, null, null, null);
-    }
-
-    @Test(expected=AMWException.class)
     public void shouldThrowAMWExceptionOnCreateIfUserNameIsEmpty() throws AMWException {
         // given // when // then
         permissionBoundary.createRestriction(null, "", null, null, null, null, null, null);
@@ -205,6 +200,18 @@ public class PermissionBoundaryTest {
     public void shouldThrowAMWExceptionOnCreateIfTrimmedUserNameIsEmpty() throws AMWException {
         // given // when // then
         permissionBoundary.createRestriction(null, " ", null, null, null, null, null, null);
+    }
+
+    @Test
+    public void shouldCreateRoleAndUserRestrictionOnCreateIfRoleCanNotBeFound() throws AMWException {
+        // given
+        when(permissionRepository.getRoleByName("newRole")).thenReturn(null);
+        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        // when
+        permissionBoundary.createRestriction("newRole", null, "good", null, null, null, null, null);
+        // then
+        verify(permissionRepository, times(1)).createRole("newRole");
+        verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
     }
 
     @Test
@@ -223,7 +230,7 @@ public class PermissionBoundaryTest {
     public void shouldAssignUserRestrictionAndCreateRestrictionIfUserNameHasBeenFound() throws AMWException {
         // given
         when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
-        when(permissionRepository.getUserRestrictionByName("fritz")).thenReturn(Arrays.asList(new UserRestrictionEntity()));
+        when(permissionRepository.getUserRestrictionByName("fritz")).thenReturn(new UserRestrictionEntity());
         // when
         permissionBoundary.createRestriction(null, "fritz", "good", null, null, null, null, null);
         // then

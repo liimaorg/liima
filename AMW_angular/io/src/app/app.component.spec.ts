@@ -5,9 +5,8 @@ import { Router } from '@angular/router';
 import { AppComponent } from './app.component';
 import { AppState } from './app.service';
 
-
-class RouterStub{
-  navigateByUrl( url:string ){ return url; }
+class RouterStub {
+  navigateByUrl( url: string ) { return url; }
 }
 
 describe('App', () => {

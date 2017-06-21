@@ -97,21 +97,30 @@ public class PermissionRepository {
     }
 
 	public RoleEntity getRoleByName(String roleName) {
-		return entityManager.createQuery("from RoleEntity r where LOWER(r.name) =:role", RoleEntity.class)
-				.setParameter("role", roleName.toLowerCase()).getSingleResult();
+		List<RoleEntity> result = entityManager.createQuery("from RoleEntity r where LOWER(r.name) =:role", RoleEntity.class)
+				.setParameter("role", roleName.toLowerCase()).getResultList();
+		return result == null || result.isEmpty() ? null : result.get(0);
 	}
 
-	public List<UserRestrictionEntity> getUserRestrictionByName(String userName) {
-		List<UserRestrictionEntity> result =  entityManager.
+	public UserRestrictionEntity getUserRestrictionByName(String userName) {
+		List<UserRestrictionEntity> result = entityManager.
 				createQuery("from UserRestrictionEntity u where LOWER(u.name) =:userName", UserRestrictionEntity.class)
 				.setParameter("userName", userName.toLowerCase()).getResultList();
-		return result == null ? new ArrayList<UserRestrictionEntity>() : result;
+		return result == null || result.isEmpty() ? null : result.get(0);
 	}
 
 	public UserRestrictionEntity createUserRestriciton(String userName) {
-		UserRestrictionEntity userRestrictionEntity = new UserRestrictionEntity(userName);
+		UserRestrictionEntity userRestrictionEntity = new UserRestrictionEntity(userName.toLowerCase());
 		entityManager.persist(userRestrictionEntity);
 		return userRestrictionEntity;
+	}
+
+	public RoleEntity createRole(String roleName) {
+		RoleEntity roleEntity = new RoleEntity();
+		roleEntity.setName(roleName.toLowerCase());
+		roleEntity.setDeletable(true);
+		entityManager.persist(roleEntity);
+		return roleEntity;
 	}
 
 	public boolean isReloadDeployableRoleList() {

@@ -483,10 +483,14 @@ public class PermissionBoundary implements Serializable {
         }
 
         if (roleName != null) {
-            try {
-                restriction.setRole(permissionRepository.getRoleByName(roleName));
-            } catch (NoResultException ne) {
-                throw new AMWException("Role " + roleName +  " not found.");
+            if (roleName.trim().isEmpty()) {
+                throw new AMWException("RoleName must not be empty.");
+            }
+            RoleEntity role = permissionRepository.getRoleByName(roleName);
+            if (role != null) {
+                restriction.setRole(role);
+            } else {
+                restriction.setRole(permissionRepository.createRole(roleName));
             }
         }
 
@@ -494,9 +498,9 @@ public class PermissionBoundary implements Serializable {
             if (userName.trim().isEmpty()) {
                 throw new AMWException("UserName must not be empty.");
             }
-            List<UserRestrictionEntity> userList = permissionRepository.getUserRestrictionByName(userName);
-            if (!userList.isEmpty()) {
-                restriction.setUser(userList.get(0));
+            UserRestrictionEntity userRestriction = permissionRepository.getUserRestrictionByName(userName);
+            if (userRestriction != null) {
+                restriction.setUser(userRestriction);
             } else {
                 restriction.setUser(permissionRepository.createUserRestriciton(userName));
             }
