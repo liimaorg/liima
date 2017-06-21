@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
-import { Permission} from './permission';
+import { Permission } from './permission';
 import { Restriction } from './restriction';
 
 @Injectable()

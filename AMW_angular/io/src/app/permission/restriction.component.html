@@ -36,7 +36,28 @@
         </div>
       </div>
 
-      <div class="form-group" *ngIf="resourceGroups.length > 0">
+      <div class="form-group">
+        <label for="selectRTP" class="col-sm-3 control-label">Resource Type Categories</label>
+        <div class="col-sm-9">
+          <select id="selectRTP" class="form-control input-sm" [(ngModel)]="restriction.resourceTypePermission"
+                  (change)="clearTypeAndGroup()">
+            <option [ngValue]="rtp" *ngFor="let rtp of resourceTypePermissions">{{rtp}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="resourceTypes.length > 0 && isResourceTypeAssignable()">
+        <label for="selectResourceType" class="col-sm-3 control-label">Resource Type</label>
+        <div class="col-sm-9">
+          <input id="selectResourceType" class="form-control input-sm" list="resTypeList" type="text"
+                 [ngClass]="{'ng-invalid':!checkType()}" [(ngModel)]="restriction.resourceTypeName">
+          <datalist id="resTypeList">
+            <option [ngValue]="resType.name" *ngFor="let resType of resourceTypes">{{resType.name}}</option>
+          </datalist>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="resourceGroups.length > 0 && isResourceGroupAssignable()">
         <label for="selectResourceGroup" class="col-sm-3 control-label">Resource Group</label>
         <div class="col-sm-9">
           <input id="selectResourceGroup" class="form-control input-sm" list="resGroupList" type="text"
@@ -44,26 +65,6 @@
           <datalist id="resGroupList">
             <option [ngValue]="resGroup.name" *ngFor="let resGroup of resourceGroups">{{resGroup.name}}</option>
           </datalist>
-        </div>
-      </div>
-
-      <div class="form-group" *ngIf="resourceTypes.length > 0">
-        <label for="selectResourceType" class="col-sm-3 control-label">Resource Type</label>
-        <div class="col-sm-9">
-          <input id="selectResourceType" class="form-control input-sm" list="resTypeList" type="text"
-                 [ngClass]="{'ng-invalid':!checkType()}" [(ngModel)]="restriction.resourceTypeName">
-          <datalist id="resTypeList">
-              <option [ngValue]="resType.name" *ngFor="let resType of resourceTypes">{{resType.name}}</option>
-          </datalist>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="selectRTP" class="col-sm-3 control-label">Resource Type Categories</label>
-        <div class="col-sm-9">
-          <select id="selectRTP" class="form-control input-sm" [(ngModel)]="restriction.resourceTypePermission">
-            <option [ngValue]="rtp" *ngFor="let rtp of resourceTypePermissions">{{rtp}}</option>
-          </select>
         </div>
       </div>
 

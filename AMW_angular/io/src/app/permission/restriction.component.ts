@@ -1,4 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import {
+  Component, Input, Output, EventEmitter, OnChanges, ChangeDetectorRef, AfterContentChecked,
+  AfterViewChecked
+} from '@angular/core';
 import { Restriction } from './restriction';
 import { Permission } from './permission';
 import { Environment } from '../deployment/environment';
@@ -11,7 +14,7 @@ import * as _ from 'lodash';
   templateUrl: './restriction.component.html'
 })
 
-export class RestrictionComponent implements OnChanges {
+export class RestrictionComponent implements OnChanges, AfterViewChecked {
 
   actions: string[] = [ 'ALL', 'CREATE', 'READ', 'UPDATE', 'DELETE' ];
   resourceTypePermissions: string[] = [ 'ANY', 'DEFAULT_ONLY', 'NON_DEFAULT_ONLY' ];
@@ -24,6 +27,14 @@ export class RestrictionComponent implements OnChanges {
   @Input() resourceTypes: ResourceType[] = [];
   @Output() cancelEdit: EventEmitter<Restriction> = new EventEmitter<Restriction>();
   @Output() saveRestriction: EventEmitter<Restriction> = new EventEmitter<Restriction>();
+
+  constructor(private cdRef: ChangeDetectorRef) {
+  }
+
+  ngAfterViewChecked() {
+    // explicit change detection to avoid "expression-has-changed-after-it-was-checked-error"
+    this.cdRef.detectChanges();
+  }
 
   ngOnChanges() {
     this.preSelectEnv(this.restriction.contextName);
@@ -53,8 +64,26 @@ export class RestrictionComponent implements OnChanges {
     return Object.keys(this.groupedEnvironments);
   }
 
-  isValidForm() {
+  isValidForm(): boolean {
     return this.checkType() && this.checkGroup();
+  }
+
+  isResourceTypeAssignable(): boolean {
+    return (this.restriction.resourceTypePermission === 'ANY' || !this.restriction.resourceTypePermission)
+      && !this.restriction.resourceGroupId;
+  }
+
+  isResourceGroupAssignable(): boolean {
+    return (this.restriction.resourceTypePermission === 'ANY' || !this.restriction.resourceTypePermission)
+      && !this.restriction.resourceTypeName;
+  }
+
+  clearTypeAndGroup() {
+    if (this.restriction.resourceTypePermission !== 'ANY') {
+      this.restriction.resourceTypeName = null;
+      this.restriction.resourceGroupId = null;
+      this.resourceGroup = <Resource> {};
+    }
   }
 
   setOld() {
@@ -70,14 +99,18 @@ export class RestrictionComponent implements OnChanges {
     }
   }
 
-  checkType() {
+  checkType(): boolean {
     if (this.restriction.resourceTypeName) {
-      return _.find(this.resourceTypes, {name: this.restriction.resourceTypeName}) ? true : false;
+      let valid: boolean = _.find(this.resourceTypes, {name: this.restriction.resourceTypeName}) ? true : false;
+      if (valid) {
+        this.clearGroup();
+      }
+      return valid;
     }
     return true;
   }
 
-  checkGroup() {
+  checkGroup(): boolean {
     if (this.resourceGroup.name) {
       let selectedResource: Resource = this.resourceGroups.find((rg) => rg.name.toLowerCase() === this.resourceGroup.name.toLowerCase());
       if (!selectedResource) {
@@ -85,6 +118,7 @@ export class RestrictionComponent implements OnChanges {
       }
       this.resourceGroup = {...selectedResource};
       this.restriction.resourceGroupId = this.resourceGroup.id;
+      this.clearType();
       return true;
     }
     this.restriction.resourceGroupId = null;
@@ -98,6 +132,19 @@ export class RestrictionComponent implements OnChanges {
     this.groupedEnvironments[env.parent][index].selected = state;
     if (state) {
       this.restriction.contextName = this.groupedEnvironments[env.parent][index].name;
+    }
+  }
+
+  private clearType() {
+    if (this.restriction.resourceGroupId) {
+      this.restriction.resourceTypeName = null;
+    }
+  }
+
+  private clearGroup() {
+    if (this.restriction.resourceTypeName) {
+      this.restriction.resourceGroupId = null;
+      this.resourceGroup = <Resource> {};
     }
   }
 
