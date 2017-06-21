@@ -277,6 +277,14 @@
                                 <br/>
                             </h:panelGroup>
 
+                            <div class="edit-resource-relation-entity-identifier-panel">
+                                <h:outputLabel for="relationEntityIdentifier" class="control-label">Identifier</h:outputLabel>
+
+                                <div class="control-group controls">
+                                    <h:inputText id="relationEntityIdentifier" value=""></h:inputText>
+                                </div>
+                            </div>
+
                             <mobi:editPropertiesTable id="editPropertiesTable"
                                                       rendered="#{editResourceView.resourceType.defaultResourceType}"
                                                       editProperties="#{propertyEditDataProvider.currentRelationProperties}"
