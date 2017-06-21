@@ -32,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
@@ -53,6 +54,7 @@ import javax.persistence.PersistenceContext;
 import java.util.*;
 import java.util.logging.Logger;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
@@ -922,6 +924,125 @@ public class DeploymentServicePersistenceTest
 		// then
 		assertEquals(d.getResourceGroup().getName(), previous.getResourceGroup().getName());
 		assertEquals(d.getContext().getName(), previous.getContext().getName());
+	}
+
+	@Test
+	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatest() throws AMWException {
+		// given
+		ResourceEntity resource = ResourceFactory.createNewResource();
+		resource.setName("fooAS");
+		entityManager.persist(resource);
+
+		ContextEntity context = new ContextEntity();
+		context.setName("test");
+		entityManager.persist(context);
+
+		DeploymentEntity successful = new DeploymentEntity();
+		successful.setResourceGroup(resource.getResourceGroup());
+		successful.setContext(context);
+		successful.setDeploymentDate(new Date());
+		successful.setDeploymentState(DeploymentState.success);
+		persistDeploymentEntityForTest(successful);
+
+		DeploymentEntity failed = new DeploymentEntity();
+		failed.setResourceGroup(resource.getResourceGroup());
+		failed.setContext(context);
+		failed.setDeploymentDate(new Date());
+		failed.setDeploymentState(DeploymentState.failed);
+		persistDeploymentEntityForTest(failed);
+
+		// when
+		List<Object[]> latest = deploymentService.getEssentialListOfLastDeploymentsForAppServerAndContext(false);
+
+		// then
+		assertEquals(failed.getContext().getId(), latest.get(0)[0]);
+		assertEquals(failed.getResourceGroup(), latest.get(0)[1]);
+	}
+
+	@Test
+	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatestOnlyIfSuccessful() throws AMWException {
+		// given
+		ResourceEntity resource = ResourceFactory.createNewResource();
+		resource.setName("fooAS");
+		entityManager.persist(resource);
+
+		ContextEntity context = new ContextEntity();
+		context.setName("test");
+		entityManager.persist(context);
+
+		DeploymentEntity successful = new DeploymentEntity();
+		successful.setResourceGroup(resource.getResourceGroup());
+		successful.setContext(context);
+		successful.setDeploymentDate(new Date());
+		successful.setDeploymentState(DeploymentState.success);
+		persistDeploymentEntityForTest(successful);
+
+		DeploymentEntity failed = new DeploymentEntity();
+		failed.setResourceGroup(resource.getResourceGroup());
+		failed.setContext(context);
+		failed.setDeploymentDate(new Date());
+		failed.setDeploymentState(DeploymentState.failed);
+		persistDeploymentEntityForTest(failed);
+
+		// when
+		List<Object[]> latest = deploymentService.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
+
+		// then
+		assertThat(latest.size(), is(0));
+	}
+
+	@Test
+	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatestOfEveryResourceGroupAndContext() throws AMWException {
+		// given
+		ResourceEntity resourceA = ResourceFactory.createNewResource();
+		resourceA.setName("A");
+		entityManager.persist(resourceA);
+
+		ResourceEntity resourceB = ResourceFactory.createNewResource();
+		resourceB.setName("B");
+		entityManager.persist(resourceB);
+
+		ContextEntity contextC = new ContextEntity();
+		contextC.setName("C");
+		entityManager.persist(contextC);
+
+		ContextEntity contextT = new ContextEntity();
+		contextT.setName("T");
+		entityManager.persist(contextT);
+
+		DeploymentEntity deploymentAColder = new DeploymentEntity();
+		deploymentAColder.setResourceGroup(resourceA.getResourceGroup());
+		deploymentAColder.setContext(contextC);
+		deploymentAColder.setDeploymentDate(new Date());
+		deploymentAColder.setDeploymentState(DeploymentState.success);
+		persistDeploymentEntityForTest(deploymentAColder);
+
+		DeploymentEntity deploymentAC = new DeploymentEntity();
+		deploymentAC.setResourceGroup(resourceA.getResourceGroup());
+		deploymentAC.setContext(contextC);
+		deploymentAC.setDeploymentDate(new Date());
+		deploymentAC.setDeploymentState(DeploymentState.success);
+		persistDeploymentEntityForTest(deploymentAC);
+
+		DeploymentEntity deploymentBC = new DeploymentEntity();
+		deploymentBC.setResourceGroup(resourceB.getResourceGroup());
+		deploymentBC.setContext(contextC);
+		deploymentBC.setDeploymentDate(new Date());
+		deploymentBC.setDeploymentState(DeploymentState.success);
+		persistDeploymentEntityForTest(deploymentBC);
+
+		DeploymentEntity deploymentBT = new DeploymentEntity();
+		deploymentBT.setResourceGroup(resourceB.getResourceGroup());
+		deploymentBT.setContext(contextT);
+		deploymentBT.setDeploymentDate(new Date());
+		deploymentBT.setDeploymentState(DeploymentState.success);
+		persistDeploymentEntityForTest(deploymentBT);
+
+		// when
+		List<Object[]> latest = deploymentService.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
+
+		// then
+		assertThat(latest.size(), is(3));
 	}
 
 }

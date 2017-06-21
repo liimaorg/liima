@@ -327,11 +327,22 @@ public class DeploymentService {
         return prevDeployments.iterator().next();
     }
 
-    // TODO test
-    public List<DeploymentEntity> getListOfLastDeploymentsForAppServerAndContext(
-            boolean onlySuccessful) {
+    public List<DeploymentEntity> getListOfLastDeploymentsForAppServerAndContext(boolean onlySuccessful) {
 
         TypedQuery<DeploymentEntity> query = em.createQuery(getListOfLastDeploymentsForAppServerAndContextQuery(onlySuccessful), DeploymentEntity.class);
+
+        return query.getResultList();
+    }
+
+    /**
+     * Loads only the essential data needed for the add shakedown test order popup
+     *
+     * @param onlySuccessful
+     * @return Object [ Integer (Context.id), ResourceGroupEntity ]
+     */
+    public List<Object[]> getEssentialListOfLastDeploymentsForAppServerAndContext(boolean onlySuccessful) {
+
+        Query query = em.createQuery(getEssentialListOfLastDeploymentsForAppServerAndContextQuery(onlySuccessful));
 
         return query.getResultList();
     }
@@ -347,7 +358,21 @@ public class DeploymentService {
 
         return "select " + DEPLOYMENT_QL_ALIAS + " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentDate = "
                 + "(select max(t.deploymentDate) from DeploymentEntity t "
-                + "where " + DEPLOYMENT_QL_ALIAS + ".context = t.context and " + DEPLOYMENT_QL_ALIAS + ".resourceGroup = t.resourceGroup) " + successStateCheck;
+                + "where " + DEPLOYMENT_QL_ALIAS + ".resourceGroup = t.resourceGroup and " + DEPLOYMENT_QL_ALIAS + ".context = t.context) " + successStateCheck;
+    }
+
+    private String getEssentialListOfLastDeploymentsForAppServerAndContextQuery(boolean onlySuccessful) {
+        String successStateCheck = "";
+        if (onlySuccessful) {
+            successStateCheck = "and "
+                    + DEPLOYMENT_QL_ALIAS
+                    + ".deploymentState = '"
+                    + DeploymentState.success + "'";
+        }
+
+        return "select " + DEPLOYMENT_QL_ALIAS + ".context.id, "  + DEPLOYMENT_QL_ALIAS + ".resourceGroup from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentDate = "
+                + "(select max(t.deploymentDate) from DeploymentEntity t "
+                + "where " + DEPLOYMENT_QL_ALIAS + ".resourceGroup = t.resourceGroup and " + DEPLOYMENT_QL_ALIAS + ".context = t.context) " + successStateCheck;
     }
 
     /**
