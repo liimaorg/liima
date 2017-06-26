@@ -157,10 +157,9 @@ public class ResourceRelationService implements Serializable{
 	 * verschobene Applikation enthält, so soll diese Gruppe gelöscht werden.
 	 * 
 	 * @throws ResourceNotFoundException
-	 * @throws ElementAlreadyExistsException
 	 */
 	public void removeAppFromContainerGroupAndRemoveGroupIfEmpty(ResourceGroupEntity applicationGroup)
-			throws ResourceNotFoundException, ElementAlreadyExistsException {
+			throws ResourceNotFoundException {
 		if (applicationGroup != null) {
 
 			ApplicationServer applicationCollectorGroup = commonService
@@ -259,7 +258,6 @@ public class ResourceRelationService implements Serializable{
 	 * @param releaseId
 	 * @param changingOwner
 	 * @throws ElementAlreadyExistsException
-	 * @throws ResourceNotFoundException
 	 */
 	public void doAddResourceRelationForSpecificRelease(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
 													String typeIdentifier, Integer releaseId, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
@@ -267,7 +265,7 @@ public class ResourceRelationService implements Serializable{
 	}
 
 	private void addResourceRelation(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
-									 String typeIdentifier, Integer releaseId, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
+									 String typeIdentifier, Integer releaseId, ForeignableOwner changingOwner) throws ElementAlreadyExistsException {
 		ResourceEntity master = entityManager.find(ResourceEntity.class, masterId);
 		ResourceGroupEntity slaveGroup = entityManager.find(ResourceGroupEntity.class, slaveGroupId);
 		ResourceRelationTypeEntity resourceRelationType = resourceTypeProvider
@@ -372,8 +370,7 @@ public class ResourceRelationService implements Serializable{
 		doRemoveResourceRelationForAllReleases(rel);
 	}
 
-	private void doRemoveResourceRelationForAllReleases(Integer relationId)
-			throws ResourceNotFoundException {
+	private void doRemoveResourceRelationForAllReleases(Integer relationId) throws ResourceNotFoundException {
 
 		// check for Consumed and ProvidedRelations
 		AbstractResourceRelationEntity relation = getResourceRelation(relationId);
@@ -398,22 +395,7 @@ public class ResourceRelationService implements Serializable{
 					.getIdentifier());
 
 			for (AbstractResourceRelationEntity rel : relations) {
-				boolean matches = false;
-				if (hasResourceIdentifier && relation.getIdentifier().equals(rel.getIdentifier())) {
-					matches = true;
-				}
-				else if (hasResourceTypeIdentifier
-						&& rel.getResourceRelationType() != null
-						&& relation.getResourceRelationType().getIdentifier()
-						.equals(rel.getResourceRelationType().getIdentifier())) {
-					matches = true;
-				}
-				else if (rel.getIdentifier() == null
-						&& (rel.getResourceRelationType() == null || rel.getResourceRelationType()
-						.getIdentifier() == null)) {
-					matches = true;
-				}
-				if (matches) {
+				if (isMatchingRelation(relation, hasResourceIdentifier, hasResourceTypeIdentifier, rel)) {
 					relation.getMasterResource().removeRelation(rel);
 					relation.getSlaveResource().removeSlaveRelation(rel);
 					entityManager.remove(rel);
@@ -427,9 +409,28 @@ public class ResourceRelationService implements Serializable{
 		}
 	}
 
+	private boolean isMatchingRelation(AbstractResourceRelationEntity relation, boolean hasResourceIdentifier,
+									   boolean hasResourceTypeIdentifier, AbstractResourceRelationEntity rel) {
+		if (hasResourceIdentifier && relation.getIdentifier().equals(rel.getIdentifier())) {
+            return true;
+        }
+        else if (hasResourceTypeIdentifier
+                && rel.getResourceRelationType() != null
+                && relation.getResourceRelationType().getIdentifierOrTypeBName()
+                .equals(rel.getResourceRelationType().getIdentifierOrTypeBName())) {
+            return true;
+        }
+        else if (rel.getIdentifier() == null
+                && (rel.getResourceRelationType() == null || rel.getResourceRelationType()
+                .getIdentifier() == null)) {
+            return true;
+        }
+		return false;
+	}
+
 	protected List<AbstractResourceRelationEntity> getConsumedRelationsByMasterAndSlave(
 			ResourceEntity masterResource, Set<ResourceEntity> slaveResources, String identifier) {
-		List<AbstractResourceRelationEntity> consumed = new ArrayList<AbstractResourceRelationEntity>();
+		List<AbstractResourceRelationEntity> consumed = new ArrayList<>();
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<ConsumedResourceRelationEntity> q = cb
 				.createQuery(ConsumedResourceRelationEntity.class);
@@ -455,7 +456,7 @@ public class ResourceRelationService implements Serializable{
 
 	protected List<AbstractResourceRelationEntity> getProvidedRelationsByMasterAndSlave(
 			ResourceEntity masterResource, Set<ResourceEntity> slaveResources, String identifier) {
-		List<AbstractResourceRelationEntity> provided = new ArrayList<AbstractResourceRelationEntity>();
+		List<AbstractResourceRelationEntity> provided = new ArrayList<>();
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<ProvidedResourceRelationEntity> q = cb
 				.createQuery(ProvidedResourceRelationEntity.class);
@@ -511,10 +512,9 @@ public class ResourceRelationService implements Serializable{
      * @return
      */
     public ResourceEditRelation getBestMatchingRelationRelease(List<ResourceEditRelation> releaseRelations, ResourceEntity releaseResource) {
-        ResourceEditRelation bestMatch = null;
         long currentTime = releaseResource != null && releaseResource.getRelease() != null && releaseResource.getRelease().getInstallationInProductionAt() != null ? releaseResource.getRelease().getInstallationInProductionAt().getTime() : (new Date()).getTime();
 
-        bestMatch = findBestMatchingPastRelease(releaseRelations, currentTime);
+		ResourceEditRelation bestMatch = findBestMatchingPastRelease(releaseRelations, currentTime);
 
         if (bestMatch == null){
             bestMatch = findBestMatchingFutureRelease(releaseRelations, currentTime);

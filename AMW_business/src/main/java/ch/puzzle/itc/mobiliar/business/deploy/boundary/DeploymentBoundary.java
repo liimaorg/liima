@@ -20,55 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributeView;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import org.apache.commons.lang.StringUtils;
-
 import ch.puzzle.itc.mobiliar.business.database.control.SequencesService;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent.DeploymentEventType;
@@ -90,29 +46,40 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
-import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
-import ch.puzzle.itc.mobiliar.common.exception.MultipleVersionsForApplicationException;
-import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter.ComperatorFilterOption;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter.FilterType;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
+import org.apache.commons.lang.StringUtils;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.io.*;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.QLConstants.DEPLOYMENT_QL_ALIAS;
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.QLConstants.GROUP_QL;
+
 
 @Stateless
-public class DeploymentService {
+public class DeploymentBoundary {
 
     private static final String DEPLOYMENT_ENTITY_NAME = "DeploymentEntity";
-    private static final String DEPLOYMENT_QL_ALIAS = "d";
-    private static final String RELEASE_QL = DEPLOYMENT_QL_ALIAS + ".release";
-    private static final String GROUP_QL = DEPLOYMENT_QL_ALIAS + ".resourceGroup";
-    private static final String ENV_QL = DEPLOYMENT_QL_ALIAS + ".context";
-    private static final String TARGET_PLATFORM_QL = DEPLOYMENT_QL_ALIAS + ".runtime";
     private static final String PROPERTY_DESCRIPTOR_ENTITY_QL = "propDescEnt";
 
     public static final String DIFF_VERSIONS = "diff versions";
@@ -126,64 +93,6 @@ public class DeploymentService {
             return DeploymentOperationValidation.SUCCESS.equals(this);
         }
 
-    }
-
-    public enum DeploymentFilterTypes {
-        ID("Id", DEPLOYMENT_QL_ALIAS + ".id", FilterType.IntegerType),
-        BUILD_SUCCESS("Build success", DEPLOYMENT_QL_ALIAS + ".buildSuccess", FilterType.booleanType),
-        CONFIRMATION_DATE("Confirmed on", DEPLOYMENT_QL_ALIAS + ".deploymentConfirmationDate", FilterType.DateType),
-        CONFIRMATION_USER("Confirmed by", DEPLOYMENT_QL_ALIAS + ".deploymentConfirmationUser", FilterType.StringType),
-        DEPLOYMENT_CONFIRMED("Confirmed", DEPLOYMENT_QL_ALIAS + ".deploymentConfirmed", FilterType.booleanType),
-        DEPLOYMENT_DATE("Deployment date", DEPLOYMENT_QL_ALIAS + ".deploymentDate", FilterType.DateType),
-        REQUEST_USER("Requested by", DEPLOYMENT_QL_ALIAS + ".deploymentRequestUser", FilterType.StringType),
-        JOB_CREATION_DATE("Created on", DEPLOYMENT_QL_ALIAS + ".deploymentJobCreationDate", FilterType.DateType),
-        CANCEL_USER("Canceled by", DEPLOYMENT_QL_ALIAS + ".deploymentCancelUser", FilterType.StringType),
-        CANCEL_DATE("Canceled on", DEPLOYMENT_QL_ALIAS + ".deploymentCancelDate", FilterType.DateType),
-        DEPLOYMENT_STATE("State", DEPLOYMENT_QL_ALIAS + ".deploymentState", FilterType.ENUM_TYPE),
-        DEPLOYMENT_MESSAGE("Message", DEPLOYMENT_QL_ALIAS + ".stateMessage", FilterType.StringType),
-        ENVIRONMENT_NAME("Environment", ENV_QL + ".name", FilterType.StringType),
-        APPSERVER_NAME("Application server", GROUP_QL + ".name", FilterType.StringType),
-        //RELEASE("Release", RELEASE_QL + ".installationInProductionAt", FilterType.LabeledDateType),
-        RELEASE("Release", RELEASE_QL + ".installationInProductionAt", FilterType.LabeledDateType),
-        APPLICATION_NAME("Application", DEPLOYMENT_QL_ALIAS + ".applicationsWithVersion", FilterType.StringType),
-        TARGETPLATFORM("Targetplatform", TARGET_PLATFORM_QL + ".name", FilterType.StringType),
-        LASTDEPLOYJOBFORASENV("Latest deployment job for App Server and Env", "", FilterType.SpecialFilterType),
-        TRACKING_ID("Tracking Id", DEPLOYMENT_QL_ALIAS + ".trackingId", FilterType.IntegerType),
-        DEPLOYMENT_PARAMETER("Deployment parameter", "p.key", "join d.deploymentParameters p", FilterType.StringType),
-        DEPLOYMENT_PARAMETER_VALUE("Deployment parameter value", "p.value", "join d.deploymentParameters p", FilterType.StringType);
-
-        private final String filterDisplayName;
-        private final String filterTabColName;
-        private final String filterTableJoining;
-        private final FilterType filterType;
-
-        DeploymentFilterTypes(String filterDisplayName, String filterTabColName, FilterType filterType) {
-            this(filterDisplayName, filterTabColName, "", filterType);
-        }
-
-        DeploymentFilterTypes(String filterDisplayName, String filterTabColName, String filterTableJoining,
-                              FilterType filterType) {
-            this.filterDisplayName = filterDisplayName;
-            this.filterTabColName = filterTabColName;
-            this.filterType = filterType;
-            this.filterTableJoining = filterTableJoining;
-        }
-
-        public String getFilterDisplayName() {
-            return filterDisplayName;
-        }
-
-        public String getFilterTabColumnName() {
-            return filterTabColName;
-        }
-
-        public FilterType getFilterType() {
-            return filterType;
-        }
-
-        public String getFilterTableJoining() {
-            return filterTableJoining;
-        }
     }
 
     @Inject
@@ -291,33 +200,27 @@ public class DeploymentService {
         LinkedList<CustomFilter> filters = new LinkedList<>();
 
         DeploymentFilterTypes filterType = DeploymentFilterTypes.LASTDEPLOYJOBFORASENV;
-        CustomFilter filter = new CustomFilter(filterType.getFilterDisplayName(), filterType.getFilterTabColumnName(), filterType.getFilterType());
+        CustomFilter filter = CustomFilter.builder(filterType).build();
         filters.add(filter);
 
         filterType = DeploymentFilterTypes.APPSERVER_NAME;
-        filter = new CustomFilter(filterType.getFilterDisplayName(), filterType.getFilterTabColumnName(), filterType.getFilterType());
+        filter = CustomFilter.builder(filterType).build();
         filter.setValue(sourceDeployment.getResourceGroup().getName());
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
         filters.add(filter);
 
         filterType = DeploymentFilterTypes.ENVIRONMENT_NAME;
-        filter = new CustomFilter(filterType.getFilterDisplayName(), filterType.getFilterTabColumnName(), filterType.getFilterType());
+        filter = CustomFilter.builder(filterType).build();
         filter.setValue(sourceDeployment.getContext().getName());
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
         filters.add(filter);
 
         filterType = DeploymentFilterTypes.DEPLOYMENT_STATE;
-        filter = new CustomFilter(filterType.getFilterDisplayName(), filterType.getFilterTabColumnName(), filterType.getFilterType());
-        filter.setEnumType(DeploymentState.class);
+        filter = CustomFilter.builder(filterType).enumType(DeploymentState.class).build();
         filter.setValue(DeploymentState.success.name());
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
         filters.add(filter);
 
         filterType = DeploymentFilterTypes.DEPLOYMENT_STATE;
-        filter = new CustomFilter(filterType.getFilterDisplayName(), filterType.getFilterTabColumnName(), filterType.getFilterType());
-        filter.setEnumType(DeploymentState.class);
+        filter = CustomFilter.builder(filterType).enumType(DeploymentState.class).build();
         filter.setValue(DeploymentState.failed.name());
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
         filters.add(filter);
 
         Set<DeploymentEntity> prevDeployments = getFilteredDeployments(false, 0, null, filters, null, null, null).getA();

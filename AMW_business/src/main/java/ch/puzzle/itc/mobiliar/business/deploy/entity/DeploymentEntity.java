@@ -300,7 +300,7 @@ public class DeploymentEntity implements Serializable {
     }
 
     /*
-     * This methods don't check if user has the right to call it, Use the DeploymentService for that.
+     * This methods don't check if user has the right to call it, Use the DeploymentBoundary for that.
      */
     public void confirm(String username) {
         setDeploymentState(DeploymentState.scheduled);

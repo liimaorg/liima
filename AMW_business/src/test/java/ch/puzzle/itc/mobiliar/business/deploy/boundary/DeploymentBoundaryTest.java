@@ -21,8 +21,14 @@
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -32,24 +38,18 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
-
-public class DeploymentServiceTest
+public class DeploymentBoundaryTest
 {
 	
 	@InjectMocks
-	private DeploymentService deploymentService;
+	private DeploymentBoundary deploymentBoundary;
+
 	@Mock
 	private Logger log;
-	
+
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 	
@@ -73,7 +73,7 @@ public class DeploymentServiceTest
 		System.setProperties(properties);
 
 		//when
-        deploymentService.cleanupDeploymentFiles();
+        deploymentBoundary.cleanupDeploymentFiles();
         
         //then
 		assertTrue(generatorFolder.exists());
@@ -112,7 +112,7 @@ public class DeploymentServiceTest
         attributes.setTimes(time, time, time);
         
 		// when
-        deploymentService.cleanupDeploymentFiles();
+        deploymentBoundary.cleanupDeploymentFiles();
         
 		//then
 		assertTrue(deployment1.exists());

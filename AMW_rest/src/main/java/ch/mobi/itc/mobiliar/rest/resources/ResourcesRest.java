@@ -22,7 +22,7 @@ package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.*;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
@@ -68,7 +68,7 @@ public class ResourcesRest {
     ReleaseMgmtService releaseMgmtService;
 
     @Inject
-    DeploymentService deploymentService;
+    DeploymentBoundary deploymentBoundary;
 
     @Inject
     ResourceGroupLocator resourceGroupLocator;
@@ -216,7 +216,7 @@ public class ResourcesRest {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         List<AppWithVersionDTO> apps = new ArrayList<>();
-        List<DeploymentEntity.ApplicationWithVersion> appVersions = deploymentService.getVersions(appServer, contextIds, appServer.getRelease());
+        List<DeploymentEntity.ApplicationWithVersion> appVersions = deploymentBoundary.getVersions(appServer, contextIds, appServer.getRelease());
         for (DeploymentEntity.ApplicationWithVersion appVersion : appVersions) {
             apps.add(new AppWithVersionDTO(appVersion.getApplicationName(), appVersion.getVersion()));
         }
