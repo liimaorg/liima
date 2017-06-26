@@ -264,7 +264,7 @@
                         </h:panelGroup>
                         <br class="clear"/>
 
-                        <article class="tab-pane sixty" style="display:block;">
+                        <article class="tab-pane sixty marginTop4" style="display:block;">
                             <h:panelGroup layout="block" rendered="${!resourceRelationModel.defaultResourceType and resourceRelationModel.currentResourceRelation ne null and resourceRelationModel.currentResourceRelation.resourceTypeRelation}">
                                 <label class="control-label">RelationName</label>
 
@@ -277,13 +277,13 @@
                                 <br/>
                             </h:panelGroup>
 
-                            <div class="edit-resource-relation-entity-identifier-panel">
-                                <h:outputLabel for="relationEntityIdentifier" class="control-label">Identifier</h:outputLabel>
+                            <h:panelGroup layout="block" class="edit-resource-relation-entity-identifier-panel" rendered="${propertyEditDataProvider.hasEditableIdentifier()}">
+                                <label class="control-label">Identifier</label>
 
                                 <div class="control-group controls">
-                                    <h:inputText id="relationEntityIdentifier" value=""></h:inputText>
+                                    <h:inputText id="relationEntityIdentifier" value="#{propertyEditDataProvider.relationIdentifier}"></h:inputText>
                                 </div>
-                            </div>
+                            </h:panelGroup>
 
                             <mobi:editPropertiesTable id="editPropertiesTable"
                                                       rendered="#{editResourceView.resourceType.defaultResourceType}"

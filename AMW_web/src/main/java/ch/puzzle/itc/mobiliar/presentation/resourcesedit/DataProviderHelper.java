@@ -117,4 +117,14 @@ public class DataProviderHelper {
 
 	   return list;
     }
+
+	public <T> List<T> flattenMap(Map<?, List<T>> map) {
+		List<T> list = new ArrayList<T>();
+		if (map != null) {
+			for (Object key : map.keySet()) {
+				list.addAll(map.get(key));
+			}
+		}
+		return list;
+	}
 }

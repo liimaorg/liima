@@ -147,7 +147,13 @@ public class ResourceEditRelation {
 			idString = slaveName;
 		}
 		if (StringUtils.isNotBlank(identifier)) {
-			idString += "_" + identifier;
+			if (StringUtils.isNumeric(identifier)) {
+				// auto generated identifier
+				idString += "_" + identifier;
+			} else {
+				// custom identifier
+				idString = identifier;
+			}
 		}
 		return idString != null ? idString : "";
 	}
