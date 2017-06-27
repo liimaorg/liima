@@ -21,18 +21,22 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.*;
+import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
@@ -42,6 +46,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -51,6 +56,9 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.*;
+
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CREATED;
 
 @RequestScoped
 @Path("/resources")
@@ -73,6 +81,9 @@ public class ResourcesRest {
 
     @Inject
     ResourceGroupLocator resourceGroupLocator;
+
+    @Inject
+    ResourceBoundary resourceBoundary;
 
     @Inject
     ResourceLocator resourceLocator;
@@ -533,6 +544,30 @@ public class ResourcesRest {
         }
 
         return inventory;
+    }
+
+    /**
+     * Creates a new resource and returns its location.
+     *
+     * @param request containing a ResourceDTO
+     * @return
+     **/
+    @POST
+    @ApiOperation(value = "Add a Resource")
+    public Response addResource(@ApiParam("Add a Resource") ResourceDTO request) {
+        Resource resource;
+        if (request.getId() != null) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
+        }
+        if (request.getReleases() == null || request.getReleases().size() != 1) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Releases must contain a Release")).build();
+        }
+        try {
+            resource = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), request.getName(), request.getType(), request.getReleases().get(0).getRelease());
+        } catch (AMWException e) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
+        }
+        return Response.status(CREATED).header("Location", "/resources/" + resource.getName()).build();
     }
 
 }

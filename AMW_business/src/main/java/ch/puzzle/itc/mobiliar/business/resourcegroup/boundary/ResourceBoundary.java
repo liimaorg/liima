@@ -23,10 +23,12 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
@@ -68,10 +70,16 @@ public class ResourceBoundary {
     private PermissionBoundary permissionBoundary;
 
     @Inject
+    private ReleaseLocator releaseLocator;
+
+    @Inject
     private ReleaseMgmtPersistenceService releaseService;
 
     @Inject
     private ResourceGroupRepository resourceGroupRepository;
+
+    @Inject
+    ResourceTypeRepository resourceTypeRepository;
 
 
     public ResourceGroupEntity getUniqueGroupByNameAndType(String name, Integer resourceTypeId) {
@@ -79,22 +87,35 @@ public class ResourceBoundary {
     }
 
     /**
-     * Create new instance resourceType (all resourceType): permitted to
-     * config_admin
+     * Create new instance resourceType (any resourceType)
      */
-    public Resource createNewResourceByName(ForeignableOwner creatingOwner, String newResourceName, Integer resourceTypeId, Integer releaseId)
-            throws ResourceTypeNotFoundException,
-            ElementAlreadyExistsException {
+    public Resource createNewResourceByName(ForeignableOwner creatingOwner, String newResourceName, String resourceTypeName,
+                                            String releaseName)
+            throws ResourceTypeNotFoundException, ElementAlreadyExistsException {
+        ResourceTypeEntity resourceTypeEntity = resourceTypeRepository.getByName(resourceTypeName);
+        ReleaseEntity release = releaseLocator.getReleaseByName(releaseName);
+        Integer releaseId = release == null ? null : release.getId();
+        return createNewResourceByName(creatingOwner, newResourceName, resourceTypeEntity, releaseId, true);
+    }
 
+    /**
+     * Create new instance resourceType (any resourceType)
+     */
+    public Resource createNewResourceByName(ForeignableOwner creatingOwner, String newResourceName, Integer resourceTypeId,
+                                            Integer releaseId)
+            throws ResourceTypeNotFoundException, ElementAlreadyExistsException {
         ResourceTypeEntity resourceTypeEntity = commonService.getResourceTypeEntityById(resourceTypeId);
+        return createNewResourceByName(creatingOwner, newResourceName, resourceTypeEntity, releaseId, false);
+    }
 
-        if(!permissionBoundary.canCreateResourceInstance(resourceTypeEntity)){
+    private Resource createNewResourceByName(ForeignableOwner creatingOwner, String newResourceName,
+                                             ResourceTypeEntity resourceTypeEntity, Integer releaseId, boolean canCreateReleaseOfExisting)
+            throws ElementAlreadyExistsException, ResourceTypeNotFoundException {
+        if (!permissionBoundary.canCreateResourceInstance(resourceTypeEntity)){
             throw new NotAuthorizedException("Permission Denied");
         }
-
         ResourceEntity resourceEntity = createResourceEntityByNameForResourceType(creatingOwner, newResourceName,
-                resourceTypeId, releaseId, false);
-
+                resourceTypeEntity.getId(), releaseId, canCreateReleaseOfExisting);
         Resource resource = Resource.createByResource(creatingOwner, resourceEntity, resourceTypeEntity,
                 contextDomainService.getGlobalResourceContextEntity());
         entityManager.persist(resource.getEntity());
