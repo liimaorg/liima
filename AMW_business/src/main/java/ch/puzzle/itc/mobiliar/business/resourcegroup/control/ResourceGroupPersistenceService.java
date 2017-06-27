@@ -141,33 +141,6 @@ public class ResourceGroupPersistenceService {
 	}
 
 	/**
-	 * @param name
-	 * @return
-	 */
-	public ResourceGroupEntity loadUniqueGroupByNameAndType(String name, Integer resourceTypeId) {
-		ResourceGroupEntity result = null;
-		try {
-			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-			CriteriaQuery<ResourceGroupEntity> q = cb.createQuery(ResourceGroupEntity.class);
-			Root<ResourceGroupEntity> r = q.from(ResourceGroupEntity.class);
-			r.fetch("resources");
-			Join<ResourceGroupEntity, ResourceEntity> resources = r.join("resources");
-			Predicate typePred = cb.equal(resources.get("resourceType").get("id"), resourceTypeId);
-			Predicate resNamePred = cb.equal(resources.get("name"), name);
-
-			q.where(cb.and(typePred, resNamePred));
-
-			q.distinct(true);
-
-			result = entityManager.createQuery(q).getSingleResult();
-		}
-		catch (NoResultException e) {
-			// do nothing
-		}
-		return result;
-	}
-
-	/**
 	 * Listet Applications auf alphabetic sorted
 	 *
 	 * @return

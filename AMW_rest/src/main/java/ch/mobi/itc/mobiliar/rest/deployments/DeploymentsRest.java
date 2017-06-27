@@ -40,6 +40,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorDomainServiceW
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -78,7 +79,7 @@ public class DeploymentsRest {
     @Inject
     private ResourceDependencyResolverService dependencyResolverService;
     @Inject
-    private ResourceGroupPersistenceService resourceGroupService;
+    private ResourceBoundary resourceBoundary;
     @Inject
     private ResourceTypeProvider resourceTypeProvider;
     @Inject
@@ -247,7 +248,7 @@ public class DeploymentsRest {
 
         // get the id of the ApplicationServer
 
-        group = resourceGroupService.loadUniqueGroupByNameAndType(request.getAppServerName(), resourceTypeProvider
+        group = resourceBoundary.getUniqueGroupByNameAndType(request.getAppServerName(), resourceTypeProvider
                 .getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER)
                 .getId());
         if (group == null) {

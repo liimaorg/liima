@@ -28,7 +28,6 @@ import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
-import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
@@ -38,7 +37,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorDomainServiceW
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
@@ -85,7 +84,7 @@ public class DeploymentTest {
 	@Mock
 	private ResourceTypeProvider resourceTypeProvider;
 	@Mock
-	private ResourceGroupPersistenceService resourceGroupService;
+	private ResourceBoundary resourceBoundary;
 	@Mock
 	private ContextDomainService contextDomainService;
 
@@ -168,7 +167,7 @@ public class DeploymentTest {
 				DefaultResourceTypeDefinition.APPLICATIONSERVER)).thenReturn(defaultAS);
 		
 		// resource group
-		when(resourceGroupService.loadUniqueGroupByNameAndType(anyString(), anyInt())).thenReturn(resource.getResourceGroup());
+		when(resourceBoundary.getUniqueGroupByNameAndType(anyString(), anyInt())).thenReturn(resource.getResourceGroup());
 		
 		when(dependencyResolverService.getResourceEntityForRelease(any(ResourceGroupEntity.class),
 				any(ReleaseEntity.class))).thenReturn(resource);
