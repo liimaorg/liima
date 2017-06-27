@@ -23,7 +23,6 @@ package ch.puzzle.itc.mobiliar.presentation.propertyEdit;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationModel;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
@@ -64,11 +63,6 @@ public class PropertyEditController {
 			try {
 				 propertyDataProvider.save();
 				 GlobalMessageAppender.addSuccessMessage(message);
-			}
-			catch (GeneralDBException e) {	
-				String errorMessage = "Was not able to save the properties: ";
-				GlobalMessageAppender.addErrorMessage(errorMessage+e.getMessage());
-				log.log(Level.SEVERE, errorMessage, e);
 			}
             catch (ForeignableOwnerViolationException e) {
                 String errorMessage = "Edit resource not allowed by owner "+e.getViolatingOwner();

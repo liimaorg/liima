@@ -152,8 +152,7 @@ public class RelationDataProvider implements Serializable {
 	}
 
 	public List<Application> loadAllApplicationsWithoutServer() {
-		List<Application> apps = new ArrayList<Application>();
-		return apps = resourceGroupPersistenceService.getAllApplicationsNotBelongingToAServer();
+		return resourceGroupPersistenceService.getAllApplicationsNotBelongingToAServer();
 	}
 
 	public void loadResourceGroupsForApplication() {
@@ -309,7 +308,7 @@ public class RelationDataProvider implements Serializable {
 			// If it is a default resource type, we can add multiple relations to a resource separated by a
 			// identifier
 			numericIdentifier = helper.nextFreeIdentifierForResourceEditRelations(
-					flattenMap(resourceRelationModel.getConsumedRelations()), slaveResourceGroupId);
+					helper.flattenMap(resourceRelationModel.getConsumedRelations()), slaveResourceGroupId);
 		}
 		return addResourceRelation(slaveResourceGroupId, false, numericIdentifier, identifier);
 	}
@@ -345,16 +344,6 @@ public class RelationDataProvider implements Serializable {
         }
     }
 
-	private <T> List<T> flattenMap(Map<?, List<T>> map) {
-		List<T> list = new ArrayList<T>();
-		if (map != null) {
-			for (Object key : map.keySet()) {
-				list.addAll(map.get(key));
-			}
-		}
-		return list;
-	}
-
 	public boolean isAllowedToAddProvidedRelations(Integer slaveResourceGroupId) {
 		// Only applications are allowed to have provided resources
 		if (!canAddProvidedRelation || !getResourceType().isApplicationResourceType()) {
@@ -362,7 +351,7 @@ public class RelationDataProvider implements Serializable {
 		}
 		// provided resources can only be added once
 		boolean providedResourceAlreadyDefined = helper.nextFreeIdentifierForResourceEditRelations(
-				flattenMap(resourceRelationModel.getProvidedRelations()), slaveResourceGroupId) != null;
+				helper.flattenMap(resourceRelationModel.getProvidedRelations()), slaveResourceGroupId) != null;
 		return !providedResourceAlreadyDefined;
 	}
 
