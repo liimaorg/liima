@@ -21,16 +21,21 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ReleaseDTO;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CopyResource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
@@ -73,6 +78,9 @@ public class ResourcesRestTest {
 
     @Mock
     ResourceBoundary resourceBoundaryMock;
+
+    @Mock
+    CopyResource copyResourceMock;
     
     @Mock
     ServerView serverViewMock;
@@ -245,7 +253,7 @@ public class ResourcesRestTest {
         ResourceDTO resourceDTO = new ResourceDTO(resGroup, Collections.EMPTY_LIST);
 
         // when
-        Response response = rest.addResource(resourceDTO);
+        Response response = rest.addResource(resourceDTO, null);
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
@@ -260,7 +268,7 @@ public class ResourcesRestTest {
         ResourceDTO resourceDTO = new ResourceDTO(resGroup, Collections.EMPTY_LIST);
 
         // when
-        Response response = rest.addResource(resourceDTO);
+        Response response = rest.addResource(resourceDTO, null);
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
@@ -268,7 +276,7 @@ public class ResourcesRestTest {
     }
 
     @Test
-    public void shouldReturnExpectedLocationHeaderOnSuccess() throws ResourceTypeNotFoundException, ResourceNotFoundException, ElementAlreadyExistsException {
+    public void shouldReturnExpectedLocationHeaderOnSuccessfullResourceCreation() throws ResourceTypeNotFoundException, ResourceNotFoundException, ElementAlreadyExistsException {
         // given
         ResourceTypeEntity resType = new ResourceTypeEntity();
         resType.setName("APP");
@@ -290,11 +298,97 @@ public class ResourcesRestTest {
         Mockito.when(resourceBoundaryMock.createNewResourceByName(ForeignableOwner.getSystemOwner(), resGroup.getName(), resType.getName(), release.getName())).thenReturn(resource);
 
         // when
-        Response response = rest.addResource(resourceDTO);
+        Response response = rest.addResource(resourceDTO, null);
 
         // then
         assertEquals(CREATED.getStatusCode(), response.getStatus());
-        assertTrue(response.getMetadata().get("Location").contains("/resources/"+resGroup.getName()));
+        assertTrue(response.getMetadata().get("Location").contains("/resources/" + resGroup.getName()));
+    }
+
+    @Test
+    public void shouldNotAllowCreationOfReleaseOfAResourcesWithoutId() {
+        // given
+        ResourceGroupEntity resGroup = new ResourceGroupEntity();
+        ResourceDTO resourceDTO = new ResourceDTO(resGroup, Collections.EMPTY_LIST);
+
+        // when
+        Response response = rest.addResource(resourceDTO, "testRelease");
+
+        // then
+        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+
+    }
+
+    @Test
+    public void shouldNotAllowCreationOfReleaseOfAResourcesWithoutOriginRelease() {
+        // given
+        ResourceGroupEntity resGroup = new ResourceGroupEntity();
+        resGroup.setId(3);
+        ResourceDTO resourceDTO = new ResourceDTO(resGroup, Collections.EMPTY_LIST);
+
+        // when
+        Response response = rest.addResource(resourceDTO, "testRelease");
+
+        // then
+        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+
+    }
+
+    @Test
+    public void shouldReturnExpectedLocationHeaderOnSuccessfullReleaseCreation() throws AMWException, ForeignableOwnerViolationException {
+        // given
+        ResourceTypeEntity resType = new ResourceTypeEntity();
+        resType.setName("APP");
+        ResourceGroupEntity resGroup = new ResourceGroupEntity();
+        resGroup.setName("TestApp");
+        resGroup.setId(7);
+        resGroup.setResourceType(resType);
+        ReleaseEntity release = new ReleaseEntity();
+        release.setName("TestRelease");
+        release.setId(1);
+        ReleaseDTO releaseDto = new ReleaseDTO(release);
+        List<ReleaseDTO> releaseDtos = new ArrayList<>();
+        releaseDtos.add(releaseDto);
+        ResourceDTO resourceDTO = new ResourceDTO(resGroup, releaseDtos);
+        String targetRelease = "AnotherRelease";
+
+        CopyResourceResult copyResourceResult = new CopyResourceResult(resGroup.getName());
+        Mockito.when(copyResourceMock.doCreateResourceRelease(resGroup.getId(), targetRelease,  release.getName(),
+                ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
+
+        // when
+        Response response = rest.addResource(resourceDTO, targetRelease);
+
+        // then
+        assertEquals(CREATED.getStatusCode(), response.getStatus());
+        assertTrue(response.getMetadata().get("Location").contains("/resources/" + resGroup.getName() + "/" +targetRelease));
+    }
+
+    @Test
+    public void shouldReturnBadRequestIfReleaseCreationFailed() throws AMWException, ForeignableOwnerViolationException {
+        // given
+        ResourceGroupEntity resGroup = new ResourceGroupEntity();
+        resGroup.setName("TestApp");
+        resGroup.setId(7);
+        ReleaseEntity release = new ReleaseEntity();
+        release.setName("TestRelease");
+        release.setId(1);
+        ReleaseDTO releaseDto = new ReleaseDTO(release);
+        List<ReleaseDTO> releaseDtos = new ArrayList<>();
+        releaseDtos.add(releaseDto);
+        ResourceDTO resourceDTO = new ResourceDTO(resGroup, releaseDtos);
+        String targetRelease = "AnotherRelease";
+
+        CopyResourceResult copyResourceResult = new CopyResourceResult(resGroup.getName());
+        copyResourceResult.getExceptions().add("bogus");
+        Mockito.when(copyResourceMock.doCreateResourceRelease(resGroup.getId(), targetRelease,  release.getName(),
+                ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
+
+        // when
+        Response response = rest.addResource(resourceDTO, targetRelease);
+
+        // then
+        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
 }

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -40,6 +41,7 @@ import javax.persistence.EntityManager;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
@@ -72,6 +74,9 @@ public class CopyResource {
 
 	@Inject
 	private CopyResourceDomainService copyResourceDomainService;
+
+	@Inject
+	private ReleaseLocator releaseLocator;
 
 	@Inject
 	private EntityManager entityManager;
@@ -107,7 +112,7 @@ public class CopyResource {
 	 * @throws ResourceNotFoundException
 	 */
 	public CopyResourceResult doCopyResource(Integer targetResourceId, Integer originResourceId, ForeignableOwner actingOwner)
-            throws ResourceNotFoundException, ForeignableOwnerViolationException, AMWException {
+            throws ForeignableOwnerViolationException, AMWException {
 		// Load resources
 		ResourceEntity targetResource = commonDomainService.getResourceEntityById(targetResourceId);
 		ResourceEntity originResource = commonDomainService.getResourceEntityById(originResourceId);
@@ -119,9 +124,41 @@ public class CopyResource {
 		return copyResourceDomainService.copyFromOriginToTargetResource(originResource, targetResource, actingOwner);
 	}
 
+	/**
+	 * Creates a new Release of an existing Resource
+	 *
+	 * @param resourceGroupId id of the existing ResourceGroup
+	 * @param targetReleaseName name of the new Release
+	 * @param originReleaseName name of the current Release
+	 * @param actingOwner the acting ForeignableOwner
+	 * @return
+	 * @throws ForeignableOwnerViolationException
+	 * @throws AMWException
+	 */
+	public CopyResourceResult doCreateResourceRelease(Integer resourceGroupId, String targetReleaseName,
+		  String originReleaseName, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
+		ReleaseEntity targetRelease;
+		ReleaseEntity originRelease;
+		ResourceGroupEntity resourceGroup = entityManager.find(ResourceGroupEntity.class, resourceGroupId);
+		if (resourceGroup == null) {
+			throw new ResourceNotFoundException("No ResourceGroup with id " +resourceGroupId + " found");
+		}
+		try {
+			targetRelease = releaseLocator.getReleaseByName(targetReleaseName);
+		} catch (EJBException e) {
+			throw new ResourceNotFoundException("Target release '" + targetReleaseName + "' found");
+		}
+		try {
+			originRelease = releaseLocator.getReleaseByName(originReleaseName);
+		} catch (EJBException e) {
+			throw new ResourceNotFoundException("Origin release '" + originReleaseName + "' found");
+		}
+		return doCreateResourceRelease(resourceGroup, targetRelease, originRelease, actingOwner);
+	}
+
 	public CopyResourceResult doCreateResourceRelease(ResourceGroupEntity resourceGroup,
-			ReleaseEntity targetRelease, ReleaseEntity originRelease, ForeignableOwner actingOwner) throws ResourceNotFoundException,
-            AMWException, ForeignableOwnerViolationException {
+			ReleaseEntity targetRelease, ReleaseEntity originRelease, ForeignableOwner actingOwner) throws AMWException,
+			ForeignableOwnerViolationException {
 		resourceGroup = entityManager.find(ResourceGroupEntity.class, resourceGroup.getId());
 		// Do not overwrite existing release
 		if (resourceGroup.getReleases() != null && resourceGroup.getReleases().contains(targetRelease)) {
