@@ -24,6 +24,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.mobi.itc.mobiliar.rest.dtos.ReleaseDTO;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +53,13 @@ import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 
+import javax.ws.rs.core.Response;
+
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CREATED;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class ResourcesRestTest {
 
     @InjectMocks
@@ -53,6 +70,9 @@ public class ResourcesRestTest {
 
     @Mock
     ResourceLocator resourceLocatorMock;
+
+    @Mock
+    ResourceBoundary resourceBoundaryMock;
     
     @Mock
     ServerView serverViewMock;
@@ -74,7 +94,7 @@ public class ResourcesRestTest {
         List<ResourceDTO> resourcesResult = rest.getResources(typeName);
 
         // then
-        Assert.assertTrue(resourcesResult.isEmpty());
+        assertTrue(resourcesResult.isEmpty());
     }
 
     @Test
@@ -150,7 +170,7 @@ public class ResourcesRestTest {
         List<ResourceDTO> resourcesResult = rest.getResources(typeName);
 
         // then
-        Assert.assertTrue(resourcesResult.isEmpty());
+        assertTrue(resourcesResult.isEmpty());
     }
 
     private ResourceGroupEntity createResourceGroupEntity(String name, String type) {
@@ -181,7 +201,7 @@ public class ResourcesRestTest {
             Assert.fail("Muss Exception werfen.");
         } catch (ValidationException e) {
             // then expect this
-            Assert.assertTrue(e.getMessage().equals("Der Parameter 'resource' muss numerisch sein"));
+            assertTrue(e.getMessage().equals("Der Parameter 'resource' muss numerisch sein"));
         }
     }
 
@@ -197,7 +217,7 @@ public class ResourcesRestTest {
         List<BatchResourceDTO> result = rest.getBatchJobResources(app);
 
         // then
-        Assert.assertTrue(result != null && result.size() == 0);
+        assertTrue(result != null && result.size() == 0);
 
     }
 
@@ -213,8 +233,68 @@ public class ResourcesRestTest {
         BatchJobInventoryDTO result = rest.getBatchJobInventar(env, type, null, null, null, null, null);
 
         // then
-        Assert.assertTrue(result != null);
+        assertTrue(result != null);
 
+    }
+
+    @Test
+    public void shouldNotAllowCreationOfNewResourcesWithExistingId() {
+        // given
+        ResourceGroupEntity resGroup = new ResourceGroupEntity();
+        resGroup.setId(1);
+        ResourceDTO resourceDTO = new ResourceDTO(resGroup, Collections.EMPTY_LIST);
+
+        // when
+        Response response = rest.addResource(resourceDTO);
+
+        // then
+        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+
+    }
+
+    @Test
+    public void shouldNotAllowCreationOfNewResourcesWithoutRelease() {
+        // given
+        ResourceGroupEntity resGroup = new ResourceGroupEntity();
+        resGroup.setName("Test");
+        ResourceDTO resourceDTO = new ResourceDTO(resGroup, Collections.EMPTY_LIST);
+
+        // when
+        Response response = rest.addResource(resourceDTO);
+
+        // then
+        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+
+    }
+
+    @Test
+    public void shouldReturnExpectedLocationHeaderOnSuccess() throws ResourceTypeNotFoundException, ResourceNotFoundException, ElementAlreadyExistsException {
+        // given
+        ResourceTypeEntity resType = new ResourceTypeEntity();
+        resType.setName("APP");
+        ResourceGroupEntity resGroup = new ResourceGroupEntity();
+        resGroup.setName("Test");
+        resGroup.setResourceType(resType);
+        ReleaseEntity release = new ReleaseEntity();
+        release.setName("TestRelease");
+        release.setId(1);
+        ReleaseDTO releaseDto = new ReleaseDTO(release);
+        List<ReleaseDTO> releaseDtos = new ArrayList<>();
+        releaseDtos.add(releaseDto);
+        ResourceDTO resourceDTO = new ResourceDTO(resGroup, releaseDtos);
+
+        ResourceEntity  resEnt = new ResourceEntity();
+        resEnt.setResourceGroup(resGroup);
+        resEnt.setName(resGroup.getName());
+        Resource resource = Resource.createByResource(ForeignableOwner.getSystemOwner(), resEnt, resType, new ContextEntity());
+        Mockito.when(resourceBoundaryMock.createNewResourceByName(ForeignableOwner.getSystemOwner(), resGroup.getName(), resType.getName(), release.getName())).thenReturn(resource);
+
+        // when
+        Response response = rest.addResource(resourceDTO);
+
+        // then
+        assertEquals(CREATED.getStatusCode(), response.getStatus());
+        assertTrue(response.getMetadata().get("Location").contains("/resources/"+resGroup.getName()));
     }
 
 }

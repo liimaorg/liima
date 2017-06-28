@@ -91,11 +91,22 @@ public class ResourceBoundary {
      */
     public Resource createNewResourceByName(ForeignableOwner creatingOwner, String newResourceName, String resourceTypeName,
                                             String releaseName)
-            throws ResourceTypeNotFoundException, ElementAlreadyExistsException {
+            throws ResourceNotFoundException, ResourceTypeNotFoundException, ElementAlreadyExistsException {
         ResourceTypeEntity resourceTypeEntity = resourceTypeRepository.getByName(resourceTypeName);
-        ReleaseEntity release = releaseLocator.getReleaseByName(releaseName);
-        Integer releaseId = release == null ? null : release.getId();
-        return createNewResourceByName(creatingOwner, newResourceName, resourceTypeEntity, releaseId, true);
+        if (resourceTypeEntity == null) {
+            String message = "ResourceType '" + resourceTypeName + "' existiert nicht";
+            log.info(message);
+            throw new ResourceNotFoundException(message);
+        }
+        ReleaseEntity release;
+        try {
+            release = releaseLocator.getReleaseByName(releaseName);
+        } catch (Exception e)  {
+            String message = "Release '" + releaseName + "' existiert nicht";
+            log.info(message);
+            throw new ResourceNotFoundException(message);
+        }
+        return createNewResourceByName(creatingOwner, newResourceName, resourceTypeEntity, release.getId(), true);
     }
 
     /**
