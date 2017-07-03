@@ -127,7 +127,7 @@ public class CopyResource {
 	/**
 	 * Creates a new Release of an existing Resource
 	 *
-	 * @param resourceGroupId id of the existing ResourceGroup
+	 * @param resourceGroupName name of the existing ResourceGroup
 	 * @param targetReleaseName name of the new Release
 	 * @param originReleaseName name of the current Release
 	 * @param actingOwner the acting ForeignableOwner
@@ -135,13 +135,13 @@ public class CopyResource {
 	 * @throws ForeignableOwnerViolationException
 	 * @throws AMWException
 	 */
-	public CopyResourceResult doCreateResourceRelease(Integer resourceGroupId, String targetReleaseName,
+	public CopyResourceResult doCreateResourceRelease(String resourceGroupName, String targetReleaseName,
 		  String originReleaseName, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
 		ReleaseEntity targetRelease;
 		ReleaseEntity originRelease;
-		ResourceGroupEntity resourceGroup = entityManager.find(ResourceGroupEntity.class, resourceGroupId);
+		ResourceGroupEntity resourceGroup = resourceGroupRepository.getResourceGroupByName(resourceGroupName);
 		if (resourceGroup == null) {
-			throw new ResourceNotFoundException("No ResourceGroup with id " +resourceGroupId + " found");
+			throw new ResourceNotFoundException("No ResourceGroup with name " +resourceGroupName + " found");
 		}
 		try {
 			targetRelease = releaseLocator.getReleaseByName(targetReleaseName);
@@ -163,6 +163,10 @@ public class CopyResource {
 		// Do not overwrite existing release
 		if (resourceGroup.getReleases() != null && resourceGroup.getReleases().contains(targetRelease)) {
 			throw new AMWException("Release " + targetRelease.getName() + " already exists");
+		}
+		// Can not copy from inexisting release
+		if (resourceGroup.getReleases() != null && !resourceGroup.getReleases().contains(originRelease)) {
+			throw new AMWException("Release " + originRelease.getName() + " must exist");
 		}
 
 		ResourceEntity originResource = commonDomainService.getResourceEntityByGroupAndRelease(resourceGroup.getId(),
