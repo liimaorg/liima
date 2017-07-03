@@ -37,7 +37,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorDomainServiceW
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
@@ -84,7 +84,7 @@ public class DeploymentTest {
 	@Mock
 	private ResourceTypeProvider resourceTypeProvider;
 	@Mock
-	private ResourceBoundary resourceBoundary;
+	private ResourceGroupPersistenceService resourceGroupService;
 	@Mock
 	private ContextDomainService contextDomainService;
 
@@ -167,7 +167,7 @@ public class DeploymentTest {
 				DefaultResourceTypeDefinition.APPLICATIONSERVER)).thenReturn(defaultAS);
 		
 		// resource group
-		when(resourceBoundary.getUniqueGroupByNameAndType(anyString(), anyInt())).thenReturn(resource.getResourceGroup());
+		when(resourceGroupService.loadUniqueGroupByNameAndType(anyString(), anyInt())).thenReturn(resource.getResourceGroup());
 		
 		when(dependencyResolverService.getResourceEntityForRelease(any(ResourceGroupEntity.class),
 				any(ReleaseEntity.class))).thenReturn(resource);

@@ -81,11 +81,6 @@ public class ResourceBoundary {
     @Inject
     ResourceTypeRepository resourceTypeRepository;
 
-
-    public ResourceGroupEntity getUniqueGroupByNameAndType(String name, Integer resourceTypeId) {
-        return resourceGroupRepository.loadUniqueGroupByNameAndType(name, resourceTypeId);
-    }
-
     /**
      * Create new instance resourceType (any resourceType)
      */
