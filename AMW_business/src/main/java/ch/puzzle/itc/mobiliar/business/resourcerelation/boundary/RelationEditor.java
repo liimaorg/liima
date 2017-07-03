@@ -33,11 +33,14 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
@@ -48,6 +51,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
+import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
@@ -73,6 +77,12 @@ public class RelationEditor {
 
 	@Inject
 	ResourceRepository resourceRepository;
+
+	@Inject
+	ResourceLocator resourceLocator;
+
+	@Inject
+	ResourceGroupLocator resourceGroupLocator;
 
     @Inject
     ForeignableService foreignableService;
@@ -108,6 +118,38 @@ public class RelationEditor {
 			ElementAlreadyExistsException {
 		resourceRelationService.addRelationByGroup(masterId, slaveGroupId, provided, identifier,
 				null, changingOwner);
+	}
+
+	/**
+	 *
+	 * @param masterGroupName
+	 * @param slaveGroupName
+	 * @param provided
+	 * @param identifier
+	 * @param typeIdentifier
+	 * @param releaseName
+	 * @param changingOwner
+	 * @throws ResourceNotFoundException
+	 * @throws ElementAlreadyExistsException
+	 * @throws ValidationException
+	 */
+	public void addResourceRelationForSpecificRelease(String masterGroupName, String slaveGroupName, boolean provided,
+		  	Integer identifier, String typeIdentifier, String releaseName, ForeignableOwner changingOwner)
+			throws ResourceNotFoundException, ElementAlreadyExistsException, ValidationException {
+
+		ResourceEntity master = resourceLocator.getResourceByGroupNameAndRelease(masterGroupName, releaseName);
+		if (master == null) {
+			throw new ResourceNotFoundException("Resource with name '" + masterGroupName + "' and Release '" + releaseName + "' not found");
+		}
+		ResourceGroupEntity slaveGroup = null;
+		try {
+			slaveGroup = resourceGroupLocator.getResourceGroupByName(slaveGroupName);
+		} catch (RuntimeException e) {
+			throw new ResourceNotFoundException("ResourceGroup with name '" + slaveGroupName + "' not found");
+		}
+
+		resourceRelationService.addRelationByGroup(master.getId(), slaveGroup.getId(), provided, identifier,
+				typeIdentifier, changingOwner);
 	}
 
 	public void addResourceTypeRelation(ResourceTypeEntity masterType, Integer slaveResourceTypeId)

@@ -39,8 +39,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
@@ -48,17 +46,13 @@ import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 
-import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.*;
@@ -107,12 +101,9 @@ public class ResourcesRest {
     ResourceRelationPropertiesRest resourceRelationProperties;
 
     @Inject
-    RelationEditor relationEditor;
-
-    @Inject
     ResourcePropertiesRest resourceProperties;
 
-	@Inject
+    @Inject
     ResourceDependencyResolverService resourceDependencyResolverService;
 
     @Inject
@@ -214,9 +205,9 @@ public class ResourcesRest {
     @GET
     @ApiOperation(value = "Get exact or closest past release")
     public ReleaseDTO getExactOrClosestPastRelease(@PathParam("resourceGroupName") String resourceGroupName,
-                                  @PathParam("releaseName") String releaseName,
-                                  @QueryParam("env") @DefaultValue("Global") String environment,
-                                  @QueryParam("type") String resourceType) throws ValidationException {
+                                                   @PathParam("releaseName") String releaseName,
+                                                   @QueryParam("env") @DefaultValue("Global") String environment,
+                                                   @QueryParam("type") String resourceType) throws ValidationException {
         ReleaseEntity release = resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName);
         return new ReleaseDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
                 releaseName, resourceType), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
