@@ -136,13 +136,22 @@ public class ReleaseMgmtService {
 	}
 
 	/**
-	 * Persists the given release - if the release doesn't exist yet, it creates it by
-	 * new - otherwise the already existing instance will be updated.
+	 * Persists the given new release.
 	 * 
 	 * @param release
 	 */
-	@HasPermission(permission = Permission.RELEASE, oneOfAction = { UPDATE, CREATE })
-	public boolean save(ReleaseEntity release) throws GeneralDBException {
+	@HasPermission(permission = Permission.RELEASE, action = CREATE)
+	public boolean create(ReleaseEntity release) throws GeneralDBException {
+		return persistenceService.saveReleaseEntity(release);
+	}
+
+	/**
+	 * Persists the given release - the already existing instance will be updated.
+	 *
+	 * @param release
+	 */
+	@HasPermission(permission = Permission.RELEASE, action = UPDATE)
+	public boolean update(ReleaseEntity release) throws GeneralDBException {
 		return persistenceService.saveReleaseEntity(release);
 	}
 

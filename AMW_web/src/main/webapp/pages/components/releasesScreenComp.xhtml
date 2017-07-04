@@ -109,7 +109,8 @@
 			movable="true" domElementAttachment="form">
 			<f:facet name="header">
 				<h2>
-					<h:outputText value="Edit release" />
+					<h:outputText value="Add release" rendered="#{releaseMgmtScreenService.currentRelease.id == null}" />
+					<h:outputText value="Edit release" rendered="#{releaseMgmtScreenService.currentRelease.id != null}" />
 				</h2>
 			</f:facet>
 			<f:facet name="controls">
@@ -133,8 +134,8 @@
 					<rich:calendar 
 					    buttonIcon="/AMW_web/images/calendarIcon.png"
 					    buttonDisabledIcon="/AMW_web/images/calendarIcon.png"
-					    enableManualInput="true" showApplyButton="true"
-						datePattern="dd.MM.yyyy"
+					    enableManualInput="true" showApplyButton="true" datePattern="dd.MM.yyyy"
+						required="true" requiredMessage="The installation date is mandatory"
 						value="#{releaseMgmtScreenService.currentRelease.installationInProductionAt}">
 					</rich:calendar>
 					<h:outputLabel value="Release description" />
