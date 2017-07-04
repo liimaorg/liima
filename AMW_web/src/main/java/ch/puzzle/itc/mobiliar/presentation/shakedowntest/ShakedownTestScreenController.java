@@ -20,32 +20,31 @@
 
 package ch.puzzle.itc.mobiliar.presentation.shakedowntest;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService.SortingDirectionType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService.ShakedownTestFilterTypes;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestOrder;
 import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent;
 import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent.ShakedownTestEventType;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import ch.puzzle.itc.mobiliar.presentation.shakedowntest.ShakedownTestScreenDataProvider.shakedownTestScreenColDescriptor;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
+
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.List;
+import java.util.Set;
 
 @Named
 @RequestScoped
@@ -58,7 +57,7 @@ public class ShakedownTestScreenController{
 	private UserSettings userSettings;
 
 	@Inject
-	private DeploymentService deploymentService;
+	private DeploymentBoundary deploymentBoundary;
 
 	@Inject
 	private ResourceGroupPersistenceService resourceGroupService;
@@ -138,8 +137,8 @@ public class ShakedownTestScreenController{
 		return trackingId;
 	}
 
-	public List<Object[]> getAllLastSucessfullDeployments() {
-		return deploymentService.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
+	public List<DeploymentEntity> getAllLastSucessfullDeployments() {
+		return deploymentBoundary.getListOfLastDeploymentsForAppServerAndContext(true);
 	}
 
 }

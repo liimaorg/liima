@@ -20,21 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-
 import ch.puzzle.itc.mobiliar.business.database.control.AmwAuditReader;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
@@ -42,11 +29,7 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.AppServerRelationsTemplateProcessor;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationOptions;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationPackage;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationUnit;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationUnitFactory;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.*;
 import ch.puzzle.itc.mobiliar.business.globalfunction.control.GlobalFunctionService;
 import ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
@@ -60,6 +43,17 @@ import ch.puzzle.itc.mobiliar.common.exception.GeneratorException;
 import ch.puzzle.itc.mobiliar.common.exception.GeneratorException.MISSING;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Stateless
 public class GeneratorDomainServiceWithAppServerRelations {
@@ -71,7 +65,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
     protected GeneratorFileWriter writer;
 
     @Inject
-    private DeploymentService deploymentService;
+    private DeploymentBoundary deploymentBoundary;
 
     @Inject
     private AmwAuditReader amwAuditReader;
@@ -468,11 +462,11 @@ public class GeneratorDomainServiceWithAppServerRelations {
         log.log(Level.WARNING, "Deployment fehlgeschlagen", e);
         String message = generationModus.getAction() + " failure at " + new Date() + ". Reason: " + e
                   .getMessage() + "\n";
-        deploymentService.updateDeploymentInfo(generationModus, deployment.getId(), message,
+        deploymentBoundary.updateDeploymentInfo(generationModus, deployment.getId(), message,
                   deployment.getResource() != null ? deployment.getResource()
                             .getId() : null, null);
         if (generationModus.isSendNotificationOnErrorGenerationModus()) {
-            deploymentService.sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
+            deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
         }
     }
 
@@ -493,11 +487,11 @@ public class GeneratorDomainServiceWithAppServerRelations {
         }
 
         log.log(Level.WARNING, "Deployment fehlgeschlagen \n" + message.toString());
-        deploymentService.updateDeploymentInfo(generationModus, deployment.getId(), message.toString(),
+        deploymentBoundary.updateDeploymentInfo(generationModus, deployment.getId(), message.toString(),
                   deployment.getResource() != null ? deployment
                             .getResource().getId() : null, generationResult);
         if (generationModus.isSendNotificationOnErrorGenerationModus()) {
-            deploymentService.sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
+            deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
         }
     }
 
@@ -593,7 +587,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
     			|| GenerationModus.PREDEPLOY.equals(context.getGenerationModus())
     			|| GenerationModus.SIMULATE.equals(context.getGenerationModus())){
 	    	// create NodeJob for this Node and Add to Deployment in Deploy and Predeploy mode
-	        nodeJobEntity = deploymentService.createAndPersistNodeJobEntity(context.getDeployment(), context.getNode());
+	        nodeJobEntity = deploymentBoundary.createAndPersistNodeJobEntity(context.getDeployment(), context.getNode());
 	        
     	}else{
     		// create Test NodeJob Entity

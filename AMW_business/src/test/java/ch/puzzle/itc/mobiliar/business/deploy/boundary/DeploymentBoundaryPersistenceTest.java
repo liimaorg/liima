@@ -20,10 +20,12 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -38,8 +40,6 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.junit.Before;
@@ -61,11 +61,11 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.*;
 
 @RunWith(PersistenceTestRunner.class)
-public class DeploymentServicePersistenceTest
+public class DeploymentBoundaryPersistenceTest
 {
 
 	@InjectMocks
-	DeploymentService deploymentService;
+    DeploymentBoundary deploymentBoundary;
 
 	@Mock
 	ResourceEditService resourceEditService;
@@ -93,10 +93,10 @@ public class DeploymentServicePersistenceTest
 	public void setup() throws Exception {
 
 		MockitoAnnotations.initMocks(this);
-		deploymentService.setEntityManager(entityManager);
+		deploymentBoundary.setEntityManager(entityManager);
 
 		commonFilterService = new CommonFilterService();
-		deploymentService.commonFilterService = commonFilterService;
+		deploymentBoundary.commonFilterService = commonFilterService;
 		commonFilterService.setEm(entityManager);
 		commonFilterService.setLog(log);
 		// given
@@ -110,7 +110,7 @@ public class DeploymentServicePersistenceTest
 	@Test(expected = IllegalArgumentException.class)
 	public void test_changeDeploymentTime_exception_noId() throws DeploymentStateException {
 		// when
-		deploymentService.changeDeploymentDate(null, new Date());
+		deploymentBoundary.changeDeploymentDate(null, new Date());
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class DeploymentServicePersistenceTest
 		detachedEntity.setDeploymentDate(deploymentDate);
 
 		// when
-		DeploymentEntity result = deploymentService
+		DeploymentEntity result = deploymentBoundary
 				.changeDeploymentDate(detachedEntity.getId(), detachedEntity.getDeploymentDate());
 
 		// then
@@ -151,7 +151,7 @@ public class DeploymentServicePersistenceTest
 		Date deploymentDate = new Date();
 		detachedEntity.setDeploymentDate(deploymentDate);
 
-		deploymentService.changeDeploymentDate(detachedEntity.getId(), detachedEntity.getDeploymentDate());
+		deploymentBoundary.changeDeploymentDate(detachedEntity.getId(), detachedEntity.getDeploymentDate());
 	}
 
 	@Test(expected = DeploymentStateException.class)
@@ -165,12 +165,12 @@ public class DeploymentServicePersistenceTest
 		Date deploymentDate = new Date();
 		detachedEntity.setDeploymentDate(deploymentDate);
 
-		deploymentService.changeDeploymentDate(detachedEntity.getId(), detachedEntity.getDeploymentDate());
+		deploymentBoundary.changeDeploymentDate(detachedEntity.getId(), detachedEntity.getDeploymentDate());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void test_cancelDeployment_failed_nullvalue() throws DeploymentStateException {
-		assertNull("", deploymentService.cancelDeployment(null));
+		assertNull("", deploymentBoundary.cancelDeployment(null));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -179,7 +179,7 @@ public class DeploymentServicePersistenceTest
 		d.setId(null);
 
 		// when
-		deploymentService.cancelDeployment(d.getId());
+		deploymentBoundary.cancelDeployment(d.getId());
 
 	}
 
@@ -192,7 +192,7 @@ public class DeploymentServicePersistenceTest
 		DeploymentEntity detachedEntity = getDetachedEntityFromDb(d);
 
 		// when
-		deploymentService.cancelDeployment(detachedEntity.getId());
+		deploymentBoundary.cancelDeployment(detachedEntity.getId());
 
 	}
 
@@ -206,7 +206,7 @@ public class DeploymentServicePersistenceTest
 
 		DeploymentEntity detachedEntity = getDetachedEntityFromDb(d);		
 		
-		deploymentService.cancelDeployment(detachedEntity.getId());
+		deploymentBoundary.cancelDeployment(detachedEntity.getId());
 
 	}
 
@@ -225,7 +225,7 @@ public class DeploymentServicePersistenceTest
 
 		// when
 		when(permissionService.getCurrentUserName()).thenReturn(cancelUserName);
-		DeploymentEntity cancelDeployment = deploymentService.cancelDeployment(detachedEntity.getId());
+		DeploymentEntity cancelDeployment = deploymentBoundary.cancelDeployment(detachedEntity.getId());
 		
 		// then
 		assertTrue("Deployment executed must be set to true after cancelling", cancelDeployment.isExecuted());
@@ -247,7 +247,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsInProgressTimeoutReached();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsInProgressTimeoutReached();
 		
 		// then
 		assertNotNull(deployments);
@@ -270,7 +270,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsInProgressTimeoutReached();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsInProgressTimeoutReached();
 		
 		// then
 		assertNotNull(deployments);
@@ -293,7 +293,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsInProgressTimeoutReached();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsInProgressTimeoutReached();
 		
 		// then
 		assertNotNull(deployments);
@@ -305,7 +305,7 @@ public class DeploymentServicePersistenceTest
 		// given
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToExecute();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToExecute();
 		
 		// then
 		assertNotNull(deployments);
@@ -324,7 +324,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToExecute();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToExecute();
 		
 		// then
 		assertNotNull(deployments);
@@ -344,7 +344,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToExecute();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToExecute();
 		
 		// then
 		assertNotNull(deployments);
@@ -365,7 +365,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getPreDeploymentsToExecute();
+		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsToExecute();
 		
 		// then
 		assertNotNull(deployments);
@@ -385,7 +385,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getPreDeploymentsToExecute();
+		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsToExecute();
 		
 		// then
 		assertNotNull(deployments);
@@ -405,7 +405,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getPreDeploymentsToExecute();
+		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsToExecute();
 		
 		// then
 		assertNotNull(deployments);
@@ -423,7 +423,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(createDeploymentEntityToExecute());
 
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getPreDeploymentsToExecute();
+		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsToExecute();
 		
 		// then
 		assertNotNull(deployments);
@@ -450,7 +450,7 @@ public class DeploymentServicePersistenceTest
 		// given
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToSimulate();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
 		
 		// then
 		assertNotNull(deployments);
@@ -470,7 +470,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToSimulate();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
 		
 		// then
 		assertNotNull(deployments);
@@ -491,7 +491,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToSimulate();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
 		
 		// then
 		assertNotNull(deployments);
@@ -512,7 +512,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToSimulate();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
 		
 		// then
 		assertNotNull(deployments);
@@ -533,7 +533,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToSimulate();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
 		
 		// then
 		assertNotNull(deployments);
@@ -553,7 +553,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToSimulate();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
 		
 		// then
 		assertNotNull(deployments);
@@ -573,7 +573,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToSimulate();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
 		
 		// then
 		assertNotNull(deployments);
@@ -595,7 +595,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToSimulate();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
 		
 		// then
 		assertNotNull(deployments);
@@ -615,7 +615,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToSimulate();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
 		
 		// then
 		assertNotNull(deployments);
@@ -633,7 +633,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(createDeploymentEntityToSimulate());
 
 		// when
-		List<DeploymentEntity> deployments = deploymentService.getDeploymentsToSimulate();
+		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
 		
 		// then
 		assertNotNull(deployments);
@@ -669,7 +669,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		deploymentService.sendOneNotificationForTrackingIdOfDeployment(Integer.valueOf(12));
+		deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(Integer.valueOf(12));
 		
 		// then
 		verify(deploymentNotificationService, times(0)).createAndSendMailForDeplyoments(anyList());
@@ -691,7 +691,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		deploymentService.sendOneNotificationForTrackingIdOfDeployment(Integer.valueOf(12));
+		deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(Integer.valueOf(12));
 		
 		// then
 		verify(deploymentNotificationService, times(0)).createAndSendMailForDeplyoments(anyList());
@@ -714,7 +714,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 		
 		// when
-		deploymentService.sendOneNotificationForTrackingIdOfDeployment(Integer.valueOf(12));
+		deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(Integer.valueOf(12));
 		
 		// then
 		verify(deploymentNotificationService, times(1)).createAndSendMailForDeplyoments(anyList());
@@ -731,7 +731,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 
 		// when
-		deploymentService.updateDeploymentInfo(GenerationModus.DEPLOY, d.getId(), "foo error", resource.getId(), null);
+		deploymentBoundary.updateDeploymentInfo(GenerationModus.DEPLOY, d.getId(), "foo error", resource.getId(), null);
 
 		// then
 		DeploymentEntity afterUpdate = entityManager.find(DeploymentEntity.class, d.getId());
@@ -794,7 +794,7 @@ public class DeploymentServicePersistenceTest
 
 		// when sorting by release ascending (releaseA - releaseC - releaseB)
 		String colToSort =	DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentService.getFilteredDeployments(true, 0, 10, null, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(true, 0, 10, null, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
 		assertNotNull(result1);
@@ -805,7 +805,7 @@ public class DeploymentServicePersistenceTest
 		assertEquals(d3, it.next());
 		
 		// when sorting by release descending (releaseB - releaseC - releaseC)
-		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentService.getFilteredDeployments(true, 0,
+		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0,
 				10, null, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
 
 		// then
@@ -857,10 +857,11 @@ public class DeploymentServicePersistenceTest
 
 		// when filtering >= releaseA
 		Tuple<Set<DeploymentEntity>, Integer> result;
-		CustomFilter filter = new CustomFilter(DeploymentFilterTypes.RELEASE.getFilterDisplayName(), DeploymentFilterTypes.RELEASE.getFilterTabColumnName(), DeploymentFilterTypes.RELEASE.getFilterType());
-		filter.setComperatorSelection(ComperatorFilterOption.greaterequals);
+
+		CustomFilter filter = CustomFilter.builder(DeploymentFilterTypes.RELEASE)
+				.comparatorSelection(ComparatorFilterOption.greaterequals).build();
 		filter.setValue(CustomFilter.convertDateToString(releaseA.getInstallationInProductionAt()));
-		result = deploymentService.getFilteredDeployments(true, 0, 10, Collections.singletonList(filter),
+		result = deploymentBoundary.getFilteredDeployments(true, 0, 10, Collections.singletonList(filter),
 				null, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
@@ -872,8 +873,8 @@ public class DeploymentServicePersistenceTest
 		
 		// when filtering <= releaseC
 		filter.setValue(CustomFilter.convertDateToString(releaseC.getInstallationInProductionAt()));
-		filter.setComperatorSelection(ComperatorFilterOption.smallerequals);
-		result = deploymentService.getFilteredDeployments(true, 0,
+		filter.setComparatorSelection(ComparatorFilterOption.smallerequals);
+		result = deploymentBoundary.getFilteredDeployments(true, 0,
 				10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);
 
@@ -886,8 +887,8 @@ public class DeploymentServicePersistenceTest
 
 		// when filtering == releaseB
 		filter.setValue(CustomFilter.convertDateToString(releaseB.getInstallationInProductionAt()));
-		filter.setComperatorSelection(ComperatorFilterOption.equals);
-		result = deploymentService.getFilteredDeployments(true, 0,
+		filter.setComparatorSelection(ComparatorFilterOption.equals);
+		result = deploymentBoundary.getFilteredDeployments(true, 0,
 				10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);
 
@@ -919,7 +920,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(d);
 
 		// when
-		DeploymentEntity previous = deploymentService.getPreviousDeployment(d);
+		DeploymentEntity previous = deploymentBoundary.getPreviousDeployment(d);
 
 		// then
 		assertEquals(d.getResourceGroup().getName(), previous.getResourceGroup().getName());
@@ -952,7 +953,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(failed);
 
 		// when
-		List<Object[]> latest = deploymentService.getEssentialListOfLastDeploymentsForAppServerAndContext(false);
+		List<Object[]> latest = deploymentBoundary.getEssentialListOfLastDeploymentsForAppServerAndContext(false);
 
 		// then
 		assertEquals(failed.getContext().getId(), latest.get(0)[0]);
@@ -985,7 +986,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(failed);
 
 		// when
-		List<Object[]> latest = deploymentService.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
+		List<Object[]> latest = deploymentBoundary.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
 
 		// then
 		assertThat(latest.size(), is(0));
@@ -1039,7 +1040,7 @@ public class DeploymentServicePersistenceTest
 		persistDeploymentEntityForTest(deploymentBT);
 
 		// when
-		List<Object[]> latest = deploymentService.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
+		List<Object[]> latest = deploymentBoundary.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
 
 		// then
 		assertThat(latest.size(), is(3));

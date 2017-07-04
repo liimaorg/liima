@@ -20,10 +20,10 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.utils.JpaWildcardConverter;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter.ComperatorFilterOption;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -131,7 +131,7 @@ public class CommonFilterService {
 				q.setParameter(parameter, f.getIntegerValue());
 				log.fine("name: " + parameter + " value: " + f.getIntegerValue());
 			} else if (f.isStringType()) {
-				if(DeploymentService.DeploymentFilterTypes.APPLICATION_NAME.getFilterDisplayName().equals(f.getFilterDisplayName())) {
+				if(DeploymentFilterTypes.APPLICATION_NAME.getFilterDisplayName().equals(f.getFilterDisplayName())) {
 					//all app names are in a json structure so we have to search with %
 					q.setParameter(parameter, "%"+f.getStringValue()+"%");
 				}
@@ -260,8 +260,8 @@ public class CommonFilterService {
 	}
 
 	protected void createQueryForBooleanTypeWithoutAddingParameterToParameterMap(StringBuilder query, CustomFilter deploymentFilter) {
-		if ((deploymentFilter.getComperatorSelection().equals(ComperatorFilterOption.notequal) && !deploymentFilter.getBooleanValue())
-				|| (deploymentFilter.getComperatorSelection().equals(ComperatorFilterOption.equals) && deploymentFilter.getBooleanValue())) {
+		if ((deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.notequal) && !deploymentFilter.getBooleanValue())
+				|| (deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.equals) && deploymentFilter.getBooleanValue())) {
 			query.append(deploymentFilter.getDeploymentTableColumnName()).append(" is true ");
 		} else {
 			query.append("(").append(deploymentFilter.getDeploymentTableColumnName()).append(" is null OR ");

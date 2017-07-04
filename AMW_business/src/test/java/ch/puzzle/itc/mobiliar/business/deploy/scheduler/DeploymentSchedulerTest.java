@@ -20,33 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.scheduler;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.matches;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentExecuterService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -58,6 +32,28 @@ import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestExecuterSe
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.matches;
+import static org.mockito.Mockito.*;
 
 public class DeploymentSchedulerTest {
 
@@ -66,7 +62,7 @@ public class DeploymentSchedulerTest {
 	@Mock
 	Logger log;
 	@Mock
-	DeploymentService deploymentService;
+	DeploymentBoundary deploymentBoundary;
 	@Mock
 	DeploymentExecuterService deploymentExecuterService;
 	@Mock
@@ -83,8 +79,8 @@ public class DeploymentSchedulerTest {
 		contextEntity =  new ContextEntity();
 		contextEntity.setName("testContext");
 
-		when(deploymentService.getDeploymentProcessingLimit()).thenReturn(5);
-		when(deploymentService.getDeploymentSimulationLimit()).thenReturn(5);
+		when(deploymentBoundary.getDeploymentProcessingLimit()).thenReturn(5);
+		when(deploymentBoundary.getDeploymentSimulationLimit()).thenReturn(5);
 	}
 
 	@Test
@@ -92,7 +88,7 @@ public class DeploymentSchedulerTest {
 		// given
 		List<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 
-		when(deploymentService.getDeploymentsToSimulate()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsToSimulate()).thenReturn(deployments);
 
 		// when
 		deploymentScheduler.executeSimulation();
@@ -109,7 +105,7 @@ public class DeploymentSchedulerTest {
 		DeploymentEntity deployment = new DeploymentEntity();
 		deployments.add(deployment);
 
-		when(deploymentService.getDeploymentsToSimulate()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsToSimulate()).thenReturn(deployments);
 
 		// when
 		deploymentScheduler.executeSimulation();
@@ -132,7 +128,7 @@ public class DeploymentSchedulerTest {
 
 		deployments.add(deployment);
 
-		when(deploymentService.getDeploymentsToSimulate()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsToSimulate()).thenReturn(deployments);
 
 		// when
 		deploymentScheduler.executeSimulation();
@@ -161,7 +157,7 @@ public class DeploymentSchedulerTest {
 		deployments.add(deployment);
 		deployments.add(deployment2);
 
-		when(deploymentService.getDeploymentsToSimulate()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsToSimulate()).thenReturn(deployments);
 
 		// when
 		deploymentScheduler.executeSimulation();
@@ -178,7 +174,7 @@ public class DeploymentSchedulerTest {
 		// given
 		List<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 
-		when(deploymentService.getDeploymentsToExecute()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsToExecute()).thenReturn(deployments);
 
 		// when
 		deploymentScheduler.executeDeployments();
@@ -195,7 +191,7 @@ public class DeploymentSchedulerTest {
 		DeploymentEntity deployment = new DeploymentEntity();
 		deployments.add(deployment);
 
-		when(deploymentService.getDeploymentsToExecute()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsToExecute()).thenReturn(deployments);
 
 		// when
 		deploymentScheduler.executeDeployments();
@@ -218,7 +214,7 @@ public class DeploymentSchedulerTest {
 
 		deployments.add(deployment);
 
-		when(deploymentService.getDeploymentsToExecute()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsToExecute()).thenReturn(deployments);
 
 		// when
 		deploymentScheduler.executeDeployments();
@@ -247,7 +243,7 @@ public class DeploymentSchedulerTest {
 		deployments.add(deployment);
 		deployments.add(deployment2);
 
-		when(deploymentService.getDeploymentsToExecute()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsToExecute()).thenReturn(deployments);
 
 		// when
 		deploymentScheduler.executeDeployments();
@@ -347,13 +343,13 @@ public class DeploymentSchedulerTest {
 	public void test_checkForEndlessDeployments_noDeployments(){
 		// given
 		List<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
-		when(deploymentService.getDeploymentsInProgressTimeoutReached()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsInProgressTimeoutReached()).thenReturn(deployments);
 
 		// when
 		deploymentScheduler.checkForEndlessDeployments();
 
 		// then
-		verify(deploymentService, times(0)).updateDeploymentInfoAndSendNotification(any(GenerationModus.class), any(Integer.class), anyString(), any(Integer.class), any(GenerationResult.class));
+		verify(deploymentBoundary, times(0)).updateDeploymentInfoAndSendNotification(any(GenerationModus.class), any(Integer.class), anyString(), any(Integer.class), any(GenerationResult.class));
 		verify(log, times(2)).log(argThat(matchesLevel(Level.FINE)), anyString());
 	}
 
@@ -369,13 +365,13 @@ public class DeploymentSchedulerTest {
 
 		System.setProperty(ConfigKey.DEPLOYMENT_IN_PROGRESS_TIMEOUT.getValue(), Integer.toString(timeout));
 		
-		when(deploymentService.getDeploymentsInProgressTimeoutReached()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsInProgressTimeoutReached()).thenReturn(deployments);
 
 		// when
 		deploymentScheduler.checkForEndlessDeployments();
 
 		// then
-		verify(deploymentService, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
+		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
 				Matchers.<Integer>eq(null), Matchers.<GenerationResult>eq(null));
 		verify(log, times(2)).log(argThat(matchesLevel(Level.INFO)), anyString());
@@ -416,9 +412,9 @@ public class DeploymentSchedulerTest {
 		tests.add(test);
 		tests.add(test2);
 
-		when(deploymentService.getDeploymentsToSimulate()).thenReturn(deployments);
-		when(deploymentService.getDeploymentsToExecute()).thenReturn(deployments);
-		when(deploymentService.getPreDeploymentsToExecute()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsToSimulate()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsToExecute()).thenReturn(deployments);
+		when(deploymentBoundary.getPreDeploymentsToExecute()).thenReturn(deployments);
 		when(shakedownTestService.getTestsToExecute()).thenReturn(tests);
 
 
@@ -476,20 +472,20 @@ public class DeploymentSchedulerTest {
 
 		int timeout = 3600;
 
-		when(deploymentService.getDeploymentsInProgressTimeoutReached()).thenReturn(deployments);
+		when(deploymentBoundary.getDeploymentsInProgressTimeoutReached()).thenReturn(deployments);
 		System.setProperty(ConfigKey.DEPLOYMENT_IN_PROGRESS_TIMEOUT.getValue(), Integer.toString(timeout));
 
 		// when
 		deploymentScheduler.checkForPendingDeploymentsAndTest();
 
 		// then
-		verify(deploymentService, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
+		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
 				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), Matchers.<GenerationResult>eq(null));
-		verify(deploymentService, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(2)),
+		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(2)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
 				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), Matchers.<GenerationResult>eq(null));
-		verify(deploymentService, times(0)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.PREDEPLOY), anyInt(),
+		verify(deploymentBoundary, times(0)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.PREDEPLOY), anyInt(),
 				anyString(), anyInt(), Matchers.<GenerationResult>any());
 		
 		verify(log, times(3)).log(argThat(matchesLevel(Level.INFO)), anyString());
