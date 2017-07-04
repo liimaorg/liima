@@ -953,7 +953,7 @@ public class DeploymentBoundaryPersistenceTest
 		persistDeploymentEntityForTest(failed);
 
 		// when
-		List<Object[]> latest = deploymentService.getEssentialListOfLastDeploymentsForAppServerAndContext(false);
+		List<Object[]> latest = deploymentBoundary.getEssentialListOfLastDeploymentsForAppServerAndContext(false);
 
 		// then
 		assertEquals(failed.getContext().getId(), latest.get(0)[0]);
@@ -986,7 +986,7 @@ public class DeploymentBoundaryPersistenceTest
 		persistDeploymentEntityForTest(failed);
 
 		// when
-		List<Object[]> latest = deploymentService.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
+		List<Object[]> latest = deploymentBoundary.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
 
 		// then
 		assertThat(latest.size(), is(0));
@@ -1040,7 +1040,7 @@ public class DeploymentBoundaryPersistenceTest
 		persistDeploymentEntityForTest(deploymentBT);
 
 		// when
-		List<Object[]> latest = deploymentService.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
+		List<Object[]> latest = deploymentBoundary.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
 
 		// then
 		assertThat(latest.size(), is(3));
