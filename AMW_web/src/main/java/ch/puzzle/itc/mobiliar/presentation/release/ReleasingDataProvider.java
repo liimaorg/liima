@@ -29,6 +29,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import lombok.Getter;
 import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -76,6 +78,9 @@ public class ReleasingDataProvider implements Serializable {
     @Inject
     PropertyEditDataProvider propertyEditDataProvider;
 
+	@Inject
+	SessionContext context;
+
 	boolean active;
 
 	@Getter
@@ -117,7 +122,8 @@ public class ReleasingDataProvider implements Serializable {
 	}
 
 	public boolean isCanCreateNewRelease(){
-		return permissionBoundary.canCopyFromResource(currentSelectedResource);
+		return currentSelectedResource != null && permissionBoundary.hasPermission(Permission.RESOURCE,
+				context.getCurrentContext(), Action.CREATE, currentSelectedResource, null);
 	}
 
 	public String createRelease() {
