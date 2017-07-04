@@ -150,10 +150,10 @@ public class ResourceRelationsRest {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Slave resource group name must not be empty")).build();
         }
         if (StringUtils.isEmpty(resourceType)) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("ResourceType must not be empty")).build();
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must not be empty")).build();
         }
         if (!resourceType.toLowerCase().equals("provided") && !resourceType.toLowerCase().equals("consumed")) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("ResourceType must either be 'consumed' or 'provided'")).build();
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must either be 'consumed' or 'provided'")).build();
         }
         try {
             relationEditor.addResourceRelationForSpecificRelease(resourceGroupName, slaveGroupName,
