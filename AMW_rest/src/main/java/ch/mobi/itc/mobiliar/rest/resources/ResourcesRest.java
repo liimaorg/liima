@@ -210,8 +210,8 @@ public class ResourcesRest {
                                                    @QueryParam("type") String resourceType) throws ValidationException {
         ReleaseEntity release = resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName);
         return new ReleaseDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
-                releaseName, resourceType), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
-                environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
+                release.getName(), resourceType), resourceProperties.getResourceProperties(resourceGroupName, release.getName(),
+                environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, release.getName(), ""));
     }
 
     @Path("/resourceGroups")
