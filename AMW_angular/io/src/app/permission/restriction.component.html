@@ -8,7 +8,7 @@
         <select id="selectPermission" class="form-control input-sm" [(ngModel)]="restriction.permission.name"
                 (change)="setOld()">
           <option [ngValue]="permission.name" *ngFor="let permission of permissions">{{permission.name}}
-            <span *ngIf="permission.old"> (OLD)</span>
+            <ng-container *ngIf="permission.old"> (OLD)</ng-container>
           </option>
         </select>
       </div>
