@@ -195,7 +195,11 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 	 */
 	public boolean save() {
 		try {
-			releaseMgmtService.save(currentRelease);
+			if (currentRelease.getId() == null) {
+				releaseMgmtService.create(currentRelease);
+			} else {
+				releaseMgmtService.update(currentRelease);
+			}
 			GlobalMessageAppender.addSuccessMessage("Release " + currentRelease.getName()
 					+ " successfully saved.");
 			reload();
