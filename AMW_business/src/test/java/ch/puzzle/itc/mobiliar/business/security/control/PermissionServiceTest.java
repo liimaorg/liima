@@ -165,7 +165,7 @@ public class PermissionServiceTest {
 	}
 
     @Test
-	public void hasPermissionToDeleteResourceRelationWhenUserIsConfigAdminAndResourceIsInstanceOfDefaultResourceType(){
+	public void hasPermissionToDeleteResourceRelationWhenUserHasResourceUpdatePermissionAndResourceIsInstanceOfDefaultResourceType(){
 		// given
         ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
 		
@@ -174,7 +174,7 @@ public class PermissionServiceTest {
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_EVERY_RELATED_RESOURCE, res)));
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -185,16 +185,16 @@ public class PermissionServiceTest {
 	}
 	
 	@Test
-	public void hasPermissionToDeleteResourceRelationWhenUserIsConfigAdminAndResourceIsInstanceOfNotDefaultResourceType(){
+	public void hasPermissionToDeleteResourceRelationWhenUserHasResourceUpdatePermissionAndResourceIsInstanceOfNotDefaultResourceType(){
 		// given
         ResourceEntity ws = resourceEntityBuilder.mockResourceEntity("ws", null, "webservice", null);
 
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
-		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_EVERY_RELATED_RESOURCE, res)));
+		RestrictionEntity upd = new RestrictionEntity();
+		upd.setAction(Action.UPDATE);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, upd)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -205,16 +205,16 @@ public class PermissionServiceTest {
 	}
 
     @Test
-    public void hasPermissionToDeleteResourceRelationWhenResourceTypeIsNull() {
+    public void hasPermissionToDeleteResourceRelationWhenUserHasResourceUpdatePermissionAndResourceTypeIsNull() {
         // given
         ResourceEntity resourceWithoutResourceType = ResourceFactory.createNewResource("Orphan");
 
         when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
-		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_EVERY_RELATED_RESOURCE, res)));
+		RestrictionEntity upd = new RestrictionEntity();
+		upd.setAction(Action.UPDATE);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, upd)));
         permissionService.rolesWithRestrictions = myRoles;
 
         // when

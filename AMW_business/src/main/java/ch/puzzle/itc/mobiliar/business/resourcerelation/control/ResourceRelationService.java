@@ -351,23 +351,20 @@ public class ResourceRelationService implements Serializable{
 				}
 			}
 			else {
+				permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
 				// there are still relations to the appServer in other releases, therefore remove this one
-				removeOtherRelation(relationId);
+				doRemoveResourceRelationForAllReleases(relationId);
 			}
 
 		}
 		else {
-			removeOtherRelation(relationId);
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
+			doRemoveResourceRelationForAllReleases(relationId);
 		}
 	}
 
 	@HasPermission(permission = Permission.DELETE_NODE_RELATION)
 	private void removeNodeRelation(Integer rel) throws ResourceNotFoundException{
-		doRemoveResourceRelationForAllReleases(rel);
-	}
-
-	@HasPermission(permission = Permission.DELETE_EVERY_RELATED_RESOURCE)
-	private void removeOtherRelation(Integer rel) throws ResourceNotFoundException {
 		doRemoveResourceRelationForAllReleases(rel);
 	}
 
