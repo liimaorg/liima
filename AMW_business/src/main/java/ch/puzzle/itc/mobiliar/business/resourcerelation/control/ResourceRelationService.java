@@ -265,7 +265,7 @@ public class ResourceRelationService implements Serializable{
 	}
 
 
-	private void addResourceRelation(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
+	private void addResourceRelation(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 									 String typeIdentifier, Integer releaseId, ForeignableOwner changingOwner) throws ElementAlreadyExistsException {
 		ResourceEntity master = entityManager.find(ResourceEntity.class, masterId);
 		ResourceGroupEntity slaveGroup = entityManager.find(ResourceGroupEntity.class, slaveGroupId);
