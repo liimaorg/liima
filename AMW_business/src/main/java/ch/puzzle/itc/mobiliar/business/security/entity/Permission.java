@@ -34,7 +34,6 @@ public enum Permission {
     // RESOURCE RELATION PERMISSIONS
     CONSUMED_RES_LIST("Allows to see consumed relations in the edit screen", true),
     PROVIDED_RES_LIST("Allows to see provided relations in the edit screen", true),
-    ADD_RELATED_RESOURCE("Add a relation to an application. Path_1: Apps -> Edit(application) -> Add Relation; Path_2 Resources -> APPLICATION -> Add Relation", true),
     ADD_AS_CONSUMED_RESOURCE("Add as consumed Resource. Path: all resource instance screen-> press button 'Add relation'.", true),
     ADD_EVERY_RELATED_RESOURCE("WARNING: DON'T CHANGE THIS PERMISSION", true),
     DELETE_EVERY_RELATED_RESOURCE("WARNING: DON'T CHANGE THIS PERMISSION", true),

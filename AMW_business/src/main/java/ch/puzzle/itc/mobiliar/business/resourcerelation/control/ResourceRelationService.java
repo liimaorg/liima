@@ -39,6 +39,8 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
@@ -75,6 +77,9 @@ public class ResourceRelationService implements Serializable{
 
 	@Inject
 	ForeignableService foreignableService;
+
+	@Inject
+	PermissionService permissionService;
 
     @Inject
     ResourceDependencyResolverService resourceDependencyResolverService;
@@ -134,6 +139,7 @@ public class ResourceRelationService implements Serializable{
 		}
 		else if (DefaultResourceTypeDefinition.APPLICATION.name()
 				.equals(master.getResourceType().getName())) {
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
 			addRelationInEditInstanceApplicationByGroup(masterId, slaveGroupId, provided,
 					identifier, typeIdentifier, changingOwner);
 		} else if (slaveGroup.getResourceType().isRuntimeType()) {
@@ -215,7 +221,6 @@ public class ResourceRelationService implements Serializable{
 	 * @throws ElementAlreadyExistsException
 	 * @throws ResourceNotFoundException
 	 */
-	@HasPermission(permission = Permission.ADD_RELATED_RESOURCE)
 	private void addRelationInEditInstanceApplicationByGroup(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
 			String typeIdentifier, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
 		doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, identifier,

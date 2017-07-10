@@ -503,7 +503,7 @@ public class PermissionServiceTest {
     }
 
     @Test
-	public void hasPermissionToAddResourceRelationWhenUserIsAppDeveloperAndResourceIsInstanceOfApplicationResType(){
+	public void hasPermissionToAddResourceRelationWhenUserHasPermissionToUpdateResourceAndResourceIsInstanceOfApplicationResType(){
 		// given
         ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
 
@@ -514,7 +514,7 @@ public class PermissionServiceTest {
 		res.setAction(Action.ALL);
 		RestrictionEntity upd = new RestrictionEntity();
 		upd.setAction(Action.UPDATE);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_RELATED_RESOURCE, res),
+		myRoles.put(APP_DEVELOPER, Arrays.asList(
 				new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_AS_CONSUMED_RESOURCE, res),
 				new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, upd)));
 		permissionService.rolesWithRestrictions = myRoles;
@@ -529,7 +529,7 @@ public class PermissionServiceTest {
 	}
 
     @Test
-    public void hasNoPermissionToAddResourceRelationWhenUserIsAppDeveloperAndResourceIsNotInstanceOfApplicationResType() {
+    public void hasNoPermissionToAddResourceRelationWhenUserUserHasNoPermissionToUpdateResourceAndResourceIsNotInstanceOfApplicationResType() {
         // given
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
@@ -538,7 +538,7 @@ public class PermissionServiceTest {
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_RELATED_RESOURCE, res)));
+		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_AS_CONSUMED_RESOURCE, res)));
         permissionService.rolesWithRestrictions = myRoles;
 
         // when

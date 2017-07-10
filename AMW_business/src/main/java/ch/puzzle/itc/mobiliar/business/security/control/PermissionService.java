@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.ALL;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
 
 @Stateless
 public class PermissionService implements Serializable {
@@ -521,12 +522,11 @@ public class PermissionService implements Serializable {
             } else if (resourceEntity.getResourceType().isApplicationServerResourceType()
                     && hasPermission(Permission.ADD_NODE_RELATION)) {
                 return true;
-            } else if (resourceEntity.getResourceType().isApplicationResourceType()
-                    && hasPermission(Permission.ADD_RELATED_RESOURCE)) {
+            } else if (resourceEntity.getResourceType().isApplicationResourceType()) {
                 return (!provided && hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE));
             }
         }
-        return hasPermission(Permission.ADD_RELATED_RESOURCETYPE);
+        return hasPermission(Permission.RESOURCE, UPDATE);
     }
 
     /**
