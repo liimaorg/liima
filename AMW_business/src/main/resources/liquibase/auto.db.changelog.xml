@@ -88,5 +88,6 @@
     <include file="changesets/data/newPermissions_migrationOfRemainingPermissions.xml" relativeToChangelogFile="true"/>
 
     <include file="changesets/data/permissionMerge/add_app_to_app_server.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/delete_app_to_app_server.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -43,7 +43,6 @@ public enum Permission {
     SELECT_RUNTIME("Select runtime. You can find this button in all instances of Application Server", true),
     ADD_NODE_RELATION("Add Node to Application Server. Path: Resources -> select one instance of Applicaiton Server ", true),
     DELETE_NODE_RELATION("Delete Node Relation button. Path: Resources -> select APPLICATIONSERVER tab -> select one instance of application server list ", true),
-    DELETE_APP_TO_APP_SERVER("Delete application to application server. You can find this list in all instances of application server", true),
     APP_LIST_ADDED_APPSERVER("The Applications added to applicationserver. Path: Resource -> APPLICATIONSERVER -> Edit", true),
 
     // RESOURCE TYPE PERMISSIONS

@@ -64,7 +64,7 @@
 					</h:link>
 				</h:column>
 				<h:column
-					rendered="#{sessionContext.isGlobal and securityDataProvider.hasPermission('DELETE_APP_TO_APP_SERVER')}">
+					rendered="#{sessionContext.isGlobal and securityDataProvider.hasPermissionForResourceType('RESOURCE', 'UPDATE', 'APPLICATIONSERVER')}">
 					<f:facet name="header">
 						<h:panelGroup>
 							<h:outputText value="Remove" />
