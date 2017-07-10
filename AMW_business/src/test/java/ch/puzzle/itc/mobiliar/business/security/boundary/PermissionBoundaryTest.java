@@ -25,16 +25,17 @@ import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -44,7 +45,6 @@ import org.mockito.Mockito;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import java.util.Arrays;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
@@ -68,6 +68,8 @@ public class PermissionBoundaryTest {
     @Mock
     ResourceTypeRepository resourceTypeRepository;
     @Mock
+    ResourceTypeProvider resourceTypeProvider;
+    @Mock
     ResourceGroupRepository resourceGroupRepository;
     @Mock
     ResourceRepository resourceRepository;
@@ -87,6 +89,8 @@ public class PermissionBoundaryTest {
         permissionBoundary.contextLocator = contextLocator;
         resourceTypeRepository = Mockito.mock(ResourceTypeRepository.class);
         permissionBoundary.resourceTypeRepository = resourceTypeRepository;
+        resourceTypeProvider = Mockito.mock(ResourceTypeProvider.class);
+        permissionBoundary.resourceTypeProvider = resourceTypeProvider;
         resourceGroupRepository = Mockito.mock(ResourceGroupRepository.class);
         permissionBoundary.resourceGroupRepository = resourceGroupRepository;
         resourceRepository = Mockito.mock(ResourceRepository.class);
@@ -474,13 +478,16 @@ public class PermissionBoundaryTest {
         // given
         ResourceEntity resource = new ResourceEntityBuilder().build();
         ResourceTypeEntity type = new ResourceTypeEntity();
+        ResourceTypeEntity asType = new ResourceTypeEntity();
+        asType.setName("APPLICATIONSERVER");
         resource.setResourceType(type);
         when(permissionService.hasPermission(Permission.RESOURCE, CREATE, type)).thenReturn(true);
+        when(resourceTypeProvider.getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER)).thenReturn(asType);
         // when
         permissionBoundary.canCreateAppAndAddToAppServer(resource);
         // then
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, CREATE, type);
-        verify(permissionService, times(1)).hasPermission(Permission.ADD_APP_TO_APP_SERVER);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, UPDATE, asType);
     }
 
     @Test
@@ -498,11 +505,11 @@ public class PermissionBoundaryTest {
         ContextEntity context = new ContextEntity();
         when(entityManager.find(type.getClass(), 21)).thenReturn(type);
         when(contextLocator.getContextById(23)).thenReturn(context);
-        when(permissionService.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, type)).thenReturn(true);
+        when(permissionService.hasPermission(Permission.RESOURCETYPE, context, UPDATE, null, type)).thenReturn(true);
         // when
         permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(21, 23, false);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, type);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, context, UPDATE, null, type);
         verify(permissionService, never()).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
@@ -517,11 +524,11 @@ public class PermissionBoundaryTest {
         ContextEntity context = new ContextEntity();
         when(entityManager.find(resource.getClass(), 21)).thenReturn(resource);
         when(contextLocator.getContextById(23)).thenReturn(context);
-        when(permissionService.hasPermission(Permission.RESOURCE, context, Action.UPDATE, rg, null)).thenReturn(false);
+        when(permissionService.hasPermission(Permission.RESOURCE, context, UPDATE, rg, null)).thenReturn(false);
         // when
         permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(21, context, false);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, context, Action.UPDATE, rg, null);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, context, UPDATE, rg, null);
         verify(permissionService, never()).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
@@ -599,7 +606,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.canEditFunctionOfResourceOrResourceType(null, type.getId());
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, type);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, null, UPDATE, null, type);
     }
 
     @Test
@@ -608,12 +615,12 @@ public class PermissionBoundaryTest {
         ResourceTypeEntity type = new ResourceTypeEntity();
         type.setId(23);
         when(permissionBoundary.resourceTypeRepository.find(23)).thenReturn(type);
-        when(permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, type)).thenReturn(true);
+        when(permissionService.hasPermission(Permission.RESOURCETYPE, null, UPDATE, null, type)).thenReturn(true);
         // when
         permissionBoundary.canEditFunctionOfResourceOrResourceType(null, type.getId());
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, type);
-        verify(permissionService, times(1)).hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, null, type);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, null, UPDATE, null, type);
+        verify(permissionService, times(1)).hasPermission(Permission.AMWFUNCTION, null, UPDATE, null, type);
     }
 
     @Test
@@ -627,7 +634,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.canEditFunctionOfResourceOrResourceType(resource.getId(), null);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, Action.UPDATE, rg, null);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, UPDATE, rg, null);
     }
 
     @Test
@@ -638,12 +645,12 @@ public class PermissionBoundaryTest {
         resource.setId(12);
         resource.setResourceGroup(rg);
         when(permissionBoundary.resourceRepository.find(12)).thenReturn(resource);
-        when(permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, rg, null)).thenReturn(true);
+        when(permissionService.hasPermission(Permission.RESOURCE, null, UPDATE, rg, null)).thenReturn(true);
         // when
         permissionBoundary.canEditFunctionOfResourceOrResourceType(resource.getId(), null);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, Action.UPDATE, rg, null);
-        verify(permissionService, times(1)).hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, rg, null);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, UPDATE, rg, null);
+        verify(permissionService, times(1)).hasPermission(Permission.AMWFUNCTION, null, UPDATE, rg, null);
     }
 
     @Test

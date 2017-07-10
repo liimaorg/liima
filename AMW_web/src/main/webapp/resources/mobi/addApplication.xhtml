@@ -18,7 +18,7 @@
 			<ul>
 				<li><h:commandLink onclick="showLoader();"
 						styleClass="btn light" type="button"
-						rendered="#{sessionContext.isGlobal and securityDataProvider.hasPermission('ADD_APP_TO_APP_SERVER')}">
+						rendered="#{sessionContext.isGlobal and securityDataProvider.hasPermissionForResourceType('RESOURCE', 'UPDATE', 'APPLICATIONSERVER')}">
 						<i class="icon icon-add"/>Add application
 								<a4j:ajax execute="@this" render="addRelationPopup"
 							oncomplete="if(confirmAddRelation()){#{rich:component('addRelationPopup')}.show();} hideLoader();"

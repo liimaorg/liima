@@ -318,7 +318,7 @@ public class PermissionBoundary implements Serializable {
 
     public boolean canCreateAppAndAddToAppServer(ResourceEntity resource) {
         return permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, resource.getResourceType()) &&
-                permissionService.hasPermission(Permission.ADD_APP_TO_APP_SERVER);
+                permissionService.hasPermission(Permission.RESOURCE, Action.UPDATE, resourceTypeProvider.getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER));
     }
 
     /**
