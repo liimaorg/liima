@@ -65,7 +65,6 @@ public enum Permission {
 
     // SHAKEDOWN TEST
     SHAKEDOWN_TEST_PAGE("Shakedown test page.", true),
-    ADD_SHAKEDOWN_TEST("Add Shakedown test. Path: Shakedown Test.", true),
     SHAKEDOWN_TEST_MODE("", true),
     EXECUTE_SHAKE_TEST_CHECKBOX("", true),
     TEST_NEIGHBOURHOOD_CHECKBOX("", true),

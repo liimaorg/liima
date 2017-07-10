@@ -68,7 +68,7 @@
                                                 </h:commandLink></li>
 
                                                 <li><a4j:commandLink styleClass="btn light"
-                                                                     rendered="#{securityDataProvider.hasPermission('ADD_SHAKEDOWN_TEST') and shakedownTestScreenDataProvider.shakedownTestViewSelected}"
+                                                                     rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE') and shakedownTestScreenDataProvider.shakedownTestViewSelected}"
                                                                      render="createTestPopupPanelGroup"
                                                                      onclick="showLoader();"
                                                                      action="${shakedownTestScreenDataProvider.initCreateTestPopupPanel()}"

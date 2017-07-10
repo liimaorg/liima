@@ -56,8 +56,6 @@ public class SecurityDataProvider implements Serializable{
 
 	private Map<String, Boolean> canDeleteResource = new HashMap<>();
 
-	private Boolean canAddShakedownTest;
-
 	private Boolean canExecuteShakeTestOrder;
 
 	/**
@@ -67,12 +65,7 @@ public class SecurityDataProvider implements Serializable{
 	 */
 	@Deprecated
 	public boolean hasPermission(String permissionValue){
-		if (permissionValue.equals("ADD_SHAKEDOWN_TEST")) {
-			if (canAddShakedownTest == null) {
-				canAddShakedownTest = permissionBoundary.hasPermission(permissionValue);
-			}
-			return canAddShakedownTest;
-		} else if (permissionValue.equals("EXECUTE_SHAKE_TEST_ORDER")) {
+		if (permissionValue.equals("EXECUTE_SHAKE_TEST_ORDER")) {
 			if (canExecuteShakeTestOrder == null) {
 				canExecuteShakeTestOrder = permissionBoundary.hasPermission(permissionValue);
 			}
