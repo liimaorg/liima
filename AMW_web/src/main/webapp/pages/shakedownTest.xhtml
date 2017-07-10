@@ -437,7 +437,7 @@
                     </h:dataTable>
 
                     <a4j:commandLink styleClass="btn primary right marginLeft20"
-                                     rendered="#{securityDataProvider.hasPermission('EXECUTE_SHAKE_TEST_ORDER')}"
+                                     rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}"
                                      value="Execute shakedown test order" type="button"
                                      action="${shakedownTestScreenDataProvider.createShakedownTest()}"
                                      onclick="showLoader();"

@@ -431,7 +431,7 @@
                     </div>
                     <div>
                         <h:panelGroup
-                                rendered="#{securityDataProvider.hasPermission('EXECUTE_SHAKE_TEST_CHECKBOX')}">
+                                rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
                             <label class="inlineBlock"> <h:selectBooleanCheckbox
                                     value="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment}">
                                 <a4j:ajax render="testNeighbourhoodButtonId"/>
@@ -624,7 +624,7 @@
                                         value="#{deployScreenDataProvider.sendEmailConfirmation}"/>send an email when deployed</label>
                         </div>
                         <h:panelGroup layout="block"
-                                      rendered="#{securityDataProvider.hasPermission('EXECUTE_SHAKE_TEST_CHECKBOX')}">
+                                      rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
                             <label class="inlineBlock">
                                 <h:selectBooleanCheckbox value="#{deployScreenDataProvider.executeShakedownTest}">
                                     <a4j:ajax render="bulkTestNeighbourhoodButtonId"/>

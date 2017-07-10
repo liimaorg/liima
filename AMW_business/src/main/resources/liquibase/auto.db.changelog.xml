@@ -93,5 +93,6 @@
     <include file="changesets/data/permissionMerge/add_related_resource.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/add_related_resourcetype.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/add_shakedown_test.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/execute_shake_test.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

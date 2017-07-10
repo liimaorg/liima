@@ -34,6 +34,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvide
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
@@ -145,7 +146,7 @@ public class ShakedownTestService{
 		return "(" + GROUP_QL + ".id in (:" + CommonFilterService.MY_AMW + ")) ";
 	}
 
-	@HasPermission(permission = Permission.EXECUTE_SHAKE_TEST_ORDER)
+	@HasPermission(permission = Permission.SHAKEDOWNTEST, action = Action.CREATE)
 	public Integer createShakedownTestOrderReturnsTrackingId(List<ShakedownTestOrder> shakedownTestOrder) {
 		Integer orderTrackingId = null;
 		if (shakedownTestOrder != null) {
