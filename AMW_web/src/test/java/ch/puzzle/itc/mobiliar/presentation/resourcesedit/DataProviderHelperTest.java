@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import org.junit.Test;
 
 public class DataProviderHelperTest {
@@ -52,6 +53,86 @@ public class DataProviderHelperTest {
 		assertEquals("_2", helper.nextFreeIdentifier(list, null, null));
 
 		// to lower case
-		assertEquals("node_2", helper.nextFreeIdentifier(list, "NODE", null));
+		assertEquals("NODE_2", helper.nextFreeIdentifier(list, "NODE", null));
 	}
+
+	@Test
+    public void shouldReturnNullIfResourceEditRelationListIsEmpty() {
+
+        // given // when // then
+        assertEquals(null, helper.nextFreeIdentifierForResourceEditRelations(Collections.<ResourceEditRelation> emptyList(), null));
+
+    }
+
+    @Test
+    public void shouldReturnNameUnderscoreOneIfSlaveGroupContainsOneElement() {
+
+        // given
+        List<ResourceEditRelation> relations = new ArrayList<>();
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
+                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        relations.add(rel0);
+
+        // when // then
+        assertEquals("slaveName_1", helper.nextFreeIdentifierForResourceEditRelations(relations, 21));
+
+    }
+
+    @Test
+    public void shouldReturnNameUnderscoreTwoIfSlaveGroupContainsTwoElements() {
+
+        // given
+        List<ResourceEditRelation> relations = new ArrayList<>();
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
+                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName_1", null,
+                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        relations.add(rel0);
+        relations.add(rel1);
+
+        // when // then
+        assertEquals("slaveName_2", helper.nextFreeIdentifierForResourceEditRelations(relations, 21));
+
+    }
+
+    @Test
+    public void shouldReturnNameUnderscoreThreeIfSlaveGroupContainsThreeElements() {
+
+        // given
+        List<ResourceEditRelation> relations = new ArrayList<>();
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
+                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName_1", null,
+                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel2 = new ResourceEditRelation(null, null, null, null, null, null, "custom", null,
+                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        relations.add(rel0);
+        relations.add(rel1);
+        relations.add(rel2);
+
+        // when // then
+        assertEquals("slaveName_3", helper.nextFreeIdentifierForResourceEditRelations(relations, 21));
+
+    }
+
+    @Test
+    public void shouldIgnoreElementsWithOtherSlaveGroupId() {
+
+        // given
+        List<ResourceEditRelation> relations = new ArrayList<>();
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
+                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName_1", null,
+                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel2 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
+                null, null, 23, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        relations.add(rel0);
+        relations.add(rel1);
+        relations.add(rel2);
+
+        // when // then
+        assertEquals("slaveName_2", helper.nextFreeIdentifierForResourceEditRelations(relations, 21));
+
+    }
+
 }

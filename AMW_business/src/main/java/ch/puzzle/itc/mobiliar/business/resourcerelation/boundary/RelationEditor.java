@@ -98,16 +98,13 @@ public class RelationEditor {
 	/**
 	 * @param masterId
 	 * @param provided
-	 * @param identifier
-	 * @param typeIdentifier
+	 * @param relationName
 	 * @throws ResourceNotFoundException
 	 * @throws ElementAlreadyExistsException
 	 */
-	public void addRelation(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
-			String typeIdentifier, ForeignableOwner changingOwner) throws ResourceNotFoundException,
-			ElementAlreadyExistsException {
-		resourceRelationService.addRelationByGroup(masterId, slaveGroupId, provided, identifier,
-				null, changingOwner);
+	public void addRelation(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
+			ForeignableOwner changingOwner) throws ResourceNotFoundException, ElementAlreadyExistsException {
+		resourceRelationService.addRelationByGroup(masterId, slaveGroupId, provided, relationName, null, changingOwner);
 	}
 
 	public void addResourceTypeRelation(ResourceTypeEntity masterType, Integer slaveResourceTypeId)
@@ -115,7 +112,7 @@ public class RelationEditor {
 		ResourceTypeEntity slaveResourceType = entityManager.find(ResourceTypeEntity.class,
 				slaveResourceTypeId);
 		Set<ResourceRelationTypeEntity> relations = slaveResourceType.getResourceRelationTypesB();
-		List<String> identifiers = new ArrayList<String>();
+		List<String> identifiers = new ArrayList<>();
 		for (ResourceRelationTypeEntity relation : relations) {
 			if (relation.getResourceTypeA().getId().equals(masterType.getId())) {
 				identifiers.add(relation.getRelationIdentifier());
@@ -142,8 +139,8 @@ public class RelationEditor {
 	 * @throws ResourceNotFoundException
 	 * @throws ElementAlreadyExistsException
 	 */
-	public void removeResourceTypeRelation(Integer resourceTypeRelationId) throws ResourceNotFoundException,
-			ElementAlreadyExistsException, ResourceTypeNotFoundException {
+	public void removeResourceTypeRelation(Integer resourceTypeRelationId) throws
+			ResourceTypeNotFoundException {
 		resourceTypeDomainService.removeResourceTypeRelation(resourceTypeRelationId);
 	}
 
@@ -151,7 +148,7 @@ public class RelationEditor {
 
 		// ... but we can also add those applications, which are already consumed by another resource of our
 		// own resoure group as long as it is not connected to our release...
-		Set<ResourceGroupEntity> applicationsFromOtherResourcesInGroup = new HashSet<ResourceGroupEntity>();
+		Set<ResourceGroupEntity> applicationsFromOtherResourcesInGroup = new HashSet<>();
 		resource = entityManager.find(ResourceEntity.class, resource.getId());
 		for (ResourceEntity r : resource.getResourceGroup().getResources()) {
 			if (!resource.equals(r)) {

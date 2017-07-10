@@ -35,8 +35,8 @@ import java.util.Date;
 public class ResourceEditRelation {
 	
 	public enum Mode {
-		CONSUMED, PROVIDED, TYPE;
-	};
+		CONSUMED, PROVIDED, TYPE
+	}
 
 	@Getter
 	private Integer resRelId;
@@ -147,13 +147,7 @@ public class ResourceEditRelation {
 			idString = slaveName;
 		}
 		if (StringUtils.isNotBlank(identifier)) {
-			if (StringUtils.isNumeric(identifier)) {
-				// auto generated identifier
-				idString += "_" + identifier;
-			} else {
-				// custom identifier
-				idString = identifier;
-			}
+			idString = identifier;
 		}
 		return idString != null ? idString : "";
 	}
@@ -163,7 +157,7 @@ public class ResourceEditRelation {
 	}
 
      public boolean hasIdentifierChanged(String newIdentifier){
-	    return !getDisplayName().equals(newIdentifier);
+		 return !getQualifiedIdentifier().equals(newIdentifier);
 	}
 
 	public String getDisplayName(){

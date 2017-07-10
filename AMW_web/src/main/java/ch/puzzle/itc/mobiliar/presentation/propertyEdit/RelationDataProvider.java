@@ -49,6 +49,7 @@ import ch.puzzle.itc.mobiliar.presentation.resourcesedit.DataProviderHelper;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
@@ -305,16 +306,17 @@ public class RelationDataProvider implements Serializable {
 	public boolean addConsumedResource(Integer slaveResourceGroupId) {
 		Integer numericIdentifier = null;
 		if (getResourceType().isDefaultResourceType() && !addRuntimeToAppServerMode) {
-			// If it is a default resource type, we can add multiple relations to a resource separated by a
-			// identifier
-			numericIdentifier = helper.nextFreeIdentifierForResourceEditRelations(
+			// If it is a default resource type, we can add multiple relations to a resource separated by a identifier
+			String nextFreeIdentifier = helper.nextFreeIdentifierForResourceEditRelations(
 					helper.flattenMap(resourceRelationModel.getConsumedRelations()), slaveResourceGroupId);
+			if (StringUtils.isEmpty(identifier) && !nextFreeIdentifier.equals(resourceRelationModel.getCurrentResourceRelation().getSlaveName())) {
+				identifier = nextFreeIdentifier;
+			}
 		}
-		return addResourceRelation(slaveResourceGroupId, false, numericIdentifier, identifier);
+		return addResourceRelation(slaveResourceGroupId, false, identifier, null);
 	}
 
-
-    public void createSoftlinkRelation() {
+	public void createSoftlinkRelation() {
         if (isEditResource()) {
 
             try {
@@ -359,7 +361,7 @@ public class RelationDataProvider implements Serializable {
 		return addResourceRelation(slaveResourceGroupId, true, null, identifier);
 	}
 
-	private boolean addResourceRelation(Integer slaveGroupId, boolean provided, Integer identifier, String typeIdentifier) {
+	private boolean addResourceRelation(Integer slaveGroupId, boolean provided, String relationName, String typeIdentifier) {
 		boolean isSuccessful = false;
 		try {
 			if (resourceOrType == null) {
@@ -373,7 +375,7 @@ public class RelationDataProvider implements Serializable {
 			else {
 				try {
 					relationEditor.addRelation(resourceOrType.getId(), slaveGroupId, provided,
-							identifier, typeIdentifier, ForeignableOwner.getSystemOwner());
+							relationName, ForeignableOwner.getSystemOwner());
 					resourceRelationModel.reloadValues();
 					String message = "Resource successfully added.";
 					GlobalMessageAppender.addSuccessMessage(message);

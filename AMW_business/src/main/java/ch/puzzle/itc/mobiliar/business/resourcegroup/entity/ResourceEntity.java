@@ -519,12 +519,10 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	}
 
 	public ConsumedResourceRelationEntity addConsumedResourceRelation(final ResourceEntity relatedResource,
-			final ResourceRelationTypeEntity resourceRelationTypeOfRelation, Integer identifier, ForeignableOwner changingOwner) {
+			final ResourceRelationTypeEntity resourceRelationTypeOfRelation, String relationName, ForeignableOwner changingOwner) {
 		final ConsumedResourceRelationEntity r = new ConsumedResourceRelationEntity();
 
-		if (identifier != null) {
-			r.setIdentifier(identifier.toString());
-		}
+		r.setIdentifier(relationName);
 		r.setResourceRelationType(resourceRelationTypeOfRelation);
 		r.setMasterResource(this);
 		r.setSlaveResource(relatedResource);

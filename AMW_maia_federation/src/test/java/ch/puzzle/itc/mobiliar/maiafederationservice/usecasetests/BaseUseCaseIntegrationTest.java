@@ -453,7 +453,7 @@ public abstract class BaseUseCaseIntegrationTest extends BaseIntegrationTest {
         ResourceTypeEntity appType = resourceTypeProvider.getFromDB(DefaultResourceTypeDefinition.APPLICATION.name());
         ResourceRelationTypeEntity resRelType = resourceTypeProvider.getResourceRelationTypeIfAvailableIncludingParents(appserverType, appType, null);
 
-        ConsumedResourceRelationEntity consumedResourceRelationEntity = asResource.addConsumedResourceRelation(appResource, resRelType, 1, ForeignableOwner.AMW);
+        ConsumedResourceRelationEntity consumedResourceRelationEntity = asResource.addConsumedResourceRelation(appResource, resRelType, null, ForeignableOwner.AMW);
         entityManager.persist(consumedResourceRelationEntity);
         Set<ConsumedResourceRelationEntity> relations = new HashSet<>();
         relations.add(consumedResourceRelationEntity);

@@ -118,28 +118,28 @@ public class ResourceRelationService implements Serializable{
 	 * @param masterId
 	 * @param slaveGroupId
 	 * @param provided
-	 * @param identifier
+	 * @param relationName
 	 * @param typeIdentifier
 	 * @throws ElementAlreadyExistsException
 	 * @throws ResourceNotFoundException
 	 */
-	public void addRelationByGroup(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
+	public void addRelationByGroup(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 			String typeIdentifier, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
 		ResourceEntity master = entityManager.find(ResourceEntity.class, masterId);
 		ResourceGroupEntity slaveGroup = entityManager.find(ResourceGroupEntity.class, slaveGroupId);
 
 		String slaveResourceType = slaveGroup.getResourceType().getName();
 		if (DefaultResourceTypeDefinition.NODE.name().equals(slaveResourceType)) {
-			addNodeByGroup(masterId, slaveGroupId, provided, identifier, typeIdentifier, changingOwner);
+			addNodeByGroup(masterId, slaveGroupId, provided, relationName, typeIdentifier, changingOwner);
 		}
 		else if (DefaultResourceTypeDefinition.APPLICATION.name()
 				.equals(master.getResourceType().getName())) {
 			addRelationInEditInstanceApplicationByGroup(masterId, slaveGroupId, provided,
-					identifier, typeIdentifier, changingOwner);
+					relationName, typeIdentifier, changingOwner);
 		} else if (slaveGroup.getResourceType().isRuntimeType()) {
 			resourceEntityService.setRuntime(master, slaveGroup, changingOwner);
 		} else {
-			addEveryRelationByGroup(masterId, slaveGroupId, provided, identifier,
+			addEveryRelationByGroup(masterId, slaveGroupId, provided, relationName,
 					typeIdentifier, changingOwner);
 			// If an application is added to the applicationserver, it has to be removed from the
 			// applications without applicationserver container
@@ -192,15 +192,15 @@ public class ResourceRelationService implements Serializable{
 	 * @param masterId
 	 * @param slaveGroupId
 	 * @param provided
-	 * @param identifier
+	 * @param relationName
 	 * @param typeIdentifier
 	 * @throws ResourceNotFoundException
 	 * @throws ElementAlreadyExistsException
 	 */
 	@HasPermission(permission = Permission.ADD_EVERY_RELATED_RESOURCE)
-	private void addEveryRelationByGroup(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
+	private void addEveryRelationByGroup(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 			String typeIdentifier, ForeignableOwner changingOwner) throws ResourceNotFoundException, ElementAlreadyExistsException {
-		doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, identifier,
+		doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, relationName,
 				typeIdentifier, changingOwner);
 	}
 
@@ -211,15 +211,15 @@ public class ResourceRelationService implements Serializable{
 	 * @param masterId
 	 * @param slaveGroupId
 	 * @param provided
-	 * @param identifier
+	 * @param relationName
 	 * @param typeIdentifier
 	 * @throws ElementAlreadyExistsException
 	 * @throws ResourceNotFoundException
 	 */
 	@HasPermission(permission = Permission.ADD_RELATED_RESOURCE)
-	private void addRelationInEditInstanceApplicationByGroup(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
+	private void addRelationInEditInstanceApplicationByGroup(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 			String typeIdentifier, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
-		doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, identifier,
+		doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, relationName,
 				typeIdentifier, changingOwner);
 	}
 
@@ -230,21 +230,21 @@ public class ResourceRelationService implements Serializable{
 	 * @param masterId
 	 * @param slaveGroupId
 	 * @param provided
-	 * @param identifier
+	 * @param relationName
 	 * @param typeIdentifier
 	 * @throws ElementAlreadyExistsException
 	 * @throws ResourceNotFoundException
 	 */
 	@HasPermission(permission = Permission.ADD_NODE_RELATION)
-	private void addNodeByGroup(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
+	private void addNodeByGroup(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 			String typeIdentifier, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
-		doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, identifier,
+		doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, relationName,
                 typeIdentifier, changingOwner);
 	}
 
-	public void doAddResourceRelationForAllReleases(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
+	public void doAddResourceRelationForAllReleases(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 			String typeIdentifier, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
-		addResourceRelation(masterId, slaveGroupId, provided, identifier, typeIdentifier, null, changingOwner);
+		addResourceRelation(masterId, slaveGroupId, provided, relationName, typeIdentifier, null, changingOwner);
 
 	}
 
@@ -254,19 +254,19 @@ public class ResourceRelationService implements Serializable{
 	 * @param masterId
 	 * @param slaveGroupId
 	 * @param provided
-	 * @param identifier
+	 * @param relationName
 	 * @param typeIdentifier
 	 * @param releaseId
 	 * @param changingOwner
 	 * @throws ElementAlreadyExistsException
 	 * @throws ResourceNotFoundException
 	 */
-	public void doAddResourceRelationForSpecificRelease(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
+	public void doAddResourceRelationForSpecificRelease(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 													String typeIdentifier, Integer releaseId, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
-		addResourceRelation(masterId, slaveGroupId, provided, identifier, typeIdentifier, releaseId, changingOwner);
+		addResourceRelation(masterId, slaveGroupId, provided, relationName, typeIdentifier, releaseId, changingOwner);
 	}
 
-	private void addResourceRelation(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
+	private void addResourceRelation(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 									 String typeIdentifier, Integer releaseId, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
 		ResourceEntity master = entityManager.find(ResourceEntity.class, masterId);
 		ResourceGroupEntity slaveGroup = entityManager.find(ResourceGroupEntity.class, slaveGroupId);
@@ -280,7 +280,7 @@ public class ResourceRelationService implements Serializable{
                 if (provided) {
                     master.addProvidedResourceRelation(slave, resourceRelationType, changingOwner);
                 } else {
-                    master.addConsumedResourceRelation(slave, resourceRelationType, identifier, changingOwner);
+                    master.addConsumedResourceRelation(slave, resourceRelationType, relationName, changingOwner);
                 }
                 log.info("Relation between resourceId: " + master.getId() + " and resourceId: "
                         + slave.getId() + " added");

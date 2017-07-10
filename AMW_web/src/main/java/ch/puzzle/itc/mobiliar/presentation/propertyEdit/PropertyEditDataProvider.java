@@ -250,7 +250,6 @@ public class PropertyEditDataProvider implements Serializable {
 
         activeApplications.save();
 
-
         if (isCurrentFocusOnResource()) {
 
             // save softlinkrelation
@@ -262,11 +261,14 @@ public class PropertyEditDataProvider implements Serializable {
                 if (currentRelation.getMode().equals(ResourceEditRelation.Mode.CONSUMED)) {
                     // get next available identifier if the actual identifier is empty and has not been empty before
                     if (StringUtils.isEmpty(relationIdentifier)
-                            && StringUtils.isNotEmpty(resourceRelation.getCurrentResourceRelation().getIdentifier())
+                            && StringUtils.isNotEmpty(currentRelation.getIdentifier())
                             && resourceRelation.isDefaultResourceType()) {
                         relationIdentifier = helper.nextFreeIdentifierForResourceEditRelations(
-                                helper.flattenMap(resourceRelation.getConsumedRelations()),
-                                resourceRelation.getCurrentResourceRelation().getSlaveGroupId()).toString();
+                                helper.flattenMap(resourceRelation.getConsumedRelations()), currentRelation.getSlaveGroupId());
+                    } else {
+                        if (currentRelation.hasIdentifierChanged(relationIdentifier)) {
+                            preventDuplicateIdentifiers();
+                        }
                     }
                 } else {
                     relationIdentifier = null;
@@ -283,6 +285,15 @@ public class PropertyEditDataProvider implements Serializable {
                     relationPropertiesToSave,
                     getNameOfResourceOrResourceType(),
                     typeRelationIdentifier);
+        }
+    }
+
+    private void preventDuplicateIdentifiers() throws AMWException {
+        List<ResourceEditRelation> consumedRelations = resourceRelation.getConsumedRelations().get(currentRelation.getSlaveTypeName());
+        for (ResourceEditRelation consumedRelation : consumedRelations) {
+            if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier)) {
+                throw new AMWException("RelationName '" + relationIdentifier + "' is already taken");
+            }
         }
     }
 
