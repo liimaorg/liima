@@ -41,7 +41,7 @@
 				styleClass="well" columnClasses=" ,last,last"
 				rowClasses="odd-row,even-row">
 				<h:column
-					rendered="#{securityDataProvider.hasPermission('APP_LIST_ADDED_APPSERVER')}">
+					rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE','READ','APPLICATION')}">
 					<f:facet name="header">
 						<h:panelGroup>
 							<h:outputText value="Application Name" />
