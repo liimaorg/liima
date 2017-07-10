@@ -140,7 +140,6 @@ public class RelationDataProvider implements Serializable {
 	@PostConstruct
 	public void init() {
 		canAddConsumedRelation = permissions.hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE);
-		canAddResourceTypeRelation = permissions.hasPermission(Permission.ADD_RELATED_RESOURCETYPE);
 	}
 
 	public void onChangedResource(@Observes ResourceEntity resourceEntity) {
@@ -150,6 +149,7 @@ public class RelationDataProvider implements Serializable {
 
 	public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
 		resourceOrType = resourceTypeEntity;
+		canAddResourceTypeRelation = permissions.hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceTypeEntity);
 	}
 
 	public List<Application> loadAllApplicationsWithoutServer() {

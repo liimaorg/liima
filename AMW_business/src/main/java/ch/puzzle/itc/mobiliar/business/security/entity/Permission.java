@@ -44,7 +44,6 @@ public enum Permission {
     APP_LIST_ADDED_APPSERVER("The Applications added to applicationserver. Path: Resource -> APPLICATIONSERVER -> Edit", true),
 
     // RESOURCE TYPE PERMISSIONS
-    ADD_RELATED_RESOURCETYPE("Add related resource type. Path: all Resource Type instance screen -> press button 'Add related resource Type.'", true),
     REL_RESTYPE_PANEL_LIST("Allows to show the related resource types", true),
 
     // RESOURCE AND RESOURCE TYPE PERMISSIONS
