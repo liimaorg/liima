@@ -88,8 +88,6 @@ public class DeploymentTest {
 	private ResourceGroupPersistenceService resourceGroupService;
 	@Mock
 	private ContextDomainService contextDomainService;
-	@Mock
-	private KeyRepository keyRepositoryMock;
 
 
 	private HashSet<DeploymentEntity> entities;

@@ -58,7 +58,7 @@ import java.util.logging.Logger;
 public class DeployScreenDataProvider implements Serializable {
 
     private static final int DEFAULT_ITEMS_PER_PAGE = 10;
-    public static final String COMMA = ",";
+    private static final String COMMA = ",";
     private static final long serialVersionUID = -6418412617050387765L;
     @Getter
     private String filterApplicationNameViewParam;
@@ -85,6 +85,7 @@ public class DeployScreenDataProvider implements Serializable {
         public String getLabel() {
             return label;
         }
+        // TODO check Action.U
     }
 
     /*
@@ -141,7 +142,7 @@ public class DeployScreenDataProvider implements Serializable {
 
     // Filters and sorting
     private DeploymentFilterTypes selectedFilter;
-    private String appServerNameFilter;
+
     // defaultmässig soll nach deployment datum absteigend sortiert werden
     // solange nichts anderes gewählt wird vom user
     private SortingDirectionType sortingDirection = SortingDirectionType.DESC;
@@ -485,7 +486,7 @@ public class DeployScreenDataProvider implements Serializable {
         return doConfirmAction(deployment, true);
     }
 
-    public List<DeploymentEntity> getSelectedDeployments() {
+    private List<DeploymentEntity> getSelectedDeployments() {
         LinkedList<DeploymentEntity> result = new LinkedList<>();
         for (DeploymentEntity deployment : pendingDeployments) {
             if (checkedDeployments.get(deployment.getId()) != null && checkedDeployments.get(deployment.getId())) {
@@ -542,7 +543,9 @@ public class DeployScreenDataProvider implements Serializable {
     public void setToggleDeploymentsSelection(Boolean checked) {
         toggleDeploymentsSelection = checked;
         for (DeploymentEntity deployment : pendingDeployments) {
-            checkedDeployments.put(deployment.getId(), checked);
+            if (isRedeployPossible(deployment)) {
+                checkedDeployments.put(deployment.getId(), checked);
+            }
         }
     }
 
@@ -618,7 +621,7 @@ public class DeployScreenDataProvider implements Serializable {
     }
 
     public boolean isRedeployPossible(DeploymentEntity deployment) {
-        return permissionService.hasPermissionToDeploy();
+        return permissionService.hasPermissionForDeployment(deployment);
     }
 
     public void reloadDeployments(boolean countAgain) {
@@ -757,10 +760,6 @@ public class DeployScreenDataProvider implements Serializable {
 
     public boolean hasLogFiles(int deploymentId) {
         return controller.getLogFileNames(deploymentId).length > 0;
-    }
-
-    public String getAppServerNameFilter() {
-        return appServerNameFilter;
     }
 
     public boolean hasFilterSelected() {

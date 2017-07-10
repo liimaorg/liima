@@ -38,7 +38,9 @@
                <class>ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity</class>
+               <class>ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity</class>
+               <class>ch.puzzle.itc.mobiliar.business.security.entity.UserRestrictionEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.database.entity.SequencesEntity</class>

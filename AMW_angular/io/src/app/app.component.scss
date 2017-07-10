@@ -76,6 +76,7 @@ body {
   .navbar-brand {
     margin-left: -15px;
     padding-top: 10px;
+    padding-right: 0;
   }
 }
 
@@ -136,6 +137,16 @@ body {
   }
 }
 
+@media (min-width: 768px) {
+  .navbar-nav {
+    li {
+      a {
+        padding-left: 5px;
+      }
+    }
+  }
+}
+
 
 /*
  * Main content
@@ -146,6 +157,11 @@ body {
   margin-top: 50px;
   padding: 20px;
 }
+
+.main-full {
+  width: 100%;
+}
+
 @media (min-width: 768px) {
   .main {
     padding-right: 40px;
@@ -163,6 +179,10 @@ body {
   padding: 0;
 }
 
+.ng-invalid.ng-dirty {
+  border-color: rgba(255, 0, 0, 0.5);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px rgba(255, 0, 0, 0.8);
+}
 
 /*
  * Styles for components library
@@ -175,3 +195,32 @@ body {
   }
 
 }
+
+/*
+ * Table with small/er font
+ */
+.table-xs {
+  font-size: x-small;
+}
+
+@media (min-width: 768px) {
+  .table-xs {
+    font-size: smaller;
+  }
+}
+
+/*
+ * Responsive table
+ */
+.table-responsive {
+  .table {
+    margin-top: -1px;
+  }
+}
+/* Firefox fix, see https://stackoverflow.com/questions/17408815/fieldset-resizes-wrong-appears-to-have-unremovable-min-width-min-content/17863685#17863685 */
+@-moz-document url-prefix() {
+  fieldset {
+    display: table-cell;
+  }
+}
+

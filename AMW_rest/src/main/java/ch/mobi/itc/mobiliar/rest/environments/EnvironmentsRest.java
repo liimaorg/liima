@@ -1,7 +1,7 @@
 package ch.mobi.itc.mobiliar.rest.environments;
 
 import ch.mobi.itc.mobiliar.rest.dtos.EnvironmentDTO;
-import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
+import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -19,14 +19,14 @@ import java.util.List;
 public class EnvironmentsRest {
 
     @Inject
-    ContextDomainService contextDomainService;
+    ContextLocator contextLocator;
 
     @GET
     @ApiOperation(value = "Get environments", notes = "Returns the available environments")
     public List<EnvironmentDTO> getEnvironments() {
 
         List<EnvironmentDTO> environments = new ArrayList<>();
-        List<ContextEntity> contexts = contextDomainService.getEnvironments();
+        List<ContextEntity> contexts = contextLocator.getAllEnvironments();
         if (contexts != null) {
             for (ContextEntity context : contexts) {
                 if (context.isEnvironment()) {

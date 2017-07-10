@@ -3,7 +3,7 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core">
 
-	<h:panelGroup id="applicationVersion_panel" layout="block" rendered="#{securityDataProvider.hasPermission('VIEW_RELEASE')}">
+	<h:panelGroup id="applicationVersion_panel" layout="block" rendered="#{securityDataProvider.hasPermission('RELEASE','READ')}">
 
 		<!-- Application Info Table-->
 			<h:dataTable id="appInfoTable" styleClass="well" var="configItem"

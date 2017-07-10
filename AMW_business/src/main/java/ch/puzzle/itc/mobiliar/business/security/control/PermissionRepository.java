@@ -23,52 +23,112 @@ package ch.puzzle.itc.mobiliar.business.security.control;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.*;
 
 @Stateless
 public class PermissionRepository {
 	@Inject
 	private EntityManager entityManager;
 
-	// FIXME: Remove to Singleton Bean or make static
-	private boolean reloadDeploybleRoleList;
-	private boolean reloadRolesAndPermissionsList;
+	private static boolean reloadDeployableRoleList;
+	private static boolean reloadRolesAndPermissionsList;
+	private static boolean reloadUserRestrictionsList;
 
-	public PermissionRepository() {
-		this.reloadDeploybleRoleList = false;
-		this.reloadRolesAndPermissionsList = false;
+	@Schedule(hour = "*", minute = "*/20", persistent = false)
+	public void forceReloadingOfLists() {
+		reloadDeployableRoleList = true;
+		reloadRolesAndPermissionsList = true;
+		reloadUserRestrictionsList = true;
 	}
 
 	/**
-	 * Diese Methode sucht die Rollen die Deployoperation können machen.
-	 * 
+	 * Returns Roles which are allowed to deploy
+	 *
 	 * @return
 	 */
-	public List<RoleEntity> getDoployableRole() {
-		List<RoleEntity> result = entityManager
-				.createQuery("from RoleEntity r where r.deployable=:deployable", RoleEntity.class)
-				.setParameter("deployable", Boolean.TRUE).getResultList();
-		return result == null ? new ArrayList<RoleEntity>() : result;
+	public List<RoleEntity> getDeployableRoles() {
+		return getRolesHavingRestrictionsWithPermission(Permission.DEPLOYMENT);
 	}
 
-	//TODO: better return entities here?
-	public List<Object[]> rolesPermissionsList() {
-		TypedQuery<Object[]> query = entityManager.createQuery("select distinct p.value, r.name from PermissionEntity p left join p.roles r", Object[].class);
-		List<Object[]> result = query.getResultList();
-		return result == null ? new ArrayList<Object[]>() : result;
+	public List<RestrictionEntity> getUserWithRestrictions(String userName) {
+		TypedQuery<RestrictionEntity> query = entityManager.createQuery("select r from RestrictionEntity r where LOWER(r.user.name) =:userName", RestrictionEntity.class)
+				.setParameter("userName", userName.toLowerCase());
+		return query.getResultList();
 	}
 
-	public boolean isReloadDeploybleRoleList() {
-		return reloadDeploybleRoleList;
+	public List<RestrictionEntity> getUsersWithRestrictions() {
+		return entityManager.createQuery("select r from RestrictionEntity r order by LOWER(r.user.name)", RestrictionEntity.class).getResultList();
 	}
 
-	public void setReloadDeploybleRoleList(boolean reloadDeploybleRoleList) {
-		this.reloadDeploybleRoleList = reloadDeploybleRoleList;
+	public List<RoleEntity> getRolesWithRestrictions() {
+		TypedQuery<RoleEntity> query = entityManager.createQuery("select distinct r from RoleEntity r left join fetch r.restrictions", RoleEntity.class);
+		return query.getResultList();
+	}
+
+	public List<RestrictionEntity> getRoleWithRestrictions(String roleName) {
+		return entityManager.createQuery("select r from RestrictionEntity r  where LOWER(r.role.name) =:roleName", RestrictionEntity.class)
+				.setParameter("roleName", roleName.toLowerCase()).getResultList();
+	}
+
+	public List<RoleEntity> getAllRoles() {
+		TypedQuery<RoleEntity> query = entityManager.createQuery("select r from RoleEntity r order by r.name", RoleEntity.class);
+		return query.getResultList();
+	}
+
+	public List<String> getAllUserRestrictionNames() {
+		TypedQuery<String> query = entityManager.createQuery("select u.name from UserRestrictionEntity u order by u.name", String.class);
+		return query.getResultList();
+	}
+
+	public PermissionEntity getPermissionByName(String permissionName) {
+		return entityManager.createQuery("from PermissionEntity p where LOWER(p.value) =:permission", PermissionEntity.class)
+				.setParameter("permission", permissionName.toLowerCase()).getSingleResult();
+	}
+
+    public List<PermissionEntity> getAllPermissions() {
+        TypedQuery<PermissionEntity> query = entityManager.createQuery("select p from PermissionEntity p order by p.value", PermissionEntity.class);
+        return query.getResultList();
+    }
+
+	public RoleEntity getRoleByName(String roleName) {
+		List<RoleEntity> result = entityManager.createQuery("from RoleEntity r where LOWER(r.name) =:role", RoleEntity.class)
+				.setParameter("role", roleName.toLowerCase()).getResultList();
+		return result == null || result.isEmpty() ? null : result.get(0);
+	}
+
+	public UserRestrictionEntity getUserRestrictionByName(String userName) {
+		List<UserRestrictionEntity> result = entityManager.
+				createQuery("from UserRestrictionEntity u where LOWER(u.name) =:userName", UserRestrictionEntity.class)
+				.setParameter("userName", userName.toLowerCase()).getResultList();
+		return result == null || result.isEmpty() ? null : result.get(0);
+	}
+
+	public UserRestrictionEntity createUserRestriciton(String userName) {
+		UserRestrictionEntity userRestrictionEntity = new UserRestrictionEntity(userName.toLowerCase());
+		entityManager.persist(userRestrictionEntity);
+		return userRestrictionEntity;
+	}
+
+	public RoleEntity createRole(String roleName) {
+		RoleEntity roleEntity = new RoleEntity();
+		roleEntity.setName(roleName.toLowerCase());
+		roleEntity.setDeletable(true);
+		entityManager.persist(roleEntity);
+		return roleEntity;
+	}
+
+	public boolean isReloadDeployableRoleList() {
+		return reloadDeployableRoleList;
+	}
+
+	public void setReloadDeployableRoleList(boolean reloadDeployableRoleList) {
+		this.reloadDeployableRoleList = reloadDeployableRoleList;
 	}
 
 	public boolean isReloadRolesAndPermissionsList() {
@@ -77,6 +137,27 @@ public class PermissionRepository {
 
 	public void setReloadRolesAndPermissionsList(boolean reloadRolesAndPermissionsList) {
 		this.reloadRolesAndPermissionsList = reloadRolesAndPermissionsList;
+	}
+
+	public boolean isReloadUserRestrictionsList() {
+		return reloadUserRestrictionsList;
+	}
+
+	public void setReloadUserRestrictionsList(boolean reloadUserRestrictionsList) {
+		this.reloadUserRestrictionsList = reloadUserRestrictionsList;
+	}
+
+	/**
+	 * Returns Roles which have a Restriction matching the provided Permission
+	 *
+	 * @param permission Permission to match
+	 * @return
+	 */
+	private List<RoleEntity> getRolesHavingRestrictionsWithPermission(Permission permission) {
+		List<RoleEntity> result = entityManager
+				.createQuery("from RoleEntity r left join fetch r.restrictions res where res.permission.value =:permission", RoleEntity.class)
+				.setParameter("permission", permission.name()).getResultList();
+		return result == null ? new ArrayList<RoleEntity>() : result;
 	}
 
 }

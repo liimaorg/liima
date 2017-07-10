@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +44,9 @@ import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class ResourcesRestTest {
 
     @InjectMocks
@@ -57,6 +61,15 @@ public class ResourcesRestTest {
     @Mock
     ServerView serverViewMock;
 
+    @Mock
+    ResourceRelationsRest resourceRelationsMock;
+
+    @Mock
+    ResourcePropertiesRest resourcePropertiesMock;
+
+    @Mock
+    ResourceTemplatesRest resourceTemplatesRestMock;
+
     @Before
     public void configure() {
         MockitoAnnotations.initMocks(this);
@@ -68,7 +81,7 @@ public class ResourcesRestTest {
         String typeName = null;
         List<ResourceGroupEntity> resourceGroupEntities = new ArrayList<>();
 
-        Mockito.when(resourceGroupLocatorMock.getResourceGroups()).thenReturn(resourceGroupEntities);
+        when(resourceGroupLocatorMock.getResourceGroups()).thenReturn(resourceGroupEntities);
 
         // when
         List<ResourceDTO> resourcesResult = rest.getResources(typeName);
@@ -85,7 +98,7 @@ public class ResourcesRestTest {
         resourceGroupEntities.add(createResourceGroupEntity("name", "type"));
         resourceGroupEntities.add(createResourceGroupEntity("name2", "type2"));
 
-        Mockito.when(resourceGroupLocatorMock.getResourceGroups()).thenReturn(resourceGroupEntities);
+        when(resourceGroupLocatorMock.getResourceGroups()).thenReturn(resourceGroupEntities);
 
         // when
         List<ResourceDTO> resourcesResult = rest.getResources(typeName);
@@ -103,7 +116,7 @@ public class ResourcesRestTest {
         String groupName = "name";
         resourceGroupEntities.add(createResourceGroupEntity(groupName, null));
 
-        Mockito.when(resourceGroupLocatorMock.getResourceGroups()).thenReturn(resourceGroupEntities);
+        when(resourceGroupLocatorMock.getResourceGroups()).thenReturn(resourceGroupEntities);
 
         // when
         List<ResourceDTO> resourcesResult = rest.getResources(typeName);
@@ -124,7 +137,7 @@ public class ResourcesRestTest {
         resourceGroupEntities.add(createResourceGroupEntity(groupName, typeName));
         resourceGroupEntities.add(createResourceGroupEntity("name2", "type2"));
 
-        Mockito.when(resourceGroupLocatorMock.getGroupsForType(typeName, Collections.EMPTY_LIST, true, true)).thenReturn(resourceGroupEntities);
+        when(resourceGroupLocatorMock.getGroupsForType(typeName, Collections.EMPTY_LIST, true, true)).thenReturn(resourceGroupEntities);
 
         // when
         List<ResourceDTO> resourcesResult = rest.getResources(typeName);
@@ -144,7 +157,7 @@ public class ResourcesRestTest {
         resourceGroupEntities.add(createResourceGroupEntity("otherName", "otherType"));
         resourceGroupEntities.add(createResourceGroupEntity("otherName2", "otherType2"));
 
-        Mockito.when(resourceGroupLocatorMock.getGroupsForType(typeName, Collections.EMPTY_LIST, true, true)).thenReturn(resourceGroupEntities);
+        when(resourceGroupLocatorMock.getGroupsForType(typeName, Collections.EMPTY_LIST, true, true)).thenReturn(resourceGroupEntities);
 
         // when
         List<ResourceDTO> resourcesResult = rest.getResources(typeName);
@@ -207,7 +220,7 @@ public class ResourcesRestTest {
         String env = "V";
         Integer type = 2305;
         List<ServerTuple> list = new ArrayList<>();
-        Mockito.when(serverViewMock.getServers(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(list);
+        when(serverViewMock.getServers(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(list);
         
         // when
         BatchJobInventoryDTO result = rest.getBatchJobInventar(env, type, null, null, null, null, null);
@@ -215,6 +228,26 @@ public class ResourcesRestTest {
         // then
         Assert.assertTrue(result != null);
 
+    }
+
+    @Test
+    public void shouldInvokeResourcesWithRightArgumentsOnGetClosestPastRelease() throws ValidationException {
+        // given
+        String resourceGroupName = "TEST";
+        String releaseName = "RL-17.10";
+        String env = "V";
+        String resourceTypeName = "APPLICATION";
+        ReleaseEntity closestRelease = new ReleaseEntity();
+        closestRelease.setName("RL-16.10");
+        when(resourceLocatorMock.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName,releaseName)).thenReturn(closestRelease);
+
+        // when
+        rest.getExactOrClosestPastRelease(resourceGroupName, releaseName, env, resourceTypeName);
+
+        // then
+        verify(resourceRelationsMock).getResourceRelations(resourceGroupName, closestRelease.getName(), resourceTypeName);
+        verify(resourcePropertiesMock).getResourceProperties(resourceGroupName, closestRelease.getName(), env);
+        verify(resourceTemplatesRestMock).getResourceTemplates(resourceGroupName, closestRelease.getName(), "");
     }
 
 }

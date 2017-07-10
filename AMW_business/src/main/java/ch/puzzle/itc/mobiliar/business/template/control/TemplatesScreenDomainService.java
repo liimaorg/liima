@@ -25,6 +25,7 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.property.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.*;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
@@ -198,12 +199,12 @@ public class TemplatesScreenDomainService {
 		}
 	}
 
-	@HasPermission(permission = Permission.DELETE_RES_TEMPLATE )
+	@HasPermission(permission = Permission.TEMPLATE_RESOURCE, action = Action.DELETE)
 	private void removeDefaultResTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
 		doRemoveTemplate(selectedTemplateId);
 	}
 
-	@HasPermission(permission = Permission.DELETE_RESTYPE_TEMPLATE)
+	@HasPermission(permission = Permission.TEMPLATE_RESOURCETYPE, action = Action.DELETE)
 	private void removeDefaultResTypeTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
 		doRemoveTemplate(selectedTemplateId);
 	}

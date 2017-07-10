@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response, Headers, URLSearchParams, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Resource } from './resource';
+import { ResourceType } from './resource-type';
 import { Release } from './release';
 import { Relation } from './relation';
 import { Property } from './property';
@@ -26,6 +27,22 @@ export class ResourceService {
     let resource$ = this.http
       .get(`${this.baseUrl}/resources/${resourceGroupName}`, {headers: this.getHeaders()})
       .map(mapResource);
+    return resource$;
+  }
+
+  getAllResourceGroups(): Observable<Resource[]> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/resourceGroups`, {headers: this.getHeaders()})
+      .map(mapResources)
+      .catch(handleError);
+    return resource$;
+  }
+
+  getAllResourceTypes(): Observable<ResourceType[]> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/resourceTypes`, {headers: this.getHeaders()})
+      .map(mapResources)
+      .catch(handleError);
     return resource$;
   }
 

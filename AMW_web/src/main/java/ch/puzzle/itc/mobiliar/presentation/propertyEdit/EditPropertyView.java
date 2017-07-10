@@ -42,7 +42,7 @@ import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyTagEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
@@ -61,7 +61,7 @@ public class EditPropertyView implements Serializable {
     PropertyTagEditor propertyTagEditor;
 
 	@Inject
-	Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
 	@Inject
 	ForeignableBoundary foreignableBoundary;
@@ -74,7 +74,8 @@ public class EditPropertyView implements Serializable {
 	public void setResourceTypeIdFromParam(Integer resourceTypeIdFromParam) {
 		this.resourceTypeIdFromParam = resourceTypeIdFromParam;
 		this.resourceIdFromParam = null;
-        canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResource(resourceTypeIdFromParam,
+		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
+        canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceType(resourceTypeIdFromParam,
                 isTesting());
 
 	}
@@ -82,6 +83,7 @@ public class EditPropertyView implements Serializable {
 	public void setResourceIdFromParam(Integer resourceIdFromParam) {
 		this.resourceIdFromParam = resourceIdFromParam;
 		this.resourceTypeIdFromParam = null;
+		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
         canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam,
                 isTesting());
 	}

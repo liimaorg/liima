@@ -23,8 +23,7 @@ declare var $: any;
 
 @Component({
   selector: 'amw-deployment',
-  templateUrl: './deployment.component.html',
-  providers: [DeploymentService]
+  templateUrl: './deployment.component.html'
 })
 export class DeploymentComponent implements OnInit, AfterViewInit {
 
@@ -78,7 +77,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
               private deploymentService: DeploymentService,
               private activatedRoute: ActivatedRoute,
               private location: Location,
-              private appState: AppState) {
+              public appState: AppState) {
   }
 
   ngOnInit() {
@@ -116,7 +115,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.isLoading = true;
     this.resourceService
       .getByType('APPLICATIONSERVER').subscribe(
-      /* happy path */ (r) => this.appservers = r.sort(function(a, b){return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });}),
+      /* happy path */ (r) => this.appservers = r.sort(function(a, b){return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }); }),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.setPreselected());
   }
@@ -323,7 +322,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private loadDeploymentParameters() {
     this.deploymentService
       .getAllDeploymentParameterKeys().subscribe(
-      /* happy path */ (r) => this.deploymentParameters = r.sort(function(a, b){return a.key.localeCompare(b.key, undefined, { sensitivity: 'base' });}),
+      /* happy path */ (r) => this.deploymentParameters = r.sort(function(a, b){return a.key.localeCompare(b.key, undefined, { sensitivity: 'base' }); }),
       /* error path */ (e) => this.errorMessage = e);
   }
 

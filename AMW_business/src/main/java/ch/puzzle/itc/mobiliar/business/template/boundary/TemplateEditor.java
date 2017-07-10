@@ -33,13 +33,11 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
-import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
-import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
-import ch.puzzle.itc.mobiliar.business.environment.entity.HasTypeContext;
+import ch.puzzle.itc.mobiliar.business.environment.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
@@ -133,11 +131,11 @@ public class TemplateEditor {
 		HasContexts<?> resourceRelation = null;
 		if (relationId != null) {
 			if (resourceEdit) {
-			     permissions.checkPermissionAndFireException(Permission.SAVE_RES_TEMPLATE, "save resource templates");
+			     permissions.checkPermissionAndFireException(Permission.TEMPLATE_RESOURCE, Action.UPDATE, "save resource templates");
 				resourceRelation = relationService.getResourceRelation(relationId);
 			}
 			else {
-			    permissions.checkPermissionAndFireException(Permission.SAVE_RESTYPE_TEMPLATE, "save resource type templates");
+			    permissions.checkPermissionAndFireException(Permission.TEMPLATE_RESOURCETYPE, Action.UPDATE, "save resource type templates");
 			    resourceRelation = relationService.getResourceTypeRelation(relationId);
 			}
 		}
@@ -161,25 +159,26 @@ public class TemplateEditor {
 		return false;
 	}
 
-    @HasPermission(permission = Permission.SAVE_RES_TEMPLATE)
+	@HasPermission(oneOfPermission = {Permission.TEMPLATE_RESOURCE, Permission.RESOURCE}, action = Action.UPDATE)
     public void saveTemplateForResource(TemplateDescriptorEntity template, Integer resourceId) throws AMWException {
-	   	saveTemplate(template,  entityManager.find(ResourceEntity.class, resourceId));
+		saveTemplate(template, entityManager.find(ResourceEntity.class, resourceId));
     }
 
-    @HasPermission(permission = Permission.SAVE_RESTYPE_TEMPLATE)
+    @HasPermission(oneOfPermission = {Permission.TEMPLATE_RESOURCETYPE, Permission.RESOURCETYPE}, action = Action.UPDATE)
     public void saveTemplateForResourceType(TemplateDescriptorEntity template, Integer resourceTypeId) throws AMWException {
-	   saveTemplate(template,  entityManager.find(ResourceTypeEntity.class, resourceTypeId));
+		saveTemplate(template, entityManager.find(ResourceTypeEntity.class, resourceTypeId));
     }
 
-    /**
-     * @param resourceId - null for resourceType templates
-     * @param testingMode - true if testing mode is activated
-     * @return
-     */
-    public boolean hasPermissionToModifyTemplate(Integer resourceId, boolean testingMode) {
-        ResourceEntity res = resourceId != null ? entityManager.find(ResourceEntity.class, resourceId) : null;
-        return permissions.hasPermissionToTemplateModify(res, testingMode);
-    }
+	public boolean hasPermissionToModifyResourceTypeTemplate(Integer resourceTypeId, boolean testingMode) {
+		ResourceTypeEntity type = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+		return permissions.hasPermissionToModifyResourceTypeTemplate(type, testingMode);
+	}
+
+	public boolean hasPermissionToModifyResourceTemplate(Integer resourceId, boolean testingMode) {
+		ResourceEntity res = entityManager.find(ResourceEntity.class, resourceId);
+		return permissions.hasPermissionToModifyResourceTemplate(res, testingMode);
+	}
+
 
     void saveTemplate(TemplateDescriptorEntity template, HasContexts<?> hasContext) throws AMWException {
 		if (StringUtils.isEmpty(template.getName())) {
@@ -224,10 +223,10 @@ public class TemplateEditor {
 		AbstractContext owner = getOwnerOfTemplate(templateDescriptor);
 		if (owner != null) {
 			if((owner instanceof ResourceContextEntity || owner instanceof ResourceRelationContextEntity)
-					&& !permissions.hasPermission(Permission.DELETE_RES_TEMPLATE)){
+					&& !permissions.hasPermission(Permission.TEMPLATE_RESOURCE, Action.DELETE)){
 				   throw new NotAuthorizedException("Not authorized to remove the template of a resource");
 			}
-			else if(!permissions.hasPermission(Permission.DELETE_RESTYPE_TEMPLATE)){
+			else if(!permissions.hasPermission(Permission.TEMPLATE_RESOURCETYPE, Action.DELETE)){
 				   throw new NotAuthorizedException("Not authorized to remove the template of a resource type");
 			}
 			owner.removeTemplate(templateDescriptor);

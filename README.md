@@ -22,18 +22,15 @@ mvn clean install
 
 Version Updates are done with the maven release plugin. 
 ```
-mvn release:prepare
+mvn release:clean release:prepare
 ```
 
-* choose the version number of the new release as well as the following version number when asked. Please make sure, that the following version number is postfixed with "SNAPSHOT"
-
-Perform the actual release and deploy the artefact to the artefactrepository
-* this checks out the new version, builds it and copies the deployables to the artifactory
-
-```
-mvn release:perform
-```
-
+* Choose the version number of the new release as well as the following version number when asked. Please make sure, that the following version number is postfixed with "SNAPSHOT"
+* This will create a new Git Tag, update the version numbers and commit the changes.
+* Travis will automatically add the binary to the release page on GitHub once it's done building.
+* The `*.releaseBackup` files can be removed with `mvn release:clean`
+* Push the changes
+* We do not use `mvn release:perform` as the ear is not uploaded to a maven repository.
 
 You also can rollback your release-step with
 ```

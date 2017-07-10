@@ -25,7 +25,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary.DeploymentParameterBoundary;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
-import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
+import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
@@ -52,7 +52,7 @@ public class CreateDeploymentController {
     private DeploymentBoundary deploymentBoundary;
 
     @Inject
-    private ContextDomainService domainService;
+    private ContextLocator contextLocator;
 
     @Inject
     private ResourceDependencyResolverService dependencyResolverService;
@@ -74,7 +74,7 @@ public class CreateDeploymentController {
 
     public List<ContextEntity> loadEnvironments() {
         List<ContextEntity> env = new ArrayList<>();
-        for (ContextEntity c : domainService.getEnvironments()) {
+        for (ContextEntity c : contextLocator.getAllEnvironments()) {
             if (c.getContextType().getName().equals(ContextNames.ENV.name())) {
                 env.add(c);
             }
@@ -84,7 +84,7 @@ public class CreateDeploymentController {
 
     public Map<String, List<ContextEntity>> loadEnvironmentsPerDomain() {
         Map<String, List<ContextEntity>> envMap = new TreeMap<>();
-        for (ContextEntity c : domainService.getEnvironments()) {
+        for (ContextEntity c : contextLocator.getAllEnvironments()) {
             if (c.isEnvironment()) {
                 ContextEntity parent = c.getParent();
 

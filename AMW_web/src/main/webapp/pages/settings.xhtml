@@ -60,20 +60,19 @@
 					</h:link></li>
 				<li class="${param['mode']== 'STP' ? 'current' : ''}"><h:link
 						value="STP Management"
-						rendered="#{securityDataProvider.hasPermission('STP_MANAGEMENT_PAGE')}">
+						rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST')}">
 						<f:param name="mode" value="STP" />
 					</h:link></li>
 				<li class="${param['mode']== 'releases' ? 'current' : ''}"><h:link
 						value="Releases"
-						rendered="#{securityDataProvider.hasPermission('VIEW_RELEASE')}">
+						rendered="#{securityDataProvider.hasPermission('RELEASE')}">
 						<f:param name="mode" value="releases" />
 					</h:link></li>
-
-				<li class="${param['mode']=='rolPerm' ? 'current': ''}"><h:link
-						value="Roles and Permissions"
+				<li class="${param['mode']=='rolePerm' ? 'current': ''}"><h:outputLink
+						value="/AMW_angular/#/permission"
 						rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
-						<f:param name="mode" value="rolPerm" />
-					</h:link></li>
+					Roles and Permissions
+					</h:outputLink></li>
 				<li class="${param['mode']=='appVersion' ? 'current': ''}"><h:link
 						value="Application Info">
 						<f:param name="mode" value="appVersion" />
@@ -219,7 +218,7 @@
 								<nav class="actionbar"> <a4j:commandLink
 									styleClass="btn light right"
 									oncomplete="#{rich:component('addNewSTPPopupPanel')}.show(); return false;"
-									rendered="#{securityDataProvider.hasPermission('ADD_STP')}"
+									rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}"
 									action="#{shakedownStpDataProvider.clearArguments()}"
 									render="argumentsTabel,addNewSTPPopupPanel">
 									<i class="icon icon-add" /> Add new STP</a4j:commandLink> </nav>
@@ -266,7 +265,7 @@
 										oncomplete="#{rich:component('editSTPPopupPanel')}.show(); return false;"
 										title="Edit current STP"
 										render="editSTPPopupPanel, argumentsTabelEdit"
-										rendered="#{securityDataProvider.hasPermission('EDIT_STP')}"
+										rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'UPDATE')}"
 										action="#{shakedownStpDataProvider.createTempArgumentToEditPopupPanel()}">
 										<a4j:param
 											assignTo="#{shakedownStpDataProvider.selectedSTPId}"
@@ -284,7 +283,7 @@
 									<a4j:commandLink id="cancelCommandLink" value="Delete"
 										oncomplete="#{rich:component('cancelSTPConfirmationPopup')}.show(); return false;"
 										title="Cancel current STP" render="cancelSTPConfirmationPopup"
-										rendered="#{securityDataProvider.hasPermission('DELETE_STP')}">
+										rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'DELETE')}">
 										<a4j:param
 											assignTo="#{shakedownStpDataProvider.selectedSTPId}"
 											value="${s.id}" />
@@ -299,13 +298,6 @@
 			<!-- Releases-->
 			<h:panelGroup rendered="${param['mode']=='releases'}">
 				<ui:include src="components/releasesScreenComp.xhtml" />
-			</h:panelGroup>
-
-
-			<!-- ROLES AND PERMISSIONS -->
-			<h:panelGroup rendered="${param['mode']=='rolPerm'}">
-				<ui:include src="components/rolesAndPermissionsComp.xhtml">
-				</ui:include>
 			</h:panelGroup>
 			
 			<!-- Application Version -->
@@ -344,17 +336,6 @@
 						<div class="controls">
 							<h:inputText id="contextName"
 								value="#{environmentsDataProvider.newName}" />
-						</div>
-						<div>
-							<h:panelGroup
-								rendered="#{!contextDataProvider.isGlobal and !environmentsDataProvider.isEnv}">
-								<h:outputText value="Assign to " />
-								<h:selectOneMenu value="#{securityDataProvider.roleSelectedId}">
-									<f:selectItem itemLabel="None" itemValue="${null}" />
-									<f:selectItems value="#{securityDataProvider.deplopyableRoles}"
-										var="role" itemLabel="#{role.name}" itemValue="#{role.id}" />
-								</h:selectOneMenu>
-							</h:panelGroup>
 						</div>
 						<a4j:commandLink value="OK" styleClass="btn primary right"
 							render="environments"
@@ -513,17 +494,6 @@
 									Add argument</a4j:commandLink>
 						</h:panelGroup>
 
-						<!-- <div class="well" style="background-color: white">
-							<form id="uploadFileStp" method="post" action="toBeDefine">
-								<div>
-									<h:outputText value="Choose file" />
-									<input type="file" name="file"/>
-								</div>
-								<div>
-									<button id="submit" type="submit">Upload</button>
-								</div>
-							</form>
-						</div>  -->
 						<div></div>
 					</div>
 				</h:panelGroup>

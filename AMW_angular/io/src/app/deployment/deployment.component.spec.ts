@@ -86,7 +86,7 @@ describe('DeploymentComponent (create deployment)', () => {
   it('should call resourceService on ngOnInit', inject([DeploymentComponent, ResourceService],
     (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
     // given
-    spyOn(resourceService, 'getByType').and.returnValue(Observable.of(''));
+    spyOn(resourceService, 'getByType').and.returnValue(Observable.of([]));
     expect(resourceService.getByType).not.toHaveBeenCalled();
     // when
     deploymentComponent.ngOnInit();

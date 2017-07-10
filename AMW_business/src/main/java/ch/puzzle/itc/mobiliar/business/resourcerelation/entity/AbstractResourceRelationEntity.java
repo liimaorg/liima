@@ -183,7 +183,7 @@ public abstract class AbstractResourceRelationEntity extends HasContexts<Resourc
 	}
 
 	public String buildIdentifer() {
-		String typeIdentifier = getResourceRelationType().getIdentifier();
+		String typeIdentifier = getResourceRelationType().getIdentifierOrTypeBName();
 
 		if (StringUtils.isNotBlank(getIdentifier()) && !StringUtils.isNumeric(getIdentifier())){
 			return getIdentifier();

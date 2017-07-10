@@ -120,9 +120,6 @@ public class DeploymentBoundary {
     CommonFilterService commonFilterService;
 
     @Inject
-    private ResourceDependencyResolverService dependencyResolverService;
-
-    @Inject
     protected EntityManager em;
 
     @Inject
@@ -233,11 +230,22 @@ public class DeploymentBoundary {
         return prevDeployments.iterator().next();
     }
 
-    // TODO test
-    public List<DeploymentEntity> getListOfLastDeploymentsForAppServerAndContext(
-            boolean onlySuccessful) {
+    public List<DeploymentEntity> getListOfLastDeploymentsForAppServerAndContext(boolean onlySuccessful) {
 
         TypedQuery<DeploymentEntity> query = em.createQuery(getListOfLastDeploymentsForAppServerAndContextQuery(onlySuccessful), DeploymentEntity.class);
+
+        return query.getResultList();
+    }
+
+    /**
+     * Loads only the essential data needed for the add shakedown test order popup
+     *
+     * @param onlySuccessful
+     * @return Object [ Integer (Context.id), ResourceGroupEntity ]
+     */
+    public List<Object[]> getEssentialListOfLastDeploymentsForAppServerAndContext(boolean onlySuccessful) {
+
+        Query query = em.createQuery(getEssentialListOfLastDeploymentsForAppServerAndContextQuery(onlySuccessful));
 
         return query.getResultList();
     }
@@ -248,12 +256,26 @@ public class DeploymentBoundary {
             successStateCheck = "and "
                     + DEPLOYMENT_QL_ALIAS
                     + ".deploymentState = '"
-                    + DeploymentEntity.DeploymentState.success + "'";
+                    + DeploymentState.success + "'";
         }
 
         return "select " + DEPLOYMENT_QL_ALIAS + " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentDate = "
                 + "(select max(t.deploymentDate) from DeploymentEntity t "
-                + "where " + DEPLOYMENT_QL_ALIAS + ".context = t.context and " + DEPLOYMENT_QL_ALIAS + ".resourceGroup = t.resourceGroup) " + successStateCheck;
+                + "where " + DEPLOYMENT_QL_ALIAS + ".resourceGroup = t.resourceGroup and " + DEPLOYMENT_QL_ALIAS + ".context = t.context) " + successStateCheck;
+    }
+
+    private String getEssentialListOfLastDeploymentsForAppServerAndContextQuery(boolean onlySuccessful) {
+        String successStateCheck = "";
+        if (onlySuccessful) {
+            successStateCheck = "and "
+                    + DEPLOYMENT_QL_ALIAS
+                    + ".deploymentState = '"
+                    + DeploymentState.success + "'";
+        }
+
+        return "select " + DEPLOYMENT_QL_ALIAS + ".context.id, "  + DEPLOYMENT_QL_ALIAS + ".resourceGroup from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentDate = "
+                + "(select max(t.deploymentDate) from DeploymentEntity t "
+                + "where " + DEPLOYMENT_QL_ALIAS + ".resourceGroup = t.resourceGroup and " + DEPLOYMENT_QL_ALIAS + ".context = t.context) " + successStateCheck;
     }
 
     /**
@@ -365,9 +387,7 @@ public class DeploymentBoundary {
                 deployment.setCreateTestForNeighborhoodAfterDeployment(false);
             }
 
-            boolean hasPermission = permissionService
-                    .hasPermission(context.getName());
-            if (!requestOnly && hasPermission) {
+            if (!requestOnly && permissionService.hasPermissionForDeploymentOnContext(context, group)) {
                 deployment.confirm(permissionService.getCurrentUserName());
             } else {
                 deployment.setDeploymentState(DeploymentState.requested);
@@ -527,7 +547,7 @@ public class DeploymentBoundary {
         //attache the appserver. without it getConsumedRelatedResourcesByResourceType
         //throws lazy load exception even if all relations of the appServer were loaded
         appServer = em.find(ResourceEntity.class, appServer.getId());
-        Set<ResourceEntity> apps = dependencyResolverService.getConsumedRelatedResourcesByResourceType(appServer, DefaultResourceTypeDefinition.APPLICATION, release);
+        Set<ResourceEntity> apps = dependencyResolver.getConsumedRelatedResourcesByResourceType(appServer, DefaultResourceTypeDefinition.APPLICATION, release);
         for (ResourceEntity app : apps) {
             String version = StringUtils.EMPTY;
 
@@ -619,7 +639,7 @@ public class DeploymentBoundary {
                         + " left join fetch " + DEPLOYMENT_QL_ALIAS
                         + ".runtime where " + DEPLOYMENT_QL_ALIAS
                         + ".deploymentState = :deploymentState", DeploymentEntity.class)
-                .setParameter("deploymentState", DeploymentEntity.DeploymentState.READY_FOR_DEPLOYMENT)
+                .setParameter("deploymentState", DeploymentState.READY_FOR_DEPLOYMENT)
                 .setMaxResults(getDeploymentProcessingLimit())
                 .getResultList();
     }
@@ -637,7 +657,7 @@ public class DeploymentBoundary {
                         + ".runtime where " + DEPLOYMENT_QL_ALIAS
                         + ".deploymentState = :deploymentState and " + DEPLOYMENT_QL_ALIAS
                         + ".deploymentDate<=:now", DeploymentEntity.class)
-                .setParameter("deploymentState", DeploymentEntity.DeploymentState.scheduled)
+                .setParameter("deploymentState", DeploymentState.scheduled)
                 .setParameter("now", new Date())
                 .setMaxResults(getDeploymentProcessingLimit())
                 .getResultList();

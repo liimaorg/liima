@@ -22,22 +22,19 @@ package ch.puzzle.itc.mobiliar.business.releasing.control;
 
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-public class ReleaseRepository {
+public class ReleaseRepository extends BaseRepository<ReleaseEntity> {
 
     @Inject
     EntityManager entityManager;
 
     public ReleaseEntity getReleaseByName(String name){
         return entityManager.createQuery("select r from ReleaseEntity r where LOWER(r.name)=:name", ReleaseEntity.class).setParameter("name", name.toLowerCase()).getSingleResult();
-    }
-
-    public ReleaseEntity getReleaseById(Integer id){
-        return entityManager.createQuery("select r from ReleaseEntity r where r.id=:id", ReleaseEntity.class).setParameter("id", id).getSingleResult();
     }
 
     public List<ReleaseEntity> getReleasesForResourceGroup(ResourceGroupEntity resgrp){

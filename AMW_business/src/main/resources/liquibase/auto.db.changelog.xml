@@ -70,4 +70,21 @@
 
     <include file="changesets/model/remove_appserverrelations/remove_appserver_relations.xml" relativeToChangelogFile="true"/>
 
+    <include file="changesets/model/newPermissions/newPermissions_restrictionEntity.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/newPermissions/newPermissions_addDeploymentPermission.xml" relativeToChangelogFile="true"/>
+
+    <include file="changesets/data/newPermissions_migration.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/newPermissions/newPermissions_dropColumns.xml" relativeToChangelogFile="true"/>
+
+    <include file="changesets/model/newPermissions/newPermissions_extendRestrictionEntity.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationCopyFromResource.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfPermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfResourcePermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfDefaultResourcePermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfResourceTypePermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfTemplatePermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfAMWFunctionPermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/newPermissions/newPermissions_userRestrictionEntity.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfRemainingPermissions.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

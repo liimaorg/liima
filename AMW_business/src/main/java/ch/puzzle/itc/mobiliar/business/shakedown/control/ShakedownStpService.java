@@ -48,6 +48,10 @@ import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.exception.StpNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
 
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.DELETE;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
+
 @Interceptors(HasPermissionInterceptor.class)
 @Stateless
 public class ShakedownStpService {
@@ -89,7 +93,7 @@ public class ShakedownStpService {
 		}
 	}
 
-	@HasPermission(permission = Permission.DELETE_STP)
+	@HasPermission(permission = Permission.SHAKEDOWNTEST, action = DELETE)
 	public void deleteSTPEntity(final Integer stpId) throws GeneralDBException, StpNotFoundException {
 		ShakedownStpEntity shakedownStpEntity = getSTPById(stpId);
 		if (shakedownStpEntity == null) {
@@ -142,7 +146,7 @@ public class ShakedownStpService {
 		return shakedownStpEntity;
 	}
 
-	@HasPermission(permission = Permission.ADD_STP)
+	@HasPermission(permission = Permission.SHAKEDOWNTEST, action = CREATE)
 	public ShakedownStpEntity createNewSTP(final String newSTPName, final String newSTPVersion,
 			final List<String> args) throws ElementAlreadyExistsException {
 		ShakedownStpEntity shakedownStpEntity = getSTPByName(newSTPName);
@@ -176,7 +180,7 @@ public class ShakedownStpService {
 	 * @return list with not added args or null if some error occurs
 	 * @throws GeneralDBException
 	 */
-	@HasPermission(permission = Permission.EDIT_STP)
+	@HasPermission(permission = Permission.SHAKEDOWNTEST, action = UPDATE)
 	public List<String> editSTPEntity(final ShakedownStpEntity stpEntity, final List<String> args) {
 		List<String> notAddedArgs = new ArrayList<>();
 		if (stpEntity == null) {

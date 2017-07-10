@@ -256,7 +256,7 @@
 
                                                     <div class="controls">
                                                         <h:inputText styleClass="propertyInputField changeAware"
-                                                                     disabled="#{!editResourceView.canRenameResource}"
+                                                                     disabled="#{!propertyEditDataProvider.editableProperties and !propertyEditDataProvider.testing}"
                                                                      value="#{editResourceView.asNamedIdentifiable.name}"/>
                                                     </div>
                                                 </div>

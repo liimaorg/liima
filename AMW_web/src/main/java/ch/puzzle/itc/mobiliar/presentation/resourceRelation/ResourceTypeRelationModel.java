@@ -74,8 +74,8 @@ public class ResourceTypeRelationModel implements Serializable {
 	@PostConstruct
 	public void postConstruct(){
 		canShowRestypes = permissionService.hasPermission(Permission.REL_RESTYPE_PANEL_LIST);
-        allowedToAddRelations = permissionService.hasPermissionToAddRelation(null, true) || permissionService.hasPermissionToAddRelation(null, false);
-		allowedToRemoveRelations = permissionService.hasPermissionToDeleteRelation(null);
+        allowedToAddRelations = permissionService.hasPermissionToAddRelation(null, true, sessionContext.getCurrentContext()) || permissionService.hasPermissionToAddRelation(null, false, sessionContext.getCurrentContext());
+		allowedToRemoveRelations = permissionService.hasPermissionToDeleteRelation(null, sessionContext.getCurrentContext());
 	}	
 	
 	public void loadResourceTypeRelations(@Observes ResourceTypeEntity resourceType){

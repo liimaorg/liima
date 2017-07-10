@@ -20,13 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.business.environment.control;
 
-import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextTypeEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.GlobalContext;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 
@@ -35,8 +33,6 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,23 +53,6 @@ public class ContextDomainService {
 	public Logger log;
 	
 	private ContextEntity globalContext;
-
-    /**
-     * Returns all Environments
-     *
-     * @return
-     * @throws GeneralDBException
-     */
-    public List<ContextEntity> getEnvironments() {
-		List<ContextEntity> allContexts = QueryUtils.fetch(ContextEntity.class, fetchAllContexts(), 0, -1);
-
-		return allContexts;
-	}
-
-	protected Query fetchAllContexts() {
-		return entityManager.createQuery("select n from ContextEntity n left join fetch n.children as c left join fetch n.contextType left join fetch c.contextType order by n.name asc");
-	}
-
 
     @Produces
     @GlobalContext
@@ -98,6 +77,7 @@ public class ContextDomainService {
 		}
 		return globalContext;
 	}
+
 	
 	/**
 	 * @param contextId

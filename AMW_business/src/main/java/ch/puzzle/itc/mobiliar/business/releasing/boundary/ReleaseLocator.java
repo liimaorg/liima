@@ -61,7 +61,7 @@ public class ReleaseLocator {
 
     public ReleaseEntity getReleaseById(Integer id) throws NoResultException{
         try {
-            return releaseRepository.getReleaseById(id);
+            return releaseRepository.find(id);
         }
         catch (NoResultException e) {
             log.warning("Error occurred in query: " + e.getMessage());

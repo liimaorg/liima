@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.test.testrunner;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
@@ -33,8 +32,6 @@ import javax.persistence.PersistenceUnit;
 
 import ch.puzzle.itc.mobiliar.business.database.control.EntityManagerProducerIntegrationTestImpl;
 import org.junit.rules.ExternalResource;
-
-import com.google.common.io.Files;
 
 public class PersistenceTestRule extends ExternalResource {
 

@@ -28,7 +28,8 @@ import javax.inject.Named;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,7 +52,7 @@ public class ResourceDependenciesView {
     private ResourceTypeLocator resourceTypeLocator;
 
     @Inject
-    private Permissions permissionBoundary;
+    private PermissionBoundary permissionBoundary;
 
     @Getter
     @Setter
@@ -101,7 +102,7 @@ public class ResourceDependenciesView {
     }
 
     public boolean hasPermissionToEditResource(){
-        return permissionBoundary.hasPermission(Permission.EDIT_RES);
+        return permissionBoundary.hasPermission(Permission.RESOURCE, Action.UPDATE);
     }
 
     public boolean isEditResource() {

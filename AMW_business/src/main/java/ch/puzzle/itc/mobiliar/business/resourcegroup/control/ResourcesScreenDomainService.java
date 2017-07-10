@@ -39,7 +39,8 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolat
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
@@ -83,7 +84,7 @@ public class ResourcesScreenDomainService {
     private ForeignableService foreignableService;
 
     @Inject
-    private Permissions permissionBoundry;
+    private PermissionBoundary permissionBoundary;
 
     /**
      * Create new instance resourceType (all resourceType): permitted to
@@ -95,7 +96,7 @@ public class ResourcesScreenDomainService {
 
         ResourceTypeEntity resourceTypeEntity = commonService.getResourceTypeEntityById(resourceTypeId);
 
-        if(!permissionBoundry.canCreateResourceInstance(resourceTypeEntity)){
+        if(!permissionBoundary.canCreateResourceInstance(resourceTypeEntity)){
             throw new NotAuthorizedException("Permission Denied");
         }
 
@@ -178,7 +179,8 @@ public class ResourcesScreenDomainService {
      * @throws ResourceTypeNotFoundException
      * @throws ElementAlreadyExistsException
      */
-    @HasPermission(permission = Permission.NEW_RES)
+    // TODO check context (?)
+    @HasPermission(permission = Permission.RESOURCE, action = Action.CREATE)
     public Resource getOrCreateNewResourceByName(ForeignableOwner creatingOwner, String newResourceName, Integer resourceTypeId, Integer releaseId)
             throws ResourceTypeNotFoundException,
             ElementAlreadyExistsException {
@@ -225,32 +227,28 @@ public class ResourcesScreenDomainService {
 
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    @HasPermission(permission = Permission.DELETE_APPSERVER)
     public void deleteApplicationServerById(int id) throws ResourceNotFoundException,
             ResourceNotDeletableException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-       doRemoveResourceEntity(ForeignableOwner.getSystemOwner(), id);
+       doRemoveResourceEntity(ForeignableOwner.getSystemOwner(), id, false);
     }
 
-    @HasPermission(permission = Permission.DELETE_RES)
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void removeResource(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-        doRemoveResourceEntity(deletingOwner, resourceId);
+        doRemoveResourceEntity(deletingOwner, resourceId, false);
     }
 
-    @HasPermission(permission = Permission.DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE)
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void removeResourceEntityOfDefaultResType(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-        doRemoveResourceEntity(deletingOwner, resourceId);
+        doRemoveResourceEntity(deletingOwner, resourceId, true);
     }
 
-    @HasPermission(permission = Permission.DELETE_APP)
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void deleteApplicationById(ForeignableOwner deletingOwner, int applicationResId) throws ResourceNotFoundException,
             ResourceNotDeletableException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-       doRemoveResourceEntity(deletingOwner, applicationResId);
+       doRemoveResourceEntity(deletingOwner, applicationResId, false);
     }
 
-    private void doRemoveResourceEntity(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+    private void doRemoveResourceEntity(ForeignableOwner deletingOwner, Integer resourceId, boolean isDefaultResType) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
         
         ResourceEntity resourceEntity = commonService.getResourceEntityById(resourceId);
 
@@ -261,6 +259,12 @@ public class ResourcesScreenDomainService {
             log.info(message);
             throw new ResourceNotFoundException(message);
         }
+
+        if ( !permissionBoundary.hasPermission(Permission.RESOURCE,
+                contextDomainService.getGlobalResourceContextEntity(), Action.DELETE, resourceEntity, resourceEntity.getResourceType())) {
+            throw new NotAuthorizedException();
+        }
+
         Integer groupId = resourceEntity.getResourceGroup().getId();
          //Special logic for the removal of an application server: If the current application server instance is the only release previously consuming this resource, the relation has to be attached to the default application server container.
         if (resourceEntity.getResourceType().getName().equals(
@@ -354,11 +358,12 @@ public class ResourcesScreenDomainService {
     public Application createNewUniqueApplicationForAppServer(ForeignableOwner creatingOwner, String applicationName, Integer asGroupId, Integer appReleaseId, Integer asReleaseId)
             throws ElementAlreadyExistsException, ResourceNotFoundException, ResourceTypeNotFoundException {
 
-        if(!permissionBoundry.canCreateAppAndAddToAppServer()){
+        ResourceEntity asResource = commonService.getResourceEntityByGroupAndRelease(asGroupId, asReleaseId);
+
+        if(!permissionBoundary.canCreateAppAndAddToAppServer(asResource)){
             throw new NotAuthorizedException("Missing Permission");
         }
 
-        ResourceEntity asResource = commonService.getResourceEntityByGroupAndRelease(asGroupId, asReleaseId);
         ApplicationServer as = ApplicationServer.createByResource(asResource, resourceTypeProvider,
                 contextDomainService.getGlobalResourceContextEntity());
         Application app = createUniqueApplicationByName(creatingOwner, applicationName, appReleaseId, false);
@@ -384,7 +389,8 @@ public class ResourcesScreenDomainService {
      * @throws ElementAlreadyExistsException
      * @throws ResourceTypeNotFoundException
      */
-    @HasPermission(permission = Permission.ADD_APP)
+    // TODO check context as well => NO
+    @HasPermission(permission = Permission.RESOURCE, action = Action.CREATE)
     public Application createNewApplicationWithoutAppServerByName(ForeignableOwner creatingOwner, String fceKey, String fceLink, String applicationName, Integer releaseId, boolean canCreateReleaseOfExisting)
             throws ElementAlreadyExistsException, ResourceTypeNotFoundException {
         Application app = createUniqueApplicationByName(creatingOwner, applicationName, releaseId, canCreateReleaseOfExisting);
@@ -418,13 +424,16 @@ public class ResourcesScreenDomainService {
 
     /**
      * Updates (merges) an existing ResourceEntity
+     * used by MaiaAmwFederationServiceImportHandler
      *
      * @param resourceEntity
      */
-    // TODO permission? which?
+    // TODO review context?
     public void updateResource(ResourceEntity resourceEntity) {
         if (resourceEntity.getId() != null) {
-            entityManager.merge(resourceEntity);
+            if (permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity, resourceEntity.getResourceType())) {
+                entityManager.merge(resourceEntity);
+            }
         }
     }
 }

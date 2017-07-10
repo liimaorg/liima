@@ -30,9 +30,10 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
+import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
+import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import lombok.Getter;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
-import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
@@ -45,6 +46,9 @@ public class SessionContext implements Serializable {
 
     @Inject
     private ContextDomainService domainService;
+
+    @Inject
+    private ContextLocator contextLocator;
 
     @Inject
     private CommonDomainService commonService;
@@ -83,7 +87,7 @@ public class SessionContext implements Serializable {
     }
 
     private void loadContexts() {
-            contexts = Collections.unmodifiableList(domainService.getEnvironments());
+            contexts = Collections.unmodifiableList(contextLocator.getAllEnvironments());
     }
 
     private void loadTargetPlatforms() {
