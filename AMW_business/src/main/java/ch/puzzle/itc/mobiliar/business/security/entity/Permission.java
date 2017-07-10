@@ -37,7 +37,6 @@ public enum Permission {
     ADD_AS_CONSUMED_RESOURCE("Add as consumed Resource. Path: all resource instance screen-> press button 'Add relation'.", true),
     ADD_EVERY_RELATED_RESOURCE("WARNING: DON'T CHANGE THIS PERMISSION", true),
     DELETE_EVERY_RELATED_RESOURCE("WARNING: DON'T CHANGE THIS PERMISSION", true),
-    DELETE_CONS_OR_PROVIDED_RELATION("Delete Consumed or Provided relation. You can find this button in all resource instance except in Applicationserver instance and node instance", true),
     SELECT_RUNTIME("Select runtime. You can find this button in all instances of Application Server", true),
     ADD_NODE_RELATION("Add Node to Application Server. Path: Resources -> select one instance of Applicaiton Server ", true),
     DELETE_NODE_RELATION("Delete Node Relation button. Path: Resources -> select APPLICATIONSERVER tab -> select one instance of application server list ", true),

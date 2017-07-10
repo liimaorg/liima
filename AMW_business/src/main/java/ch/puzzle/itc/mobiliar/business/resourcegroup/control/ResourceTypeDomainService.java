@@ -231,13 +231,12 @@ public class ResourceTypeDomainService {
 		entityManager.persist(relation);
 	}
 
-	@HasPermission(permission = Permission.DELETE_CONS_OR_PROVIDED_RELATION)
 	public void removeResourceTypeRelation(Integer relResTypeId) throws ResourceTypeNotFoundException {
 		ResourceRelationTypeEntity resRelType = getResourceRelationTypeById(relResTypeId);
-
+		permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, resRelType.getResourceTypeA(), null);
+		permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, resRelType.getResourceTypeB(), null);
 		resRelType.getResourceTypeA().getResourceRelationTypesA().remove(resRelType);
 		resRelType.getResourceTypeB().getResourceRelationTypesB().remove(resRelType);
-		
 		entityManager.remove(resRelType);
 	}
 

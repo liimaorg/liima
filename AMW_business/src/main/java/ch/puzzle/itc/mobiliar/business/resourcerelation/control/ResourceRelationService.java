@@ -317,7 +317,8 @@ public class ResourceRelationService implements Serializable{
 		}
 		else if (DefaultResourceTypeDefinition.APPLICATION.name()
 				.equals(master.getResourceType().getName())) {
-			removeRelationInEditInstanceApplication(relationId);
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
+			doRemoveResourceRelationForAllReleases(relationId);
 		}
 		// If an application is removed from the applicationserver
 		// and application is not related to the applicationserver in an other release,
@@ -367,11 +368,6 @@ public class ResourceRelationService implements Serializable{
 
 	@HasPermission(permission = Permission.DELETE_EVERY_RELATED_RESOURCE)
 	private void removeOtherRelation(Integer rel) throws ResourceNotFoundException {
-		doRemoveResourceRelationForAllReleases(rel);
-	}
-
-	@HasPermission(permission = Permission.DELETE_CONS_OR_PROVIDED_RELATION)
-	private void removeRelationInEditInstanceApplication(Integer rel) throws ResourceNotFoundException {
 		doRemoveResourceRelationForAllReleases(rel);
 	}
 

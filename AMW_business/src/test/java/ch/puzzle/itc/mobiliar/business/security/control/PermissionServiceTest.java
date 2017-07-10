@@ -277,7 +277,7 @@ public class PermissionServiceTest {
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_CONS_OR_PROVIDED_RELATION, res)));
+		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -373,7 +373,7 @@ public class PermissionServiceTest {
 	}
 	
 	@Test
-	public void hasNoPermissionToDeleteResourceRelationWhenUserIsAppDeveloperAndResourceIsNotInstanceOfApplicationResType(){
+	public void hasNoPermissionToDeleteResourceRelationWhenUserHasNoReourceUpdatePermissionAndResourceIsNotInstanceOfApplicationResType(){
 		// given
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
@@ -382,7 +382,7 @@ public class PermissionServiceTest {
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_CONS_OR_PROVIDED_RELATION, res)));
+		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCETYPE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when

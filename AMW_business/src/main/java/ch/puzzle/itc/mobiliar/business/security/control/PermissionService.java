@@ -553,11 +553,6 @@ public class PermissionService implements Serializable {
                     && resourceTypeEntity.isApplicationServerResourceType()) {
                 return true;
             }
-            // Check that the user is app_developer
-            if (hasPermission(Permission.DELETE_CONS_OR_PROVIDED_RELATION)
-                    && resourceTypeEntity.isApplicationResourceType()) {
-                return true;
-            }
             return hasPermission(Permission.SELECT_RUNTIME) && resourceTypeEntity.isRuntimeType();
         }
         return false;
