@@ -89,5 +89,6 @@
 
     <include file="changesets/data/permissionMerge/add_app_to_app_server.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/delete_app_to_app_server.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/add_as_provided_resource.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

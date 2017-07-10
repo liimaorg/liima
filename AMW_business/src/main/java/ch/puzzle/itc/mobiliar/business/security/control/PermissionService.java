@@ -523,8 +523,7 @@ public class PermissionService implements Serializable {
                 return true;
             } else if (resourceEntity.getResourceType().isApplicationResourceType()
                     && hasPermission(Permission.ADD_RELATED_RESOURCE)) {
-                return (!provided && hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE))
-                        || (provided && hasPermission(Permission.ADD_AS_PROVIDED_RESOURCE));
+                return (!provided && hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE));
             }
         }
         return hasPermission(Permission.ADD_RELATED_RESOURCETYPE);

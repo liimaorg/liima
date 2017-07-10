@@ -34,6 +34,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainS
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
@@ -139,12 +140,12 @@ public class RelationDataProvider implements Serializable {
 	@PostConstruct
 	public void init() {
 		canAddConsumedRelation = permissions.hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE);
-		canAddProvidedRelation = permissions.hasPermission(Permission.ADD_AS_PROVIDED_RESOURCE);
 		canAddResourceTypeRelation = permissions.hasPermission(Permission.ADD_RELATED_RESOURCETYPE);
 	}
 
 	public void onChangedResource(@Observes ResourceEntity resourceEntity) {
 		resourceOrType = resourceEntity;
+		canAddProvidedRelation = permissions.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
 	}
 
 	public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
@@ -152,8 +153,7 @@ public class RelationDataProvider implements Serializable {
 	}
 
 	public List<Application> loadAllApplicationsWithoutServer() {
-		List<Application> apps = new ArrayList<Application>();
-		return apps = resourceGroupPersistenceService.getAllApplicationsNotBelongingToAServer();
+		return resourceGroupPersistenceService.getAllApplicationsNotBelongingToAServer();
 	}
 
 	public void loadResourceGroupsForApplication() {
@@ -161,7 +161,7 @@ public class RelationDataProvider implements Serializable {
 		addRuntimeToAppServerMode = false;
 		ResourceType t = resourceTypeDataProvider.getByName(DefaultResourceTypeDefinition.APPLICATION
 				.name());
-		resourceTypes = Arrays.asList();
+		resourceTypes = Collections.emptyList();
 		currentResourceType = t!=null ? t.getEntity() : null;
 		// First, we load all applications without servers...
 		List<Application> applications = loadAllApplicationsWithoutServer();
@@ -173,7 +173,7 @@ public class RelationDataProvider implements Serializable {
 				selectableItems.add(appGroup);
 			}
 		}
-		Set<Integer> alreadyDefinedGroups = new HashSet<Integer>();
+		Set<Integer> alreadyDefinedGroups = new HashSet<>();
 		if (resourceRelationModel.getConsumedApplications() != null) {
 			for (ResourceEditRelation rel : resourceRelationModel.getConsumedApplications()) {
 				alreadyDefinedGroups.add(rel.getSlaveGroupId());
@@ -231,14 +231,14 @@ public class RelationDataProvider implements Serializable {
 		else {
 			// Non-default types can only define those relations which are defined as "unresolved"
 			selectableItems = (List<NamedIdentifiable>) relationEditor.loadResourceGroupsForType(typeName, resourceOrType.getId());
-			resourceTypes = Arrays.asList(t);
+			resourceTypes = Collections.singletonList(t);
             Collections.sort(resourceTypes);
 			currentResourceType = t.getEntity();
 		}
 	}
 
     private List<ResourceGroup> loadResourceGroupsByResourceTypeId(Integer id, List<Integer> excludedResourceIds) {
-        List<ResourceGroup> resourcesByResourceType = new ArrayList<ResourceGroup>();
+        List<ResourceGroup> resourcesByResourceType = new ArrayList<>();
 
         if (id == null) {
             String message = "No resourcetype selected.";
@@ -273,7 +273,7 @@ public class RelationDataProvider implements Serializable {
 		addRuntimeToAppServerMode = true;
 
 		ResourceType t = resourceTypeDataProvider.getByName(ResourceTypeEntity.RUNTIME);
-		resourceTypes = Arrays.asList();
+		resourceTypes = Collections.emptyList();
 		currentResourceType = t!=null ? t.getEntity() : null;
 
 		selectableItems = loadAllRuntimeEnvironments();
@@ -346,7 +346,7 @@ public class RelationDataProvider implements Serializable {
     }
 
 	private <T> List<T> flattenMap(Map<?, List<T>> map) {
-		List<T> list = new ArrayList<T>();
+		List<T> list = new ArrayList<>();
 		if (map != null) {
 			for (Object key : map.keySet()) {
 				list.addAll(map.get(key));
@@ -466,10 +466,7 @@ public class RelationDataProvider implements Serializable {
 						throw e;
 					}
 				}
-				catch (ElementAlreadyExistsException e) {
-					GlobalMessageAppender.addErrorMessage(e.getMessage());
-				}
-				catch (ResourceTypeNotFoundException e) {
+				catch (ElementAlreadyExistsException | ResourceTypeNotFoundException e) {
 					GlobalMessageAppender.addErrorMessage(e.getMessage());
 				}
 			}
