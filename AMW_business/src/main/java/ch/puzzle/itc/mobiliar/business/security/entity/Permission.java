@@ -31,8 +31,6 @@ public enum Permission {
     TEST_GENERATION("With this permission the user can test the generation of an Applicationserver", true),
 
     // RESOURCE RELATION PERMISSIONS
-    CONSUMED_RES_LIST("Allows to see consumed relations in the edit screen", true),
-    PROVIDED_RES_LIST("Allows to see provided relations in the edit screen", true),
     ADD_AS_CONSUMED_RESOURCE("Add as consumed Resource. Path: all resource instance screen-> press button 'Add relation'.", true),
     SELECT_RUNTIME("Select runtime. You can find this button in all instances of Application Server", true),
     ADD_NODE_RELATION("Add Node to Application Server. Path: Resources -> select one instance of Applicaiton Server ", true),

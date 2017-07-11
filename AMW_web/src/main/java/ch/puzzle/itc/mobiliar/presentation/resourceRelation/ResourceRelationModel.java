@@ -141,10 +141,7 @@ public class ResourceRelationModel implements Serializable {
     private boolean allowedToSelectRuntime = false;
 
     @Getter
-    private boolean allowedToListConsumedRelations = false;
-
-    @Getter
-    private boolean allowedToListProvidedRelations = false;
+    private boolean allowedToListRelations = false;
 
     @Getter
     private boolean allowedToListResourceTypeRelations = false;
@@ -183,8 +180,7 @@ public class ResourceRelationModel implements Serializable {
 
     @PostConstruct
     public void init() {
-        allowedToListConsumedRelations = permissionBoundary.hasPermission(Permission.CONSUMED_RES_LIST);
-        allowedToListProvidedRelations = permissionBoundary.hasPermission(Permission.PROVIDED_RES_LIST);
+        allowedToListRelations = permissionBoundary.hasPermission(Permission.RESOURCE, Action.READ);
         allowedToListResourceTypeRelations = permissionBoundary
                 .hasPermission(Permission.REL_RESTYPE_PANEL_LIST);
         allowedToJumpToRelatedResourceEditScreen = permissionBoundary.hasPermission(Permission.RESOURCE, Action.UPDATE);
@@ -195,6 +191,7 @@ public class ResourceRelationModel implements Serializable {
         allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelation(resourceEntity, sessionContext.getCurrentContext());
         canAddConsumedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, false, sessionContext.getCurrentContext());
         canAddProvidedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, true, sessionContext.getCurrentContext());
+        allowedToListRelations = permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.READ, resourceEntity, null);
         allowedToAddRelations = canAddConsumedRelations || canAddProvidedRelations;
         currentSelectedResourceOrType = resourceEntity;
 

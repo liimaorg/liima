@@ -1,0 +1,36 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/permissionMerge/consumed_or_provided_res_list.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="permissionMerge_consumed_or_provided_res_list" >
+
+        <!-- CONSUMED_RES_LIST("Allows to see consumed relations in the edit screen", true) -->
+        <!-- PROVIDED_RES_LIST("Allows to see provided relations in the edit screen", true) -->
+
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'CONSUMED_RES_LIST' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'PROVIDED_RES_LIST' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
+            <where>SEQ_NAME='restrictionId'</where>
+        </update>
+
+        <update tableName="TAMW_restriction">
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'RESOURCE')" />
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'CONSUMED_RES_LIST' OR value = 'PROVIDED_RES_LIST')</where>
+        </update>
+
+        <delete tableName="TAMW_role_permission">
+            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE value = 'CONSUMED_RES_LIST' OR value = 'PROVIDED_RES_LIST')</where>
+        </delete>
+
+        <delete tableName="TAMW_permission">
+            <where>value = 'CONSUMED_RES_LIST' OR value = 'PROVIDED_RES_LIST'</where>
+        </delete>
+
+        <rollback></rollback>
+    </changeSet>
+
+</databaseChangeLog>

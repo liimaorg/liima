@@ -96,7 +96,7 @@
                         <li><h3>Consumed resources</h3></li>
                     </h:panelGroup>
                     <h:panelGroup
-                            rendered="#{resourceRelationModel.allowedToListConsumedRelations}">
+                            rendered="#{resourceRelationModel.allowedToListRelations}">
                         <ui:repeat
                                 value="#{amw:mapToList(resourceRelationModel.consumedRelations)}"
                                 var="entry">
@@ -132,7 +132,7 @@
                         <li><h3>Provided resources</h3></li>
                     </h:panelGroup>
                     <h:panelGroup
-                            rendered="#{resourceRelationModel.allowedToListProvidedRelations}">
+                            rendered="#{resourceRelationModel.allowedToListRelations}">
                         <ui:repeat
                                 value="#{amw:mapToList(resourceRelationModel.providedRelations)}"
                                 var="entry">
