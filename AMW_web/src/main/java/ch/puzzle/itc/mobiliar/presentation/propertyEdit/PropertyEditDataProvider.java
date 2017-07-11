@@ -313,10 +313,6 @@ public class PropertyEditDataProvider implements Serializable {
         return null;
     }
 
-    public boolean hasResetPropertyPermission() {
-        return permissionBoundary.hasPermission(Permission.RESET_PROP);
-    }
-
     public boolean hasEditRelationNamePermission() {
         return permissionBoundary.hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
     }

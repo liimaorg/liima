@@ -43,7 +43,7 @@
 
             <!-- RESET -->
             <h:panelGroup
-                    rendered="${(cc.attrs.property.propertyValue!=null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and propertyEditDataProvider.editableProperties and (propertyEditDataProvider.hasResetPropertyPermission() or propertyEditDataProvider.testing) }">
+                    rendered="${(cc.attrs.property.propertyValue!=null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and (propertyEditDataProvider.editableProperties or propertyEditDataProvider.testing) }">
                 <h:selectBooleanCheckbox id="resetBox" value="#{cc.attrs.property.reset}" styleClass="${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} resetBox"
                                          onclick="checkReset(this, '${cc.attrs.property.replacedValue}', '${cc.attrs.property.propertyValue}');"/>
                 <h:outputLabel styleClass="inlineBlock" for="resetBox" value="Reset"/>
@@ -83,7 +83,7 @@
 
             <!-- RESET -->
             <h:panelGroup
-                    rendered="${(cc.attrs.property.propertyValue!=null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and propertyEditDataProvider.editableProperties and (propertyEditDataProvider.hasResetPropertyPermission() or propertyEditDataProvider.testing)}">
+                    rendered="${(cc.attrs.property.propertyValue!=null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and (propertyEditDataProvider.editableProperties or propertyEditDataProvider.testing)}">
                 <h:selectBooleanCheckbox value="#{cc.attrs.property.reset}" styleClass="${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} resetBox"
                                          onclick="checkReset(this, '${cc.attrs.property.replacedValue}', '${cc.attrs.property.propertyValue}');"/>
                 <h:outputText value="Reset"/>
