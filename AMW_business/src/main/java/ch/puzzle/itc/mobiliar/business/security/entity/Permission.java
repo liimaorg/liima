@@ -41,7 +41,6 @@ public enum Permission {
     // RESOURCE AND RESOURCE TYPE PERMISSIONS
     EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen.", true),
     RESET_PROP("Reset properties. You can find this list in all Resource/Resource Type screen.", true),
-    EDIT_PROP_LIST_OF_INST_APP("Edit properties in resource / resource type screen.", true),
     PROP_LIST("This permission allows to list the properties in the edit screen.", true),
     DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value", true),
     SAVE_PROPERTY("With this permission it can modify a property descriptor", true),
