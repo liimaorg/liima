@@ -38,6 +38,7 @@ import ch.puzzle.itc.mobiliar.business.property.control.PropertyTypeScreenDomain
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceImportService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
@@ -95,6 +96,8 @@ public class MaiaAmwFederationServiceImportHandlerTest {
     @Mock
     private ResourcesScreenDomainService resourcesServiceMock;
 
+    @Mock
+    private ResourceBoundary resourceBoundaryMock;
 
     @Mock
     private ContextDomainService contextServiceMock;
@@ -141,7 +144,7 @@ public class MaiaAmwFederationServiceImportHandlerTest {
     public void setUp() throws ResourceTypeNotFoundException, ElementAlreadyExistsException {
         MockitoAnnotations.initMocks(this);
 
-        when(resourcesServiceMock.createNewApplicationWithoutAppServerByName(ForeignableOwner.MAIA, FC_EXT_KEY, FC_EXT_LINK, APPNAME, RELEASE_ALPHA.getId(), true)).thenReturn(applicationMock);
+        when(resourceBoundaryMock.createNewApplicationWithoutAppServerByName(ForeignableOwner.MAIA, FC_EXT_KEY, FC_EXT_LINK, APPNAME, RELEASE_ALPHA.getId(), true)).thenReturn(applicationMock);
         when(contextServiceMock.getGlobalResourceContextEntity()).thenReturn(globalContextMock);
         // mock a not yet existing app
         when(resourceRepositoryMock.getResourceByNameAndRelease(APPNAME,RELEASE_ALPHA)).thenReturn(null);
@@ -206,7 +209,7 @@ public class MaiaAmwFederationServiceImportHandlerTest {
         serviceImportHandler.handleUpdateApplicationRelease(app1, appBinding, RELEASE_ALPHA);
 
         // then
-        verify(resourcesServiceMock).createNewApplicationWithoutAppServerByName(ForeignableOwner.MAIA,FC_EXT_KEY, FC_EXT_LINK, APPNAME, RELEASE_ALPHA.getId(), true);
+        verify(resourceBoundaryMock).createNewApplicationWithoutAppServerByName(ForeignableOwner.MAIA,FC_EXT_KEY, FC_EXT_LINK, APPNAME, RELEASE_ALPHA.getId(), true);
     }
 
     @Test
@@ -230,7 +233,7 @@ public class MaiaAmwFederationServiceImportHandlerTest {
         ApplicationReleaseBinding appBinding = createAppReleaseBinding(RELEASE_ALPHA.getName(), null);
         Application app1 = createApplication(APPNAME, TECHSTACK, FC_EXT_KEY, FC_EXT_LINK);
 
-        when(resourcesServiceMock.createNewApplicationWithoutAppServerByName(ForeignableOwner.MAIA, FC_EXT_KEY, FC_EXT_LINK, APPNAME, RELEASE_ALPHA.getId(), true)).thenReturn(null);
+        when(resourceBoundaryMock.createNewApplicationWithoutAppServerByName(ForeignableOwner.MAIA, FC_EXT_KEY, FC_EXT_LINK, APPNAME, RELEASE_ALPHA.getId(), true)).thenReturn(null);
 
         // when
         serviceImportHandler.handleUpdateApplicationRelease(app1, appBinding, RELEASE_ALPHA);

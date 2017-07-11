@@ -244,10 +244,9 @@ public class DeploymentsRest {
         }
 
         // get the id of the ApplicationServer
-
         group = resourceGroupService.loadUniqueGroupByNameAndType(request.getAppServerName(), resourceTypeProvider
-                .getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER)
-                .getId());
+                .getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER).getId());
+
         if (group == null) {
             return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto("ApplicationServer with name " + request.getAppServerName() + " not found."))
                     .build();
