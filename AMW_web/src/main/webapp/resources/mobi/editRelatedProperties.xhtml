@@ -281,7 +281,10 @@
                                 <label class="control-label">RelationName</label>
 
                                 <div class="control-group controls">
-                                    <h:inputText id="relationEntityIdentifier" value="#{propertyEditDataProvider.relationIdentifier}"></h:inputText>
+                                    <h:inputText id="relationEntityIdentifier"
+                                                 disabled="#{!propertyEditDataProvider.isGlobalContext()}"
+                                                 value="#{propertyEditDataProvider.relationIdentifier}">
+                                    </h:inputText>
                                 </div>
                             </h:panelGroup>
 

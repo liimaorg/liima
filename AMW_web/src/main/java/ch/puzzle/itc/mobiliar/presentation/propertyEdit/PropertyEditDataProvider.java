@@ -134,6 +134,10 @@ public class PropertyEditDataProvider implements Serializable {
         return testing != null && testing;
     }
 
+    public boolean isGlobalContext() {
+        return currentContext.isGlobal();
+    }
+
     public void onContextChanged(@Observes ContextEntity contextEntity) throws GeneralDBException {
         if (isCurrentFocusOnResource()) {
             onChangedResource((ResourceEntity) resourceOrResourceType);
@@ -289,6 +293,9 @@ public class PropertyEditDataProvider implements Serializable {
 
     private void preventDuplicateIdentifiers() throws AMWException {
         List<ResourceEditRelation> consumedRelations = resourceRelation.getConsumedRelations().get(currentRelation.getSlaveTypeName());
+        if (currentRelation.getSlaveName().equals(relationIdentifier)) {
+            throw new AMWException("RelationName '" + relationIdentifier + "' is not allowed");
+        }
         for (ResourceEditRelation consumedRelation : consumedRelations) {
             if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier)) {
                 throw new AMWException("RelationName '" + relationIdentifier + "' is already taken");
