@@ -39,7 +39,6 @@ public enum Permission {
     REL_RESTYPE_PANEL_LIST("Allows to show the related resource types", true),
 
     // RESOURCE AND RESOURCE TYPE PERMISSIONS
-    EDIT_PROPERTIES_COMMENT_POPUP("Edit comments of property.", true),
     EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen.", true),
     RESET_PROP("Reset properties. You can find this list in all Resource/Resource Type screen.", true),
     EDIT_PROP_LIST_OF_INST_APP("Edit properties in resource / resource type screen.", true),

@@ -101,5 +101,6 @@
     <include file="changesets/data/permissionMerge/add_every_related_resource.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/change_resource_release.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/consumed_or_provided_res_list.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/edit_properties_comment_popup.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
