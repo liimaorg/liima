@@ -43,7 +43,6 @@ public enum Permission {
     RESET_PROP("Reset properties. You can find this list in all Resource/Resource Type screen.", true),
     PROP_LIST("This permission allows to list the properties in the edit screen.", true),
     DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value", true),
-    SAVE_PROPERTY("With this permission it can modify a property descriptor", true),
     SET_SOFTLINK_ID_OR_REF("Allows to manually set a softlink id or a softlink reference respective", true),
     REMOVE_RELATED_RESOURCETYPE("Remove related resource type", true),
 

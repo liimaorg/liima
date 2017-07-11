@@ -1,0 +1,40 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/permissionMerge/save_property.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="permissionMerge_save_property" >
+
+        <!-- SAVE_PROPERTY("With this permission it can modify a property descriptor", true) -->
+
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'UPDATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'SAVE_PROPERTY' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)+5) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'UPDATE', 1 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'SAVE_PROPERTY' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
+            <where>SEQ_NAME='restrictionId'</where>
+        </update>
+
+        <update tableName="TAMW_restriction">
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'RESOURCE')" />
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'SAVE_PROPERTY' AND v = 0)</where>
+        </update>
+
+        <update tableName="TAMW_restriction">
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'RESOURCETYPE')" />
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'SAVE_PROPERTY' AND v = 1)</where>
+        </update>
+
+        <delete tableName="TAMW_role_permission">
+            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE value = 'SAVE_PROPERTY')</where>
+        </delete>
+
+        <delete tableName="TAMW_permission">
+            <where>value = 'SAVE_PROPERTY'</where>
+        </delete>
+
+        <rollback></rollback>
+    </changeSet>
+
+</databaseChangeLog>

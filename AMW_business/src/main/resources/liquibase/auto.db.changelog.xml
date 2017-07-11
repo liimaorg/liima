@@ -103,5 +103,6 @@
     <include file="changesets/data/permissionMerge/consumed_or_provided_res_list.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/edit_properties_comment_popup.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/edit_prop_list_of_inst_app.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/save_property.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

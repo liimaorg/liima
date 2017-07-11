@@ -636,10 +636,10 @@ public class PropertyEditor {
 	/**
 	 * Checks Permissions and Persists the given property descriptor to the database for resource instance
 	 */
-    @HasPermission(permission = Permission.SAVE_PROPERTY)
 	public PropertyDescriptorEntity savePropertyDescriptorForResource(ForeignableOwner editingOwner, Integer resourceId, PropertyDescriptorEntity descriptor, int foreignableHashBeforeModification, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
-
-        // verify if modifications are allowed
+		ResourceEntity attachedResource = entityManager.find(ResourceEntity.class, resourceId);
+		// verify if modifications are allowed
+		permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, attachedResource.getResourceGroup(), null, null);
         foreignableService.verifyEditableByOwner(editingOwner, foreignableHashBeforeModification, descriptor);
         return savePropertyDescriptorResource(editingOwner, resourceId, descriptor, propertyTagsString);
 	}
@@ -671,9 +671,10 @@ public class PropertyEditor {
 	/**
 	 * Checks Permissions and Persists the given property descriptor to the database for resource type
 	 */
-    @HasPermission(permission = Permission.SAVE_PROPERTY)
 	public PropertyDescriptorEntity savePropertyDescriptorForResourceType(ForeignableOwner editingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor,int foreignableHashBeforeModification, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
-        // verify if modifications are allowed
+		ResourceTypeEntity attachedResourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+		// verify if modifications are allowed
+		permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, attachedResourceType, null);
         foreignableService.verifyEditableByOwner(editingOwner, foreignableHashBeforeModification, descriptor);
         return savePropertyDescriptorResourceType(editingOwner, resourceTypeId, descriptor, propertyTagsString);
 	}
@@ -687,12 +688,13 @@ public class PropertyEditor {
     /**
      * Checks Permissions and deletes the given property descriptor from database for resource
      */
-    @HasPermission(permission = Permission.SAVE_PROPERTY)
 	public void deletePropertyDescriptorForResource(ForeignableOwner deletingOwner, Integer resourceId, PropertyDescriptorEntity descriptor) throws AMWException, ForeignableOwnerViolationException {
 
 		if (descriptor != null && descriptor.getId() != null) {
 			ResourceEntity attachedResource = entityManager.find(ResourceEntity.class, resourceId);
 			ResourceContextEntity resourceContext = attachedResource.getOrCreateContext(contextService.getGlobalResourceContextEntity());
+
+			permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, attachedResource.getResourceGroup(), null, null);
             foreignableService.verifyDeletableByOwner(deletingOwner, descriptor);
             propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceContext);
 		}
@@ -702,7 +704,6 @@ public class PropertyEditor {
     /**
      * Checks Permissions and deletes the given property descriptor from database for resource type
      */
-    @HasPermission(permission = Permission.SAVE_PROPERTY)
 	public void deletePropertyDescriptorForResourceType(ForeignableOwner deletingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor) throws AMWException, ForeignableOwnerViolationException {
 
 		if (descriptor != null && descriptor.getId() != null) {
@@ -710,6 +711,7 @@ public class PropertyEditor {
 			ResourceTypeEntity attachedResourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 			ResourceTypeContextEntity resourceTypeContextEntity = attachedResourceType.getOrCreateContext(contextService.getGlobalResourceContextEntity());
 
+			permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, attachedResourceType, null);
             foreignableService.verifyDeletableByOwner(deletingOwner, descriptor);
             propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceTypeContextEntity);
 		}
