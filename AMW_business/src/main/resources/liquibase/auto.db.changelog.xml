@@ -106,5 +106,6 @@
     <include file="changesets/data/permissionMerge/save_property.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/prop_list.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/rel_restype_panel_list.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/remove_related_resourcetype.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

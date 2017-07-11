@@ -40,7 +40,6 @@ public enum Permission {
     RESET_PROP("Reset properties. You can find this list in all Resource/Resource Type screen.", true),
     DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value", true),
     SET_SOFTLINK_ID_OR_REF("Allows to manually set a softlink id or a softlink reference respective", true),
-    REMOVE_RELATED_RESOURCETYPE("Remove related resource type", true),
 
     // FOREIGNABLES PERMISSIONS
     IGNORE_FOREIGNABLE_OWNER("Ignore the owner of a foreignable object. Chuck Norris can edit/delete objects of any owner!", true),
