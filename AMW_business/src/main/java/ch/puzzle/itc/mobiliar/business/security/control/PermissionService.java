@@ -544,11 +544,6 @@ public class PermissionService implements Serializable {
             }
             // TODO migrate existing Permissions to Restrictions (?)
             ResourceTypeEntity resourceTypeEntity = resourceEntity.getResourceType();
-            // Check that the user is server_admin
-            if (hasPermission(Permission.DELETE_NODE_RELATION)
-                    && resourceTypeEntity.isApplicationServerResourceType()) {
-                return true;
-            }
             return hasPermission(Permission.SELECT_RUNTIME) && resourceTypeEntity.isRuntimeType();
         }
         return false;

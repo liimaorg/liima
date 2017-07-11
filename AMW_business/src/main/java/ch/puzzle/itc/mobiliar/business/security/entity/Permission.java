@@ -38,7 +38,6 @@ public enum Permission {
     ADD_EVERY_RELATED_RESOURCE("WARNING: DON'T CHANGE THIS PERMISSION", true),
     SELECT_RUNTIME("Select runtime. You can find this button in all instances of Application Server", true),
     ADD_NODE_RELATION("Add Node to Application Server. Path: Resources -> select one instance of Applicaiton Server ", true),
-    DELETE_NODE_RELATION("Delete Node Relation button. Path: Resources -> select APPLICATIONSERVER tab -> select one instance of application server list ", true),
 
     // RESOURCE TYPE PERMISSIONS
     REL_RESTYPE_PANEL_LIST("Allows to show the related resource types", true),

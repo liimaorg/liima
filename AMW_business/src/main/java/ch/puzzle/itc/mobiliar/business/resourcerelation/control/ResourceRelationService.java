@@ -313,7 +313,8 @@ public class ResourceRelationService implements Serializable{
 				.getId());
 		String slaveResourceType = relation.getSlaveResource().getResourceType().getName();
 		if (DefaultResourceTypeDefinition.NODE.name().equals(slaveResourceType)) {
-			removeNodeRelation(relationId);
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
+			doRemoveResourceRelationForAllReleases(relationId);
 		}
 		else if (DefaultResourceTypeDefinition.APPLICATION.name()
 				.equals(master.getResourceType().getName())) {
@@ -361,11 +362,6 @@ public class ResourceRelationService implements Serializable{
 			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
 			doRemoveResourceRelationForAllReleases(relationId);
 		}
-	}
-
-	@HasPermission(permission = Permission.DELETE_NODE_RELATION)
-	private void removeNodeRelation(Integer rel) throws ResourceNotFoundException{
-		doRemoveResourceRelationForAllReleases(rel);
 	}
 
 	private void doRemoveResourceRelationForAllReleases(Integer relationId) throws ResourceNotFoundException {
