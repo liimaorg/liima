@@ -400,6 +400,7 @@ public class GenerationUnitFactory {
 
 	private void addUnit(GenerationSubPackage workSet, GenerationUnit generationUnit) {
 		log.info("adding workset for " + generationUnit.getSlaveResource().getName());
+		generationUnit.setParentGenerationSubPackage(workSet);
 		workSet.addGenerationUnit(generationUnit);
 	}
 
