@@ -235,7 +235,7 @@ public class ReleasingDataProvider implements Serializable {
 	}
 
     public boolean isCanChangeRelease() {
-        return permissionBoundary.hasPermission(Permission.CHANGE_RESOURCE_RELEASE) && currentSelectedResource != null
+        return permissionBoundary.hasPermission(Permission.RELEASE, Action.UPDATE) && currentSelectedResource != null
 				&& foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource);
     }
 
