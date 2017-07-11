@@ -69,6 +69,9 @@ public class ResourceTypeRelationModel implements Serializable {
 
     @Getter
     private boolean allowedToAddRelations = false;
+
+	@Getter
+	private boolean allowedToAddTypeRelations = false;
 	
 
 	@PostConstruct
@@ -79,14 +82,8 @@ public class ResourceTypeRelationModel implements Serializable {
 	}	
 	
 	public void loadResourceTypeRelations(@Observes ResourceTypeEntity resourceType){
-	    //TODO resourcetyperelations
-//		if(resourceType!=null){
-//			resourceTypeRelations = editor.getRelationsForResourceType(resourceType);
-//		}
-//		else{
-			resourceTypeRelations = new ArrayList<ResourceEditRelation>();
-//		}
-//		setCurrentResourceTypeRelation(resourceTypeRelations==null || resourceTypeRelations.isEmpty() ? null : resourceTypeRelations.get(0));
+		allowedToAddTypeRelations = permissionService.hasPermissionToAddRelatedResourceType(resourceType);
+		resourceTypeRelations = new ArrayList<>();
 	}
 		
 	public boolean isAllowedToRemoveRelation(){

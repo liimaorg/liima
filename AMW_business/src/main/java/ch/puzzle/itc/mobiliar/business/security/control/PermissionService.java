@@ -503,11 +503,11 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * Check that the user is config_admin, server_admin or app_developer : server_admin: can add node
-     * relationship config_admin: can add all relationship. app_developer: can add reletionship of instances
-     * of APPLICATION
+     * Checks if a user is allowed to add a Relation to a Resource
      *
-     * @param
+     * @param resourceEntity
+     * @param provided
+     * @param context
      * @return
      */
     public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, boolean provided, ContextEntity context) {
@@ -515,19 +515,34 @@ public class PermissionService implements Serializable {
             if (hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity.getResourceGroup(), null)) {
                 return true;
             }
-            // TODO migrate existing Permissions to Restrictions (?)
-            // Check that the user is config_admin
-            if (hasPermission(Permission.ADD_EVERY_RELATED_RESOURCE)) {
-                return true;
-            } else if (resourceEntity.getResourceType().isApplicationServerResourceType()
+            if (resourceEntity.getResourceType().isApplicationServerResourceType()
                     && hasPermission(Permission.ADD_NODE_RELATION)) {
                 return true;
             } else if (resourceEntity.getResourceType().isApplicationResourceType()) {
                 return (!provided && hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE));
             }
         }
+        if (resourceEntity != null && resourceEntity.getResourceType() == null) {
+            return false;
+        }
         return hasPermission(Permission.RESOURCE, UPDATE);
     }
+
+    /**
+     * Checks if user is allowed to add a Relation to a ResourceType
+     *
+     * @param resourceTypeEntity
+     * @return
+     */
+    public boolean hasPermissionToAddRelatedResourceType(ResourceTypeEntity resourceTypeEntity) {
+        if (resourceTypeEntity != null) {
+            if (hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceTypeEntity)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Check that the user is config_admin, server_admin or app_developer : server_admin: can delete node

@@ -18,7 +18,7 @@
     </h:outputScript>
 
     <h:commandLink styleClass="btn light right"
-                   rendered="#{sessionContext.isGlobal and !editResourceView.editResource and resourceTypeRelationModel.allowedToAddRelations}">
+                   rendered="#{sessionContext.isGlobal and !editResourceView.editResource and resourceTypeRelationModel.allowedToAddTypeRelations}">
         <i class="icon icon-add"/> Add Related Resource Type
         <a4j:ajax execute="@this" render="addRelationPopup"
                   event="click"
