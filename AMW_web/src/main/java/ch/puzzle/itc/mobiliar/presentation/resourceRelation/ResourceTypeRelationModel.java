@@ -20,15 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.presentation.resourceRelation;
 
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import lombok.Getter;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.faces.bean.ViewScoped;
@@ -52,63 +50,17 @@ public class ResourceTypeRelationModel implements Serializable {
 
 	@Getter
 	private boolean canShowRestypes; 
-	
-	private boolean allowedToRemoveRelations = false;
-	
-	@Getter
-	private ResourceEditRelation currentResourceTypeRelation;
-	
-	@Inject
-	SessionContext sessionContext;
-	
+
 	@Inject
 	PermissionService permissionService;
-	
-	@Inject
-	PropertyEditor editor;
-
-    @Getter
-    private boolean allowedToAddRelations = false;
 
 	@Getter
 	private boolean allowedToAddTypeRelations = false;
 	
-
-	@PostConstruct
-	public void postConstruct(){
-		canShowRestypes = permissionService.hasPermission(Permission.REL_RESTYPE_PANEL_LIST);
-        allowedToAddRelations = permissionService.hasPermissionToAddRelation(null, true, sessionContext.getCurrentContext()) || permissionService.hasPermissionToAddRelation(null, false, sessionContext.getCurrentContext());
-		allowedToRemoveRelations = permissionService.hasPermissionToDeleteRelation(null, sessionContext.getCurrentContext());
-	}	
-	
 	public void loadResourceTypeRelations(@Observes ResourceTypeEntity resourceType){
 		allowedToAddTypeRelations = permissionService.hasPermissionToAddRelatedResourceType(resourceType);
+		canShowRestypes = permissionService.hasPermission(Permission.RESOURCETYPE, Action.READ, resourceType);
 		resourceTypeRelations = new ArrayList<>();
 	}
-		
-	public boolean isAllowedToRemoveRelation(){
-		return currentResourceTypeRelation!=null && sessionContext.getIsGlobal() && allowedToRemoveRelations;
-	}
-
-	public boolean isActiveRelation(ResourceEditRelation rel){
-		if(currentResourceTypeRelation!=null){
-			return currentResourceTypeRelation.equals(rel);
-		}
-		return false;
-	}
-	
-	/**
-	 * Called by JSF - fires a ResourceEditRelation-Event if the current relation changes.
-	 * 
-	 * @param currentResourceTypeRelation
-	 */
-	public void setCurrentResourceTypeRelation(ResourceEditRelation currentResourceTypeRelation){
-		if(this.currentResourceTypeRelation==null || !this.currentResourceTypeRelation.equals(currentResourceTypeRelation)){
-			this.currentResourceTypeRelation = currentResourceTypeRelation;
-			changeResourceEditRelationEvent.fire(currentResourceTypeRelation);			
-		}
-	}
-	
-	
 	
 }

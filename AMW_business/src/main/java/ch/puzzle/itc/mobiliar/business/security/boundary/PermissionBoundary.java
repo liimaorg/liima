@@ -269,6 +269,14 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermissionToAddRelation(mergedResource, isProvided, context);
     }
 
+    /**
+     * Checks if user is allowed to add a Relation to a ResourceType
+     */
+    public boolean hasPermissionToAddRelatedResourceType(ResourceTypeEntity resourceTypeEntity) {
+        ResourceTypeEntity mergedResource = entityManager.find(ResourceTypeEntity.class, resourceTypeEntity.getId());
+        return permissionService.hasPermissionToAddRelatedResourceType(mergedResource);
+    }
+
     public boolean hasPermissionToRemoveInstanceOfResType(ResourceTypeEntity resourceType) {
         return permissionService.hasPermissionToRemoveInstanceOfResType(resourceType);
     }

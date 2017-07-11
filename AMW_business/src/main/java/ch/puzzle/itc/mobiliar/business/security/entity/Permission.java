@@ -35,9 +35,6 @@ public enum Permission {
     SELECT_RUNTIME("Select runtime. You can find this button in all instances of Application Server", true),
     ADD_NODE_RELATION("Add Node to Application Server. Path: Resources -> select one instance of Applicaiton Server ", true),
 
-    // RESOURCE TYPE PERMISSIONS
-    REL_RESTYPE_PANEL_LIST("Allows to show the related resource types", true),
-
     // RESOURCE AND RESOURCE TYPE PERMISSIONS
     EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen.", true),
     RESET_PROP("Reset properties. You can find this list in all Resource/Resource Type screen.", true),

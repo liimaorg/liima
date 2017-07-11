@@ -180,9 +180,6 @@ public class ResourceRelationModel implements Serializable {
 
     @PostConstruct
     public void init() {
-        allowedToListRelations = permissionBoundary.hasPermission(Permission.RESOURCE, Action.READ);
-        allowedToListResourceTypeRelations = permissionBoundary
-                .hasPermission(Permission.REL_RESTYPE_PANEL_LIST);
         allowedToJumpToRelatedResourceEditScreen = permissionBoundary.hasPermission(Permission.RESOURCE, Action.UPDATE);
     }
 
@@ -221,14 +218,13 @@ public class ResourceRelationModel implements Serializable {
         return null;
     }
 
-    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity)
-            throws GeneralDBException {
+    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) throws GeneralDBException {
+        allowedToListResourceTypeRelations = permissionBoundary.hasPermission(Permission.RESOURCETYPE, null, Action.READ, null, resourceTypeEntity);
+        allowedToAddRelations = permissionBoundary.hasPermissionToAddRelatedResourceType(resourceTypeEntity);
+        allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelationType(resourceTypeEntity);
         allowedToSelectRuntime = false;
         canAddConsumedRelations = false;
         canAddProvidedRelations = false;
-        allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelationType(resourceTypeEntity);
-        // FIXME: find the correct permission
-        allowedToAddRelations = true;
         currentSelectedResourceOrType = resourceTypeEntity;
         canShowSoftlinkRelations = false;
         canShowAddSoftlinkRelationButton = false;
