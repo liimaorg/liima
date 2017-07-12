@@ -26,7 +26,6 @@ public enum Permission {
 
     // RESOURCE PERMISSIONS
     RENAME_INSTANCE_DEFAULT_RESOURCE("With this permission it is possible to rename all instances of default resource types. This permission has only effect if it is not combined with EDIT_RES_OR_RESTYPE_NAME since it is more restrictive. WARNING: DON'T CHANGE THIS PERMISSION", true),
-    TAG_CURRENT_STATE("Tag current state. You can find this select one menu in application instance screen and in all not default resource screen. ", true),
     EXCLUDE_APP_FROM_NODE("Exclude application from node. You find can this checkbox in all instances of applications server", true),
     TEST_GENERATION("With this permission the user can test the generation of an Applicationserver", true),
 
