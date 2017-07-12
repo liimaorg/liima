@@ -122,7 +122,7 @@ public class RelationEditor {
 	 * @param masterGroupName
 	 * @param slaveGroupName
 	 * @param provided
-	 * @param identifier
+	 * @param relationName
 	 * @param typeIdentifier
 	 * @param releaseName
 	 * @param changingOwner
@@ -131,7 +131,7 @@ public class RelationEditor {
 	 * @throws ValidationException
 	 */
 	public void addResourceRelationForSpecificRelease(String masterGroupName, String slaveGroupName, boolean provided,
-		  	Integer identifier, String typeIdentifier, String releaseName, ForeignableOwner changingOwner)
+			String relationName, String typeIdentifier, String releaseName, ForeignableOwner changingOwner)
 			throws ResourceNotFoundException, ElementAlreadyExistsException, ValidationException {
 
 		ResourceEntity master = resourceLocator.getResourceByGroupNameAndRelease(masterGroupName, releaseName);
@@ -145,7 +145,7 @@ public class RelationEditor {
 			throw new ResourceNotFoundException("ResourceGroup with name '" + slaveGroupName + "' not found");
 		}
 
-		resourceRelationService.addRelationByGroup(master.getId(), slaveGroup.getId(), provided, identifier,
+		resourceRelationService.addRelationByGroup(master.getId(), slaveGroup.getId(), provided, relationName,
 				typeIdentifier, changingOwner);
 	}
 
