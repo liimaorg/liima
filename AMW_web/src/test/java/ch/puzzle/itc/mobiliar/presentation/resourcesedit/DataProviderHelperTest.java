@@ -61,9 +61,14 @@ public class DataProviderHelperTest {
 
 	@Test
     public void shouldReturnNullIfResourceEditRelationListIsEmpty() {
+        // given
+        List<ResourceEditRelation> relations = Collections.<ResourceEditRelation>emptyList();
 
-        // given // when // then
-        assertEquals(null, helper.nextFreeIdentifierForResourceEditRelations(Collections.<ResourceEditRelation> emptyList(), null, StringUtils.EMPTY));
+        // when
+        String actual = helper.nextFreeIdentifierForResourceEditRelations(relations, null, StringUtils.EMPTY);
+
+        // then
+        assertEquals(StringUtils.EMPTY, actual);
 
     }
 
