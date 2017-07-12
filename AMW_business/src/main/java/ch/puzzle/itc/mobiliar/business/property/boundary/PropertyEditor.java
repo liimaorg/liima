@@ -295,7 +295,7 @@ public class PropertyEditor {
 	 * @throws ForeignableOwnerViolationException
 	 */
 	public void save(ForeignableOwner changingOwner, Integer contextId, Integer resourceId, List<ResourceEditProperty> resourceProperties,
-			ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String softlinkId) throws AMWException, ValidationException, ForeignableOwnerViolationException {
+			ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String softlinkId, String relationIdentifier) throws AMWException, ValidationException, ForeignableOwnerViolationException {
 
 		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
         ResourceEntity editedResource = verifyAndSaveResource(resourceId, changingOwner, resourceName, softlinkId, context);
@@ -304,6 +304,9 @@ public class PropertyEditor {
 			propertyValueService.saveProperties(context, editedResource, resourceProperties);
 			if (relation != null) {
 				AbstractResourceRelationEntity resourceRelation = editedResource.getResourceRelation(relation);
+				if (relation.hasIdentifierChanged(relationIdentifier)) {
+					resourceRelation.setIdentifier(relationIdentifier);
+				}
 				propertyValueService.saveProperties(context, resourceRelation, relationProperties);
 			}
 		}

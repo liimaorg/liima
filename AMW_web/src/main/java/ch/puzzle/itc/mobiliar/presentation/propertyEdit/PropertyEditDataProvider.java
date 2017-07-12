@@ -45,18 +45,17 @@ import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.Selected;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationModel;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
+import ch.puzzle.itc.mobiliar.presentation.resourcesedit.DataProviderHelper;
 import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @CompositeBackingBean
 public class PropertyEditDataProvider implements Serializable {
@@ -118,6 +117,12 @@ public class PropertyEditDataProvider implements Serializable {
     @Setter
     String typeRelationIdentifier;
 
+    @Getter
+    @Setter
+    String relationIdentifier;
+
+    protected DataProviderHelper helper = new DataProviderHelper();
+
     private NamedIdentifiable resourceOrResourceType;
 
     private ResourceEditRelation currentRelation;
@@ -127,6 +132,10 @@ public class PropertyEditDataProvider implements Serializable {
      */
     public boolean isTesting() {
         return testing != null && testing;
+    }
+
+    public boolean isGlobalContext() {
+        return currentContext.isGlobal();
     }
 
     public void onContextChanged(@Observes ContextEntity contextEntity) throws GeneralDBException {
@@ -177,8 +186,13 @@ public class PropertyEditDataProvider implements Serializable {
         }
     }
 
+    public boolean hasEditableIdentifier() {
+        return currentRelation != null && currentRelation.getMode().equals(ResourceEditRelation.Mode.CONSUMED)
+                && !currentRelation.getSlaveTypeName().equals("RUNTIME");
+    }
+
     private void loadResourceRelationEditProperties() {
-        filteredRelationProperties = new ArrayList<ResourceEditProperty>();
+        filteredRelationProperties = new ArrayList<>();
 
         if (currentRelation != null) {
             if (currentRelation.isResourceTypeRelation()) {
@@ -189,6 +203,7 @@ public class PropertyEditDataProvider implements Serializable {
                 currentRelationProperties = userSettings.filterTestingProperties(editor
                         .getPropertiesForRelatedResource(getResourceId(), currentRelation, getContextId()));
                 filterHostNameAndActiveFromRelatedNode(currentRelation);
+                relationIdentifier = currentRelation.getIdentifier();
             }
         } else {
             currentRelationProperties = Collections.emptyList();
@@ -224,7 +239,7 @@ public class PropertyEditDataProvider implements Serializable {
         }
     }
 
-    public void save() throws GeneralDBException, AMWException, ForeignableOwnerViolationException, ValidationException {
+    public void save() throws AMWException, ForeignableOwnerViolationException, ValidationException {
         // play back the filtered properties - otherwise they will be deleted.
         resourceEditProperties.addAll(filteredResourceProperties);
         if (currentRelationProperties != null && filteredRelationProperties != null) {
@@ -238,18 +253,35 @@ public class PropertyEditDataProvider implements Serializable {
 
         activeApplications.save();
 
-
         if (isCurrentFocusOnResource()) {
 
             // save softlinkrelation
             SoftlinkRelationEntity softlinkRelation = ((ResourceEntity) resourceOrResourceType).getSoftlinkRelation();
             if (softlinkRelation != null) {
                 softlinkRelationBoundary.editSoftlinkRelation(ForeignableOwner.getSystemOwner(), softlinkRelation);
+            } else {
+                // there can be several consumed relations with identical slave resourceType
+                if (currentRelation.getMode().equals(ResourceEditRelation.Mode.CONSUMED)) {
+                    // get next available identifier if the actual identifier is empty and has not been empty before
+                    if (StringUtils.isEmpty(relationIdentifier)
+                            && StringUtils.isNotEmpty(currentRelation.getIdentifier())
+                            && resourceRelation.isDefaultResourceType()) {
+                        List<ResourceEditRelation> relations = helper.flattenMap(resourceRelation.getConsumedRelations());
+                        relationIdentifier = helper.nextFreeIdentifierForResourceEditRelations(
+                                relations, currentRelation.getSlaveGroupId(), currentRelation.getSlaveName());
+                    } else {
+                        if (currentRelation.hasIdentifierChanged(relationIdentifier)) {
+                            preventDuplicateIdentifiers();
+                        }
+                    }
+                } else {
+                    relationIdentifier = null;
+                }
             }
 
             editor.save(ForeignableOwner.getSystemOwner(), getContextId(), getResourceId(), resourceEditProperties,
                     resourceRelation.getCurrentResourceRelation(), relationPropertiesToSave,
-                    getNameOfResourceOrResourceType(), getSoftlinkIdIfResource());
+                    getNameOfResourceOrResourceType(), getSoftlinkIdIfResource(), relationIdentifier);
 
         } else {
             editor.savePropertiesForResourceType(getContextId(), getResourceTypeId(),
@@ -260,6 +292,17 @@ public class PropertyEditDataProvider implements Serializable {
         }
     }
 
+    private void preventDuplicateIdentifiers() throws AMWException {
+        List<ResourceEditRelation> consumedRelations = resourceRelation.getConsumedRelations().get(currentRelation.getSlaveTypeName());
+        if (currentRelation.getSlaveName().equals(relationIdentifier)) {
+            throw new AMWException("RelationName '" + relationIdentifier + "' is not allowed");
+        }
+        for (ResourceEditRelation consumedRelation : consumedRelations) {
+            if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier)) {
+                throw new AMWException("RelationName '" + relationIdentifier + "' is already taken");
+            }
+        }
+    }
 
     private String getSoftlinkIdIfResource() {
         return isCurrentFocusOnResource() ? ((ResourceEntity) resourceOrResourceType).getSoftlinkId() : null;

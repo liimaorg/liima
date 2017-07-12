@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -35,9 +33,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
  * Collect helper methods for which we dont know yet where they should go.
  */
 public class DataProviderHelper {
-
-
-
 
 	/**
 	 * find the next free identifier
@@ -52,13 +47,13 @@ public class DataProviderHelper {
 	 */
 	public String nextFreeIdentifier(List<String> identifiers, String prefix, Integer count) {
 		if (identifiers.size() <= 0) {
-			return prefix.toLowerCase();
+			return prefix;
 		}
 		else if (count == null) {
 			return nextFreeIdentifier(identifiers, prefix, identifiers.size());
 		}
 		else {
-			String sPrefix = !StringUtils.isBlank(prefix) ? prefix.toLowerCase() : "";
+			String sPrefix = !StringUtils.isBlank(prefix) ? prefix : "";
 			String nextIdentifier = sPrefix + "_" + String.valueOf(count);
 
 			if (identifiers.contains(nextIdentifier)) {
@@ -68,37 +63,31 @@ public class DataProviderHelper {
 		}
 	}
 
-    /**
-	* calculate next free identifier for slave resource
-	*
-	* @param relations
-	*             - list of relations
-	* @param slaveResourceGroupId
-	*             - related slave resource id
-	* @return next integer based identifier or null no existing relation was found
-	*/
-    public Integer nextFreeIdentifierForResourceEditRelations(List<ResourceEditRelation> relations, Integer slaveResourceGroupId) {
-	   // TODO: 5551 use new nextFreeIdentifier(List<String> identifiers, String prefix, Integer
-	   // count)
-	   int count = 0;
-	   SortedSet<Integer> identifiers = new TreeSet<Integer>();
-	   for (ResourceEditRelation relation : relations) {
-		  if (relation.getSlaveGroupId().equals(slaveResourceGroupId)) {
-			 if (StringUtils.isNumeric(relation.getIdentifier())) {
-				identifiers.add(Integer.valueOf(relation.getIdentifier()));
-			 }
-			 count += 1;
-		  }
-	   }
+	/**
+	 * find next free identifier for slave resource
+	 *
+	 * @param relations            - list of relations
+	 * @param slaveResourceGroupId - related slave resource id
+	 * @return next free identifier
+	 */
+	public String nextFreeIdentifierForResourceEditRelations(List<ResourceEditRelation> relations, Integer slaveResourceGroupId, String slavePrefix) {
+		int count = 0;
+		List<String> identifiers = new ArrayList<>();
+		String prefix = null;
+		for (ResourceEditRelation relation : relations) {
+			if (relation.getSlaveGroupId().equals(slaveResourceGroupId)) {
+				if (prefix == null) {
+					prefix = relation.getSlaveName();
+				}
+				identifiers.add(relation.getIdentifier());
+				++count;
+			}
+		}
+		prefix = prefix == null ? slavePrefix : prefix;
+		return nextFreeIdentifier(identifiers, prefix, count);
+	}
 
-	   if (identifiers.size() > 0) {
-		  return identifiers.last() + 1;
-	   }
-	   else {
-		  return count > 0 ? count : null;
-	   }
-    }
-    /**
+	/**
 	* Converts a Map to a List filled with its entries. This is needed since very few if any JSF iteration
 	* components are able to iterate over a map.
 	*
@@ -110,11 +99,21 @@ public class DataProviderHelper {
 		  return null;
 	   }
 
-	   List<Map.Entry<T, S>> list = new ArrayList<Map.Entry<T, S>>();
+	   List<Map.Entry<T, S>> list = new ArrayList<>();
 	   Set<Map.Entry<T, S>> entrySet = map.entrySet();
 
 	   list.addAll(entrySet);
 
 	   return list;
     }
+
+	public <T> List<T> flattenMap(Map<?, List<T>> map) {
+		List<T> list = new ArrayList<>();
+		if (map != null) {
+			for (Object key : map.keySet()) {
+				list.addAll(map.get(key));
+			}
+		}
+		return list;
+	}
 }

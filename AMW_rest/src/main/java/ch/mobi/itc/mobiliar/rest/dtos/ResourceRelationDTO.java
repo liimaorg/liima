@@ -20,24 +20,27 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
-import java.util.List;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement(name = "relations")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
+@Data
 public class ResourceRelationDTO {
 
     private String relatedResourceName;
     private String relatedResourceRelease;
+    /**
+     * @deprecated will be replaced by relationName by v1.14
+     */
+    @Deprecated
     private String identifier;
+    private String relationName;
     private String type;
     private List<TemplateDTO> templates;
 
@@ -47,7 +50,8 @@ public class ResourceRelationDTO {
     public ResourceRelationDTO(ConsumedResourceRelationEntity relation) {
         relatedResourceName = relation.getSlaveResource().getName();
         relatedResourceRelease = relation.getSlaveResource().getRelease().getName();
-        identifier = relation.buildIdentifer();
+        relationName = relation.buildIdentifer();
+        identifier = relationName;
         type = relation.getResourceRelationType().getResourceTypeB().getName();
     }
 }
