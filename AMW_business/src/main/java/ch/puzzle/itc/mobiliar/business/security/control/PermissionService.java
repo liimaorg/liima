@@ -261,6 +261,9 @@ public class PermissionService implements Serializable {
         if (context != null && sessionContext != null) {
             List<String> allowedRoles = new ArrayList<>();
             String permissionName = Permission.DEPLOYMENT.name();
+            if (deployableRolesWithRestrictions == null) {
+                getDeployableRoles();
+            }
             for (Map.Entry<String, List<RestrictionDTO>> entry : deployableRolesWithRestrictions.entrySet()) {
                 matchPermissionsAndContext(permissionName, null, context, resourceGroup, resourceGroup.getResourceType(), allowedRoles, entry);
             }

@@ -39,6 +39,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
@@ -92,6 +93,8 @@ public class ResourcesRest {
 	@Inject
     ResourceDependencyResolverService resourceDependencyResolverService;
 
+    @Inject
+    PermissionBoundary permissionBoundary;
 
     @Inject
     ResourceTemplatesRest resourceTemplatesRest;
@@ -294,6 +297,17 @@ public class ResourcesRest {
             resourceTypeDTOs.add(new ResourceTypeDTO(resourceType));
         }
         return resourceTypeDTOs;
+    }
+
+    @Path("/resourceGroups/{resourceGroupId}/canCreateShakedownTest")
+    @GET
+    @ApiOperation(value = "Checks is caller is allowed to create/execute ShakedownTests - used by Angular")
+    public Response canCreateShakedownTest(@PathParam("resourceGroupId") Integer resourceGroupId) throws ValidationException {
+        if (resourceGroupId == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        boolean hasPermission = permissionBoundary.hasPermissionToCreateShakedownTests(resourceGroupId);
+        return Response.ok(hasPermission).build();
     }
 
     // Fuer JavaBatch Monitor

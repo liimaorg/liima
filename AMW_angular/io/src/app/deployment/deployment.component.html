@@ -152,7 +152,7 @@
                 send an email when deployed
               </label>
             </div>
-            <div class="checkbox">
+            <div class="checkbox" *ngIf="hasPermissionShakedownTest">
               <label>
                 <input type="checkbox" [(ngModel)]="doExecuteShakedownTest">
                 execute shakedown tests when deployed
