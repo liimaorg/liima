@@ -87,6 +87,16 @@ public class DataProviderHelper {
 		return nextFreeIdentifier(identifiers, prefix, count);
 	}
 
+	public List<ResourceEditRelation> relationsWithSameSlaveGroup(List<ResourceEditRelation> relations, Integer slaveResourceGroupId) {
+		List<ResourceEditRelation> same = new ArrayList<>();
+		for (ResourceEditRelation relation : relations) {
+			if (relation.getSlaveGroupId().equals(slaveResourceGroupId)) {
+				same.add(relation);
+			}
+		}
+		return same;
+	}
+
 	/**
 	* Converts a Map to a List filled with its entries. This is needed since very few if any JSF iteration
 	* components are able to iterate over a map.

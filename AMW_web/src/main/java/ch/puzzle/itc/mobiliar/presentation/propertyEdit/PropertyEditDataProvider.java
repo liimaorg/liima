@@ -266,13 +266,15 @@ public class PropertyEditDataProvider implements Serializable {
                     if (StringUtils.isEmpty(relationIdentifier)
                             && StringUtils.isNotEmpty(currentRelation.getIdentifier())
                             && resourceRelation.isDefaultResourceType()) {
-                        List<ResourceEditRelation> relations = helper.flattenMap(resourceRelation.getConsumedRelations());
-                        relationIdentifier = helper.nextFreeIdentifierForResourceEditRelations(
-                                relations, currentRelation.getSlaveGroupId(), currentRelation.getSlaveName());
-                    } else {
-                        if (currentRelation.hasIdentifierChanged(relationIdentifier)) {
-                            preventDuplicateIdentifiers();
+                        List<ResourceEditRelation> relationsWithSameSlaveGroup = helper.relationsWithSameSlaveGroup(
+                                helper.flattenMap(resourceRelation.getConsumedRelations()), currentRelation.getSlaveGroupId());
+                        // first relation shall can have an empty identifier
+                        if (relationsWithSameSlaveGroup.size() > 1) {
+                            relationIdentifier = helper.nextFreeIdentifierForResourceEditRelations(
+                                    relationsWithSameSlaveGroup, currentRelation.getSlaveGroupId(), currentRelation.getSlaveName());
                         }
+                    } else {
+                        preventDuplicateIdentifiers();
                     }
                 } else {
                     relationIdentifier = null;

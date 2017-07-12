@@ -308,10 +308,10 @@ public class RelationDataProvider implements Serializable {
 		String prefix = resourceGroupEntity.getName();
 		if (getResourceType().isDefaultResourceType() && !addRuntimeToAppServerMode) {
 			// If it is a default resource type, we can add multiple relations to a resource separated by a identifier
-			List<ResourceEditRelation> relations = helper.flattenMap(resourceRelationModel.getConsumedRelations());
-			String nextFreeIdentifier = helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix);
-			if (StringUtils.isEmpty(identifier) && !nextFreeIdentifier.equals(resourceRelationModel.getCurrentResourceRelation().getSlaveName())) {
-				identifier = nextFreeIdentifier;
+			List<ResourceEditRelation> relationsWithSameSlaveGroup = helper.relationsWithSameSlaveGroup(helper.flattenMap(
+					resourceRelationModel.getConsumedRelations()), slaveResourceGroupId);
+			if (!relationsWithSameSlaveGroup.isEmpty()) {
+				identifier = helper.nextFreeIdentifierForResourceEditRelations(relationsWithSameSlaveGroup, slaveResourceGroupId, prefix);
 			}
 		}
 		return addResourceRelation(slaveResourceGroupId, false, identifier, null);
