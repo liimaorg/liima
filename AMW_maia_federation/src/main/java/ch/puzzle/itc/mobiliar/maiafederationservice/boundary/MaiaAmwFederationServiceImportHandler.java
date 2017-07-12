@@ -35,6 +35,7 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
@@ -75,6 +76,9 @@ public class MaiaAmwFederationServiceImportHandler {
 
     @Inject
     private ResourcesScreenDomainService resourcesService;
+
+    @Inject
+    private ResourceBoundary resourceBoundary;
 
     @Inject
     private ReleaseMgmtPersistenceService releaseService;
@@ -285,7 +289,7 @@ public class MaiaAmwFederationServiceImportHandler {
         setOutOfService(app.getOutOfServiceByRelease(), application.getResourceGroup());
 
         // merge
-        resourcesService.updateResource(application);
+        resourceBoundary.updateResource(application);
 
         resourceHelper.addResource(application);
 
@@ -546,7 +550,7 @@ public class MaiaAmwFederationServiceImportHandler {
 //    3
     private ResourceEntity createApplication(Application app, Integer releaseId, ForeignableOwner owner) {
         try {
-            ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Application applicationWithoutAppServer = resourcesService.createNewApplicationWithoutAppServerByName(owner, app.getFcKey(), app.getFcLink(), app.getId().getName(), releaseId, true);
+            ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Application applicationWithoutAppServer = resourceBoundary.createNewApplicationWithoutAppServerByName(owner, app.getFcKey(), app.getFcLink(), app.getId().getName(), releaseId, true);
             if (applicationWithoutAppServer != null) {
                 log.info("Application " + applicationWithoutAppServer.getName() + " successfully created");
                 return applicationWithoutAppServer.getEntity();

@@ -28,6 +28,7 @@ import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
@@ -86,6 +87,9 @@ public abstract class BaseUseCaseIntegrationTest extends BaseIntegrationTest {
 
     @Inject
     private ResourcesScreenDomainService resourcesScreenDomainService;
+
+    @Inject
+    private ResourceBoundary resourceBoundary;
 
     @Inject
     private ResourceTypeProvider resourceTypeProvider;
@@ -426,7 +430,7 @@ public abstract class BaseUseCaseIntegrationTest extends BaseIntegrationTest {
         if (!releases.isEmpty()){
             // create as for first release
             ReleaseEntity firstRelease = releases.remove(0);
-            appserver = resourcesScreenDomainService.createNewResourceByName(ForeignableOwner.AMW, name, appserverType.getId(), firstRelease.getId());
+            appserver = resourceBoundary.createNewResourceByName(ForeignableOwner.AMW, name, appserverType.getId(), firstRelease.getId());
 
             for(ReleaseEntity followingRelease : releases){
                 // create release for following releases of appserver

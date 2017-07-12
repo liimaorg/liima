@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,7 +28,9 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -92,6 +95,36 @@ public class ResourceGroupRepository {
 	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, List<Integer> myAmw, boolean fetchResources) {
 		return getGroupsForType("id", resourceTypeId, myAmw, fetchResources, false);
 	}
+
+    /**
+     *
+     * @param name
+     * @param resourceTypeId
+     * @return
+     */
+    public ResourceGroupEntity loadUniqueGroupByNameAndType(String name, Integer resourceTypeId) {
+        ResourceGroupEntity result = null;
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<ResourceGroupEntity> q = cb.createQuery(ResourceGroupEntity.class);
+            Root<ResourceGroupEntity> r = q.from(ResourceGroupEntity.class);
+            r.fetch("resources");
+            Join<ResourceGroupEntity, ResourceEntity> resources = r.join("resources");
+            Predicate typePred = cb.equal(resources.get("resourceType").get("id"), resourceTypeId);
+            Predicate resNamePred = cb.equal(resources.get("name"), name);
+
+            q.where(cb.and(typePred, resNamePred));
+
+            q.distinct(true);
+
+            result = entityManager.createQuery(q).getSingleResult();
+        }
+        catch (NoResultException e) {
+            // do nothing
+        }
+        return result;
+    }
+
 
 	
 	private List<ResourceGroupEntity> getGroupsForType(String typeParam, Object typeParamValue, List<Integer> myAmw, boolean fetchResources, boolean sorted) {
