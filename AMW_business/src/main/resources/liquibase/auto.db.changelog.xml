@@ -108,5 +108,6 @@
     <include file="changesets/data/permissionMerge/rel_restype_panel_list.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/remove_related_resourcetype.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/reset_prop.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/test_neighbourhood_checkbox.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

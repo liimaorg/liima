@@ -441,7 +441,7 @@
 
                     <div class="paddingLeft20">
                         <h:panelGroup
-                                rendered="#{securityDataProvider.hasPermission('TEST_NEIGHBOURHOOD_CHECKBOX')}">
+                                rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
                             <label class="inlineBlock"> <h:selectBooleanCheckbox
                                     id="testNeighbourhoodButtonId"
                                     disabled="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment==false}"
@@ -632,7 +632,7 @@
                         </h:panelGroup>
 
                         <h:panelGroup layout="block" class="paddingLeft20"
-                                      rendered="#{securityDataProvider.hasPermission('TEST_NEIGHBOURHOOD_CHECKBOX')}">
+                                      rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
                             <label class="inlineBlock"> <h:selectBooleanCheckbox
                                     id="bulkTestNeighbourhoodButtonId"
                                     disabled="#{deployScreenDataProvider.executeShakedownTest==false}"

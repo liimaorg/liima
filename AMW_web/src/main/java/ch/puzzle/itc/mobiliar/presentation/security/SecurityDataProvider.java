@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.presentation.security;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
@@ -100,6 +101,15 @@ public class SecurityDataProvider implements Serializable{
 	
 	public boolean hasPermissionToDeploy(){
 		return permissionBoundary.hasPermissionToDeploy();
+	}
+
+	public boolean hasPermissionToCreateShakedownTests(List<Integer> resourceGroupIds) {
+		for (Integer resourceGroupId : resourceGroupIds) {
+			if (!permissionBoundary.hasPermissionToCreateShakedownTests(resourceGroupId)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public String getUserName() {

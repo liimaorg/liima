@@ -342,6 +342,11 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermissionToDeploy();
     }
 
+    public boolean hasPermissionToCreateShakedownTests(Integer resourceGroupId) {
+        ResourceGroupEntity resourceGroupEntity = resourceGroupRepository.find(resourceGroupId);
+        return permissionService.hasPermission(Permission.SHAKEDOWNTEST, null, Action.CREATE, resourceGroupEntity, null);
+    }
+
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public RestrictionEntity findRestriction(Integer id) {
         return restrictionRepository.find(id);

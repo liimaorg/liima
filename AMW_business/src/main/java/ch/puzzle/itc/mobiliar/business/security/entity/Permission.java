@@ -49,7 +49,6 @@ public enum Permission {
     // SHAKEDOWN TEST
     SHAKEDOWN_TEST_PAGE("Shakedown test page.", true),
     SHAKEDOWN_TEST_MODE("", true),
-    TEST_NEIGHBOURHOOD_CHECKBOX("", true),
 
     // FUNCTIONS
     MANAGE_GLOBAL_FUNCTIONS("Create, edit and delete GlobalFunctions", true),
