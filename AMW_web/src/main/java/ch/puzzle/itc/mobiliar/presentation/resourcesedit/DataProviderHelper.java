@@ -63,34 +63,31 @@ public class DataProviderHelper {
 		}
 	}
 
-    /**
-	* find next free identifier for slave resource
-	*
-	* @param relations
-	*             - list of relations
-	* @param slaveResourceGroupId
-	*             - related slave resource id
-	* @return next free identifier or null if no existing relation was found
-	*/
-    public String nextFreeIdentifierForResourceEditRelations(List<ResourceEditRelation> relations, Integer slaveResourceGroupId) {
-	   int count = 0;
+	/**
+	 * find next free identifier for slave resource
+	 *
+	 * @param relations            - list of relations
+	 * @param slaveResourceGroupId - related slave resource id
+	 * @return next free identifier
+	 */
+	public String nextFreeIdentifierForResourceEditRelations(List<ResourceEditRelation> relations, Integer slaveResourceGroupId, String slavePrefix) {
+		int count = 0;
 		List<String> identifiers = new ArrayList<>();
 		String prefix = null;
-	   for (ResourceEditRelation relation : relations) {
-		  if (relation.getSlaveGroupId().equals(slaveResourceGroupId)) {
-			  if (prefix == null) {
-				  prefix = relation.getSlaveName();
-			  }
-			  identifiers.add(relation.getIdentifier());
-			  ++count;
-		  }
-	   }
-	   if (count == 0) {
-		   return null;
-	   }
-	   return nextFreeIdentifier(identifiers, prefix, count);
-    }
-    /**
+		for (ResourceEditRelation relation : relations) {
+			if (relation.getSlaveGroupId().equals(slaveResourceGroupId)) {
+				if (prefix == null) {
+					prefix = relation.getSlaveName();
+				}
+				identifiers.add(relation.getIdentifier());
+				++count;
+			}
+		}
+		prefix = prefix == null ? slavePrefix : prefix;
+		return nextFreeIdentifier(identifiers, prefix, count);
+	}
+
+	/**
 	* Converts a Map to a List filled with its entries. This is needed since very few if any JSF iteration
 	* components are able to iterate over a map.
 	*

@@ -303,12 +303,13 @@ public class RelationDataProvider implements Serializable {
 		resourceRelationModel.reloadValues();
 	}
 
-	public boolean addConsumedResource(Integer slaveResourceGroupId) {
-		Integer numericIdentifier = null;
+	public boolean addConsumedResource(ResourceGroupEntity resourceGroupEntity) {
+		Integer slaveResourceGroupId = resourceGroupEntity.getId();
+		String prefix = resourceGroupEntity.getName();
 		if (getResourceType().isDefaultResourceType() && !addRuntimeToAppServerMode) {
 			// If it is a default resource type, we can add multiple relations to a resource separated by a identifier
-			String nextFreeIdentifier = helper.nextFreeIdentifierForResourceEditRelations(
-					helper.flattenMap(resourceRelationModel.getConsumedRelations()), slaveResourceGroupId);
+			List<ResourceEditRelation> relations = helper.flattenMap(resourceRelationModel.getConsumedRelations());
+			String nextFreeIdentifier = helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix);
 			if (StringUtils.isEmpty(identifier) && !nextFreeIdentifier.equals(resourceRelationModel.getCurrentResourceRelation().getSlaveName())) {
 				identifier = nextFreeIdentifier;
 			}
@@ -346,15 +347,17 @@ public class RelationDataProvider implements Serializable {
         }
     }
 
-	public boolean isAllowedToAddProvidedRelations(Integer slaveResourceGroupId) {
+	public boolean isAllowedToAddProvidedRelations(ResourceGroupEntity resourceGroupEntity) {
 		// Only applications are allowed to have provided resources
 		if (!canAddProvidedRelation || !getResourceType().isApplicationResourceType()) {
 			return false;
 		}
 		// provided resources can only be added once
-		boolean providedResourceAlreadyDefined = helper.nextFreeIdentifierForResourceEditRelations(
-				helper.flattenMap(resourceRelationModel.getProvidedRelations()), slaveResourceGroupId) != null;
-		return !providedResourceAlreadyDefined;
+		List<ResourceEditRelation> relations = helper.flattenMap(resourceRelationModel.getProvidedRelations());
+		Integer slaveResourceGroupId = resourceGroupEntity.getId();
+		String prefix = resourceGroupEntity.getName();
+		return helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix);
+
 	}
 
 	public boolean addProvidedResource(Integer slaveResourceGroupId) {

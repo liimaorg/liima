@@ -20,14 +20,17 @@
 
 package ch.puzzle.itc.mobiliar.presentation.resourcesedit;
 
-import static org.junit.Assert.assertEquals;
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
+import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
-import org.junit.Test;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class DataProviderHelperTest {
 
@@ -60,7 +63,7 @@ public class DataProviderHelperTest {
     public void shouldReturnNullIfResourceEditRelationListIsEmpty() {
 
         // given // when // then
-        assertEquals(null, helper.nextFreeIdentifierForResourceEditRelations(Collections.<ResourceEditRelation> emptyList(), null));
+        assertEquals(null, helper.nextFreeIdentifierForResourceEditRelations(Collections.<ResourceEditRelation> emptyList(), null, StringUtils.EMPTY));
 
     }
 
@@ -74,7 +77,7 @@ public class DataProviderHelperTest {
         relations.add(rel0);
 
         // when // then
-        assertEquals("slaveName_1", helper.nextFreeIdentifierForResourceEditRelations(relations, 21));
+        assertEquals("slaveName_1", helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
 
     }
 
@@ -91,7 +94,7 @@ public class DataProviderHelperTest {
         relations.add(rel1);
 
         // when // then
-        assertEquals("slaveName_2", helper.nextFreeIdentifierForResourceEditRelations(relations, 21));
+        assertEquals("slaveName_2", helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
 
     }
 
@@ -111,7 +114,7 @@ public class DataProviderHelperTest {
         relations.add(rel2);
 
         // when // then
-        assertEquals("slaveName_3", helper.nextFreeIdentifierForResourceEditRelations(relations, 21));
+        assertEquals("slaveName_3", helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
 
     }
 
@@ -131,8 +134,61 @@ public class DataProviderHelperTest {
         relations.add(rel2);
 
         // when // then
-        assertEquals("slaveName_2", helper.nextFreeIdentifierForResourceEditRelations(relations, 21));
+        assertEquals("slaveName_2", helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
 
+    }
+
+
+    @Test
+    public void shouldUseGivenPrefixWhenNoRelations() {
+
+        // given
+        List<ResourceEditRelation> relations = new ArrayList<>();
+        String prefix = "activemq";
+
+        // when
+        String s = helper.nextFreeIdentifierForResourceEditRelations(relations, 21, prefix);
+
+        // then
+        assertThat(s, is(prefix));
+    }
+
+    @Test
+    public void shouldUseGivenPrefixWhenNoRelationsInSameSlaveGroup() {
+
+        // given
+        List<ResourceEditRelation> relations = new ArrayList<>();
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
+                null, null, 1, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        relations.add(rel0);
+        String prefix = "activemq";
+
+        // when
+        String s = helper.nextFreeIdentifierForResourceEditRelations(relations, 21, prefix);
+
+        // then
+        assertThat(s, is(prefix));
+    }
+
+    @Test
+    public void shouldUseNextIdentifierForRelationInSameSlaveGroup() {
+
+        // given
+        String slaveName = "activeMq";
+        String prefix = slaveName;
+        List<ResourceEditRelation> relations = new ArrayList<>();
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, slaveName, null,
+                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, null, null, null, slaveName, null,
+                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        relations.add(rel0);
+        relations.add(rel1);
+
+        // when
+        String s = helper.nextFreeIdentifierForResourceEditRelations(relations, 21, prefix);
+
+        // then
+        assertThat(s, is(String.format("%s_2", prefix)));
     }
 
 }
