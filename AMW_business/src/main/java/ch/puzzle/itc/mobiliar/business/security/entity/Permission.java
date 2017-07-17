@@ -83,7 +83,7 @@ public enum Permission {
 
     // NEW PERMISSIONS
     DEPLOYMENT("The right to deploy.", false),
-    COPY_FROM_RESOURCE("The right to copy the configuration from one Resources into an other.", false),
+    RESOURCE_RELEASE_COPY_FROM_RESOURCE ("The right to copy the configuration from one Resources into an other.", false),
     RELEASE("The right to create, read, update or delete Releases", false),
     SHAKEDOWNTEST("The right to create, read, update or delete ShakedownTests", false),
     RESOURCE("The right to create, read, update or delete Resources", false),

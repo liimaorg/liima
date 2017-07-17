@@ -335,7 +335,7 @@ public class PermissionBoundary implements Serializable {
      */
     public boolean canCopyFromResource(ResourceEntity resourceEntity) {
         return !(resourceEntity == null || resourceEntity.getResourceType() == null) &&
-                permissionService.hasPermission(Permission.COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
+                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
     }
 
     public boolean hasPermissionToDeploy() {

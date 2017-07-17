@@ -460,7 +460,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.canCopyFromResource(resource);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.COPY_FROM_RESOURCE, null, UPDATE, rg, type);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, UPDATE, rg, type);
     }
 
     @Test
