@@ -73,7 +73,7 @@ public class ActiveApplicationsDataProvider implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		canExcludeApps = permissions.hasPermission(Permission.EXCLUDE_APP_FROM_NODE);
+		canExcludeApps = permissions.hasPermission(Permission.RESOURCE);
 	}
 
 	public void onChangedContext(@Observes ContextEntity contextEntity) {
