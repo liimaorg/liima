@@ -25,14 +25,13 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import org.apache.commons.lang.NotImplementedException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,13 +42,15 @@ import java.util.Set;
  * This is a helper service for more complex business logic on top of the {@link ResourceEntity}.
  */
 @Stateless
-@Interceptors(HasPermissionInterceptor.class)
 @Deprecated
 public class ResourceEntityService {
 
 
 	@Inject
 	ResourceTypeProvider restypeProvider;
+
+	@Inject
+	PermissionService permissionService;
 
 	@Inject
 	EntityManager entityManager;
@@ -72,9 +73,9 @@ public class ResourceEntityService {
 //		}
 //	}
 
-	@HasPermission(permission = Permission.SELECT_RUNTIME)
 	public void setRuntime(ResourceEntity applicationServer, ResourceGroupEntity runtime, ForeignableOwner changingOwner) {
 		if (applicationServer.getResourceType().isApplicationServerResourceType()) {
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, applicationServer.getResourceGroup(), null, "set runtime");
 			ResourceGroupEntity existingResGroup = applicationServer.getRuntime();
 			if (existingResGroup != null) {
 				for (ConsumedResourceRelationEntity rel : applicationServer.getRuntimeRelations()) {

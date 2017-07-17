@@ -557,9 +557,6 @@ public class PermissionService implements Serializable {
             if (hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity.getResourceGroup(), null)) {
                 return true;
             }
-            // TODO migrate existing Permissions to Restrictions (?)
-            ResourceTypeEntity resourceTypeEntity = resourceEntity.getResourceType();
-            return hasPermission(Permission.SELECT_RUNTIME) && resourceTypeEntity.isRuntimeType();
         }
         return false;
     }

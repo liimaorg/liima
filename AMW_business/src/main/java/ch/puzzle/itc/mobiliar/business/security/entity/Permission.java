@@ -29,7 +29,6 @@ public enum Permission {
 
     // RESOURCE RELATION PERMISSIONS
     ADD_AS_CONSUMED_RESOURCE("Add as consumed Resource. Path: all resource instance screen-> press button 'Add relation'.", true),
-    SELECT_RUNTIME("Select runtime. You can find this button in all instances of Application Server", true),
 
     // RESOURCE AND RESOURCE TYPE PERMISSIONS
     DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value", true),

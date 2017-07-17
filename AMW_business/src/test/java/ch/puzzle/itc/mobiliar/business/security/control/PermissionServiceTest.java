@@ -400,7 +400,7 @@ public class PermissionServiceTest {
 	}
 
     @Test
-    public void hasPermissionToDeleteResourceRelationWhenResourceIsRuntimeType(){
+    public void hasPermissionToDeleteResourceRelationWhenUserHasPermissionToUpdateResourceAndResourceIsRuntimeType(){
         // given
         ResourceEntity runtime = resourceEntityBuilder.mockRuntimeEntity("EAP6", null, null);
 
@@ -409,7 +409,7 @@ public class PermissionServiceTest {
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.SELECT_RUNTIME, res)));
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
         permissionService.rolesWithRestrictions = myRoles;
 
         // when

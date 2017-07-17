@@ -145,7 +145,7 @@ public class PropertyEditDataProvider implements Serializable {
         filterHostNameAndActiveFromNode();
         editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
                 currentContext, userSettings.isTestingMode());
-        canChangeRuntime = permissionBoundary.hasPermission(Permission.SELECT_RUNTIME);
+        canChangeRuntime = permissionBoundary.hasPermission(Permission.RESOURCE, currentContext, Action.UPDATE, resourceEntity, null);
         group = ResourceGroup.createByResource(resourceEntity.getResourceGroup());
 
         resourceOrResourceType = resourceEntity;
