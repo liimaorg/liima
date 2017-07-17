@@ -518,10 +518,7 @@ public class PermissionService implements Serializable {
             if (hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity.getResourceGroup(), null)) {
                 return true;
             }
-            if (resourceEntity.getResourceType().isApplicationServerResourceType()
-                    && hasPermission(Permission.ADD_NODE_RELATION)) {
-                return true;
-            } else if (resourceEntity.getResourceType().isApplicationResourceType()) {
+            else if (resourceEntity.getResourceType().isApplicationResourceType()) {
                 return (!provided && hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE));
             }
         }

@@ -135,6 +135,7 @@ public class ResourceRelationService implements Serializable{
 
 		String slaveResourceType = slaveGroup.getResourceType().getName();
 		if (DefaultResourceTypeDefinition.NODE.name().equals(slaveResourceType)) {
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
 			addNodeByGroup(masterId, slaveGroupId, provided, identifier, typeIdentifier, changingOwner);
 		}
 		else if (DefaultResourceTypeDefinition.APPLICATION.name()
@@ -220,7 +221,6 @@ public class ResourceRelationService implements Serializable{
 	 * @throws ElementAlreadyExistsException
 	 * @throws ResourceNotFoundException
 	 */
-	@HasPermission(permission = Permission.ADD_NODE_RELATION)
 	private void addNodeByGroup(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
 			String typeIdentifier, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
 		doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, identifier,

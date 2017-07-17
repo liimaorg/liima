@@ -32,7 +32,6 @@ public enum Permission {
     // RESOURCE RELATION PERMISSIONS
     ADD_AS_CONSUMED_RESOURCE("Add as consumed Resource. Path: all resource instance screen-> press button 'Add relation'.", true),
     SELECT_RUNTIME("Select runtime. You can find this button in all instances of Application Server", true),
-    ADD_NODE_RELATION("Add Node to Application Server. Path: Resources -> select one instance of Applicaiton Server ", true),
 
     // RESOURCE AND RESOURCE TYPE PERMISSIONS
     EDIT_RES_OR_RESTYPE_NAME("Edit all resource and resource type names irrespective of their type. You can find this fiel in all resource/resource type instance screen.", true),
