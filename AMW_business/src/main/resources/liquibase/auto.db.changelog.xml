@@ -112,5 +112,6 @@
     <include file="changesets/data/permissionMerge/tag_current_state.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/add_node_relation.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/exclude_app_from_node.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/rename_instance_default_resource.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

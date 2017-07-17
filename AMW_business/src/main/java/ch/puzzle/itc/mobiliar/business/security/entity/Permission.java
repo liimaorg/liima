@@ -25,7 +25,6 @@ public enum Permission {
     DEFAULT("",true),
 
     // RESOURCE PERMISSIONS
-    RENAME_INSTANCE_DEFAULT_RESOURCE("With this permission it is possible to rename all instances of default resource types. This permission has only effect if it is not combined with EDIT_RES_OR_RESTYPE_NAME since it is more restrictive. WARNING: DON'T CHANGE THIS PERMISSION", true),
     TEST_GENERATION("With this permission the user can test the generation of an Applicationserver", true),
 
     // RESOURCE RELATION PERMISSIONS
