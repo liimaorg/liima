@@ -83,14 +83,15 @@ public enum Permission {
 
     // NEW PERMISSIONS
     DEPLOYMENT("The right to deploy.", false),
-    COPY_FROM_RESOURCE("The right to copy the configuration from one resource into an other.", false),
-    RELEASE("The right to create, read, update or delete releases", false),
-    SHAKEDOWNTEST("The right to create, read, update or delete shakedown tests", false),
-    RESOURCE("The right to create, read, update or delete resources", false),
-    RESOURCETYPE("The right to create, read, update or delete resourcetypes", false),
-    TEMPLATE_RESOURCE("The right to create, read, update or delete templates of resources", false),
-    TEMPLATE_RESOURCETYPE("The right to create, read, update or delete templates of resourcestypes", false),
-    AMWFUNCTION("The right to create, read, update or delete AmwFunctions", false);
+    COPY_FROM_RESOURCE("The right to copy the configuration from one Resources into an other.", false),
+    RELEASE("The right to create, read, update or delete Releases", false),
+    SHAKEDOWNTEST("The right to create, read, update or delete ShakedownTests", false),
+    RESOURCE("The right to create, read, update or delete Resources", false),
+    RESOURCETYPE("The right to create, read, update or delete ResourceTypes", false),
+    TEMPLATE_RESOURCE("The right to create, read, update or delete Templates of Resources", false),
+    TEMPLATE_RESOURCETYPE("The right to create, read, update or delete templates of ResourceTypes", false),
+    RESOURCE_AMWFUNCTION("The right to create, read, update or delete AmwFunctions of Resources", false),
+    RESOURCETYPE_AMWFUNCTION("The right to create, read, update or delete AmwFunctions of ResourceTypes", false);
 
     private String info;
     private boolean old;

@@ -620,7 +620,7 @@ public class PermissionBoundaryTest {
         permissionBoundary.canEditFunctionOfResourceOrResourceType(null, type.getId());
         // then
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, null, UPDATE, null, type);
-        verify(permissionService, times(1)).hasPermission(Permission.AMWFUNCTION, null, UPDATE, null, type);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, UPDATE, null, type);
     }
 
     @Test
@@ -650,7 +650,7 @@ public class PermissionBoundaryTest {
         permissionBoundary.canEditFunctionOfResourceOrResourceType(resource.getId(), null);
         // then
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, UPDATE, rg, null);
-        verify(permissionService, times(1)).hasPermission(Permission.AMWFUNCTION, null, UPDATE, rg, null);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_AMWFUNCTION, null, UPDATE, rg, null);
     }
 
     @Test

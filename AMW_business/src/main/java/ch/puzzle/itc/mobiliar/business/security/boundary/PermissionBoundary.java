@@ -305,11 +305,11 @@ public class PermissionBoundary implements Serializable {
         if (resourceEntityId != null) {
             ResourceEntity resource = resourceRepository.find(resourceEntityId);
             return permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resource.getResourceGroup(), null) &&
-                    permissionService.hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, resource.getResourceGroup(), null);
+                    permissionService.hasPermission(Permission.RESOURCE_AMWFUNCTION, null, Action.UPDATE, resource.getResourceGroup(), null);
         }
         ResourceTypeEntity type = resourceTypeRepository.find(resourceTypeEntityId);
         return permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, type) &&
-                permissionService.hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, null, type);
+                permissionService.hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, Action.UPDATE, null, type);
     }
 
     public boolean canCreateResourceInstance(DefaultResourceTypeDefinition type) {

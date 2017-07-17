@@ -154,10 +154,10 @@ public class FunctionsBoundary {
 		}
 
 		if (functionToDelete.getResource() == null && functionToDelete.getResourceType() != null) {
-			permissionBoundary.checkPermissionAndFireException(Permission.AMWFUNCTION, null, Action.DELETE,
+			permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE_AMWFUNCTION, null, Action.DELETE,
 					null, functionToDelete.getResourceType(), "missing Permission to delete ResourceType functions");
 		} else {
-			permissionBoundary.checkPermissionAndFireException(Permission.AMWFUNCTION, null, Action.DELETE,
+			permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE_AMWFUNCTION, null, Action.DELETE,
 					functionToDelete.getResource().getResourceGroup(), null,
 					"missing Permission to delete Resource functions");
 		}
@@ -176,7 +176,7 @@ public class FunctionsBoundary {
 	public AmwFunctionEntity createNewResourceFunction(AmwFunctionEntity amwFunction, Integer resourceId,
 													   Set<String> functionMikNames) throws ValidationException, AMWException {
 		ResourceEntity resource = resourceRepository.find(resourceId);
-		permissionBoundary.checkPermissionAndFireException(Permission.AMWFUNCTION, null, Action.CREATE,
+		permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE_AMWFUNCTION, null, Action.CREATE,
 				resource.getResourceGroup(), resource.getResourceType(), "missing Permission to create Resource functions");
 
 		// search for already existing functions with this name on functiontree
@@ -198,7 +198,7 @@ public class FunctionsBoundary {
 	public AmwFunctionEntity createNewResourceTypeFunction(AmwFunctionEntity amwFunction, Integer resourceTypeId,
 														   Set<String> functionMikNames) throws ValidationException, AMWException {
         ResourceTypeEntity resourceType = resourceTypeRepository.find(resourceTypeId);
-		permissionBoundary.checkPermissionAndFireException(Permission.AMWFUNCTION, null, Action.CREATE,
+		permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE_AMWFUNCTION, null, Action.CREATE,
 				null, resourceType, "missing Permission to create ResourceType functions");
 
 		// search for already existing functions with this name on functiontree
@@ -216,10 +216,10 @@ public class FunctionsBoundary {
 
 	public void saveFunction(AmwFunctionEntity amwFunction) throws AMWException {
 		if (amwFunction.getResource() == null && amwFunction.getResourceType() != null) {
-			permissionBoundary.checkPermissionAndFireException(Permission.AMWFUNCTION, null, Action.UPDATE,
+			permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE_AMWFUNCTION, null, Action.UPDATE,
 					null, amwFunction.getResourceType(), "missing Permission to save ResourceType functions");
 		} else {
-			permissionBoundary.checkPermissionAndFireException(Permission.AMWFUNCTION, null, Action.UPDATE,
+			permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE_AMWFUNCTION, null, Action.UPDATE,
 					amwFunction.getResource().getResourceGroup(), null,
 					"missing Permission to save Resource functions");
 		}
@@ -234,7 +234,7 @@ public class FunctionsBoundary {
 		if (functionToOverwrite == null || resource == null) {
 			throw new RuntimeException("Function or Resource not found");
 		}
-		permissionBoundary.checkPermissionAndFireException(Permission.AMWFUNCTION, null, Action.UPDATE,
+		permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE_AMWFUNCTION, null, Action.UPDATE,
 				resource.getResourceGroup(), null, "missing Permission to overwrite Resource functions");
 
 		AmwFunctionEntity overwritingFunction = functionService.overwriteResourceFunction(functionBody, functionToOverwrite, resource);
@@ -248,7 +248,7 @@ public class FunctionsBoundary {
 		if (functionToOverwrite == null || resourceType == null) {
 			throw new RuntimeException("Function or ResourceType not found");
 		}
-		permissionBoundary.checkPermissionAndFireException(Permission.AMWFUNCTION, null, Action.UPDATE,
+		permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE_AMWFUNCTION, null, Action.UPDATE,
 				null, resourceType, "missing Permission to overwrite ResourceType functions");
 
 		AmwFunctionEntity overwritingFunction =  functionService.overwriteResourceTypeFunction(functionBody, functionToOverwrite, resourceType);
