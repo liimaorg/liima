@@ -196,17 +196,11 @@ public class ResourceRelationModel implements Serializable {
                 && hasConsumableSoftlinkSuperType(resourceEntity)
                 && getResourceSoftlinkRelation() != null;
 
+        canShowAddSoftlinkRelationButton = canShowSoftlinkRelations
+                && permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity, null);
 
-        canShowAddSoftlinkRelationButton = sessionContext.getIsGlobal()
-                && getResourceSoftlinkRelation() == null
-                && hasConsumableSoftlinkSuperType(resourceEntity)
-                && permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF);
-
-        canEditSoftlinkRelation = sessionContext.getIsGlobal()
-                && getResourceSoftlinkRelation() != null
-                && hasConsumableSoftlinkSuperType(resourceEntity)
-                && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), createForeignableDto(getResourceSoftlinkRelation()))
-                && permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF);
+        canEditSoftlinkRelation = canShowAddSoftlinkRelationButton
+                && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), createForeignableDto(getResourceSoftlinkRelation()));
 
         reloadValues();
     }
@@ -768,17 +762,11 @@ public class ResourceRelationModel implements Serializable {
                     && hasConsumableSoftlinkSuperType(getCurrentSelectedResource())
                     && getResourceSoftlinkRelation() != null;
 
+            canShowAddSoftlinkRelationButton = canShowSoftlinkRelations
+                    && permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.UPDATE, getCurrentSelectedResource(), null);
 
-            canShowAddSoftlinkRelationButton = sessionContext.getIsGlobal()
-                    && getResourceSoftlinkRelation() == null
-                    && hasConsumableSoftlinkSuperType(getCurrentSelectedResource())
-                    && permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF);
-
-            canEditSoftlinkRelation = sessionContext.getIsGlobal()
-                    && getResourceSoftlinkRelation() != null
-                    && hasConsumableSoftlinkSuperType(getCurrentSelectedResource())
-                    && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), createForeignableDto(getResourceSoftlinkRelation()))
-                    && permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF);
+            canEditSoftlinkRelation = canShowAddSoftlinkRelationButton
+                    && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), createForeignableDto(getResourceSoftlinkRelation()));
 
             reloadValues();
 

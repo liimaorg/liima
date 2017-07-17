@@ -27,7 +27,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
@@ -35,14 +34,13 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.control.SoftlinkRelationService;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 
 @Stateless
-@Interceptors(HasPermissionInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class SoftlinkRelationBoundary implements Serializable {
 
@@ -53,11 +51,14 @@ public class SoftlinkRelationBoundary implements Serializable {
     private ForeignableService foreignableService;
 
     @Inject
+    PermissionService permissionService;
+
+    @Inject
     private EntityManager entityManager;
 
-    @HasPermission(permission = Permission.SET_SOFTLINK_ID_OR_REF)
     public void createSoftlinkRelation(ForeignableOwner creatingOwner, Integer cpiResourceId, String softlinkReference) throws ForeignableOwnerViolationException {
         ResourceEntity cpiResource = entityManager.find(ResourceEntity.class, cpiResourceId);
+        permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, cpiResource.getResourceGroup(), null, null);
 
         if (cpiResource != null) {
 
@@ -82,9 +83,10 @@ public class SoftlinkRelationBoundary implements Serializable {
         }
     }
 
-    @HasPermission(permission = Permission.SET_SOFTLINK_ID_OR_REF)
     public void removeRelationForResource(ForeignableOwner deletingOwner, Integer resourceId) throws ForeignableOwnerViolationException {
         ResourceEntity cpiResource = entityManager.find(ResourceEntity.class, resourceId);
+        permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, cpiResource.getResourceGroup(), null, null);
+
         if (cpiResource != null) {
             SoftlinkRelationEntity softlinkRelation = cpiResource.getSoftlinkRelation();
             if (softlinkRelation != null){
@@ -98,9 +100,9 @@ public class SoftlinkRelationBoundary implements Serializable {
         }
     }
 
-    @HasPermission(permission = Permission.SET_SOFTLINK_ID_OR_REF)
     public void editSoftlinkRelation(ForeignableOwner editingUser, SoftlinkRelationEntity editedSoftlinkRelation) throws ForeignableOwnerViolationException {
         SoftlinkRelationEntity softlinkRelation = entityManager.find(SoftlinkRelationEntity.class, Objects.requireNonNull(editedSoftlinkRelation, "editedSoftlinkRelation must not be null!").getId());
+        permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, softlinkRelation.getCpiResource().getResourceGroup(), null, null);
 
         if (softlinkRelation != null) {
             int beforeChangeForeignableFieldHashCode = softlinkRelation.foreignableFieldHashCode();

@@ -164,7 +164,7 @@ public class EditResourceView implements Serializable {
             }
             resourceType = null;
 
-            canEditSoftlinkId = isSoftlinkEditable(resource);
+            canEditSoftlinkId = isSoftlinkEditable(resource, sessionContext.getCurrentContext());
             canShowSoftlinkField = sessionContext.getIsGlobal() && hasProvidableSoftlinkSuperType(resource);
             canShowDeploymentLink = isResourceOrTypeDeployable(resource.getResourceType());
 
@@ -323,10 +323,10 @@ public class EditResourceView implements Serializable {
         return sessionContext.getIsGlobal();
     }
 
-    private boolean isSoftlinkEditable(ResourceEntity resourceEntity) {
+    private boolean isSoftlinkEditable(ResourceEntity resourceEntity, ContextEntity context) {
         return isEditResource() && (foreignableBoundary
                 .isModifiableByOwner(ForeignableOwner.getSystemOwner(), resourceEntity)
-                && permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF));
+                && permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity, null));
     }
 
     private boolean isResourceOrTypeDeployable(ResourceTypeEntity resourceTypeEntity) {

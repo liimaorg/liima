@@ -33,7 +33,6 @@ public enum Permission {
 
     // RESOURCE AND RESOURCE TYPE PERMISSIONS
     DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value", true),
-    SET_SOFTLINK_ID_OR_REF("Allows to manually set a softlink id or a softlink reference respective", true),
 
     // FOREIGNABLES PERMISSIONS
     IGNORE_FOREIGNABLE_OWNER("Ignore the owner of a foreignable object. Chuck Norris can edit/delete objects of any owner!", true),

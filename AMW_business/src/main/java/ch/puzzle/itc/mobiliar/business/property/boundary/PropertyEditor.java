@@ -280,7 +280,7 @@ public class PropertyEditor {
 	}
 
 	/**
-	 * Persists changes made on a Resource
+	 * Persists changes made on a Resource if the use has the permission to do so
 	 *
 	 * @param changingOwner
 	 * @param contextId
@@ -313,28 +313,27 @@ public class PropertyEditor {
         ResourceEntity resource = resourceRepository.find(resourceId);
         int beforeChangeForeignableHashCode = resource.foreignableFieldHashCode();
 
-        verifyAndSetResourceName(resourceName, resource, context);
-        verifyAndSetSoftlinkId(softlinkId, resource);
+		// do permission check
+		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
+			verifyAndSetResourceName(resourceName, resource);
+			verifyAndSetSoftlinkId(softlinkId, resource);
+		}
 
         // check if owner can modify resource
         foreignableService.verifyEditableByOwner(changingOwner, beforeChangeForeignableHashCode, resource);
         return resource;
     }
 
-    private void verifyAndSetResourceName(String resourceName, ResourceEntity resource, ContextEntity context) throws AMWException {
-		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
-            if (resourceName == null || !resourceName.equals(resource.getName())) {
-                resourceValidationService.validateResourceName(resourceName);
-                resource.setName(resourceName);
-            }
-        }
+    private void verifyAndSetResourceName(String resourceName, ResourceEntity resource) throws AMWException {
+		if (resourceName == null || !resourceName.equals(resource.getName())) {
+			resourceValidationService.validateResourceName(resourceName);
+			resource.setName(resourceName);
+		}
     }
 
     private void verifyAndSetSoftlinkId(String softlinkId, ResourceEntity resource) throws AMWException {
-        if (permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF)) {
-			resourceValidationService.validateSoftlinkId(softlinkId, resource.getResourceGroup().getId());
-			resource.setSoftlinkId(softlinkId);
-        }
+		resourceValidationService.validateSoftlinkId(softlinkId, resource.getResourceGroup().getId());
+		resource.setSoftlinkId(softlinkId);
     }
 
 	/**
