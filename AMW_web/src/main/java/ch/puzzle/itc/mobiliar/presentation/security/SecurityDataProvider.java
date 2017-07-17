@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
@@ -101,6 +102,10 @@ public class SecurityDataProvider implements Serializable{
 	
 	public boolean hasPermissionToDeploy(){
 		return permissionBoundary.hasPermissionToDeploy();
+	}
+
+	public boolean hasPermissionToExportDeployments() {
+		return permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.READ);
 	}
 
 	public boolean hasPermissionToCreateShakedownTests(List<Integer> resourceGroupIds) {

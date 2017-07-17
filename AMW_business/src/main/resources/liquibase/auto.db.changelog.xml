@@ -116,5 +116,6 @@
     <include file="changesets/data/permissionMerge/edit_res_or_restype_name.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/set_softlink_id_or_ref.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/select_runtime.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/export_csv_deployments.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

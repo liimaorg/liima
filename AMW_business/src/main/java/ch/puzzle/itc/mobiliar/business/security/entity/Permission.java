@@ -36,9 +36,6 @@ public enum Permission {
     // FOREIGNABLES PERMISSIONS
     IGNORE_FOREIGNABLE_OWNER("Ignore the owner of a foreignable object. Chuck Norris can edit/delete objects of any owner!", true),
 
-    // DEPLOYMENT
-    EXPORT_CSV_DEPLOYMENTS("You can find this button in Deploy page.", true),
-
     // SHAKEDOWN TEST
     SHAKEDOWN_TEST_PAGE("Shakedown test page.", true),
     SHAKEDOWN_TEST_MODE("", true),

@@ -72,7 +72,7 @@
                                                     </h:commandLink>
                                                 </li>
                                                 <li><h:outputLink styleClass="btn light" target="_blank"
-                                                                  rendered="#{securityDataProvider.hasPermission('EXPORT_CSV_DEPLOYMENTS')}"
+                                                                  rendered="#{securityDataProvider.hasPermissionToExportDeployments()}"
                                                                   value="../deploymentCsvExport">
                                                     <i class="icon icon-csv"/>
                                                     <h:outputText value="Export"/>
