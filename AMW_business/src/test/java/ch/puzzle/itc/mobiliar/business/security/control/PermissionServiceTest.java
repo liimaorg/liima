@@ -1101,12 +1101,12 @@ public class PermissionServiceTest {
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_RES_OR_RESTYPE_NAME, res)));
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_RES_OR_RESTYPE_NAME, res)));
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RELEASE, res)));
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RELEASE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 			
 		// when
-		boolean result = permissionService.hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
+		boolean result = permissionService.hasPermission(Permission.RELEASE);
 		
 		// then
 		Assert.assertTrue(result);
@@ -1121,12 +1121,12 @@ public class PermissionServiceTest {
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_RES_OR_RESTYPE_NAME, res)));
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_RES_OR_RESTYPE_NAME, res)));
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RELEASE, res)));
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RELEASE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 			
 		// when
-		boolean result = permissionService.hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
+		boolean result = permissionService.hasPermission(Permission.RELEASE);
 		
 		// then
 		Assert.assertFalse(result);

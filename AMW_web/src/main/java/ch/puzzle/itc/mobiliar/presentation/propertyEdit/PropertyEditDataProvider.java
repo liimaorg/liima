@@ -314,7 +314,8 @@ public class PropertyEditDataProvider implements Serializable {
     }
 
     public boolean hasEditRelationNamePermission() {
-        return permissionBoundary.hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
+        return isCurrentFocusOnResourceType() && permissionBoundary.hasPermission(Permission.RESOURCETYPE, currentContext,
+                Action.UPDATE, null, (ResourceTypeEntity) resourceOrResourceType);
     }
 
     public boolean isLongValue(String value) {

@@ -30,7 +30,6 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 
-import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
@@ -179,7 +178,6 @@ public class ResourcesScreenDomainService {
      * @throws ResourceTypeNotFoundException
      * @throws ElementAlreadyExistsException
      */
-    // TODO check context (?)
     @HasPermission(permission = Permission.RESOURCE, action = Action.CREATE)
     public Resource getOrCreateNewResourceByName(ForeignableOwner creatingOwner, String newResourceName, Integer resourceTypeId, Integer releaseId)
             throws ResourceTypeNotFoundException,
@@ -302,44 +300,6 @@ public class ResourcesScreenDomainService {
     private long countNumberOfConsumedSlaveRelations(ResourceEntity res){
         return entityManager.createQuery("select count(a.id) from ResourceEntity r left join r.consumedSlaveRelations a where r=:res", Long.class).setParameter("res", res).getSingleResult();
     }
-    
-    /**
-     * Benennt den ResourceType um
-     * 
-     * @param resourceTypeId
-     * @param resourceTypeName
-     * @throws ResourceNotFoundException
-     * @throws SavePropertyException
-     * @throws RenameException
-     * @throws ElementAlreadyExistsException
-     * @throws ResourceTypeNotFoundException
-     */
-
-    @HasPermission(permission = Permission.EDIT_RES_OR_RESTYPE_NAME)
-    public void renameResourceType(Integer resourceTypeId, String resourceTypeName) throws ResourceNotFoundException, SavePropertyException, RenameException, ElementAlreadyExistsException, ResourceTypeNotFoundException {
-
-        if (resourceTypeName == null || resourceTypeName.trim().isEmpty()) {
-            throw new RenameException("Der ResourceTypename darf nicht leer sein", null);
-        }
-        ResourceType resourceType = ResourceType.createByResourceType(commonService.getResourceTypeEntityById(resourceTypeId), null);
-        String oldName = resourceType.getName();
-        if (resourceTypeName != null && !resourceTypeName.equals(oldName)) {
-
-            List<ResourceTypeEntity> resourceTypeEntities = QueryUtils.fetch(ResourceTypeEntity.class, queries.searchResourceTypeByName(resourceTypeName), 0, -1);
-            if (resourceTypeEntities.size() > 0) {
-                String message = "Ein ResourceType mit dem Namen " + resourceTypeName + " existiert bereits";
-                log.warning(message);
-                throw new ElementAlreadyExistsException(message, ResourceType.class, resourceTypeName);
-            }
-            resourceType.setName(resourceTypeName);
-
-            entityManager.persist(resourceType.getEntity());
-            log.info("ResourceType " + oldName + " nach " + resourceTypeName + " umbenannt");
-
-        }
-    }
-
-    
 
     public ResourceTypeProvider getResourceTypeProvider() {
         return resourceTypeProvider;
@@ -389,7 +349,6 @@ public class ResourcesScreenDomainService {
      * @throws ElementAlreadyExistsException
      * @throws ResourceTypeNotFoundException
      */
-    // TODO check context as well => NO
     @HasPermission(permission = Permission.RESOURCE, action = Action.CREATE)
     public Application createNewApplicationWithoutAppServerByName(ForeignableOwner creatingOwner, String fceKey, String fceLink, String applicationName, Integer releaseId, boolean canCreateReleaseOfExisting)
             throws ElementAlreadyExistsException, ResourceTypeNotFoundException {
@@ -428,7 +387,6 @@ public class ResourcesScreenDomainService {
      *
      * @param resourceEntity
      */
-    // TODO review context?
     public void updateResource(ResourceEntity resourceEntity) {
         if (resourceEntity.getId() != null) {
             if (permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity, resourceEntity.getResourceType())) {
