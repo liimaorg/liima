@@ -88,8 +88,8 @@ public enum Permission {
     SHAKEDOWNTEST("The right to create, read, update or delete ShakedownTests", false),
     RESOURCE("The right to create, read, update or delete Resources", false),
     RESOURCETYPE("The right to create, read, update or delete ResourceTypes", false),
-    TEMPLATE_RESOURCE("The right to create, read, update or delete Templates of Resources", false),
-    TEMPLATE_RESOURCETYPE("The right to create, read, update or delete templates of ResourceTypes", false),
+    RESOURCE_TEMPLATE("The right to create, read, update or delete Templates of Resources", false),
+    RESOURCETYPE_TEMPLATE("The right to create, read, update or delete templates of ResourceTypes", false),
     RESOURCE_AMWFUNCTION("The right to create, read, update or delete AmwFunctions of Resources", false),
     RESOURCETYPE_AMWFUNCTION("The right to create, read, update or delete AmwFunctions of ResourceTypes", false);
 

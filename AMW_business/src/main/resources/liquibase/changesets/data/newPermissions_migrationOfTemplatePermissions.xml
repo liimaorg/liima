@@ -62,17 +62,17 @@
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="TEMPLATE_RESOURCE" />
+            <column name="value" value="RESOURCE_TEMPLATE" />
             <where>value = 'INSTANCE_TEMP_LIST'</where>
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="TEMPLATE_RESOURCETYPE" />
+            <column name="value" value="RESOURCETYPE_TEMPLATE" />
             <where>value = 'RES_RESTYPE_TEMPLATE_LIST'</where>
         </update>
 
         <delete tableName="TAMW_role_permission">
-            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE value = 'TEMPLATE_RESOURCE' or value = 'DELETE_RES_TEMPLATE' or value = 'EDIT_RES_TEMP' or value = 'SAVE_RES_TEMPLATE' or value = 'DELETE_RESTYPE_TEMPLATE' or value = 'TEMPLATE_RESOURCETYPE' or value = 'EDIT_RESTYPE_TEMPLATE' or value = 'SAVE_RESTYPE_TEMPLATE' or value = 'CREATE_TEMPLATE')</where>
+            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE value = 'RESOURCE_TEMPLATE' or value = 'DELETE_RES_TEMPLATE' or value = 'EDIT_RES_TEMP' or value = 'SAVE_RES_TEMPLATE' or value = 'DELETE_RESTYPE_TEMPLATE' or value = 'RESOURCETYPE_TEMPLATE' or value = 'EDIT_RESTYPE_TEMPLATE' or value = 'SAVE_RESTYPE_TEMPLATE' or value = 'CREATE_TEMPLATE')</where>
         </delete>
 
         <delete tableName="TAMW_permission">
