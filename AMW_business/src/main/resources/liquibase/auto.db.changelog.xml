@@ -85,7 +85,6 @@
     <include file="changesets/data/newPermissions_migrationOfTemplatePermissions.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/newPermissions_migrationOfAMWFunctionPermissions.xml" relativeToChangelogFile="true"/>
     <include file="changesets/model/newPermissions/newPermissions_userRestrictionEntity.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/data/newPermissions_migrationOfRemainingPermissions.xml" relativeToChangelogFile="true"/>
 
     <include file="changesets/data/permissionMerge/add_app_to_app_server.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/delete_app_to_app_server.xml" relativeToChangelogFile="true"/>
@@ -117,5 +116,8 @@
     <include file="changesets/data/permissionMerge/set_softlink_id_or_ref.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/select_runtime.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/export_csv_deployments.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/test_generation.xml" relativeToChangelogFile="true"/>
+
+    <include file="changesets/data/newPermissions_migrationOfRemainingPermissions.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

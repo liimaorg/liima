@@ -24,9 +24,6 @@ public enum Permission {
 
     DEFAULT("",true),
 
-    // RESOURCE PERMISSIONS
-    TEST_GENERATION("With this permission the user can test the generation of an Applicationserver", true),
-
     // RESOURCE RELATION PERMISSIONS
     ADD_AS_CONSUMED_RESOURCE("Add as consumed Resource. Path: all resource instance screen-> press button 'Add relation'.", true),
 
@@ -91,7 +88,9 @@ public enum Permission {
     RESOURCE_TEMPLATE("The right to create, read, update or delete Templates of Resources", false),
     RESOURCETYPE_TEMPLATE("The right to create, read, update or delete templates of ResourceTypes", false),
     RESOURCE_AMWFUNCTION("The right to create, read, update or delete AmwFunctions of Resources", false),
-    RESOURCETYPE_AMWFUNCTION("The right to create, read, update or delete AmwFunctions of ResourceTypes", false);
+    RESOURCETYPE_AMWFUNCTION("The right to create, read, update or delete AmwFunctions of ResourceTypes", false),
+    RESOURCE_TEST_GENERATION("The right to start test generation", false),
+    RESOURCE_TEST_GENERATION_RESULT("The right to see templates generated from test generation", false);
 
     private String info;
     private boolean old;

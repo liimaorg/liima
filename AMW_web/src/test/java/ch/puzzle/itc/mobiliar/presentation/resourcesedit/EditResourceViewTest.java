@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.presentation.resourcesedit;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
@@ -56,12 +57,16 @@ public class EditResourceViewTest {
 
 	@Mock
 	SessionContext sessionContext;
+
+	@Mock
+	ResourceLocator resourceLocator;
 	
 	@Before
 	public void setup(){
 		context.resourceType = resourceType;
 		context.permissionBoundary = permissionBoundary;
 		context.sessionContext = sessionContext;
+		context.resourceLocator = resourceLocator;
 	}
 	
 	
@@ -172,12 +177,22 @@ public class EditResourceViewTest {
 		//given
 		ResourceGroupEntity group = new ResourceGroupEntity();
 		ResourceEntity r = ResourceFactory.createNewResource(group);
+		ResourceTypeEntity type = new ResourceTypeEntity();
+		type.setName("Test");
 		r.setId(7);
+		r.setResourceType(type);
 		context.resource = r;
+		when(context.resourceLocator.getResourceWithGroupAndRelatedResources(8)).thenReturn(r);
 		//when
-		context.setResourceIdFromParam(7);
-		//then
-		verify(permissionBoundary, times(1)).checkPermissionAndFireException(Permission.RESOURCE, READ, "edit resources");
+		try {
+			context.setResourceIdFromParam(8);
+		} catch (NullPointerException npe) {}
+		finally {
+			//then
+			verify(permissionBoundary, times(1)).checkPermissionAndFireException(Permission.RESOURCE, null, READ, group, null, "edit resources");
+			verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCETYPE, Action.READ);
+			verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCE_TEST_GENERATION, sessionContext.getCurrentContext(), Action.READ, r, null);
+		}
 	}
 
 }
