@@ -8,7 +8,7 @@
 
         <!--  ADD_AS_PROVIDED_RESOURCE("Add as provided Resource. Path: all resource instance screen -> press button 'Add relation'.", true) -->
 
-        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'UPDATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'ADD_AS_PROVIDED_RESOURCE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'ADD_AS_PROVIDED_RESOURCE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
 
         <update tableName="SAMW_SEQUENCES">
             <column name="NEXT_VAL" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />

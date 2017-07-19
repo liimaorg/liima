@@ -24,9 +24,6 @@ public enum Permission {
 
     DEFAULT("",true),
 
-    // RESOURCE RELATION PERMISSIONS
-    ADD_AS_CONSUMED_RESOURCE("Add as consumed Resource. Path: all resource instance screen-> press button 'Add relation'.", true),
-
     // FOREIGNABLES PERMISSIONS
     IGNORE_FOREIGNABLE_OWNER("Ignore the owner of a foreignable object. Chuck Norris can edit/delete objects of any owner!", true),
 

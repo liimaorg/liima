@@ -511,13 +511,9 @@ public class PermissionServiceTest {
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
-		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
 		RestrictionEntity upd = new RestrictionEntity();
 		upd.setAction(Action.UPDATE);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(
-				new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_AS_CONSUMED_RESOURCE, res),
-				new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, upd)));
+		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, upd)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -536,8 +532,8 @@ public class PermissionServiceTest {
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_AS_CONSUMED_RESOURCE, res)));
+		res.setAction(Action.READ);
+		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
