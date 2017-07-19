@@ -295,13 +295,15 @@ public class PropertyEditDataProvider implements Serializable {
     }
 
     private void preventDuplicateIdentifiers() throws AMWException {
-        List<ResourceEditRelation> consumedRelations = resourceRelation.getConsumedRelations().get(currentRelation.getSlaveTypeName());
-        if (currentRelation.getSlaveName().equals(relationIdentifier)) {
-            throw new AMWException("RelationName '" + relationIdentifier + "' is not allowed");
-        }
-        for (ResourceEditRelation consumedRelation : consumedRelations) {
-            if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier)) {
-                throw new AMWException("RelationName '" + relationIdentifier + "' is already taken");
+        Collection<List<ResourceEditRelation>> resourceEditRelations = resourceRelation.getConsumedRelations().values();
+        for (List<ResourceEditRelation> consumedRelations: resourceEditRelations) {
+            for (ResourceEditRelation consumedRelation : consumedRelations) {
+                if (consumedRelation.getSlaveName().equals(relationIdentifier)) {
+                    throw new AMWException("RelationName '" + relationIdentifier + "' is not allowed");
+                }
+                if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier)) {
+                    throw new AMWException("RelationName '" + relationIdentifier + "' is already taken");
+                }
             }
         }
     }

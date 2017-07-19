@@ -303,16 +303,45 @@ public class PropertyEditor {
         if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, editedResource, editedResource.getResourceType())) {
 			propertyValueService.saveProperties(context, editedResource, resourceProperties);
 			if (relation != null) {
-				AbstractResourceRelationEntity resourceRelation = editedResource.getResourceRelation(relation);
-				if (relation.hasIdentifierChanged(relationIdentifier)) {
-					resourceRelation.setIdentifier(relationIdentifier);
-				}
-				propertyValueService.saveProperties(context, resourceRelation, relationProperties);
+				handleRelations(relation, relationProperties, relationIdentifier, context, editedResource);
 			}
 		}
 	}
 
-    private ResourceEntity verifyAndSaveResource(Integer resourceId, ForeignableOwner changingOwner, String resourceName, String softlinkId, ContextEntity context) throws ForeignableOwnerViolationException, AMWException {
+	private void handleRelations(ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String relationIdentifier,
+								 ContextEntity context, ResourceEntity editedResource) throws ValidationException {
+		String previousIdentifier = null;
+		String slaveName = null;
+		AbstractResourceRelationEntity resourceRelation = editedResource.getResourceRelation(relation);
+		if (relation.hasIdentifierChanged(relationIdentifier)) {
+            previousIdentifier = relation.getQualifiedIdentifier();
+            slaveName = relation.getSlaveName();
+            resourceRelation.setIdentifier(relationIdentifier);
+        }
+		propertyValueService.saveProperties(context, resourceRelation, relationProperties);
+		if (previousIdentifier != null) {
+            // if the previousIdentifier equals to the slaveName, then the identifier of the relation has been empty before
+            if (previousIdentifier.equals(slaveName)) {
+                for (ConsumedResourceRelationEntity consumedResourceRelation : editedResource.getConsumedMasterRelations()) {
+                    if (consumedResourceRelation.getIdentifier() == null
+							&& consumedResourceRelation.getSlaveResource().getName().equals(previousIdentifier)) {
+                        consumedResourceRelation.setIdentifier(relationIdentifier);
+                        entityManager.merge(consumedResourceRelation);
+                    }
+                }
+            } else {
+                for (ConsumedResourceRelationEntity consumedResourceRelation : editedResource.getConsumedMasterRelations()) {
+                    if (consumedResourceRelation.getIdentifier() != null
+							&& consumedResourceRelation.getIdentifier().equals(previousIdentifier)) {
+                        consumedResourceRelation.setIdentifier(relationIdentifier);
+                        entityManager.merge(consumedResourceRelation);
+                    }
+                }
+            }
+        }
+	}
+
+	private ResourceEntity verifyAndSaveResource(Integer resourceId, ForeignableOwner changingOwner, String resourceName, String softlinkId, ContextEntity context) throws ForeignableOwnerViolationException, AMWException {
         ResourceEntity resource = resourceRepository.find(resourceId);
         int beforeChangeForeignableHashCode = resource.foreignableFieldHashCode();
 
