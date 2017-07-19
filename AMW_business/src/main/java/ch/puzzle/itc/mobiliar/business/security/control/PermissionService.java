@@ -509,18 +509,12 @@ public class PermissionService implements Serializable {
      * Checks if a user is allowed to add a Relation to a Resource
      *
      * @param resourceEntity
-     * @param provided
      * @param context
      * @return
      */
-    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, boolean provided, ContextEntity context) {
+    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, ContextEntity context) {
         if (resourceEntity != null && resourceEntity.getResourceType() != null) {
-            if (hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity.getResourceGroup(), null)) {
-                return true;
-            }
-            else if (resourceEntity.getResourceType().isApplicationResourceType()) {
-                return (!provided && hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE));
-            }
+            return hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity.getResourceGroup(), null);
         }
         if (resourceEntity != null && resourceEntity.getResourceType() == null) {
             return false;
@@ -545,9 +539,7 @@ public class PermissionService implements Serializable {
 
 
     /**
-     * Check that the user is config_admin, server_admin or app_developer : server_admin: can delete node
-     * relationship config_admin: can delete all relationship. app_developer: can delete reletionship of
-     * instances of APPLICATION
+     * Checks if the user may delete a Resource relationship
      *
      * @param
      * @return
@@ -601,14 +593,6 @@ public class PermissionService implements Serializable {
             return true;
         }
         return resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
-    }
-
-    private boolean isApplicationResourceType(ResourceTypeEntity resourceType) {
-        return resourceType != null && resourceType.isApplicationResourceType();
-    }
-
-    private boolean isResourceEntityWithApplicationResourceType(ResourceEntity resource) {
-        return resource != null && resource.getResourceType().isApplicationResourceType();
     }
 
     /**

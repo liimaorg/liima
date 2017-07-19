@@ -158,13 +158,6 @@ public class ResourceRelationModel implements Serializable {
     @Getter
     private boolean allowedToJumpToRelatedResourceEditScreen = false;
 
-
-    @Getter
-    private boolean canAddConsumedRelations;
-
-    @Getter
-    private boolean canAddProvidedRelations;
-
     private Integer currentRelationId;
 
     private Identifiable currentSelectedResourceOrType;
@@ -186,10 +179,8 @@ public class ResourceRelationModel implements Serializable {
     public void onChangedResource(@Observes ResourceEntity resourceEntity) throws GeneralDBException {
         allowedToSelectRuntime = permissionBoundary.hasPermission(Permission.RESOURCE, sessionContext.getCurrentContext(), Action.UPDATE, resourceEntity, null);
         allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelation(resourceEntity, sessionContext.getCurrentContext());
-        canAddConsumedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, false, sessionContext.getCurrentContext());
-        canAddProvidedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, true, sessionContext.getCurrentContext());
+        allowedToAddRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, sessionContext.getCurrentContext());
         allowedToListRelations = permissionBoundary.hasPermission(Permission.RESOURCE, sessionContext.getCurrentContext(), Action.READ, resourceEntity, null);
-        allowedToAddRelations = canAddConsumedRelations || canAddProvidedRelations;
         currentSelectedResourceOrType = resourceEntity;
 
         canShowSoftlinkRelations = sessionContext.getIsGlobal()
@@ -217,8 +208,7 @@ public class ResourceRelationModel implements Serializable {
         allowedToAddRelations = permissionBoundary.hasPermissionToAddRelatedResourceType(resourceTypeEntity);
         allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelationType(resourceTypeEntity);
         allowedToSelectRuntime = false;
-        canAddConsumedRelations = false;
-        canAddProvidedRelations = false;
+        allowedToAddRelations = false;
         currentSelectedResourceOrType = resourceTypeEntity;
         canShowSoftlinkRelations = false;
         canShowAddSoftlinkRelationButton = false;

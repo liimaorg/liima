@@ -200,6 +200,10 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermission(permission, context, action, null, resourceType);
     }
 
+    public boolean hasPermission(Permission permission, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
+        return permissionService.hasPermission(permission, null, action, resourceGroup, resourceType);
+    }
+
     /**
      * Checks if given permission is available. If not a checked exception is thrown with error message
      * containing extraInfo part.
@@ -240,9 +244,7 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
-     * Check that the user is config_admin, server_admin or app_developer : server_admin: can delete node
-     * relationship config_admin: can delete all relationship. app_developer: can delete reletionship of
-     * instances of APPLICATION
+     * Checks if user is allowed to delete a Relation of a Resource
      */
     public boolean hasPermissionToDeleteRelation(ResourceEntity resourceEntity, ContextEntity context) {
         ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, resourceEntity.getId());
@@ -250,9 +252,7 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
-     * Check that the user is config_admin, server_admin or app_developer : server_admin: can delete node
-     * relationship config_admin: can delete all relationship. app_developer: can delete reletionship of
-     * instances of APPLICATION
+     * Checks if user is allowed to delete a Relation of a ResourceType
      */
     public boolean hasPermissionToDeleteRelationType(ResourceTypeEntity resourceTypeEntity) {
         ResourceTypeEntity mergedResource = entityManager.find(ResourceTypeEntity.class, resourceTypeEntity.getId());
@@ -260,13 +260,11 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
-     * Check that the user is config_admin, server_admin or app_developer : server_admin: can add node
-     * relationship config_admin: can add all relationship. app_developer: can add reletionship of instances
-     * of APPLICATION
+     * Checks if user is allowed to add a Relation to a Resource
      */
-    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, boolean isProvided, ContextEntity context) {
+    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, ContextEntity context) {
         ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, resourceEntity.getId());
-        return permissionService.hasPermissionToAddRelation(mergedResource, isProvided, context);
+        return permissionService.hasPermissionToAddRelation(mergedResource, context);
     }
 
     /**

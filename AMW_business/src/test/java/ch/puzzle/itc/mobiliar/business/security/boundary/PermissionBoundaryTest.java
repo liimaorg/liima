@@ -566,9 +566,9 @@ public class PermissionBoundaryTest {
         ContextEntity aContext = new ContextEntity();
         when(entityManager.find(ResourceEntity.class, 7)).thenReturn(resource);
         // when
-        permissionBoundary.hasPermissionToAddRelation(resource, false, aContext);
+        permissionBoundary.hasPermissionToAddRelation(resource, aContext);
         // then
-        verify(permissionService, times(1)).hasPermissionToAddRelation(resource, false, aContext);
+        verify(permissionService, times(1)).hasPermissionToAddRelation(resource, aContext);
     }
 
     @Test

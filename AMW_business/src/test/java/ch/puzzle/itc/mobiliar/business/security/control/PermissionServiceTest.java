@@ -433,12 +433,10 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
-        boolean consumed = permissionService.hasPermissionToAddRelation(as, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(as, true, new ContextEntity());
+        boolean canAdd = permissionService.hasPermissionToAddRelation(as, new ContextEntity());
 
         // then
-        Assert.assertTrue(consumed);
-        Assert.assertTrue(provided);
+        Assert.assertTrue(canAdd);
     }
 
     @Test
@@ -457,12 +455,10 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
-        boolean consumed = permissionService.hasPermissionToAddRelation(resourceWithoutResourceType, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(resourceWithoutResourceType, true, new ContextEntity());
+        boolean canAdd = permissionService.hasPermissionToAddRelation(resourceWithoutResourceType, new ContextEntity());
 
         // then
-        Assert.assertFalse(consumed);
-        Assert.assertFalse(provided);
+        Assert.assertFalse(canAdd);
     }
 
     @Test
@@ -480,12 +476,10 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
-        boolean consumed = permissionService.hasPermissionToAddRelation(as, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(as, true, new ContextEntity());
+        boolean canAdd= permissionService.hasPermissionToAddRelation(as, new ContextEntity());
 
         // then
-        Assert.assertTrue(consumed);
-        Assert.assertTrue(provided);
+        Assert.assertTrue(canAdd);
     }
 
     @Test
@@ -503,12 +497,10 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
-        boolean consumed = permissionService.hasPermissionToAddRelation(app, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(app, true, new ContextEntity());
+        boolean canAdd = permissionService.hasPermissionToAddRelation(app, new ContextEntity());
 
         // then
-        Assert.assertFalse(consumed);
-        Assert.assertFalse(provided);
+        Assert.assertFalse(canAdd);
     }
 
     @Test
@@ -529,12 +521,10 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
-        boolean consumed = permissionService.hasPermissionToAddRelation(app, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(app, true, new ContextEntity());
+        boolean canAdd = permissionService.hasPermissionToAddRelation(app, new ContextEntity());
 
 		// then
-		Assert.assertTrue(consumed);
-        Assert.assertTrue(provided);
+		Assert.assertTrue(canAdd);
 	}
 
     @Test
@@ -551,12 +541,10 @@ public class PermissionServiceTest {
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
-        boolean consumed = permissionService.hasPermissionToAddRelation(as, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(as, true, new ContextEntity());
+        boolean canAdd = permissionService.hasPermissionToAddRelation(as, new ContextEntity());
 
         // then
-        Assert.assertFalse(consumed);
-        Assert.assertFalse(provided);
+        Assert.assertFalse(canAdd);
     }
 
     @Test
