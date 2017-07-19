@@ -117,6 +117,7 @@
     <include file="changesets/data/permissionMerge/select_runtime.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/export_csv_deployments.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/test_generation.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/decrypt_properties.xml" relativeToChangelogFile="true"/>
 
     <include file="changesets/data/newPermissions_migrationOfRemainingPermissions.xml" relativeToChangelogFile="true"/>
 

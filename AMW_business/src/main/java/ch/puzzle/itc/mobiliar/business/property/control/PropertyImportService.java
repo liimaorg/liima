@@ -118,7 +118,7 @@ public class PropertyImportService {
     public void savePropertyDescriptorWithTags(PropertyDescriptorEntity propDesc, List<String> tags, ResourceEntity resourceEntity, ForeignableOwner owner) throws AMWException {
         ResourceContextEntity resourceContext = resourceEntity.getOrCreateContext(globalContext);
         List<PropertyTagEntity> propertyTags = createPropertyTags(tags);
-        descriptorService.savePropertyDescriptorForOwner(owner, resourceContext, propDesc, propertyTags);
+        descriptorService.savePropertyDescriptorForOwner(owner, resourceContext, propDesc, propertyTags, resourceEntity);
     }
 
     private List<PropertyTagEntity> createPropertyTags(List<String> tags) {

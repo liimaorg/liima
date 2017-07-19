@@ -88,6 +88,9 @@ public class PropertyEditDataProvider implements Serializable {
     private boolean editableProperties = false;
 
     @Getter
+    private boolean canDecryptProperties = false;
+
+    @Getter
     private boolean allowedToEditProperties = false;
 
     @Getter
@@ -146,6 +149,8 @@ public class PropertyEditDataProvider implements Serializable {
         editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
                 currentContext, userSettings.isTestingMode());
         canChangeRuntime = permissionBoundary.hasPermission(Permission.RESOURCE, currentContext, Action.UPDATE, resourceEntity, null);
+        canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, currentContext, Action.ALL,
+                resourceEntity, null);
         group = ResourceGroup.createByResource(resourceEntity.getResourceGroup());
 
         resourceOrResourceType = resourceEntity;
@@ -158,6 +163,8 @@ public class PropertyEditDataProvider implements Serializable {
         resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResourceType(
                 resourceTypeEntity.getId(), getContextId()));
         editableProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE, currentContext, Action.UPDATE,
+                null, resourceTypeEntity);
+        canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, currentContext, Action.ALL,
                 null, resourceTypeEntity);
         canChangeRuntime = false;
         group = null;

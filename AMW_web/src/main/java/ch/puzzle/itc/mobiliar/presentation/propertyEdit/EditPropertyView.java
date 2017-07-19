@@ -43,7 +43,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
@@ -107,8 +106,6 @@ public class EditPropertyView implements Serializable {
 
 	private boolean canEditProperties;
 
-	private boolean canDecryptProperties;
-
     private List<PropertyTagEntity> globalPropertyTags;
 
     private int propertyDescriptorHashBeforeModification = 0;
@@ -128,8 +125,6 @@ public class EditPropertyView implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		canDecryptProperties = permissionBoundary.hasPermission(Permission.DECRYPT_PROPERTIES);
-
 		customPropertyType = new PropertyTypeEntity();
 		customPropertyType.setPropertyTypeName(CUSTOMPROPERTYTYPE_NAME);
 		customPropertyType.setId(0);
@@ -196,10 +191,6 @@ public class EditPropertyView implements Serializable {
 
 	public boolean canEditProperties() {
 		return this.canEditProperties;
-	}
-
-	public boolean canDecryptProperties() {
-		return this.canDecryptProperties;
 	}
 
 	@Setter

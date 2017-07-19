@@ -27,9 +27,6 @@ public enum Permission {
     // RESOURCE RELATION PERMISSIONS
     ADD_AS_CONSUMED_RESOURCE("Add as consumed Resource. Path: all resource instance screen-> press button 'Add relation'.", true),
 
-    // RESOURCE AND RESOURCE TYPE PERMISSIONS
-    DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value", true),
-
     // FOREIGNABLES PERMISSIONS
     IGNORE_FOREIGNABLE_OWNER("Ignore the owner of a foreignable object. Chuck Norris can edit/delete objects of any owner!", true),
 
@@ -86,11 +83,13 @@ public enum Permission {
     RESOURCE("The right to create, read, update or delete Resources", false),
     RESOURCETYPE("The right to create, read, update or delete ResourceTypes", false),
     RESOURCE_TEMPLATE("The right to create, read, update or delete Templates of Resources", false),
-    RESOURCETYPE_TEMPLATE("The right to create, read, update or delete templates of ResourceTypes", false),
+    RESOURCETYPE_TEMPLATE("The right to create, read, update or delete Templates of ResourceTypes", false),
     RESOURCE_AMWFUNCTION("The right to create, read, update or delete AmwFunctions of Resources", false),
     RESOURCETYPE_AMWFUNCTION("The right to create, read, update or delete AmwFunctions of ResourceTypes", false),
     RESOURCE_TEST_GENERATION("The right to start test generation", false),
-    RESOURCE_TEST_GENERATION_RESULT("The right to see templates generated from test generation", false);
+    RESOURCE_TEST_GENERATION_RESULT("The right to see Templates generated from test generation", false),
+    RESOURCE_PROPERTY_DECRYPT("The right to decrypt and edit crypted Resource Properties", false),
+    RESOURCETYPE_PROPERTY_DECRYPT("The right to decrypt and edit crypted ResourceType Properties", false);
 
     private String info;
     private boolean old;

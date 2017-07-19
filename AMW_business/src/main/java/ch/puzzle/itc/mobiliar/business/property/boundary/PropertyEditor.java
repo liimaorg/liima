@@ -194,9 +194,11 @@ public class PropertyEditor {
 	public List<ResourceEditProperty> getPropertiesForResource(Integer resourceId, Integer contextId) {
 		ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
 		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-		return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditResource(
-                resource.getId(), resource.getResourceType(), context));
-
+		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
+			return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditResource(
+					resource.getId(), resource.getResourceType(), context));
+		}
+		return propertyEditingService.loadPropertiesForEditResource(resource.getId(), resource.getResourceType(), context);
 	}
 
 	/**
@@ -210,8 +212,11 @@ public class PropertyEditor {
 	public List<ResourceEditProperty> getPropertiesForResourceType(Integer resourceTypeId, Integer contextId) {
 		ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-		return propertyValueService.decryptProperties(propertyEditingService
-				.loadPropertiesForEditResourceType(resourceType, context));
+		if (permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, context, Action.ALL, null, resourceType)) {
+			return propertyValueService.decryptProperties(propertyEditingService
+					.loadPropertiesForEditResourceType(resourceType, context));
+		}
+		return propertyEditingService.loadPropertiesForEditResourceType(resourceType, context);
 	}
 
 	/**
@@ -228,9 +233,14 @@ public class PropertyEditor {
             ContextEntity context = entityManager.find(ContextEntity.class, contextId);
             ResourceEntity slaveResource = entityManager.find(ResourceEntity.class,
                     resourceRelation.getSlaveId());
-            return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditRelation(
-                    resourceRelation.getMode(), resourceRelation.getResRelId(), slaveResource.getId(),
-                    resource.getResourceType(), slaveResource.getResourceType(), context));
+			if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, slaveResource, null)) {
+				return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditRelation(
+						resourceRelation.getMode(), resourceRelation.getResRelId(), slaveResource.getId(),
+						resource.getResourceType(), slaveResource.getResourceType(), context));
+			}
+            return propertyEditingService.loadPropertiesForEditRelation(resourceRelation.getMode(),
+					resourceRelation.getResRelId(), slaveResource.getId(), resource.getResourceType(),
+					slaveResource.getResourceType(), context);
         }
         return new ArrayList<>();
 	}
@@ -245,9 +255,14 @@ public class PropertyEditor {
 		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
 		ResourceEntity slaveResource = entityManager.find(ResourceEntity.class, relationEntity
 				.getSlaveResource().getId());
-		return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditRelation(
-                ResourceEditRelation.Mode.CONSUMED, relationEntity.getId(), slaveResource.getId(),
-                resource.getResourceType(), slaveResource.getResourceType(), context));
+		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, slaveResource, null)) {
+			return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditRelation(
+					ResourceEditRelation.Mode.CONSUMED, relationEntity.getId(), slaveResource.getId(),
+					resource.getResourceType(), slaveResource.getResourceType(), context));
+		}
+		return propertyEditingService.loadPropertiesForEditRelation(ResourceEditRelation.Mode.CONSUMED,
+				relationEntity.getId(), slaveResource.getId(), resource.getResourceType(),
+				slaveResource.getResourceType(), context);
 	}
 
 	/**
@@ -263,9 +278,14 @@ public class PropertyEditor {
 		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
 		ResourceRelationTypeEntity relationTypeEntity = entityManager.find(
 				ResourceRelationTypeEntity.class, resourceRelation.getResRelTypeId());
-		return propertyValueService.decryptProperties(propertyEditingService
-                .loadPropertiesForEditResourceTypeRelation(relationTypeEntity.getResourceTypeA(),
-                        relationTypeEntity.getResourceTypeB(), context));
+		if (permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, context, Action.ALL, null,
+				relationTypeEntity.getResourceTypeB())) {
+			return propertyValueService.decryptProperties(propertyEditingService
+					.loadPropertiesForEditResourceTypeRelation(relationTypeEntity.getResourceTypeA(),
+							relationTypeEntity.getResourceTypeB(), context));
+		}
+		return propertyEditingService.loadPropertiesForEditResourceTypeRelation(relationTypeEntity.getResourceTypeA(),
+				relationTypeEntity.getResourceTypeB(), context);
 	}
 
 	public Map<ResourceEditRelation.Mode, List<ResourceEditRelation>> getRelationsForResource(
@@ -446,10 +466,14 @@ public class PropertyEditor {
 		List<ResourceEditProperty> resourceEditProperties = propertyEditingService
 				.loadPropertiesForEditResource(resourceByNameAndRelease.getId(),
 						resourceByNameAndRelease.getResourceType(), context);
-		List<ResourceEditProperty> decryptedProperties = propertyValueService
-				.decryptProperties(resourceEditProperties);
 
-		ResourceEditProperty property = findByName(propertyName, decryptedProperties);
+		List<ResourceEditProperty> potentiallyDecryptedProperties;
+		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resourceByNameAndRelease, null)) {
+			potentiallyDecryptedProperties = propertyValueService.decryptProperties(resourceEditProperties);
+		} else {
+			potentiallyDecryptedProperties = resourceEditProperties;
+		}
+		ResourceEditProperty property = findByName(propertyName, potentiallyDecryptedProperties);
 		setSingleProperty(resourceByNameAndRelease, context, property.getDescriptorId(), propertyValue);
 	}
 
@@ -478,10 +502,14 @@ public class PropertyEditor {
 
 		List<ResourceEditProperty> resourceEditProperties = propertyEditingService
 				.loadPropertiesForEditResource(resource.getId(), resource.getResourceType(), context);
-		List<ResourceEditProperty> decryptedProperties = propertyValueService
-				.decryptProperties(resourceEditProperties);
 
-		ResourceEditProperty property = findByName(propertyName, decryptedProperties);
+		List<ResourceEditProperty> potentiallyDecryptedProperties;
+		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
+			potentiallyDecryptedProperties = propertyValueService.decryptProperties(resourceEditProperties);
+		} else {
+			potentiallyDecryptedProperties = resourceEditProperties;
+		}
+		ResourceEditProperty property = findByName(propertyName, potentiallyDecryptedProperties);
 		resetSingleProperty(resource, context, property.getDescriptorId());
 	}
 
@@ -547,9 +575,11 @@ public class PropertyEditor {
 			ConsumedResourceRelationEntity resourceRelation) {
 		List<ResourceEditProperty> propertiesForRelatedResource = getPropertiesForRelatedResource(
 				resourceRelation, context.getId());
-		List<ResourceEditProperty> decryptedProperties = propertyValueService
-				.decryptProperties(propertiesForRelatedResource);
-		return findByName(hostName, decryptedProperties);
+
+		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resourceRelation.getSlaveResource(), null)) {
+			return findByName(hostName, propertyValueService.decryptProperties(propertiesForRelatedResource));
+		}
+		return findByName(hostName, propertiesForRelatedResource);
 	}
 
 	/**
@@ -653,7 +683,7 @@ public class PropertyEditor {
             throw new AMWException("Failure - duplicate propertydescriptors: " + duplicatePropertyDescriptorNames);
         }
 
-        return propertyDescriptorService.savePropertyDescriptorForOwner(editingOwner, resourceContext, descriptor, propertyTagEditingService.convertToTags(propertyTagsString));
+        return propertyDescriptorService.savePropertyDescriptorForOwner(editingOwner, resourceContext, descriptor, propertyTagEditingService.convertToTags(propertyTagsString), attachedResource);
     }
 
     /**
@@ -681,7 +711,7 @@ public class PropertyEditor {
     private PropertyDescriptorEntity savePropertyDescriptorResourceType(ForeignableOwner editingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
         ResourceTypeEntity attachedResourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
         ResourceTypeContextEntity resourceTypeContextEntity = attachedResourceType.getOrCreateContext(contextService.getGlobalResourceContextEntity());
-        return propertyDescriptorService.savePropertyDescriptorForOwner(editingOwner, resourceTypeContextEntity, descriptor, propertyTagEditingService.convertToTags(propertyTagsString));
+        return propertyDescriptorService.savePropertyDescriptorForOwner(editingOwner, resourceTypeContextEntity, descriptor, propertyTagEditingService.convertToTags(propertyTagsString), attachedResourceType);
     }
 
     /**
