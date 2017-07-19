@@ -139,8 +139,8 @@ public class CopyResourceDomainServiceTest {
         ResourceEntity slave2 = new ResourceEntityBuilder().buildApplicationEntity("cpi", null, null, true);
         slave2.setOwner(ForeignableOwner.MAIA);
 
-        originResource.addConsumedResourceRelation(slave, mock(ResourceRelationTypeEntity.class), 1, ForeignableOwner.getSystemOwner());
-        originResource.addConsumedResourceRelation(slave2, mock(ResourceRelationTypeEntity.class), 2, ForeignableOwner.MAIA);
+        originResource.addConsumedResourceRelation(slave, mock(ResourceRelationTypeEntity.class), null, ForeignableOwner.getSystemOwner());
+        originResource.addConsumedResourceRelation(slave2, mock(ResourceRelationTypeEntity.class), null, ForeignableOwner.MAIA);
 
 
         CopyUnit copyUnit = new CopyUnit(originResource, targetResource, CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR, ForeignableOwner.MAIA);

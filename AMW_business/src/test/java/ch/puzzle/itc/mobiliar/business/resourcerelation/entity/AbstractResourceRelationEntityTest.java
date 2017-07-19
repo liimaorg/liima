@@ -128,7 +128,7 @@ public class AbstractResourceRelationEntityTest {
 		assertEquals("adIntern", relation.buildIdentifer());
 
 		relation.setIdentifier("a123");
-		assertEquals("adIntern", relation.buildIdentifer());
+		assertEquals("a123", relation.buildIdentifer());
 	}
 	
 	@Test
@@ -140,6 +140,17 @@ public class AbstractResourceRelationEntityTest {
 
 		relation.setIdentifier("1");
 		assertEquals("activedirectory_1", relation.buildIdentifer());
+	}
+
+	@Test
+	public void testBuildIdentifierWithDefaultEntityType() {
+		EntityBuilder builder = new AmwEntityBuilder();
+
+		ConsumedResourceRelationEntity relation = builder.buildConsumedRelation(builder.resourceFor(APP), builder.resourceFor(AS), ForeignableOwner.AMW);
+		assertEquals("amw", relation.buildIdentifer());
+
+		relation.setIdentifier("testApp");
+		assertEquals("testApp", relation.buildIdentifer());
 	}
 
 }
