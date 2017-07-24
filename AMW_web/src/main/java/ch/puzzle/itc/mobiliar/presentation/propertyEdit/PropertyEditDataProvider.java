@@ -261,7 +261,7 @@ public class PropertyEditDataProvider implements Serializable {
                 softlinkRelationBoundary.editSoftlinkRelation(ForeignableOwner.getSystemOwner(), softlinkRelation);
             } else {
                 // there can be several consumed relations with identical slave resourceType
-                if (currentRelation.getMode().equals(ResourceEditRelation.Mode.CONSUMED)) {
+                if (currentRelation != null && currentRelation.getMode().equals(ResourceEditRelation.Mode.CONSUMED)) {
                     // get next available identifier if the actual identifier is empty and has not been empty before
                     if (StringUtils.isEmpty(relationIdentifier)
                             && StringUtils.isNotEmpty(currentRelation.getIdentifier())
