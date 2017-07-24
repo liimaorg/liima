@@ -50,6 +50,7 @@ import ch.puzzle.itc.mobiliar.presentation.resourcesedit.DataProviderHelper;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 
 import javax.ejb.EJBException;
 import javax.enterprise.event.Observes;
@@ -156,11 +157,13 @@ public class RelationDataProvider implements Serializable {
 			return false;
 		}
 		// provided resources can only be added once
-		if (helper.nextFreeIdentifierForResourceEditRelations(flattenMap(resourceRelationModel.getProvidedRelations()),
-				slaveResourceGroup.getId()) != null) {
-			return false;
-		}
 		if (slaveResourceGroup instanceof ResourceGroupEntity) {
+			List<ResourceEditRelation> relations = helper.flattenMap(resourceRelationModel.getProvidedRelations());
+			Integer slaveResourceGroupId = slaveResourceGroup.getId();
+			String prefix = slaveResourceGroup.getName();
+			if (!helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix)) {
+				return false;
+			}
 			return  canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
 		}
 		return false;
@@ -324,19 +327,21 @@ public class RelationDataProvider implements Serializable {
 		resourceRelationModel.reloadValues();
 	}
 
-	public boolean addConsumedResource(Integer slaveResourceGroupId) {
-		Integer numericIdentifier = null;
+	public boolean addConsumedResource(ResourceGroupEntity resourceGroupEntity) {
+		Integer slaveResourceGroupId = resourceGroupEntity.getId();
+		String prefix = resourceGroupEntity.getName();
 		if (getResourceType().isDefaultResourceType() && !addRuntimeToAppServerMode) {
-			// If it is a default resource type, we can add multiple relations to a resource separated by a
-			// identifier
-			numericIdentifier = helper.nextFreeIdentifierForResourceEditRelations(
-					flattenMap(resourceRelationModel.getConsumedRelations()), slaveResourceGroupId);
+			// If it is a default resource type, we can add multiple relations to a resource separated by a identifier
+			List<ResourceEditRelation> relationsWithSameSlaveGroup = helper.relationsWithSameSlaveGroup(helper.flattenMap(
+					resourceRelationModel.getConsumedRelations()), slaveResourceGroupId);
+			if (!relationsWithSameSlaveGroup.isEmpty()) {
+				identifier = helper.nextFreeIdentifierForResourceEditRelations(relationsWithSameSlaveGroup, slaveResourceGroupId, prefix);
+			}
 		}
-		return addResourceRelation(slaveResourceGroupId, false, numericIdentifier, identifier);
+		return addResourceRelation(slaveResourceGroupId, false, identifier, null);
 	}
 
-
-    public void createSoftlinkRelation() {
+	public void createSoftlinkRelation() {
         if (isEditResource()) {
 
             try {
@@ -366,21 +371,24 @@ public class RelationDataProvider implements Serializable {
         }
     }
 
-	private <T> List<T> flattenMap(Map<?, List<T>> map) {
-		List<T> list = new ArrayList<>();
-		if (map != null) {
-			for (Object key : map.keySet()) {
-				list.addAll(map.get(key));
-			}
+	public boolean isAllowedToAddProvidedRelations(ResourceGroupEntity resourceGroupEntity) {
+		// Only applications are allowed to have provided resources
+		if (!canAddResourceRelation || !getResourceType().isApplicationResourceType()) {
+			return false;
 		}
-		return list;
+		// provided resources can only be added once
+		List<ResourceEditRelation> relations = helper.flattenMap(resourceRelationModel.getProvidedRelations());
+		Integer slaveResourceGroupId = resourceGroupEntity.getId();
+		String prefix = resourceGroupEntity.getName();
+		return helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix);
+
 	}
 
 	public boolean addProvidedResource(Integer slaveResourceGroupId) {
 		return addResourceRelation(slaveResourceGroupId, true, null, identifier);
 	}
 
-	private boolean addResourceRelation(Integer slaveGroupId, boolean provided, Integer identifier, String typeIdentifier) {
+	private boolean addResourceRelation(Integer slaveGroupId, boolean provided, String relationName, String typeIdentifier) {
 		boolean isSuccessful = false;
 		try {
 			if (resourceOrType == null) {
@@ -394,7 +402,7 @@ public class RelationDataProvider implements Serializable {
 			else {
 				try {
 					relationEditor.addRelation(resourceOrType.getId(), slaveGroupId, provided,
-							identifier, typeIdentifier, ForeignableOwner.getSystemOwner());
+							relationName, ForeignableOwner.getSystemOwner());
 					resourceRelationModel.reloadValues();
 					String message = "Resource successfully added.";
 					GlobalMessageAppender.addSuccessMessage(message);

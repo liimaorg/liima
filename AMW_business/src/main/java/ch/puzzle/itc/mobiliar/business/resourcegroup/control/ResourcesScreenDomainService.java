@@ -77,6 +77,9 @@ public class ResourcesScreenDomainService {
     private ResourceGroupPersistenceService resourceGroupService;
 
     @Inject
+    private ResourceGroupRepository resourceGroupRepository;
+
+    @Inject
     private ReleaseMgmtPersistenceService releaseService;
 
     @Inject
@@ -84,87 +87,6 @@ public class ResourcesScreenDomainService {
 
     @Inject
     private PermissionBoundary permissionBoundary;
-
-    /**
-     * Create new instance resourceType (all resourceType): permitted to
-     * config_admin
-     */
-    public Resource createNewResourceByName(ForeignableOwner creatingOwner, String newResourceName, Integer resourceTypeId, Integer releaseId)
-            throws ResourceTypeNotFoundException,
-            ElementAlreadyExistsException {
-
-        ResourceTypeEntity resourceTypeEntity = commonService.getResourceTypeEntityById(resourceTypeId);
-
-        if(!permissionBoundary.canCreateResourceInstance(resourceTypeEntity)){
-            throw new NotAuthorizedException("Permission Denied");
-        }
-
-        ResourceEntity resourceEntity = createResourceEntityByNameForResourceType(creatingOwner, newResourceName,
-                resourceTypeId, releaseId, false);
-
-        Resource resource = Resource.createByResource(creatingOwner, resourceEntity, resourceTypeEntity,
-                contextDomainService.getGlobalResourceContextEntity());
-        entityManager.persist(resource.getEntity());
-        entityManager.flush();
-        log.info("Neue Resource " + newResourceName + "in DB persistiert");
-        return resource;
-    }
-
-    /**
-     * Creates a new resource for the given name, type and release
-     * 
-     * @param newResourceName
-     * @param resourceTypeId
-     * @param releaseId
-     * @param canCreateReleaseOfExisting if true, resource will be created if resources with same name in other releases exist. if false an ElementAlreadyExistsException will thrown in that case
-     * @return new created ResourceEntity
-     * @throws ElementAlreadyExistsException
-     * @throws ResourceTypeNotFoundException
-     */
-    private ResourceEntity createResourceEntityByNameForResourceType(ForeignableOwner creatingOwner, String newResourceName, Integer resourceTypeId, int releaseId, boolean canCreateReleaseOfExisting) throws ElementAlreadyExistsException,
-            ResourceTypeNotFoundException {
-        ReleaseEntity release = releaseService.getById(releaseId);
-        ResourceTypeEntity type = commonService.getResourceTypeEntityById(resourceTypeId);
-        ResourceGroupEntity group = resourceGroupService.loadUniqueGroupByNameAndType(newResourceName,
-                resourceTypeId);
-        ResourceEntity resourceEntity = null;
-        if (group == null) {
-            // if group does not exists a new resource with a new group can be created
-            resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
-            log.info("Neue Resource " + newResourceName + "inkl. Gruppe erstellt für Release "
-                    + release.getName());
-        }
-        else if(canCreateReleaseOfExisting)  {
-            // check if group contains resource for release
-            for (ResourceEntity r : group.getResources()) {
-                if (r.getRelease().getId().equals(releaseId)) {
-                    resourceEntity = r;
-                    break;
-                }
-            }
-            if (resourceEntity == null) {
-                // if resource is null, a new resource for the existing group can be created
-                resourceEntity = ResourceFactory.createNewResourceForOwner(group, creatingOwner);
-                log.info("Neue Resource " + newResourceName
-                        + "für existierende Gruppe erstellt für Release " + release.getName());
-            }
-            else {
-                // if resource with given name, type and release already exists throw an exeption
-                String message = "The "+type.getName()+" with name: " + newResourceName
-                        + " already exists in release "+release.getName();
-                log.info(message);
-                throw new ElementAlreadyExistsException(message, Resource.class, newResourceName);
-            }
-        }else{
-            // if it is not allowed to create a new release for existing throw an exception
-            String message = "The "+type.getName()+" with name: " + newResourceName
-                    + " already exists.";
-            log.info(message);
-            throw new ElementAlreadyExistsException(message, Resource.class, newResourceName);
-        }
-        resourceEntity.setRelease(release);
-        return resourceEntity;
-    }
 
     /**
      * Returns or creates a resource with the given name.
@@ -196,7 +118,7 @@ public class ResourcesScreenDomainService {
     private ResourceEntity getOrCreateResourceEntityByNameForResourceType(ForeignableOwner creatingOwner, String newResourceName, Integer resourceTypeId, int releaseId) throws ElementAlreadyExistsException,
             ResourceTypeNotFoundException {
         ReleaseEntity release = releaseService.getById(releaseId);
-        ResourceGroupEntity group = resourceGroupService.loadUniqueGroupByNameAndType(newResourceName, resourceTypeId);
+        ResourceGroupEntity group = resourceGroupRepository.loadUniqueGroupByNameAndType(newResourceName, resourceTypeId);
         ResourceEntity resourceEntity = null;
         if (group == null) {
             // if group does not exists a new resource with a new group can be created
@@ -305,93 +227,4 @@ public class ResourcesScreenDomainService {
         return resourceTypeProvider;
     }
 
-    /**
-     * Creates a new Application for given ApplicationServer in the given release.<br>
-     * If ApplicationServer does not exist it will be also created
-     * 
-     * @param applicationName
-     * @param appReleaseId
-     * @return created application
-     * @throws ElementAlreadyExistsException
-     * @throws ResourceTypeNotFoundException
-     */
-    public Application createNewUniqueApplicationForAppServer(ForeignableOwner creatingOwner, String applicationName, Integer asGroupId, Integer appReleaseId, Integer asReleaseId)
-            throws ElementAlreadyExistsException, ResourceNotFoundException, ResourceTypeNotFoundException {
-
-        ResourceEntity asResource = commonService.getResourceEntityByGroupAndRelease(asGroupId, asReleaseId);
-
-        if(!permissionBoundary.canCreateAppAndAddToAppServer(asResource)){
-            throw new NotAuthorizedException("Missing Permission");
-        }
-
-        ApplicationServer as = ApplicationServer.createByResource(asResource, resourceTypeProvider,
-                contextDomainService.getGlobalResourceContextEntity());
-        Application app = createUniqueApplicationByName(creatingOwner, applicationName, appReleaseId, false);
-        as.addApplication(app, creatingOwner);
-
-        entityManager.persist(as.getEntity());
-        entityManager.flush();
-        log.info("Application " + applicationName + " für ApplicationServer " + asResource.getName()
-                + " in DB persistiert");
-        return app;
-    }
-
-    /**
-     * Creates an application for the special applicationserver "Applications without application server"
-     *
-     * @param creatingOwner
-     * @param fceKey
-     * @param fceLink
-     * @param applicationName
-     * @param releaseId
-     * @param canCreateReleaseOfExisting if true, resource will be created if resources with same name in other releases exist. if false an ElementAlreadyExistsException will thrown in that case
-     * @return created application
-     * @throws ElementAlreadyExistsException
-     * @throws ResourceTypeNotFoundException
-     */
-    @HasPermission(permission = Permission.RESOURCE, action = Action.CREATE)
-    public Application createNewApplicationWithoutAppServerByName(ForeignableOwner creatingOwner, String fceKey, String fceLink, String applicationName, Integer releaseId, boolean canCreateReleaseOfExisting)
-            throws ElementAlreadyExistsException, ResourceTypeNotFoundException {
-        Application app = createUniqueApplicationByName(creatingOwner, applicationName, releaseId, canCreateReleaseOfExisting);
-        app.getEntity().setExternalKey(fceKey);
-        app.getEntity().setExternalLink(fceLink);
-        ApplicationServer applicationCollectorGroup = commonService.createOrGetApplicationCollectorServer();
-        applicationCollectorGroup.addApplication(app, creatingOwner);
-        entityManager.persist(applicationCollectorGroup.getEntity());
-        entityManager.flush();
-        return app;
-    }
-
-    /**
-     * @param applicationName
-     * @param releaseId
-     * @param canCreateReleaseOfExisting if true, resource will be created if resources with same name in other releases exist. if false an ElementAlreadyExistsException will thrown in that case
-     * @return
-     * @throws ResourceTypeNotFoundException
-     * @throws ElementAlreadyExistsException
-     */
-    private Application createUniqueApplicationByName(ForeignableOwner creatingOwner,String applicationName, int releaseId, boolean canCreateReleaseOfExisting)
-            throws ResourceTypeNotFoundException, ElementAlreadyExistsException {
-        ResourceTypeEntity resourceTypeEntity = resourceTypeProvider
-                .getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATION);
-        ResourceEntity resourceEntity = createResourceEntityByNameForResourceType(creatingOwner, applicationName,
-                resourceTypeEntity.getId(), releaseId, canCreateReleaseOfExisting);
-        Application application = Application.createByResource(resourceEntity, resourceTypeProvider,
-                contextDomainService.getGlobalResourceContextEntity());
-        return application;
-    }
-
-    /**
-     * Updates (merges) an existing ResourceEntity
-     * used by MaiaAmwFederationServiceImportHandler
-     *
-     * @param resourceEntity
-     */
-    public void updateResource(ResourceEntity resourceEntity) {
-        if (resourceEntity.getId() != null) {
-            if (permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity, resourceEntity.getResourceType())) {
-                entityManager.merge(resourceEntity);
-            }
-        }
-    }
 }

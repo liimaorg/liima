@@ -640,7 +640,6 @@ public class PermissionService implements Serializable {
         return false;
     }
 
-
     /**
      * Checks if the user may delete a Resource relationship
      *

@@ -142,7 +142,7 @@
                                             rendered="#{editResourceView.editResource and relationDataProvider.canAddAsConsumedRelation(selectableItem)}"
                                             onclick="if(confirmLeave(event) &amp;&amp; confirmMatchingRelease(${editResourceView.existsForThisRelease(selectableItem)})){${rich:component('addRelationPopup')}.hide();showLoader();}else{return false;}">
                                         <a4j:ajax
-                                                listener="#{relationDataProvider.addConsumedResource(selectableItem.id)}"
+                                                listener="#{relationDataProvider.addConsumedResource(selectableItem)}"
                                                 render="relatedResourcesGroup, applicationInstanceListComp" execute="@this"
                                                 oncomplete="updateElements();hideLoader();refreshChanges();refreshSubChanges();"/>
                                 </h:commandLink></td>

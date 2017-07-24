@@ -21,18 +21,21 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.*;
+import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.*;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
@@ -43,15 +46,20 @@ import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import org.apache.commons.lang.StringUtils;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.*;
+
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CREATED;
 
 @RequestScoped
 @Path("/resources")
@@ -76,7 +84,13 @@ public class ResourcesRest {
     ResourceGroupLocator resourceGroupLocator;
 
     @Inject
+    ResourceBoundary resourceBoundary;
+
+    @Inject
     ResourceLocator resourceLocator;
+
+    @Inject
+    CopyResource copyResource;
 
     @Inject
     ResourceRelationsRest resourceRelations;
@@ -547,6 +561,62 @@ public class ResourcesRest {
         }
 
         return inventory;
+    }
+
+    /**
+     * Creates a new resource and returns its location.
+     *
+     * @param request containing a ResourceReleaseDTO
+     * @return
+     */
+    @POST
+    @ApiOperation(value = "Add a Resource")
+    public Response addResource(@ApiParam("Add a Resource") ResourceReleaseDTO request) {
+        Resource resource;
+        if (StringUtils.isEmpty(request.getName())) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Resource name must not be empty")).build();
+        }
+        if (StringUtils.isEmpty(request.getReleaseName())) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Release name must not be empty")).build();
+        }
+        try {
+            resource = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), request.getName(),
+                    request.getType(), request.getReleaseName());
+        } catch (AMWException e) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
+        }
+        return Response.status(CREATED).header("Location", "/resources/" + resource.getName()).build();
+    }
+
+    /**
+     * Creates a new resource release of an existing resource and returns its location.
+     *
+     * @param request containing a ResourceReleaseDTO
+     * @param releaseName target release name
+     * @return
+     */
+    @POST
+    @Path("/{releaseName}")
+    @ApiOperation(value = "Create a new Resource Release")
+    public Response addNewResourceRelease(@ApiParam("Add a Resource") ResourceReleaseDTO request,
+                                          @PathParam("releaseName") String releaseName) {
+        CopyResourceResult copyResourceResult;
+        if (StringUtils.isEmpty(request.getName())) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Resource name must not be empty")).build();
+        }
+        if (StringUtils.isEmpty(request.getReleaseName())) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Release name must not be empty")).build();
+        }
+        try {
+            copyResourceResult = copyResource.doCreateResourceRelease(request.getName(), releaseName,
+                    request.getReleaseName(), ForeignableOwner.getSystemOwner());
+        } catch (ForeignableOwnerViolationException | AMWException e) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
+        }
+        if (!copyResourceResult.isSuccess()) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Release creation failed")).build();
+        }
+        return Response.status(CREATED).header("Location", "/resources/" + copyResourceResult.getTargetResourceName() + "/" +releaseName).build();
     }
 
 }

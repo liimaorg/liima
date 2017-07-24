@@ -82,7 +82,7 @@ public class ResourceGroupPersistenceService {
 	 * @return
 	 */
 	public List<ResourceGroupEntity> loadGroupsForTypeName(String resourceTypeName, List<Integer> myAmw) {
-		List<ResourceGroupEntity> result = new ArrayList<ResourceGroupEntity>();
+		List<ResourceGroupEntity> result = new ArrayList<>();
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<ResourceGroupEntity> q = cb.createQuery(ResourceGroupEntity.class);
@@ -116,7 +116,7 @@ public class ResourceGroupPersistenceService {
 	public List<ResourceGroupEntity> loadGroupsForTypeNameExcludeSelected(String resourceTypeName,
 			List<Integer> excludeGroups) {
 
-		List<ResourceGroupEntity> result = new ArrayList<ResourceGroupEntity>();
+		List<ResourceGroupEntity> result = new ArrayList<>();
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<ResourceGroupEntity> q = cb.createQuery(ResourceGroupEntity.class);
@@ -174,7 +174,7 @@ public class ResourceGroupPersistenceService {
 	 * @throws ch.puzzle.itc.mobiliar.common.exception.GeneralDBException
 	 */
 	public List<Application> getAllApplicationsNotBelongingToAServer() {
-		List<Application> allApplications = new ArrayList<Application>();
+		List<Application> allApplications = new ArrayList<>();
 		Query query = entityManager
 				.createQuery(
 						"select resEnt from ResourceEntity resEnt left join fetch resEnt.resourceGroup rg left join fetch rg.resources otherRes left join fetch resEnt.contexts left join fetch resEnt.consumedSlaveRelations as resConsSlaveRel left join fetch resConsSlaveRel.masterResource as master where master.name=:name order by resEnt.name")

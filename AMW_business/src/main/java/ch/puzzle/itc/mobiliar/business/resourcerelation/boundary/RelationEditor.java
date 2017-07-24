@@ -33,11 +33,14 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
@@ -48,6 +51,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
+import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
@@ -74,6 +78,12 @@ public class RelationEditor {
 	@Inject
 	ResourceRepository resourceRepository;
 
+	@Inject
+	ResourceLocator resourceLocator;
+
+	@Inject
+	ResourceGroupLocator resourceGroupLocator;
+
     @Inject
     ForeignableService foreignableService;
 
@@ -98,16 +108,45 @@ public class RelationEditor {
 	/**
 	 * @param masterId
 	 * @param provided
-	 * @param identifier
-	 * @param typeIdentifier
+	 * @param relationName
 	 * @throws ResourceNotFoundException
 	 * @throws ElementAlreadyExistsException
 	 */
-	public void addRelation(Integer masterId, Integer slaveGroupId, boolean provided, Integer identifier,
-			String typeIdentifier, ForeignableOwner changingOwner) throws ResourceNotFoundException,
-			ElementAlreadyExistsException {
-		resourceRelationService.addRelationByGroup(masterId, slaveGroupId, provided, identifier,
-				null, changingOwner);
+	public void addRelation(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
+			ForeignableOwner changingOwner) throws ResourceNotFoundException, ElementAlreadyExistsException {
+		resourceRelationService.addRelationByGroup(masterId, slaveGroupId, provided, relationName, null, changingOwner);
+	}
+
+	/**
+	 *
+	 * @param masterGroupName
+	 * @param slaveGroupName
+	 * @param provided
+	 * @param relationName
+	 * @param typeIdentifier
+	 * @param releaseName
+	 * @param changingOwner
+	 * @throws ResourceNotFoundException
+	 * @throws ElementAlreadyExistsException
+	 * @throws ValidationException
+	 */
+	public void addResourceRelationForSpecificRelease(String masterGroupName, String slaveGroupName, boolean provided,
+			String relationName, String typeIdentifier, String releaseName, ForeignableOwner changingOwner)
+			throws ResourceNotFoundException, ElementAlreadyExistsException, ValidationException {
+
+		ResourceEntity master = resourceLocator.getResourceByGroupNameAndRelease(masterGroupName, releaseName);
+		if (master == null) {
+			throw new ResourceNotFoundException("Resource with name '" + masterGroupName + "' and Release '" + releaseName + "' not found");
+		}
+		ResourceGroupEntity slaveGroup = null;
+		try {
+			slaveGroup = resourceGroupLocator.getResourceGroupByName(slaveGroupName);
+		} catch (RuntimeException e) {
+			throw new ResourceNotFoundException("ResourceGroup with name '" + slaveGroupName + "' not found");
+		}
+
+		resourceRelationService.addRelationByGroup(master.getId(), slaveGroup.getId(), provided, relationName,
+				typeIdentifier, changingOwner);
 	}
 
 	public void addResourceTypeRelation(ResourceTypeEntity masterType, Integer slaveResourceTypeId)
@@ -115,7 +154,7 @@ public class RelationEditor {
 		ResourceTypeEntity slaveResourceType = entityManager.find(ResourceTypeEntity.class,
 				slaveResourceTypeId);
 		Set<ResourceRelationTypeEntity> relations = slaveResourceType.getResourceRelationTypesB();
-		List<String> identifiers = new ArrayList<String>();
+		List<String> identifiers = new ArrayList<>();
 		for (ResourceRelationTypeEntity relation : relations) {
 			if (relation.getResourceTypeA().getId().equals(masterType.getId())) {
 				identifiers.add(relation.getRelationIdentifier());
@@ -142,8 +181,8 @@ public class RelationEditor {
 	 * @throws ResourceNotFoundException
 	 * @throws ElementAlreadyExistsException
 	 */
-	public void removeResourceTypeRelation(Integer resourceTypeRelationId) throws ResourceNotFoundException,
-			ElementAlreadyExistsException, ResourceTypeNotFoundException {
+	public void removeResourceTypeRelation(Integer resourceTypeRelationId) throws
+			ResourceTypeNotFoundException {
 		resourceTypeDomainService.removeResourceTypeRelation(resourceTypeRelationId);
 	}
 
@@ -151,7 +190,7 @@ public class RelationEditor {
 
 		// ... but we can also add those applications, which are already consumed by another resource of our
 		// own resoure group as long as it is not connected to our release...
-		Set<ResourceGroupEntity> applicationsFromOtherResourcesInGroup = new HashSet<ResourceGroupEntity>();
+		Set<ResourceGroupEntity> applicationsFromOtherResourcesInGroup = new HashSet<>();
 		resource = entityManager.find(ResourceEntity.class, resource.getId());
 		for (ResourceEntity r : resource.getResourceGroup().getResources()) {
 			if (!resource.equals(r)) {

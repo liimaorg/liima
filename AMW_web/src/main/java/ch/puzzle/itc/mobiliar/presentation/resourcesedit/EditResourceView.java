@@ -146,6 +146,7 @@ public class EditResourceView implements Serializable {
      * To be called by JSF (by viewParameter)
      */
     public void setResourceIdFromParam(Integer resourceIdFromParam) {
+        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "edit resources");
         this.resourceIdFromParam = resourceIdFromParam;
         if (resource == null || !resource.getId().equals(resourceIdFromParam)) {
             resource = resourceLocator.getResourceWithGroupAndRelatedResources(resourceIdFromParam);
@@ -155,8 +156,6 @@ public class EditResourceView implements Serializable {
                 relativeApplicationServer = null;
             }
             resourceType = null;
-
-            permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, null, Action.READ, resource.getResourceGroup(), null, "edit resources");
 
             this.canEditResourceType = permissionBoundary.hasPermission(Permission.RESOURCETYPE, Action.READ);
             this.canGenerateTestConfiguration = permissionBoundary.hasPermission(Permission.RESOURCE_TEST_GENERATION, sessionContext.getCurrentContext(), Action.READ, resource, null);
@@ -175,13 +174,12 @@ public class EditResourceView implements Serializable {
      * @param resourceTypeIdFromParam
      */
     public void setResourceTypeIdFromParam(Integer resourceTypeIdFromParam) {
+        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, Action.READ, "edit resource types");
         this.resourceTypeIdFromParam = resourceTypeIdFromParam;
         // Only execute if resource has not been set...
         if (resourceType == null || !resourceType.getId().equals(resourceTypeIdFromParam)) {
             resource = null;
             resourceType = resourceTypeLocator.getResourceType(resourceTypeIdFromParam);
-
-            permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.READ, null,  resourceType, "edit resource types");
 
             // this just disables "Go to > Resource type" in dropdown
             this.canEditResourceType = false;
