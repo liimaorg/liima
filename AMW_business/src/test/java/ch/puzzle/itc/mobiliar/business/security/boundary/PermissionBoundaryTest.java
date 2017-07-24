@@ -457,10 +457,30 @@ public class PermissionBoundaryTest {
         resource.setResourceGroup(rg);
         ResourceTypeEntity type = new ResourceTypeEntity();
         resource.setResourceType(type);
+        when(permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, UPDATE, rg, type)).thenReturn(true);
         // when
         permissionBoundary.canCopyFromResource(resource);
         // then
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, UPDATE, rg, type);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceWithCorrectParametersOnCanCopyFromSpecificResource() {
+        // given
+        ResourceEntity resource = new ResourceEntityBuilder().build();
+        ResourceGroupEntity rg = new ResourceGroupEntity();
+        resource.setResourceGroup(rg);
+        ResourceTypeEntity type = new ResourceTypeEntity();
+        resource.setResourceType(type);
+        ResourceEntity originResource = new ResourceEntityBuilder().build();
+        ResourceGroupEntity org = new ResourceGroupEntity();
+        originResource.setResourceGroup(org);
+        originResource.setResourceType(type);
+        when(permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, UPDATE, rg, type)).thenReturn(true);
+        // when
+        permissionBoundary.canCopyFromSpecificResource(resource, org);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, UPDATE, rg, type);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, READ, org, type);
     }
 
     @Test

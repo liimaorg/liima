@@ -69,7 +69,7 @@
                                 <table class="addRes">
                                     <tr>
                                         <td><h:commandLink value="Copy from this resource"
-                                                           rendered="#{copyResourceDataProvider.canCopyResource}"
+                                                           rendered="#{copyResourceDataProvider.allowedToCopyFromThatResource(resourceGroup)}"
                                                            action="#{copyResourceDataProvider.copyFromResource(resourceGroup.id)}"
                                                            onclick="if(confirmLeave(event)){showLoader(); return true;} else{return false;};">
                                         </h:commandLink></td>

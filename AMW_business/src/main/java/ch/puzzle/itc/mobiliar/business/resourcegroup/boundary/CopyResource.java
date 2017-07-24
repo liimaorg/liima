@@ -112,7 +112,7 @@ public class CopyResource {
 		ResourceEntity targetResource = commonDomainService.getResourceEntityById(targetResourceId);
 		ResourceEntity originResource = commonDomainService.getResourceEntityById(originResourceId);
 
-		if(!permissionBoundary.canCopyFromResource(originResource)){
+		if(!permissionBoundary.canCopyFromSpecificResource(originResource, originResource.getResourceGroup())){
 			throw new NotAuthorizedException("Permission Denied");
 		}
 
@@ -130,7 +130,7 @@ public class CopyResource {
 
 		ResourceEntity originResource = commonDomainService.getResourceEntityByGroupAndRelease(resourceGroup.getId(),
 					originRelease.getId());
-		if(!permissionBoundary.canCopyFromResource(originResource)){
+		if(!permissionBoundary.canCopyFromSpecificResource(originResource, originResource.getResourceGroup())){
 			throw new NotAuthorizedException("Permission Denied");
 		}
 		return copyResourceDomainService.createReleaseFromOriginResource(originResource, targetRelease, actingOwner);

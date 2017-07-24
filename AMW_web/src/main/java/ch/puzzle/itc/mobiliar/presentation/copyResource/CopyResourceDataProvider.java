@@ -31,6 +31,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CopyResource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -235,7 +236,16 @@ public class CopyResourceDataProvider implements Serializable {
     public boolean isCanCopyResource() {
         return permissionBoundary.canCopyFromResource(resource.getResource()) && (resource.getResource() != null);
     }
+
 	public boolean isCanCopyFromPredecessorResource() {
 		return permissionBoundary.canCopyFromResource(resource.getResource()) && (resource.getResource() != null);
+	}
+
+	public boolean allowedToCopyFromThatResource(ResourceGroup originResourceGroup) {
+		return permissionBoundary.canCopyFromSpecificResource(resource.getResource(), originResourceGroup.getEntity()) && (resource.getResource() != null);
+	}
+
+	public boolean allowedToCopyFromThatPredecessorResource(ResourceGroup originResourceGroup) {
+		return permissionBoundary.canCopyFromSpecificResource(resource.getResource(), originResourceGroup.getEntity()) && (resource.getResource() != null);
 	}
 }
