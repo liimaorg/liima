@@ -1153,5 +1153,153 @@ public class PermissionServiceTest {
 		// then
 		verify(permissionService.permissionRepository, times(1)).getDeployableRoles();
 	}
+
+	@Test
+	public void shouldSucceedIfAPermissionCheckIsDoneWithoutContextAndPermissionIsGrantedToRoleOnSpecificContext() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.UPDATE);
+		res.setContext(envC);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		// when
+		boolean result = permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceGroup, null);
+
+		// then
+		Assert.assertTrue(result);
+	}
+
+	@Test
+	public void shouldSucceedIfAPermissionCheckIsDoneWithoutContextAndPermissionIsGrantedToUserOnSpecificContext() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.UPDATE);
+		res.setContext(envC);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.RESOURCE.name());
+		res.setPermission(perm);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res));
+
+		// when
+		boolean result = permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceGroup, null);
+
+		// then
+		Assert.assertTrue(result);
+	}
+
+
+	@Test
+	public void shouldFailIfAPermissionIsRequiredOnAllContextsButOnlyGrantedToGroupOnASpecificContext() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		res.setContext(envC);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE_PROPERTY_DECRYPT, res)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		// when
+		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
+
+		// then
+		Assert.assertFalse(result);
+	}
+
+	@Test
+	public void shouldFailIfAPermissionIsRequiredOnAllContextsButOnlyGrantedToUserOnASpecificContext() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		res.setContext(envC);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res.setPermission(perm);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res));
+
+		// when
+		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
+
+		// then
+		Assert.assertFalse(result);
+	}
+
+	@Test
+	public void shouldSucceedIfAPermissionIsRequiredOnAllContextsAndGrantedToRoleOnAllContexts() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE_PROPERTY_DECRYPT, res)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		// when
+		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
+
+		// then
+		Assert.assertTrue(result);
+	}
+
+	@Test
+	public void shouldSucceedIfAPermissionIsRequiredOnAllContextsAndGrantedToUserOnAllContext() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res.setPermission(perm);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res));
+
+		// when
+		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
+
+		// then
+		Assert.assertTrue(result);
+	}
 	
 }

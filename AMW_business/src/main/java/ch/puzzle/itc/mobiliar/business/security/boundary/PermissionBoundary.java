@@ -336,6 +336,22 @@ public class PermissionBoundary implements Serializable {
                 permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
     }
 
+    public boolean canToggleDecryptionOfResource(Integer resourceEntityId ) {
+        if (resourceEntityId == null) {
+            return false;
+        }
+        ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceEntityId);
+        return permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resource.getResourceGroup(), null);
+    }
+
+    public boolean canToggleDecryptionOfResourceType(Integer resourceTypeEntityId) {
+        if (resourceTypeEntityId == null) {
+            return false;
+        }
+        ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeEntityId);
+        return permissionService.hasPermissionOnAllContext(Permission.RESOURCETYPE_PROPERTY_DECRYPT, Action.ALL, null, resourceType);
+    }
+
     public boolean hasPermissionToDeploy() {
         return permissionService.hasPermissionToDeploy();
     }

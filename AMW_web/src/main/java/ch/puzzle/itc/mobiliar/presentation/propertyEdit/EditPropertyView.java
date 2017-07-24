@@ -28,6 +28,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -70,23 +71,6 @@ public class EditPropertyView implements Serializable {
 	@Setter
 	private Integer relationId;
 
-	public void setResourceTypeIdFromParam(Integer resourceTypeIdFromParam) {
-		this.resourceTypeIdFromParam = resourceTypeIdFromParam;
-		this.resourceIdFromParam = null;
-		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
-        canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceType(resourceTypeIdFromParam,
-                isTesting());
-
-	}
-
-	public void setResourceIdFromParam(Integer resourceIdFromParam) {
-		this.resourceIdFromParam = resourceIdFromParam;
-		this.resourceTypeIdFromParam = null;
-		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
-        canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam,
-                isTesting());
-	}
-
 	@Getter
 	private Integer resourceTypeIdFromParam;
 
@@ -106,6 +90,8 @@ public class EditPropertyView implements Serializable {
 
 	private boolean canEditProperties;
 
+	private boolean canDecryptProperties;
+
     private List<PropertyTagEntity> globalPropertyTags;
 
     private int propertyDescriptorHashBeforeModification = 0;
@@ -122,7 +108,6 @@ public class EditPropertyView implements Serializable {
 		this.testing = isTesting;
 	}
 
-
 	@PostConstruct
 	public void init() {
 		customPropertyType = new PropertyTypeEntity();
@@ -131,6 +116,25 @@ public class EditPropertyView implements Serializable {
 		propertyTypes = propertyEditor.getPropertyTypes();
         globalPropertyTags = propertyTagEditor.getAllGlobalPropertyTags();
 		propertyTypes.add(0, customPropertyType);
+	}
+
+	public void setResourceTypeIdFromParam(Integer resourceTypeIdFromParam) {
+		this.resourceTypeIdFromParam = resourceTypeIdFromParam;
+		this.resourceIdFromParam = null;
+		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
+		canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceType(resourceTypeIdFromParam,
+				isTesting());
+		canDecryptProperties = permissionBoundary.canToggleDecryptionOfResourceType(resourceTypeIdFromParam);
+
+	}
+
+	public void setResourceIdFromParam(Integer resourceIdFromParam) {
+		this.resourceIdFromParam = resourceIdFromParam;
+		this.resourceTypeIdFromParam = null;
+		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
+		canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam,
+				isTesting());
+		canDecryptProperties = permissionBoundary.canToggleDecryptionOfResource(resourceIdFromParam);
 	}
 
     /**
@@ -191,6 +195,10 @@ public class EditPropertyView implements Serializable {
 
 	public boolean canEditProperties() {
 		return this.canEditProperties;
+	}
+
+	public boolean canDecryptProperties() {
+		return this.canDecryptProperties;
 	}
 
 	@Setter

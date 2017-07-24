@@ -173,6 +173,13 @@ public class PermissionService implements Serializable {
                 hasUserRestriction(permission.name(), null, null, null, null);
     }
 
+    /**
+     * Checks if a user has a role or a restriction with a certain Permission and Action
+     * Useful for displaying/hiding navigation elements in views
+     *
+     * @param permission
+     * @return
+     */
     public boolean hasPermission(Permission permission, Action action) {
         return hasRole(permission.name(), null, action, null, null) ||
                 hasUserRestriction(permission.name(), null, action, null, null);
@@ -183,10 +190,36 @@ public class PermissionService implements Serializable {
                 hasUserRestriction(permission.name(), null, action, null, resourceType);
     }
 
+    /**
+     * Checks if a user has a role or a restriction with a certain Permission
+     *
+     * @param permission the required Permission
+     * @param context the requested Context (null = irrelevant)
+     * @param action the required Action
+     * @param resourceGroup the requested resourceGroup (null = irrelevant)
+     * @param resourceType the requested resourceType (null = irrelevant)
+     * @return
+     */
     public boolean hasPermission(Permission permission, ContextEntity context, Action action,
                                  ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
         return hasRole(permission.name(), context, action, resourceGroup, resourceType) ||
                 hasUserRestriction(permission.name(), context, action, resourceGroup, resourceType);
+    }
+
+    /**
+     * Checks if a user has a role or a restriction with a certain Permission on ALL Contexts
+     * => context MUST NOT be restricted to a specific environment
+     *
+     * @param permission the required Permission
+     * @param action the required Action
+     * @param resourceGroup the requested resourceGroup (null = irrelevant)
+     * @param resourceType the requested resourceType (null = irrelevant)
+     * @return
+     */
+    public boolean hasPermissionOnAllContext(Permission permission, Action action,
+                                             ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
+        return hasRoleOnAllContext(permission.name(), action, resourceGroup, resourceType) ||
+                hasUserRestrictionOnAllContext(permission.name(), action, resourceGroup, resourceType);
     }
 
     /**
@@ -287,6 +320,7 @@ public class PermissionService implements Serializable {
             }
 
             for (Map.Entry<String, List<RestrictionDTO>> entry : entries) {
+                // context null means no check on context required - so any context is ok
                 if (context == null) {
                     matchPermissions(permissionName, action, resourceGroup, resourceType, allowedRoles, entry);
                 } else {
@@ -302,9 +336,31 @@ public class PermissionService implements Serializable {
         return false;
     }
 
+    private boolean hasRoleOnAllContext(String permissionName, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
+        if (sessionContext != null) {
+            List<String> allowedRoles = new ArrayList<>();
+            Set<Map.Entry<String, List<RestrictionDTO>>> entries = getPermissions().entrySet();
+
+            if (resourceType == null && resourceGroup != null) {
+                resourceType = resourceGroup.getResourceType();
+            }
+
+            for (Map.Entry<String, List<RestrictionDTO>> entry : entries) {
+                matchPermissionsAndContext(permissionName, action, null, resourceGroup, resourceType, allowedRoles, entry);
+            }
+            for (String roleName : allowedRoles) {
+                if (sessionContext.isCallerInRole(roleName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Checks if the logged-in user has a Restriction with the required Permission for a specific Context, Action,
      * ResourceGroup and/or ResourceType
+     * => will skip context check if context is null
      *
      * @param permissionName
      * @param context
@@ -321,7 +377,37 @@ public class PermissionService implements Serializable {
         if (!userRestrictions.get(getCurrentUserName()).isEmpty()) {
             for (RestrictionEntity restrictionEntity : userRestrictions.get(getCurrentUserName())) {
                 if (restrictionEntity.getPermission().getValue().equals(permissionName)) {
-                    return hasRequiredUserRestriction(context, action, resourceGroup, resourceType, restrictionEntity);
+                    // context null means no check on context required - so any context is ok
+                    if (context == null) {
+                        return hasRequiredUserRestriction(action, resourceGroup, resourceType, restrictionEntity);
+                    }
+                    return hasRequiredUserRestrictionOnAllContext(context, action, resourceGroup, resourceType, restrictionEntity);
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the logged-in user has a Restriction with the required Permission for a specific Action, ResourceGroup
+     * and/or ResourceType ON ALL context
+     * => will return false if the user restriction is restricted to a specific context
+     *
+     * @param permissionName
+     * @param action
+     * @param resourceGroup
+     * @param resourceType
+     * @return
+     */
+    private boolean hasUserRestrictionOnAllContext(String permissionName, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
+        if (sessionContext == null) {
+            return false;
+        }
+        getUserRestrictions(getCurrentUserName());
+        if (!userRestrictions.get(getCurrentUserName()).isEmpty()) {
+            for (RestrictionEntity restrictionEntity : userRestrictions.get(getCurrentUserName())) {
+                if (restrictionEntity.getPermission().getValue().equals(permissionName)) {
+                    return hasRequiredUserRestrictionOnAllContext(null, action, resourceGroup, resourceType, restrictionEntity);
                 }
             }
         }
@@ -404,16 +490,32 @@ public class PermissionService implements Serializable {
      * @param restriction
      * @return
      */
-    private boolean hasRequiredUserRestriction(ContextEntity context, Action action, ResourceGroupEntity resource,
-                                                  ResourceTypeEntity resourceType, RestrictionEntity restriction) {
+    private boolean hasRequiredUserRestrictionOnAllContext(ContextEntity context, Action action, ResourceGroupEntity resource,
+                                                           ResourceTypeEntity resourceType, RestrictionEntity restriction) {
         if (hasPermissionForContext(restriction, context) && hasPermissionForAction(restriction, action) &&
                 hasPermissionForResource(restriction, resource) && hasPermissionForResourceType(restriction, resourceType)
                 && hasPermissionForDefaultResourceType(restriction, resourceType)) {
             return true;
         } else if (context != null && context.getParent() != null) {
-            hasRequiredUserRestriction(context.getParent(), action, resource, resourceType, restriction);
+            hasRequiredUserRestrictionOnAllContext(context.getParent(), action, resource, resourceType, restriction);
         }
         return false;
+    }
+
+    /**
+     * Checks if a User is allowed to perform a certain Action with a specific ResourceGroup/ResourceType
+     *
+     * @param action
+     * @param resource
+     * @param resourceType
+     * @param restriction
+     * @return
+     */
+    private boolean hasRequiredUserRestriction(Action action, ResourceGroupEntity resource,
+                                               ResourceTypeEntity resourceType, RestrictionEntity restriction) {
+        return (hasPermissionForAction(restriction, action) && hasPermissionForResource(restriction, resource)
+                && hasPermissionForResourceType(restriction, resourceType)
+                && hasPermissionForDefaultResourceType(restriction, resourceType));
     }
 
     /**
@@ -425,7 +527,8 @@ public class PermissionService implements Serializable {
      * @return
      */
     private boolean hasPermissionForContext(RestrictionEntity restriction, ContextEntity context) {
-        return restriction.getContext() == null || context.getId().equals(restriction.getContext().getId());
+        return restriction.getContext() == null ||
+                (context != null && restriction.getContext().getId().equals(context.getId()));
     }
 
     /**
