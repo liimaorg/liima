@@ -189,7 +189,7 @@ public class EditResourceViewTest {
 		} catch (NullPointerException npe) {}
 		finally {
 			//then
-			verify(permissionBoundary, times(1)).checkPermissionAndFireException(Permission.RESOURCE, null, READ, group, null, "edit resources");
+			verify(permissionBoundary, times(1)).checkPermissionAndFireException(Permission.RESOURCE, READ, "edit resources");
 			verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCETYPE, Action.READ);
 			verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCE_TEST_GENERATION, sessionContext.getCurrentContext(), Action.READ, r, null);
 		}
