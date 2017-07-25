@@ -41,7 +41,6 @@ import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -116,12 +115,6 @@ public class EditResourceView implements Serializable {
     @Getter
     private boolean canShowDeploymentLink;
 
-    @PostConstruct
-    public void init() {
-        this.canEditResourceType = permissionBoundary.hasPermission(Permission.RESOURCETYPE, Action.READ);
-        this.canGenerateTestConfiguration = permissionBoundary.hasPermission(Permission.TEST_GENERATION);
-    }
-
     public void setContextIdViewParam(Integer contextIdViewParam) {
         this.contextIdViewParam = contextIdViewParam;
         // initialize context
@@ -164,7 +157,10 @@ public class EditResourceView implements Serializable {
             }
             resourceType = null;
 
-            canEditSoftlinkId = isSoftlinkEditable(resource);
+            this.canEditResourceType = permissionBoundary.hasPermission(Permission.RESOURCETYPE, Action.READ);
+            this.canGenerateTestConfiguration = permissionBoundary.hasPermission(Permission.RESOURCE_TEST_GENERATION, sessionContext.getCurrentContext(), Action.READ, resource, null);
+
+            canEditSoftlinkId = isSoftlinkEditable(resource, sessionContext.getCurrentContext());
             canShowSoftlinkField = sessionContext.getIsGlobal() && hasProvidableSoftlinkSuperType(resource);
             canShowDeploymentLink = isResourceOrTypeDeployable(resource.getResourceType());
 
@@ -178,13 +174,16 @@ public class EditResourceView implements Serializable {
      * @param resourceTypeIdFromParam
      */
     public void setResourceTypeIdFromParam(Integer resourceTypeIdFromParam) {
-        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, Action.READ,
-                "edit resource types");
+        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, Action.READ, "edit resource types");
         this.resourceTypeIdFromParam = resourceTypeIdFromParam;
         // Only execute if resource has not been set...
         if (resourceType == null || !resourceType.getId().equals(resourceTypeIdFromParam)) {
             resource = null;
             resourceType = resourceTypeLocator.getResourceType(resourceTypeIdFromParam);
+
+            // this just disables "Go to > Resource type" in dropdown
+            this.canEditResourceType = false;
+            this.canGenerateTestConfiguration = false;
 
             canEditSoftlinkId = false;
             canShowSoftlinkField = false;
@@ -323,10 +322,10 @@ public class EditResourceView implements Serializable {
         return sessionContext.getIsGlobal();
     }
 
-    private boolean isSoftlinkEditable(ResourceEntity resourceEntity) {
+    private boolean isSoftlinkEditable(ResourceEntity resourceEntity, ContextEntity context) {
         return isEditResource() && (foreignableBoundary
                 .isModifiableByOwner(ForeignableOwner.getSystemOwner(), resourceEntity)
-                && permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF));
+                && permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity, null));
     }
 
     private boolean isResourceOrTypeDeployable(ResourceTypeEntity resourceTypeEntity) {

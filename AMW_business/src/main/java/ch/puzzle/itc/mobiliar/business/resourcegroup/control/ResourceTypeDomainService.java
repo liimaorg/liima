@@ -34,6 +34,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import org.apache.commons.lang.StringUtils;
 
@@ -65,6 +66,9 @@ public class ResourceTypeDomainService {
 
 	@Inject
 	private CommonDomainService commonService;
+
+	@Inject
+	private PermissionService permissionService;
 
 	@Inject
 	private ContextDomainService context;
@@ -216,9 +220,9 @@ public class ResourceTypeDomainService {
 		return entityManager.createQuery(q);
 	}
 
-	@HasPermission(permission = Permission.ADD_RELATED_RESOURCETYPE)
 	public void createResourceTypeRelation(Integer resTypeId, Integer relResTypeId, String identifier) throws ResourceTypeNotFoundException {
 		ResourceTypeEntity resType = commonService.getResourceTypeEntityById(resTypeId);
+		permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, resType, null);
 		ResourceTypeEntity relResType = commonService.getResourceTypeEntityById(relResTypeId);
 		ResourceRelationTypeEntity relation = new ResourceRelationTypeEntity();
 		relation.setResourceTypes(resType, relResType);
@@ -227,13 +231,12 @@ public class ResourceTypeDomainService {
 		entityManager.persist(relation);
 	}
 
-	@HasPermission(permission = Permission.DELETE_CONS_OR_PROVIDED_RELATION)
 	public void removeResourceTypeRelation(Integer relResTypeId) throws ResourceTypeNotFoundException {
 		ResourceRelationTypeEntity resRelType = getResourceRelationTypeById(relResTypeId);
-
+		permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, resRelType.getResourceTypeA(), null);
+		permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, resRelType.getResourceTypeB(), null);
 		resRelType.getResourceTypeA().getResourceRelationTypesA().remove(resRelType);
 		resRelType.getResourceTypeB().getResourceRelationTypesB().remove(resRelType);
-		
 		entityManager.remove(resRelType);
 	}
 

@@ -66,7 +66,8 @@ public class PermissionServiceTest {
 	private ContextEntity parent;
 	private ContextEntity envC;
 	private ContextEntity envZ;
-	private ResourceGroupEntity anotherResourceGroup;
+	private ResourceGroupEntity asResourceGroup;
+	private ResourceGroupEntity appResourceGroup;
 
 	private Principal principal;
 
@@ -90,10 +91,12 @@ public class PermissionServiceTest {
 			}
 		};
 
-		// APPLICATION
-		anotherResourceGroup = new ResourceGroupEntity();
-		anotherResourceGroup.setId(321);
-		anotherResourceGroup.setResourceType(new ResourceTypeEntityBuilder().id(1).parentResourceType(null).build());
+		asResourceGroup = new ResourceGroupEntity();
+		asResourceGroup.setResourceType(ResourceTypeEntityBuilder.APPLICATION_SERVER_TYPE);
+
+		appResourceGroup = new ResourceGroupEntity();
+		appResourceGroup.setId(321);
+		appResourceGroup.setResourceType(ResourceTypeEntityBuilder.APPLICATION_TYPE);
 	}
 
 	@Test
@@ -165,16 +168,16 @@ public class PermissionServiceTest {
 	}
 
     @Test
-	public void hasPermissionToDeleteResourceRelationWhenUserIsConfigAdminAndResourceIsInstanceOfDefaultResourceType(){
+	public void hasPermissionToDeleteResourceRelationWhenUserHasResourceUpdatePermissionAndResourceIsInstanceOfDefaultResourceType(){
 		// given
-        ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
+        ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", appResourceGroup, null);
 		
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_EVERY_RELATED_RESOURCE, res)));
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -185,16 +188,16 @@ public class PermissionServiceTest {
 	}
 	
 	@Test
-	public void hasPermissionToDeleteResourceRelationWhenUserIsConfigAdminAndResourceIsInstanceOfNotDefaultResourceType(){
+	public void hasPermissionToDeleteResourceRelationWhenUserHasResourceUpdatePermissionAndResourceIsInstanceOfNotDefaultResourceType(){
 		// given
         ResourceEntity ws = resourceEntityBuilder.mockResourceEntity("ws", null, "webservice", null);
 
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
-		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_EVERY_RELATED_RESOURCE, res)));
+		RestrictionEntity upd = new RestrictionEntity();
+		upd.setAction(Action.UPDATE);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, upd)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -205,16 +208,16 @@ public class PermissionServiceTest {
 	}
 
     @Test
-    public void hasPermissionToDeleteResourceRelationWhenResourceTypeIsNull() {
+    public void hasPermissionToDeleteResourceRelationWhenUserHasResourceUpdatePermissionAndResourceTypeIsNull() {
         // given
         ResourceEntity resourceWithoutResourceType = ResourceFactory.createNewResource("Orphan");
 
         when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
-		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_EVERY_RELATED_RESOURCE, res)));
+		RestrictionEntity upd = new RestrictionEntity();
+		upd.setAction(Action.UPDATE);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, upd)));
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
@@ -228,7 +231,7 @@ public class PermissionServiceTest {
 	 * Screen AppServer: remove node relation
 	 */
 	@Test
-	public void hasPermissionToDeleteResourceRelationWhenUserIsServerAdminAndResourceIsInstanceOfAppServerResType(){
+	public void hasPermissionToDeleteResourceRelationWhenUserHasResourceUpdatePermissionAndResourceIsInstanceOfAppServerResType(){
 		// given
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
@@ -237,7 +240,7 @@ public class PermissionServiceTest {
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_NODE_RELATION, res)));
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -248,7 +251,7 @@ public class PermissionServiceTest {
 	}
 	
 	@Test
-	public void hasPermissionToDeleteResourceRelationWhenUserIsServerAdminAndResourceIsNotInstanceOfNodeResType(){
+	public void hasPermissionToDeleteResourceRelationWhenUserHasResourceUpdatePermissionAndResourceIsNotInstanceOfNodeResType(){
 		// given
 		ResourceEntity node = resourceEntityBuilder.mockNodeEntity("node", null,null);
 
@@ -256,28 +259,28 @@ public class PermissionServiceTest {
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_NODE_RELATION, res)));
+		res.setAction(Action.UPDATE);
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
 		boolean result = permissionService.hasPermissionToDeleteRelation(node, new ContextEntity());
 
 		// then
-		Assert.assertFalse(result);
+		Assert.assertTrue(result);
 	}
 	
 	@Test
 	public void hasPermissionToDeleteResourceRelationWhenUserIsAppDeveloperAndResourceIsInstanceOfApplicationResType(){
 		// given
-        ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
+        ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", appResourceGroup, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_CONS_OR_PROVIDED_RELATION, res)));
+		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -290,7 +293,7 @@ public class PermissionServiceTest {
 	@Test
 	public void hasPermissionToDeleteResourceRelationWhenUserHasPermissionToEditAllResourcesOnSpecificEnvironment(){
 		// given
-		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
+		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", appResourceGroup, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
@@ -311,14 +314,14 @@ public class PermissionServiceTest {
 	@Test
 	public void hasPermissionToDeleteResourceRelationWhenUserHasPermissionToEditSpecificResourceGroupOnAllEnvironments(){
 		// given
-		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", anotherResourceGroup, null);
+		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", appResourceGroup, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.UPDATE);
-		res.setResourceGroup(anotherResourceGroup);
+		res.setResourceGroup(appResourceGroup);
 		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
@@ -333,7 +336,7 @@ public class PermissionServiceTest {
 	@Test
 	public void hasNoPermissionToDeleteResourceRelationWhenUserHasPermissionToEditAllResourcesOnAnotherEnvironment(){
 		// given
-		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
+		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", appResourceGroup, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
@@ -354,14 +357,18 @@ public class PermissionServiceTest {
 	@Test
 	public void hasNoPermissionToDeleteResourceRelationWhenUserHasPermissionToEditSpecificResourceGroupOnAllEnvironments(){
 		// given
-		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
+		ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", appResourceGroup, null);
+
+		ResourceGroupEntity allowedApResourceGroup = new ResourceGroupEntity();
+		allowedApResourceGroup.setId(4321);
+		allowedApResourceGroup.setResourceType(new ResourceTypeEntityBuilder().id(1).parentResourceType(null).build());
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.UPDATE);
-		res.setResourceGroup(anotherResourceGroup);
+		res.setResourceGroup(allowedApResourceGroup);
 		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
@@ -373,7 +380,7 @@ public class PermissionServiceTest {
 	}
 	
 	@Test
-	public void hasNoPermissionToDeleteResourceRelationWhenUserIsAppDeveloperAndResourceIsNotInstanceOfApplicationResType(){
+	public void hasNoPermissionToDeleteResourceRelationWhenUserHasNoReourceUpdatePermissionAndResourceIsNotInstanceOfApplicationResType(){
 		// given
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
@@ -382,7 +389,7 @@ public class PermissionServiceTest {
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.DELETE_CONS_OR_PROVIDED_RELATION, res)));
+		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCETYPE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -393,7 +400,7 @@ public class PermissionServiceTest {
 	}
 
     @Test
-    public void hasPermissionToDeleteResourceRelationWhenResourceIsRuntimeType(){
+    public void hasPermissionToDeleteResourceRelationWhenUserHasPermissionToUpdateResourceAndResourceIsRuntimeType(){
         // given
         ResourceEntity runtime = resourceEntityBuilder.mockRuntimeEntity("EAP6", null, null);
 
@@ -402,7 +409,7 @@ public class PermissionServiceTest {
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.SELECT_RUNTIME, res)));
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
@@ -413,7 +420,7 @@ public class PermissionServiceTest {
     }
 
     @Test
-    public void hasPermissionToAddResourceRelationWhenUserIsConfigAdmin() {
+    public void hasPermissionToAddResourceRelationWhenUserHasPermissionToUpdateResource() {
         // given
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
@@ -422,16 +429,14 @@ public class PermissionServiceTest {
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_EVERY_RELATED_RESOURCE, res)));
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
-        boolean consumed = permissionService.hasPermissionToAddRelation(as, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(as, true, new ContextEntity());
+        boolean canAdd = permissionService.hasPermissionToAddRelation(as, new ContextEntity());
 
         // then
-        Assert.assertTrue(consumed);
-        Assert.assertTrue(provided);
+        Assert.assertTrue(canAdd);
     }
 
     @Test
@@ -446,88 +451,80 @@ public class PermissionServiceTest {
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_EVERY_RELATED_RESOURCE, res)));
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
-        boolean consumed = permissionService.hasPermissionToAddRelation(resourceWithoutResourceType, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(resourceWithoutResourceType, true, new ContextEntity());
+        boolean canAdd = permissionService.hasPermissionToAddRelation(resourceWithoutResourceType, new ContextEntity());
 
         // then
-        Assert.assertFalse(consumed);
-        Assert.assertFalse(provided);
+        Assert.assertFalse(canAdd);
     }
 
     @Test
-    public void hasPermissionToAddResourceRelationWhenUserIsServeAdminAndResourceIsInstanceOfApplicationServerResType() {
+    public void hasPermissionToAddResourceRelationWhenUserHasResourceUpdatePermissionForApplicationServerResTypeAndResourceIsInstanceOfApplicationServerResType() {
         // given
-        ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
+        ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", asResourceGroup, null, null);
 
         when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_NODE_RELATION, res)));
+		res.setResourceType(ResourceTypeEntityBuilder.APPLICATION_SERVER_TYPE);
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
-        boolean consumed = permissionService.hasPermissionToAddRelation(as, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(as, true, new ContextEntity());
+        boolean canAdd= permissionService.hasPermissionToAddRelation(as, new ContextEntity());
 
         // then
-        Assert.assertTrue(consumed);
-        Assert.assertTrue(provided);
+        Assert.assertTrue(canAdd);
     }
 
     @Test
-    public void hasNoPermissionToAddResourceRelationWhenUserIsServeAdminAndResourceIsInstanceOfApplicationResType() {
+    public void hasNoPermissionToAddResourceRelationWhenUserUserHasResourceUpdatePermissionForApplicationServerResTypeAndResourceIsInstanceOfApplicationResType() {
         // given
-        ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
+        ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", appResourceGroup, null);
 
         when(sessionContext.isCallerInRole(SERVER_ADMIN)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_NODE_RELATION, res)));
+		res.setResourceType(ResourceTypeEntityBuilder.APPLICATION_SERVER_TYPE);
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
-        boolean consumed = permissionService.hasPermissionToAddRelation(app, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(app, true, new ContextEntity());
+        boolean canAdd = permissionService.hasPermissionToAddRelation(app, new ContextEntity());
 
         // then
-        Assert.assertFalse(consumed);
-        Assert.assertFalse(provided);
+        Assert.assertFalse(canAdd);
     }
 
     @Test
-	public void hasPermissionToAddResourceRelationWhenUserIsAppDeveloperAndResourceIsInstanceOfApplicationResType(){
+	public void hasPermissionToAddResourceRelationWhenUserHasPermissionToUpdateResourceAndResourceIsInstanceOfApplicationResType(){
 		// given
-        ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", null, null);
+        ResourceEntity app = resourceEntityBuilder.mockApplicationEntity("app", appResourceGroup, null);
 
 		when(sessionContext.isCallerInRole(APP_DEVELOPER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
-		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_RELATED_RESOURCE, res),
-				new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_AS_CONSUMED_RESOURCE, res),
-				new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_AS_PROVIDED_RESOURCE, res)));
+		RestrictionEntity upd = new RestrictionEntity();
+		upd.setAction(Action.UPDATE);
+		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, upd)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
-        boolean consumed = permissionService.hasPermissionToAddRelation(app, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(app, true, new ContextEntity());
+        boolean canAdd = permissionService.hasPermissionToAddRelation(app, new ContextEntity());
 
 		// then
-		Assert.assertTrue(consumed);
-        Assert.assertTrue(provided);
+		Assert.assertTrue(canAdd);
 	}
 
     @Test
-    public void hasNoPermissionToAddResourceRelationWhenUserIsAppDeveloperAndResourceIsNotInstanceOfApplicationResType() {
+    public void hasNoPermissionToAddResourceRelationWhenUserUserHasNoPermissionToUpdateResourceAndResourceIsNotInstanceOfApplicationResType() {
         // given
         ResourceEntity as = resourceEntityBuilder.mockAppServerEntity("as", null, null, null);
 
@@ -535,17 +532,15 @@ public class PermissionServiceTest {
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
         myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.ADD_RELATED_RESOURCE, res)));
+		res.setAction(Action.READ);
+		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
         permissionService.rolesWithRestrictions = myRoles;
 
         // when
-        boolean consumed = permissionService.hasPermissionToAddRelation(as, false, new ContextEntity());
-        boolean provided = permissionService.hasPermissionToAddRelation(as, true, new ContextEntity());
+        boolean canAdd = permissionService.hasPermissionToAddRelation(as, new ContextEntity());
 
         // then
-        Assert.assertFalse(consumed);
-        Assert.assertFalse(provided);
+        Assert.assertFalse(canAdd);
     }
 
     @Test
@@ -618,7 +613,7 @@ public class PermissionServiceTest {
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.UPDATE);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.TEMPLATE_RESOURCE, res)));
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE_TEMPLATE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -660,7 +655,7 @@ public class PermissionServiceTest {
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.UPDATE);
 		res.setResourceTypePermission(ResourceTypePermission.ANY);
-		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.TEMPLATE_RESOURCETYPE, res)));
+		myRoles.put(APP_DEVELOPER, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCETYPE_TEMPLATE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -788,7 +783,7 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		// when
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, anotherResourceGroup);
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, appResourceGroup);
 		boolean resCAllowed = permissionService.hasPermissionForDeploymentOnContext(envC, allowedResourceGroup);
 		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, allowedResourceGroup);
 
@@ -831,7 +826,7 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		// when
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, anotherResourceGroup);
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, appResourceGroup);
 		boolean resCAllowed = permissionService.hasPermissionForDeploymentOnContext(envC, allowedResourceGroup);
 		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, allowedResourceGroup);
 
@@ -868,7 +863,7 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		// when
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, anotherResourceGroup);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, appResourceGroup);
 		boolean resZAllowed = permissionService.hasPermissionForDeploymentOnContext(envZ, resourceGroup);
 		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, resourceGroup);
 
@@ -904,7 +899,7 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		// when
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, anotherResourceGroup);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, appResourceGroup);
 		boolean resZAllowed = permissionService.hasPermissionForDeploymentOnContext(envZ, resourceGroup);
 		boolean resCAllowed = permissionService.hasPermissionForDeploymentOnContext(envC, resourceGroup);
 
@@ -936,8 +931,8 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		// when
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, anotherResourceGroup);
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, anotherResourceGroup);
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, appResourceGroup);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, appResourceGroup);
 
 		// then
 		Assert.assertTrue(resC);
@@ -966,10 +961,10 @@ public class PermissionServiceTest {
 		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(false);
 
 		// when
-		boolean resGlobal = permissionService.hasPermissionForDeploymentOnContext(global, anotherResourceGroup);
-		boolean resParent = permissionService.hasPermissionForDeploymentOnContext(parent, anotherResourceGroup);
-		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, anotherResourceGroup);
-		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, anotherResourceGroup);
+		boolean resGlobal = permissionService.hasPermissionForDeploymentOnContext(global, appResourceGroup);
+		boolean resParent = permissionService.hasPermissionForDeploymentOnContext(parent, appResourceGroup);
+		boolean resC = permissionService.hasPermissionForDeploymentOnContext(envC, appResourceGroup);
+		boolean resZ = permissionService.hasPermissionForDeploymentOnContext(envZ, appResourceGroup);
 
 		// then
 		Assert.assertTrue(resGlobal);
@@ -1030,7 +1025,7 @@ public class PermissionServiceTest {
 		res.setAction(Action.ALL);
 		res.setResourceTypePermission(ResourceTypePermission.ANY);
 		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCETYPE, res),
-				new RestrictionDTOBuilder().mockRestrictionDTO(Permission.TEMPLATE_RESOURCETYPE, res)));
+				new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCETYPE_TEMPLATE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// when
@@ -1090,12 +1085,12 @@ public class PermissionServiceTest {
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_RES_OR_RESTYPE_NAME, res)));
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_RES_OR_RESTYPE_NAME, res)));
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RELEASE, res)));
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RELEASE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 			
 		// when
-		boolean result = permissionService.hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
+		boolean result = permissionService.hasPermission(Permission.RELEASE);
 		
 		// then
 		Assert.assertTrue(result);
@@ -1110,12 +1105,12 @@ public class PermissionServiceTest {
 		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
-		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_RES_OR_RESTYPE_NAME, res)));
-		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.EDIT_RES_OR_RESTYPE_NAME, res)));
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RELEASE, res)));
+		myRoles.put(SERVER_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RELEASE, res)));
 		permissionService.rolesWithRestrictions = myRoles;
 			
 		// when
-		boolean result = permissionService.hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
+		boolean result = permissionService.hasPermission(Permission.RELEASE);
 		
 		// then
 		Assert.assertFalse(result);
@@ -1157,6 +1152,154 @@ public class PermissionServiceTest {
 
 		// then
 		verify(permissionService.permissionRepository, times(1)).getDeployableRoles();
+	}
+
+	@Test
+	public void shouldSucceedIfAPermissionCheckIsDoneWithoutContextAndPermissionIsGrantedToRoleOnSpecificContext() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.UPDATE);
+		res.setContext(envC);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, res)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		// when
+		boolean result = permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceGroup, null);
+
+		// then
+		Assert.assertTrue(result);
+	}
+
+	@Test
+	public void shouldSucceedIfAPermissionCheckIsDoneWithoutContextAndPermissionIsGrantedToUserOnSpecificContext() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.UPDATE);
+		res.setContext(envC);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.RESOURCE.name());
+		res.setPermission(perm);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res));
+
+		// when
+		boolean result = permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceGroup, null);
+
+		// then
+		Assert.assertTrue(result);
+	}
+
+
+	@Test
+	public void shouldFailIfAPermissionIsRequiredOnAllContextsButOnlyGrantedToGroupOnASpecificContext() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		res.setContext(envC);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE_PROPERTY_DECRYPT, res)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		// when
+		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
+
+		// then
+		Assert.assertFalse(result);
+	}
+
+	@Test
+	public void shouldFailIfAPermissionIsRequiredOnAllContextsButOnlyGrantedToUserOnASpecificContext() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		res.setContext(envC);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res.setPermission(perm);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res));
+
+		// when
+		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
+
+		// then
+		Assert.assertFalse(result);
+	}
+
+	@Test
+	public void shouldSucceedIfAPermissionIsRequiredOnAllContextsAndGrantedToRoleOnAllContexts() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		myRoles.put(CONFIG_ADMIN, Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE_PROPERTY_DECRYPT, res)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		// when
+		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
+
+		// then
+		Assert.assertTrue(result);
+	}
+
+	@Test
+	public void shouldSucceedIfAPermissionIsRequiredOnAllContextsAndGrantedToUserOnAllContext() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		myRoles = new HashMap<>();
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res.setPermission(perm);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res));
+
+		// when
+		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
+
+		// then
+		Assert.assertTrue(result);
 	}
 	
 }

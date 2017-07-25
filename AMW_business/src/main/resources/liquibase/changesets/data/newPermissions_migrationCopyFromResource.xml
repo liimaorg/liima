@@ -45,6 +45,11 @@
             <where>value LIKE 'COPY_FROM_RESOURCE_%'</where>
         </delete>
 
+        <update tableName="TAMW_permission">
+            <column name="value" value="RESOURCE_RELEASE_COPY_FROM_RESOURCE" />
+            <where>value = 'COPY_FROM_RESOURCE'</where>
+        </update>
+
         <rollback></rollback>
     </changeSet>
 </databaseChangeLog>

@@ -136,6 +136,7 @@
                         </li>
                     </ul>
                 </li>
+                <h:panelGroup rendered="${releasingDataProvider.canCreateNewRelease or releasingDataProvider.canChangeRelease or releasingDataProvider.canRemoveRelease}">
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
                         Release
@@ -172,6 +173,8 @@
                         </a4j:commandLink></li>
                     </ul>
                 </li>
+                </h:panelGroup>
+                <h:panelGroup rendered="${editResourceView.canEditResourceType or (editResourceView.relativeApplicationServerId ne null) or editResourceView.canShowDeploymentLink}">
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
                         Go to
@@ -209,6 +212,7 @@
                         </li>
                     </ul>
                 </li>
+                </h:panelGroup>
             </ul>
         </h:panelGroup>
     </ui:define>

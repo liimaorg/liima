@@ -28,6 +28,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,7 +44,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
@@ -70,23 +70,6 @@ public class EditPropertyView implements Serializable {
 	@Getter
 	@Setter
 	private Integer relationId;
-
-	public void setResourceTypeIdFromParam(Integer resourceTypeIdFromParam) {
-		this.resourceTypeIdFromParam = resourceTypeIdFromParam;
-		this.resourceIdFromParam = null;
-		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
-        canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceType(resourceTypeIdFromParam,
-                isTesting());
-
-	}
-
-	public void setResourceIdFromParam(Integer resourceIdFromParam) {
-		this.resourceIdFromParam = resourceIdFromParam;
-		this.resourceTypeIdFromParam = null;
-		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
-        canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam,
-                isTesting());
-	}
 
 	@Getter
 	private Integer resourceTypeIdFromParam;
@@ -125,17 +108,33 @@ public class EditPropertyView implements Serializable {
 		this.testing = isTesting;
 	}
 
-
 	@PostConstruct
 	public void init() {
-		canDecryptProperties = permissionBoundary.hasPermission(Permission.DECRYPT_PROPERTIES);
-
 		customPropertyType = new PropertyTypeEntity();
 		customPropertyType.setPropertyTypeName(CUSTOMPROPERTYTYPE_NAME);
 		customPropertyType.setId(0);
 		propertyTypes = propertyEditor.getPropertyTypes();
         globalPropertyTags = propertyTagEditor.getAllGlobalPropertyTags();
 		propertyTypes.add(0, customPropertyType);
+	}
+
+	public void setResourceTypeIdFromParam(Integer resourceTypeIdFromParam) {
+		this.resourceTypeIdFromParam = resourceTypeIdFromParam;
+		this.resourceIdFromParam = null;
+		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
+		canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceType(resourceTypeIdFromParam,
+				isTesting());
+		canDecryptProperties = permissionBoundary.canToggleDecryptionOfResourceType(resourceTypeIdFromParam);
+
+	}
+
+	public void setResourceIdFromParam(Integer resourceIdFromParam) {
+		this.resourceIdFromParam = resourceIdFromParam;
+		this.resourceTypeIdFromParam = null;
+		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
+		canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam,
+				isTesting());
+		canDecryptProperties = permissionBoundary.canToggleDecryptionOfResource(resourceIdFromParam);
 	}
 
     /**

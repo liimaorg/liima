@@ -26,16 +26,13 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
@@ -58,8 +55,6 @@ public class TaggingDataProvider implements Serializable {
 	@Inject
 	PropertyEditor editor;
 
-	boolean active;
-
 	@Getter
 	@Setter
 	private String tagLabel;
@@ -77,17 +72,13 @@ public class TaggingDataProvider implements Serializable {
 
 	public void onResourceChange(@Observes ResourceEntity resourceEntity) {
 		this.resource = resourceEntity;
+		canTagCurrentState = permissions.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
 		extractTagLabels(tagConfigurationService.loadTagLabelsForResource(resourceEntity));
 	}
 
 	public void onResourceTypeChange(@Observes ResourceTypeEntity resourceTypeEntity) {
 		this.resource = null;
 		tagLabels = Collections.emptySet();
-	}
-
-	@PostConstruct
-	public void init() {
-		canTagCurrentState = permissions.hasPermission(Permission.TAG_CURRENT_STATE);
 	}
 
 	public String tagConfiguration() {
@@ -110,33 +101,17 @@ public class TaggingDataProvider implements Serializable {
 				GlobalMessageAppender.addErrorMessage(message);
 			}
 			else {
-				try {
-					tagConfigurationService.tagConfiguration(resource.getId(), tagLabel, tagDate);
-					String message = "New tag '" + tagLabel + "' created.";
-					GlobalMessageAppender.addSuccessMessage(message);
-					return NavigationUtils.getRefreshOutcome();
-				}
-				catch (ResourceNotFoundException e) {
-					String message = "The selected resource can not be found.";
-					GlobalMessageAppender.addErrorMessage(message);
-				}
-				catch (ElementAlreadyExistsException e) {
-					String message = "A resource with the name \""
-							+ ((ElementAlreadyExistsException) e).getExistingObjectName()
-							+ "\" already exists";
-					GlobalMessageAppender.addErrorMessage(message);
-				}
-				catch (GeneralDBException e) {
-					String message = "Could not tag current state.";
-					GlobalMessageAppender.addErrorMessage(e.getErrorMessage() + " " + message);
-				}
+				tagConfigurationService.tagConfiguration(resource.getId(), tagLabel, tagDate);
+				String message = "New tag '" + tagLabel + "' created.";
+				GlobalMessageAppender.addSuccessMessage(message);
+				return NavigationUtils.getRefreshOutcome();
 			}
 		}
 		return NavigationUtils.getRefreshOutcome();
 	}
 
 	private void extractTagLabels(List<ResourceTagEntity> tags) {
-		tagLabels = new LinkedHashSet<String>();
+		tagLabels = new LinkedHashSet<>();
 		for (ResourceTagEntity r : tags) {
 			tagLabels.add(r.getLabel());
 		}

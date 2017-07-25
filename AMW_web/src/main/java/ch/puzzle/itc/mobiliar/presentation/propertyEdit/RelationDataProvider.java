@@ -34,6 +34,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainS
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
@@ -51,7 +52,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
 import javax.enterprise.event.Observes;
 import javax.faces.bean.ViewScoped;
@@ -72,7 +72,7 @@ public class RelationDataProvider implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	PermissionService permissions;
+	PermissionService permissionService;
 
 	private Identifiable resourceOrType;
 
@@ -108,8 +108,6 @@ public class RelationDataProvider implements Serializable {
 
 	private String identifier;
 
-	private String slaveTypeName;
-
     @Setter
     @Getter
     private String softlinkReferenceName;
@@ -131,25 +129,51 @@ public class RelationDataProvider implements Serializable {
 	@Getter
 	private boolean addRuntimeToAppServerMode;
 
-	private boolean canAddProvidedRelation;
-	@Getter
-	private boolean canAddConsumedRelation;
+	private boolean canAddResourceRelation;
+
 	@Getter
 	private boolean canAddResourceTypeRelation;
 
-	@PostConstruct
-	public void init() {
-		canAddConsumedRelation = permissions.hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE);
-		canAddProvidedRelation = permissions.hasPermission(Permission.ADD_AS_PROVIDED_RESOURCE);
-		canAddResourceTypeRelation = permissions.hasPermission(Permission.ADD_RELATED_RESOURCETYPE);
-	}
-
 	public void onChangedResource(@Observes ResourceEntity resourceEntity) {
 		resourceOrType = resourceEntity;
+		canAddResourceRelation = permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
 	}
 
 	public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
 		resourceOrType = resourceTypeEntity;
+		canAddResourceTypeRelation = permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceTypeEntity);
+	}
+
+	public boolean canAddAsConsumedRelation(NamedIdentifiable slaveResourceGroup) {
+		if (slaveResourceGroup instanceof ResourceGroupEntity) {
+			return  canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
+		}
+		return false;
+	}
+
+	public boolean canAddAsProvidedRelation(NamedIdentifiable slaveResourceGroup) {
+		// Only applications are allowed to have provided resources
+		if (!canAddResourceRelation || !getResourceType().isApplicationResourceType()) {
+			return false;
+		}
+		// provided resources can only be added once
+		if (slaveResourceGroup instanceof ResourceGroupEntity) {
+			List<ResourceEditRelation> relations = helper.flattenMap(resourceRelationModel.getProvidedRelations());
+			Integer slaveResourceGroupId = slaveResourceGroup.getId();
+			String prefix = slaveResourceGroup.getName();
+			if (!helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix)) {
+				return false;
+			}
+			return  canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
+		}
+		return false;
+	}
+
+	public boolean canAddAsResourceTypeRelation(NamedIdentifiable slaveResourceType) {
+		if (slaveResourceType instanceof ResourceTypeEntity) {
+			return  canAddResourceTypeRelation && permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.READ, null, (ResourceTypeEntity) slaveResourceType);
+		}
+		return false;
 	}
 
 	public List<Application> loadAllApplicationsWithoutServer() {
@@ -161,7 +185,7 @@ public class RelationDataProvider implements Serializable {
 		addRuntimeToAppServerMode = false;
 		ResourceType t = resourceTypeDataProvider.getByName(DefaultResourceTypeDefinition.APPLICATION
 				.name());
-		resourceTypes = Arrays.asList();
+		resourceTypes = Collections.emptyList();
 		currentResourceType = t!=null ? t.getEntity() : null;
 		// First, we load all applications without servers...
 		List<Application> applications = loadAllApplicationsWithoutServer();
@@ -173,7 +197,7 @@ public class RelationDataProvider implements Serializable {
 				selectableItems.add(appGroup);
 			}
 		}
-		Set<Integer> alreadyDefinedGroups = new HashSet<Integer>();
+		Set<Integer> alreadyDefinedGroups = new HashSet<>();
 		if (resourceRelationModel.getConsumedApplications() != null) {
 			for (ResourceEditRelation rel : resourceRelationModel.getConsumedApplications()) {
 				alreadyDefinedGroups.add(rel.getSlaveGroupId());
@@ -204,7 +228,6 @@ public class RelationDataProvider implements Serializable {
 	public void loadResourceGroupsForType(String typeName, String identifier) {
 		addApplicationToAppServerMode = false;
 		addRuntimeToAppServerMode = false;
-		this.slaveTypeName = typeName;
 		this.identifier = identifier;
 		ResourceType t = resourceTypeDataProvider.getByName(typeName);
 		if (getResourceType().isDefaultResourceType()) {
@@ -213,7 +236,8 @@ public class RelationDataProvider implements Serializable {
 			resourceTypes = new ArrayList<>(resourceTypeDataProvider.getRootResourceTypes());
             Collections.sort(resourceTypes);
 
-			if (getResourceType().isApplicationServerResourceType() && permissions.hasPermission(Permission.ADD_NODE_RELATION)) {
+			if (getResourceType().isApplicationServerResourceType() && permissionService.hasPermission(Permission.RESOURCE,
+					Action.UPDATE, t.getEntity())) {
 				// The application server can additionally add nodes
 				resourceTypes = new ArrayList<>(resourceTypes);
 				resourceTypes.add(0, resourceTypeDataProvider.getByName(DefaultResourceTypeDefinition.NODE.name()));
@@ -231,14 +255,14 @@ public class RelationDataProvider implements Serializable {
 		else {
 			// Non-default types can only define those relations which are defined as "unresolved"
 			selectableItems = (List<NamedIdentifiable>) relationEditor.loadResourceGroupsForType(typeName, resourceOrType.getId());
-			resourceTypes = Arrays.asList(t);
+			resourceTypes = Collections.singletonList(t);
             Collections.sort(resourceTypes);
 			currentResourceType = t.getEntity();
 		}
 	}
 
     private List<ResourceGroup> loadResourceGroupsByResourceTypeId(Integer id, List<Integer> excludedResourceIds) {
-        List<ResourceGroup> resourcesByResourceType = new ArrayList<ResourceGroup>();
+        List<ResourceGroup> resourcesByResourceType = new ArrayList<>();
 
         if (id == null) {
             String message = "No resourcetype selected.";
@@ -273,7 +297,7 @@ public class RelationDataProvider implements Serializable {
 		addRuntimeToAppServerMode = true;
 
 		ResourceType t = resourceTypeDataProvider.getByName(ResourceTypeEntity.RUNTIME);
-		resourceTypes = Arrays.asList();
+		resourceTypes = Collections.emptyList();
 		currentResourceType = t!=null ? t.getEntity() : null;
 
 		selectableItems = loadAllRuntimeEnvironments();
@@ -349,7 +373,7 @@ public class RelationDataProvider implements Serializable {
 
 	public boolean isAllowedToAddProvidedRelations(ResourceGroupEntity resourceGroupEntity) {
 		// Only applications are allowed to have provided resources
-		if (!canAddProvidedRelation || !getResourceType().isApplicationResourceType()) {
+		if (!canAddResourceRelation || !getResourceType().isApplicationResourceType()) {
 			return false;
 		}
 		// provided resources can only be added once
@@ -460,10 +484,7 @@ public class RelationDataProvider implements Serializable {
 						throw e;
 					}
 				}
-				catch (ElementAlreadyExistsException e) {
-					GlobalMessageAppender.addErrorMessage(e.getMessage());
-				}
-				catch (ResourceTypeNotFoundException e) {
+				catch (ElementAlreadyExistsException | ResourceTypeNotFoundException e) {
 					GlobalMessageAppender.addErrorMessage(e.getMessage());
 				}
 			}

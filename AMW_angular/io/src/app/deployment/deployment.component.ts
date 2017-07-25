@@ -53,6 +53,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   transDeploymentParameter: DeploymentParameter = <DeploymentParameter> {};
   transDeploymentParameters: DeploymentParameter[] = [];
   deploymentResponse: any = {};
+  hasPermissionShakedownTest: boolean = false;
 
   // redeploy only
   selectedDeployment: Deployment = <Deployment> {};
@@ -123,6 +124,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   onChangeAppserver() {
     this.resetVars();
     this.loadReleases();
+    this.canCreateShakedownTest();
   }
 
   onChangeRelease() {
@@ -242,6 +244,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private resetVars() {
     this.errorMessage = '';
     this.successMessage = '';
+    this.hasPermissionShakedownTest = false;
     this.selectedRelease = null;
     this.bestForSelectedRelease = null;
     this.resourceTags = [this.defaultResourceTag];
@@ -255,6 +258,12 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.appsWithoutVersion = [];
     this.transDeploymentParameter = <DeploymentParameter> {};
     this.transDeploymentParameters = [];
+  }
+
+  private canCreateShakedownTest() {
+    this.resourceService.canCreateShakedownTest(this.selectedAppserver.id).subscribe(
+      /* happy path */ (r) => this.hasPermissionShakedownTest = r,
+      /* error path */ (e) => this.errorMessage = e);
   }
 
   private prepareDeployment() {

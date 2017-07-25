@@ -218,8 +218,8 @@ public class EditFunction implements Serializable {
 
     private void refreshPermissions() {
 
-        canShowInstanceFunctions = permissionBoundary.hasPermission(Permission.AMWFUNCTION, Action.READ);
-        canShowSuperTypeFunctions = permissionBoundary.hasPermission(Permission.AMWFUNCTION, Action.READ);
+        canShowInstanceFunctions = permissionBoundary.hasPermission(Permission.RESOURCE_AMWFUNCTION, Action.READ);
+        canShowSuperTypeFunctions = permissionBoundary.hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, Action.READ);
     }
 
     public boolean isCanAdd() {

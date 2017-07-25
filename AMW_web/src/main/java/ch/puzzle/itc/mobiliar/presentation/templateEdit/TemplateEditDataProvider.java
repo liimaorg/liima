@@ -132,8 +132,8 @@ public class TemplateEditDataProvider implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		canListInstanceTemplates = permission.hasPermission(Permission.TEMPLATE_RESOURCE, Action.READ);
-		canListResTypeTemplates = permission.hasPermission(Permission.TEMPLATE_RESOURCETYPE, Action.READ);
+		canListInstanceTemplates = permission.hasPermission(Permission.RESOURCE_TEMPLATE, Action.READ);
+		canListResTypeTemplates = permission.hasPermission(Permission.RESOURCETYPE_TEMPLATE, Action.READ);
 		canEdit = false;
 		canAdd = false;
 		canDelete = false;
@@ -230,9 +230,9 @@ public class TemplateEditDataProvider implements Serializable {
 		// context has to be global
 		return context.getIsGlobal()
 				&& (canAddEditOrDeleteShakedownTest() || (isEditResource() ? permission
-						.hasPermission(Permission.TEMPLATE_RESOURCE, null, Action.DELETE,
+						.hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.DELETE,
 								(ResourceEntity) resourceOrType, null) : permission
-						.hasPermission(Permission.TEMPLATE_RESOURCETYPE, null, Action.DELETE,
+						.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.DELETE,
 								null, resourceType)));
 	}
 
@@ -240,9 +240,9 @@ public class TemplateEditDataProvider implements Serializable {
 	private boolean canEdit() {
 		// context has to be global
 		return context.getIsGlobal() && (canAddEditOrDeleteShakedownTest() || (isEditResource() ?
-				(permission.hasPermission(Permission.TEMPLATE_RESOURCE, null, Action.READ, (ResourceEntity) resourceOrType, null) ||
+				(permission.hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.READ, (ResourceEntity) resourceOrType, null) ||
 						permission.hasPermission(Permission.RESOURCE, null, Action.UPDATE, (ResourceEntity) resourceOrType, null)) :
-				(permission.hasPermission(Permission.TEMPLATE_RESOURCETYPE, null, Action.READ, null, (ResourceTypeEntity) resourceOrType) ||
+				(permission.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.READ, null, (ResourceTypeEntity) resourceOrType) ||
 						permission.hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, (ResourceTypeEntity) resourceOrType))));
 	}
 

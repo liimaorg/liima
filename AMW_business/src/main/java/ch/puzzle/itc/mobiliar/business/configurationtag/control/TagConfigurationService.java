@@ -22,16 +22,12 @@ package ch.puzzle.itc.mobiliar.business.configurationtag.control;
 
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -41,26 +37,24 @@ import java.util.HashSet;
 import java.util.List;
 
 @Stateless
-@Interceptors(HasPermissionInterceptor.class)
 public class TagConfigurationService {
 
 	@Inject
 	private EntityManager entityManager;
+
+	@Inject
+	PermissionService permissionService;
 
 	/**
 	 * @param resourceId
 	 * @param tag
 	 * @param date
 	 * @return the new created resourceTag entity
-	 * @throws ResourceNotFoundException
-	 * @throws ElementAlreadyExistsException
-	 * @throws GeneralDBException
 	 */
-	@HasPermission(permission = Permission.TAG_CURRENT_STATE)
-	public ResourceTagEntity tagConfiguration(int resourceId, String tag, Date date) throws ResourceNotFoundException,
-			ElementAlreadyExistsException,
-			GeneralDBException {
+	public ResourceTagEntity tagConfiguration(int resourceId, String tag, Date date) {
 		ResourceEntity currentResource = entityManager.find(ResourceEntity.class, resourceId);
+		permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE,
+				currentResource.getResourceGroup(), null, null);
 		if (currentResource.getResourceTags() == null) {
 			currentResource.setResourceTags(new HashSet<ResourceTagEntity>());
 		}

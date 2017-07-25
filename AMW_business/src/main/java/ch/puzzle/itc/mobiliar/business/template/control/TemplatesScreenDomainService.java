@@ -199,12 +199,12 @@ public class TemplatesScreenDomainService {
 		}
 	}
 
-	@HasPermission(permission = Permission.TEMPLATE_RESOURCE, action = Action.DELETE)
+	@HasPermission(permission = Permission.RESOURCE_TEMPLATE, action = Action.DELETE)
 	private void removeDefaultResTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
 		doRemoveTemplate(selectedTemplateId);
 	}
 
-	@HasPermission(permission = Permission.TEMPLATE_RESOURCETYPE, action = Action.DELETE)
+	@HasPermission(permission = Permission.RESOURCETYPE_TEMPLATE, action = Action.DELETE)
 	private void removeDefaultResTypeTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
 		doRemoveTemplate(selectedTemplateId);
 	}

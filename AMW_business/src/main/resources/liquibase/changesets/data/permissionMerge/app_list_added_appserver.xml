@@ -1,0 +1,26 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/permissionMerge/edit_properties_comment_popup.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="permissionMerge_edit_properties_comment_popup" >
+
+        <!-- EDIT_PROPERTIES_COMMENT_POPUP("Edit comments of property.", true) -->
+
+        <delete tableName="TAMW_restriction">
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'EDIT_PROPERTIES_COMMENT_POPUP')</where>
+        </delete>
+
+        <delete tableName="TAMW_role_permission">
+            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE value = 'EDIT_PROPERTIES_COMMENT_POPUP')</where>
+        </delete>
+
+        <delete tableName="TAMW_permission">
+            <where>value = 'EDIT_PROPERTIES_COMMENT_POPUP'</where>
+        </delete>
+
+        <rollback></rollback>
+    </changeSet>
+
+</databaseChangeLog>

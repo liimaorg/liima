@@ -200,6 +200,10 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermission(permission, context, action, null, resourceType);
     }
 
+    public boolean hasPermission(Permission permission, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
+        return permissionService.hasPermission(permission, null, action, resourceGroup, resourceType);
+    }
+
     /**
      * Checks if given permission is available. If not a checked exception is thrown with error message
      * containing extraInfo part.
@@ -240,9 +244,7 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
-     * Check that the user is config_admin, server_admin or app_developer : server_admin: can delete node
-     * relationship config_admin: can delete all relationship. app_developer: can delete reletionship of
-     * instances of APPLICATION
+     * Checks if user is allowed to delete a Relation of a Resource
      */
     public boolean hasPermissionToDeleteRelation(ResourceEntity resourceEntity, ContextEntity context) {
         ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, resourceEntity.getId());
@@ -250,9 +252,7 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
-     * Check that the user is config_admin, server_admin or app_developer : server_admin: can delete node
-     * relationship config_admin: can delete all relationship. app_developer: can delete reletionship of
-     * instances of APPLICATION
+     * Checks if user is allowed to delete a Relation of a ResourceType
      */
     public boolean hasPermissionToDeleteRelationType(ResourceTypeEntity resourceTypeEntity) {
         ResourceTypeEntity mergedResource = entityManager.find(ResourceTypeEntity.class, resourceTypeEntity.getId());
@@ -260,13 +260,19 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
-     * Check that the user is config_admin, server_admin or app_developer : server_admin: can add node
-     * relationship config_admin: can add all relationship. app_developer: can add reletionship of instances
-     * of APPLICATION
+     * Checks if user is allowed to add a Relation to a Resource
      */
-    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, boolean isProvided, ContextEntity context) {
+    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, ContextEntity context) {
         ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, resourceEntity.getId());
-        return permissionService.hasPermissionToAddRelation(mergedResource, isProvided, context);
+        return permissionService.hasPermissionToAddRelation(mergedResource, context);
+    }
+
+    /**
+     * Checks if user is allowed to add a Relation to a ResourceType
+     */
+    public boolean hasPermissionToAddRelatedResourceType(ResourceTypeEntity resourceTypeEntity) {
+        ResourceTypeEntity mergedResource = entityManager.find(ResourceTypeEntity.class, resourceTypeEntity.getId());
+        return permissionService.hasPermissionToAddRelatedResourceType(mergedResource);
     }
 
     public boolean hasPermissionToRemoveInstanceOfResType(ResourceTypeEntity resourceType) {
@@ -297,11 +303,11 @@ public class PermissionBoundary implements Serializable {
         if (resourceEntityId != null) {
             ResourceEntity resource = resourceRepository.find(resourceEntityId);
             return permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resource.getResourceGroup(), null) &&
-                    permissionService.hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, resource.getResourceGroup(), null);
+                    permissionService.hasPermission(Permission.RESOURCE_AMWFUNCTION, null, Action.UPDATE, resource.getResourceGroup(), null);
         }
         ResourceTypeEntity type = resourceTypeRepository.find(resourceTypeEntityId);
         return permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, type) &&
-                permissionService.hasPermission(Permission.AMWFUNCTION, null, Action.UPDATE, null, type);
+                permissionService.hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, Action.UPDATE, null, type);
     }
 
     public boolean canCreateResourceInstance(DefaultResourceTypeDefinition type) {
@@ -318,7 +324,7 @@ public class PermissionBoundary implements Serializable {
 
     public boolean canCreateAppAndAddToAppServer(ResourceEntity resource) {
         return permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, resource.getResourceType()) &&
-                permissionService.hasPermission(Permission.ADD_APP_TO_APP_SERVER);
+                permissionService.hasPermission(Permission.RESOURCE, Action.UPDATE, resourceTypeProvider.getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER));
     }
 
     /**
@@ -327,11 +333,44 @@ public class PermissionBoundary implements Serializable {
      */
     public boolean canCopyFromResource(ResourceEntity resourceEntity) {
         return !(resourceEntity == null || resourceEntity.getResourceType() == null) &&
-                permissionService.hasPermission(Permission.COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
+                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
+    }
+
+    /**
+     *
+     * @param resourceEntity
+     * @param originResourceGroup
+     * @return
+     */
+    public boolean canCopyFromSpecificResource(ResourceEntity resourceEntity, ResourceGroupEntity originResourceGroup) {
+        return !(resourceEntity == null || resourceEntity.getResourceType() == null) &&
+                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType())
+                && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, originResourceGroup, originResourceGroup.getResourceType());
+    }
+
+    public boolean canToggleDecryptionOfResource(Integer resourceEntityId ) {
+        if (resourceEntityId == null) {
+            return false;
+        }
+        ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceEntityId);
+        return permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resource.getResourceGroup(), null);
+    }
+
+    public boolean canToggleDecryptionOfResourceType(Integer resourceTypeEntityId) {
+        if (resourceTypeEntityId == null) {
+            return false;
+        }
+        ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeEntityId);
+        return permissionService.hasPermissionOnAllContext(Permission.RESOURCETYPE_PROPERTY_DECRYPT, Action.ALL, null, resourceType);
     }
 
     public boolean hasPermissionToDeploy() {
         return permissionService.hasPermissionToDeploy();
+    }
+
+    public boolean hasPermissionToCreateShakedownTests(Integer resourceGroupId) {
+        ResourceGroupEntity resourceGroupEntity = resourceGroupRepository.find(resourceGroupId);
+        return permissionService.hasPermission(Permission.SHAKEDOWNTEST, null, Action.CREATE, resourceGroupEntity, null);
     }
 
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)

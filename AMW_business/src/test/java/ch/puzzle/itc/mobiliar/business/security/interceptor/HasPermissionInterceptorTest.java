@@ -133,12 +133,12 @@ public class HasPermissionInterceptorTest {
     public void shouldCallPermissionServiceWithMultipleAnnotatedPermissionsAndActionsButSkipAsSoonACheckReturnsTrue() throws Exception {
         //given
         when(context.getMethod()).thenReturn(TestBoundary.class.getMethod("deployOrCopyFromPermissionActionCreateOrUpdateNeeded"));
-        when(hasPermissionInterceptor.permissionService.hasPermission(Permission.COPY_FROM_RESOURCE, null, Action.UPDATE, null, null)).thenReturn(true);
+        when(hasPermissionInterceptor.permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, null, null)).thenReturn(true);
         //when
         hasPermissionInterceptor.roleCall(context);
         //then
-        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.COPY_FROM_RESOURCE, null, Action.CREATE, null, null);
-        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.COPY_FROM_RESOURCE, null, Action.UPDATE, null, null);
+        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.CREATE, null, null);
+        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, null, null);
         verify(hasPermissionInterceptor.permissionService, never()).hasPermission(Permission.DEPLOYMENT, null, Action.CREATE, null, null);
         verify(hasPermissionInterceptor.permissionService, never()).hasPermission(Permission.DEPLOYMENT, null, Action.UPDATE, null, null);
         verify(hasPermissionInterceptor.permissionService, never()).throwNotAuthorizedException(null);

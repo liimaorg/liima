@@ -87,6 +87,9 @@ public class PropertyEditDataProvider implements Serializable {
     private boolean editableProperties = false;
 
     @Getter
+    private boolean canDecryptProperties = false;
+
+    @Getter
     private boolean allowedToEditProperties = false;
 
     @Getter
@@ -154,7 +157,9 @@ public class PropertyEditDataProvider implements Serializable {
         filterHostNameAndActiveFromNode();
         editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
                 currentContext, userSettings.isTestingMode());
-        canChangeRuntime = permissionBoundary.hasPermission(Permission.SELECT_RUNTIME);
+        canChangeRuntime = permissionBoundary.hasPermission(Permission.RESOURCE, currentContext, Action.UPDATE, resourceEntity, null);
+        canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, currentContext, Action.ALL,
+                resourceEntity, null);
         group = ResourceGroup.createByResource(resourceEntity.getResourceGroup());
 
         resourceOrResourceType = resourceEntity;
@@ -167,6 +172,8 @@ public class PropertyEditDataProvider implements Serializable {
         resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResourceType(
                 resourceTypeEntity.getId(), getContextId()));
         editableProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE, currentContext, Action.UPDATE,
+                null, resourceTypeEntity);
+        canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, currentContext, Action.ALL,
                 null, resourceTypeEntity);
         canChangeRuntime = false;
         group = null;
@@ -360,12 +367,9 @@ public class PropertyEditDataProvider implements Serializable {
         return null;
     }
 
-    public boolean hasResetPropertyPermission() {
-        return permissionBoundary.hasPermission(Permission.RESET_PROP);
-    }
-
     public boolean hasEditRelationNamePermission() {
-        return permissionBoundary.hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
+        return isCurrentFocusOnResourceType() && permissionBoundary.hasPermission(Permission.RESOURCETYPE, currentContext,
+                Action.UPDATE, null, (ResourceTypeEntity) resourceOrResourceType);
     }
 
     public boolean isLongValue(String value) {

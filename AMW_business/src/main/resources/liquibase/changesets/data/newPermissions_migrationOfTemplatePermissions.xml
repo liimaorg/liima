@@ -11,32 +11,37 @@
 
         <!--INSTANCE_TEMP_LIST("Instance template list. You can find this list in all Resource and Resource Type screen."), > READ-->
         <!--EDIT_RES_TEMP("Permission to edit the template of a resource"), > READ-->
-        <!--SAVE_RES_TEMPLATE("WARNING: DON'T CHANGE THIS PERMISSION"), > UPDATE-->
-        <!--DELETE_RES_TEMPLATE("Delete instance template. You can find this link in all Templates/Relationship Templates panel in all Resource/Resource screen."), > DELETE-->
+        <!--SAVE_RES_TEMPLATE("WARNING: DON'T CHANGE THIS PERMISSION"), > ALL APPLICATION-->
+        <!--DELETE_RES_TEMPLATE("Delete instance template. You can find this link in all Templates/Relationship Templates panel in all Resource/Resource screen."), > ALL APPLICATION-->
 
         <!--RES_RESTYPE_TEMPLATE_LIST("Allows to list the templates of resources and resource types"), > RESTYPE APP READ-->
         <!--EDIT_RESTYPE_TEMPLATE("Edit resource type tempalte. This is the List of Resource Type Templates in Templates panel. You can find this panel in all Resource/ResourceType screen"), READ-->
         <!--SAVE_RESTYPE_TEMPLATE("Permission to persist a template for a resource type. WARNING: DON'T CHANGE THIS PERMISSION"), > CREATE AND UPDATE #99 -->
         <!--DELETE_RESTYPE_TEMPLATE("Delete resource type template. You can find this link in all Templates/Relationship Templates panel in all Resource/ResourceType screen"), > DELETE-->
-        <!--CREATE_TEMPLATE("With this permission it can create a new template"), > RESOURCETYPE APP UPDATE (app_developer)-->
+        <!--CREATE_TEMPLATE("With this permission it can create a new template"), > DELETED (#124) -->
 
         <!-- RESOURCE -->
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'INSTANCE_TEMP_LIST' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'EDIT_RES_TEMP' AND TAMW_role_permission.roles_id = TAMW_role.id AND TAMW_role.id NOT IN (SELECT role_id FROM TAMW_restriction WHERE permission_id = (SELECT id FROM TAMW_permission WHERE value = 'INSTANCE_TEMP_LIST'));</sql>
-        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'UPDATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'SAVE_RES_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
-        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'DELETE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'DELETE_RES_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'ALL', 1 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'SAVE_RES_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'ALL', 1 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'DELETE_RES_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
 
         <!-- RESOURCETYPE -->
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'EDIT_RESTYPE_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'RES_RESTYPE_TEMPLATE_LIST' AND TAMW_role_permission.roles_id = TAMW_role.id AND TAMW_role.id NOT IN (SELECT role_id FROM TAMW_restriction WHERE permission_id = (SELECT id FROM TAMW_permission WHERE value = 'EDIT_RESTYPE_TEMPLATE'));</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'UPDATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'SAVE_RESTYPE_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)+5) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'CREATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'SAVE_RESTYPE_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
-        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'UPDATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'CREATE_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'DELETE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'DELETE_RESTYPE_TEMPLATE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
 
         <update tableName="SAMW_SEQUENCES">
             <column name="NEXT_VAL" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
             <where>SEQ_NAME='restrictionId'</where>
+        </update>
+
+        <update tableName="TAMW_restriction">
+            <column name="resourcetype_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_resourcetype WHERE name = 'APPLICATION')" />
+            <column name="v" type="INTEGER" value="0" />
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'SAVE_RES_TEMPLATE' or value = 'DELETE_RES_TEMPLATE') AND v = 1</where>
         </update>
 
         <update tableName="TAMW_restriction">
@@ -53,7 +58,7 @@
         <update tableName="TAMW_restriction">
             <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'RES_RESTYPE_TEMPLATE_LIST')" />
             <column name="resourcetype_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_resourcetype WHERE name = 'APPLICATION')" />
-            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'RES_RESTYPE_TEMPLATE_LIST' or value = 'CREATE_TEMPLATE')</where>
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'RES_RESTYPE_TEMPLATE_LIST')</where>
         </update>
 
         <update tableName="TAMW_restriction">
@@ -62,17 +67,17 @@
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="TEMPLATE_RESOURCE" />
+            <column name="value" value="RESOURCE_TEMPLATE" />
             <where>value = 'INSTANCE_TEMP_LIST'</where>
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="TEMPLATE_RESOURCETYPE" />
+            <column name="value" value="RESOURCETYPE_TEMPLATE" />
             <where>value = 'RES_RESTYPE_TEMPLATE_LIST'</where>
         </update>
 
         <delete tableName="TAMW_role_permission">
-            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE value = 'TEMPLATE_RESOURCE' or value = 'DELETE_RES_TEMPLATE' or value = 'EDIT_RES_TEMP' or value = 'SAVE_RES_TEMPLATE' or value = 'DELETE_RESTYPE_TEMPLATE' or value = 'TEMPLATE_RESOURCETYPE' or value = 'EDIT_RESTYPE_TEMPLATE' or value = 'SAVE_RESTYPE_TEMPLATE' or value = 'CREATE_TEMPLATE')</where>
+            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE value = 'RESOURCE_TEMPLATE' or value = 'DELETE_RES_TEMPLATE' or value = 'EDIT_RES_TEMP' or value = 'SAVE_RES_TEMPLATE' or value = 'DELETE_RESTYPE_TEMPLATE' or value = 'RESOURCETYPE_TEMPLATE' or value = 'EDIT_RESTYPE_TEMPLATE' or value = 'SAVE_RESTYPE_TEMPLATE' or value = 'CREATE_TEMPLATE')</where>
         </delete>
 
         <delete tableName="TAMW_permission">

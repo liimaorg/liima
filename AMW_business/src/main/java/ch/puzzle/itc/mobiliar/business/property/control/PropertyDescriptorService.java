@@ -42,10 +42,13 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolat
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 
 /**
  * This is a control service providing logic for property descriptors
@@ -59,7 +62,7 @@ public class PropertyDescriptorService {
     ContextDomainService contextService;
 
     @Inject
-    PermissionService permissions;
+    PermissionService permissionService;
 
     @Inject
     PropertyValidationService propertyValidationService;
@@ -91,14 +94,33 @@ public class PropertyDescriptorService {
      * @throws AMWException                       is thrown when technical key is invalid or another PropertyDescriptor with same technical key already exists
      * @throws ForeignableOwnerViolationException is thrown when the change is not permitted by changing owner
      */
-    public PropertyDescriptorEntity savePropertyDescriptorForOwner(ForeignableOwner changingOwner, AbstractContext abstractContext, PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags) throws AMWException {
+    public PropertyDescriptorEntity savePropertyDescriptorForOwner(ForeignableOwner changingOwner, AbstractContext abstractContext, PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceEntity resource) throws AMWException {
         checkForValidTechnicalKey(descriptor);
 
         if (descriptor.getId() == null) {
             preventDuplicateTechnicalKeys(abstractContext, descriptor);
             createNewPropertyDescriptor(changingOwner, descriptor, abstractContext, tags);
         } else {
-            saveExistingPropertyDescriptor(descriptor, tags);
+            saveExistingPropertyDescriptor(descriptor, tags, resource);
+        }
+
+        return descriptor;
+    }
+
+    /**
+     * Verify if the change is allowed by given owner and persists a given PropertyDescriptor, handles its encryption/decryption and manages its PropertyTags
+     *
+     * @throws AMWException                       is thrown when technical key is invalid or another PropertyDescriptor with same technical key already exists
+     * @throws ForeignableOwnerViolationException is thrown when the change is not permitted by changing owner
+     */
+    public PropertyDescriptorEntity savePropertyDescriptorForOwner(ForeignableOwner changingOwner, AbstractContext abstractContext, PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceTypeEntity resourceType) throws AMWException {
+        checkForValidTechnicalKey(descriptor);
+
+        if (descriptor.getId() == null) {
+            preventDuplicateTechnicalKeys(abstractContext, descriptor);
+            createNewPropertyDescriptor(changingOwner, descriptor, abstractContext, tags);
+        } else {
+            saveExistingPropertyDescriptor(descriptor, tags, resourceType);
         }
 
         return descriptor;
@@ -170,7 +192,7 @@ public class PropertyDescriptorService {
         entityManager.persist(abstractContext);
     }
 
-    private void saveExistingPropertyDescriptor(PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags) {
+    private void saveExistingPropertyDescriptor(PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceEntity resource) {
 
         PropertyDescriptorEntity oldDescriptor = entityManager.find(PropertyDescriptorEntity.class, descriptor.getId());
         List<Integer> encryptedPropertyIds = new ArrayList<>();
@@ -181,7 +203,35 @@ public class PropertyDescriptorService {
         PropertyDescriptorEntity mergedDescriptor = entityManager.merge(descriptor);
         propertyTagEditingService.updateTags(tags, mergedDescriptor);
 
-        manageChangeOfEncryptedPropertyDescriptor(mergedDescriptor, encryptedPropertyIds);
+        boolean canDecrypt = false;
+        // decryption required - check permission
+        if (!mergedDescriptor.isEncrypt() && encryptedPropertyIds.contains(mergedDescriptor.getId())) {
+            // context?
+            canDecrypt = permissionService.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, Action.ALL, resource.getResourceGroup(), null);
+        }
+
+        manageChangeOfEncryptedPropertyDescriptor(mergedDescriptor, encryptedPropertyIds, canDecrypt);
+    }
+
+    private void saveExistingPropertyDescriptor(PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceTypeEntity resourceType) {
+
+        PropertyDescriptorEntity oldDescriptor = entityManager.find(PropertyDescriptorEntity.class, descriptor.getId());
+        List<Integer> encryptedPropertyIds = new ArrayList<>();
+        if (oldDescriptor.isEncrypt()) {
+            encryptedPropertyIds.add(oldDescriptor.getId());
+        }
+
+        PropertyDescriptorEntity mergedDescriptor = entityManager.merge(descriptor);
+        propertyTagEditingService.updateTags(tags, mergedDescriptor);
+
+        boolean canDecrypt = false;
+        // decryption required - check permission
+        if (!mergedDescriptor.isEncrypt() && encryptedPropertyIds.contains(mergedDescriptor.getId())) {
+            // context?
+            canDecrypt = permissionService.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, null, Action.ALL, null, resourceType);
+        }
+
+        manageChangeOfEncryptedPropertyDescriptor(mergedDescriptor, encryptedPropertyIds, canDecrypt);
     }
 
 
@@ -223,18 +273,21 @@ public class PropertyDescriptorService {
      *
      * @param descr
      * @param encryptedPropertyIds
+     * @param canDecrypt whether or not the caller has the permission to decrypt encrypted property values
      */
-    void manageChangeOfEncryptedPropertyDescriptor(PropertyDescriptorEntity descr, List<Integer> encryptedPropertyIds) {
-        TypedQuery<PropertyEntity> propertyQuery = entityManager.createQuery("select p from PropertyEntity p where p.descriptor=:descriptor", PropertyEntity.class).setParameter("descriptor", descr);
+    void manageChangeOfEncryptedPropertyDescriptor(PropertyDescriptorEntity descr, List<Integer> encryptedPropertyIds, boolean canDecrypt) {
         boolean encrypt = descr.isEncrypt() && !encryptedPropertyIds.contains(descr.getId());
         boolean decrypt = !descr.isEncrypt() && encryptedPropertyIds.contains(descr.getId());
         if (encrypt || decrypt) {
+            TypedQuery<PropertyEntity> propertyQuery = entityManager.createQuery("select p from PropertyEntity p where p.descriptor=:descriptor", PropertyEntity.class).setParameter("descriptor", descr);
             List<PropertyEntity> properties = propertyQuery.getResultList();
             for (PropertyEntity property : properties) {
                 if (encrypt) {
                     property.encrypt();
                 } else {
-                    permissions.checkPermissionAndFireException(Permission.DECRYPT_PROPERTIES, "decrypt properties");
+                    if (!canDecrypt) {
+                        throw new NotAuthorizedException("decrypt properties");
+                    }
                     property.decrypt();
                 }
                 entityManager.persist(property);

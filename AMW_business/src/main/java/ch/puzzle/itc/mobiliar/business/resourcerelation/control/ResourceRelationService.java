@@ -39,8 +39,9 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
@@ -75,6 +76,9 @@ public class ResourceRelationService implements Serializable{
 
 	@Inject
 	ForeignableService foreignableService;
+
+	@Inject
+	PermissionService permissionService;
 
     @Inject
     ResourceDependencyResolverService resourceDependencyResolverService;
@@ -130,17 +134,19 @@ public class ResourceRelationService implements Serializable{
 
 		String slaveResourceType = slaveGroup.getResourceType().getName();
 		if (DefaultResourceTypeDefinition.NODE.name().equals(slaveResourceType)) {
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
 			addNodeByGroup(masterId, slaveGroupId, provided, relationName, typeIdentifier, changingOwner);
 		}
 		else if (DefaultResourceTypeDefinition.APPLICATION.name()
 				.equals(master.getResourceType().getName())) {
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
 			addRelationInEditInstanceApplicationByGroup(masterId, slaveGroupId, provided,
 					relationName, typeIdentifier, changingOwner);
 		} else if (slaveGroup.getResourceType().isRuntimeType()) {
 			resourceEntityService.setRuntime(master, slaveGroup, changingOwner);
 		} else {
-			addEveryRelationByGroup(masterId, slaveGroupId, provided, relationName,
-					typeIdentifier, changingOwner);
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
+			doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, relationName, typeIdentifier, changingOwner);
 			// If an application is added to the applicationserver, it has to be removed from the
 			// applications without applicationserver container
 			if (DefaultResourceTypeDefinition.APPLICATIONSERVER.name().equals(
@@ -186,19 +192,18 @@ public class ResourceRelationService implements Serializable{
 
 	/**
 	 * Adds a relation for all releases existing for slave resource<br>
-	 * Only for users with permission to add every related resource
+	 * Only for users with permission to add related resource
 	 * 
 	 * @param masterId
 	 * @param slaveGroupId
 	 * @param provided
 	 * @param relationName
 	 * @param typeIdentifier
-	 * @throws ResourceNotFoundException
 	 * @throws ElementAlreadyExistsException
+	 * @throws ResourceNotFoundException
 	 */
-	@HasPermission(permission = Permission.ADD_EVERY_RELATED_RESOURCE)
-	private void addEveryRelationByGroup(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
-			String typeIdentifier, ForeignableOwner changingOwner) throws ResourceNotFoundException, ElementAlreadyExistsException {
+	private void addRelationInEditInstanceApplicationByGroup(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
+			String typeIdentifier, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
 		doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, relationName,
 				typeIdentifier, changingOwner);
 	}
@@ -215,8 +220,7 @@ public class ResourceRelationService implements Serializable{
 	 * @throws ElementAlreadyExistsException
 	 * @throws ResourceNotFoundException
 	 */
-	@HasPermission(permission = Permission.ADD_RELATED_RESOURCE)
-	private void addRelationInEditInstanceApplicationByGroup(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
+	private void addNodeByGroup(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 			String typeIdentifier, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
 		doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, relationName,
 				typeIdentifier, changingOwner);
@@ -224,24 +228,18 @@ public class ResourceRelationService implements Serializable{
 
 	/**
 	 * Adds a relation for all releases existing for slave resource<br>
-	 * Only for users with permission to add node
-	 * 
+	 * Only for users with permission to add every related resource
+	 *
 	 * @param masterId
 	 * @param slaveGroupId
 	 * @param provided
 	 * @param relationName
 	 * @param typeIdentifier
+	 * @param changingOwner
 	 * @throws ElementAlreadyExistsException
 	 * @throws ResourceNotFoundException
 	 */
-	@HasPermission(permission = Permission.ADD_NODE_RELATION)
-	private void addNodeByGroup(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
-			String typeIdentifier, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
-		doAddResourceRelationForAllReleases(masterId, slaveGroupId, provided, relationName,
-                typeIdentifier, changingOwner);
-	}
-
-	public void doAddResourceRelationForAllReleases(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
+	 public void doAddResourceRelationForAllReleases(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 			String typeIdentifier, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
 		addResourceRelation(masterId, slaveGroupId, provided, relationName, typeIdentifier, null, changingOwner);
 
@@ -263,7 +261,6 @@ public class ResourceRelationService implements Serializable{
 													String typeIdentifier, Integer releaseId, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
 		addResourceRelation(masterId, slaveGroupId, provided, relationName, typeIdentifier, releaseId, changingOwner);
 	}
-
 
 	private void addResourceRelation(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 									 String typeIdentifier, Integer releaseId, ForeignableOwner changingOwner) throws ElementAlreadyExistsException {
@@ -308,12 +305,10 @@ public class ResourceRelationService implements Serializable{
 		ResourceEntity master = entityManager.find(ResourceEntity.class, relation.getMasterResource()
 				.getId());
 		String slaveResourceType = relation.getSlaveResource().getResourceType().getName();
-		if (DefaultResourceTypeDefinition.NODE.name().equals(slaveResourceType)) {
-			removeNodeRelation(relationId);
-		}
-		else if (DefaultResourceTypeDefinition.APPLICATION.name()
-				.equals(master.getResourceType().getName())) {
-			removeRelationInEditInstanceApplication(relationId);
+		if (DefaultResourceTypeDefinition.NODE.name().equals(slaveResourceType) ||
+				DefaultResourceTypeDefinition.APPLICATION.name().equals(master.getResourceType().getName())) {
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
+			doRemoveResourceRelationForAllReleases(relationId);
 		}
 		// If an application is removed from the applicationserver
 		// and application is not related to the applicationserver in an other release,
@@ -346,29 +341,16 @@ public class ResourceRelationService implements Serializable{
 				}
 			}
 			else {
+				permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
 				// there are still relations to the appServer in other releases, therefore remove this one
-				removeOtherRelation(relationId);
+				doRemoveResourceRelationForAllReleases(relationId);
 			}
 
 		}
 		else {
-			removeOtherRelation(relationId);
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, master.getResourceGroup(), null, null);
+			doRemoveResourceRelationForAllReleases(relationId);
 		}
-	}
-
-	@HasPermission(permission = Permission.DELETE_NODE_RELATION)
-	private void removeNodeRelation(Integer rel) throws ResourceNotFoundException{
-		doRemoveResourceRelationForAllReleases(rel);
-	}
-
-	@HasPermission(permission = Permission.DELETE_EVERY_RELATED_RESOURCE)
-	private void removeOtherRelation(Integer rel) throws ResourceNotFoundException {
-		doRemoveResourceRelationForAllReleases(rel);
-	}
-
-	@HasPermission(permission = Permission.DELETE_CONS_OR_PROVIDED_RELATION)
-	private void removeRelationInEditInstanceApplication(Integer rel) throws ResourceNotFoundException {
-		doRemoveResourceRelationForAllReleases(rel);
 	}
 
 	private void doRemoveResourceRelationForAllReleases(Integer relationId) throws ResourceNotFoundException {

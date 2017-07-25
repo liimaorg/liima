@@ -18,7 +18,7 @@
 			<ul>
 				<li><h:commandLink onclick="showLoader();"
 						styleClass="btn light" type="button"
-						rendered="#{sessionContext.isGlobal and securityDataProvider.hasPermission('ADD_APP_TO_APP_SERVER')}">
+						rendered="#{sessionContext.isGlobal and securityDataProvider.hasPermissionForResourceType('RESOURCE', 'UPDATE', 'APPLICATIONSERVER')}">
 						<i class="icon icon-add"/>Add application
 								<a4j:ajax execute="@this" render="addRelationPopup"
 							oncomplete="if(confirmAddRelation()){#{rich:component('addRelationPopup')}.show();} hideLoader();"
@@ -41,7 +41,7 @@
 				styleClass="well" columnClasses=" ,last,last"
 				rowClasses="odd-row,even-row">
 				<h:column
-					rendered="#{securityDataProvider.hasPermission('APP_LIST_ADDED_APPSERVER')}">
+					rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE','READ','APPLICATION')}">
 					<f:facet name="header">
 						<h:panelGroup>
 							<h:outputText value="Application Name" />
@@ -64,7 +64,7 @@
 					</h:link>
 				</h:column>
 				<h:column
-					rendered="#{sessionContext.isGlobal and securityDataProvider.hasPermission('DELETE_APP_TO_APP_SERVER')}">
+					rendered="#{sessionContext.isGlobal and securityDataProvider.hasPermissionForResourceType('RESOURCE', 'UPDATE', 'APPLICATIONSERVER')}">
 					<f:facet name="header">
 						<h:panelGroup>
 							<h:outputText value="Remove" />

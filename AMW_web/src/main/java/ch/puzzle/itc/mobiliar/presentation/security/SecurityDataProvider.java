@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.presentation.security;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
@@ -56,10 +58,6 @@ public class SecurityDataProvider implements Serializable{
 
 	private Map<String, Boolean> canDeleteResource = new HashMap<>();
 
-	private Boolean canAddShakedownTest;
-
-	private Boolean canExecuteShakeTestOrder;
-
 	/**
 	 * Use {@link PermissionBoundary#hasPermission(Permission)} instead
 	 * @param permissionValue
@@ -67,17 +65,6 @@ public class SecurityDataProvider implements Serializable{
 	 */
 	@Deprecated
 	public boolean hasPermission(String permissionValue){
-		if (permissionValue.equals("ADD_SHAKEDOWN_TEST")) {
-			if (canAddShakedownTest == null) {
-				canAddShakedownTest = permissionBoundary.hasPermission(permissionValue);
-			}
-			return canAddShakedownTest;
-		} else if (permissionValue.equals("EXECUTE_SHAKE_TEST_ORDER")) {
-			if (canExecuteShakeTestOrder == null) {
-				canExecuteShakeTestOrder = permissionBoundary.hasPermission(permissionValue);
-			}
-			return canExecuteShakeTestOrder;
-		}
 		return permissionBoundary.hasPermission(permissionValue);
 	}
 
@@ -115,6 +102,19 @@ public class SecurityDataProvider implements Serializable{
 	
 	public boolean hasPermissionToDeploy(){
 		return permissionBoundary.hasPermissionToDeploy();
+	}
+
+	public boolean hasPermissionToExportDeployments() {
+		return permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.READ);
+	}
+
+	public boolean hasPermissionToCreateShakedownTests(List<Integer> resourceGroupIds) {
+		for (Integer resourceGroupId : resourceGroupIds) {
+			if (!permissionBoundary.hasPermissionToCreateShakedownTests(resourceGroupId)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public String getUserName() {

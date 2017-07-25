@@ -13,7 +13,7 @@
  
     <composite:implementation>
 	<h:dataTable value="#{cc.attrs.editProperties}" var="prop"
-		styleClass="propertyTable" rendered="#{securityDataProvider.hasPermission('PROP_LIST')}">
+		styleClass="propertyTable" rendered="#{securityDataProvider.hasPermission('RESOURCE','READ')}">
 		<h:column >
 		<h:panelGroup layout="block" styleClass="control-group ${prop.testing and editPropertiesTable.testing ? 'testing' : ''}" rendered="#{editPropertiesTable.isPropertyDisplayable(prop)}">
 				<label class="control-label ellipsisRight" title="${prop.propertyDisplayName}" >

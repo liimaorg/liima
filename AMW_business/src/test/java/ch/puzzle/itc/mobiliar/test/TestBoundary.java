@@ -39,7 +39,7 @@ public class TestBoundary {
     @HasPermission(permission = Permission.DEPLOYMENT, oneOfAction = { Action.CREATE, Action.UPDATE} )
     public void deployPermissionActionCreateOrUpdateNeeded() {}
 
-    @HasPermission(oneOfPermission = { Permission.COPY_FROM_RESOURCE, Permission.DEPLOYMENT }, oneOfAction = { Action.CREATE, Action.UPDATE} )
+    @HasPermission(oneOfPermission = { Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, Permission.DEPLOYMENT }, oneOfAction = { Action.CREATE, Action.UPDATE} )
     public void deployOrCopyFromPermissionActionCreateOrUpdateNeeded() {}
 
     @HasPermission(permission = Permission.DEPLOYMENT, action = Action.CREATE, resourceSpecific = true)

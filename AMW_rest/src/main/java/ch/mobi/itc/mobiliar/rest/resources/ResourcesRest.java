@@ -42,6 +42,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
@@ -103,8 +104,11 @@ public class ResourcesRest {
     @Inject
     ResourcePropertiesRest resourceProperties;
 
-    @Inject
+	@Inject
     ResourceDependencyResolverService resourceDependencyResolverService;
+
+    @Inject
+    PermissionBoundary permissionBoundary;
 
     @Inject
     ResourceTemplatesRest resourceTemplatesRest;
@@ -205,9 +209,9 @@ public class ResourcesRest {
     @GET
     @ApiOperation(value = "Get exact or closest past release")
     public ReleaseDTO getExactOrClosestPastRelease(@PathParam("resourceGroupName") String resourceGroupName,
-                                                   @PathParam("releaseName") String releaseName,
-                                                   @QueryParam("env") @DefaultValue("Global") String environment,
-                                                   @QueryParam("type") String resourceType) throws ValidationException {
+                                  @PathParam("releaseName") String releaseName,
+                                  @QueryParam("env") @DefaultValue("Global") String environment,
+                                  @QueryParam("type") String resourceType) throws ValidationException {
         ReleaseEntity release = resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName);
         return new ReleaseDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
                 release.getName(), resourceType), resourceProperties.getResourceProperties(resourceGroupName, release.getName(),
@@ -307,6 +311,17 @@ public class ResourcesRest {
             resourceTypeDTOs.add(new ResourceTypeDTO(resourceType));
         }
         return resourceTypeDTOs;
+    }
+
+    @Path("/resourceGroups/{resourceGroupId}/canCreateShakedownTest")
+    @GET
+    @ApiOperation(value = "Checks is caller is allowed to create/execute ShakedownTests - used by Angular")
+    public Response canCreateShakedownTest(@PathParam("resourceGroupId") Integer resourceGroupId) throws ValidationException {
+        if (resourceGroupId == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        boolean hasPermission = permissionBoundary.hasPermissionToCreateShakedownTests(resourceGroupId);
+        return Response.ok(hasPermission).build();
     }
 
     // Fuer JavaBatch Monitor

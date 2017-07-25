@@ -114,6 +114,14 @@ export class ResourceService {
     return resource$;
   }
 
+  canCreateShakedownTest(resourceGroupId: number): Observable<boolean> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/resourceGroups/${resourceGroupId}/canCreateShakedownTest`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   private getHeaders() {
     let headers = new Headers();
     headers.append('Accept', 'application/json');

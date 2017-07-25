@@ -27,6 +27,7 @@ import java.util.*;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -139,7 +140,7 @@ public class PropertyDescriptorServiceTest {
         else{
             encryptedProperties = Arrays.asList(propertyDescriptorEntity.getId());
         }
-        service.manageChangeOfEncryptedPropertyDescriptor(propertyDescriptorEntity, encryptedProperties);
+        service.manageChangeOfEncryptedPropertyDescriptor(propertyDescriptorEntity, encryptedProperties, hasPermission);
         if(encrypt!=null){
             if(encrypt){
                 verify(p, times(0)).decrypt();
@@ -166,9 +167,10 @@ public class PropertyDescriptorServiceTest {
         AbstractContext abstractContextMock = mock(AbstractContext.class);
         PropertyDescriptorEntity descriptor = null;
         List<PropertyTagEntity> tags = new ArrayList<>();
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
 
         // when
-        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags);
+        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags, resourceEntityMock );
     }
 
     @Test(expected = AMWException.class)
@@ -180,10 +182,11 @@ public class PropertyDescriptorServiceTest {
         PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().build();;
         List<PropertyTagEntity> tags = new ArrayList<>();
         Assert.assertNull(descriptor.getId());
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
         when(propertyValidationServiceMock.isValidTechnicalKey(descriptor.getPropertyName())).thenReturn(false);
 
         // when
-        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags);
+        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags, resourceEntityMock);
     }
 
     @Test
@@ -194,11 +197,12 @@ public class PropertyDescriptorServiceTest {
         AbstractContext abstractContextMock = mock(AbstractContext.class);
         PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().build();
         List<PropertyTagEntity> tags = new ArrayList<>();
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
         when(propertyValidationServiceMock.isValidTechnicalKey(descriptor.getPropertyName())).thenReturn(true);
         Assert.assertNull(descriptor.getId());
 
         // when
-        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags);
+        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags, resourceEntityMock);
 
         // then
         verify(abstractContextMock).addPropertyDescriptor(descriptor);
@@ -216,11 +220,12 @@ public class PropertyDescriptorServiceTest {
         AbstractContext abstractContextMock = mock(AbstractContext.class);
         PropertyDescriptorEntity newDescriptor = new PropertyDescriptorEntityBuilder().withPropertyName("existing").build();
         List<PropertyTagEntity> tags = new ArrayList<>();
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
         when(propertyValidationServiceMock.isValidTechnicalKey(descriptor.getPropertyName())).thenReturn(true);
         when(abstractContextMock.getPropertyDescriptors()).thenReturn(new HashSet<>(Collections.singletonList(descriptor)));
 
         // when
-        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, newDescriptor, tags);
+        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, newDescriptor, tags, resourceEntityMock);
     }
 
     @Test
@@ -240,9 +245,10 @@ public class PropertyDescriptorServiceTest {
         // mocking the manageChangeOfEncryptedPropertyDescriptor
         when(entityManagerMock.find(PropertyDescriptorEntity.class, descriptor.getId())).thenReturn(descriptor);
         when(entityManagerMock.createQuery("select p from PropertyEntity p where p.descriptor=:descriptor", PropertyEntity.class)).thenReturn(mock(TypedQuery.class));
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
 
         // when
-        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags);
+        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags, resourceEntityMock);
 
         // then
         verify(propertyTagEditingServiceMock).updateTags(tags, mergedPropertyDescriptorMock);
@@ -268,9 +274,10 @@ public class PropertyDescriptorServiceTest {
 
         // return descriptor with same values (not changed fields)
         when(entityManagerMock.find(PropertyDescriptorEntity.class, descriptor.getId())).thenReturn(descriptor);
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
 
         // when
-        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags);
+        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags, resourceEntityMock);
 
         // then
         verify(propertyTagEditingServiceMock).updateTags(tags, mergedPropertyDescriptorMock);
