@@ -123,5 +123,6 @@
     <include file="changesets/data/newPermissions_migrationOfRemainingPermissions.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/remove_duplicate_restrictions.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/correct_role_server_admin.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/correct_role_shakedown_admin.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
