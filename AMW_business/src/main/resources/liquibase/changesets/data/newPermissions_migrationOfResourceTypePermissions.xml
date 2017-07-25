@@ -50,6 +50,7 @@
 
         <update tableName="TAMW_restriction">
             <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'RESOURCE')" />
+            <column name="resourcetype_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_resourcetype WHERE name = 'APPLICATION')" />
             <column name="v" type="INTEGER" value="0" />
             <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'SAVE_ALL_CHANGES' or value = 'SAVE_ALL_PROPERTIES') AND v = 1</where>
         </update>
