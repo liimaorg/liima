@@ -245,12 +245,23 @@ describe('DeploymentComponent (create deployment)', () => {
     expect(deploymentComponent.isReadyForDeployment()).toBeFalsy();
   }));
 
-  it('should be readyForDeployment if a release ist set and an environment is selected',
+  it('should not be readyForDeployment if a release ist set, an environment is selected but appWithVersions is empty',
+    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+      // given
+      deploymentComponent.selectedAppserver = <Resource> {name: 'testServer'};
+      deploymentComponent.selectedRelease = <Release> {id: 1, release: 'testRelease'};
+      deploymentComponent.environments = [<Environment> {id: 1}, <Environment> {id: 2, selected: true}];
+      // when then
+      expect(deploymentComponent.isReadyForDeployment()).toBeFalsy();
+    }));
+
+  it('should be readyForDeployment if a release ist set, an environment is selected and appWithVersions is not empty',
     inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
     deploymentComponent.selectedAppserver = <Resource> {name: 'testServer'};
     deploymentComponent.selectedRelease = <Release> {id: 1, release: 'testRelease'};
     deploymentComponent.environments = [<Environment> {id: 1}, <Environment> {id: 2, selected: true}];
+    deploymentComponent.appsWithVersion = [<AppWithVersion> { applicationName: 'testApp' }];
     // when then
     expect(deploymentComponent.isReadyForDeployment()).toBeTruthy();
   }));
@@ -345,6 +356,49 @@ describe('DeploymentComponent (create deployment with params)', () => {
     // then
     expect(deploymentComponent.appserverName).toEqual('aServer');
     expect(deploymentComponent.releaseName).toEqual('aRelease');
+    expect(deploymentComponent.deploymentId).toBeUndefined();
+    expect(deploymentComponent.isRedeployment).toBeFalsy();
+  }));
+
+});
+
+describe('DeploymentComponent (create deployment with fake redeploy param)', () => {
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [
+      CommonModule,
+      RouterTestingModule.withRoutes([
+        {path: 'deployment', component: DummyComponent}
+      ])
+    ],
+    providers: [
+      BaseRequestOptions, {
+        provide: ActivatedRoute,
+        useValue: {
+          params: Observable.of({deploymentId: 'aServer'})
+        },
+      },
+      MockBackend,
+      {
+        provide: Http,
+        useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+          return new Http(backend, defaultOptions);
+        },
+        deps: [MockBackend, BaseRequestOptions]
+      },
+      EnvironmentService,
+      DeploymentService,
+      ResourceService,
+      DeploymentComponent,
+      AppState,
+    ],
+    declarations: [DummyComponent],
+  }));
+
+  it('should init vars with corrected route params on ngOnInit', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+    // given // when
+    deploymentComponent.ngOnInit();
+    // then
+    expect(deploymentComponent.appserverName).toEqual('aServer');
     expect(deploymentComponent.deploymentId).toBeUndefined();
     expect(deploymentComponent.isRedeployment).toBeFalsy();
   }));

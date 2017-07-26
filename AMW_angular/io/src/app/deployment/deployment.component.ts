@@ -67,7 +67,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   doNeighbourhoodTest: boolean = false;
 
   bestForSelectedRelease: Release = null;
-  appsWithoutVersion: string[] = [];
 
   errorMessage: string = '';
   successMessage: string = '';
@@ -95,11 +94,17 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
     console.log('hello `Deployment` component');
 
-    if (this.deploymentId) {
+    // a deploymentId MUST be numeric..
+    if (this.deploymentId && !isNaN(this.deploymentId)) {
       this.appState.set('pageTitle', 'Redeploy');
       this.isRedeployment = true;
       this.getDeployment();
     } else {
+      // ..or it's rather an appserverName (we got no type safety on runtime)
+      if (this.deploymentId) {
+        this.appserverName = this.deploymentId.toString();
+        delete this.deploymentId;
+      }
       this.appState.set('pageTitle', 'Create new deployment');
       this.initAppservers();
     }
@@ -128,10 +133,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   onChangeRelease() {
-    console.log('selected release is ' + this.selectedRelease.release);
     if (!this.selectedRelease) {
       this.selectedRelease = this.releases[0];
     }
+    console.log('selected release is ' + this.selectedRelease.release);
     this.getRelatedForRelease();
     this.goTo(this.selectedAppserver.name + '/' + this.selectedRelease.release);
   }
@@ -153,7 +158,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   isReadyForDeployment(): boolean {
-    return (this.selectedRelease && _.filter(this.environments, 'selected').length > 0);
+    return (this.selectedRelease  && this.appsWithVersion.length > 0 && _.filter(this.environments, 'selected').length > 0);
   }
 
   requestDeployment() {
@@ -227,7 +232,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private extractFromRelations() {
     this.runtime = _.filter(this.bestForSelectedRelease.relations, {type: 'RUNTIME'}).pop();
-    this.appsWithoutVersion = _.filter(this.bestForSelectedRelease.relations, {type: 'APPLICATION'}).map((val) => val.relatedResourceName);
     this.resourceTags = this.resourceTags.concat(this.bestForSelectedRelease.resourceTags);
     this.appsWithVersion = [];
     this.getAppVersions();
@@ -235,7 +239,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private getAppVersions() {
     this.isLoading = true;
-    this.resourceService.getAppsWithVersions(this.selectedAppserver.id, this.bestForSelectedRelease.id, _.filter(this.environments, 'selected').map((val) => val.id)).subscribe(
+    this.resourceService.getAppsWithVersions(this.selectedAppserver.id, this.selectedRelease.id, _.filter(this.environments, 'selected').map((val) => val.id)).subscribe(
       /* happy path */ (r) => this.appsWithVersion = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
@@ -255,7 +259,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.doExecuteShakedownTest = false;
     this.doNeighbourhoodTest = false;
     this.appsWithVersion = [];
-    this.appsWithoutVersion = [];
     this.transDeploymentParameter = <DeploymentParameter> {};
     this.transDeploymentParameters = [];
   }
