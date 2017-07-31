@@ -1,0 +1,43 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/permissionMerge/correct_remaining_roles.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="permissionMerge_remaining_roles" >
+        <comment>
+            corrects permissions of remaining roles
+        </comment>
+
+        <!-- admin_developer -->
+        <sql>DELETE FROM TAMW_restriction WHERE role_id = (SELECT id FROM TAMW_ROLE WHERE name = 'admin_developer') AND permission_id = (SELECT id FROM TAMW_PERMISSION WHERE value = 'RESOURCE') AND action IN ('ALL');</sql>
+        <sql>DELETE FROM TAMW_restriction WHERE role_id = (SELECT id FROM TAMW_ROLE WHERE name = 'admin_developer') AND permission_id = (SELECT id FROM TAMW_PERMISSION WHERE value = 'RESOURCE') AND action IN ('UPDATE') AND resourcetype_id IS NULL;</sql>
+
+        <!-- app_developer -->
+        <sql>DELETE FROM TAMW_restriction WHERE role_id = (SELECT id FROM TAMW_ROLE WHERE name = 'app_developer') AND permission_id = (SELECT id FROM TAMW_PERMISSION WHERE value = 'RESOURCE') AND action IN ('READ') AND resourcetype_id IS NULL;</sql>
+        <sql>DELETE FROM TAMW_restriction WHERE role_id = (SELECT id FROM TAMW_ROLE WHERE name = 'app_developer') AND permission_id = (SELECT id FROM TAMW_PERMISSION WHERE value = 'RESOURCE_TEST_GENERATION_RESULT');</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, context_id, v) SELECT ABS(context_id+10000), role_id, permission_id, context_id, 99 FROM TAMW_restriction WHERE role_id = (SELECT id FROM TAMW_role WHERE name = 'developer_deployer') AND context_id IS NOT NULL;</sql>
+
+        <update tableName="TAMW_restriction">
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'RESOURCE_TEST_GENERATION_RESULT')" />
+            <column name="role_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_role WHERE name = 'app_developer')" />
+            <column name="v" type="INTEGER" valueNumeric="0" />
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'DEPLOYMENT') AND role_id IN (SELECT id FROM TAMW_role WHERE name = 'developer_deployer') AND v = 99</where>
+        </update>
+
+        <!-- config_admin -->
+        <sql>DELETE FROM TAMW_restriction WHERE role_id = (SELECT id FROM TAMW_ROLE WHERE name = 'config_admin') AND permission_id = (SELECT id FROM TAMW_PERMISSION WHERE value = 'DEPLOYMENT') AND action IN ('ALL');</sql>
+        <sql>DELETE FROM TAMW_restriction WHERE role_id = (SELECT id FROM TAMW_ROLE WHERE name = 'config_admin') AND permission_id = (SELECT id FROM TAMW_PERMISSION WHERE value = 'RESOURCE') AND action IN ('UPDATE') AND resourcetypepermission = 'NON_DEFAULT_ONLY';</sql>
+
+        <!-- server_admin -->
+        <sql>DELETE FROM TAMW_restriction WHERE role_id = (SELECT id FROM TAMW_ROLE WHERE name = 'server_admin') AND permission_id = (SELECT id FROM TAMW_PERMISSION WHERE value = 'RESOURCE') AND action IN ('ALL','UPDATE');</sql>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
+            <where>SEQ_NAME='restrictionId'</where>
+        </update>
+
+        <rollback></rollback>
+    </changeSet>
+
+</databaseChangeLog>

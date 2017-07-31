@@ -125,5 +125,6 @@
     <include file="changesets/data/permissionMerge/correct_role_server_admin.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/correct_role_shakedown_admin.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/correct_role_viewer.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/correct_remaining_roles.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
