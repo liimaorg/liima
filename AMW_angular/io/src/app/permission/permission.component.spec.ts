@@ -87,11 +87,13 @@ describe('PermissionComponent (type Role)', () => {
     expect(permissionComponent.groupedEnvironments['Test']).toContain({ id: 3, name: 'T', parent: 'Test', selected: false });
   }));
 
-  it('should invoke PermissionService on changeRole if selected Role exists',
+  it('should invoke PermissionService and sort the Restrictions by Permission.name, action on changeRole if selected Role exists',
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
     // given
-    let restrictions: Restriction[] = [ <Restriction> { id: 21 }, <Restriction> { id: 22 } ];
+    let restrictions: Restriction[] = [ <Restriction> { id: 21, action: 'ALL', permission: <Permission> { name: 'RESOURCE' } },
+      <Restriction> { id: 22, action: 'ALL', permission: <Permission> { name: 'DEPLOYMENT' } },
+      <Restriction> { id: 23, action: 'CREATE', permission: <Permission> { name: 'RESOURCE' } }] ;
     permissionComponent.selectedRoleName = 'TESTER';
     permissionComponent.roleNames = [ 'tester', 'role' ];
     spyOn(permissionService, 'getRoleWithRestrictions').and.returnValue(Observable.of(restrictions));
@@ -99,7 +101,10 @@ describe('PermissionComponent (type Role)', () => {
     permissionComponent.onChangeRole();
     // then
     expect(permissionService.getRoleWithRestrictions).toHaveBeenCalledWith('TESTER');
-    expect(permissionComponent.restrictions).toBe(restrictions);
+    expect(permissionComponent.restrictions.length).toBe(3);
+    expect(permissionComponent.restrictions[0].id).toBe(22);
+    expect(permissionComponent.restrictions[1].id).toBe(21);
+    expect(permissionComponent.restrictions[2].id).toBe(23);
   }));
 
   it('should not invoke PermissionService on changeRole if selected Role does not exist',
@@ -117,11 +122,12 @@ describe('PermissionComponent (type Role)', () => {
         expect(permissionComponent.restrictions).toEqual([]);
   }));
 
-  it('should invoke PermissionService on changeUser if selected User exists',
+  it('should invoke PermissionService and sort the Restrictions by Permission.name, action on changeUser if selected User exists',
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
       // given
-      let restrictions: Restriction[] = [ <Restriction> { id: 31 }, <Restriction> { id: 32 } ];
+      let restrictions: Restriction[] = [ <Restriction> { id: 41, action: 'DELETE', permission: <Permission> { name: 'SAME' } },
+        <Restriction> { id: 42, action: 'CREATE', permission: <Permission> { name: 'SAME' } } ];
       permissionComponent.selectedUserName = 'Tester';
       permissionComponent.userNames = [ 'tester', 'user' ];
       spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(Observable.of(restrictions));
@@ -129,14 +135,16 @@ describe('PermissionComponent (type Role)', () => {
       permissionComponent.onChangeUser();
       // then
       expect(permissionService.getUserWithRestrictions).toHaveBeenCalledWith('Tester');
-      expect(permissionComponent.restrictions).toBe(restrictions);
+      expect(permissionComponent.restrictions.length).toBe(2);
+      expect(permissionComponent.restrictions[0].id).toBe(42);
+      expect(permissionComponent.restrictions[1].id).toBe(41);
   }));
 
   it('should not invoke PermissionService on changeUser if selected User does not exist',
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
         // given
-        permissionComponent.restrictions = [ <Restriction> { id: 31 }, <Restriction> { id: 32 } ];
+        permissionComponent.restrictions = [ <Restriction> { id: 51 }, <Restriction> { id: 52 } ];
         permissionComponent.selectedUserName = 'Tester';
         permissionComponent.userNames = [ 'user' ];
         spyOn(permissionService, 'getUserWithRestrictions').and.callThrough();

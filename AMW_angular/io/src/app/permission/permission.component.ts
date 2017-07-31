@@ -238,7 +238,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.permissionService
       .getRoleWithRestrictions(roleName).subscribe(
-      /* happy path */ (r) => this.restrictions = r,
+      /* happy path */ (r) => this.restrictions = _.sortBy(r, ['permission.name', 'action']),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }
@@ -247,7 +247,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.permissionService
       .getUserWithRestrictions(userName).subscribe(
-      /* happy path */ (r) => this.restrictions = r,
+      /* happy path */ (r) => this.restrictions = _.sortBy(r, ['permission.name', 'action']),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }
