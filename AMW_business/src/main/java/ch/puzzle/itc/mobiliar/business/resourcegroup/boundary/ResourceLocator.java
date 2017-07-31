@@ -113,13 +113,31 @@ public class ResourceLocator {
     }
 
     /**
+     * Obtains a resource in the requested release or the closest past release before the requested one
+     * @param groupId id of resource group
+     * @param releaseId release id
+     * @return ResourceEntity
+     */
+    public ResourceEntity getExactOrClosestPastReleaseByGroupIdAndReleaseId(@NotNull Integer groupId, @NotNull Integer releaseId) {
+
+        ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
+        ResourceGroupEntity resGroup = resourceGroupRepository.getResourceGroupById(groupId);
+        try {
+            release = resourceDependencyResolverService.findExactOrClosestPastRelease(resGroup.getReleases(),
+                    release.getInstallationInProductionAt());
+        }
+        catch (NoResultException e) {
+            return null;
+        }
+        return resourceRepository.getResourceByGroupIdAndRelease(groupId, release);
+    }
+
+    /**
      * @param groupId id of resource group
      * @param releaseId release id
      * @return
-     * @throws ValidationException thrown if one of the arguments is either empty or null
      */
-    public ResourceEntity getResourceByGroupIdAndRelease(@NotNull Integer groupId, @NotNull Integer releaseId)
-            throws ValidationException {
+    public ResourceEntity getResourceByGroupIdAndRelease(@NotNull Integer groupId, @NotNull Integer releaseId) {
 
         ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
         try {
@@ -304,9 +322,8 @@ public class ResourceLocator {
      *  Für JavaBatch Monitor
      * @param apps
      * @return
-     * @throws ValidationException
      */
-    public List<ResourceEntity> getBatchJobConsumedResources(List<String> apps) throws ValidationException {
+    public List<ResourceEntity> getBatchJobConsumedResources(List<String> apps) {
         if (apps == null || apps.isEmpty()) {
             return null;
         }
@@ -322,9 +339,8 @@ public class ResourceLocator {
      *  Für JavaBatch Monitor
      * @param apps
      * @return
-     * @throws ValidationException
      */
-    public List<ResourceEntity> getBatchJobProvidedResources(List<String> apps) throws ValidationException {
+    public List<ResourceEntity> getBatchJobProvidedResources(List<String> apps) {
         if (apps == null || apps.isEmpty()) {
             return null;
         }

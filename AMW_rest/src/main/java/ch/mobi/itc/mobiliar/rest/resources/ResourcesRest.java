@@ -254,15 +254,17 @@ public class ResourcesRest {
     @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}/appWithVersions/")
     @GET
     @ApiOperation(value = "Get application with version for a specific resourceGroup, release and context(s) - used by Angular")
-    public Response getAppplicationsWithVersionForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
+    public Response getApplicationsWithVersionForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
                                                           @PathParam("releaseId") Integer releaseId,
                                                           @QueryParam("context") List<Integer> contextIds) throws ValidationException {
-        ResourceEntity appServer = resourceLocator.getResourceByGroupIdAndRelease(resourceGroupId, releaseId);
+
+        ResourceEntity appServer = resourceLocator.getExactOrClosestPastReleaseByGroupIdAndReleaseId(resourceGroupId, releaseId);
         if (appServer == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+        ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
         List<AppWithVersionDTO> apps = new ArrayList<>();
-        List<DeploymentEntity.ApplicationWithVersion> appVersions = deploymentBoundary.getVersions(appServer, contextIds, appServer.getRelease());
+        List<DeploymentEntity.ApplicationWithVersion> appVersions = deploymentBoundary.getVersions(appServer, contextIds, release);
         for (DeploymentEntity.ApplicationWithVersion appVersion : appVersions) {
             apps.add(new AppWithVersionDTO(appVersion.getApplicationName(), appVersion.getVersion()));
         }
