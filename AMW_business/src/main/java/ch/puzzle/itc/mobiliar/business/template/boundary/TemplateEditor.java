@@ -35,6 +35,7 @@ import javax.persistence.Query;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
@@ -222,12 +223,15 @@ public class TemplateEditor {
 		}
 		AbstractContext owner = getOwnerOfTemplate(templateDescriptor);
 		if (owner != null) {
-			if((owner instanceof ResourceContextEntity || owner instanceof ResourceRelationContextEntity)
-					&& !permissions.hasPermission(Permission.RESOURCE_TEMPLATE, Action.DELETE)){
-				   throw new NotAuthorizedException("Not authorized to remove the template of a resource");
-			}
-			else if(!permissions.hasPermission(Permission.RESOURCETYPE_TEMPLATE, Action.DELETE)){
-				   throw new NotAuthorizedException("Not authorized to remove the template of a resource type");
+			if (owner instanceof ResourceContextEntity && !permissions.hasPermission(Permission.RESOURCE_TEMPLATE, null,
+					Action.DELETE, ((ResourceContextEntity) owner).getContextualizedObject().getResourceGroup(), null)) {
+				throw new NotAuthorizedException("Not authorized to remove the template of a resource");
+			} else if (owner instanceof ResourceRelationContextEntity && !permissions.hasPermission(Permission.RESOURCE_TEMPLATE, null,
+					Action.DELETE, ((ResourceRelationContextEntity) owner).getContextualizedObject().getMasterResource().getResourceGroup(), null)) {
+				throw new NotAuthorizedException("Not authorized to remove the template of a resource");
+			} else if (owner instanceof ResourceTypeContextEntity && !permissions.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null,
+					Action.DELETE, null, ((ResourceTypeContextEntity) owner).getContextualizedObject())) {
+				throw new NotAuthorizedException("Not authorized to remove the template of a resource type");
 			}
 			owner.removeTemplate(templateDescriptor);
 		}
