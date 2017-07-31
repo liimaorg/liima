@@ -583,7 +583,9 @@ public class DeploymentBoundary {
                     return name.startsWith(deploymentId + "_");
                 }
             };
-            return dir.list(filter);
+            String[] fileNames = dir.list(filter);
+            Arrays.sort(fileNames);
+            return fileNames;
 
         } else {
             String message;
