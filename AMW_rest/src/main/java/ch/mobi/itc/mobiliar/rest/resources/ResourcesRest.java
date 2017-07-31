@@ -254,7 +254,7 @@ public class ResourcesRest {
     @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}/appWithVersions/")
     @GET
     @ApiOperation(value = "Get application with version for a specific resourceGroup, release and context(s) - used by Angular")
-    public Response getAppplicationsWithVersionForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
+    public Response getApplicationsWithVersionForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
                                                           @PathParam("releaseId") Integer releaseId,
                                                           @QueryParam("context") List<Integer> contextIds) throws ValidationException {
 
