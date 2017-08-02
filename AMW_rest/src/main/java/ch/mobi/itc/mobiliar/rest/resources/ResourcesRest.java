@@ -619,4 +619,48 @@ public class ResourcesRest {
         return Response.status(CREATED).header("Location", "/resources/" + copyResourceResult.getTargetResourceName() + "/" +releaseName).build();
     }
 
+    /**
+     * Copies the properties of a Resource into another
+     *
+     * @param targetResourceGroupName
+     * @param targetReleaseName
+     * @param originResourceGroupName
+     * @param originReleaseName
+     * @return
+     * @throws ValidationException
+     */
+    @Path("/{resourceGroupName}/{releaseName}/copyFrom")
+    @PUT
+    @Consumes("text/plain")
+    @ApiOperation(value = "Copy the properties of a Resource into another")
+    public Response copyFromResource(@ApiParam(value = "The target ResourceGroup (to)") @PathParam("resourceGroupName") String targetResourceGroupName,
+                                @ApiParam(value = "The target ReleaseName (to)") @PathParam("releaseName") String targetReleaseName,
+                                @ApiParam(value = "The origin ResourceGroup (from)") @QueryParam("originResourceGroupName") String originResourceGroupName,
+                                @ApiParam(value = "The origin ReleaseName (from)") @QueryParam("originReleaseName") String originReleaseName) throws ValidationException {
+        ResourceEntity targetResource = resourceLocator.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName);
+        if (targetResource == null) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Target Resource not found")).build();
+        }
+        ResourceEntity originResource = resourceLocator.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName);
+        if (originResource == null) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Origin Resource not found")).build();
+        }
+        if ((!originResource.getResourceType().isApplicationResourceType() && !originResource.getResourceType().isApplicationServerResourceType())
+                || (!targetResource.getResourceType().isApplicationResourceType() && !targetResource.getResourceType().isApplicationServerResourceType())) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Only Application or ApplicationServer ResourceTypes are allowed")).build();
+        }
+
+        CopyResourceResult copyResourceResult;
+        try {
+            copyResourceResult = copyResource.doCopyResource(targetResource.getId(), originResource.getId(), ForeignableOwner.getSystemOwner());
+        } catch (ForeignableOwnerViolationException | AMWException e) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
+        }
+        
+        if (!copyResourceResult.isSuccess()) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from "  + originResource.getName() + " failed")).build();
+        }
+        return Response.ok().build();
+    }
+
 }

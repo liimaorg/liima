@@ -117,6 +117,10 @@ public class CopyResource {
 		ResourceEntity targetResource = commonDomainService.getResourceEntityById(targetResourceId);
 		ResourceEntity originResource = commonDomainService.getResourceEntityById(originResourceId);
 
+		if (!originResource.getResourceType().equals(targetResource.getResourceType())) {
+			throw new AMWException("Target and origin Resource are not of the same ResourceType");
+		}
+
 		if(!permissionBoundary.canCopyFromSpecificResource(originResource, originResource.getResourceGroup())){
 			throw new NotAuthorizedException("Permission Denied");
 		}
