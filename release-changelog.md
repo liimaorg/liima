@@ -1,4 +1,9 @@
-# v1.13
+# v1.13.0
+
+This release contains a new and enhanced permission system and bugfixes.
+
+## Neue features
+* New permission system: The permission system has been rewriten to allow for permissions to scoped by environement, resource and resource type. See [documentation](https://github.com/liimaorg/docs/blob/master/content/permissions.md) for more details.
 
 ## API Changes / Important for peripheral systems 
 * In ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO the new property *relationName* will replace the property *identifier*. The property *identifier* will be removed by v1.14. The following REST URIs are concerned:
