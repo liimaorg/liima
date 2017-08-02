@@ -33,6 +33,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersis
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
@@ -100,6 +101,9 @@ public class RelationDataProvider implements Serializable {
     @Inject
     SoftlinkRelationBoundary softlinkRelationBoundary;
 
+	@Inject
+	ResourceRelationBoundary resourceRelationBoundary;
+
 	@Getter
 	@Setter
 	private boolean allowNodes = false;
@@ -164,7 +168,8 @@ public class RelationDataProvider implements Serializable {
 			if (!helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix)) {
 				return false;
 			}
-			return  canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
+			boolean gotPermission = canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
+			return gotPermission && resourceRelationBoundary.isAddableAsProvidedResourceToResourceGroup((ResourceEntity) resourceOrType, slaveResourceGroup.getName());
 		}
 		return false;
 	}

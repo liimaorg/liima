@@ -73,6 +73,9 @@ public class RelationEditor {
 	ResourceRelationService resourceRelationService;
 
 	@Inject
+	ResourceRelationBoundary resourceRelationBoundary;
+
+	@Inject
 	ResourceTypeDomainService resourceTypeDomainService;
 
 	@Inject
@@ -138,6 +141,11 @@ public class RelationEditor {
 		if (master == null) {
 			throw new ResourceNotFoundException("Resource with name '" + masterGroupName + "' and Release '" + releaseName + "' not found");
 		}
+		// a Resource shall only be provided by one ResourceGroup
+		if (typeIdentifier.toLowerCase().equals("provided") && !resourceRelationBoundary.isAddableAsProvidedResourceToResourceGroup(master, slaveGroupName)) {
+			throw new ValidationException("Resource '" + slaveGroupName + "' is already provided by another ResourceGroup");
+		}
+
 		ResourceGroupEntity slaveGroup = null;
 		try {
 			slaveGroup = resourceGroupLocator.getResourceGroupByName(slaveGroupName);

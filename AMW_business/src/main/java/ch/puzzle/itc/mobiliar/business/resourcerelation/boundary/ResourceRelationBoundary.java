@@ -24,7 +24,12 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationConfigurationService;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationRepository;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+
+import java.util.List;
 
 @Stateless
 public class ResourceRelationBoundary {
@@ -32,10 +37,33 @@ public class ResourceRelationBoundary {
     @Inject
     ResourceRelationConfigurationService resourceRelationConfigurationService;
 
+    @Inject
+    ResourceRelationRepository resourceRelationRepository;
+
     /**
      *  Returns true if a ownership combination is questionable
      */
     public boolean isSuspectRelation(ForeignableOwner sourceOwner, ForeignableOwner relationOwner, ForeignableOwner targetOwner) {
         return resourceRelationConfigurationService.isSuspectOwnerCombination(sourceOwner,relationOwner,targetOwner);
     }
+
+    /**
+     * Checks if a Resource can be added as provided Resource
+     * A Resource can only be provided by one ResourceGroup
+     * @param masterResource
+     * @param slaveResourceName
+     * @return
+     */
+    public boolean isAddableAsProvidedResourceToResourceGroup(ResourceEntity masterResource, String slaveResourceName) {
+        List<ProvidedResourceRelationEntity> resourceRelations = resourceRelationRepository.getResourceRelationOfOtherMasterResourceGroupsBySlaveResourceGroupName(masterResource, slaveResourceName);
+        if (resourceRelations != null) {
+            for (ProvidedResourceRelationEntity resourceRelation : resourceRelations) {
+                if (!resourceRelation.getMasterResource().getName().equals(masterResource.getName())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }
