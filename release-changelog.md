@@ -3,7 +3,9 @@
 This release contains a new and enhanced permission system and bugfixes.
 
 ## New features
-* New permission system [#25](https://github.com/liimaorg/liima/issues/25): the permission system has been rewriten to allow for permissions to be scoped by environement, resource and resource type. See [documentation](https://github.com/liimaorg/docs/blob/master/content/permissions.md) for more details. Migration to the new permission system happens automatically via Liquibase. Please check if the permissions of the roles are still correct after the migration.
+* New permission system [#25](https://github.com/liimaorg/liima/issues/25): the permission system has been rewriten to allow for permissions to be scoped by environement, resource and resource type. See [documentation](https://github.com/liimaorg/docs/blob/master/content/permissions.md) for more details. Important:
+  * Migration to the new permission system happens automatically via Liquibase. Please check if the permissions of the roles are still correct after the migration.
+  * The role app_developer can now also rename applications. This is because rename is part of the update action.
 * Resource relation names are now editable [#78](https://github.com/liimaorg/liima/issues/78)
 * New REST function to add relations to resources [#51](https://github.com/liimaorg/liima/issues/51)
 * New REST function `GET /resources/{resourceGroupName}/lte/{releaseName}` that fetches the lower or equal release to the given one [#86](https://github.com/liimaorg/liima/issues/86)
