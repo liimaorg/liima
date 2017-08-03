@@ -2,8 +2,16 @@
 
 This release contains a new and enhanced permission system and bugfixes.
 
-## Neue features
-* New permission system: The permission system has been rewriten to allow for permissions to scoped by environement, resource and resource type. See [documentation](https://github.com/liimaorg/docs/blob/master/content/permissions.md) for more details.
+## New features
+* New permission system [#25](https://github.com/liimaorg/liima/issues/25): the permission system has been rewriten to allow for permissions to be scoped by environement, resource and resource type. See [documentation](https://github.com/liimaorg/docs/blob/master/content/permissions.md) for more details. Migration to the new permission system happens automatically via Liquibase. Please check if the permissions of the roles are still correct after the migration.
+* Resource relation names are now editable [#78](https://github.com/liimaorg/liima/issues/78)
+* New REST function to add relations to resources [#51](https://github.com/liimaorg/liima/issues/51)
+* New REST function `GET /resources/{resourceGroupName}/lte/{releaseName}` that fetches the lower or equal release to the given one [#86](https://github.com/liimaorg/liima/issues/86)
+
+## Bugfixes
+* The REST service did not encrypt property values before writing it to the DB [#131](https://github.com/liimaorg/liima/issues/131)
+* The Angular page `Create new deployment` showed the wrong apps and app versions for some releases [#113](https://github.com/liimaorg/liima/issues/113) and [#127](https://github.com/liimaorg/liima/issues/127)
+* The log dropdown of the deployment log page is sorted again [#128](https://github.com/liimaorg/liima/issues/128)
 
 ## API Changes / Important for peripheral systems 
 * In ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO the new property *relationName* will replace the property *identifier*. The property *identifier* will be removed by v1.14. The following REST URIs are concerned:
