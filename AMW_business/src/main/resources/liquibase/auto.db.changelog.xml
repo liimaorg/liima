@@ -70,6 +70,7 @@
 
     <include file="changesets/model/remove_appserverrelations/remove_appserver_relations.xml" relativeToChangelogFile="true"/>
 
+    <!--1.13.0-->
     <include file="changesets/model/newPermissions/newPermissions_restrictionEntity.xml" relativeToChangelogFile="true"/>
     <include file="changesets/model/newPermissions/newPermissions_addDeploymentPermission.xml" relativeToChangelogFile="true"/>
 
@@ -126,5 +127,6 @@
     <include file="changesets/data/permissionMerge/correct_role_shakedown_admin.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/correct_role_viewer.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/correct_remaining_roles.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/correct_role_config_admin.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
