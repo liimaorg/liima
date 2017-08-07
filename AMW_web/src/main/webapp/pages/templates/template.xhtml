@@ -149,7 +149,8 @@
                     class="#{screen eq 'newResourceList' or screen eq 'newEditRes' or screen eq 'newEditApp' or screen eq 'newEditNode' or screen eq 'newEditResType' ? 'current' : ''}"><h:link
                         outcome="resourceList" value="Resources" onclick="showLoader();" /></li>
                 <li class="#{screen eq 'newDeploy' ? 'current' : ''}"><h:link
-                        outcome="deploy" value="Deploy" onclick="showLoader();" /></li>
+                        outcome="deploy" value="Deploy" onclick="showLoader();"
+                        rendered="#{securityDataProvider.hasPermissionOnAllContext('DEPLOYMENT', 'READ')}"/></li>
 
                 <li class="#{screen eq 'shakedownTest' ? 'current' : ''}"><h:link
                         outcome="shakedownTest" value="Shakedown Test"

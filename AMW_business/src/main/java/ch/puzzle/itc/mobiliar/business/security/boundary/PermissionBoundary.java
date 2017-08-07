@@ -170,6 +170,12 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermission(permission, action);
     }
 
+    public boolean hasPermissionOnAllContext(String permissionName, String actionName) {
+        Permission permission = Permission.valueOf(permissionName);
+        Action action = Action.valueOf(actionName);
+        return permissionService.hasPermissionOnAllContext(permission, action, null, null);
+    }
+
     public boolean hasPermissionForResourceType(String permissionName, String actionName, String resourceTypeName) {
         Permission permission = Permission.valueOf(permissionName);
         Action action = Action.valueOf(actionName);
@@ -202,6 +208,10 @@ public class PermissionBoundary implements Serializable {
 
     public boolean hasPermission(Permission permission, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
         return permissionService.hasPermission(permission, null, action, resourceGroup, resourceType);
+    }
+
+    public boolean hasPermission(Permission permission, Action action, ContextEntity context, ResourceGroupEntity resourceGroup) {
+        return permissionService.hasPermission(permission, context, action, resourceGroup, null);
     }
 
     /**

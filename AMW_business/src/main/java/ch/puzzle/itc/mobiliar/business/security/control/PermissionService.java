@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.ALL;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
 
 @Stateless
@@ -88,7 +89,7 @@ public class PermissionService implements Serializable {
                 return true;
             }
         }
-        return hasUserRestriction(Permission.DEPLOYMENT.name(), null, null, null, null);
+        return hasUserRestriction(Permission.DEPLOYMENT.name(), null, CREATE, null, null);
     }
 
     /**
