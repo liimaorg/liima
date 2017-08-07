@@ -22,7 +22,7 @@
 				<li>
 					<div style="display: inline-block; float: right;">
 						<h:link 
-							rendered="#{(!templateEditDataProvider.editResource or !cc.attrs.isRelation or resourceRelationModel.consumedRelation) and templateEditDataProvider.canEdit and templateEditDataProvider.canAdd}"
+							rendered="#{(!templateEditDataProvider.editResource or !cc.attrs.isRelation or resourceRelationModel.consumedRelation) and templateEditDataProvider.canAdd}"
 							outcome="editTemplateView" type="button" styleClass="btn light right ${templateEditDataProvider.testing ? 'testing' :  ''}" includeViewParams="true">
 							<f:param name="rel" value="#{!cc.attrs.isRelation ? null : resourceRelationModel.currentRelationUniqueIdentifier}" />
 							<f:param name="templ" value="${instanceTemplate.id}" />
