@@ -1,0 +1,36 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/permissionMerge/correct_role_config_admin.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="permissionMerge_correct_role_config_admin" >
+        <comment>
+            corrects config admin permissions
+        </comment>
+
+        <insert tableName="TAMW_restriction">
+            <column name="id" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'RESOURCE_TEST_GENERATION')" />
+            <column name="role_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_role WHERE name = 'config_admin')" />
+            <column name="action" value="ALL" />
+            <column name="v" type="INTEGER" valueNumeric="0" />
+        </insert>
+
+        <insert tableName="TAMW_restriction">
+            <column name="id" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'RESOURCE_TEST_GENERATION_RESULT')" />
+            <column name="role_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_role WHERE name = 'config_admin')" />
+            <column name="action" value="ALL" />
+            <column name="v" type="INTEGER" valueNumeric="0" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
+            <where>SEQ_NAME='restrictionId'</where>
+        </update>
+
+        <rollback></rollback>
+    </changeSet>
+
+</databaseChangeLog>
