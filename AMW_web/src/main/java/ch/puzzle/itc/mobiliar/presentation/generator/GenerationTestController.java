@@ -110,6 +110,9 @@ public class GenerationTestController implements Serializable {
     @Setter
     private Integer resourceTypeId;
 
+    @Getter
+    private boolean hasPermissionToSeeGenerationResults;
+
     public void setContextIdViewParam(Integer contextIdViewParam) {
         this.contextIdViewParam = contextIdViewParam;
         // initialize context
@@ -189,8 +192,8 @@ public class GenerationTestController implements Serializable {
      */
     // TODO remove call from init event listener from view!
     public void init() {
-        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE_TEST_GENERATION_RESULT,
-                sessionContext.getCurrentContext(), Action.READ, currentResource.getResourceGroup(), null, "You do not have the permission to view the results of test generation");
+        hasPermissionToSeeGenerationResults = permissionBoundary.hasPermission(Permission.RESOURCE_TEST_GENERATION_RESULT,
+                sessionContext.getCurrentContext(), Action.READ, currentResource, null);
         // Only generate if the generationResult is not yet built
         if (currentResource != null) {
             if (generationResult == null) {

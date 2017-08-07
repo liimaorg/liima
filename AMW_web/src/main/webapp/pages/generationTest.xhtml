@@ -228,12 +228,17 @@
 
 						<hr />
 						<h3>Templates</h3>
+						<h4 class="generatorTest">
+							<h:outputText value="You do not have the required permission to view the generated templates"
+										  rendered="#{!generationTestController.hasPermissionToSeeGenerationResults}"/>
+						</h4>
 
 						<ul class="generatorTest">
 
 							<ui:repeat
 								value="#{generationTestController.compareResult.getAppServerResults(node)}"
-								var="astempl">
+								var="astempl"
+								rendered="#{generationTestController.hasPermissionToSeeGenerationResults}">
 								<li>
 									<div
 										class="well${generationTestController.compareResult.compareMode and !astempl.sameContent() ? ' templateDiff' : ''}">
