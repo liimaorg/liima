@@ -598,10 +598,10 @@ public class PermissionBoundaryTest {
         resource.setId(12);
         when(entityManager.find(ResourceEntity.class, 12)).thenReturn(resource);
         // when
-        permissionBoundary.hasPermissionToTemplateModify(resource, false);
+        permissionBoundary.hasPermissionToAddTemplate(resource, false);
         // then
-        verify(permissionService, never()).hasPermissionToModifyResourceTypeTemplate((ResourceTypeEntity) anyObject(), anyBoolean());
-        verify(permissionService, times(1)).hasPermissionToModifyResourceTemplate(resource, false);
+        verify(permissionService, never()).hasPermissionToAddResourceTypeTemplate((ResourceTypeEntity) anyObject(), anyBoolean());
+        verify(permissionService, times(1)).hasPermissionToAddResourceTemplate(resource, false);
     }
 
     @Test
@@ -611,10 +611,10 @@ public class PermissionBoundaryTest {
         type.setId(23);
         when(entityManager.find(ResourceTypeEntity.class, 23)).thenReturn(type);
         // when
-        permissionBoundary.hasPermissionToTemplateModify(type, true);
+        permissionBoundary.hasPermissionToAddTemplate(type, true);
         // then
-        verify(permissionService, never()).hasPermissionToModifyResourceTemplate((ResourceEntity) anyObject(), anyBoolean());
-        verify(permissionService, times(1)).hasPermissionToModifyResourceTypeTemplate(type, true);
+        verify(permissionService, never()).hasPermissionToAddResourceTemplate((ResourceEntity) anyObject(), anyBoolean());
+        verify(permissionService, times(1)).hasPermissionToAddResourceTypeTemplate(type, true);
     }
 
     @Test
