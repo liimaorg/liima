@@ -193,6 +193,26 @@ describe('DeploymentComponent (create deployment)', () => {
     expect(deploymentComponent.environments[1].selected).toBeTruthy();
   }));
 
+  it('should check permission on onChangeAppserver',
+    inject([DeploymentComponent, DeploymentService, ResourceService], (deploymentComponent: DeploymentComponent,
+                                                                       deploymentService: DeploymentService,
+                                                                       resourceService: ResourceService) => {
+      // given
+      deploymentComponent.selectedRelease = <Release> {id: 1};
+      let appServer: Resource = <Resource> {name: 'testServer', id: 3};
+      deploymentComponent.environments = [<Environment> {id: 1}, <Environment> {id: 2, selected: true}];
+      deploymentComponent.selectedAppserver = appServer;
+      spyOn(resourceService, 'canCreateShakedownTest').and.returnValue(Observable.of(false));
+      spyOn(deploymentService, 'canDeploy').and.returnValue(Observable.of(true));
+      // when
+      deploymentComponent.onChangeAppserver();
+      // then
+      expect(resourceService.canCreateShakedownTest).toHaveBeenCalledWith(3);
+      expect(deploymentService.canDeploy).toHaveBeenCalledWith(3, [ 2 ]);
+      expect(deploymentComponent.hasPermissionShakedownTest).toBeFalsy();
+      expect(deploymentComponent.hasPermissionToDeploy).toBeTruthy();
+    }));
+
   it('should call resourceService on onChangeRelease',
     inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
     // given

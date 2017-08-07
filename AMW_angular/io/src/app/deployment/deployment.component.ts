@@ -54,6 +54,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   transDeploymentParameters: DeploymentParameter[] = [];
   deploymentResponse: any = {};
   hasPermissionShakedownTest: boolean = false;
+  hasPermissionToDeploy: boolean = false;
 
   // redeploy only
   selectedDeployment: Deployment = <Deployment> {};
@@ -130,6 +131,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.resetVars();
     this.loadReleases();
     this.canCreateShakedownTest();
+    this.canDeploy();
   }
 
   onChangeRelease() {
@@ -145,6 +147,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     if (!this.isRedeployment) {
       this.getAppVersions();
     }
+    this.canDeploy();
   }
 
   onAddParam() {
@@ -267,6 +270,18 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.resourceService.canCreateShakedownTest(this.selectedAppserver.id).subscribe(
       /* happy path */ (r) => this.hasPermissionShakedownTest = r,
       /* error path */ (e) => this.errorMessage = e);
+  }
+
+  private canDeploy() {
+    if (this.selectedAppserver != null) {
+      this.hasPermissionToDeploy = false;
+      let contextIds: number[] = _.filter(this.environments, 'selected').map((val) => val.id);
+      if (contextIds.length > 0) {
+        this.deploymentService.canDeploy(this.selectedAppserver.id, contextIds).subscribe(
+          /* happy path */ (r) => this.hasPermissionToDeploy = r,
+          /* error path */ (e) => this.errorMessage = e);
+      }
+    }
   }
 
   private prepareDeployment() {
