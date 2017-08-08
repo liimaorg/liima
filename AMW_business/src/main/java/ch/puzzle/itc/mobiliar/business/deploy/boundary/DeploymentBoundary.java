@@ -45,6 +45,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
@@ -311,7 +312,7 @@ public class DeploymentBoundary {
         if (deploymentDate == null || deploymentDate.before(now)) {
             deploymentDate = now;
         }
-        createDeploymentForAppserver(appServerGroupId, releaseId, deploymentDate, stateToDeploy, contextIds, applicationWithVersion, deployParams, sendEmail, requestOnly, doSimulate,
+        requestOnly = createDeploymentForAppserver(appServerGroupId, releaseId, deploymentDate, stateToDeploy, contextIds, applicationWithVersion, deployParams, sendEmail, requestOnly, doSimulate,
                 isExecuteShakedownTest, isNeighbourhoodTest, trackingId);
 
         if (deploymentDate == now && !requestOnly) {
@@ -343,7 +344,7 @@ public class DeploymentBoundary {
             Integer appServerGroupId = selectedDeployment.getResourceGroup().getId();
             Integer releaseId = selectedDeployment.getRelease().getId();
 
-            createDeploymentForAppserver(appServerGroupId, releaseId, deploymentDate, stateToDeploy, contextIds, applicationWithVersion, deployParams, sendEmail, requestOnly, doSimulate,
+            requestOnly = createDeploymentForAppserver(appServerGroupId, releaseId, deploymentDate, stateToDeploy, contextIds, applicationWithVersion, deployParams, sendEmail, requestOnly, doSimulate,
                     isExecuteShakedownTest, isNeighbourhoodTest, trackingId);
         }
 
@@ -355,7 +356,25 @@ public class DeploymentBoundary {
         return trackingId;
     }
 
-    private void createDeploymentForAppserver(Integer appServerGroupId, Integer releaseId, Date deploymentDate, Date stateToDeploy, List<Integer> contextIds, List<ApplicationWithVersion>
+    /**
+     * Creates a Deployment or a deployment request for an ApplicationServer, returns true if
+     *
+     * @param appServerGroupId
+     * @param releaseId
+     * @param deploymentDate
+     * @param stateToDeploy
+     * @param contextIds
+     * @param applicationWithVersion
+     * @param deployParams
+     * @param sendEmail
+     * @param requestOnly
+     * @param doSimulate
+     * @param isExecuteShakedownTest
+     * @param isNeighbourhoodTest
+     * @param trackingId
+     * @return boolean true if deployment request only
+     */
+    private boolean createDeploymentForAppserver(Integer appServerGroupId, Integer releaseId, Date deploymentDate, Date stateToDeploy, List<Integer> contextIds, List<ApplicationWithVersion>
             applicationWithVersion, List<DeploymentParameter> deployParams, boolean sendEmail, boolean requestOnly, boolean doSimulate, boolean isExecuteShakedownTest, boolean
             isNeighbourhoodTest, Integer trackingId) {
         ResourceGroupEntity group = em.find(ResourceGroupEntity.class, appServerGroupId);
@@ -371,8 +390,7 @@ public class DeploymentBoundary {
             deployment.setTrackingId(trackingId);
 
             deployment.setDeploymentJobCreationDate(new Date());
-            ContextEntity context = em.find(ContextEntity.class,
-                    contextId);
+            ContextEntity context = em.find(ContextEntity.class, contextId);
 
             deployment.setContext(context);
 
@@ -387,10 +405,13 @@ public class DeploymentBoundary {
                 deployment.setCreateTestForNeighborhoodAfterDeployment(false);
             }
 
-            if (!requestOnly && permissionService.hasPermissionForDeploymentOnContext(context, group)) {
-                deployment.confirm(permissionService.getCurrentUserName());
-            } else {
+            // Permission DEPLOYMENT.UPDATE is required for confirming Deployments
+            if (requestOnly || !(permissionService.hasPermissionAndActionForDeploymentOnContext(context, group, Action.UPDATE)
+                    && permissionService.hasPermissionAndActionForDeploymentOnContext(context, group, Action.CREATE))) {
                 deployment.setDeploymentState(DeploymentState.requested);
+                requestOnly = true;
+            } else {
+                deployment.confirm(permissionService.getCurrentUserName());
             }
 
             if (resource != null && resource.getRuntime() != null) {
@@ -418,8 +439,8 @@ public class DeploymentBoundary {
 
             em.persist(deployment);
             log.info("Deployment for appServer " + group.getName() + " env " + contextId + " created");
-
         }
+        return requestOnly;
     }
 
     private void createAndAddDeploymentParameterForDeployment(DeploymentEntity deployment, List<DeploymentParameter> deployParams) {

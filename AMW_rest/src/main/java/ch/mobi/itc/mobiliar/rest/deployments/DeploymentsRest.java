@@ -224,7 +224,7 @@ public class DeploymentsRest {
      * @return the new DeploymentDTO
      **/
     @POST
-    @ApiOperation(value = "adds a DeplyomentRequest")
+    @ApiOperation(value = "adds a DeploymentRequest")
     public Response addDeployment(@ApiParam("Deployment Request") DeploymentRequestDTO request) {
         Integer trackingId;
         ResourceEntity appServer;
@@ -395,6 +395,27 @@ public class DeploymentsRest {
     @Path("/canDeploy/{resourceGroupId}")
     @ApiOperation(value = "Checks if caller is allowed to deploy a given ResourceGroup on the specified Environment(s)  - used by Angular")
     public Response canDeploy(@PathParam("resourceGroupId") Integer resourceGroupId,
+                              @QueryParam("contextId") Set<Integer> contextIds) {
+        ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
+        if (resourceGroup == null) {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        boolean hasPermission = false;
+        for (Integer contextId : contextIds) {
+            ContextEntity context = contextLocator.getContextById(contextId);
+            hasPermission = permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.CREATE, context, resourceGroup)
+                    && permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.UPDATE, context, resourceGroup);
+            if (!hasPermission) {
+                return Response.ok(hasPermission).build();
+            }
+        }
+        return Response.ok(hasPermission).build();
+    }
+
+    @GET
+    @Path("/canRequestDeployment/{resourceGroupId}")
+    @ApiOperation(value = "Checks if caller is allowed to request a deployment a given ResourceGroup on the specified Environment(s)  - used by Angular")
+    public Response canRequestDeployment(@PathParam("resourceGroupId") Integer resourceGroupId,
                               @QueryParam("contextId") Set<Integer> contextIds) {
         ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
         if (resourceGroup == null) {
