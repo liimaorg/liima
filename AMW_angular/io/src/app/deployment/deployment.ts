@@ -8,6 +8,7 @@ export interface Deployment {
   state: string,
   deploymentDate: Date,
   appServerName: string,
+  appServerId: number,
   appsWithVersion: AppWithVersion[];
   deploymentParameters: DeploymentParameter[];
   environmentName: string;

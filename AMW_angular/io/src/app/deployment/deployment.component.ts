@@ -195,7 +195,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.transDeploymentParameters = this.selectedDeployment.deploymentParameters;
     this.appsWithVersion = this.selectedDeployment.appsWithVersion;
     this.selectedRelease = <Release> { release: this.selectedDeployment.releaseName };
-    this.selectedAppserver = <Resource> { name: this.selectedDeployment.appServerName };
+    this.selectedAppserver = <Resource> { id: this.selectedDeployment.appServerId, name: this.selectedDeployment.appServerName };
   }
 
   private composeRedeploymentAppserverDisplayName() {
