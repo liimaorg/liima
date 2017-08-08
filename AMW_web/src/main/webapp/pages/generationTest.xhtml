@@ -228,17 +228,12 @@
 
 						<hr />
 						<h3>Templates</h3>
-						<h4 class="generatorTest">
-							<h:outputText value="You do not have the required permission to view the generated templates"
-										  rendered="#{!generationTestController.hasPermissionToSeeGenerationResults}"/>
-						</h4>
 
 						<ul class="generatorTest">
 
 							<ui:repeat
 								value="#{generationTestController.compareResult.getAppServerResults(node)}"
-								var="astempl"
-								rendered="#{generationTestController.hasPermissionToSeeGenerationResults}">
+								var="astempl">
 								<li>
 									<div
 										class="well${generationTestController.compareResult.compareMode and !astempl.sameContent() ? ' templateDiff' : ''}">
@@ -386,11 +381,14 @@
 												</div>
 
 											</f:facet>
-											<h:panelGroup rendered="#{astempl.isOmitted()}">You don't have the permission to see the content of this template.</h:panelGroup>
-											<textarea id="${rich:clientId('templatePanel')}TextArea"
-												style="display: none;">${astempl.originalTemplate.content}</textarea>
-											<textarea id="${rich:clientId('templatePanel')}TextAreaComp"
-												style="display: none;">${astempl.comparedTemplate.content}</textarea>
+											<h:panelGroup rendered="#{astempl.isOmitted() or !generationTestController.hasPermissionToSeeGenerationResults}">
+												You don't have the permission to see the content of this template.</h:panelGroup>
+											<h:panelGroup rendered="#{generationTestController.hasPermissionToSeeGenerationResults}">
+												<textarea id="${rich:clientId('templatePanel')}TextArea"
+													style="display: none;">${astempl.originalTemplate.content}</textarea>
+												<textarea id="${rich:clientId('templatePanel')}TextAreaComp"
+													style="display: none;">${astempl.comparedTemplate.content}</textarea>
+											</h:panelGroup>
 										</rich:collapsiblePanel>
 
 									</div>
@@ -558,11 +556,14 @@
 													</div>
 
 												</f:facet>
-												<h:panelGroup rendered="#{appGenResult.isOmitted()}">You don't have the permission to see the content of this template.</h:panelGroup>
-												<textarea id="${rich:clientId('templatePanel')}TextArea"
-													style="display: none;">${appGenResult.originalTemplate.content}</textarea>
-												<textarea id="${rich:clientId('templatePanel')}TextAreaComp"
-													style="display: none;">${appGenResult.comparedTemplate.content}</textarea>
+												<h:panelGroup rendered="#{appGenResult.isOmitted() or !generationTestController.hasPermissionToSeeGenerationResults}">
+													You don't have the permission to see the content of this template.</h:panelGroup>
+												<h:panelGroup rendered="#{generationTestController.hasPermissionToSeeGenerationResults}">
+													<textarea id="${rich:clientId('templatePanel')}TextArea"
+														style="display: none;">${appGenResult.originalTemplate.content}</textarea>
+													<textarea id="${rich:clientId('templatePanel')}TextAreaComp"
+														style="display: none;">${appGenResult.comparedTemplate.content}</textarea>
+												</h:panelGroup>
 											</rich:collapsiblePanel>
 										</div>
 									</li>
