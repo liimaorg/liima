@@ -53,7 +53,7 @@ public class PermissionRepository {
 	 * @return
 	 */
 	public List<RoleEntity> getDeployableRoles() {
-		return getRolesHavingRestrictionsWithPermissionAndAction(Permission.DEPLOYMENT, Action.CREATE);
+		return getRolesHavingRestrictionsWithPermission(Permission.DEPLOYMENT);
 	}
 
 	public List<RestrictionEntity> getUserWithRestrictions(String userName) {

@@ -111,8 +111,8 @@ public class SecurityDataProvider implements Serializable{
 		return permissionBoundary.hasPermissionForResourceType(permissionValue, actionValue, resourceTypeValue, contextId);
 	}
 	
-	public boolean hasPermissionToDeploy(){
-		return permissionBoundary.hasPermissionToDeploy();
+	public boolean hasPermissionToCreateDeployment(){
+		return permissionBoundary.hasPermissionToCreateDeployment();
 	}
 
 	public boolean hasPermissionToExportDeployments() {

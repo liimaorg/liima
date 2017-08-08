@@ -380,7 +380,11 @@ public class PermissionBoundary implements Serializable {
     }
 
     public boolean hasPermissionToDeploy() {
-        return permissionService.hasPermissionToDeploy();
+        return permissionService.hasPermissionToSeeDeployment();
+    }
+
+    public boolean hasPermissionToCreateDeployment() {
+        return permissionService.hasPermissionToCreateDeployment();
     }
 
     public boolean hasPermissionToCreateShakedownTests(Integer resourceGroupId) {

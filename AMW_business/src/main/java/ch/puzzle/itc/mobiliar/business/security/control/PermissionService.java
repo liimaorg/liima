@@ -78,18 +78,52 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * Diese Methode controlliert ob einen User Deployoperation darf machen oder nicht. Es wird im
-     * deploy.xhtml aufgerufen und zeigt der Button "Add Deploy" wenn der user darf deploy machen.
-     *
+     * Checks if the caller is allowed to see Deployments
      * @return
      */
-    public boolean hasPermissionToDeploy() {
+    public boolean hasPermissionToSeeDeployment() {
         for (Map.Entry<String, List<RestrictionDTO>> entry : getDeployableRoles().entrySet()) {
             if (sessionContext.isCallerInRole(entry.getKey())) {
                 return true;
             }
         }
-        return hasUserRestriction(Permission.DEPLOYMENT.name(), null, CREATE, null, null);
+        return hasUserRestriction(Permission.DEPLOYMENT.name(), null, null, null, null);
+    }
+
+    /**
+     * Checks if the caller is allowed to create (re-)Deployments
+     * @return
+     */
+    public boolean hasPermissionToCreateDeployment() {
+        for (Map.Entry<String, List<RestrictionDTO>> entry : getDeployableRoles().entrySet()) {
+            if (sessionContext.isCallerInRole(entry.getKey())) {
+                for (RestrictionDTO restrictionDTO : entry.getValue()) {
+                    if (restrictionDTO.getRestriction().getAction().equals(Action.CREATE)
+                            || restrictionDTO.getRestriction().getAction().equals(Action.ALL)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return hasUserRestriction(Permission.DEPLOYMENT.name(), null, Action.CREATE, null, null);
+    }
+
+    /**
+     * Checks if the caller is allowed to edit Deployments
+     * @return
+     */
+    public boolean hasPermissionToEditDeployment() {
+        for (Map.Entry<String, List<RestrictionDTO>> entry : getDeployableRoles().entrySet()) {
+            if (sessionContext.isCallerInRole(entry.getKey())) {
+                for (RestrictionDTO restrictionDTO : entry.getValue()) {
+                    if (restrictionDTO.getRestriction().getAction().equals(Action.UPDATE)
+                            || restrictionDTO.getRestriction().getAction().equals(Action.ALL)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return hasUserRestriction(Permission.DEPLOYMENT.name(), null, Action.UPDATE, null, null);
     }
 
     /**
@@ -277,6 +311,20 @@ public class PermissionService implements Serializable {
         return deployment != null && hasPermissionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup());
     }
 
+    public boolean hasPermissionForDeploymentUpdate(DeploymentEntity deployment) {
+        return deployment != null && hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.UPDATE);
+    }
+
+    public boolean hasPermissionForDeploymentCreation(DeploymentEntity deployment) {
+        return deployment != null && (hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.CREATE)
+                || hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.UPDATE));
+    }
+
+    public boolean hasPermissionForDeploymentReject(DeploymentEntity deployment) {
+        return deployment != null && (hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.DELETE)
+                || hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.DELETE));
+    }
+
     public boolean hasPermissionForCancelDeployment(DeploymentEntity deployment) {
         if (getCurrentUserName().equals(deployment.getDeploymentRequestUser()) && deployment.getDeploymentState() == DeploymentState.requested) {
             return true;
@@ -307,6 +355,35 @@ public class PermissionService implements Serializable {
                 }
             }
             return hasUserRestriction(permissionName, context, null, resourceGroup, null);
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the caller is allowed to perform the requested action for specific ResourceGroup on the specific Environment
+     * Note: Both, Permission/Restriction by Group and by User are checked
+     *
+     * @param context
+     * @param resourceGroup
+     * @param action
+     * @return
+     */
+    public boolean hasPermissionAndActionForDeploymentOnContext(ContextEntity context, ResourceGroupEntity resourceGroup, Action action) {
+        if (context != null && sessionContext != null) {
+            List<String> allowedRoles = new ArrayList<>();
+            String permissionName = Permission.DEPLOYMENT.name();
+            if (deployableRolesWithRestrictions == null) {
+                getDeployableRoles();
+            }
+            for (Map.Entry<String, List<RestrictionDTO>> entry : deployableRolesWithRestrictions.entrySet()) {
+                matchPermissionsAndContext(permissionName, action, context, resourceGroup, resourceGroup.getResourceType(), allowedRoles, entry);
+            }
+            for (String roleName : allowedRoles) {
+                if (sessionContext.isCallerInRole(roleName)) {
+                    return true;
+                }
+            }
+            return hasUserRestriction(permissionName, context, action, resourceGroup, null);
         }
         return false;
     }
