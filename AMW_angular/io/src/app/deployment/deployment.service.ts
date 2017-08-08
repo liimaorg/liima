@@ -55,6 +55,20 @@ export class DeploymentService {
     return resource$;
   }
 
+  canRequestDeployment(resourceGroupId: number, contextIds: number[]): Observable<boolean> {
+    let params = new URLSearchParams();
+    contextIds.forEach((key) => params.append('contextId', String(key)));
+    let options = new RequestOptions({
+      search: params,
+      headers: this.getHeaders()
+    });
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/canRequestDeployment/${resourceGroupId}`, options)
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   private getHeaders() {
     let headers = new Headers();
     headers.append('Accept', 'application/json');

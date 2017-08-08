@@ -158,10 +158,10 @@
           </div>
         </div>
 
-        <div class="form-group" *ngIf="hasPermissionToDeploy && isReadyForDeployment()">
+        <div class="form-group" *ngIf="isReadyForDeployment()">
           <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-default" (click)="requestDeployment()">Request deployment</button>
-            <button type="submit" class="btn btn-primary" (click)="createDeployment()">Deploy</button>
+            <button type="submit" class="btn btn-default" *ngIf="hasPermissionToRequestDeployment" (click)="requestDeployment()">Request deployment</button>
+            <button type="submit" class="btn btn-primary" *ngIf="hasPermissionToDeploy" (click)="createDeployment()">Deploy</button>
           </div>
         </div>
 

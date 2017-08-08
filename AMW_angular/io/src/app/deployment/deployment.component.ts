@@ -55,6 +55,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   deploymentResponse: any = {};
   hasPermissionShakedownTest: boolean = false;
   hasPermissionToDeploy: boolean = false;
+  hasPermissionToRequestDeployment: boolean = false;
 
   // redeploy only
   selectedDeployment: Deployment = <Deployment> {};
@@ -196,6 +197,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.appsWithVersion = this.selectedDeployment.appsWithVersion;
     this.selectedRelease = <Release> { release: this.selectedDeployment.releaseName };
     this.selectedAppserver = <Resource> { id: this.selectedDeployment.appServerId, name: this.selectedDeployment.appServerName };
+    this.canDeploy();
   }
 
   private composeRedeploymentAppserverDisplayName() {
@@ -279,6 +281,18 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       if (contextIds.length > 0) {
         this.deploymentService.canDeploy(this.selectedAppserver.id, contextIds).subscribe(
           /* happy path */ (r) => this.hasPermissionToDeploy = r,
+          /* error path */ (e) => this.errorMessage = e,
+          /* onComplete */ () => this.canRequestDeployment(contextIds));
+      }
+    }
+  }
+
+  private canRequestDeployment(contextIds: number[]) {
+    if (this.selectedAppserver != null) {
+      this.hasPermissionToRequestDeployment = false;
+      if (contextIds.length > 0) {
+        this.deploymentService.canRequestDeployment(this.selectedAppserver.id, contextIds).subscribe(
+          /* happy path */ (r) => this.hasPermissionToRequestDeployment = r,
           /* error path */ (e) => this.errorMessage = e);
       }
     }
