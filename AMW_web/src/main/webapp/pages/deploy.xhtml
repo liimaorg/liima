@@ -93,10 +93,6 @@
                                                     </a4j:commandLink>
                                                 </li>
                                                 <li>
-                                                    <h:link rendered="#{!deployScreenDataProvider.canRedeploy()}"
-                                                            disabled="true" styleClass="btn disable">
-                                                        <i class="icon icon-redeploy">Redeploy</i>
-                                                    </h:link>
                                                     <h:link outcome="redeploy" rendered="#{deployScreenDataProvider.canRedeploy()}"
                                                             styleClass="btn light">
                                                         <i class="icon icon-redeploy">Redeploy</i>
