@@ -696,7 +696,7 @@ public class PermissionServiceTest {
 		when(sessionContext.isCallerInRole(ROLE_NOT_DEPLOY)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		// when
-		boolean result = permissionService.hasPermissionToDeploy();
+		boolean result = permissionService.hasPermissionToSeeDeployment();
 		// then
 		Assert.assertFalse(result);
 	}
