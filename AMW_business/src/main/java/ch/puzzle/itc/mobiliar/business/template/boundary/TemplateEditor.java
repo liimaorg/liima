@@ -71,7 +71,7 @@ public class TemplateEditor {
 	ResourceRelationService relationService;
 
 	@Inject
-	PermissionService permissions;
+	PermissionService permissionService;
 
 	@Inject
 	FreemarkerSyntaxValidator freemarkerValidator;
@@ -132,11 +132,11 @@ public class TemplateEditor {
 		HasContexts<?> resourceRelation = null;
 		if (relationId != null) {
 			if (resourceEdit) {
-			     permissions.checkPermissionAndFireException(Permission.RESOURCE_TEMPLATE, Action.UPDATE, "save resource templates");
+			     permissionService.checkPermissionAndFireException(Permission.RESOURCE_TEMPLATE, Action.UPDATE, "save resource templates");
 				resourceRelation = relationService.getResourceRelation(relationId);
 			}
 			else {
-			    permissions.checkPermissionAndFireException(Permission.RESOURCETYPE_TEMPLATE, Action.UPDATE, "save resource type templates");
+			    permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE_TEMPLATE, Action.UPDATE, "save resource type templates");
 			    resourceRelation = relationService.getResourceTypeRelation(relationId);
 			}
 		}
@@ -160,26 +160,35 @@ public class TemplateEditor {
 		return false;
 	}
 
-	@HasPermission(oneOfPermission = {Permission.RESOURCE_TEMPLATE, Permission.RESOURCE}, action = Action.UPDATE)
+	@HasPermission(permission = Permission.RESOURCE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
     public void saveTemplateForResource(TemplateDescriptorEntity template, Integer resourceId) throws AMWException {
 		saveTemplate(template, entityManager.find(ResourceEntity.class, resourceId));
     }
 
-    @HasPermission(oneOfPermission = {Permission.RESOURCETYPE_TEMPLATE, Permission.RESOURCETYPE}, action = Action.UPDATE)
+    @HasPermission(permission = Permission.RESOURCETYPE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
     public void saveTemplateForResourceType(TemplateDescriptorEntity template, Integer resourceTypeId) throws AMWException {
 		saveTemplate(template, entityManager.find(ResourceTypeEntity.class, resourceTypeId));
     }
 
-	public boolean hasPermissionToModifyResourceTypeTemplate(Integer resourceTypeId, boolean testingMode) {
+	public boolean hasPermissionToAddResourceTypeTemplate(Integer resourceTypeId, boolean testingMode) {
 		ResourceTypeEntity type = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
-		return permissions.hasPermissionToAddResourceTypeTemplate(type, testingMode);
+		return permissionService.hasPermissionToAddResourceTypeTemplate(type, testingMode);
 	}
 
-	public boolean hasPermissionToModifyResourceTemplate(Integer resourceId, boolean testingMode) {
+	public boolean hasPermissionToUpdateResourceTypeTemplate(Integer resourceTypeId, boolean testingMode) {
+		ResourceTypeEntity type = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+		return permissionService.hasPermissionToUpdateResourceTypeTemplate(type, testingMode);
+	}
+
+	public boolean hasPermissionToAddResourceTemplate(Integer resourceId, boolean testingMode) {
 		ResourceEntity res = entityManager.find(ResourceEntity.class, resourceId);
-		return permissions.hasPermissionToAddResourceTemplate(res, testingMode);
+		return permissionService.hasPermissionToAddResourceTemplate(res, testingMode);
 	}
 
+	public boolean hasPermissionToUpdateResourceTemplate(Integer resourceId, boolean testingMode) {
+		ResourceEntity res = entityManager.find(ResourceEntity.class, resourceId);
+		return permissionService.hasPermissionToUpdateResourceTemplate(res, testingMode);
+	}
 
     void saveTemplate(TemplateDescriptorEntity template, HasContexts<?> hasContext) throws AMWException {
 		if (StringUtils.isEmpty(template.getName())) {
@@ -223,13 +232,13 @@ public class TemplateEditor {
 		}
 		AbstractContext owner = getOwnerOfTemplate(templateDescriptor);
 		if (owner != null) {
-			if (owner instanceof ResourceContextEntity && !permissions.hasPermission(Permission.RESOURCE_TEMPLATE, null,
+			if (owner instanceof ResourceContextEntity && !permissionService.hasPermission(Permission.RESOURCE_TEMPLATE, null,
 					Action.DELETE, ((ResourceContextEntity) owner).getContextualizedObject().getResourceGroup(), null)) {
 				throw new NotAuthorizedException("Not authorized to remove the template of a resource");
-			} else if (owner instanceof ResourceRelationContextEntity && !permissions.hasPermission(Permission.RESOURCE_TEMPLATE, null,
+			} else if (owner instanceof ResourceRelationContextEntity && !permissionService.hasPermission(Permission.RESOURCE_TEMPLATE, null,
 					Action.DELETE, ((ResourceRelationContextEntity) owner).getContextualizedObject().getMasterResource().getResourceGroup(), null)) {
 				throw new NotAuthorizedException("Not authorized to remove the template of a resource");
-			} else if (owner instanceof ResourceTypeContextEntity && !permissions.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null,
+			} else if (owner instanceof ResourceTypeContextEntity && !permissionService.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null,
 					Action.DELETE, null, ((ResourceTypeContextEntity) owner).getContextualizedObject())) {
 				throw new NotAuthorizedException("Not authorized to remove the template of a resource type");
 			}

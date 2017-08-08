@@ -110,6 +110,9 @@ public class EditFunctionView implements Serializable {
         return resourceIdViewParam != null;
     }
 
+    public boolean isNewFunction() {
+        return amwFunction == null || amwFunction.getId() == null;
+    }
 
     public void setResourceIdViewParam(Integer resourceIdViewParam) {
         if (this.resourceIdViewParam == null && resourceIdViewParam != null) {
@@ -198,9 +201,9 @@ public class EditFunctionView implements Serializable {
      * Defines if the current user has the rights to modify the function
      */
     public boolean canModifyFunction() {
-        return permissionBoundary.canUpdateFunctionOfResourceOrResourceType(resourceIdViewParam, resourceTypeIdViewParam);
+        return isNewFunction() ? permissionBoundary.canCreateFunctionOfResourceOrResourceType(resourceIdViewParam, resourceTypeIdViewParam)
+                :permissionBoundary.canUpdateFunctionOfResourceOrResourceType(resourceIdViewParam, resourceTypeIdViewParam);
     }
-
 
     private void refreshRevisionInformation(Integer funId){
         revisionInformations = Lists.reverse(functionsBoundary.getFunctionRevisions(funId));
