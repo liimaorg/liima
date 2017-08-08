@@ -232,7 +232,6 @@ public class CopyResourceDataProvider implements Serializable {
 		return copyResource.loadResourceGroupsForType(resourceTypeId, resource.getResource());
 	}
 
-
     public boolean isCanCopyResource() {
         return permissionBoundary.canCopyFromResource(resource.getResource()) && (resource.getResource() != null);
     }
@@ -242,10 +241,6 @@ public class CopyResourceDataProvider implements Serializable {
 	}
 
 	public boolean allowedToCopyFromThatResource(ResourceGroup originResourceGroup) {
-		return permissionBoundary.canCopyFromSpecificResource(resource.getResource(), originResourceGroup.getEntity()) && (resource.getResource() != null);
-	}
-
-	public boolean allowedToCopyFromThatPredecessorResource(ResourceGroup originResourceGroup) {
-		return permissionBoundary.canCopyFromSpecificResource(resource.getResource(), originResourceGroup.getEntity()) && (resource.getResource() != null);
+		return permissionBoundary.canReadFromResource(originResourceGroup.getEntity()) && (resource.getResource() != null);
 	}
 }
