@@ -102,7 +102,7 @@ public class TemplateEditDataProvider implements Serializable {
 	boolean canAdd;
 
 	@Getter
-	boolean canEdit;
+	boolean canRead;
 
 	@Getter
 	boolean canListInstanceTemplates;
@@ -134,13 +134,13 @@ public class TemplateEditDataProvider implements Serializable {
 	public void init() {
 		canListInstanceTemplates = permission.hasPermission(Permission.RESOURCE_TEMPLATE, Action.READ);
 		canListResTypeTemplates = permission.hasPermission(Permission.RESOURCETYPE_TEMPLATE, Action.READ);
-		canEdit = false;
+		canRead = false;
 		canAdd = false;
 		canDelete = false;
 	}
 
 	private void refreshPermissions() {
-		canEdit = canEdit();
+		canRead = canRead();
 		canAdd = canAdd();
 		canDelete = canDelete(getResourceType());
 	}
@@ -236,12 +236,11 @@ public class TemplateEditDataProvider implements Serializable {
 								null, resourceType)));
 	}
 
-	// edit in the reading sense of edit
-	private boolean canEdit() {
+	private boolean canRead() {
 		// context has to be global
 		return context.getIsGlobal() && (canAddEditOrDeleteShakedownTest() || (isEditResource() ?
-				permission.hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.UPDATE, (ResourceEntity) resourceOrType, null) :
-				permission.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.UPDATE, null, (ResourceTypeEntity) resourceOrType)));
+				permission.hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.READ, (ResourceEntity) resourceOrType, null) :
+				permission.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.READ, null, (ResourceTypeEntity) resourceOrType)));
 	}
 
 	private boolean canAddEditOrDeleteShakedownTest() {

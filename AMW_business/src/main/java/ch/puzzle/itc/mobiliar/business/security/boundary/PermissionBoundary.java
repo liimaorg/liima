@@ -308,16 +308,26 @@ public class PermissionBoundary implements Serializable {
         return false;
     }
 
-    public boolean canEditFunctionOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId) {
+    public boolean canCreateFunctionOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId) {
+        return canModifyFunctionOfResourceOrResourceType(resourceEntityId, resourceTypeEntityId, Action.CREATE);
+    }
+
+    public boolean canUpdateFunctionOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId) {
+        return canModifyFunctionOfResourceOrResourceType(resourceEntityId, resourceTypeEntityId, Action.UPDATE);
+    }
+
+    public boolean canDeleteFunctionOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId) {
+        return canModifyFunctionOfResourceOrResourceType(resourceEntityId, resourceTypeEntityId, Action.DELETE);
+    }
+
+    private boolean canModifyFunctionOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId, Action action) {
         // context is always global
         if (resourceEntityId != null) {
             ResourceEntity resource = resourceRepository.find(resourceEntityId);
-            return permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resource.getResourceGroup(), null) &&
-                    permissionService.hasPermission(Permission.RESOURCE_AMWFUNCTION, null, Action.UPDATE, resource.getResourceGroup(), null);
+            return permissionService.hasPermission(Permission.RESOURCE_AMWFUNCTION, null, action, resource.getResourceGroup(), null);
         }
         ResourceTypeEntity type = resourceTypeRepository.find(resourceTypeEntityId);
-        return permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, type) &&
-                permissionService.hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, Action.UPDATE, null, type);
+        return permissionService.hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, action, null, type);
     }
 
     public boolean canCreateResourceInstance(DefaultResourceTypeDefinition type) {

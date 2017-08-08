@@ -666,9 +666,9 @@ public class PermissionBoundaryTest {
         type.setId(23);
         when(permissionBoundary.resourceTypeRepository.find(23)).thenReturn(type);
         // when
-        permissionBoundary.canEditFunctionOfResourceOrResourceType(null, type.getId());
+        permissionBoundary.canUpdateFunctionOfResourceOrResourceType(null, type.getId());
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, null, UPDATE, null, type);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, UPDATE, null, type);
     }
 
     @Test
@@ -677,11 +677,9 @@ public class PermissionBoundaryTest {
         ResourceTypeEntity type = new ResourceTypeEntity();
         type.setId(23);
         when(permissionBoundary.resourceTypeRepository.find(23)).thenReturn(type);
-        when(permissionService.hasPermission(Permission.RESOURCETYPE, null, UPDATE, null, type)).thenReturn(true);
         // when
-        permissionBoundary.canEditFunctionOfResourceOrResourceType(null, type.getId());
+        permissionBoundary.canUpdateFunctionOfResourceOrResourceType(null, type.getId());
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, null, UPDATE, null, type);
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, UPDATE, null, type);
     }
 
@@ -694,9 +692,9 @@ public class PermissionBoundaryTest {
         resource.setResourceGroup(rg);
         when(permissionBoundary.resourceRepository.find(12)).thenReturn(resource);
         // when
-        permissionBoundary.canEditFunctionOfResourceOrResourceType(resource.getId(), null);
+        permissionBoundary.canUpdateFunctionOfResourceOrResourceType(resource.getId(), null);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, UPDATE, rg, null);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_AMWFUNCTION, null, UPDATE, rg, null);
     }
 
     @Test
@@ -707,11 +705,9 @@ public class PermissionBoundaryTest {
         resource.setId(12);
         resource.setResourceGroup(rg);
         when(permissionBoundary.resourceRepository.find(12)).thenReturn(resource);
-        when(permissionService.hasPermission(Permission.RESOURCE, null, UPDATE, rg, null)).thenReturn(true);
         // when
-        permissionBoundary.canEditFunctionOfResourceOrResourceType(resource.getId(), null);
+        permissionBoundary.canUpdateFunctionOfResourceOrResourceType(resource.getId(), null);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, UPDATE, rg, null);
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_AMWFUNCTION, null, UPDATE, rg, null);
     }
 
