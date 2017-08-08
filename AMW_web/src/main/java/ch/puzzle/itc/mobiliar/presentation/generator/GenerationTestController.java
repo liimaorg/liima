@@ -31,7 +31,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.CheckedNotAuthorizedException;
@@ -109,9 +108,6 @@ public class GenerationTestController implements Serializable {
     @Getter
     @Setter
     private Integer resourceTypeId;
-
-    @Getter
-    private boolean hasPermissionToSeeGenerationResults;
 
     public void setContextIdViewParam(Integer contextIdViewParam) {
         this.contextIdViewParam = contextIdViewParam;
@@ -192,9 +188,6 @@ public class GenerationTestController implements Serializable {
      */
     // TODO remove call from init event listener from view!
     public void init() {
-        hasPermissionToSeeGenerationResults = permissionBoundary.hasPermission(Permission.RESOURCE_TEST_GENERATION_RESULT,
-                sessionContext.getCurrentContext(), Action.READ, currentResource, null);
-        // Only generate if the generationResult is not yet built
         if (currentResource != null) {
             if (generationResult == null) {
 

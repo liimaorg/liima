@@ -23,7 +23,10 @@ package ch.puzzle.itc.mobiliar.business.generator.control;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -53,8 +56,8 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     @Test
     public void testDoNotOmitTemplateWithPermission() throws Exception {
         //given
-        Mockito.when(permissionService.hasPermissionForDeploymentOnContext(any(
-                  ContextEntity.class), any(ResourceGroupEntity.class))).thenReturn(true);
+        Mockito.when(permissionService.hasPermission(any(Permission.class), any(
+                  ContextEntity.class), any(Action.class), any(ResourceGroupEntity.class), any(ResourceTypeEntity.class))).thenReturn(true);
 
         //when
         service.omitTemplateForLackingPermissions(new ContextEntity(), new ResourceEntity(), result);
@@ -67,8 +70,8 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     @Test
     public void testOmitTemplateForLackingPermissions() throws Exception {
         //given
-        Mockito.when(permissionService.hasPermissionForDeploymentOnContext(any(
-                  ContextEntity.class), any(ResourceGroupEntity.class))).thenReturn(false);
+        Mockito.when(permissionService.hasPermission(any(Permission.class), any(
+                ContextEntity.class), any(Action.class), any(ResourceGroupEntity.class), any(ResourceTypeEntity.class))).thenReturn(false);
 
         //when
         service.omitTemplateForLackingPermissions(new ContextEntity(), new ResourceEntity(), result);
