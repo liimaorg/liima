@@ -47,6 +47,7 @@ public class DeploymentDTO {
 	private DeploymentEntity.DeploymentState state;
 	private Date deploymentDate;
 	private String appServerName;
+	private Integer appServerId;
 	private List<AppWithVersionDTO> appsWithVersion = new LinkedList<>();
 	private List<DeploymentParameterDTO> deploymentParameters = new LinkedList<>();
 	private String environmentName;
@@ -65,6 +66,7 @@ public class DeploymentDTO {
 		this.trackingId = entity.getTrackingId();
 		this.state = entity.getDeploymentState();
 		this.appServerName = entity.getResourceGroup().getName();
+		this.appServerId = entity.getResourceGroup().getId();
 		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
 			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
 		}
