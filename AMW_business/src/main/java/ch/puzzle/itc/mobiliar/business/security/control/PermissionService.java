@@ -758,6 +758,14 @@ public class PermissionService implements Serializable {
         return resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
+    public boolean hasPermissionToUpdateResourceTemplate(ResourceEntity resource, boolean isTestingMode) {
+        // ok if user has update permission on the Resource, context is always global, so we set it to null to omit the check
+        if (hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.UPDATE, resource.getResourceGroup(), null)) {
+            return true;
+        }
+        return resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+    }
+
     /**
      * Checks if user may create or edit Templates of ResourceTypes
      *
@@ -768,6 +776,14 @@ public class PermissionService implements Serializable {
     public boolean hasPermissionToAddResourceTypeTemplate(ResourceTypeEntity resourceType, boolean isTestingMode) {
         // ok if user has update permission on the ResourceType, context is always global, so we set it to null to omit the check
         if (hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.CREATE, null, resourceType)) {
+            return true;
+        }
+        return resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+    }
+
+    public boolean hasPermissionToUpdateResourceTypeTemplate(ResourceTypeEntity resourceType, boolean isTestingMode) {
+        // ok if user has update permission on the ResourceType, context is always global, so we set it to null to omit the check
+        if (hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.UPDATE, null, resourceType)) {
             return true;
         }
         return resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
