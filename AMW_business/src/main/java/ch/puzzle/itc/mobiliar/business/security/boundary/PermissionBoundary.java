@@ -343,19 +343,24 @@ public class PermissionBoundary implements Serializable {
      */
     public boolean canCopyFromResource(ResourceEntity resourceEntity) {
         return !(resourceEntity == null || resourceEntity.getResourceType() == null) &&
-                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
+                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.ALL, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
     }
 
     /**
      *
-     * @param resourceEntity
-     * @param originResourceGroup
+     * @param originResource (from)
+     * @param targetResourceGroup (to)
      * @return
      */
-    public boolean canCopyFromSpecificResource(ResourceEntity resourceEntity, ResourceGroupEntity originResourceGroup) {
-        return !(resourceEntity == null || resourceEntity.getResourceType() == null) &&
-                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType())
-                && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, originResourceGroup, originResourceGroup.getResourceType());
+    public boolean canCopyFromSpecificResource(ResourceEntity originResource, ResourceGroupEntity targetResourceGroup) {
+        return !(originResource == null || targetResourceGroup == null) &&
+                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.ALL, targetResourceGroup, targetResourceGroup.getResourceType())
+                && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, originResource.getResourceGroup(), originResource.getResourceType());
+    }
+
+    public boolean canReadFromResource(ResourceGroupEntity resourceGroup) {
+        return !(resourceGroup == null)
+                && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, resourceGroup, resourceGroup.getResourceType());
     }
 
     public boolean canToggleDecryptionOfResource(Integer resourceEntityId ) {

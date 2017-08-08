@@ -129,5 +129,6 @@
     <include file="changesets/data/permissionMerge/correct_remaining_roles.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/correct_role_config_admin.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/permissionMerge/correct_test_generation_result.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/correct_resource_release_copy_from_resource.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
