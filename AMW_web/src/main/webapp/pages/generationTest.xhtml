@@ -381,7 +381,7 @@
 												</div>
 
 											</f:facet>
-											<h:panelGroup rendered="#{astempl.isOmitted() or !generationTestController.hasPermissionToSeeGenerationResults}">
+											<h:panelGroup rendered="#{!generationTestController.hasPermissionToSeeGenerationResults}">
 												You don't have the permission to see the content of this template.</h:panelGroup>
 											<h:panelGroup rendered="#{generationTestController.hasPermissionToSeeGenerationResults}">
 												<textarea id="${rich:clientId('templatePanel')}TextArea"
@@ -556,7 +556,7 @@
 													</div>
 
 												</f:facet>
-												<h:panelGroup rendered="#{appGenResult.isOmitted() or !generationTestController.hasPermissionToSeeGenerationResults}">
+												<h:panelGroup rendered="#{!generationTestController.hasPermissionToSeeGenerationResults}">
 													You don't have the permission to see the content of this template.</h:panelGroup>
 												<h:panelGroup rendered="#{generationTestController.hasPermissionToSeeGenerationResults}">
 													<textarea id="${rich:clientId('templatePanel')}TextArea"
