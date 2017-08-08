@@ -343,7 +343,7 @@ public class PermissionBoundary implements Serializable {
      */
     public boolean canCopyFromResource(ResourceEntity resourceEntity) {
         return !(resourceEntity == null || resourceEntity.getResourceType() == null) &&
-                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
+                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.ALL, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
     }
 
     /**
@@ -354,7 +354,7 @@ public class PermissionBoundary implements Serializable {
      */
     public boolean canCopyFromSpecificResource(ResourceEntity originResource, ResourceGroupEntity targetResourceGroup) {
         return !(originResource == null || targetResourceGroup == null) &&
-                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, targetResourceGroup, targetResourceGroup.getResourceType())
+                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.ALL, targetResourceGroup, targetResourceGroup.getResourceType())
                 && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, originResource.getResourceGroup(), originResource.getResourceType());
     }
 
