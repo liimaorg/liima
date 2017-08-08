@@ -53,7 +53,7 @@ public class PermissionRepository {
 	 * @return
 	 */
 	public List<RoleEntity> getDeployableRoles() {
-		return getRolesHavingRestrictionsWithPermission(Permission.DEPLOYMENT);
+		return getRolesHavingRestrictionsWithPermissionAndAction(Permission.DEPLOYMENT, Action.CREATE);
 	}
 
 	public List<RestrictionEntity> getUserWithRestrictions(String userName) {
@@ -157,6 +157,20 @@ public class PermissionRepository {
 		List<RoleEntity> result = entityManager
 				.createQuery("from RoleEntity r left join fetch r.restrictions res where res.permission.value =:permission", RoleEntity.class)
 				.setParameter("permission", permission.name()).getResultList();
+		return result == null ? new ArrayList<RoleEntity>() : result;
+	}
+
+	/**
+	 * Returns Roles which have a Restriction matching the provided Permission and Action
+	 *
+	 * @param permission
+	 * @param action
+	 * @return
+	 */
+	private List<RoleEntity> getRolesHavingRestrictionsWithPermissionAndAction(Permission permission, Action action) {
+		List<RoleEntity> result = entityManager
+				.createQuery("from RoleEntity r left join fetch r.restrictions res where res.permission.value =:permission and (res.action =:action or res.action = 'ALL')", RoleEntity.class)
+				.setParameter("permission", permission.name()).setParameter("action", action).getResultList();
 		return result == null ? new ArrayList<RoleEntity>() : result;
 	}
 
