@@ -15,6 +15,12 @@
         function confirmMatchingRelease(existsInCurrentRelease){
         return existsInCurrentRelease || window.confirm('The selected resource does not exist for the release ${editResourceView.resource.release.name}. Are you sure you want to add it for this release?');
         }
+        function alreadyProvided(addable){
+            if (!addable) {
+                window.alert('This resource is already provided by another resource.');
+            }
+            return addable;
+        }
     </h:outputScript>
 
     <h:commandLink styleClass="btn light right"
@@ -148,7 +154,8 @@
                                 </h:commandLink></td>
                                 <td><h:commandLink value="Add as provided Resource"
                                                    rendered="#{editResourceView.editResource and relationDataProvider.canAddAsProvidedRelation(selectableItem)}"
-                                                   onclick="if(confirmLeave(event) &amp;&amp; confirmMatchingRelease(${editResourceView.existsForThisRelease(selectableItem)})){${rich:component('addRelationPopup')}.hide();showLoader();}else{return false;}">
+                                                   onclick="if(confirmLeave(event) &amp;&amp; alreadyProvided(${relationDataProvider.isAddableAsProvidedResource(selectableItem)})
+                                                   &amp;&amp; confirmMatchingRelease(${editResourceView.existsForThisRelease(selectableItem)})){${rich:component('addRelationPopup')}.hide();showLoader();}else{return false;}">
                                     <a4j:ajax
                                             listener="#{relationDataProvider.addProvidedResource(selectableItem.id)}"
                                             render="relatedResourcesGroup" execute="@this"
