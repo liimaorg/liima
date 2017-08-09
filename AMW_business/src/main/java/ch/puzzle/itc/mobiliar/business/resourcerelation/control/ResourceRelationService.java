@@ -183,7 +183,8 @@ public class ResourceRelationService implements Serializable{
 			}
 			// Falls ApplicationServerContainer nur die soeben verschobene
 			// Applikation enthält, so soll diese Gruppe gelöscht werden!
-			if (applications.size() == 0 || applications.size() == applicationGroup.getResources().size()) {
+			// (sofern es sich nicht um den "Applications without application server" handelt)
+			if (applicationCollectorGroup.getEntity().isDeletable() && (applications.size() == 0 || applications.size() == applicationGroup.getResources().size())) {
 				entityManager.remove(applicationCollectorGroup.getEntity());
 				log.info("ApplicationServerContainer removed");
 			}
