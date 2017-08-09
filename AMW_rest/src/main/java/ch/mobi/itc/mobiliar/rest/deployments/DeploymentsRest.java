@@ -36,6 +36,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
+import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.EnvironmentsScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorDomainServiceWithAppServerRelations;
@@ -46,6 +47,9 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersis
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
@@ -84,9 +88,13 @@ public class DeploymentsRest {
     @Inject
     private ResourceTypeProvider resourceTypeProvider;
     @Inject
-    GeneratorDomainServiceWithAppServerRelations generatorDomainServiceWithAppServerRelations;
+    private GeneratorDomainServiceWithAppServerRelations generatorDomainServiceWithAppServerRelations;
     @Inject
     private KeyRepository keyRepository;
+    @Inject
+    private PermissionBoundary permissionBoundary;
+    @Inject
+    private ContextLocator contextLocator;
 
     /**
      * Query for deployments. All parameters are optional.
@@ -216,7 +224,7 @@ public class DeploymentsRest {
      * @return the new DeploymentDTO
      **/
     @POST
-    @ApiOperation(value = "adds a DeplyomentRequest")
+    @ApiOperation(value = "adds a DeploymentRequest")
     public Response addDeployment(@ApiParam("Deployment Request") DeploymentRequestDTO request) {
         Integer trackingId;
         ResourceEntity appServer;
@@ -381,6 +389,47 @@ public class DeploymentsRest {
         }
         return Response.status(Response.Status.OK).build();
 
+    }
+
+    @GET
+    @Path("/canDeploy/{resourceGroupId}")
+    @ApiOperation(value = "Checks if caller is allowed to deploy a given ResourceGroup on the specified Environment(s)  - used by Angular")
+    public Response canDeploy(@PathParam("resourceGroupId") Integer resourceGroupId,
+                              @QueryParam("contextId") Set<Integer> contextIds) {
+        ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
+        if (resourceGroup == null) {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        boolean hasPermission = false;
+        for (Integer contextId : contextIds) {
+            ContextEntity context = contextLocator.getContextById(contextId);
+            hasPermission = permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.CREATE, context, resourceGroup)
+                    && permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.UPDATE, context, resourceGroup);
+            if (!hasPermission) {
+                return Response.ok(hasPermission).build();
+            }
+        }
+        return Response.ok(hasPermission).build();
+    }
+
+    @GET
+    @Path("/canRequestDeployment/{resourceGroupId}")
+    @ApiOperation(value = "Checks if caller is allowed to request a deployment a given ResourceGroup on the specified Environment(s)  - used by Angular")
+    public Response canRequestDeployment(@PathParam("resourceGroupId") Integer resourceGroupId,
+                              @QueryParam("contextId") Set<Integer> contextIds) {
+        ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
+        if (resourceGroup == null) {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        boolean hasPermission = false;
+        for (Integer contextId : contextIds) {
+            ContextEntity context = contextLocator.getContextById(contextId);
+            hasPermission = permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.CREATE, context, resourceGroup);
+            if (!hasPermission) {
+                return Response.ok(hasPermission).build();
+            }
+        }
+        return Response.ok(hasPermission).build();
     }
 
     /**

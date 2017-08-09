@@ -22,7 +22,7 @@
 				<li>
 					<div style="display: inline-block; float: right;">
 						<h:link 
-							rendered="#{(!templateEditDataProvider.editResource or !cc.attrs.isRelation or resourceRelationModel.consumedRelation) and templateEditDataProvider.canEdit and templateEditDataProvider.canAdd}"
+							rendered="#{(!templateEditDataProvider.editResource or !cc.attrs.isRelation or resourceRelationModel.consumedRelation) and templateEditDataProvider.canAdd}"
 							outcome="editTemplateView" type="button" styleClass="btn light right ${templateEditDataProvider.testing ? 'testing' :  ''}" includeViewParams="true">
 							<f:param name="rel" value="#{!cc.attrs.isRelation ? null : resourceRelationModel.currentRelationUniqueIdentifier}" />
 							<f:param name="templ" value="${instanceTemplate.id}" />
@@ -56,7 +56,7 @@
 								<span class="ellipsisRight inlineBlock width100" title="#{instanceTemplate.name}">#{instanceTemplate.name}</span>
 								<span class="meta ellipsisRight inlineBlock width100" title="#{instanceTemplate.targetPath}">#{instanceTemplate.targetPath}</span>
 							</h:column>
-							<h:column rendered="#{templateEditDataProvider.canEdit}">
+							<h:column rendered="#{templateEditDataProvider.canRead}">
 
 								<h:link outcome="editTemplateView" includeViewParams="true">
 									<f:param name="rel" value="#{!cc.attrs.isRelation ? null : editResourceView.relationIdViewParam}"/>
@@ -89,7 +89,7 @@
 									value="#{resTypeTemplate.targetPath}" /></span>
 						</h:column>
 						<h:column
-							rendered="${!templateEditDataProvider.editResource and templateEditDataProvider.canEdit}">
+							rendered="${!templateEditDataProvider.editResource and templateEditDataProvider.canRead}">
 							<h:link outcome="editTemplateView" includeViewParams="true">
 								<f:param name="rel" value="#{!cc.attrs.isRelation ? null : resourceRelationModel.currentRelationUniqueIdentifier}" />
 								<f:param name="templ" value="${resTypeTemplate.id}" />

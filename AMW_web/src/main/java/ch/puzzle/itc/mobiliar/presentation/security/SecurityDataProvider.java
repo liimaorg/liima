@@ -78,6 +78,17 @@ public class SecurityDataProvider implements Serializable{
 	}
 
 	/**
+	 * Checks if user or role has a certain permission with specific action an ALL environments
+	 *
+	 * @param permissionValue Name of the Permission (must be mappable to the Permission ENUM)
+	 * @param actionValue Name of the Action (must be mappable to the Action ENUM)
+	 * @return
+	 */
+	public boolean hasPermissionOnAllContext(String permissionValue, String actionValue){
+		return permissionBoundary.hasPermissionOnAllContext(permissionValue, actionValue);
+	}
+
+	/**
 	 * @param permissionValue Name of the Permission (must be mappable to the Permission ENUM)
 	 * @param actionValue Name of the Action (must be mappable to the Action ENUM)
 	 * @param resourceTypeValue Name of a valid ResourceTypeEntity
@@ -100,8 +111,8 @@ public class SecurityDataProvider implements Serializable{
 		return permissionBoundary.hasPermissionForResourceType(permissionValue, actionValue, resourceTypeValue, contextId);
 	}
 	
-	public boolean hasPermissionToDeploy(){
-		return permissionBoundary.hasPermissionToDeploy();
+	public boolean hasPermissionToCreateDeployment(){
+		return permissionBoundary.hasPermissionToCreateDeployment();
 	}
 
 	public boolean hasPermissionToExportDeployments() {

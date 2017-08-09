@@ -223,27 +223,47 @@ public class EditFunction implements Serializable {
     }
 
     public boolean isCanAdd() {
-        return currentContext.getIsGlobal() && canManageFunctions();
+        return currentContext.getIsGlobal() && canAddFunctions();
     }
 
     public boolean isCanEdit() {
-        return currentContext.getIsGlobal() && canManageFunctions();
+        return currentContext.getIsGlobal() && canUpdateFunctions();
     }
 
     public boolean isCanOverwrite() {
-        return currentContext.getIsGlobal() && canManageFunctions();
+        return currentContext.getIsGlobal() && canUpdateFunctions();
     }
 
     public boolean isCanDelete() {
-        return currentContext.getIsGlobal() && canManageFunctions();
+        return currentContext.getIsGlobal() && canDeleteFunctions();
     }
 
-    private boolean canManageFunctions() {
+    private boolean canUpdateFunctions() {
         if (isCurrentFocusOnResource()) {
-            return permissionBoundary.canEditFunctionOfResourceOrResourceType(resourceOrResourceType.getId(), null);
+            return permissionBoundary.canUpdateFunctionOfResourceOrResourceType(resourceOrResourceType.getId(), null);
         }
         if (isCurrentFocusOnResourceType()) {
-            return permissionBoundary.canEditFunctionOfResourceOrResourceType(null, resourceOrResourceType.getId());
+            return permissionBoundary.canUpdateFunctionOfResourceOrResourceType(null, resourceOrResourceType.getId());
+        }
+        return false;
+    }
+
+    private boolean canAddFunctions() {
+        if (isCurrentFocusOnResource()) {
+            return permissionBoundary.canCreateFunctionOfResourceOrResourceType(resourceOrResourceType.getId(), null);
+        }
+        if (isCurrentFocusOnResourceType()) {
+            return permissionBoundary.canCreateFunctionOfResourceOrResourceType(null, resourceOrResourceType.getId());
+        }
+        return false;
+    }
+
+    private boolean canDeleteFunctions() {
+        if (isCurrentFocusOnResource()) {
+            return permissionBoundary.canDeleteFunctionOfResourceOrResourceType(resourceOrResourceType.getId(), null);
+        }
+        if (isCurrentFocusOnResourceType()) {
+            return permissionBoundary.canDeleteFunctionOfResourceOrResourceType(null, resourceOrResourceType.getId());
         }
         return false;
     }

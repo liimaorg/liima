@@ -160,22 +160,22 @@ public class CopyResource {
 		return doCreateResourceRelease(resourceGroup, targetRelease, originRelease, actingOwner);
 	}
 
-	public CopyResourceResult doCreateResourceRelease(ResourceGroupEntity resourceGroup,
+	public CopyResourceResult doCreateResourceRelease(ResourceGroupEntity targetResourceGroup,
 			ReleaseEntity targetRelease, ReleaseEntity originRelease, ForeignableOwner actingOwner) throws AMWException,
 			ForeignableOwnerViolationException {
-		resourceGroup = entityManager.find(ResourceGroupEntity.class, resourceGroup.getId());
+		targetResourceGroup = entityManager.find(ResourceGroupEntity.class, targetResourceGroup.getId());
 		// Do not overwrite existing release
-		if (resourceGroup.getReleases() != null && resourceGroup.getReleases().contains(targetRelease)) {
+		if (targetResourceGroup.getReleases() != null && targetResourceGroup.getReleases().contains(targetRelease)) {
 			throw new AMWException("Release " + targetRelease.getName() + " already exists");
 		}
 		// Can not copy from inexisting release
-		if (resourceGroup.getReleases() != null && !resourceGroup.getReleases().contains(originRelease)) {
+		if (targetResourceGroup.getReleases() != null && !targetResourceGroup.getReleases().contains(originRelease)) {
 			throw new AMWException("Release " + originRelease.getName() + " must exist");
 		}
 
-		ResourceEntity originResource = commonDomainService.getResourceEntityByGroupAndRelease(resourceGroup.getId(),
+		ResourceEntity originResource = commonDomainService.getResourceEntityByGroupAndRelease(targetResourceGroup.getId(),
 					originRelease.getId());
-		if(!permissionBoundary.canCopyFromSpecificResource(originResource, originResource.getResourceGroup())){
+		if(!permissionBoundary.canCopyFromSpecificResource(originResource, targetResourceGroup)){
 			throw new NotAuthorizedException("Permission Denied");
 		}
 		return copyResourceDomainService.createReleaseFromOriginResource(originResource, targetRelease, actingOwner);

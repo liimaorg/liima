@@ -46,9 +46,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
 import static ch.puzzle.itc.mobiliar.business.security.entity.ResourceTypePermission.*;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -457,15 +455,15 @@ public class PermissionBoundaryTest {
         resource.setResourceGroup(rg);
         ResourceTypeEntity type = new ResourceTypeEntity();
         resource.setResourceType(type);
-        when(permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, UPDATE, rg, type)).thenReturn(true);
+        when(permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type)).thenReturn(true);
         // when
         permissionBoundary.canCopyFromResource(resource);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, UPDATE, rg, type);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
     }
 
     @Test
-    public void shouldInvokePermissionServiceWithCorrectParametersOnCanCopyFromSpecificResource() {
+    public void shouldInvokePermissionServiceWithCorrectParametersOnCanCopyFromSpecificResourceFailureOnRead() {
         // given
         ResourceEntity resource = new ResourceEntityBuilder().build();
         ResourceGroupEntity rg = new ResourceGroupEntity();
@@ -476,11 +474,55 @@ public class PermissionBoundaryTest {
         ResourceGroupEntity org = new ResourceGroupEntity();
         originResource.setResourceGroup(org);
         originResource.setResourceType(type);
-        when(permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, UPDATE, rg, type)).thenReturn(true);
+        when(permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type)).thenReturn(true);
+        when(permissionService.hasPermission(Permission.RESOURCE, null, READ, org, type)).thenReturn(false);
         // when
-        permissionBoundary.canCopyFromSpecificResource(resource, org);
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, UPDATE, rg, type);
+        boolean can = permissionBoundary.canCopyFromSpecificResource(resource, org);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, READ, org, type);
+        assertFalse(can);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceWithCorrectParametersOnCanCopyFromSpecificResourceFailureOnCopyFrom() {
+        // given
+        ResourceEntity resource = new ResourceEntityBuilder().build();
+        ResourceGroupEntity rg = new ResourceGroupEntity();
+        resource.setResourceGroup(rg);
+        ResourceTypeEntity type = new ResourceTypeEntity();
+        resource.setResourceType(type);
+        ResourceEntity originResource = new ResourceEntityBuilder().build();
+        ResourceGroupEntity org = new ResourceGroupEntity();
+        originResource.setResourceGroup(org);
+        originResource.setResourceType(type);
+        when(permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type)).thenReturn(false);
+        when(permissionService.hasPermission(Permission.RESOURCE, null, READ, org, type)).thenReturn(true);
+        // when
+        boolean can = permissionBoundary.canCopyFromSpecificResource(resource, org);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
+        verify(permissionService, never()).hasPermission(Permission.RESOURCE, null, READ, org, type);
+        assertFalse(can);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceWithCorrectParametersOnCanCopyFromSpecificResourceSuccess() {
+        // given
+        ResourceEntity resource = new ResourceEntityBuilder().build();
+        ResourceGroupEntity rg = new ResourceGroupEntity();
+        resource.setResourceGroup(rg);
+        ResourceTypeEntity type = new ResourceTypeEntity();
+        resource.setResourceType(type);
+        ResourceEntity originResource = new ResourceEntityBuilder().build();
+        ResourceGroupEntity org = new ResourceGroupEntity();
+        originResource.setResourceGroup(org);
+        originResource.setResourceType(type);
+        when(permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type)).thenReturn(true);
+        when(permissionService.hasPermission(Permission.RESOURCE, null, READ, org, type)).thenReturn(true);
+        // when
+        boolean can = permissionBoundary.canCopyFromSpecificResource(resource, org);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, READ, org, type);
+        assertTrue(can);
     }
 
     @Test
@@ -598,10 +640,10 @@ public class PermissionBoundaryTest {
         resource.setId(12);
         when(entityManager.find(ResourceEntity.class, 12)).thenReturn(resource);
         // when
-        permissionBoundary.hasPermissionToTemplateModify(resource, false);
+        permissionBoundary.hasPermissionToAddTemplate(resource, false);
         // then
-        verify(permissionService, never()).hasPermissionToModifyResourceTypeTemplate((ResourceTypeEntity) anyObject(), anyBoolean());
-        verify(permissionService, times(1)).hasPermissionToModifyResourceTemplate(resource, false);
+        verify(permissionService, never()).hasPermissionToAddResourceTypeTemplate((ResourceTypeEntity) anyObject(), anyBoolean());
+        verify(permissionService, times(1)).hasPermissionToAddResourceTemplate(resource, false);
     }
 
     @Test
@@ -611,10 +653,10 @@ public class PermissionBoundaryTest {
         type.setId(23);
         when(entityManager.find(ResourceTypeEntity.class, 23)).thenReturn(type);
         // when
-        permissionBoundary.hasPermissionToTemplateModify(type, true);
+        permissionBoundary.hasPermissionToAddTemplate(type, true);
         // then
-        verify(permissionService, never()).hasPermissionToModifyResourceTemplate((ResourceEntity) anyObject(), anyBoolean());
-        verify(permissionService, times(1)).hasPermissionToModifyResourceTypeTemplate(type, true);
+        verify(permissionService, never()).hasPermissionToAddResourceTemplate((ResourceEntity) anyObject(), anyBoolean());
+        verify(permissionService, times(1)).hasPermissionToAddResourceTypeTemplate(type, true);
     }
 
     @Test
@@ -624,9 +666,9 @@ public class PermissionBoundaryTest {
         type.setId(23);
         when(permissionBoundary.resourceTypeRepository.find(23)).thenReturn(type);
         // when
-        permissionBoundary.canEditFunctionOfResourceOrResourceType(null, type.getId());
+        permissionBoundary.canUpdateFunctionOfResourceOrResourceType(null, type.getId());
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, null, UPDATE, null, type);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, UPDATE, null, type);
     }
 
     @Test
@@ -635,11 +677,9 @@ public class PermissionBoundaryTest {
         ResourceTypeEntity type = new ResourceTypeEntity();
         type.setId(23);
         when(permissionBoundary.resourceTypeRepository.find(23)).thenReturn(type);
-        when(permissionService.hasPermission(Permission.RESOURCETYPE, null, UPDATE, null, type)).thenReturn(true);
         // when
-        permissionBoundary.canEditFunctionOfResourceOrResourceType(null, type.getId());
+        permissionBoundary.canUpdateFunctionOfResourceOrResourceType(null, type.getId());
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, null, UPDATE, null, type);
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, UPDATE, null, type);
     }
 
@@ -652,9 +692,9 @@ public class PermissionBoundaryTest {
         resource.setResourceGroup(rg);
         when(permissionBoundary.resourceRepository.find(12)).thenReturn(resource);
         // when
-        permissionBoundary.canEditFunctionOfResourceOrResourceType(resource.getId(), null);
+        permissionBoundary.canUpdateFunctionOfResourceOrResourceType(resource.getId(), null);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, UPDATE, rg, null);
+        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_AMWFUNCTION, null, UPDATE, rg, null);
     }
 
     @Test
@@ -665,11 +705,9 @@ public class PermissionBoundaryTest {
         resource.setId(12);
         resource.setResourceGroup(rg);
         when(permissionBoundary.resourceRepository.find(12)).thenReturn(resource);
-        when(permissionService.hasPermission(Permission.RESOURCE, null, UPDATE, rg, null)).thenReturn(true);
         // when
-        permissionBoundary.canEditFunctionOfResourceOrResourceType(resource.getId(), null);
+        permissionBoundary.canUpdateFunctionOfResourceOrResourceType(resource.getId(), null);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, UPDATE, rg, null);
         verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_AMWFUNCTION, null, UPDATE, rg, null);
     }
 

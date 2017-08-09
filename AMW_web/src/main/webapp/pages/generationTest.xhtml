@@ -381,11 +381,14 @@
 												</div>
 
 											</f:facet>
-											<h:panelGroup rendered="#{astempl.isOmitted()}">You don't have the permission to see the content of this template.</h:panelGroup>
-											<textarea id="${rich:clientId('templatePanel')}TextArea"
-												style="display: none;">${astempl.originalTemplate.content}</textarea>
-											<textarea id="${rich:clientId('templatePanel')}TextAreaComp"
-												style="display: none;">${astempl.comparedTemplate.content}</textarea>
+											<h:panelGroup rendered="#{astempl.isOmitted()}">
+												You don't have the permission to see the content of this template.</h:panelGroup>
+											<h:panelGroup rendered="#{!astempl.isOmitted()}">
+												<textarea id="${rich:clientId('templatePanel')}TextArea"
+													style="display: none;">${astempl.originalTemplate.content}</textarea>
+												<textarea id="${rich:clientId('templatePanel')}TextAreaComp"
+													style="display: none;">${astempl.comparedTemplate.content}</textarea>
+											</h:panelGroup>
 										</rich:collapsiblePanel>
 
 									</div>
@@ -553,11 +556,14 @@
 													</div>
 
 												</f:facet>
-												<h:panelGroup rendered="#{appGenResult.isOmitted()}">You don't have the permission to see the content of this template.</h:panelGroup>
-												<textarea id="${rich:clientId('templatePanel')}TextArea"
-													style="display: none;">${appGenResult.originalTemplate.content}</textarea>
-												<textarea id="${rich:clientId('templatePanel')}TextAreaComp"
-													style="display: none;">${appGenResult.comparedTemplate.content}</textarea>
+												<h:panelGroup rendered="#{appGenResult.isOmitted()}">
+													You don't have the permission to see the content of this template.</h:panelGroup>
+												<h:panelGroup rendered="#{!appGenResult.isOmitted()}">
+													<textarea id="${rich:clientId('templatePanel')}TextArea"
+														style="display: none;">${appGenResult.originalTemplate.content}</textarea>
+													<textarea id="${rich:clientId('templatePanel')}TextAreaComp"
+														style="display: none;">${appGenResult.comparedTemplate.content}</textarea>
+												</h:panelGroup>
 											</rich:collapsiblePanel>
 										</div>
 									</li>

@@ -36,7 +36,8 @@
         <section id="content">
             <div class="container">
 
-                <h:panelGroup id="contentPanelGroup">
+                <h:panelGroup id="contentPanelGroup"
+                              rendered="#{securityDataProvider.hasPermissionOnAllContext('DEPLOYMENT', 'READ')}">
 
                     <article>
                         <div class="well withHeight autoOverflow">
@@ -92,10 +93,6 @@
                                                     </a4j:commandLink>
                                                 </li>
                                                 <li>
-                                                    <h:link rendered="#{!deployScreenDataProvider.canRedeploy()}"
-                                                            disabled="true" styleClass="btn disable">
-                                                        <i class="icon icon-redeploy">Redeploy</i>
-                                                    </h:link>
                                                     <h:link outcome="redeploy" rendered="#{deployScreenDataProvider.canRedeploy()}"
                                                             styleClass="btn light">
                                                         <i class="icon icon-redeploy">Redeploy</i>
@@ -105,13 +102,13 @@
                                                 </li>
                                                 <li>
                                                     <h:link outcome="createDeploymentView" value="Add deployment"
-                                                            rendered="#{securityDataProvider.hasPermissionToDeploy() and !deployScreenDataProvider.isAngularEnabled()}"
+                                                            rendered="#{securityDataProvider.hasPermissionToCreateDeployment() and !deployScreenDataProvider.isAngularEnabled()}"
                                                             styleClass="btn light"
                                                             onclick="showLoader();confirmLeave(event);">
                                                         <i class="icon icon-add"/>
                                                     </h:link>
                                                     <h:outputLink value="/AMW_angular/#/deployment"
-                                                            rendered="#{securityDataProvider.hasPermissionToDeploy() and deployScreenDataProvider.isAngularEnabled()}"
+                                                            rendered="#{securityDataProvider.hasPermissionToCreateDeployment() and deployScreenDataProvider.isAngularEnabled()}"
                                                             styleClass="btn light"
                                                             onclick="showLoader();confirmLeave(event);">
                                                         <i class="icon icon-add"/>

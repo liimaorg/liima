@@ -38,6 +38,8 @@ import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.GeneratorException;
 import ch.puzzle.itc.mobiliar.common.exception.GeneratorException.MISSING;
@@ -374,7 +376,8 @@ public class GeneratorDomainServiceWithAppServerRelations {
 
 
     void omitTemplateForLackingPermissions(ContextEntity context, ResourceEntity resource, EnvironmentGenerationResult result) {
-        boolean omitTemplateContent = !permissionService.hasPermissionForDeploymentOnContext(context, resource.getResourceGroup());
+        boolean omitTemplateContent = !permissionService.hasPermission(Permission.RESOURCE_TEST_GENERATION_RESULT, context,
+                Action.READ, resource.getResourceGroup(), null);
         if(omitTemplateContent) {
             result.omitAllTemplates();
         }

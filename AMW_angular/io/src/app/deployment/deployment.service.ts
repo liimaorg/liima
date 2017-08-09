@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers } from '@angular/http';
+import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Deployment } from './deployment';
 import { DeploymentRequest } from './deployment-request';
@@ -29,7 +29,6 @@ export class DeploymentService {
   }
 
   createDeployment(deploymentRequest: DeploymentRequest): Observable<Deployment> {
-    console.log('createDeployment: ' + deploymentRequest);
     return this.http.post(`${this.baseUrl}/deployments`, deploymentRequest, {headers: this.postHeaders()}).map((res: Response) => res.json())
       .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
   }
@@ -37,6 +36,34 @@ export class DeploymentService {
   getAllDeploymentParameterKeys(): Observable<DeploymentParameter[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/deployments/deploymentParameterKeys/`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
+  canDeploy(resourceGroupId: number, contextIds: number[]): Observable<boolean> {
+    let params = new URLSearchParams();
+    contextIds.forEach((key) => params.append('contextId', String(key)));
+    let options = new RequestOptions({
+      search: params,
+      headers: this.getHeaders()
+    });
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/canDeploy/${resourceGroupId}`, options)
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
+  canRequestDeployment(resourceGroupId: number, contextIds: number[]): Observable<boolean> {
+    let params = new URLSearchParams();
+    contextIds.forEach((key) => params.append('contextId', String(key)));
+    let options = new RequestOptions({
+      search: params,
+      headers: this.getHeaders()
+    });
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/canRequestDeployment/${resourceGroupId}`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
     return resource$;

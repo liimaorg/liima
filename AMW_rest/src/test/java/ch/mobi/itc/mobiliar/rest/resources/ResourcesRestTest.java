@@ -25,9 +25,11 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.mobi.itc.mobiliar.rest.dtos.*;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CopyResource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
@@ -39,6 +41,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,6 +65,7 @@ import static javax.ws.rs.core.Response.Status.CREATED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -93,6 +97,12 @@ public class ResourcesRestTest {
 
     @Mock
     ResourceTemplatesRest resourceTemplatesRestMock;
+
+    @Mock
+    ReleaseLocator releaseLocatorMock;
+
+    @Mock
+    DeploymentBoundary deploymentBoundaryMock;
 
     @Before
     public void configure() {
@@ -388,6 +398,25 @@ public class ResourcesRestTest {
         verify(resourcePropertiesMock).getResourceProperties(resourceGroupName, closestRelease.getName(), env);
         verify(resourceTemplatesRestMock).getResourceTemplates(resourceGroupName, closestRelease.getName(), "");
     }
+  
+    @Test
+    public void shouldInvokeBoundaryWithRightArgumentsOnGetApplicationsWithVersionForRelease() throws ValidationException {
+        // given
+        Integer resourceGroupId = 8;
+        Integer releaseId = 9;
+        ResourceEntity appServer = new ResourceEntity();
+        List<Integer> contextIds = Arrays.asList(1,2);
+        ReleaseEntity release = new ReleaseEntity();
+        release.setName("TestRelease");
+        when(resourceLocatorMock.getExactOrClosestPastReleaseByGroupIdAndReleaseId(resourceGroupId, releaseId)).thenReturn(appServer);
+        when(releaseLocatorMock.getReleaseById(releaseId)).thenReturn(release);
+
+        // when
+        rest.getApplicationsWithVersionForRelease(resourceGroupId, releaseId, contextIds);
+
+        // then
+        verify(deploymentBoundaryMock, times(1)).getVersions(appServer, contextIds, release);
+    }
 
     @Test
     public void shouldNotAllowCopyFromResourceOfDifferentTypes() throws ValidationException, ForeignableOwnerViolationException, AMWException {
@@ -463,7 +492,6 @@ public class ResourcesRestTest {
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
-
     }
 
 }

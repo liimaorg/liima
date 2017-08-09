@@ -54,6 +54,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   transDeploymentParameters: DeploymentParameter[] = [];
   deploymentResponse: any = {};
   hasPermissionShakedownTest: boolean = false;
+  hasPermissionToDeploy: boolean = false;
+  hasPermissionToRequestDeployment: boolean = false;
 
   // redeploy only
   selectedDeployment: Deployment = <Deployment> {};
@@ -67,7 +69,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   doNeighbourhoodTest: boolean = false;
 
   bestForSelectedRelease: Release = null;
-  appsWithoutVersion: string[] = [];
 
   errorMessage: string = '';
   successMessage: string = '';
@@ -95,11 +96,17 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
     console.log('hello `Deployment` component');
 
-    if (this.deploymentId) {
+    // a deploymentId MUST be numeric..
+    if (this.deploymentId && !isNaN(this.deploymentId)) {
       this.appState.set('pageTitle', 'Redeploy');
       this.isRedeployment = true;
       this.getDeployment();
     } else {
+      // ..or it's rather an appserverName (we got no type safety on runtime)
+      if (this.deploymentId) {
+        this.appserverName = this.deploymentId.toString();
+        delete this.deploymentId;
+      }
       this.appState.set('pageTitle', 'Create new deployment');
       this.initAppservers();
     }
@@ -125,13 +132,14 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.resetVars();
     this.loadReleases();
     this.canCreateShakedownTest();
+    this.canDeploy();
   }
 
   onChangeRelease() {
-    console.log('selected release is ' + this.selectedRelease.release);
     if (!this.selectedRelease) {
       this.selectedRelease = this.releases[0];
     }
+    console.log('selected release is ' + this.selectedRelease.release);
     this.getRelatedForRelease();
     this.goTo(this.selectedAppserver.name + '/' + this.selectedRelease.release);
   }
@@ -140,6 +148,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     if (!this.isRedeployment) {
       this.getAppVersions();
     }
+    this.canDeploy();
   }
 
   onAddParam() {
@@ -153,7 +162,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   isReadyForDeployment(): boolean {
-    return (this.selectedRelease && _.filter(this.environments, 'selected').length > 0);
+    return (this.selectedRelease  && this.appsWithVersion.length > 0 && _.filter(this.environments, 'selected').length > 0);
   }
 
   requestDeployment() {
@@ -187,7 +196,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.transDeploymentParameters = this.selectedDeployment.deploymentParameters;
     this.appsWithVersion = this.selectedDeployment.appsWithVersion;
     this.selectedRelease = <Release> { release: this.selectedDeployment.releaseName };
-    this.selectedAppserver = <Resource> { name: this.selectedDeployment.appServerName };
+    this.selectedAppserver = <Resource> { id: this.selectedDeployment.appServerId, name: this.selectedDeployment.appServerName };
+    this.canDeploy();
   }
 
   private composeRedeploymentAppserverDisplayName() {
@@ -227,7 +237,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private extractFromRelations() {
     this.runtime = _.filter(this.bestForSelectedRelease.relations, {type: 'RUNTIME'}).pop();
-    this.appsWithoutVersion = _.filter(this.bestForSelectedRelease.relations, {type: 'APPLICATION'}).map((val) => val.relatedResourceName);
     this.resourceTags = this.resourceTags.concat(this.bestForSelectedRelease.resourceTags);
     this.appsWithVersion = [];
     this.getAppVersions();
@@ -235,7 +244,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private getAppVersions() {
     this.isLoading = true;
-    this.resourceService.getAppsWithVersions(this.selectedAppserver.id, this.bestForSelectedRelease.id, _.filter(this.environments, 'selected').map((val) => val.id)).subscribe(
+    this.resourceService.getAppsWithVersions(this.selectedAppserver.id, this.selectedRelease.id, _.filter(this.environments, 'selected').map((val) => val.id)).subscribe(
       /* happy path */ (r) => this.appsWithVersion = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
@@ -255,7 +264,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.doExecuteShakedownTest = false;
     this.doNeighbourhoodTest = false;
     this.appsWithVersion = [];
-    this.appsWithoutVersion = [];
     this.transDeploymentParameter = <DeploymentParameter> {};
     this.transDeploymentParameters = [];
   }
@@ -264,6 +272,30 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.resourceService.canCreateShakedownTest(this.selectedAppserver.id).subscribe(
       /* happy path */ (r) => this.hasPermissionShakedownTest = r,
       /* error path */ (e) => this.errorMessage = e);
+  }
+
+  private canDeploy() {
+    if (this.selectedAppserver != null) {
+      this.hasPermissionToDeploy = false;
+      let contextIds: number[] = _.filter(this.environments, 'selected').map((val) => val.id);
+      if (contextIds.length > 0) {
+        this.deploymentService.canDeploy(this.selectedAppserver.id, contextIds).subscribe(
+          /* happy path */ (r) => this.hasPermissionToDeploy = r,
+          /* error path */ (e) => this.errorMessage = e,
+          /* onComplete */ () => this.canRequestDeployment(contextIds));
+      }
+    }
+  }
+
+  private canRequestDeployment(contextIds: number[]) {
+    if (this.selectedAppserver != null) {
+      this.hasPermissionToRequestDeployment = false;
+      if (contextIds.length > 0) {
+        this.deploymentService.canRequestDeployment(this.selectedAppserver.id, contextIds).subscribe(
+          /* happy path */ (r) => this.hasPermissionToRequestDeployment = r,
+          /* error path */ (e) => this.errorMessage = e);
+      }
+    }
   }
 
   private prepareDeployment() {

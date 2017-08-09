@@ -170,6 +170,12 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermission(permission, action);
     }
 
+    public boolean hasPermissionOnAllContext(String permissionName, String actionName) {
+        Permission permission = Permission.valueOf(permissionName);
+        Action action = Action.valueOf(actionName);
+        return permissionService.hasPermissionOnAllContext(permission, action, null, null);
+    }
+
     public boolean hasPermissionForResourceType(String permissionName, String actionName, String resourceTypeName) {
         Permission permission = Permission.valueOf(permissionName);
         Action action = Action.valueOf(actionName);
@@ -202,6 +208,10 @@ public class PermissionBoundary implements Serializable {
 
     public boolean hasPermission(Permission permission, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
         return permissionService.hasPermission(permission, null, action, resourceGroup, resourceType);
+    }
+
+    public boolean hasPermission(Permission permission, Action action, ContextEntity context, ResourceGroupEntity resourceGroup) {
+        return permissionService.hasPermission(permission, context, action, resourceGroup, null);
     }
 
     /**
@@ -284,30 +294,40 @@ public class PermissionBoundary implements Serializable {
      * modify(add/edit/delete) all testing templates config_admin: can modify(add/edit/delete) all templates
      * app_developer: can modify(add/edit/delete) only templates in instances of APPLICATION
      */
-    public boolean hasPermissionToTemplateModify(Identifiable resourceOrResourceTypeEntity, boolean isTestingMode) {
+    public boolean hasPermissionToAddTemplate(Identifiable resourceOrResourceTypeEntity, boolean isTestingMode) {
         if (resourceOrResourceTypeEntity != null) {
             if (resourceOrResourceTypeEntity instanceof ResourceEntity) {
                 ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, resourceOrResourceTypeEntity.getId());
-                return permissionService.hasPermissionToModifyResourceTemplate(mergedResource, isTestingMode);
+                return permissionService.hasPermissionToAddResourceTemplate(mergedResource, isTestingMode);
             }
             if (resourceOrResourceTypeEntity instanceof ResourceTypeEntity) {
                 ResourceTypeEntity mergedResourceType = entityManager.find(ResourceTypeEntity.class, resourceOrResourceTypeEntity.getId());
-                return permissionService.hasPermissionToModifyResourceTypeTemplate(mergedResourceType, isTestingMode);
+                return permissionService.hasPermissionToAddResourceTypeTemplate(mergedResourceType, isTestingMode);
             }
         }
         return false;
     }
 
-    public boolean canEditFunctionOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId) {
+    public boolean canCreateFunctionOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId) {
+        return canModifyFunctionOfResourceOrResourceType(resourceEntityId, resourceTypeEntityId, Action.CREATE);
+    }
+
+    public boolean canUpdateFunctionOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId) {
+        return canModifyFunctionOfResourceOrResourceType(resourceEntityId, resourceTypeEntityId, Action.UPDATE);
+    }
+
+    public boolean canDeleteFunctionOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId) {
+        return canModifyFunctionOfResourceOrResourceType(resourceEntityId, resourceTypeEntityId, Action.DELETE);
+    }
+
+    private boolean canModifyFunctionOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId, Action action) {
         // context is always global
         if (resourceEntityId != null) {
             ResourceEntity resource = resourceRepository.find(resourceEntityId);
-            return permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resource.getResourceGroup(), null) &&
-                    permissionService.hasPermission(Permission.RESOURCE_AMWFUNCTION, null, Action.UPDATE, resource.getResourceGroup(), null);
+            return permissionService.hasPermission(Permission.RESOURCE_AMWFUNCTION, null, action, resource.getResourceGroup(), null);
         }
         ResourceTypeEntity type = resourceTypeRepository.find(resourceTypeEntityId);
-        return permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, type) &&
-                permissionService.hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, Action.UPDATE, null, type);
+        return permissionService.hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, action, null, type);
     }
 
     public boolean canCreateResourceInstance(DefaultResourceTypeDefinition type) {
@@ -333,19 +353,24 @@ public class PermissionBoundary implements Serializable {
      */
     public boolean canCopyFromResource(ResourceEntity resourceEntity) {
         return !(resourceEntity == null || resourceEntity.getResourceType() == null) &&
-                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
+                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.ALL, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
     }
 
     /**
      *
-     * @param resourceEntity
-     * @param originResourceGroup
+     * @param originResource (from)
+     * @param targetResourceGroup (to)
      * @return
      */
-    public boolean canCopyFromSpecificResource(ResourceEntity resourceEntity, ResourceGroupEntity originResourceGroup) {
-        return !(resourceEntity == null || resourceEntity.getResourceType() == null) &&
-                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), resourceEntity.getResourceType())
-                && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, originResourceGroup, originResourceGroup.getResourceType());
+    public boolean canCopyFromSpecificResource(ResourceEntity originResource, ResourceGroupEntity targetResourceGroup) {
+        return !(originResource == null || targetResourceGroup == null) &&
+                permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.ALL, targetResourceGroup, targetResourceGroup.getResourceType())
+                && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, originResource.getResourceGroup(), originResource.getResourceType());
+    }
+
+    public boolean canReadFromResource(ResourceGroupEntity resourceGroup) {
+        return !(resourceGroup == null)
+                && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, resourceGroup, resourceGroup.getResourceType());
     }
 
     public boolean canToggleDecryptionOfResource(Integer resourceEntityId ) {
@@ -365,7 +390,11 @@ public class PermissionBoundary implements Serializable {
     }
 
     public boolean hasPermissionToDeploy() {
-        return permissionService.hasPermissionToDeploy();
+        return permissionService.hasPermissionToSeeDeployment();
+    }
+
+    public boolean hasPermissionToCreateDeployment() {
+        return permissionService.hasPermissionToCreateDeployment();
     }
 
     public boolean hasPermissionToCreateShakedownTests(Integer resourceGroupId) {

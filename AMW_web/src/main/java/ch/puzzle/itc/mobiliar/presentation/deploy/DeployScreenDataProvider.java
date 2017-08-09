@@ -609,19 +609,19 @@ public class DeployScreenDataProvider implements Serializable {
     }
 
     public boolean isConfirmPossible(DeploymentEntity deployment) {
-        return deploymentBoundary.isConfirmPossible(deployment).isPossible();
+        return deploymentBoundary.isConfirmPossible(deployment).isPossible()&& permissionService.hasPermissionForDeploymentUpdate(deployment);
     }
 
     public boolean isRejectPossible(DeploymentEntity deployment) {
-        return deploymentBoundary.isConfirmPossible(deployment).isPossible();
+        return deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment);
     }
 
     public boolean isChangeDeploymentDatePossible(DeploymentEntity deployment) {
-        return deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible();
+        return deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment);
     }
 
     public boolean isRedeployPossible(DeploymentEntity deployment) {
-        return permissionService.hasPermissionForDeployment(deployment);
+        return permissionService.hasPermissionForDeploymentCreation(deployment);
     }
 
     public void reloadDeployments(boolean countAgain) {
@@ -907,11 +907,11 @@ public class DeployScreenDataProvider implements Serializable {
             }
         }
 
-        return permissionService.hasPermissionToDeploy() && isEditAllowed;
+        return isEditAllowed && (permissionService.hasPermissionToCreateDeployment() || permissionService.hasPermissionToEditDeployment());
     }
 
     public boolean canRedeploy() {
-        return permissionService.hasPermissionToDeploy() && !getSelectedDeployments().isEmpty();
+        return permissionService.hasPermissionToCreateDeployment() && !getSelectedDeployments().isEmpty();
     }
 
     public boolean hasDeploymentParameter() {
