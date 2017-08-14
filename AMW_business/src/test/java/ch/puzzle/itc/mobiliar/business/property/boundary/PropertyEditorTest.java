@@ -196,18 +196,16 @@ public class PropertyEditorTest {
 
         List<ResourceEditProperty> properties = new ArrayList<>();
         properties.add(new ResourceEditPropertyBuilder().withDisplayAndTechKeyName(propertyName).withValue(propertyValue).build());
-
         ContextEntity contextMock = mock(ContextEntity.class);
-
         ResourceEntity resource = createWithIdNameAndTypeName(1, resourceGroupName, typeName);
+
         when(resourceLocatorMock.getResourceByGroupNameAndRelease(resourceGroupName, releaseName)).thenReturn(resource);
         when(contextLocatorMock.getContextByName(contextName)).thenReturn(contextMock);
-        when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
+        when(propertyEditingServiceMock.loadPropertiesForEditResource(any(Integer.class), any(ResourceTypeEntity.class), any(ContextEntity.class))).thenReturn(properties);
         when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, resource, null)).thenReturn(true);
         when(permissionBoundaryMock.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, contextMock, Action.ALL, resource, null)).thenReturn(true);
 
         setupMocksForSinglePropertiesModificationsFor(resource);
-
 
         // when
         Assert.assertTrue(!properties.isEmpty());

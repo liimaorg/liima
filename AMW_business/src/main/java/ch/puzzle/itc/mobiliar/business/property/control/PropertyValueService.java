@@ -71,7 +71,7 @@ public class PropertyValueService {
         if (!propertyValidationService.canPropertyValueBeSetOnContext(p.getDescriptor(), resourceContext)) {
             throw new ValidationException("The property " + p.getDescriptor() + " can not be set on context " + resourceContext.getContext());
         }
-        p.setValueAndEncrypt(unobfuscatedValue);
+        p.setValue(unobfuscatedValue);
     }
 
 

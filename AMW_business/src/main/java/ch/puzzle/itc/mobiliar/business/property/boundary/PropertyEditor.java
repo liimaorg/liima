@@ -492,6 +492,12 @@ public class PropertyEditor {
 
 		ResourceEntity resourceByNameAndRelease = resourceLocator.getResourceByGroupNameAndRelease(
 				resourceGroupName, releaseName);
+
+		if (resourceByNameAndRelease == null) {
+			log.info("Resource group " + resourceGroupName + " not found in release " + releaseName);
+			throw new NoResultException("Could not find resource group in this release");
+		}
+
 		ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL
 				.getDisplayName() : contextName);
 
@@ -499,14 +505,9 @@ public class PropertyEditor {
 				.loadPropertiesForEditResource(resourceByNameAndRelease.getId(),
 						resourceByNameAndRelease.getResourceType(), context);
 
-		List<ResourceEditProperty> potentiallyDecryptedProperties;
-		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resourceByNameAndRelease, null)) {
-			potentiallyDecryptedProperties = propertyValueService.decryptProperties(resourceEditProperties);
-		} else {
-			potentiallyDecryptedProperties = resourceEditProperties;
-		}
-		ResourceEditProperty property = findByName(propertyName, potentiallyDecryptedProperties);
-		setSingleProperty(resourceByNameAndRelease, context, property.getDescriptorId(), propertyValue);
+		ResourceEditProperty property = findByName(propertyName, resourceEditProperties);
+		property.setPropertyValue(propertyValue);
+		setSingleProperty(resourceByNameAndRelease, context, property.getDescriptorId(), property.getUnobfuscatedValue());
 	}
 
 	/**
