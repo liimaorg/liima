@@ -51,7 +51,6 @@ import ch.puzzle.itc.mobiliar.presentation.resourcesedit.DataProviderHelper;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
 
 import javax.ejb.EJBException;
 import javax.enterprise.event.Observes;
@@ -168,8 +167,7 @@ public class RelationDataProvider implements Serializable {
 			if (!helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix)) {
 				return false;
 			}
-			boolean gotPermission = canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
-			return gotPermission && resourceRelationBoundary.isAddableAsProvidedResourceToResourceGroup((ResourceEntity) resourceOrType, slaveResourceGroup.getName());
+			return canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
 		}
 		return false;
 	}
@@ -387,6 +385,10 @@ public class RelationDataProvider implements Serializable {
 		String prefix = resourceGroupEntity.getName();
 		return helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix);
 
+	}
+
+	public boolean isAddableAsProvidedResource(NamedIdentifiable slaveResourceGroup) {
+		return resourceRelationBoundary.isAddableAsProvidedResourceToResourceGroup((ResourceEntity) resourceOrType, slaveResourceGroup.getName());
 	}
 
 	public boolean addProvidedResource(Integer slaveResourceGroupId) {
