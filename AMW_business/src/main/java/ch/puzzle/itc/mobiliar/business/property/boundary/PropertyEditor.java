@@ -233,7 +233,8 @@ public class PropertyEditor {
             ContextEntity context = entityManager.find(ContextEntity.class, contextId);
             ResourceEntity slaveResource = entityManager.find(ResourceEntity.class,
                     resourceRelation.getSlaveId());
-			if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, slaveResource, null)) {
+			// a decrypt permission on the master resource allows to decrypt on the related slave properties
+			if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
 				return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditRelation(
 						resourceRelation.getMode(), resourceRelation.getResRelId(), slaveResource.getId(),
 						resource.getResourceType(), slaveResource.getResourceType(), context));
@@ -247,6 +248,7 @@ public class PropertyEditor {
 
 	/**
 	 * Returns the property values (including information about their descriptors and overwritten values)
+	 * Encrypted property values are returned decrypted if the caller has the permission to do so
 	 */
 	public List<ResourceEditProperty> getPropertiesForRelatedResource(
 			ConsumedResourceRelationEntity relationEntity, Integer contextId) {
@@ -255,7 +257,8 @@ public class PropertyEditor {
 		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
 		ResourceEntity slaveResource = entityManager.find(ResourceEntity.class, relationEntity
 				.getSlaveResource().getId());
-		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, slaveResource, null)) {
+		// a decrypt permission on the master resource allows to decrypt on the related slave properties
+		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
 			return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditRelation(
 					ResourceEditRelation.Mode.CONSUMED, relationEntity.getId(), slaveResource.getId(),
 					resource.getResourceType(), slaveResource.getResourceType(), context));
@@ -268,6 +271,7 @@ public class PropertyEditor {
 	/**
 	 * Returns the property values (including information about their descriptors and overwritten values) of
 	 * the given ResourceRelationTypeEntity
+	 * Encrypted property values are returned decrypted if the caller has the permission to do so
 	 *
 	 * @param resourceRelation
 	 * @param contextId
@@ -278,8 +282,9 @@ public class PropertyEditor {
 		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
 		ResourceRelationTypeEntity relationTypeEntity = entityManager.find(
 				ResourceRelationTypeEntity.class, resourceRelation.getResRelTypeId());
+		// a decrypt permission on the resource type A allows to decrypt on the related resource type B properties
 		if (permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, context, Action.ALL, null,
-				relationTypeEntity.getResourceTypeB())) {
+				relationTypeEntity.getResourceTypeA())) {
 			return propertyValueService.decryptProperties(propertyEditingService
 					.loadPropertiesForEditResourceTypeRelation(relationTypeEntity.getResourceTypeA(),
 							relationTypeEntity.getResourceTypeB(), context));
@@ -608,10 +613,6 @@ public class PropertyEditor {
 			ConsumedResourceRelationEntity resourceRelation) {
 		List<ResourceEditProperty> propertiesForRelatedResource = getPropertiesForRelatedResource(
 				resourceRelation, context.getId());
-
-		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resourceRelation.getSlaveResource(), null)) {
-			return findByName(hostName, propertyValueService.decryptProperties(propertiesForRelatedResource));
-		}
 		return findByName(hostName, propertiesForRelatedResource);
 	}
 
