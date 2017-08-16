@@ -194,9 +194,8 @@ describe('DeploymentComponent (create deployment)', () => {
   }));
 
   it('should check permission on onChangeAppserver',
-    inject([DeploymentComponent, DeploymentService, ResourceService], (deploymentComponent: DeploymentComponent,
-                                                                       deploymentService: DeploymentService,
-                                                                       resourceService: ResourceService) => {
+    inject([DeploymentComponent, DeploymentService, ResourceService],
+      (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
       // given
       deploymentComponent.selectedRelease = <Release> {id: 1};
       let appServer: Resource = <Resource> {name: 'testServer', id: 3};
@@ -469,8 +468,9 @@ describe('DeploymentComponent (redeployment)', () => {
     expect(deploymentService.get).toHaveBeenCalledWith(123);
   }));
 
-  it('should initRedeploymentValues ngOnInit', inject([DeploymentComponent, DeploymentService],
-    (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+  it('should initRedeploymentValues ngOnInit and leave isDeploymentBlocked to false if all appWithVersion have been found',
+    inject([DeploymentComponent, DeploymentService, ResourceService],
+    (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
     // given
     deploymentComponent.environments = [ <Environment> {name: 'X'}, <Environment> {name: 'Y'} ];
     let appsWithVersion: AppWithVersion[] = [<AppWithVersion> {applicationId: 4, applicationName: 'testApp', version: '1.2.3'},
@@ -479,10 +479,14 @@ describe('DeploymentComponent (redeployment)', () => {
     let deployment: Deployment = <Deployment> { appsWithVersion: appsWithVersion, deploymentParameters: [deploymentParameter],
       releaseName: 'testRelease', appServerName: 'testServer', environmentName: 'Y' };
     spyOn(deploymentService, 'get').and.returnValue(Observable.of(deployment));
+    spyOn(resourceService, 'getDeployableReleases').and.returnValue(Observable.of([ <Release> { id: 9, release: 'testRelease' } ]));
+    spyOn(resourceService, 'getAppsWithVersions').and.returnValue(Observable.of([<AppWithVersion> {applicationId: 4, applicationName: 'testApp', version: '1.2.3'},
+        <AppWithVersion> {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'}]));
     // when
     deploymentComponent.ngOnInit();
     // then
     expect(deploymentComponent.isRedeployment).toBeTruthy();
+    expect(deploymentComponent.isDeploymentBlocked).toBeFalsy();
     expect(deploymentComponent.selectedRelease.release).toEqual('testRelease');
     expect(deploymentComponent.selectedAppserver.name).toEqual('testServer');
     expect(deploymentComponent.appsWithVersion).toEqual(appsWithVersion);
@@ -493,8 +497,29 @@ describe('DeploymentComponent (redeployment)', () => {
     expect(deploymentComponent.environments[1].selected).toBeTruthy();
   }));
 
-  it('should call the deploymentService with the right values on createDeployment',
-    inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+  it('should initRedeploymentValues and set isDeploymentBlocked to true if an appWithVersion is missing ngOnInit',
+    inject([DeploymentComponent, DeploymentService, ResourceService],
+    (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
+      // given
+      deploymentComponent.environments = [ <Environment> {name: 'X'}, <Environment> {name: 'Y'} ];
+      let appsWithVersion: AppWithVersion[] = [<AppWithVersion> {applicationId: 4, applicationName: 'testApp', version: '1.2.3'},
+        <AppWithVersion> {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'}];
+      let deploymentParameter: DeploymentParameter = <DeploymentParameter> {key: 'atest', value: 'foo'};
+      let deployment: Deployment = <Deployment> { appsWithVersion: appsWithVersion, deploymentParameters: [deploymentParameter],
+        releaseName: 'testRelease', appServerName: 'testServer', appServerId: 1, environmentName: 'Y' };
+      spyOn(deploymentService, 'get').and.returnValue(Observable.of(deployment));
+      spyOn(resourceService, 'getDeployableReleases').and.returnValue(Observable.of([ <Release> { id: 9, release: 'testRelease' } ]));
+      // second app missing
+      spyOn(resourceService, 'getAppsWithVersions').and.returnValue(Observable.of([<AppWithVersion> {applicationId: 4, applicationName: 'testApp', version: '1.2.3'}]));
+      // when
+      deploymentComponent.ngOnInit();
+      // then
+      expect(deploymentComponent.isRedeployment).toBeTruthy();
+      expect(deploymentComponent.isDeploymentBlocked).toBeTruthy();
+  }));
+
+  it('should call the deploymentService with the right values on createDeployment', inject([DeploymentComponent, DeploymentService, ResourceService],
+      (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
       // given
       deploymentComponent.environments = [ <Environment> {name: 'X', id: 1}, <Environment> {name: 'Y', id: 2} ];
       let appsWithVersion: AppWithVersion[] = [<AppWithVersion> {applicationId: 4, applicationName: 'testApp',
@@ -508,6 +533,7 @@ describe('DeploymentComponent (redeployment)', () => {
         releaseName: 'testRelease', contextIds: [2], simulate: false, sendEmail: false, executeShakedownTest: false,
         neighbourhoodTest: false, requestOnly: false,  appsWithVersion: appsWithVersion,
         deploymentParameters: deploymentParameters };
+      spyOn(resourceService, 'getDeployableReleases').and.returnValue(Observable.of([ <Release> { id: 9, release: 'testRelease' } ]));
       spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment> { trackingId: 911 }));
       // when
       deploymentComponent.ngOnInit();
