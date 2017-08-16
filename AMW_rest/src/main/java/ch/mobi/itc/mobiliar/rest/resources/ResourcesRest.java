@@ -593,32 +593,32 @@ public class ResourcesRest {
     /**
      * Creates a new resource release of an existing resource and returns its location.
      *
-     * @param request containing a ResourceReleaseDTO
-     * @param releaseName target release name
+     * @param request containing a ResourceReleaseCopyDTO
+     * @param resourceGroupName
      * @return
      */
     @POST
-    @Path("/{releaseName}")
+    @Path("/{resourceGroupName}")
     @ApiOperation(value = "Create a new Resource Release")
-    public Response addNewResourceRelease(@ApiParam("Add a Resource") ResourceReleaseDTO request,
-                                          @PathParam("releaseName") String releaseName) {
+    public Response addNewResourceRelease(@ApiParam("Create a Resource Release") ResourceReleaseCopyDTO request,
+                                          @PathParam("resourceGroupName") String resourceGroupName) {
         CopyResourceResult copyResourceResult;
-        if (StringUtils.isEmpty(request.getName())) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Resource name must not be empty")).build();
-        }
         if (StringUtils.isEmpty(request.getReleaseName())) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Release name must not be empty")).build();
         }
+        if (StringUtils.isEmpty(request.getSourceReleaseName())) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Source release name must not be empty")).build();
+        }
         try {
-            copyResourceResult = copyResource.doCreateResourceRelease(request.getName(), releaseName,
-                    request.getReleaseName(), ForeignableOwner.getSystemOwner());
+            copyResourceResult = copyResource.doCreateResourceRelease(resourceGroupName, request.getReleaseName(),
+                    request.getSourceReleaseName(), ForeignableOwner.getSystemOwner());
         } catch (ForeignableOwnerViolationException | AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
         if (!copyResourceResult.isSuccess()) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Release creation failed")).build();
         }
-        return Response.status(CREATED).header("Location", "/resources/" + copyResourceResult.getTargetResourceName() + "/" +releaseName).build();
+        return Response.status(CREATED).header("Location", "/resources/" + copyResourceResult.getTargetResourceName() + "/" + request.getReleaseName()).build();
     }
 
     /**
