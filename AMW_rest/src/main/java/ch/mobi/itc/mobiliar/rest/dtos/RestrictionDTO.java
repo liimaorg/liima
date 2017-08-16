@@ -25,8 +25,7 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.entity.ResourceTypePermission;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -34,27 +33,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "restriction")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
+@Data
 public class RestrictionDTO {
 
-    @Getter @Setter
     private Integer id;
-    @Getter @Setter
+
     private String roleName;
-    @Getter @Setter
+
     private String userName;
-    @Getter @Setter
+
     @ApiModelProperty(required = true)
     private PermissionDTO permission;
-    @Getter @Setter
+
     private Integer resourceGroupId;
-    @Getter @Setter
+
     private String resourceTypeName;
-    @Getter @Setter
+
     private ResourceTypePermission resourceTypePermission;
-    @Getter @Setter
+
     private String contextName;
-    @Getter @Setter
+
     private Action action;
 
     RestrictionDTO(){}

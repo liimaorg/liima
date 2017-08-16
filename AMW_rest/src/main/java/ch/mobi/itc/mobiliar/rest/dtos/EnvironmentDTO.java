@@ -21,8 +21,7 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -30,17 +29,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "environment")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
+@Data
 public class EnvironmentDTO {
 
-    @Getter
-    @Setter
     private Integer id;
-    @Getter
-    @Setter
+
     private String name;
-    @Getter
-    @Setter
+
     private String parent;
 
     EnvironmentDTO() {

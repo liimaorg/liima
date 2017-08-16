@@ -34,12 +34,11 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @XmlRootElement(name = "deployment")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@Getter @Setter
+@Data
 public class DeploymentDTO {
 
 	private Integer id;

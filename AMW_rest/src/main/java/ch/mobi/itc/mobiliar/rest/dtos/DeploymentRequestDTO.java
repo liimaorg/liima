@@ -20,8 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -32,7 +31,7 @@ import java.util.List;
 
 @XmlRootElement(name = "deploymentRequest")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@Getter @Setter
+@Data
 public class DeploymentRequestDTO {
 	
 	private String appServerName;
