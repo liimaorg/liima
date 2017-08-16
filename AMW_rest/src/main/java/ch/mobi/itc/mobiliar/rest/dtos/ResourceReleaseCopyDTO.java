@@ -26,19 +26,12 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "deploymentParameter")
+@XmlRootElement(name = "resourceReleaseCopy")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
-public class DeploymentParameterDTO {
+public class ResourceReleaseCopyDTO {
 
-	private String key;
-	private String value;
+    private String releaseName;
 
-	public DeploymentParameterDTO() {}
-
-	public DeploymentParameterDTO(String key, String value) {
-		this.key = key;
-		this.value = value;
-	}
-	
+    private String sourceReleaseName;
 }

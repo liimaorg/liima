@@ -24,8 +24,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * DTO für JavaBatch Monitor: Job resources
@@ -34,20 +33,15 @@ import lombok.Setter;
  */
 @XmlRootElement(name = "resource")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
+@Data
 public class BatchResourceDTO {
 
-    @Getter
-    @Setter
     private String name;
-    @Getter
-    @Setter
+
     private String type;
-    @Getter
-    @Setter
+
     private String description;
-    @Getter
-    @Setter
+
     private Boolean consumed; //consumed = true, provided = false
     
     public BatchResourceDTO() {
