@@ -173,8 +173,8 @@ describe('PermissionComponent (type Role)', () => {
     inject([PermissionComponent],
       (permissionComponent: PermissionComponent) => {
       // given
-      permissionComponent.restriction = <Restriction> { id: 111, contextName: 'T' };
-      permissionComponent.backupRestriction = <Restriction> { id: 111, contextName: 'B' };
+      permissionComponent.restriction = <Restriction> { id: 111, contextName: 'T', permission: { name: 'aPermission' } };
+      permissionComponent.backupRestriction = <Restriction> { id: 111, contextName: 'B', permission: { name: 'aPermission' } };
       // when
       permissionComponent.cancel();
       // then
