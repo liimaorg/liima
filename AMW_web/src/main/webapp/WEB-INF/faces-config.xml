@@ -11,7 +11,7 @@
 	</factory>
 	
 	<application>
-		<view-handler>ch.puzzle.itc.mobiliar.presentation.util.RequestParamViewHandler</view-handler>
+		<!--<view-handler>ch.puzzle.itc.mobiliar.presentation.util.RequestParamViewHandler</view-handler>-->
 		<view-handler>ch.puzzle.itc.mobiliar.presentation.util.NullFilterViewHandler</view-handler>
 	</application>
 	
