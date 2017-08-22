@@ -148,33 +148,24 @@ public class RelationDataProvider implements Serializable {
 	}
 
 	public boolean canAddAsConsumedRelation(NamedIdentifiable slaveResourceGroup) {
-		if (slaveResourceGroup instanceof ResourceGroupEntity) {
-			return  canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
-		}
-		return false;
+		return canAddAsResourceRelation(slaveResourceGroup);
 	}
 
 	public boolean canAddAsProvidedRelation(NamedIdentifiable slaveResourceGroup) {
 		// Only applications are allowed to have provided resources
-		if (!canAddResourceRelation || !getResourceType().isApplicationResourceType()) {
-			return false;
-		}
-		// provided resources can only be added once
-		if (slaveResourceGroup instanceof ResourceGroupEntity) {
-			List<ResourceEditRelation> relations = helper.flattenMap(resourceRelationModel.getProvidedRelations());
-			Integer slaveResourceGroupId = slaveResourceGroup.getId();
-			String prefix = slaveResourceGroup.getName();
-			if (!helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix)) {
-				return false;
-			}
-			return canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
-		}
-		return false;
+		return canAddAsResourceRelation(slaveResourceGroup) && getResourceType().isApplicationResourceType();
 	}
 
 	public boolean canAddAsResourceTypeRelation(NamedIdentifiable slaveResourceType) {
 		if (slaveResourceType instanceof ResourceTypeEntity) {
 			return  canAddResourceTypeRelation && permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.READ, null, (ResourceTypeEntity) slaveResourceType);
+		}
+		return false;
+	}
+
+	private boolean canAddAsResourceRelation(NamedIdentifiable slaveResourceGroup) {
+		if (slaveResourceGroup instanceof ResourceGroupEntity) {
+			return canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
 		}
 		return false;
 	}
@@ -374,21 +365,30 @@ public class RelationDataProvider implements Serializable {
         }
     }
 
-	public boolean isAllowedToAddProvidedRelations(ResourceGroupEntity resourceGroupEntity) {
-		// Only applications are allowed to have provided resources
-		if (!canAddResourceRelation || !getResourceType().isApplicationResourceType()) {
-			return false;
-		}
+	private boolean isAlreadyProvided(ResourceGroupEntity resourceGroupEntity) {
 		// provided resources can only be added once
 		List<ResourceEditRelation> relations = helper.flattenMap(resourceRelationModel.getProvidedRelations());
 		Integer slaveResourceGroupId = resourceGroupEntity.getId();
 		String prefix = resourceGroupEntity.getName();
-		return helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix);
-
+		return !helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix);
 	}
 
-	public boolean isAddableAsProvidedResource(NamedIdentifiable slaveResourceGroup) {
-		return resourceRelationBoundary.isAddableAsProvidedResourceToResourceGroup((ResourceEntity) resourceOrType, slaveResourceGroup.getName());
+	public int canBeAddedAsProvidedResource(NamedIdentifiable slaveResourceGroup) {
+		if (slaveResourceGroup instanceof ResourceGroupEntity) {
+			// A provided resource can only be added once
+			if (isAlreadyProvided((ResourceGroupEntity) slaveResourceGroup)) {
+				return 1;
+			}
+			if (!canAddResourceRelation || !permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null)) {
+				return 2;
+			}
+			// A Resource can only be provided by one ResourceGroup
+			if (!resourceRelationBoundary.isAddableAsProvidedResourceToResourceGroup((ResourceEntity) resourceOrType, slaveResourceGroup.getName())) {
+				return 3;
+			}
+			return 0;
+		}
+		return 0;
 	}
 
 	public boolean addProvidedResource(Integer slaveResourceGroupId) {
