@@ -713,7 +713,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -740,7 +739,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -772,7 +770,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -808,7 +805,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -852,7 +848,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -889,7 +884,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -921,7 +915,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -951,7 +944,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
