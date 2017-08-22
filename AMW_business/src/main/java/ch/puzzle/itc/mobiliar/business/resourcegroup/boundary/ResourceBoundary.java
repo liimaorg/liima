@@ -45,6 +45,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import java.util.logging.Logger;
 
 @Stateless
@@ -136,7 +137,8 @@ public class ResourceBoundary {
      * @param newResourceName
      * @param resourceTypeId
      * @param releaseId
-     * @param canCreateReleaseOfExisting if true, resource will be created if resources with same name in other releases exist. if false an ElementAlreadyExistsException will thrown in that case
+     * @param canCreateReleaseOfExisting if true, resource will be created even if resources with same name and type in other releases exist.
+     *                                   if false an ElementAlreadyExistsException will thrown in that case
      * @return new created ResourceEntity
      * @throws ElementAlreadyExistsException
      * @throws ResourceTypeNotFoundException
@@ -145,16 +147,27 @@ public class ResourceBoundary {
             ResourceTypeNotFoundException {
         ReleaseEntity release = releaseService.getById(releaseId);
         ResourceTypeEntity type = commonService.getResourceTypeEntityById(resourceTypeId);
-        ResourceGroupEntity group = resourceGroupRepository.loadUniqueGroupByNameAndType(newResourceName,
-                resourceTypeId);
+        ResourceGroupEntity group = resourceGroupRepository.loadUniqueGroupByNameAndType(newResourceName, resourceTypeId);
+        ResourceGroupEntity anotherGroup = null;
+        try {
+            anotherGroup = resourceGroupRepository.getResourceGroupByName(newResourceName);
+        } catch (NoResultException nr) {
+            // nothing to do here
+        }
         ResourceEntity resourceEntity = null;
         if (group == null) {
-            // if group does not exists a new resource with a new group can be created
-            resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
-            log.info("Neue Resource " + newResourceName + "inkl. Gruppe erstellt für Release "
-                    + release.getName());
-        }
-        else if(canCreateReleaseOfExisting)  {
+            if (anotherGroup == null) {
+                // if group does not exists a new resource with a new group can be created
+                resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
+                log.info("Neue Resource " + newResourceName + "inkl. Gruppe erstellt für Release "
+                        + release.getName());
+            } else {
+                String message = "A " + anotherGroup.getResourceType().getName()+" with the same name: " + newResourceName
+                        + " already exists.";
+                log.info(message);
+                throw new ElementAlreadyExistsException(message, Resource.class, newResourceName);
+            }
+        } else if (canCreateReleaseOfExisting)  {
             // check if group contains resource for release
             for (ResourceEntity r : group.getResources()) {
                 if (r.getRelease().getId().equals(releaseId)) {
@@ -167,17 +180,16 @@ public class ResourceBoundary {
                 resourceEntity = ResourceFactory.createNewResourceForOwner(group, creatingOwner);
                 log.info("Neue Resource " + newResourceName
                         + "für existierende Gruppe erstellt für Release " + release.getName());
-            }
-            else {
+            } else {
                 // if resource with given name, type and release already exists throw an exeption
                 String message = "The "+type.getName()+" with name: " + newResourceName
                         + " already exists in release "+release.getName();
                 log.info(message);
                 throw new ElementAlreadyExistsException(message, Resource.class, newResourceName);
             }
-        }else{
+        } else {
             // if it is not allowed to create a new release for existing throw an exception
-            String message = "The "+type.getName()+" with name: " + newResourceName
+            String message = "The " + type.getName() + " with name: " + newResourceName
                     + " already exists.";
             log.info(message);
             throw new ElementAlreadyExistsException(message, Resource.class, newResourceName);
@@ -200,9 +212,8 @@ public class ResourceBoundary {
                 .getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATION);
         ResourceEntity resourceEntity = createResourceEntityByNameForResourceType(creatingOwner, applicationName,
                 resourceTypeEntity.getId(), releaseId, canCreateReleaseOfExisting);
-        Application application = Application.createByResource(resourceEntity, resourceTypeProvider,
+        return Application.createByResource(resourceEntity, resourceTypeProvider,
                 contextDomainService.getGlobalResourceContextEntity());
-        return application;
     }
 
     /**
