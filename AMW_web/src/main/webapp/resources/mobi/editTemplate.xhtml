@@ -23,12 +23,12 @@
 					<div style="display: inline-block; float: right;">
 						<h:link 
 							rendered="#{(!templateEditDataProvider.editResource or !cc.attrs.isRelation or resourceRelationModel.consumedRelation) and templateEditDataProvider.canAdd}"
-							outcome="editTemplateView" type="button" styleClass="btn light right ${templateEditDataProvider.testing ? 'testing' :  ''}" includeViewParams="true">
+							outcome="editTemplateView" type="button" styleClass="btn light right ${templateEditDataProvider.testing ? 'testing' :  ''}" includeViewParams="false">
 							<f:param name="rel" value="#{!cc.attrs.isRelation ? null : resourceRelationModel.currentRelationUniqueIdentifier}" />
 							<f:param name="templ" value="${instanceTemplate.id}" />
-							<i
-								class="icon ${templateEditDataProvider.testing ? 'icon-addGrey' :  'icon-add'}" />New <h:outputText
-								value="Test-" rendered="${templateEditDataProvider.testing}" />Template
+							<f:param name="id" value="#{editResourceView.resourceIdFromParam}" />
+							<i class="icon ${templateEditDataProvider.testing ? 'icon-addGrey' :  'icon-add'}" />
+							New  <h:outputText value="Test-" rendered="${templateEditDataProvider.testing}" />Template
 						</h:link>
 					</div>
 				</li>
