@@ -57,6 +57,12 @@ public class EditResourceView implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    // request params
+    public static final String RELATION_ID = "rel";
+    public static final String CONTEXT_ID = "ctx";
+    public static final String RESOURCE_ID = "id";
+    public static final String RESOURCE_TYPE_ID = "resTypeId";
+
     @Inject
     ResourceTypeLocator resourceTypeLocator;
 
@@ -126,16 +132,16 @@ public class EditResourceView implements Serializable {
     public void init() {
         Map<String, String> requestParams = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         if (relationIdViewParam == null) {
-            relationIdViewParam = getRequestParam("rel", requestParams);
+            relationIdViewParam = getRequestParam(RELATION_ID, requestParams);
         }
         if (contextIdViewParam == null) {
-            contextIdViewParam = getRequestParam("ctx", requestParams);
+            contextIdViewParam = getRequestParam(CONTEXT_ID, requestParams);
         }
         if (resourceIdFromParam == null) {
-            resourceIdFromParam = getRequestParam("id", requestParams);
+            resourceIdFromParam = getRequestParam(RESOURCE_ID, requestParams);
         }
         if (resourceTypeIdFromParam == null) {
-            resourceTypeIdFromParam = getRequestParam("resTypeId", requestParams);
+            resourceTypeIdFromParam = getRequestParam(RESOURCE_TYPE_ID, requestParams);
         }
     }
 

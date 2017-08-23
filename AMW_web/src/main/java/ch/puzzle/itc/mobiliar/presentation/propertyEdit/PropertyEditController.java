@@ -81,10 +81,10 @@ public class PropertyEditController {
     private String getRefreshOutcomeWithRelation(String relationId, String ctx, String resourceId, String resourceTypeId) {
         StringBuilder urlBuilder = new StringBuilder(FacesContext.getCurrentInstance().getViewRoot().getViewId());
         urlBuilder.append("?faces-redirect=true")
-                .append(buildParamIfNotNull("id", resourceId))
-                .append(buildParamIfNotNull("ctx", ctx))
-                .append(buildParamIfNotNull("resTypId", resourceTypeId))
-                .append(buildParamIfNotNull("rel", relationId));
+                .append(buildParamIfNotNull(EditResourceView.RESOURCE_ID, resourceId))
+                .append(buildParamIfNotNull(EditResourceView.CONTEXT_ID, ctx))
+                .append(buildParamIfNotNull(EditResourceView.RESOURCE_TYPE_ID, resourceTypeId))
+                .append(buildParamIfNotNull(EditResourceView.RELATION_ID, relationId));
         return urlBuilder.toString();
     }
 
