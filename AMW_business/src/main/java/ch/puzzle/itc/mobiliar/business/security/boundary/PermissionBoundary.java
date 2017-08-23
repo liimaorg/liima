@@ -465,11 +465,10 @@ public class PermissionBoundary implements Serializable {
 
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.DELETE)
     public void removeRestriction(Integer id) throws AMWException {
-        RestrictionEntity restriction = restrictionRepository.find(id);
-        if (restriction == null) {
+        if (restrictionRepository.find(id) == null) {
             throw new AMWException("Restriction not found");
         }
-        restrictionRepository.remove(id);
+        restrictionRepository.deleteRestrictionById(id);
         permissionRepository.forceReloadingOfLists();
     }
 
