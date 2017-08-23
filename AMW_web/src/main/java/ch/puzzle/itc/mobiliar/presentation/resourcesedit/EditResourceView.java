@@ -44,13 +44,10 @@ import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.Map;
 
 @ViewBackingBean
 public class EditResourceView implements Serializable {
@@ -126,28 +123,6 @@ public class EditResourceView implements Serializable {
 
     @Getter
     private boolean canShowDeploymentLink;
-
-
-    @PostConstruct
-    public void init() {
-        Map<String, String> requestParams = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-        if (relationIdViewParam == null) {
-            relationIdViewParam = getRequestParam(RELATION_ID, requestParams);
-        }
-        if (contextIdViewParam == null) {
-            contextIdViewParam = getRequestParam(CONTEXT_ID, requestParams);
-        }
-        if (resourceIdFromParam == null) {
-            resourceIdFromParam = getRequestParam(RESOURCE_ID, requestParams);
-        }
-        if (resourceTypeIdFromParam == null) {
-            resourceTypeIdFromParam = getRequestParam(RESOURCE_TYPE_ID, requestParams);
-        }
-    }
-
-    public Integer getRequestParam(String key, Map<String, String> requestParams) {
-        return requestParams.get(key) == null ? null : Integer.valueOf(requestParams.get(key));
-    }
 
     public void setContextIdViewParam(Integer contextIdViewParam) {
         this.contextIdViewParam = contextIdViewParam;

@@ -52,7 +52,7 @@ public class PropertyEditController {
 	@Inject
 	EditResourceView resource;
 
-	public String save(String relationId, String ctx, String resourceId, String resourceTypeId) {
+	public void save() {
 		String message;
 	     if(resource.isEditResource() && !NameChecker.isNameValid(resource.getResource().getName())) {
 			   GlobalMessageAppender
@@ -75,7 +75,6 @@ public class PropertyEditController {
 				log.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
-		return getRefreshOutcomeWithRelation(relationId, ctx, resourceId, resourceTypeId);
 	}
 
     private String getRefreshOutcomeWithRelation(String relationId, String ctx, String resourceId, String resourceTypeId) {

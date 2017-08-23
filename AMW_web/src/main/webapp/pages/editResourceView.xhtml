@@ -47,7 +47,7 @@
                 <li class="dropdown">
                     <h:commandButton onclick="disableChangeCheck();showLoader();"
                                      styleClass="btn primary right"
-                                     action="#{propertyEditController.save(editResourceView.relationIdViewParam, editResourceView.contextIdViewParam, editResourceView.resourceIdFromParam, editResourceView.resourceTypeIdFromParam)}"
+                                     action="#{propertyEditController.save()}"
                                      execute="@form"
                                      rendered="#{editResourceView.canSaveChanges()}" value="Save changes" />
                 </li>
