@@ -20,18 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.templateEdit;
 
-import java.io.Serializable;
-import java.util.*;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
-import lombok.Getter;
-import lombok.Setter;
-
-import org.apache.commons.lang.StringUtils;
-
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownStpService;
@@ -45,11 +33,18 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
 import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
-
 import com.google.common.collect.Lists;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import java.io.Serializable;
+import java.util.*;
 
 @ViewBackingBean
 public class EditTemplateView implements Serializable {
@@ -258,7 +253,7 @@ public class EditTemplateView implements Serializable {
 		}
 	}
 
-	public String save() {
+	public void save() {
 		boolean success = true;
 		String errorMessage = "Was not able to save the template: ";
 		try {
@@ -300,9 +295,7 @@ public class EditTemplateView implements Serializable {
 		}
 		if (success) {
 			GlobalMessageAppender.addSuccessMessage("Template successfully saved.");
-			return NavigationUtils.getRefreshOutcomeWithAdditionalParams(new String[]{"templ=" + template.getId(), "lnWrap=" + this.lineWrapping});
 		}
-		return null;
 	}
 
 	public boolean canModifyTemplates() {
