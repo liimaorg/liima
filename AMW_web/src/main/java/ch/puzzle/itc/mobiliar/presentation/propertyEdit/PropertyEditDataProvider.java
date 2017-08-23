@@ -308,7 +308,7 @@ public class PropertyEditDataProvider implements Serializable {
                 if (consumedRelation.getSlaveName().equals(relationIdentifier)) {
                     throw new AMWException("RelationName '" + relationIdentifier + "' is not allowed");
                 }
-                if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier)) {
+                if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier) && ! consumedRelation.equals(resourceRelation.getResourceRelation())) {
                     throw new AMWException("RelationName '" + relationIdentifier + "' is already taken");
                 }
             }
