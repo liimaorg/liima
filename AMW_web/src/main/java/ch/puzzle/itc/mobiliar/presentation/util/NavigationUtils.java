@@ -94,12 +94,4 @@ public class NavigationUtils {
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&id="
 				+ resourceId;
 	}
-
-	public static String getRefreshOutcomeWithRelation(Integer relationId) {
-		if (relationId != null) {
-			return FacesContext.getCurrentInstance().getViewRoot().getViewId()
-					+ "?faces-redirect=true&rel=" + relationId;
-		}
-		return getRefreshOutcome();
-	}
 }

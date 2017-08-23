@@ -44,10 +44,12 @@
     <ui:define name="headerButtons">
         <h:panelGroup id="saveButtons">
             <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown"><h:commandButton onclick="disableChangeCheck();showLoader();"
-                                                    styleClass="btn primary right"
-                                                    action="#{propertyEditController.save()}" execute="@form"
-                                                    rendered="#{editResourceView.canSaveChanges()}" value="Save changes" />
+                <li class="dropdown">
+                    <h:commandButton onclick="disableChangeCheck();showLoader();"
+                                     styleClass="btn primary right"
+                                     action="#{propertyEditController.save(editResourceView.relationIdViewParam, editResourceView.contextIdViewParam, editResourceView.resourceIdFromParam, editResourceView.resourceTypeIdFromParam)}"
+                                     execute="@form"
+                                     rendered="#{editResourceView.canSaveChanges()}" value="Save changes" />
                 </li>
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
@@ -218,6 +220,10 @@
     </ui:define>
 
     <ui:define name="body">
+
+        <!--<f:param  name="ctx" value="#{editResourceView.contextIdViewParam}"/>-->
+        <!--<f:param id="id" value="#{editResourceView.resourceIdFromParam}"/>-->
+        <!--<f:param name="resTypId" value="#{editResourceView.resourceTypeIdFromParam == null ? '' : editResourceView.resourceTypeIdFromParam}"/>-->
 
         <!--  CONTEXT NAVIGATION -->
         <mobi:contextTree />

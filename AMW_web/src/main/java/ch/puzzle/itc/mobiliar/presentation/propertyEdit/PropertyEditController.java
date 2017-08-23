@@ -27,9 +27,10 @@ import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationModel;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.enterprise.context.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.logging.Level;
@@ -51,7 +52,7 @@ public class PropertyEditController {
 	@Inject
 	EditResourceView resource;
 
-	public String save() {
+	public String save(String relationId, String ctx, String resourceId, String resourceTypeId) {
 		String message;
 	     if(resource.isEditResource() && !NameChecker.isNameValid(resource.getResource().getName())) {
 			   GlobalMessageAppender
@@ -74,7 +75,21 @@ public class PropertyEditController {
 				log.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
-		return NavigationUtils.getRefreshOutcomeWithRelation(resourceRelation.getCurrentResourceRelationId());
+		return getRefreshOutcomeWithRelation(relationId, ctx, resourceId, resourceTypeId);
 	}
+
+    private String getRefreshOutcomeWithRelation(String relationId, String ctx, String resourceId, String resourceTypeId) {
+        StringBuilder urlBuilder = new StringBuilder(FacesContext.getCurrentInstance().getViewRoot().getViewId());
+        urlBuilder.append("?faces-redirect=true")
+                .append(buildParamIfNotNull("id", resourceId))
+                .append(buildParamIfNotNull("ctx", ctx))
+                .append(buildParamIfNotNull("resTypId", resourceTypeId))
+                .append(buildParamIfNotNull("rel", relationId));
+        return urlBuilder.toString();
+    }
+
+    private String buildParamIfNotNull(String key, String value) {
+        return StringUtils.isNotEmpty(value) ? String.format("&%s=%s", key, value) : StringUtils.EMPTY;
+    }
 
 }
