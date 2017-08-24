@@ -373,26 +373,34 @@ public class RelationDataProvider implements Serializable {
 		return !helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix);
 	}
 
-	public int canBeAddedAsProvidedResource(NamedIdentifiable slaveResourceGroup) {
+	private boolean canBeAddedAsProvidedResource(NamedIdentifiable slaveResourceGroup) {
 		if (slaveResourceGroup instanceof ResourceGroupEntity) {
-			// A provided resource can only be added once
 			if (isAlreadyProvided((ResourceGroupEntity) slaveResourceGroup)) {
-				return 1;
+				String message = "A resource can only be provided once";
+				GlobalMessageAppender.addErrorMessage(message);
+				return false;
 			}
 			if (!canAddResourceRelation || !permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null)) {
-				return 2;
+				String message = "You do not have the permission to add this relation";
+				GlobalMessageAppender.addErrorMessage(message);
+				return false;
 			}
-			// A Resource can only be provided by one ResourceGroup
 			if (!resourceRelationBoundary.isAddableAsProvidedResourceToResourceGroup((ResourceEntity) resourceOrType, slaveResourceGroup.getName())) {
-				return 3;
+				String message = "This resource is already provided by another resource";
+				GlobalMessageAppender.addErrorMessage(message);
+				return false;
 			}
-			return 0;
+			return true;
 		}
-		return 0;
+		return false;
 	}
 
-	public boolean addProvidedResource(Integer slaveResourceGroupId) {
-		return addResourceRelation(slaveResourceGroupId, true, null, identifier);
+	public boolean addProvidedResource(NamedIdentifiable slaveResourceGroup) {
+		if (canBeAddedAsProvidedResource(slaveResourceGroup)) {
+			return addResourceRelation(slaveResourceGroup.getId(), true, null, identifier);
+		} else {
+			return false;
+		}
 	}
 
 	private boolean addResourceRelation(Integer slaveGroupId, boolean provided, String relationName, String typeIdentifier) {
