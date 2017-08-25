@@ -18,8 +18,10 @@
                         <div style="display: inline-block; float: right;">
                             <h:link
                                     rendered="${editFunction.canAdd}"
-                                    outcome="editFunctionView" type="button" styleClass="btn light right}" includeViewParams="true">
-
+                                    outcome="editFunctionView"
+                                    type="button"
+                                    styleClass="btn light right}"
+                                    includeViewParams="false">
                                 <f:param name="resid" value="#{editFunction.resourceId}"/>
                                 <f:param name="resTypId" value="${editFunction.resourceTypeId}"/>
                                 <f:param name="functionId" value="${editFunction.functionId}"/>
@@ -50,7 +52,8 @@
                                     <span class="meta ellipsisRight inlineBlock width100" title="#{instanceFunction.getCommaseparatedMikNames()}">#{instanceFunction.getCommaseparatedMikNames()} </span>
                                 </h:column>
                                 <h:column rendered="#{editFunction.canEdit or editFunction.canShowInstanceFunctions}">
-                                    <h:link outcome="editFunctionView" includeViewParams="true">
+                                    <h:link outcome="editFunctionView"
+                                            includeViewParams="false">
                                         <f:param name="rel" value="#{editFunction.relationId}"/>
                                         <f:param name="resid" value="#{editFunction.resourceId}"/>
                                         <f:param name="resTypId" value="${editFunction.resourceTypeId}"/>
