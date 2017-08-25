@@ -184,8 +184,10 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <h:link outcome="editResourceView" includeViewParams="true"
-                                    value="Resource type" styleClass="btn light"
+                            <h:link outcome="editResourceView"
+                                    includeViewParams="false"
+                                    value="Resource type"
+                                    styleClass="btn light"
                                     rendered="${editResourceView.canEditResourceType}">
                                 <f:param name="id" value="${null}"/>
                                 <f:param name="rel" value="${null}"/>
@@ -194,8 +196,10 @@
                             </h:link>
                         </li>
                         <li>
-                            <h:link outcome="editResourceView" includeViewParams="true"
-                                    value="Application server" styleClass="btn light"
+                            <h:link outcome="editResourceView"
+                                    includeViewParams="false"
+                                    value="Application server"
+                                    styleClass="btn light"
                                     rendered="${editResourceView.relativeApplicationServerId ne null}">
                                 <f:param name="id" value="${editResourceView.relativeApplicationServerId}"/>
                                 <f:param name="rel" value="${null}"/>
@@ -221,10 +225,6 @@
 
     <ui:define name="body">
 
-        <!--<f:param  name="ctx" value="#{editResourceView.contextIdViewParam}"/>-->
-        <!--<f:param id="id" value="#{editResourceView.resourceIdFromParam}"/>-->
-        <!--<f:param name="resTypId" value="#{editResourceView.resourceTypeIdFromParam == null ? '' : editResourceView.resourceTypeIdFromParam}"/>-->
-
         <!--  CONTEXT NAVIGATION -->
         <mobi:contextTree />
         <section id="content">
@@ -237,7 +237,7 @@
                                 <li>
                                     <h:panelGroup id="managePropertiesComp" rendered="#{editResourceView.isGlobalContext()}">
                                         <h:link outcome="editPropertyView"
-                                                includeViewParams="true"
+                                                includeViewParams="false"
                                                 rendered="#{editResourceView.hasAddPropertyPermission()}"
                                                 styleClass="btn light ${editResourceView.testing ? 'testing' : ''}">
                                             <i class="icon ${editResourceView.testing ? 'icon-addWhite' :  'icon-add'}"/>
