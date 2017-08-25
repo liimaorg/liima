@@ -27,6 +27,7 @@
 							<f:param name="rel" value="#{!cc.attrs.isRelation ? null : resourceRelationModel.currentRelationUniqueIdentifier}" />
 							<f:param name="templ" value="${instanceTemplate.id}" />
 							<f:param name="id" value="#{editResourceView.resourceIdFromParam}" />
+							<f:param name="resTypId" value="#{editResourceView.resourceTypeIdFromParam}" />
 							<i class="icon ${templateEditDataProvider.testing ? 'icon-addGrey' :  'icon-add'}" />
 							New  <h:outputText value="Test-" rendered="${templateEditDataProvider.testing}" />Template
 						</h:link>
