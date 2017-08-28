@@ -798,7 +798,7 @@ public class PermissionService implements Serializable {
      * @return
      */
     public String getCurrentUserName() {
-        return sessionContext.getCallerPrincipal().toString();
+        return sessionContext.getCallerPrincipal().getName();
     }
 
 }
