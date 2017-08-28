@@ -80,6 +80,10 @@ public class CustomFilter {
 
     private List<ComparatorFilterOption> comparatorSelectionList;
 
+    @Setter
+    @Getter
+    private ComparatorFilterOption selectedComparatorFilterOption;
+
     public static CustomFilterBuilder builder(DeploymentFilterTypes deploymentFilterTypes) {
         ComparatorFilterOption defaultComparator = ComparatorFilterOption.equals;
 
