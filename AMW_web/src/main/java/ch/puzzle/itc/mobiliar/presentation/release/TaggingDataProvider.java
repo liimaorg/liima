@@ -21,15 +21,14 @@
 package ch.puzzle.itc.mobiliar.presentation.release;
 
 import ch.puzzle.itc.mobiliar.business.configurationtag.control.TagConfigurationService;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
+import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -81,7 +80,7 @@ public class TaggingDataProvider implements Serializable {
 		tagLabels = Collections.emptySet();
 	}
 
-	public String tagConfiguration() {
+	public void tagConfiguration() {
 		if (resource == null) {
 			String message = "No resource selected.";
 			GlobalMessageAppender.addErrorMessage(message);
@@ -104,10 +103,8 @@ public class TaggingDataProvider implements Serializable {
 				tagConfigurationService.tagConfiguration(resource.getId(), tagLabel, tagDate);
 				String message = "New tag '" + tagLabel + "' created.";
 				GlobalMessageAppender.addSuccessMessage(message);
-				return NavigationUtils.getRefreshOutcome();
 			}
 		}
-		return NavigationUtils.getRefreshOutcome();
 	}
 
 	private void extractTagLabels(List<ResourceTagEntity> tags) {
