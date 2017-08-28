@@ -23,7 +23,6 @@ package ch.puzzle.itc.mobiliar.business.security.entity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -55,12 +54,6 @@ public class PermissionEntity implements Serializable
 	@Getter
 	@Version
 	private long v;
-
-	@Getter
-	@Setter
-	@ManyToMany(mappedBy = "permissions")
-	@NotAudited
-	private Set<RoleEntity> roles = new HashSet<RoleEntity>();
 
 	@Getter
 	@Setter

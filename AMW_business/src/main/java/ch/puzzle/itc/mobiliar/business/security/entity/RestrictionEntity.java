@@ -30,13 +30,15 @@ import org.hibernate.annotations.OnDelete;
 
 import javax.persistence.*;
 
+import java.io.Serializable;
+
 import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 @Entity
 @Table(name="TAMW_restriction")
-public class RestrictionEntity {
+public class RestrictionEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7865243852438L;
     @Getter
     @Setter
     @TableGenerator(name = "restrictionIdGen", table = Constants.GENERATORTABLE, pkColumnName = Constants.GENERATORPKCOLUMNNAME,
@@ -59,7 +61,6 @@ public class RestrictionEntity {
     @Getter
     @Setter
     @ManyToOne
-    @OnDelete(action = CASCADE)
     @JoinColumn(name = "user_id")
     private UserRestrictionEntity user;
 

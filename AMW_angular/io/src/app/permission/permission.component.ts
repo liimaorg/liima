@@ -23,7 +23,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   userNames: string[] = [];
   permissions: Permission[] = [];
   environments: Environment[] = [ { id: null, name: null, parent: 'All', selected: false } ];
-  groupedEnvironments: { [key: string]: Environment[] } = {};
+  groupedEnvironments: { [key: string]: Environment[] } = { 'All': [], 'Global': [] };
   resourceGroups: Resource[] = [];
   resourceTypes: ResourceType[] = [ { id: null, name: null } ];
 
@@ -202,7 +202,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.permissionService
       .getAllPermissionEnumValues().subscribe(
-      /* happy path */ (r) => this.permissions = r,
+      /* happy path */ (r) => this.permissions = _.sortBy(r, function(s: Permission) { return s.name.replace(/[_]/, ''); }),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }
@@ -210,7 +210,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getAllEnvironments() {
     this.isLoading = true;
     this.environmentService
-      .getAll().subscribe(
+      .getAllIncludingGroups().subscribe(
       /* happy path */ (r) => this.environments = this.environments.concat(r),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.extractEnvironmentGroups());
@@ -238,7 +238,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.permissionService
       .getRoleWithRestrictions(roleName).subscribe(
-      /* happy path */ (r) => this.restrictions = _.sortBy(r, ['permission.name', 'action']),
+      /* happy path */ (r) => this.reorderRestrictions(r),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }
@@ -247,7 +247,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.permissionService
       .getUserWithRestrictions(userName).subscribe(
-      /* happy path */ (r) => this.restrictions = _.sortBy(r, ['permission.name', 'action']),
+      /* happy path */ (r) => this.reorderRestrictions(r),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }
@@ -265,6 +265,12 @@ export class PermissionComponent implements OnInit, OnDestroy {
     } else {
       this.restrictions.push(restriction);
     }
+    this.reorderRestrictions(this.restrictions);
+  }
+
+  private reorderRestrictions(restrictions: Restriction[]) {
+    this.restrictions = _.sortBy(restrictions, [function(s: Restriction) {
+      return s.permission.name.replace(/[_]/, ''); }, 'action'])
   }
 
   private extractEnvironmentGroups() {

@@ -47,6 +47,17 @@ public class RestrictionRepository extends BaseRepository<RestrictionEntity> {
     }
 
     /**
+     * Deletes the Restriction with the specified id
+     * This method is useful when a subsequent forceReloadingOfLists call is needed (which interferes with em.remove)
+     *
+     * @param id id of the Restriction to be removed
+     */
+    public void deleteRestrictionById(Integer id){
+        entityManager.createQuery("delete from RestrictionEntity r where r.id =:id").setParameter("id", id)
+                .executeUpdate();
+    }
+
+    /**
      * Deletes all Restrictions matching a specific Context
      *
      * @param context ContextEntity to match

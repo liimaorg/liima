@@ -128,7 +128,7 @@ public class PropertyValueServiceTest {
         service.setPropertyValue(resourceContextMock, propertyDescriptorId, unobfuscatedValue);
 
         // then
-        Mockito.verify(propertyMock).setValueAndEncrypt(unobfuscatedValue);
+        Mockito.verify(propertyMock).setValue(unobfuscatedValue);
     }
 
     @Test(expected = ValidationException.class)

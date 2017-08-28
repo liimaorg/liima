@@ -29,23 +29,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @XmlRootElement(name = "template")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
+@Data
 public class TemplateDTO {
 
-    @Getter @Setter
     private String relatedResourceIdentifier;
-    @Getter @Setter
+
     private String name;
-    @Getter @Setter
+
     private String targetPath;
-    @Getter @Setter
+
     private Set<String> targetPlatforms;
-    @Getter @Setter
+
     private String fileContent;
 
     TemplateDTO(){}

@@ -451,18 +451,21 @@ public class PermissionService implements Serializable {
         if (sessionContext == null) {
             return false;
         }
-        getUserRestrictions(getCurrentUserName());
-        if (!userRestrictions.get(getCurrentUserName()).isEmpty()) {
-            for (RestrictionEntity restrictionEntity : userRestrictions.get(getCurrentUserName())) {
-                if (restrictionEntity.getPermission().getValue().equals(permissionName)) {
-                    // context null means no check on context required - so any context is ok
-                    if (context == null) {
-                        return hasRequiredUserRestriction(action, resourceGroup, resourceType, restrictionEntity);
-                    }
-                    return hasRequiredUserRestrictionOnAllContext(context, action, resourceGroup, resourceType, restrictionEntity);
+
+        for (RestrictionEntity restrictionEntity : getUserRestrictions(getCurrentUserName())) {
+            if (restrictionEntity.getPermission().getValue().equals(permissionName)) {
+                // context null means no check on context required - so any context is ok
+                if (context == null) {
+                		if(hasRequiredUserRestriction(action, resourceGroup, resourceType, restrictionEntity)) {
+                			return true;
+                		}
+                }
+                if(hasRequiredUserRestrictionOnAllContext(context, action, resourceGroup, resourceType, restrictionEntity)) {
+                		return true;
                 }
             }
         }
+
         return false;
     }
 
@@ -795,7 +798,7 @@ public class PermissionService implements Serializable {
      * @return
      */
     public String getCurrentUserName() {
-        return sessionContext.getCallerPrincipal().toString();
+        return sessionContext.getCallerPrincipal().getName();
     }
 
 }

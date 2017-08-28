@@ -69,14 +69,14 @@ describe('PermissionComponent (type Role)', () => {
     let environments: Environment[] = [ <Environment> { id: 1, name: 'U', parent: 'Dev' },
       <Environment> { id: 2, name: 'V', parent: 'Dev' }, <Environment> { id: 3, name: 'T', parent: 'Test' } ];
     spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(Observable.of(permissions));
-    spyOn(environmentService, 'getAll').and.returnValue(Observable.of(environments));
+    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(Observable.of(environments));
     spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
     spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
     // when
     permissionComponent.ngOnInit();
     // then
     expect(permissionService.getAllPermissionEnumValues).toHaveBeenCalled();
-    expect(environmentService.getAll).toHaveBeenCalled();
+    expect(environmentService.getAllIncludingGroups).toHaveBeenCalled();
     expect(resourceService.getAllResourceGroups).toHaveBeenCalled();
     expect(resourceService.getAllResourceTypes).toHaveBeenCalled();
     expect(permissionComponent.permissions).toEqual(permissions);
@@ -173,8 +173,8 @@ describe('PermissionComponent (type Role)', () => {
     inject([PermissionComponent],
       (permissionComponent: PermissionComponent) => {
       // given
-      permissionComponent.restriction = <Restriction> { id: 111, contextName: 'T' };
-      permissionComponent.backupRestriction = <Restriction> { id: 111, contextName: 'B' };
+      permissionComponent.restriction = <Restriction> { id: 111, contextName: 'T', permission: { name: 'aPermission' } };
+      permissionComponent.backupRestriction = <Restriction> { id: 111, contextName: 'B', permission: { name: 'aPermission' } };
       // when
       permissionComponent.cancel();
       // then
@@ -273,7 +273,7 @@ describe('PermissionComponent (type Role)', () => {
           let environments: Environment[] = [ <Environment> { id: 1, name: 'U', parent: 'Dev' },
             <Environment> { id: 2, name: 'V', parent: 'Dev' }, <Environment> { id: 3, name: 'T', parent: 'Test' } ];
           spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(Observable.of(permissions));
-          spyOn(environmentService, 'getAll').and.returnValue(Observable.of(environments));
+          spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(Observable.of(environments));
           spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
           spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
           spyOn(permissionService, 'getAllUserRestrictionNames').and.callThrough();
@@ -282,7 +282,7 @@ describe('PermissionComponent (type Role)', () => {
           // then
           expect(permissionComponent.restrictionType).toEqual('user');
           expect(permissionService.getAllPermissionEnumValues).toHaveBeenCalled();
-          expect(environmentService.getAll).toHaveBeenCalled();
+          expect(environmentService.getAllIncludingGroups).toHaveBeenCalled();
           expect(resourceService.getAllResourceGroups).toHaveBeenCalled();
           expect(resourceService.getAllResourceTypes).toHaveBeenCalled();
           expect(permissionService.getAllUserRestrictionNames).toHaveBeenCalled();

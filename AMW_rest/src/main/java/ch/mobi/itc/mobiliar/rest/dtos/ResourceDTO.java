@@ -27,21 +27,19 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @XmlRootElement(name = "resource")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
+@Data
 public class ResourceDTO {
 
-    @Getter @Setter
     private Integer id;
-    @Getter @Setter
+
     private String name;
-    @Getter @Setter
+
     private String type;
-    @Getter @Setter
+
     private List<ReleaseDTO> releases;
     
     ResourceDTO(){}

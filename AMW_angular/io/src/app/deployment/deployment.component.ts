@@ -60,6 +60,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   // redeploy only
   selectedDeployment: Deployment = <Deployment> {};
   redeploymentAppserverDisplayName: string = '';
+  appsWithVersionForRedeployment: AppWithVersion[] = [];
 
   simulate: boolean = false;
   requestOnly: boolean = false;
@@ -73,6 +74,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   errorMessage: string = '';
   successMessage: string = '';
   isLoading: boolean = false;
+  isDeploymentBlocked: boolean = false;
 
   constructor(private resourceService: ResourceService,
               private environmentService: EnvironmentService,
@@ -147,6 +149,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   onChangeEnvironment() {
     if (!this.isRedeployment) {
       this.getAppVersions();
+    } else {
+      this.verifyRedeployment();
     }
     this.canDeploy();
   }
@@ -162,7 +166,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   isReadyForDeployment(): boolean {
-    return (this.selectedRelease  && this.appsWithVersion.length > 0 && _.filter(this.environments, 'selected').length > 0);
+    return (!this.isDeploymentBlocked && this.selectedRelease  && this.appsWithVersion.length > 0 && _.filter(this.environments, 'selected').length > 0);
   }
 
   requestDeployment() {
@@ -195,8 +199,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.setPreSelectedEnvironment();
     this.transDeploymentParameters = this.selectedDeployment.deploymentParameters;
     this.appsWithVersion = this.selectedDeployment.appsWithVersion;
-    this.selectedRelease = <Release> { release: this.selectedDeployment.releaseName };
     this.selectedAppserver = <Resource> { id: this.selectedDeployment.appServerId, name: this.selectedDeployment.appServerName };
+    this.loadReleases();
     this.canDeploy();
   }
 
@@ -219,12 +223,18 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       /* onComplete */ () => this.onChangeRelease());
   }
 
+  private setSelectedReleaseForRedeployment() {
+    this.selectedRelease = this.releases.find((release) => release.release === this.selectedDeployment.releaseName);
+    // will perform verifyRedeployment()
+    this.getAppVersions();
+  }
+
   private loadReleases(): Subscription {
     this.isLoading = true;
     return this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe(
       /* happy path */ (r) => this.releases = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.setSelectedRelease());
+      /* onComplete */ () => this.isRedeployment ? this.setSelectedReleaseForRedeployment() : this.setSelectedRelease());
   }
 
   private getRelatedForRelease() {
@@ -245,14 +255,15 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private getAppVersions() {
     this.isLoading = true;
     this.resourceService.getAppsWithVersions(this.selectedAppserver.id, this.selectedRelease.id, _.filter(this.environments, 'selected').map((val) => val.id)).subscribe(
-      /* happy path */ (r) => this.appsWithVersion = r,
+      /* happy path */ (r) => this.isRedeployment ? this.appsWithVersionForRedeployment = r : this.appsWithVersion = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.isLoading = false);
+      /* onComplete */ () => this.isRedeployment ? this.verifyRedeployment() : this.isLoading = false);
   }
 
   private resetVars() {
     this.errorMessage = '';
     this.successMessage = '';
+    this.isDeploymentBlocked = false;
     this.hasPermissionShakedownTest = false;
     this.selectedRelease = null;
     this.bestForSelectedRelease = null;
@@ -296,6 +307,19 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
           /* error path */ (e) => this.errorMessage = e);
       }
     }
+  }
+
+  private verifyRedeployment() {
+    this.errorMessage = '';
+    this.isDeploymentBlocked = false;
+    this.appsWithVersion.forEach((originApp: AppWithVersion) => {
+      let actualApp: AppWithVersion = _.find(this.appsWithVersionForRedeployment, [ 'applicationName', originApp.applicationName ]);
+      if (!this.isDeploymentBlocked && !actualApp) {
+          this.errorMessage = 'Application <strong>' + originApp.applicationName + '</strong> does not exist anymore';
+          this.isDeploymentBlocked = true;
+      }
+    });
+    this.isLoading = false;
   }
 
   private prepareDeployment() {

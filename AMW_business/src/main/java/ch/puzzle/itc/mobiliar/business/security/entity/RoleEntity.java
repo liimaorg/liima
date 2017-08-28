@@ -62,13 +62,6 @@ public class RoleEntity implements Serializable {
 	@Getter
 	@Setter
 	@NotAudited
-	@ManyToMany
-	@JoinTable(name="TAMW_role_permission")
-	private Set<PermissionEntity> permissions = new HashSet<>();
-
-	@Getter
-	@Setter
-	@NotAudited
 	@OneToMany(mappedBy="role", cascade = ALL, orphanRemoval = true)
 	private Set<RestrictionEntity> restrictions = new HashSet<>();
 	

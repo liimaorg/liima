@@ -14,8 +14,8 @@
     <div class="panel-body">
       <span class="form-horizontal">
 
-        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade in" role="alert"><span [innerHTML]="successMessage"></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
-        <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert">{{errorMessage}}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="successMessage"></span></div>
+        <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="errorMessage"></span></div>
 
         <div class="form-group" *ngIf="appservers.length > 0">
           <label for="selectApplicationserver" class="col-sm-2 control-label">Applicationserver</label>

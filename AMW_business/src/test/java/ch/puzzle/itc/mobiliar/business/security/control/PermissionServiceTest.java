@@ -78,6 +78,10 @@ public class PermissionServiceTest {
 		permissionService.sessionContext = sessionContext;
 		permissionRepository = Mockito.mock(PermissionRepository.class);
 		permissionService.permissionRepository = permissionRepository;
+		// reset the static caches to avoid side effects
+		permissionService.deployableRolesWithRestrictions = null;
+		permissionService.rolesWithRestrictions = null;
+		permissionService.userRestrictions = null;
 
 		global = new ContextEntityBuilder().id(1).buildContextEntity("GLOBAL", null, new HashSet<ContextEntity>(), false);
 		parent = new ContextEntityBuilder().id(5).buildContextEntity("TEST", global, new HashSet<ContextEntity>(), false);
@@ -89,6 +93,7 @@ public class PermissionServiceTest {
 			public String getName() {
 				return "tester";
 			}
+
 		};
 
 		asResourceGroup = new ResourceGroupEntity();
@@ -708,7 +713,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -735,7 +739,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -767,7 +770,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -803,7 +805,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -847,7 +848,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -884,7 +884,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -916,7 +915,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -946,7 +944,6 @@ public class PermissionServiceTest {
 		roleTestDeployer.setName(TEST_DEPLOYER);
 		PermissionEntity permissionToDeploy = new PermissionEntity();
 		permissionToDeploy.setValue(Permission.DEPLOYMENT.name());
-		roleTestDeployer.getPermissions().add(permissionToDeploy);
 		when(sessionContext.isCallerInRole(TEST_DEPLOYER)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 		myRoles = new HashMap<>();
@@ -973,6 +970,50 @@ public class PermissionServiceTest {
 		Assert.assertTrue(resZ);
 	}
 
+	@Test
+	public void multipleDeployUserRestriction(){
+		// given
+		List<RestrictionEntity> userRestriction = new LinkedList<>();
+
+		ResourceGroupEntity resGroup1 = new ResourceGroupEntity();
+		resGroup1.setId(111);
+		resGroup1.setResourceType(new ResourceTypeEntityBuilder().id(1).parentResourceType(null).build());
+		ResourceGroupEntity resGroup2 = new ResourceGroupEntity();
+		resGroup2.setId(222);
+		resGroup2.setResourceType(new ResourceTypeEntityBuilder().id(1).parentResourceType(null).build());
+		ResourceGroupEntity forbiddenResGroup3 = new ResourceGroupEntity();
+		forbiddenResGroup3.setId(333);
+		forbiddenResGroup3.setResourceType(new ResourceTypeEntityBuilder().id(1).parentResourceType(null).build());
+
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		res.setResourceGroup(resGroup1);
+		PermissionEntity permission = new PermissionEntity();
+		permission.setValue(Permission.DEPLOYMENT.name());
+		res.setPermission(permission);
+		userRestriction.add(res);
+		RestrictionEntity res2 = new RestrictionEntity();
+		res2.setAction(Action.ALL);
+		res2.setResourceGroup(resGroup2);
+		PermissionEntity permission2 = new PermissionEntity();
+		permission2.setValue(Permission.DEPLOYMENT.name());
+		res2.setPermission(permission2);
+		userRestriction.add(res2);
+
+		when(permissionRepository.getUserWithRestrictions(principal.getName())).thenReturn(userRestriction);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+
+		// when
+		boolean result1 = permissionService.hasPermission(Permission.DEPLOYMENT, envC, Action.CREATE, resGroup1, null);
+		boolean result2 = permissionService.hasPermission(Permission.DEPLOYMENT, envC, Action.CREATE, resGroup2, null);
+		boolean result3 = permissionService.hasPermission(Permission.DEPLOYMENT, envC, Action.CREATE, forbiddenResGroup3, null);
+
+		// then
+		Assert.assertTrue(result1);
+		Assert.assertTrue(result2);
+		Assert.assertFalse(result3);
+	}
+	
 	@Test
 	public void hasPermissionToAddResourceTypeTemplateWhenUserIsShakedownAdminAndIsTestingMode() {
 		// given
@@ -1120,6 +1161,7 @@ public class PermissionServiceTest {
 	public void shouldOnlyReloadWhenNeeded() {
 		// given
 		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(false);
+		permissionService.rolesWithRestrictions = new HashMap<>();
 
 		// when
 		permissionService.getPermissions();

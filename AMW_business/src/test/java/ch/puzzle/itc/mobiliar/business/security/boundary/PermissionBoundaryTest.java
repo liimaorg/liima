@@ -314,7 +314,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.removeRestriction(42);
         // then
-        verify(restrictionRepository, times(1)).remove(42);
+        verify(restrictionRepository, times(1)).deleteRestrictionById(42);
         verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
