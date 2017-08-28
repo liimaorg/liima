@@ -34,7 +34,7 @@
                   event="click"
                   onbegin="showLoader();"
                   oncomplete="if(confirmAddRelation()){#{rich:component('addRelationPopup')}.show();} hideLoader();"
-                  listener="#{relationDataProvider.loadResourceGroupsForType(editResourceView.resourceType.name, null)}"></a4j:ajax>
+                  listener="#{relationDataProvider.loadResourceGroupsForType(null, null)}"></a4j:ajax>
     </h:commandLink>
 
     <h:commandLink styleClass="btn light right"
@@ -147,7 +147,7 @@
                                                 oncomplete="updateElements();hideLoader();refreshChanges();refreshSubChanges();"/>
                                 </h:commandLink></td>
                                 <td><h:commandLink value="Add as provided Resource"
-                                                   rendered="#{editResourceView.editResource and relationDataProvider.canAddAsProvidedRelation(selectableItem)}"
+                                                   rendered="#{editResourceView.editResource and relationDataProvider.canAddAsProvidedRelation(selectableItem) and relationDataProvider.canBeAddedAsProvidedResource(selectableItem)}"
                                                    onclick="if(confirmLeave(event) &amp;&amp; confirmMatchingRelease(#{editResourceView.existsForThisRelease(selectableItem)})){#{rich:component('addRelationPopup')}.hide();showLoader();}else{return false;}">
                                     <a4j:ajax
                                             listener="#{relationDataProvider.addProvidedResource(selectableItem)}"
