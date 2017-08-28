@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers } from '@angular/http';
+import { Http, Response, Headers, URLSearchParams, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Environment } from './environment';
 
@@ -11,8 +11,24 @@ export class EnvironmentService {
   }
 
   getAll(): Observable<Environment[]> {
+    return this.getEnvironments(false);
+  }
+
+  getAllIncludingGroups(): Observable<Environment[]> {
+    return this.getEnvironments(true);
+  }
+
+  private getEnvironments(includingGroups: boolean): Observable<Environment[]> {
+    let params: URLSearchParams = new URLSearchParams();
+    if (includingGroups) {
+      params.set('includingGroups', 'true');
+    }
+    let options = new RequestOptions({
+      search: params,
+      headers: this.getHeaders()
+    });
     let resource$ = this.http
-      .get(`${this.baseUrl}/environments`, {headers: this.getHeaders()})
+      .get(`${this.baseUrl}/environments`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
     return resource$;
