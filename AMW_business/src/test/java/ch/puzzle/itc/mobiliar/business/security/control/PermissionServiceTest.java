@@ -970,11 +970,10 @@ public class PermissionServiceTest {
 		Assert.assertTrue(resZ);
 	}
 
+	@Test
 	public void multipleDeployUserRestriction(){
 		// given
 		List<RestrictionEntity> userRestriction = new LinkedList<>();
-		when(permissionRepository.getUserWithRestrictions(principal.toString())).thenReturn(userRestriction);
-		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 
 		ResourceGroupEntity resGroup1 = new ResourceGroupEntity();
 		resGroup1.setId(111);
@@ -993,14 +992,16 @@ public class PermissionServiceTest {
 		permission.setValue(Permission.DEPLOYMENT.name());
 		res.setPermission(permission);
 		userRestriction.add(res);
+		RestrictionEntity res2 = new RestrictionEntity();
+		res2.setAction(Action.ALL);
+		res2.setResourceGroup(resGroup2);
+		PermissionEntity permission2 = new PermissionEntity();
+		permission2.setValue(Permission.DEPLOYMENT.name());
+		res2.setPermission(permission2);
+		userRestriction.add(res2);
 
-		res = new RestrictionEntity();
-		res.setAction(Action.ALL);
-		res.setResourceGroup(resGroup2);
-		permission = new PermissionEntity();
-		permission.setValue(Permission.DEPLOYMENT.name());
-		res.setPermission(permission);
-		userRestriction.add(res);
+		when(permissionRepository.getUserWithRestrictions(principal.getName())).thenReturn(userRestriction);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
 
 		// when
 		boolean result1 = permissionService.hasPermission(Permission.DEPLOYMENT, envC, Action.CREATE, resGroup1, null);
