@@ -34,7 +34,7 @@
                   event="click"
                   onbegin="showLoader();"
                   oncomplete="if(confirmAddRelation()){#{rich:component('addRelationPopup')}.show();} hideLoader();"
-                  listener="#{relationDataProvider.loadResourceGroupsForType(editResourceView.resourceType.name, null)}"></a4j:ajax>
+                  listener="#{relationDataProvider.loadResourceGroupsForType(null, null)}"></a4j:ajax>
     </h:commandLink>
 
     <h:commandLink styleClass="btn light right"
