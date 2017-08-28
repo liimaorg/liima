@@ -61,8 +61,9 @@ public class PropertyEditController {
 		}
 		else {
 			message = "Changes successfully saved.";
-			try {
+			 try {
 				 propertyDataProvider.save();
+				 resourceRelation.reloadValues();
 				 GlobalMessageAppender.addSuccessMessage(message);
 			}
             catch (ForeignableOwnerViolationException e) {
