@@ -199,29 +199,25 @@ public class PropertyEditDataProvider implements Serializable {
 
     private void filterHostNameAndActiveFromNode() {
         if (isNode() && !currentContext.isEnvironment() && resourceEditProperties != null) {
-            Iterator<ResourceEditProperty> it = resourceEditProperties.iterator();
-            while (it.hasNext()) {
-                ResourceEditProperty p = it.next();
-                if (AppServerRelationsTemplateProcessor.HOST_NAME.equals(p.getTechnicalKey())
-                        || AppServerRelationsTemplateProcessor.NODE_ACTIVE.equals(p.getTechnicalKey())) {
-                    filteredResourceProperties.add(p);
-                    it.remove();
-                }
-            }
+            filterHostNameAndActive(resourceEditProperties);
         }
     }
 
     private void filterHostNameAndActiveFromRelatedNode(ResourceEditRelation relation) {
         if (relation.getSlaveTypeName().equals(DefaultResourceTypeDefinition.NODE.name())
                 && !currentContext.isEnvironment() && currentRelationProperties != null) {
-            Iterator<ResourceEditProperty> it = currentRelationProperties.iterator();
-            while (it.hasNext()) {
-                ResourceEditProperty p = it.next();
-                if (AppServerRelationsTemplateProcessor.HOST_NAME.equals(p.getTechnicalKey())
-                        || AppServerRelationsTemplateProcessor.NODE_ACTIVE.equals(p.getTechnicalKey())) {
-                    filteredRelationProperties.add(p);
-                    it.remove();
-                }
+            filterHostNameAndActive(currentRelationProperties);
+        }
+    }
+
+    private void filterHostNameAndActive(List<ResourceEditProperty> props) {
+        Iterator<ResourceEditProperty> it = props.iterator();
+        while (it.hasNext()) {
+            ResourceEditProperty p = it.next();
+            if (AppServerRelationsTemplateProcessor.HOST_NAME.equals(p.getTechnicalKey())
+                    || AppServerRelationsTemplateProcessor.NODE_ACTIVE.equals(p.getTechnicalKey())) {
+                filteredRelationProperties.add(p);
+                it.remove();
             }
         }
     }
