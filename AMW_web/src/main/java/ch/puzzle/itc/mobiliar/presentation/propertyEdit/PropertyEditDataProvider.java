@@ -155,35 +155,11 @@ public class PropertyEditDataProvider implements Serializable {
     }
 
     public void onChangedResource(@Observes ResourceEntity resourceEntity) throws GeneralDBException {
-        filteredResourceProperties = new ArrayList<>();
-        resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResource(
-                resourceEntity.getId(), getContextId()));
-        filterHostNameAndActiveFromNode();
-        editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
-                currentContext, userSettings.isTestingMode());
-        canChangeRuntime = permissionBoundary.hasPermission(Permission.RESOURCE, currentContext, Action.UPDATE, resourceEntity, null);
-        canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, currentContext, Action.ALL,
-                resourceEntity, null);
-        group = ResourceGroup.createByResource(resourceEntity.getResourceGroup());
-
-        resourceOrResourceType = resourceEntity;
-
-        loadResourceRelationEditProperties();
+        reloadResourceEditProperties(resourceEntity);
     }
 
     public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) throws GeneralDBException {
-        filteredResourceProperties = new ArrayList<>();
-        resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResourceType(
-                resourceTypeEntity.getId(), getContextId()));
-        editableProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE, currentContext, Action.UPDATE,
-                null, resourceTypeEntity);
-        canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, currentContext, Action.ALL,
-                null, resourceTypeEntity);
-        canChangeRuntime = false;
-        group = null;
-        resourceOrResourceType = resourceTypeEntity;
-
-        loadResourceRelationEditProperties();
+        reloadResourceTypeEditProperties(resourceTypeEntity);
     }
 
     public Integer getContextId() {
