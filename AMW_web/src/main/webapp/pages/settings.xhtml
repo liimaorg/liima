@@ -1,536 +1,538 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	  xmlns:ui="http://java.sun.com/jsf/facelets"
-	  xmlns:h="http://java.sun.com/jsf/html"
-	  xmlns:f="http://java.sun.com/jsf/core"
-	  xmlns:a4j="http://richfaces.org/a4j"
-	  xmlns:rich="http://richfaces.org/rich"
-	  xmlns:mobi="http://java.sun.com/jsf/composite/mobi">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:mobi="http://java.sun.com/jsf/composite/mobi">
 
 <ui:composition template="templates/template.xhtml">
-	<ui:param name="screen" value="newSettings" />
-	<ui:define name="title">Settings</ui:define>
-	<ui:define name="pagetitle">
-		<h:outputText id="pageheader" value="Settings" />
-	</ui:define>
-	<ui:define name="headerButtons">
-		<a4j:commandLink value="Save" styleClass="btn primary right"
-			rendered="#{securityDataProvider.hasPermission('SAVE_SETTINGS_ENV')}"
-			action="#{environmentsDataProvider.save()}" render="environments"
-			style="display: ${(param['mode']!='props' and param['mode']!='rolPerm' and param['mode']!='tags' and param['mode']!='functions' and param['mode']!='myAmw' and param['mode']!='STP' and param['mode']!='releases' and param['mode']!='appVersion') ? 'block' : 'none'}" />
-		<a4j:commandLink styleClass="btn primary right"
-			rendered="#{securityDataProvider.hasPermission('SAVE_SETTINGS_PROPTYPE')}"
-			style="display: ${param['mode']=='props' ? 'block' : 'none'}"
-			render="@all, propertyTypes" action="#{propertyTypeDataProvider.save()}"
-			value="Save" />
-	</ui:define>
-	<ui:define name="body">
-		<h:panelGroup layout="block" id="navig"
-			rendered="#{securityDataProvider.hasPermission('SETTING_PANEL_LIST')}">
-			<aside> <nav>
-			<ul>
-				<li
-					class="${param['mode']!='props' and param['mode']!='rolPerm' and param['mode']!='tags' and param['mode']!='functions' and param['mode']!='deployparam' and param['mode']!='myAmw'
-					and param['mode']!='STP' and
-					param['mode']!='releases' and param['mode']!='appVersion' ? 'current' : ''}"><h:link
-						value="Environments">
-						<f:param name="mode" value="envs" />
-					</h:link></li>
-				<li class="${param['mode']=='props' ? 'current' : ''}"><h:link
-						value="Property Types">
-						<f:param name="mode" value="props" />
-					</h:link></li>
-				<li class="${param['mode']=='tags' ? 'current' : ''}"><h:link
-						value="Tags">
-					<f:param name="mode" value="tags" />
-				</h:link></li>
-				<li class="${param['mode']=='functions' ? 'current' : ''}"><h:link
-						value="Functions">
-					<f:param name="mode" value="functions" />
-				</h:link></li>
+    <ui:param name="screen" value="newSettings" />
+    <ui:define name="title">Settings</ui:define>
+    <ui:define name="pagetitle">
+        <h:outputText id="pageheader" value="Settings" />
+    </ui:define>
+    <ui:define name="headerButtons">
+        <a4j:commandLink value="Save" styleClass="btn primary right"
+            rendered="#{securityDataProvider.hasPermission('SAVE_SETTINGS_ENV')}"
+            action="#{environmentsDataProvider.save()}" render="environments"
+            style="display: ${(param['mode']!='props' and param['mode']!='rolPerm' and param['mode']!='tags' and param['mode']!='functions' and param['mode']!='myAmw' and param['mode']!='STP' and param['mode']!='releases' and param['mode']!='appVersion') ? 'block' : 'none'}" />
+        <a4j:commandLink styleClass="btn primary right"
+            rendered="#{securityDataProvider.hasPermission('SAVE_SETTINGS_PROPTYPE')}"
+            style="display: ${param['mode']=='props' ? 'block' : 'none'}"
+            render="@all, propertyTypes" action="#{propertyTypeDataProvider.save()}"
+            value="Save" />
+    </ui:define>
+    <ui:define name="body">
+        <h:panelGroup layout="block" id="navig"
+            rendered="#{securityDataProvider.hasPermission('SETTING_PANEL_LIST')}">
+            <aside> <nav>
+            <ul>
+                <li
+                    class="${param['mode']!='props' and param['mode']!='rolPerm' and param['mode']!='tags' and param['mode']!='functions' and param['mode']!='deployparam' and param['mode']!='myAmw'
+                    and param['mode']!='STP' and
+                    param['mode']!='releases' and param['mode']!='appVersion' ? 'current' : ''}"><h:link
+                        value="Environments">
+                        <f:param name="mode" value="envs" />
+                    </h:link></li>
+                <li class="${param['mode']=='props' ? 'current' : ''}"><h:link
+                        value="Property Types">
+                        <f:param name="mode" value="props" />
+                    </h:link></li>
+                <li class="${param['mode']=='tags' ? 'current' : ''}"><h:link
+                        value="Tags">
+                    <f:param name="mode" value="tags" />
+                </h:link></li>
+                <li class="${param['mode']=='functions' ? 'current' : ''}"><h:link
+                        value="Functions">
+                    <f:param name="mode" value="functions" />
+                </h:link></li>
 
-				<li class="${param['mode']=='deployparam' ? 'current' : ''}"><h:link
-						value="Deployment Parameter">
-					<f:param name="mode" value="deployparam" />
-				</h:link></li>
+                <li class="${param['mode']=='deployparam' ? 'current' : ''}"><h:link
+                        value="Deployment Parameter">
+                    <f:param name="mode" value="deployparam" />
+                </h:link></li>
 
-				<li class="${param['mode']=='myAmw' ? 'current' : ''}"><h:link
-						value="My favorites">
-						<f:param name="mode" value="myAmw" />
-					</h:link></li>
-				<li class="${param['mode']== 'STP' ? 'current' : ''}"><h:link
-						value="STP Management"
-						rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST')}">
-						<f:param name="mode" value="STP" />
-					</h:link></li>
-				<li class="${param['mode']== 'releases' ? 'current' : ''}"><h:link
-						value="Releases"
-						rendered="#{securityDataProvider.hasPermission('RELEASE')}">
-						<f:param name="mode" value="releases" />
-					</h:link></li>
-				<li class="${param['mode']=='rolePerm' ? 'current': ''}"><h:outputLink
-						value="/AMW_angular/#/permission"
-						rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
-					Roles and Permissions
-					</h:outputLink></li>
-				<li class="${param['mode']=='appVersion' ? 'current': ''}"><h:link
-						value="Application Info">
-						<f:param name="mode" value="appVersion" />
-					</h:link></li>
-			</ul>
-			</nav> </aside>
-		</h:panelGroup>
-		<section id="content">
-		<div class="container">
-			<h:form>
-				<h:panelGroup
-					rendered="${param['mode']!='props' and param['mode']!='rolPerm' and param['mode']!='tags' and param['mode']!='functions' and param['mode']!='deployparam' and
-					param['mode']!='myAmw' and param['mode']!='STP' and
-					 param['mode']!='releases' and param['mode']!='appVersion'}">
+                <li class="${param['mode']=='myAmw' ? 'current' : ''}"><h:link
+                        value="My favorites">
+                        <f:param name="mode" value="myAmw" />
+                    </h:link></li>
+                <li class="${param['mode']== 'STP' ? 'current' : ''}"><h:link
+                        value="STP Management"
+                        rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST')}">
+                        <f:param name="mode" value="STP" />
+                    </h:link></li>
+                <li class="${param['mode']== 'releases' ? 'current' : ''}"><h:link
+                        value="Releases"
+                        rendered="#{securityDataProvider.hasPermission('RELEASE')}">
+                        <f:param name="mode" value="releases" />
+                    </h:link></li>
+                <li class="${param['mode']=='rolePerm' ? 'current': ''}"><h:outputLink
+                        value="/AMW_angular/#/permission"
+                        rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
+                    Roles and Permissions
+                    </h:outputLink></li>
+                <li class="${param['mode']=='appVersion' ? 'current': ''}"><h:link
+                        value="Application Info">
+                        <f:param name="mode" value="appVersion" />
+                    </h:link></li>
+            </ul>
+            </nav> </aside>
+        </h:panelGroup>
+        <section id="content">
+        <div class="container">
+            <h:form>
+                <h:panelGroup
+                    rendered="${param['mode']!='props' and param['mode']!='rolPerm' and param['mode']!='tags' and param['mode']!='functions' and param['mode']!='deployparam' and
+                    param['mode']!='myAmw' and param['mode']!='STP' and
+                     param['mode']!='releases' and param['mode']!='appVersion'}">
 
-					<h:panelGroup id="environments">
-						<div class="well">
-							<h2>Environments</h2>
-							<hr />
-							<table class="width100">
-								<tr>
-									<td class="width120px vtop valignTop">
-										<div class="marginLeft50">
-											<ui:include src="components/contextTreeComp.xhtml">
-											</ui:include>
-										</div>
-									</td>
-									<td valign="top" width="100%"><h:panelGroup id="content">
-											<f:facet name="header">
-												<h:outputText id="contentPanelHeader"
-													value="Selected context: #{contextDataProvider.contextDisplayName}" />
-											</f:facet>
-											<span class="right displayBlock"> <a4j:commandLink
-													styleClass="btn light" type="button"
-													rendered="#{!environmentsDataProvider.isEnv and securityDataProvider.hasPermission('ADD_NEW_ENV_OR_DOM')}"
-													render="environments"
-													value="Add new #{environmentsDataProvider.nameOfChildContext}"
-													onclick="#{rich:component('addContextPopupPanel')}.show();">
-												</a4j:commandLink> <a4j:commandLink styleClass="btn light"
-													rendered="#{!contextDataProvider.isGlobal and securityDataProvider.hasPermission('REMOVE_ENV_OR_DOM')}"
-													render="environments"
-													value="Remove #{environmentsDataProvider.contextTypeName} #{contextDataProvider.contextDisplayName}"
-													onclick="#{rich:component('confirmContextDeletePopupPanel')}.show();">
-												</a4j:commandLink>
-											</span>
+                    <h:panelGroup id="environments">
+                        <div class="well">
+                            <h2>Environments</h2>
+                            <hr />
+                            <table class="width100">
+                                <tr>
+                                    <td class="width120px vtop valignTop">
+                                        <div class="marginLeft50">
+                                            <ui:include src="components/contextTreeComp.xhtml">
+                                            </ui:include>
+                                        </div>
+                                    </td>
+                                    <td valign="top" width="100%"><h:panelGroup id="content">
+                                            <f:facet name="header">
+                                                <h:outputText id="contentPanelHeader"
+                                                    value="Selected context: #{contextDataProvider.contextDisplayName}" />
+                                            </f:facet>
+                                            <span class="right displayBlock"> <a4j:commandLink
+                                                    styleClass="btn light" type="button"
+                                                    rendered="#{!environmentsDataProvider.isEnv and securityDataProvider.hasPermission('ADD_NEW_ENV_OR_DOM')}"
+                                                    render="environments"
+                                                    value="Add new #{environmentsDataProvider.nameOfChildContext}"
+                                                    onclick="#{rich:component('addContextPopupPanel')}.show();">
+                                                </a4j:commandLink> <a4j:commandLink styleClass="btn light"
+                                                    rendered="#{!contextDataProvider.isGlobal and securityDataProvider.hasPermission('REMOVE_ENV_OR_DOM')}"
+                                                    render="environments"
+                                                    value="Remove #{environmentsDataProvider.contextTypeName} #{contextDataProvider.contextDisplayName}"
+                                                    onclick="#{rich:component('confirmContextDeletePopupPanel')}.show();">
+                                                </a4j:commandLink>
+                                            </span>
 
-											<div class="control-group">
-												<label class="control-label"><h:outputText
-														value="#{environmentsDataProvider.contextTypeName} name" /></label>
-												<div class="controls">
-													<h:inputText
-														disabled="${contextDataProvider.isGlobal or securityDataProvider.hasPermission('EDIT_ENV_OR_DOM_NAME')==false}"
-														value="#{contextDataProvider.contextDisplayName}" />
-												</div>
-											</div>
-										</h:panelGroup></td>
-								</tr>
-							</table>
-						</div>
-					</h:panelGroup>
-				</h:panelGroup>
-			</h:form>
+                                            <div class="control-group">
+                                                <label class="control-label"><h:outputText
+                                                        value="#{environmentsDataProvider.contextTypeName} name" /></label>
+                                                <div class="controls">
+                                                    <h:inputText
+                                                        disabled="${contextDataProvider.isGlobal or securityDataProvider.hasPermission('EDIT_ENV_OR_DOM_NAME')==false}"
+                                                        value="#{contextDataProvider.contextDisplayName}" />
+                                                </div>
+                                            </div>
+                                        </h:panelGroup></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
 
-			<!-- Property Types -->
-			<h:panelGroup rendered="${param['mode']=='props'}">
-				<ui:include  src="components/propertyTypesComp.xhtml" />
-			</h:panelGroup>
+            <!-- Property Types -->
+            <h:panelGroup rendered="${param['mode']=='props'}">
+                <ui:include  src="components/propertyTypesComp.xhtml" />
+            </h:panelGroup>
 
-			<!-- Functions -->
-			<h:panelGroup rendered="${param['mode']=='functions'}">
-				<mobi:listGlobalFunctions/>
-			</h:panelGroup>
+            <!-- Functions -->
+            <h:panelGroup rendered="${param['mode']=='functions'}">
+                <mobi:listGlobalFunctions/>
+            </h:panelGroup>
 
-			<!-- Tags -->
-			<h:panelGroup rendered="${param['mode']=='tags'}">
-				<ui:include  src="components/propertyTagsComp.xhtml" />
-			</h:panelGroup>
+            <!-- Tags -->
+            <h:panelGroup rendered="${param['mode']=='tags'}">
+                <ui:include  src="components/propertyTagsComp.xhtml" />
+            </h:panelGroup>
 
-			<!-- Deployparam -->
-			<h:panelGroup rendered="${param['mode']=='deployparam'}">
-				<ui:include  src="components/deploymentParameterComp.xhtml" />
-			</h:panelGroup>
+            <!-- Deployparam -->
+            <h:panelGroup rendered="${param['mode']=='deployparam'}">
+                <ui:include  src="components/deploymentParameterComp.xhtml" />
+            </h:panelGroup>
 
-			<h:panelGroup rendered="${param['mode']=='myAmw'}">
-				<h:panelGroup id="myAmw" layout="block">
-					<h:dataTable var="favorit" value="${userSettings.myAMWObjects}"
-						styleClass="well width100" rowClasses="odd-row,even-row"
-						id="amwlist">
-						<f:facet name="caption">
-							<h2>My favorites</h2>
-						</f:facet>
-						<h:column>
-							<f:facet name="header">
-								<h:panelGroup>
-									<h:outputText value="Resource Name" />
-									<br />
-								</h:panelGroup>
-							</f:facet>
-							<div>
-								<h:outputText value="${favorit.name}" />
-							</div>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:panelGroup>
-									<h:outputText value="Send email when deploying" />
-									<br />
-								</h:panelGroup>
-							</f:facet>
-							<div>
-								<h:selectBooleanCheckbox value="#{favorit.email}"
-									rendered="${favorit.asOrApp}">
-									<a4j:ajax listener="${userSettings.switchEmailNotification(favorit)}" />
-								</h:selectBooleanCheckbox>
-							</div>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:panelGroup>
-									<h:outputText value="Remove from favorites" />
-									<br />
-								</h:panelGroup>
-							</f:facet>
-							<div>
-								<a4j:commandLink
-									action="${userSettings.removeFavoriteResource(favorit.groupId)}"
-									render="myAmw">Remove from favorites</a4j:commandLink>
-							</div>
-						</h:column>
-					</h:dataTable>
-				</h:panelGroup>
+            <h:panelGroup rendered="${param['mode']=='myAmw'}">
+                <h:panelGroup id="myAmw" layout="block">
+                    <h:dataTable var="favorit" value="${userSettings.myAMWObjects}"
+                        styleClass="well width100" rowClasses="odd-row,even-row"
+                        id="amwlist">
+                        <f:facet name="caption">
+                            <h2>My favorites</h2>
+                        </f:facet>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:panelGroup>
+                                    <h:outputText value="Resource Name" />
+                                    <br />
+                                </h:panelGroup>
+                            </f:facet>
+                            <div>
+                                <h:outputText value="${favorit.name}" />
+                            </div>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:panelGroup>
+                                    <h:outputText value="Send email when deploying" />
+                                    <br />
+                                </h:panelGroup>
+                            </f:facet>
+                            <div>
+                                <h:selectBooleanCheckbox value="#{favorit.email}"
+                                    rendered="${favorit.asOrApp}">
+                                    <a4j:ajax listener="${userSettings.switchEmailNotification(favorit)}" />
+                                </h:selectBooleanCheckbox>
+                            </div>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:panelGroup>
+                                    <h:outputText value="Remove from favorites" />
+                                    <br />
+                                </h:panelGroup>
+                            </f:facet>
+                            <div>
+                                <a4j:commandLink
+                                    action="${userSettings.removeFavoriteResource(favorit.groupId)}"
+                                    render="myAmw">Remove from favorites</a4j:commandLink>
+                            </div>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
 
-			</h:panelGroup>
+            </h:panelGroup>
 
-			<!-- STP MANAGEMENT -->
-			<h:form id="stpPanelForm">
-				<h:panelGroup rendered="${param['mode']=='STP'}">
-					<h:panelGroup id="STP_panel" layout="block">
-						<h:dataTable id="stpDataTable"
-							value="#{shakedownStpDataProvider.stp}" var="s" styleClass="well"
-							rowClasses="odd-row,even-row">
-							<f:facet name="caption">
-								<nav class="actionbar"> <a4j:commandLink
-									styleClass="btn light right"
-									oncomplete="#{rich:component('addNewSTPPopupPanel')}.show(); return false;"
-									rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}"
-									action="#{shakedownStpDataProvider.clearArguments()}"
-									render="argumentsTabel,addNewSTPPopupPanel">
-									<i class="icon icon-add" /> Add new STP</a4j:commandLink> </nav>
-								<h2>STP Management</h2>
-							</f:facet>
-							<h:column>
-								<f:facet name="header">
-									<h:panelGroup>
-										<h:outputText value="Name" />
-									</h:panelGroup>
-								</f:facet>
-								<div>
-									<h:outputText value="#{s.stpName}" />
-								</div>
-							</h:column>
-							<h:column>
-								<f:facet name="header">
-									<h:panelGroup>
-										<h:outputText value="Version" />
-									</h:panelGroup>
-								</f:facet>
-								<div>
-									<h:outputText value="#{s.version}" />
-								</div>
-							</h:column>
-							<h:column>
-								<f:facet name="header">
-									<h:panelGroup>
-										<h:outputText value="Arguments" />
-									</h:panelGroup>
-								</f:facet>
-								<div>
-									<h:outputText value="#{s.comaSeperatedParameters}" />
-								</div>
-							</h:column>
-							<h:column>
-								<f:facet name="header">
-									<h:panelGroup>
-										<h:outputText value="Edit" />
-									</h:panelGroup>
-								</f:facet>
-								<div>
-									<a4j:commandLink id="editCommandLink" value="Edit"
-										oncomplete="#{rich:component('editSTPPopupPanel')}.show(); return false;"
-										title="Edit current STP"
-										render="editSTPPopupPanel, argumentsTabelEdit"
-										rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'UPDATE')}"
-										action="#{shakedownStpDataProvider.createTempArgumentToEditPopupPanel()}">
-										<a4j:param
-											assignTo="#{shakedownStpDataProvider.selectedSTPId}"
-											value="${s.id}" />
-									</a4j:commandLink>
-								</div>
-							</h:column>
-							<h:column>
-								<f:facet name="header">
-									<h:panelGroup>
-										<h:outputText value="Delete" />
-									</h:panelGroup>
-								</f:facet>
-								<div>
-									<a4j:commandLink id="cancelCommandLink" value="Delete"
-										oncomplete="#{rich:component('cancelSTPConfirmationPopup')}.show(); return false;"
-										title="Cancel current STP" render="cancelSTPConfirmationPopup"
-										rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'DELETE')}">
-										<a4j:param
-											assignTo="#{shakedownStpDataProvider.selectedSTPId}"
-											value="${s.id}" />
-									</a4j:commandLink>
-								</div>
-							</h:column>
-						</h:dataTable>
-					</h:panelGroup>
-				</h:panelGroup>
-			</h:form>
+            <!-- STP MANAGEMENT -->
+            <h:form id="stpPanelForm">
+                <h:panelGroup rendered="${param['mode']=='STP'}">
+                    <h:panelGroup id="STP_panel" layout="block">
+                        <h:dataTable id="stpDataTable"
+                            value="#{shakedownStpDataProvider.stp}" var="s" styleClass="well"
+                            rowClasses="odd-row,even-row">
+                            <f:facet name="caption">
+                                <nav class="actionbar"> <a4j:commandLink
+                                    styleClass="btn light right"
+                                    oncomplete="#{rich:component('addNewSTPPopupPanel')}.show(); return false;"
+                                    rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}"
+                                    action="#{shakedownStpDataProvider.clearArguments()}"
+                                    render="argumentsTabel,addNewSTPPopupPanel">
+                                    <i class="icon icon-add" /> Add new STP</a4j:commandLink> </nav>
+                                <h2>STP Management</h2>
+                            </f:facet>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:panelGroup>
+                                        <h:outputText value="Name" />
+                                    </h:panelGroup>
+                                </f:facet>
+                                <div>
+                                    <h:outputText value="#{s.stpName}" />
+                                </div>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:panelGroup>
+                                        <h:outputText value="Version" />
+                                    </h:panelGroup>
+                                </f:facet>
+                                <div>
+                                    <h:outputText value="#{s.version}" />
+                                </div>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:panelGroup>
+                                        <h:outputText value="Arguments" />
+                                    </h:panelGroup>
+                                </f:facet>
+                                <div>
+                                    <h:outputText value="#{s.comaSeperatedParameters}" />
+                                </div>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:panelGroup>
+                                        <h:outputText value="Edit" />
+                                    </h:panelGroup>
+                                </f:facet>
+                                <div>
+                                    <a4j:commandLink id="editCommandLink" value="Edit"
+                                        oncomplete="#{rich:component('editSTPPopupPanel')}.show(); return false;"
+                                        title="Edit current STP"
+                                        render="editSTPPopupPanel, argumentsTabelEdit"
+                                        rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'UPDATE')}"
+                                        action="#{shakedownStpDataProvider.createTempArgumentToEditPopupPanel()}">
+                                        <a4j:param
+                                            assignTo="#{shakedownStpDataProvider.selectedSTPId}"
+                                            value="${s.id}" />
+                                    </a4j:commandLink>
+                                </div>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:panelGroup>
+                                        <h:outputText value="Delete" />
+                                    </h:panelGroup>
+                                </f:facet>
+                                <div>
+                                    <a4j:commandLink id="cancelCommandLink" value="Delete"
+                                        oncomplete="#{rich:component('cancelSTPConfirmationPopup')}.show(); return false;"
+                                        title="Cancel current STP" render="cancelSTPConfirmationPopup"
+                                        rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'DELETE')}">
+                                        <a4j:param
+                                            assignTo="#{shakedownStpDataProvider.selectedSTPId}"
+                                            value="${s.id}" />
+                                    </a4j:commandLink>
+                                </div>
+                            </h:column>
+                        </h:dataTable>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:form>
 
-			<!-- Releases-->
-			<h:panelGroup rendered="${param['mode']=='releases'}">
-				<ui:include src="components/releasesScreenComp.xhtml" />
-			</h:panelGroup>
-			
-			<!-- Application Version -->
-			<h:panelGroup rendered="${param['mode']=='appVersion'}">
-				<ui:include src="components/applicationInfoComp.xhtml">
-				</ui:include>
-			</h:panelGroup>
+            <!-- Releases-->
+            <h:panelGroup rendered="${param['mode']=='releases'}">
+                <ui:include src="components/releasesScreenComp.xhtml" />
+            </h:panelGroup>
+            
+            <!-- Application Version -->
+            <h:panelGroup rendered="${param['mode']=='appVersion'}">
+                <ui:include src="components/applicationInfoComp.xhtml">
+                </ui:include>
+            </h:panelGroup>
 
 
-		</div>
+        </div>
 
-		</section>
-	</ui:define>
+        </section>
+    </ui:define>
 
-	<ui:define name="component_popups">
-		<rich:popupPanel id="addContextPopupPanel" autosized="true"
-			movable="true" onshow="#{rich:element('contextName')}.focus();">
-			<f:facet name="header">
-				<h2>
-					<h:outputText
-						value="Create new #{environmentsDataProvider.nameOfChildContext} for #{contextDataProvider.contextDisplayName}"
-						id="addContextPopupPanelHeader" />
-				</h2>
-			</f:facet>
-			<f:facet name="controls">
-				<h:outputLink value="#"
-					styleClass="close icon icon-close icon-replace"
-					onclick="#{rich:component('addContextPopupPanel')}.hide(); return false;">
-					x
-					</h:outputLink>
-			</f:facet>
-			<h:form>
-				<h:panelGroup id="addContextPopupPanelGroup">
-					<div class="control-group">
-						<label class="control-label"> <h:outputLabel value="Name" /></label>
-						<div class="controls">
-							<h:inputText id="contextName"
-								value="#{environmentsDataProvider.newName}" />
-						</div>
-						<a4j:commandLink value="OK" styleClass="btn primary right"
-							render="environments"
-							action="#{environmentsDataProvider.createContext()}"
-							oncomplete="#{rich:component('addContextPopupPanel')}.hide(); return false;" />
-					</div>
-				</h:panelGroup>
+    <ui:define name="component_popups">
+        <rich:popupPanel id="addContextPopupPanel" autosized="true"
+            movable="true" onshow="#{rich:element('contextName')}.focus();">
+            <f:facet name="header">
+                <h2>
+                    <h:outputText
+                        value="Create new #{environmentsDataProvider.nameOfChildContext} for #{contextDataProvider.contextDisplayName}"
+                        id="addContextPopupPanelHeader" />
+                </h2>
+            </f:facet>
+            <f:facet name="controls">
+                <h:outputLink value="#"
+                    styleClass="close icon icon-close icon-replace"
+                    onclick="#{rich:component('addContextPopupPanel')}.hide(); return false;">
+                    x
+                    </h:outputLink>
+            </f:facet>
+            <h:form>
+                <h:panelGroup id="addContextPopupPanelGroup">
+                    <div class="control-group">
+                        <label class="control-label"> <h:outputLabel value="Name" /></label>
+                        <div class="controls">
+                            <h:inputText id="contextName"
+                                value="#{environmentsDataProvider.newName}" />
+                        </div>
+                        <a4j:commandLink id="createCtxButton"
+                            value="OK"
+                            styleClass="btn primary right"
+                            render="environments"
+                            action="#{environmentsDataProvider.createContext()}"
+                            oncomplete="#{rich:component('addContextPopupPanel')}.hide(); return false;" />
+                    </div>
+                </h:panelGroup>
 
-			</h:form>
-		</rich:popupPanel>
+            </h:form>
+        </rich:popupPanel>
 
-		<rich:popupPanel id="confirmContextDeletePopupPanel" autosized="true">
-			<f:facet name="header">
-				<h2>
-					<h:outputText value="Remove context" />
-				</h2>
-			</f:facet>
-			<f:facet name="controls">
-				<h:outputLink value="#"
-					styleClass="close icon icon-close icon-replace"
-					onclick="#{rich:component('confirmContextDeletePopupPanel')}.hide(); return false;">
-					x
-					</h:outputLink>
-			</f:facet>
-			<h:panelGrid styleClass="marginBottom10">Are you sure you want to delete this context? <br />If you continue, all defined property values for any application, resource or relation between them as well as any sub context will be lost.</h:panelGrid>
-			<h:form>
-				<a4j:commandLink value="Delete" styleClass="btn primary right"
-					render="environments"
-					action="#{environmentsDataProvider.removeContext()}"
-					oncomplete="#{rich:component('confirmContextDeletePopupPanel')}.hide(); return false;" />
+        <rich:popupPanel id="confirmContextDeletePopupPanel" autosized="true">
+            <f:facet name="header">
+                <h2>
+                    <h:outputText value="Remove context" />
+                </h2>
+            </f:facet>
+            <f:facet name="controls">
+                <h:outputLink value="#"
+                    styleClass="close icon icon-close icon-replace"
+                    onclick="#{rich:component('confirmContextDeletePopupPanel')}.hide(); return false;">
+                    x
+                    </h:outputLink>
+            </f:facet>
+            <h:panelGrid styleClass="marginBottom10">Are you sure you want to delete this context? <br />If you continue, all defined property values for any application, resource or relation between them as well as any sub context will be lost.</h:panelGrid>
+            <h:form>
+                <a4j:commandLink value="Delete" styleClass="btn primary right"
+                    render="environments"
+                    action="#{environmentsDataProvider.removeContext()}"
+                    oncomplete="#{rich:component('confirmContextDeletePopupPanel')}.hide(); return false;" />
 
-			</h:form>
-		</rich:popupPanel>
+            </h:form>
+        </rich:popupPanel>
 
-		<!-- STP EDIT POPUPPANEL -->
-		<h:form>
-			<rich:popupPanel id="editSTPPopupPanel" autosized="true"
-				moveable="true" domElementAttachment="form">
-				<f:facet name="header">
-					<h2>
-						<h:outputText
-							value="Edit #{shakedownStpDataProvider.currentSTPSelected().stpName}" />
-					</h2>
-				</f:facet>
-				<f:facet name="controls">
-					<h:outputLink value="#"
-						styleClass="close icon icon-close icon-replace"
-						onclick="#{rich:component('editSTPPopupPanel')}.hide(); return false;">x</h:outputLink>
-				</f:facet>
-				<h:panelGroup>
-					<div class="control-group textCenter">
-						<label class="control-label"><h:outputLabel
-								value="STP Name" /></label>
-						<div class="controls">
-							<h:inputText id="newStpName" disabled="false" styleClass="minWidth400"
-								value="#{shakedownStpDataProvider.selectedSTP.stpName}" />
-						</div>
-						<label class="control-label"><h:outputLabel
-								value="Version" /></label>
-						<div class="controls">
-							<h:inputText id="stpVersion" styleClass="minWidth400"
-								value="#{shakedownStpDataProvider.selectedSTP.version}" />
-						</div>
-					</div>
-				</h:panelGroup>
-				<h:panelGroup layout="block" styleClass="autoHeight width100 right">
-					<rich:dataTable id="argumentsTabelEdit" iterationStatusVar="i"
-						value="#{shakedownStpDataProvider.args}" var="arg"
-						styleClass="well" rowClasses="odd-row,even-row">
-						<f:facet name="header">
-							<h2>Arguments</h2>
-						</f:facet>
-						<h:column>
-							<h:panelGroup>
-								<h:outputText value="Value ${i.count} " />
-								<h:inputText value="#{arg.argumentValue}" styleClass="minWidth350px">
-									<a4j:ajax />
-								</h:inputText>
-							</h:panelGroup>
-						</h:column>
-						<h:column>
-							<a4j:commandLink execute="@this" render="argumentsTabelEdit"
-								value="Delete"
-								action="#{shakedownStpDataProvider.removeSelectedArguments(i)}" />
-						</h:column>
-					</rich:dataTable>
-					<a4j:commandLink styleClass="btn light left"
-							action="#{shakedownStpDataProvider.addArgumentsToSTP()}"
-							title="Add new argument" execute="@this"
-							render="argumentsTabelEdit">
-							<i class="icon icon-add" />
-									Add argument</a4j:commandLink>
-				</h:panelGroup>			
-				<a4j:commandLink styleClass="btn primary right" value="Save"
-					execute="@form" action="#{shakedownStpDataProvider.editSTP()}"
-					oncomplete="#{rich:component('editSTPPopupPanel')}.hide(); return false;"
-					render="STP_panel,stpDataTable" />
-			</rich:popupPanel>
-		</h:form>
+        <!-- STP EDIT POPUPPANEL -->
+        <h:form>
+            <rich:popupPanel id="editSTPPopupPanel" autosized="true"
+                moveable="true" domElementAttachment="form">
+                <f:facet name="header">
+                    <h2>
+                        <h:outputText
+                            value="Edit #{shakedownStpDataProvider.currentSTPSelected().stpName}" />
+                    </h2>
+                </f:facet>
+                <f:facet name="controls">
+                    <h:outputLink value="#"
+                        styleClass="close icon icon-close icon-replace"
+                        onclick="#{rich:component('editSTPPopupPanel')}.hide(); return false;">x</h:outputLink>
+                </f:facet>
+                <h:panelGroup>
+                    <div class="control-group textCenter">
+                        <label class="control-label"><h:outputLabel
+                                value="STP Name" /></label>
+                        <div class="controls">
+                            <h:inputText id="newStpName" disabled="false" styleClass="minWidth400"
+                                value="#{shakedownStpDataProvider.selectedSTP.stpName}" />
+                        </div>
+                        <label class="control-label"><h:outputLabel
+                                value="Version" /></label>
+                        <div class="controls">
+                            <h:inputText id="stpVersion" styleClass="minWidth400"
+                                value="#{shakedownStpDataProvider.selectedSTP.version}" />
+                        </div>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="autoHeight width100 right">
+                    <rich:dataTable id="argumentsTabelEdit" iterationStatusVar="i"
+                        value="#{shakedownStpDataProvider.args}" var="arg"
+                        styleClass="well" rowClasses="odd-row,even-row">
+                        <f:facet name="header">
+                            <h2>Arguments</h2>
+                        </f:facet>
+                        <h:column>
+                            <h:panelGroup>
+                                <h:outputText value="Value ${i.count} " />
+                                <h:inputText value="#{arg.argumentValue}" styleClass="minWidth350px">
+                                    <a4j:ajax />
+                                </h:inputText>
+                            </h:panelGroup>
+                        </h:column>
+                        <h:column>
+                            <a4j:commandLink execute="@this" render="argumentsTabelEdit"
+                                value="Delete"
+                                action="#{shakedownStpDataProvider.removeSelectedArguments(i)}" />
+                        </h:column>
+                    </rich:dataTable>
+                    <a4j:commandLink styleClass="btn light left"
+                            action="#{shakedownStpDataProvider.addArgumentsToSTP()}"
+                            title="Add new argument" execute="@this"
+                            render="argumentsTabelEdit">
+                            <i class="icon icon-add" />
+                                    Add argument</a4j:commandLink>
+                </h:panelGroup>            
+                <a4j:commandLink styleClass="btn primary right" value="Save"
+                    execute="@form" action="#{shakedownStpDataProvider.editSTP()}"
+                    oncomplete="#{rich:component('editSTPPopupPanel')}.hide(); return false;"
+                    render="STP_panel,stpDataTable" />
+            </rich:popupPanel>
+        </h:form>
 
-		<!-- ADD NEW STP POPUPPANEL -->
-		<h:form>
-			<rich:popupPanel id="addNewSTPPopupPanel" autosized="true"
-				moveable="true" domElementAttachment="form" styleClass="minWidth400px">
-				<f:facet name="header">
-					<h2>
-						<h:outputText value="Add new STP" />
-					</h2>
-				</f:facet>
-				<f:facet name="controls">
-					<h:outputLink value="#"
-						styleClass="close icon icon-close icon-replace"
-						onclick="#{rich:component('addNewSTPPopupPanel')}.hide(); return false;">x	</h:outputLink>
-				</f:facet>
-				<h:panelGroup id="inputsPanel">
-					<div class="header">
-						<label class="control-label"><h:outputLabel
-								value="STP Name" /></label>
-						<div class="controls">
-							<h:inputText id="newStpName" styleClass="minWidth400px"
-								value="#{shakedownStpDataProvider.newSTPName}" />
-						</div>
-						<label class="control-label"><h:outputLabel
-								value="Version" /></label>
-						<div class="controls">
-							<h:inputText id="newStpVersion" styleClass="minWidth400px"
-								value="#{shakedownStpDataProvider.newSTPVersion}" />
-						</div>
-						<h:panelGroup layout="block"
-							styleClass="height220px autoOverflow width600px">
-							<rich:dataTable id="argumentsTabel" iterationStatusVar="index"
-								value="#{shakedownStpDataProvider.args}" var="arg"
-								styleClass="well" rowClasses="odd-row,even-row">
-								<f:facet name="header">
-									<h2>Arguments</h2>
-								</f:facet>
-								<h:column>
-									<h:panelGroup>
-										<h:outputText value="Value  ${index.count} " />
-										<h:inputText value="#{arg.argumentValue}"
-											styleClass="minWidth350px">
-											<a4j:ajax />
-										</h:inputText>
-									</h:panelGroup>
-								</h:column>
-								<h:column>
-									<a4j:commandLink execute="@this" render="argumentsTabel"
-										value="Delete"
-										action="#{shakedownStpDataProvider.removeSelectedArguments(index)}" />
-								</h:column>
-							</rich:dataTable>
-							<a4j:commandLink styleClass="btn light left"
-								action="#{shakedownStpDataProvider.addArgumentsToSTP()}"
-								title="Add new argument" execute="@this" render="argumentsTabel">
-								<i class="icon icon-add" />
-									Add argument</a4j:commandLink>
-						</h:panelGroup>
+        <!-- ADD NEW STP POPUPPANEL -->
+        <h:form>
+            <rich:popupPanel id="addNewSTPPopupPanel" autosized="true"
+                moveable="true" domElementAttachment="form" styleClass="minWidth400px">
+                <f:facet name="header">
+                    <h2>
+                        <h:outputText value="Add new STP" />
+                    </h2>
+                </f:facet>
+                <f:facet name="controls">
+                    <h:outputLink value="#"
+                        styleClass="close icon icon-close icon-replace"
+                        onclick="#{rich:component('addNewSTPPopupPanel')}.hide(); return false;">x    </h:outputLink>
+                </f:facet>
+                <h:panelGroup id="inputsPanel">
+                    <div class="header">
+                        <label class="control-label"><h:outputLabel
+                                value="STP Name" /></label>
+                        <div class="controls">
+                            <h:inputText id="newStpName" styleClass="minWidth400px"
+                                value="#{shakedownStpDataProvider.newSTPName}" />
+                        </div>
+                        <label class="control-label"><h:outputLabel
+                                value="Version" /></label>
+                        <div class="controls">
+                            <h:inputText id="newStpVersion" styleClass="minWidth400px"
+                                value="#{shakedownStpDataProvider.newSTPVersion}" />
+                        </div>
+                        <h:panelGroup layout="block"
+                            styleClass="height220px autoOverflow width600px">
+                            <rich:dataTable id="argumentsTabel" iterationStatusVar="index"
+                                value="#{shakedownStpDataProvider.args}" var="arg"
+                                styleClass="well" rowClasses="odd-row,even-row">
+                                <f:facet name="header">
+                                    <h2>Arguments</h2>
+                                </f:facet>
+                                <h:column>
+                                    <h:panelGroup>
+                                        <h:outputText value="Value  ${index.count} " />
+                                        <h:inputText value="#{arg.argumentValue}"
+                                            styleClass="minWidth350px">
+                                            <a4j:ajax />
+                                        </h:inputText>
+                                    </h:panelGroup>
+                                </h:column>
+                                <h:column>
+                                    <a4j:commandLink execute="@this" render="argumentsTabel"
+                                        value="Delete"
+                                        action="#{shakedownStpDataProvider.removeSelectedArguments(index)}" />
+                                </h:column>
+                            </rich:dataTable>
+                            <a4j:commandLink styleClass="btn light left"
+                                action="#{shakedownStpDataProvider.addArgumentsToSTP()}"
+                                title="Add new argument" execute="@this" render="argumentsTabel">
+                                <i class="icon icon-add" />
+                                    Add argument</a4j:commandLink>
+                        </h:panelGroup>
 
-						<div></div>
-					</div>
-				</h:panelGroup>
-				<a4j:commandLink styleClass="btn primary right" value="Confirm"
-					execute="@form" action="#{shakedownStpDataProvider.createNewSTP()}"
-					onclick="showLoader();"
-					oncomplete="#{rich:component('addNewSTPPopupPanel')}.hide(); hideLoader(); return false;"
-					render="STP_panel,stpDataTable,inputsPanel" />
-			</rich:popupPanel>
-		</h:form>
+                        <div></div>
+                    </div>
+                </h:panelGroup>
+                <a4j:commandLink styleClass="btn primary right" value="Confirm"
+                    execute="@form" action="#{shakedownStpDataProvider.createNewSTP()}"
+                    onclick="showLoader();"
+                    oncomplete="#{rich:component('addNewSTPPopupPanel')}.hide(); hideLoader(); return false;"
+                    render="STP_panel,stpDataTable,inputsPanel" />
+            </rich:popupPanel>
+        </h:form>
 
-		<!-- STP delete popup confirm -->
-		<h:form id="cancelSTPConfirmation">
-			<rich:popupPanel id="cancelSTPConfirmationPopup" autosized="true"
-				moveable="true" domElementAttachment="form">
-				<f:facet name="header">
-					<h2>
-						<h:outputText
-							value="Delete STP #{shakedownStpDataProvider.currentSTPSelected().stpName}" />
-					</h2>
-				</f:facet>
-				<f:facet name="controls">
-					<h:outputLink value="#"
-						styleClass="close icon icon-close icon-replace"
-						onclick="#{rich:component('cancelSTPConfirmationPopup')}.hide(); return false;">x</h:outputLink>
-				</f:facet>
-				<h:panelGrid styleClass="marginBottom10">Are you sure you want to delete this Shakedown Test Package? <br />
-							If you continue, all defined testing-template, with this Shakedown Test Package, for any application, resource or relation will be lost.</h:panelGrid>
-				<a4j:commandLink styleClass="btn primary right" value="Delete"
-					execute="@form" action="${shakedownStpDataProvider.deleteSTP()}"
-					oncomplete="#{rich:component('cancelSTPConfirmationPopup')}.hide(); return false;"
-					render="stpDataTable,STP_panel" />
+        <!-- STP delete popup confirm -->
+        <h:form id="cancelSTPConfirmation">
+            <rich:popupPanel id="cancelSTPConfirmationPopup" autosized="true"
+                moveable="true" domElementAttachment="form">
+                <f:facet name="header">
+                    <h2>
+                        <h:outputText
+                            value="Delete STP #{shakedownStpDataProvider.currentSTPSelected().stpName}" />
+                    </h2>
+                </f:facet>
+                <f:facet name="controls">
+                    <h:outputLink value="#"
+                        styleClass="close icon icon-close icon-replace"
+                        onclick="#{rich:component('cancelSTPConfirmationPopup')}.hide(); return false;">x</h:outputLink>
+                </f:facet>
+                <h:panelGrid styleClass="marginBottom10">Are you sure you want to delete this Shakedown Test Package? <br />
+                            If you continue, all defined testing-template, with this Shakedown Test Package, for any application, resource or relation will be lost.</h:panelGrid>
+                <a4j:commandLink styleClass="btn primary right" value="Delete"
+                    execute="@form" action="${shakedownStpDataProvider.deleteSTP()}"
+                    oncomplete="#{rich:component('cancelSTPConfirmationPopup')}.hide(); return false;"
+                    render="stpDataTable,STP_panel" />
 
-			</rich:popupPanel>
-		</h:form>
+            </rich:popupPanel>
+        </h:form>
 
-	</ui:define>
+    </ui:define>
 </ui:composition>
 
 
