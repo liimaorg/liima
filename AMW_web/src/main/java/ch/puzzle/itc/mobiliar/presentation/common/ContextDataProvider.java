@@ -61,15 +61,10 @@ public class ContextDataProvider implements Serializable {
     private Integer contextId;
     private List<ContextEntity> contexts = null;
     private Integer globalContextId;
-    private ContextChangeHandler handler;
     private List<ResourceGroupEntity> targetPlatforms;
 
     public String getUUID(){
         return UUID.randomUUID().toString();
-    }
-
-    public static interface ContextChangeHandler{
-        void onContextChanged();
     }
 
     public Integer getGlobalContextId() {
@@ -90,13 +85,6 @@ public class ContextDataProvider implements Serializable {
         globalContextId = c.getId();
         loadContexts();
         loadTargetPlatforms();
-    }
-
-    public void init(ContextChangeHandler handler){
-        this.handler = handler;
-        Integer paramContextId = RequestParameter.getContextRequestParameter();
-
-        setContextId(paramContextId);
     }
 
     public List<ContextEntity> getEnvironments(){
@@ -158,9 +146,6 @@ public class ContextDataProvider implements Serializable {
             this.contextId = contextId;
             ContextEntity current = getCurrentContext();
             this.contextDisplayName = current.getName();
-            if (handler != null) {
-                handler.onContextChanged();
-            }
         }
 
     }

@@ -1,14 +1,12 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:ui="http://java.sun.com/jsf/facelets">
 
     <h:panelGroup layout="block" id="contextTreeComp"
                   rendered="#{securityDataProvider.hasPermission('ENV_PANEL_LIST')}">
         <aside>
             <nav class="primary">
-                <c:if test="#{contextDataProvider.init(contextChangeHandler)}"/>
                 <ul>
                     <li class="${contextDataProvider.isCurrentContext(null) eq true ? 'current' : ''}">
                         <h:link value="Global">

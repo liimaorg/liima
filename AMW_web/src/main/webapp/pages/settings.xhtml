@@ -8,6 +8,10 @@
       xmlns:mobi="http://java.sun.com/jsf/composite/mobi">
 
 <ui:composition template="templates/template.xhtml">
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{environmentsDataProvider.loadContext}"/>
+    </f:metadata>
+
     <ui:param name="screen" value="newSettings" />
     <ui:define name="title">Settings</ui:define>
     <ui:define name="pagetitle">
@@ -96,8 +100,7 @@
                                 <tr>
                                     <td class="width120px vtop valignTop">
                                         <div class="marginLeft50">
-                                            <ui:include src="components/contextTreeComp.xhtml">
-                                            </ui:include>
+                                            <ui:include src="components/contextTreeComp.xhtml" />
                                         </div>
                                     </td>
                                     <td valign="top" width="100%"><h:panelGroup id="content">
@@ -120,10 +123,11 @@
                                             </span>
 
                                             <div class="control-group">
-                                                <label class="control-label"><h:outputText
-                                                        value="#{environmentsDataProvider.contextTypeName} name" /></label>
+                                                <label class="control-label">
+                                                    <h:outputText value="#{environmentsDataProvider.contextTypeName} name" />
+                                                </label>
                                                 <div class="controls">
-                                                    <h:inputText
+                                                    <h:inputText id="envOrDomainNameInput"
                                                         disabled="${contextDataProvider.isGlobal or securityDataProvider.hasPermission('EDIT_ENV_OR_DOM_NAME')==false}"
                                                         value="#{contextDataProvider.contextDisplayName}" />
                                                 </div>
