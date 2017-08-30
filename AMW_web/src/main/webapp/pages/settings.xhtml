@@ -221,13 +221,15 @@
                             value="#{shakedownStpDataProvider.stp}" var="s" styleClass="well"
                             rowClasses="odd-row,even-row">
                             <f:facet name="caption">
-                                <nav class="actionbar"> <a4j:commandLink
-                                    styleClass="btn light right"
-                                    oncomplete="#{rich:component('addNewSTPPopupPanel')}.show(); return false;"
-                                    rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}"
-                                    action="#{shakedownStpDataProvider.clearArguments()}"
-                                    render="argumentsTabel,addNewSTPPopupPanel">
-                                    <i class="icon icon-add" /> Add new STP</a4j:commandLink> </nav>
+                                <nav class="actionbar">
+                                    <h:commandLink
+                                            styleClass="btn light right"
+                                            onclick="#{rich:component('addNewSTPPopupPanel')}.show(); return false;"
+                                            rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
+                                        <!--action="#{shakedownStpDataProvider.clearArguments()}"-->
+                                        <i class="icon icon-add" /> Add new STP
+                                    </h:commandLink>
+                                </nav>
                                 <h2>STP Management</h2>
                             </f:facet>
                             <h:column>
@@ -453,9 +455,12 @@
         </h:form>
 
         <!-- ADD NEW STP POPUPPANEL -->
-        <h:form>
-            <rich:popupPanel id="addNewSTPPopupPanel" autosized="true"
-                moveable="true" domElementAttachment="form" styleClass="minWidth400px">
+        <h:form id="newStpPopupPanelForm">
+            <rich:popupPanel id="addNewSTPPopupPanel"
+                             autosized="true"
+                             moveable="true"
+                             domElementAttachment="form"
+                             styleClass="minWidth400px">
                 <f:facet name="header">
                     <h2>
                         <h:outputText value="Add new STP" />
@@ -538,10 +543,9 @@
                 </f:facet>
                 <h:panelGrid styleClass="marginBottom10">Are you sure you want to delete this Shakedown Test Package? <br />
                             If you continue, all defined testing-template, with this Shakedown Test Package, for any application, resource or relation will be lost.</h:panelGrid>
-                <a4j:commandLink styleClass="btn primary right" value="Delete"
-                    execute="@form" action="${shakedownStpDataProvider.deleteSTP()}"
-                    oncomplete="#{rich:component('cancelSTPConfirmationPopup')}.hide(); return false;"
-                    render="stpDataTable,STP_panel" />
+                <h:commandLink styleClass="btn primary right"
+                               value="Delete"
+                               action="${shakedownStpDataProvider.deleteSTP()}"/>
 
             </rich:popupPanel>
         </h:form>
