@@ -25,9 +25,9 @@
                 </h:outputLink>
             </f:facet>
             <h:panelGrid>Are you sure you want to delete the selected property type?</h:panelGrid>
-            <a4j:commandLink styleClass="btn primary right" value="Delete"
+            <h:commandLink styleClass="btn primary right" value="Delete"
             				 execute="@this"
-                             render="@all, propertyTypes" type="button"
+                             render="propertyTypes" type="button"
                              action="#{propertyTypeDataProvider.remove()}"
                              oncomplete="#{rich:component('deletePropertyTypePopup')}.hide(); return false;" />
         </rich:popupPanel>

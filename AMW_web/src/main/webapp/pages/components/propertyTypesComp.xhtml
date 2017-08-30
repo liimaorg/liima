@@ -20,10 +20,9 @@
                 <h:commandLink id="deletePropTypeButton"
                                styleClass="btn light"
                                render="deletePropertyTypePopup"
-                               onclick="showLoader();"
+                               onclick="#{rich:component('deletePropertyTypePopup')}.show(); return false;"
                                rendered="#{securityDataProvider.hasPermission('DELETE_PROPTYPE')}">
                     <i class="icon icon-delete"/>Remove
-                    <a4j:ajax oncomplete="hideLoader();#{rich:component('deletePropertyTypePopup')}.show();"/>
                 </h:commandLink>
             </li>
         </ul>
@@ -104,8 +103,4 @@
         </tr>
     </table>
 </h:panelGroup>
-
-    <mobi:deletePropertyTypePopup/>
-
-
 </ui:composition>

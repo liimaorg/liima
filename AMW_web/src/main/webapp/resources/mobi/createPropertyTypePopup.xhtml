@@ -70,8 +70,7 @@
                              execute="@form"
                              render=":propertyTypes"
                              actionListener="${propertyTypeDataProvider.createByPropertyTypeEntity()}"
-                             oncomplete="#{rich:component('createPropertyTypePopup')}.hide(); return false; location.reload();">
-            </a4j:commandLink>
+                             oncomplete="#{rich:component('createPropertyTypePopup')}.hide(); return false; location.reload();" />
         </rich:popupPanel>
 </composite:implementation>
 </html>
