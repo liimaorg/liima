@@ -40,7 +40,7 @@
                                        value="${propertyTypeDataProvider.allPropertyTypes}">
                                 <li class="${propertyTypeDataProvider.selectedPropertyTypeId==propType.id ? 'current' : ''}">
                                     <h:link value="${propType.propertyTypeName}"
-                                    outcome="settings">
+                                            outcome="settings">
                                         <f:param name="mode" value="#{settingsDataProvider.mode}" />
                                         <f:param name="propId" value="#{propType.id}" />
                                     </h:link>

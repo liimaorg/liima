@@ -38,69 +38,69 @@ import java.util.List;
 @CompositeBackingBean
 public class PropertyTypeDataProvider implements Serializable {
 
-	@PostConstruct
-	public void initView() {
-		reloadPropertyTypes();
-	}
+    @PostConstruct
+    public void initView() {
+        reloadPropertyTypes();
+    }
 
-	@Inject
-	private PropertyTypeController controller;
+    @Inject
+    private PropertyTypeController controller;
 
     @Inject
     PropertyTagEditor propertyTagEditor;
 
     @Inject
     SettingsDataProvider settingsDataProviderProvider;
-	
-	private List<PropertyTypeEntity> propertyTypes;
-	
-	private PropertyTypeEntity selectedPropertyType;
+    
+    private List<PropertyTypeEntity> propertyTypes;
+    
+    private PropertyTypeEntity selectedPropertyType;
 
-	// edit propType
-	@Getter
-	private Integer selectedPropertyTypeId;
-	@Getter
-	@Setter
-	private String selectedPropertyTypeName;
-	@Getter
-	@Setter
-	private String selectedPropertyTypeRegex;
-	@Getter
-	@Setter
-	private boolean selectedEncrypted;
-	@Setter
-	private String selectedPropTypeTagsString;
+    // edit propType
+    @Getter
+    private Integer selectedPropertyTypeId;
+    @Getter
+    @Setter
+    private String selectedPropertyTypeName;
+    @Getter
+    @Setter
+    private String selectedPropertyTypeRegex;
+    @Getter
+    @Setter
+    private boolean selectedEncrypted;
+    @Setter
+    private String selectedPropTypeTagsString;
 
-	// add PropType
-	@Getter
-	@Setter
-	private String newPropertyTypeName;
-	@Getter
-	@Setter
-	private String newValidationRegex;
-	@Getter
-	@Setter
-	private boolean newEncrypted;
-	@Setter
-	@Getter
-	private String newPropTypeTagsString;
+    // add PropType
+    @Getter
+    @Setter
+    private String newPropertyTypeName;
+    @Getter
+    @Setter
+    private String newValidationRegex;
+    @Getter
+    @Setter
+    private boolean newEncrypted;
+    @Setter
+    @Getter
+    private String newPropTypeTagsString;
 
     private List<PropertyTagEntity> globalPropertyTags;
 
-	public PropertyTypeEntity getSelectedPropertyType() {
-		return selectedPropertyType;
-	}
+    public PropertyTypeEntity getSelectedPropertyType() {
+        return selectedPropertyType;
+    }
 
-	public void setSelectedPropertyType(PropertyTypeEntity propertyType) {
-		this.selectedPropertyType = propertyType;
-		setSelectedPropertyTypeName(propertyType.getPropertyTypeName());
-		setSelectedPropertyTypeRegex(propertyType.getValidationRegex());
-		setSelectedEncrypted(propertyType.isEncrypt());
-	}
-	
-	public List<PropertyTypeEntity> getAllPropertyTypes() {
-		return propertyTypes;
-	}
+    public void setSelectedPropertyType(PropertyTypeEntity propertyType) {
+        this.selectedPropertyType = propertyType;
+        setSelectedPropertyTypeName(propertyType.getPropertyTypeName());
+        setSelectedPropertyTypeRegex(propertyType.getValidationRegex());
+        setSelectedEncrypted(propertyType.isEncrypt());
+    }
+    
+    public List<PropertyTypeEntity> getAllPropertyTypes() {
+        return propertyTypes;
+    }
 
 
     /**
@@ -117,84 +117,84 @@ public class PropertyTypeDataProvider implements Serializable {
         return propertyTagEditor.getTagsAsCommaSeparatedString(selectedPropertyType.getPropertyTags());
     }
 
-	public void createByPropertyTypeEntity() {
-		if (controller.doCreateByPropertyType(getNewPropertyTypeName(), getNewValidationRegex(), isNewEncrypted(), getNewPropTypeTagsString())) {
-			reloadPropertyTypes();
-			selectPropertyTypeByName(getNewPropertyTypeName());
-			clearCreatePropertyTypePopup();
-		}
-	}
+    public void createByPropertyTypeEntity() {
+        if (controller.doCreateByPropertyType(getNewPropertyTypeName(), getNewValidationRegex(), isNewEncrypted(), getNewPropTypeTagsString())) {
+            reloadPropertyTypes();
+            selectPropertyTypeByName(getNewPropertyTypeName());
+            clearCreatePropertyTypePopup();
+        }
+    }
 
-	public void save() {
-		if (controller.doSave(getSelectedPropertyType().getId(), getSelectedPropertyTypeName(), getSelectedPropertyTypeRegex(), isSelectedEncrypted(), selectedPropTypeTagsString)) {
-			reloadPropertyTypes();
-		} else {
-			setSelectedPropertyTypeName(getSelectedPropertyType().getPropertyTypeName());
-			setSelectedPropertyTypeRegex(getSelectedPropertyType().getValidationRegex());
-		}
-	}
+    public void save() {
+        if (controller.doSave(getSelectedPropertyType().getId(), getSelectedPropertyTypeName(), getSelectedPropertyTypeRegex(), isSelectedEncrypted(), selectedPropTypeTagsString)) {
+            reloadPropertyTypes();
+        } else {
+            setSelectedPropertyTypeName(getSelectedPropertyType().getPropertyTypeName());
+            setSelectedPropertyTypeRegex(getSelectedPropertyType().getValidationRegex());
+        }
+    }
 
-	public void remove() {
-		if (controller.doRemovePropertyType(getSelectedPropertyType())) {
-			this.selectedPropertyTypeId = null;
-			reloadPropertyTypes();
-			clearCreatePropertyTypePopup();
-		}
-	}
+    public void remove() {
+        if (controller.doRemovePropertyType(getSelectedPropertyType())) {
+            this.selectedPropertyTypeId = null;
+            reloadPropertyTypes();
+            clearCreatePropertyTypePopup();
+        }
+    }
 
-	public void clearCreatePropertyTypePopup() {
-		newPropertyTypeName = null;
-		newValidationRegex = null;
-		newEncrypted = false;
-		newPropTypeTagsString = null;
-	}
+    public void clearCreatePropertyTypePopup() {
+        newPropertyTypeName = null;
+        newValidationRegex = null;
+        newEncrypted = false;
+        newPropTypeTagsString = null;
+    }
 
-	private void reloadPropertyTypes() {
-		propertyTypes = controller.loadPropertyTypes();
+    private void reloadPropertyTypes() {
+        propertyTypes = controller.loadPropertyTypes();
         if(selectedPropertyTypeId != null) {
             setSelectedPropertyTypeId(selectedPropertyTypeId);
         } else {
-			String propId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("propId");
-			if (propId != null) {
-				setSelectedPropertyTypeId(Integer.valueOf(propId));
-			} else {
-				selectFirstPropertytype();
-			}
-		}
+            String propId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("propId");
+            if (propId != null) {
+                setSelectedPropertyTypeId(Integer.valueOf(propId));
+            } else {
+                selectFirstPropertytype();
+            }
+        }
         globalPropertyTags = propertyTagEditor.getAllGlobalPropertyTags();
-	}
+    }
 
-	private void selectPropertyTypeByName(String propertyName) {
-		if (!getAllPropertyTypes().isEmpty() && propertyName != null) {
-			for (PropertyTypeEntity propertyType : getAllPropertyTypes()) {
-				if (propertyName.equals(propertyType.getPropertyTypeName())) {
-					setSelectedPropertyTypeId(propertyType.getId());
-					return;
-				}
-			}
-		}
-		// falls name null ist, so soll erstes element selektiert werden
-		selectFirstPropertytype();
-	}
+    private void selectPropertyTypeByName(String propertyName) {
+        if (!getAllPropertyTypes().isEmpty() && propertyName != null) {
+            for (PropertyTypeEntity propertyType : getAllPropertyTypes()) {
+                if (propertyName.equals(propertyType.getPropertyTypeName())) {
+                    setSelectedPropertyTypeId(propertyType.getId());
+                    return;
+                }
+            }
+        }
+        // falls name null ist, so soll erstes element selektiert werden
+        selectFirstPropertytype();
+    }
 
-	private void selectFirstPropertytype() {
-		if (!getAllPropertyTypes().isEmpty()) {
+    private void selectFirstPropertytype() {
+        if (!getAllPropertyTypes().isEmpty()) {
             PropertyTypeEntity propertyType = getAllPropertyTypes().get(0);
-			setSelectedPropertyTypeId(propertyType.getId());
-		}
-	}
+            setSelectedPropertyTypeId(propertyType.getId());
+        }
+    }
 
-	public void setSelectedPropertyTypeId(Integer selectedPropertyTypeId) {
-		this.selectedPropertyTypeId = selectedPropertyTypeId;
-		setSelectedPropertyType(getPropertyTypeById(selectedPropertyTypeId));
-	}
-	
-	private PropertyTypeEntity getPropertyTypeById(Integer propertyType){
-		for(PropertyTypeEntity t : propertyTypes){
-			if(t.getId().equals(propertyType)) {
-				return t;
-			}
-		}
-		return null;
-	}
+    public void setSelectedPropertyTypeId(Integer selectedPropertyTypeId) {
+        this.selectedPropertyTypeId = selectedPropertyTypeId;
+        setSelectedPropertyType(getPropertyTypeById(selectedPropertyTypeId));
+    }
+    
+    private PropertyTypeEntity getPropertyTypeById(Integer propertyType){
+        for(PropertyTypeEntity t : propertyTypes){
+            if(t.getId().equals(propertyType)) {
+                return t;
+            }
+        }
+        return null;
+    }
 }

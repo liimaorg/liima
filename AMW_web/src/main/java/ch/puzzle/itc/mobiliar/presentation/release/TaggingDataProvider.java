@@ -43,74 +43,74 @@ import java.util.*;
 @ViewScoped
 public class TaggingDataProvider implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	TagConfigurationService tagConfigurationService;
+    @Inject
+    TagConfigurationService tagConfigurationService;
 
-	@Inject
-	PermissionService permissions;
+    @Inject
+    PermissionService permissions;
 
-	@Inject
-	PropertyEditor editor;
+    @Inject
+    PropertyEditor editor;
 
-	@Getter
-	@Setter
-	private String tagLabel;
+    @Getter
+    @Setter
+    private String tagLabel;
 
-	@Getter
-	@Setter
-	private Date tagDate;
+    @Getter
+    @Setter
+    private Date tagDate;
 
-	@Getter
-	private boolean canTagCurrentState;
+    @Getter
+    private boolean canTagCurrentState;
 
-	private Set<String> tagLabels;
+    private Set<String> tagLabels;
 
-	private ResourceEntity resource;
+    private ResourceEntity resource;
 
-	public void onResourceChange(@Observes ResourceEntity resourceEntity) {
-		this.resource = resourceEntity;
-		canTagCurrentState = permissions.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
-		extractTagLabels(tagConfigurationService.loadTagLabelsForResource(resourceEntity));
-	}
+    public void onResourceChange(@Observes ResourceEntity resourceEntity) {
+        this.resource = resourceEntity;
+        canTagCurrentState = permissions.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
+        extractTagLabels(tagConfigurationService.loadTagLabelsForResource(resourceEntity));
+    }
 
-	public void onResourceTypeChange(@Observes ResourceTypeEntity resourceTypeEntity) {
-		this.resource = null;
-		tagLabels = Collections.emptySet();
-	}
+    public void onResourceTypeChange(@Observes ResourceTypeEntity resourceTypeEntity) {
+        this.resource = null;
+        tagLabels = Collections.emptySet();
+    }
 
-	public void tagConfiguration() {
-		if (resource == null) {
-			String message = "No resource selected.";
-			GlobalMessageAppender.addErrorMessage(message);
-		}
-		else if (tagLabel == null) {
-			String message = "No tag label defined.";
-			GlobalMessageAppender.addErrorMessage(message);
-		}
-		else if (tagDate == null) {
-			String message = "No tag date defined.";
-			GlobalMessageAppender.addErrorMessage(message);
-		}
-		else {
-			if (tagLabels.contains(tagLabel.trim())) {
-				String message = "A label with the value '" + tagLabel
-						+ "' already exists for this application.";
-				GlobalMessageAppender.addErrorMessage(message);
-			}
-			else {
-				tagConfigurationService.tagConfiguration(resource.getId(), tagLabel, tagDate);
-				String message = "New tag '" + tagLabel + "' created.";
-				GlobalMessageAppender.addSuccessMessage(message);
-			}
-		}
-	}
+    public void tagConfiguration() {
+        if (resource == null) {
+            String message = "No resource selected.";
+            GlobalMessageAppender.addErrorMessage(message);
+        }
+        else if (tagLabel == null) {
+            String message = "No tag label defined.";
+            GlobalMessageAppender.addErrorMessage(message);
+        }
+        else if (tagDate == null) {
+            String message = "No tag date defined.";
+            GlobalMessageAppender.addErrorMessage(message);
+        }
+        else {
+            if (tagLabels.contains(tagLabel.trim())) {
+                String message = "A label with the value '" + tagLabel
+                        + "' already exists for this application.";
+                GlobalMessageAppender.addErrorMessage(message);
+            }
+            else {
+                tagConfigurationService.tagConfiguration(resource.getId(), tagLabel, tagDate);
+                String message = "New tag '" + tagLabel + "' created.";
+                GlobalMessageAppender.addSuccessMessage(message);
+            }
+        }
+    }
 
-	private void extractTagLabels(List<ResourceTagEntity> tags) {
-		tagLabels = new LinkedHashSet<>();
-		for (ResourceTagEntity r : tags) {
-			tagLabels.add(r.getLabel());
-		}
-	}
+    private void extractTagLabels(List<ResourceTagEntity> tags) {
+        tagLabels = new LinkedHashSet<>();
+        for (ResourceTagEntity r : tags) {
+            tagLabels.add(r.getLabel());
+        }
+    }
 }

@@ -16,8 +16,7 @@
                 <ul>
                     <li>
                         <div style="display: inline-block; float: right;">
-                            <h:link
-                                    rendered="${editFunction.canAdd}"
+                            <h:link rendered="${editFunction.canAdd}"
                                     outcome="editFunctionView"
                                     type="button"
                                     styleClass="btn light right}"
@@ -40,10 +39,7 @@
                 <h:panelGroup id="instanceFunctions">
                     <h:panelGroup
                             rendered="${!editFunction.resourceOrTypeInstanceFunctions.isEmpty() and editFunction.canShowInstanceFunctions}">
-                        <h3>
-                            <h:outputText
-                                    value="${editFunction.instanceTitle}"/>
-                        </h3>
+                        <h3> <h:outputText value="${editFunction.instanceTitle}"/> </h3>
                         <h:dataTable var="instanceFunction"
                                      value="${editFunction.resourceOrTypeInstanceFunctions}"
                                      columnClasses="paddingRight10 ,last,last">
@@ -107,7 +103,6 @@
 
         </div>
     </h:panelGroup>
-
 
     <a4j:jsFunction name="deleteFunction"
                     execute="@this"

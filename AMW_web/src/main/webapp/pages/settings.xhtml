@@ -37,53 +37,60 @@
                 <li
                     class="${settingsDataProvider.mode!='props' and settingsDataProvider.mode!='rolPerm' and settingsDataProvider.mode!='tags' and settingsDataProvider.mode!='functions' and settingsDataProvider.mode!='deployparam' and settingsDataProvider.mode!='myAmw'
                     and settingsDataProvider.mode!='STP' and
-                    settingsDataProvider.mode!='releases' and settingsDataProvider.mode!='appVersion' ? 'current' : ''}"><h:link
-                        value="Environments">
+                    settingsDataProvider.mode!='releases' and settingsDataProvider.mode!='appVersion' ? 'current' : ''}">
+                    <h:link value="Environments">
                         <f:param name="mode" value="envs" />
-                    </h:link></li>
-                <li class="${settingsDataProvider.mode=='props' ? 'current' : ''}"><h:link
-                        value="Property Types">
+                    </h:link>
+                </li>
+                <li class="${settingsDataProvider.mode=='props' ? 'current' : ''}">
+                    <h:link value="Property Types">
                         <f:param name="mode" value="props" />
-                    </h:link></li>
-                <li class="${settingsDataProvider.mode=='tags' ? 'current' : ''}"><h:link
-                        value="Tags">
-                    <f:param name="mode" value="tags" />
-                </h:link></li>
-                <li class="${settingsDataProvider.mode=='functions' ? 'current' : ''}"><h:link
-                        value="Functions">
-                    <f:param name="mode" value="functions" />
-                </h:link></li>
-
-                <li class="${settingsDataProvider.mode=='deployparam' ? 'current' : ''}"><h:link
-                        value="Deployment Parameter">
-                    <f:param name="mode" value="deployparam" />
-                </h:link></li>
-
-                <li class="${settingsDataProvider.mode=='myAmw' ? 'current' : ''}"><h:link
-                        value="My favorites">
+                    </h:link>
+                </li>
+                <li class="${settingsDataProvider.mode=='tags' ? 'current' : ''}">
+                    <h:link value="Tags">
+                        <f:param name="mode" value="tags" />
+                    </h:link>
+                </li>
+                <li class="${settingsDataProvider.mode=='functions' ? 'current' : ''}">
+                    <h:link value="Functions">
+                        <f:param name="mode" value="functions" />
+                    </h:link>
+                </li>
+                <li class="${settingsDataProvider.mode=='deployparam' ? 'current' : ''}">
+                    <h:link value="Deployment Parameter">
+                        <f:param name="mode" value="deployparam" />
+                    </h:link>
+                </li>
+                <li class="${settingsDataProvider.mode=='myAmw' ? 'current' : ''}">
+                    <h:link value="My favorites">
                         <f:param name="mode" value="myAmw" />
-                    </h:link></li>
-                <li class="${settingsDataProvider.mode== 'STP' ? 'current' : ''}"><h:link
-                        value="STP Management"
-                        rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST')}">
+                    </h:link>
+                </li>
+                <li class="${settingsDataProvider.mode== 'STP' ? 'current' : ''}">
+                    <h:link value="STP Management" rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST')}">
                         <f:param name="mode" value="STP" />
-                    </h:link></li>
-                <li class="${settingsDataProvider.mode== 'releases' ? 'current' : ''}"><h:link
-                        value="Releases"
-                        rendered="#{securityDataProvider.hasPermission('RELEASE')}">
+                    </h:link>
+                </li>
+                <li class="${settingsDataProvider.mode== 'releases' ? 'current' : ''}">
+                    <h:link value="Releases" rendered="#{securityDataProvider.hasPermission('RELEASE')}">
                         <f:param name="mode" value="releases" />
-                    </h:link></li>
-                <li class="${settingsDataProvider.mode=='rolePerm' ? 'current': ''}"><h:outputLink
-                        value="/AMW_angular/#/permission"
-                        rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
-                    Roles and Permissions
-                    </h:outputLink></li>
-                <li class="${settingsDataProvider.mode=='appVersion' ? 'current': ''}"><h:link
-                        value="Application Info">
+                    </h:link>
+                </li>
+                <li class="${settingsDataProvider.mode=='rolePerm' ? 'current': ''}">
+                    <h:outputLink value="/AMW_angular/#/permission"
+                                  rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
+                        Roles and Permissions
+                    </h:outputLink>
+                </li>
+                <li class="${settingsDataProvider.mode=='appVersion' ? 'current': ''}">
+                    <h:link value="Application Info">
                         <f:param name="mode" value="appVersion" />
-                    </h:link></li>
+                    </h:link>
+                </li>
             </ul>
-            </nav> </aside>
+            </nav>
+            </aside>
         </h:panelGroup>
         <section id="content">
         <div class="container">

@@ -54,12 +54,6 @@ public class EditResourceView implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // request params
-    public static final String RELATION_ID = "rel";
-    public static final String CONTEXT_ID = "ctx";
-    public static final String RESOURCE_ID = "id";
-    public static final String RESOURCE_TYPE_ID = "resTypeId";
-
     @Inject
     ResourceTypeLocator resourceTypeLocator;
 

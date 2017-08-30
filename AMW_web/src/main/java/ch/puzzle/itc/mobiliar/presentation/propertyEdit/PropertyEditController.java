@@ -27,10 +27,8 @@ import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationModel;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import org.apache.commons.lang.StringUtils;
 
 import javax.enterprise.context.RequestScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.logging.Level;
@@ -40,56 +38,41 @@ import java.util.logging.Logger;
 @RequestScoped
 public class PropertyEditController {
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	@Inject
-	PropertyEditDataProvider propertyDataProvider;
+    @Inject
+    PropertyEditDataProvider propertyDataProvider;
 
-	@Inject
-	ResourceRelationModel resourceRelation;
+    @Inject
+    ResourceRelationModel resourceRelation;
 
-	@Inject
-	EditResourceView resource;
+    @Inject
+    EditResourceView resource;
 
-	public void save() {
-		String message;
-	     if(resource.isEditResource() && !NameChecker.isNameValid(resource.getResource().getName())) {
-			   GlobalMessageAppender
-					   .addErrorMessage(NameChecker.getErrorTextForResourceType(resource
+    public void save() {
+        String message;
+         if(resource.isEditResource() && !NameChecker.isNameValid(resource.getResource().getName())) {
+               GlobalMessageAppender
+                       .addErrorMessage(NameChecker.getErrorTextForResourceType(resource
                                .getResourceType().getName(), resource.getResource().getName()));
-		}
-		else {
-			message = "Changes successfully saved.";
-			 try {
-				 propertyDataProvider.save();
-				 resourceRelation.reloadValues();
-				 GlobalMessageAppender.addSuccessMessage(message);
-			}
+        }
+        else {
+            message = "Changes successfully saved.";
+             try {
+                 propertyDataProvider.save();
+                 resourceRelation.reloadValues();
+                 GlobalMessageAppender.addSuccessMessage(message);
+            }
             catch (ForeignableOwnerViolationException e) {
                 String errorMessage = "Edit resource not allowed by owner "+e.getViolatingOwner();
                 GlobalMessageAppender.addErrorMessage(errorMessage);
                 log.log(Level.SEVERE, errorMessage, e);
             }
-			catch (AMWException | ValidationException e) {
-				GlobalMessageAppender.addErrorMessage(e.getMessage());
-				log.log(Level.SEVERE, e.getMessage(), e);
-			}
-		}
-	}
-
-    private String getRefreshOutcomeWithRelation(String relationId, String ctx, String resourceId, String resourceTypeId) {
-        StringBuilder urlBuilder = new StringBuilder(FacesContext.getCurrentInstance().getViewRoot().getViewId());
-        urlBuilder.append("?faces-redirect=true")
-                .append(buildParamIfNotNull(EditResourceView.RESOURCE_ID, resourceId))
-                .append(buildParamIfNotNull(EditResourceView.CONTEXT_ID, ctx))
-                .append(buildParamIfNotNull(EditResourceView.RESOURCE_TYPE_ID, resourceTypeId))
-                .append(buildParamIfNotNull(EditResourceView.RELATION_ID, relationId));
-        return urlBuilder.toString();
+            catch (AMWException | ValidationException e) {
+                GlobalMessageAppender.addErrorMessage(e.getMessage());
+                log.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
     }
-
-    private String buildParamIfNotNull(String key, String value) {
-        return StringUtils.isNotEmpty(value) ? String.format("&%s=%s", key, value) : StringUtils.EMPTY;
-    }
-
 }
