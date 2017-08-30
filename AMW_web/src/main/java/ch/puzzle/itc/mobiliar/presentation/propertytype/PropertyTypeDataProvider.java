@@ -20,19 +20,18 @@
 
 package ch.puzzle.itc.mobiliar.presentation.propertytype;
 
-import java.io.Serializable;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import ch.puzzle.itc.mobiliar.business.generator.control.TemplateUtils;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyTagEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import java.io.Serializable;
+import java.util.List;
 
 @SuppressWarnings("serial")
 @CompositeBackingBean
@@ -115,12 +114,13 @@ public class PropertyTypeDataProvider implements Serializable {
         return propertyTagEditor.getTagsAsCommaSeparatedString(selectedPropertyType.getPropertyTags());
     }
 
-	public void createByPropertyTypeEntity() {
+	public String createByPropertyTypeEntity() {
 		if (controller.doCreateByPropertyType(getNewPropertyTypeName(), getNewValidationRegex(), isNewEncrypted(), getNewPropTypeTagsString())) {
 			refresh();
 			selectPropertyTypeByName(getNewPropertyTypeName());
 			clearCreatePropertyTypePopup();
 		}
+		return buildSettingsPropertiesUrl();
 	}
 
 	public void save() {
@@ -132,12 +132,13 @@ public class PropertyTypeDataProvider implements Serializable {
 		}
 	}
 
-	public void remove() {
+	public String remove() {
 		if (controller.doRemovePropertyType(getSelectedPropertyType())) {
 			this.selectedPropertyTypeId = null;
 			initPropertyType();
 			clearCreatePropertyTypePopup();
 		}
+		return buildSettingsPropertiesUrl();
 	}
 
 	public void clearCreatePropertyTypePopup() {
@@ -205,6 +206,10 @@ public class PropertyTypeDataProvider implements Serializable {
 			}
 		}
 		return null;
+	}
+
+	private String buildSettingsPropertiesUrl() {
+		return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&mode=props";
 	}
 
 }
