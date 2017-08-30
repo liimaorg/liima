@@ -9,6 +9,7 @@
 
 <ui:composition template="templates/template.xhtml">
     <f:metadata>
+        <f:event type="preRenderView" listener="#{settings.init}"/>
         <f:event type="preRenderView" listener="#{environmentsDataProvider.loadContext}"/>
     </f:metadata>
 
@@ -34,50 +35,50 @@
             <aside> <nav>
             <ul>
                 <li
-                    class="${param['mode']!='props' and param['mode']!='rolPerm' and param['mode']!='tags' and param['mode']!='functions' and param['mode']!='deployparam' and param['mode']!='myAmw'
-                    and param['mode']!='STP' and
-                    param['mode']!='releases' and param['mode']!='appVersion' ? 'current' : ''}"><h:link
+                    class="${settings.mode!='props' and settings.mode!='rolPerm' and settings.mode!='tags' and settings.mode!='functions' and settings.mode!='deployparam' and settings.mode!='myAmw'
+                    and settings.mode!='STP' and
+                    settings.mode!='releases' and settings.mode!='appVersion' ? 'current' : ''}"><h:link
                         value="Environments">
                         <f:param name="mode" value="envs" />
                     </h:link></li>
-                <li class="${param['mode']=='props' ? 'current' : ''}"><h:link
+                <li class="${settings.mode=='props' ? 'current' : ''}"><h:link
                         value="Property Types">
                         <f:param name="mode" value="props" />
                     </h:link></li>
-                <li class="${param['mode']=='tags' ? 'current' : ''}"><h:link
+                <li class="${settings.mode=='tags' ? 'current' : ''}"><h:link
                         value="Tags">
                     <f:param name="mode" value="tags" />
                 </h:link></li>
-                <li class="${param['mode']=='functions' ? 'current' : ''}"><h:link
+                <li class="${settings.mode=='functions' ? 'current' : ''}"><h:link
                         value="Functions">
                     <f:param name="mode" value="functions" />
                 </h:link></li>
 
-                <li class="${param['mode']=='deployparam' ? 'current' : ''}"><h:link
+                <li class="${settings.mode=='deployparam' ? 'current' : ''}"><h:link
                         value="Deployment Parameter">
                     <f:param name="mode" value="deployparam" />
                 </h:link></li>
 
-                <li class="${param['mode']=='myAmw' ? 'current' : ''}"><h:link
+                <li class="${settings.mode=='myAmw' ? 'current' : ''}"><h:link
                         value="My favorites">
                         <f:param name="mode" value="myAmw" />
                     </h:link></li>
-                <li class="${param['mode']== 'STP' ? 'current' : ''}"><h:link
+                <li class="${settings.mode== 'STP' ? 'current' : ''}"><h:link
                         value="STP Management"
                         rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST')}">
                         <f:param name="mode" value="STP" />
                     </h:link></li>
-                <li class="${param['mode']== 'releases' ? 'current' : ''}"><h:link
+                <li class="${settings.mode== 'releases' ? 'current' : ''}"><h:link
                         value="Releases"
                         rendered="#{securityDataProvider.hasPermission('RELEASE')}">
                         <f:param name="mode" value="releases" />
                     </h:link></li>
-                <li class="${param['mode']=='rolePerm' ? 'current': ''}"><h:outputLink
+                <li class="${settings.mode=='rolePerm' ? 'current': ''}"><h:outputLink
                         value="/AMW_angular/#/permission"
                         rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
                     Roles and Permissions
                     </h:outputLink></li>
-                <li class="${param['mode']=='appVersion' ? 'current': ''}"><h:link
+                <li class="${settings.mode=='appVersion' ? 'current': ''}"><h:link
                         value="Application Info">
                         <f:param name="mode" value="appVersion" />
                     </h:link></li>
@@ -88,9 +89,9 @@
         <div class="container">
             <h:form>
                 <h:panelGroup
-                    rendered="${param['mode']!='props' and param['mode']!='rolPerm' and param['mode']!='tags' and param['mode']!='functions' and param['mode']!='deployparam' and
-                    param['mode']!='myAmw' and param['mode']!='STP' and
-                     param['mode']!='releases' and param['mode']!='appVersion'}">
+                    rendered="${settings.mode!='props' and settings.mode!='rolPerm' and settings.mode!='tags' and settings.mode!='functions' and settings.mode!='deployparam' and
+                    settings.mode!='myAmw' and settings.mode!='STP' and
+                     settings.mode!='releases' and settings.mode!='appVersion'}">
 
                     <h:panelGroup id="environments">
                         <div class="well">
@@ -142,26 +143,26 @@
             </h:form>
 
             <!-- Property Types -->
-            <h:panelGroup rendered="${param['mode']=='props'}">
+            <h:panelGroup rendered="${settings.mode=='props'}">
                 <ui:include  src="components/propertyTypesComp.xhtml" />
             </h:panelGroup>
 
             <!-- Functions -->
-            <h:panelGroup rendered="${param['mode']=='functions'}">
+            <h:panelGroup rendered="${settings.mode=='functions'}">
                 <mobi:listGlobalFunctions/>
             </h:panelGroup>
 
             <!-- Tags -->
-            <h:panelGroup rendered="${param['mode']=='tags'}">
+            <h:panelGroup rendered="${settings.mode=='tags'}">
                 <ui:include  src="components/propertyTagsComp.xhtml" />
             </h:panelGroup>
 
             <!-- Deployparam -->
-            <h:panelGroup rendered="${param['mode']=='deployparam'}">
+            <h:panelGroup rendered="${settings.mode=='deployparam'}">
                 <ui:include  src="components/deploymentParameterComp.xhtml" />
             </h:panelGroup>
 
-            <h:panelGroup rendered="${param['mode']=='myAmw'}">
+            <h:panelGroup rendered="${settings.mode=='myAmw'}">
                 <h:panelGroup id="myAmw" layout="block">
                     <h:dataTable var="favorit" value="${userSettings.myAMWObjects}"
                         styleClass="well width100" rowClasses="odd-row,even-row"
@@ -214,7 +215,7 @@
 
             <!-- STP MANAGEMENT -->
             <h:form id="stpPanelForm">
-                <h:panelGroup rendered="${param['mode']=='STP'}">
+                <h:panelGroup rendered="${settings.mode=='STP'}">
                     <h:panelGroup id="STP_panel" layout="block">
                         <h:dataTable id="stpDataTable"
                             value="#{shakedownStpDataProvider.stp}" var="s" styleClass="well"
@@ -301,12 +302,12 @@
             </h:form>
 
             <!-- Releases-->
-            <h:panelGroup rendered="${param['mode']=='releases'}">
+            <h:panelGroup rendered="${settings.mode=='releases'}">
                 <ui:include src="components/releasesScreenComp.xhtml" />
             </h:panelGroup>
 
             <!-- Application Version -->
-            <h:panelGroup rendered="${param['mode']=='appVersion'}">
+            <h:panelGroup rendered="${settings.mode=='appVersion'}">
                 <ui:include src="components/applicationInfoComp.xhtml">
                 </ui:include>
             </h:panelGroup>
