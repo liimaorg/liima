@@ -1,9 +1,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:mobi="http://java.sun.com/jsf/composite/mobi">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:rich="http://richfaces.org/rich">
 
 <h:panelGroup id="propertyTypes" layout="block"
               styleClass="well withHeight">
@@ -40,10 +39,11 @@
                             <ui:repeat var="propType"
                                        value="${propertyTypeDataProvider.allPropertyTypes}">
                                 <li class="${propertyTypeDataProvider.selectedPropertyTypeId==propType.id ? 'current' : ''}">
-                                    <a4j:commandLink value="${propType.propertyTypeName}" render="@all, propertyTypes">
-                                        <a4j:param assignTo="${propertyTypeDataProvider.selectedPropertyTypeId}"
-                                                   value="${propType.id}"/>
-                                    </a4j:commandLink>
+                                    <h:link value="${propType.propertyTypeName}"
+                                    outcome="settings">
+                                        <f:param name="mode" value="#{settings.mode}" />
+                                        <f:param name="propId" value="#{propType.id}" />
+                                    </h:link>
                                 </li>
                             </ui:repeat>
                         </ul>

@@ -24,6 +24,7 @@ import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyTagEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
+import ch.puzzle.itc.mobiliar.presentation.settings.Settings;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,7 +39,7 @@ import java.util.List;
 public class PropertyTypeDataProvider implements Serializable {
 
 	@PostConstruct
-	protected void initView() {
+	public void initView() {
 		initPropertyType();
 	}
 
@@ -47,6 +48,9 @@ public class PropertyTypeDataProvider implements Serializable {
 
     @Inject
     PropertyTagEditor propertyTagEditor;
+
+    @Inject
+	Settings settingsProvider;
 	
 	private List<PropertyTypeEntity> propertyTypes;
 	
@@ -150,14 +154,21 @@ public class PropertyTypeDataProvider implements Serializable {
 
 	private void initPropertyType() {
 		refresh();
-		selectFirstPropertytype();
+
 	}
 
 	private void refresh() {
 		propertyTypes = controller.loadPropertyTypes();
         if(selectedPropertyTypeId != null) {
             setSelectedPropertyTypeId(selectedPropertyTypeId);
-        }
+        } else {
+			String propId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("propId");
+			if (propId != null) {
+				setSelectedPropertyTypeId(Integer.valueOf(propId));
+			} else {
+				selectFirstPropertytype();
+			}
+		}
         globalPropertyTags = propertyTagEditor.getAllGlobalPropertyTags();
 	}
 
