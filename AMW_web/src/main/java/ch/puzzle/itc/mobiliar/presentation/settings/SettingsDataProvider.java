@@ -29,7 +29,7 @@ import java.io.Serializable;
 @Data
 @SuppressWarnings("serial")
 @CompositeBackingBean
-public class Settings implements Serializable {
+public class SettingsDataProvider implements Serializable {
 
 	public static String PARAM_MODE = "mode";
 	private static String MODE_ENV = "env";

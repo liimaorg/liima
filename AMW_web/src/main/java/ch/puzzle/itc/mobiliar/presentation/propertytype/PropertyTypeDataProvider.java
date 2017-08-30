@@ -24,7 +24,7 @@ import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyTagEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
-import ch.puzzle.itc.mobiliar.presentation.settings.Settings;
+import ch.puzzle.itc.mobiliar.presentation.settings.SettingsDataProvider;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,7 +50,7 @@ public class PropertyTypeDataProvider implements Serializable {
     PropertyTagEditor propertyTagEditor;
 
     @Inject
-	Settings settingsProvider;
+    SettingsDataProvider settingsDataProviderProvider;
 	
 	private List<PropertyTypeEntity> propertyTypes;
 	
