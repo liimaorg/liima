@@ -9,20 +9,23 @@
               styleClass="well withHeight">
     <nav class="actionbar">
         <ul>
-            <li><h:commandLink id="createPropTypeButton" styleClass="btn light" render="createPropertyTypePopup"
-                               onclick="showLoader();"
+            <li><h:commandLink id="createPropTypeButton"
+                               styleClass="btn light"
+                               onclick="#{rich:component('createPropertyTypePopup')}.show(); return false;"
                                rendered="#{securityDataProvider.hasPermission('ADD_PROPTYPE')}">
-                <i class="icon icon-add"/>Add
-                <a4j:ajax
-                        oncomplete="hideLoader();#{rich:component('createPropertyTypePopup')}.show();"/>
-            </h:commandLink></li>
-            <li><h:commandLink id="deletePropTypeButton" styleClass="btn light" render="deletePropertyTypePopup"
+                    <i class="icon icon-add"/>Add
+                </h:commandLink>
+            </li>
+            <li>
+                <h:commandLink id="deletePropTypeButton"
+                               styleClass="btn light"
+                               render="deletePropertyTypePopup"
                                onclick="showLoader();"
                                rendered="#{securityDataProvider.hasPermission('DELETE_PROPTYPE')}">
-                <i class="icon icon-delete"/>Remove
-                <a4j:ajax
-                        oncomplete="hideLoader();#{rich:component('deletePropertyTypePopup')}.show();"/>
-            </h:commandLink></li>
+                    <i class="icon icon-delete"/>Remove
+                    <a4j:ajax oncomplete="hideLoader();#{rich:component('deletePropertyTypePopup')}.show();"/>
+                </h:commandLink>
+            </li>
         </ul>
     </nav>
     <h2>
@@ -37,13 +40,10 @@
                         <ul>
                             <ui:repeat var="propType"
                                        value="${propertyTypeDataProvider.allPropertyTypes}">
-                                <li
-                                        class="${propertyTypeDataProvider.selectedPropertyTypeId==propType.id ? 'current' : ''}">
-                                    <a4j:commandLink value="${propType.propertyTypeName}"
-                                                     render="@all, propertyTypes">
-                                        <a4j:param
-                                                assignTo="${propertyTypeDataProvider.selectedPropertyTypeId}"
-                                                value="${propType.id}"/>
+                                <li class="${propertyTypeDataProvider.selectedPropertyTypeId==propType.id ? 'current' : ''}">
+                                    <a4j:commandLink value="${propType.propertyTypeName}" render="@all, propertyTypes">
+                                        <a4j:param assignTo="${propertyTypeDataProvider.selectedPropertyTypeId}"
+                                                   value="${propType.id}"/>
                                     </a4j:commandLink>
                                 </li>
                             </ui:repeat>
@@ -105,8 +105,7 @@
     </table>
 </h:panelGroup>
 
-		<mobi:createPropertyTypePopup/>
-		<mobi:deletePropertyTypePopup/>
+    <mobi:deletePropertyTypePopup/>
 
 
 </ui:composition>

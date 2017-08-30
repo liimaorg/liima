@@ -304,7 +304,7 @@
             <h:panelGroup rendered="${param['mode']=='releases'}">
                 <ui:include src="components/releasesScreenComp.xhtml" />
             </h:panelGroup>
-            
+
             <!-- Application Version -->
             <h:panelGroup rendered="${param['mode']=='appVersion'}">
                 <ui:include src="components/applicationInfoComp.xhtml">
@@ -435,7 +435,7 @@
                             render="argumentsTabelEdit">
                             <i class="icon icon-add" />
                                     Add argument</a4j:commandLink>
-                </h:panelGroup>            
+                </h:panelGroup>
                 <a4j:commandLink styleClass="btn primary right" value="Save"
                     execute="@form" action="#{shakedownStpDataProvider.editSTP()}"
                     oncomplete="#{rich:component('editSTPPopupPanel')}.hide(); return false;"
@@ -538,7 +538,16 @@
         </h:form>
 
     </ui:define>
+
+    <ui:define name="component_popups">
+        <h:form id="popup-form" prependId="false">
+            <mobi:createPropertyTypePopup/>
+        </h:form>
+    </ui:define>
 </ui:composition>
+
+
+
 
 
 </html>

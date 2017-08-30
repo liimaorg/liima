@@ -64,12 +64,14 @@
                     </div>
                 </div>
             </h:panelGroup>
-            <a4j:commandLink styleClass="btn primary right" value="Create"
-                             execute="@all"
-                             action="${propertyTypeDataProvider.createByPropertyTypeEntity()}"
-                             oncomplete="#{rich:component('createPropertyTypePopup')}.hide(); return false"
-                             render="@all, propertyTypes"/>
 
+            <a4j:commandLink styleClass="btn primary right"
+                             value="Create"
+                             execute="@form"
+                             render=":propertyTypes"
+                             actionListener="${propertyTypeDataProvider.createByPropertyTypeEntity()}"
+                             oncomplete="#{rich:component('createPropertyTypePopup')}.hide(); return false; location.reload();">
+            </a4j:commandLink>
         </rich:popupPanel>
 </composite:implementation>
 </html>
