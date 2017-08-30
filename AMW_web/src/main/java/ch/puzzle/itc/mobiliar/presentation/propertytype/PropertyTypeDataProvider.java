@@ -40,7 +40,7 @@ public class PropertyTypeDataProvider implements Serializable {
 
 	@PostConstruct
 	public void initView() {
-		initPropertyType();
+		reloadPropertyTypes();
 	}
 
 	@Inject
@@ -55,7 +55,6 @@ public class PropertyTypeDataProvider implements Serializable {
 	private List<PropertyTypeEntity> propertyTypes;
 	
 	private PropertyTypeEntity selectedPropertyType;
-
 
 	// edit propType
 	@Getter
@@ -120,7 +119,7 @@ public class PropertyTypeDataProvider implements Serializable {
 
 	public String createByPropertyTypeEntity() {
 		if (controller.doCreateByPropertyType(getNewPropertyTypeName(), getNewValidationRegex(), isNewEncrypted(), getNewPropTypeTagsString())) {
-			refresh();
+			reloadPropertyTypes();
 			selectPropertyTypeByName(getNewPropertyTypeName());
 			clearCreatePropertyTypePopup();
 		}
@@ -129,7 +128,7 @@ public class PropertyTypeDataProvider implements Serializable {
 
 	public void save() {
 		if (controller.doSave(getSelectedPropertyType().getId(), getSelectedPropertyTypeName(), getSelectedPropertyTypeRegex(), isSelectedEncrypted(), selectedPropTypeTagsString)) {
-			refresh();
+			reloadPropertyTypes();
 		} else {
 			setSelectedPropertyTypeName(getSelectedPropertyType().getPropertyTypeName());
 			setSelectedPropertyTypeRegex(getSelectedPropertyType().getValidationRegex());
@@ -139,7 +138,7 @@ public class PropertyTypeDataProvider implements Serializable {
 	public String remove() {
 		if (controller.doRemovePropertyType(getSelectedPropertyType())) {
 			this.selectedPropertyTypeId = null;
-			initPropertyType();
+			reloadPropertyTypes();
 			clearCreatePropertyTypePopup();
 		}
 		return buildSettingsPropertiesUrl();
@@ -152,12 +151,7 @@ public class PropertyTypeDataProvider implements Serializable {
 		newPropTypeTagsString = null;
 	}
 
-	private void initPropertyType() {
-		refresh();
-
-	}
-
-	private void refresh() {
+	private void reloadPropertyTypes() {
 		propertyTypes = controller.loadPropertyTypes();
         if(selectedPropertyTypeId != null) {
             setSelectedPropertyTypeId(selectedPropertyTypeId);
@@ -189,19 +183,6 @@ public class PropertyTypeDataProvider implements Serializable {
 		if (!getAllPropertyTypes().isEmpty()) {
             PropertyTypeEntity propertyType = getAllPropertyTypes().get(0);
 			setSelectedPropertyTypeId(propertyType.getId());
-		}
-	}
-
-	public void prtTypeSelectionListener() {
-		if (selectedPropertyTypeId != null) {
-
-
-			for (PropertyTypeEntity propertyType : getAllPropertyTypes()) {
-				if (propertyType.getId().equals(selectedPropertyTypeId)) {
-					setSelectedPropertyType(propertyType);
-					break;
-				}
-			}
 		}
 	}
 
