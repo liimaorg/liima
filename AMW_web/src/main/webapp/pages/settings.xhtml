@@ -378,6 +378,14 @@
             </h:form>
         </rich:popupPanel>
 
+        <h:form id="createPropertyTypeForm">
+            <mobi:createPropertyTypePopup/>
+        </h:form>
+
+        <h:form id="deletePropertyTypeForm">
+            <mobi:deletePropertyTypePopup/>
+        </h:form>
+
         <!-- STP EDIT POPUPPANEL -->
         <h:form>
             <rich:popupPanel id="editSTPPopupPanel" autosized="true"
@@ -537,19 +545,7 @@
 
             </rich:popupPanel>
         </h:form>
-
-    </ui:define>
-
-    <ui:define name="component_popups">
-        <h:form id="popup-form" prependId="false">
-            <mobi:createPropertyTypePopup/>
-            <mobi:deletePropertyTypePopup/>
-        </h:form>
     </ui:define>
 </ui:composition>
-
-
-
-
 
 </html>

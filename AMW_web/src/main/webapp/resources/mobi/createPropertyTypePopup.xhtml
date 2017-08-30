@@ -66,11 +66,9 @@
             </h:panelGroup>
 
             <h:commandLink styleClass="btn primary right"
-                             value="Create"
-                             execute="@form"
-                             render=":propertyTypes"
-                             action="${propertyTypeDataProvider.createByPropertyTypeEntity()}"
-                             oncomplete="#{rich:component('createPropertyTypePopup')}.hide(); return false; location.reload();" />
+                           type="button"
+                           value="Create"
+                           action="${propertyTypeDataProvider.createByPropertyTypeEntity()}"/>
         </rich:popupPanel>
 </composite:implementation>
 </html>

@@ -117,13 +117,12 @@ public class PropertyTypeDataProvider implements Serializable {
         return propertyTagEditor.getTagsAsCommaSeparatedString(selectedPropertyType.getPropertyTags());
     }
 
-	public String createByPropertyTypeEntity() {
+	public void createByPropertyTypeEntity() {
 		if (controller.doCreateByPropertyType(getNewPropertyTypeName(), getNewValidationRegex(), isNewEncrypted(), getNewPropTypeTagsString())) {
 			reloadPropertyTypes();
 			selectPropertyTypeByName(getNewPropertyTypeName());
 			clearCreatePropertyTypePopup();
 		}
-		return buildSettingsPropertiesUrl();
 	}
 
 	public void save() {
@@ -135,13 +134,12 @@ public class PropertyTypeDataProvider implements Serializable {
 		}
 	}
 
-	public String remove() {
+	public void remove() {
 		if (controller.doRemovePropertyType(getSelectedPropertyType())) {
 			this.selectedPropertyTypeId = null;
 			reloadPropertyTypes();
 			clearCreatePropertyTypePopup();
 		}
-		return buildSettingsPropertiesUrl();
 	}
 
 	public void clearCreatePropertyTypePopup() {
@@ -199,9 +197,4 @@ public class PropertyTypeDataProvider implements Serializable {
 		}
 		return null;
 	}
-
-	private String buildSettingsPropertiesUrl() {
-		return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&mode=props";
-	}
-
 }
