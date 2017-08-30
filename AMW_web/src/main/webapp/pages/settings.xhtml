@@ -108,18 +108,19 @@
                                                 <h:outputText id="contentPanelHeader"
                                                     value="Selected context: #{contextDataProvider.contextDisplayName}" />
                                             </f:facet>
-                                            <span class="right displayBlock"> <a4j:commandLink
-                                                    styleClass="btn light" type="button"
-                                                    rendered="#{!environmentsDataProvider.isEnv and securityDataProvider.hasPermission('ADD_NEW_ENV_OR_DOM')}"
-                                                    render="environments"
-                                                    value="Add new #{environmentsDataProvider.nameOfChildContext}"
-                                                    onclick="#{rich:component('addContextPopupPanel')}.show();">
-                                                </a4j:commandLink> <a4j:commandLink styleClass="btn light"
-                                                    rendered="#{!contextDataProvider.isGlobal and securityDataProvider.hasPermission('REMOVE_ENV_OR_DOM')}"
-                                                    render="environments"
-                                                    value="Remove #{environmentsDataProvider.contextTypeName} #{contextDataProvider.contextDisplayName}"
-                                                    onclick="#{rich:component('confirmContextDeletePopupPanel')}.show();">
-                                                </a4j:commandLink>
+                                            <span class="right displayBlock">
+                                                <h:commandLink id="addDomainOrEnvBtn"
+                                                               styleClass="btn light" type="button"
+                                                               rendered="#{!environmentsDataProvider.isEnv and securityDataProvider.hasPermission('ADD_NEW_ENV_OR_DOM')}"
+                                                               value="Add new #{environmentsDataProvider.nameOfChildContext}"
+                                                               onclick="#{rich:component('addContextPopupPanel')}.show();">
+                                                </h:commandLink>
+                                                <h:commandLink id="removeDomainOrEnvBtn"
+                                                               styleClass="btn light"
+                                                               rendered="#{!contextDataProvider.isGlobal and securityDataProvider.hasPermission('REMOVE_ENV_OR_DOM')}"
+                                                               value="Remove #{environmentsDataProvider.contextTypeName} #{contextDataProvider.contextDisplayName}"
+                                                               onclick="#{rich:component('confirmContextDeletePopupPanel')}.show();">
+                                                </h:commandLink>
                                             </span>
 
                                             <div class="control-group">
