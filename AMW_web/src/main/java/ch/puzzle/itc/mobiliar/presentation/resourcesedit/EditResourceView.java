@@ -33,6 +33,7 @@ import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
@@ -115,6 +116,8 @@ public class EditResourceView implements Serializable {
     @Getter
     private boolean canShowDeploymentLink;
 
+    private final boolean useAngularDeploymentLink = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI));
+
     public void setContextIdViewParam(Integer contextIdViewParam) {
         this.contextIdViewParam = contextIdViewParam;
         // initialize context
@@ -191,6 +194,10 @@ public class EditResourceView implements Serializable {
 
             resourceTypeEvent.fire(resourceType);
         }
+    }
+
+    public boolean isAngularDeploymentLink() {
+        return this.useAngularDeploymentLink;
     }
 
     /**
@@ -397,4 +404,7 @@ public class EditResourceView implements Serializable {
     }
 
 
+    public String getDeploymentLinkAngular() {
+        return "[{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
+    }
 }
