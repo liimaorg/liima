@@ -74,7 +74,8 @@ public class ConfigurationService {
 
 
 		/*Feature toggles*/
-		FEATURE_DISABLE_ANGULAR_GUI("amw.feature.disableAngularGui","AMW_FEATURE_DISABLEANGULARGUI","false", false);
+		FEATURE_DISABLE_ANGULAR_GUI("amw.feature.disableAngularGui","AMW_FEATURE_DISABLEANGULARGUI","false", false),
+		FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI("amw.feature.disableAngularDeploymentGui", "AMW_FEATURE_DISABLEANGULARDEPLOYMENTGUI", "false", false);
 
 		@Getter
 		private String value;
