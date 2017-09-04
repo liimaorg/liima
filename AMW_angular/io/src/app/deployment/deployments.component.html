@@ -16,40 +16,46 @@
         <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="successMessage"></span></div>
         <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="errorMessage"></span></div>
 
+        <div class="form-group">
+          <label for="selectFilterType" class="col-sm-3 control-label">Add Filter</label>
+          <div class="col-sm-9">
+            <select id="selectFilterType" class="form-control input-sm" [(ngModel)]="selectedFilterType" (change)="addType()">
+              <option *ngFor="let filterType of filterTypes" [ngValue]="filterType">{{filterType.name}}</option>
+            </select>
+          </div>
+        </div>
+
+        <ng-container *ngIf="filters.length > 0">
+          <div class="form-group" *ngFor="let filter of filters">
+            <label class="col-sm-3 control-label"></label>
+            <div class="col-sm-3">
+              <input class="form-control" disabled type="text" value="{{filter.name}}">
+            </div>
+            <div class="col-sm-1">
+              <select id="selectFilterComp" class="form-control input-sm" [attr.disabled]="filter.compOptions.length == 1 ? '' : null" [(ngModel)]="filter.comp">
+                <option *ngFor="let compOption of filter.compOptions" [ngValue]="compOption.name">{{compOption.displayName}}</option>
+              </select>
+            </div>
+            <div class="col-sm-4" *ngIf="filter.type !== 'booleanType'">
+              <input class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
+              <datalist id="filterOptionList">
+                <option *ngFor="let filterValueOption of filterValueOptions[filter.name]">{{filterValueOption}}</option>
+              </datalist>
+            </div>
+            <div class="col-sm-4" *ngIf="filter.type === 'booleanType'">
+              <select class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
+                <option *ngFor="let filterValueOption of filterValueOptions[filter.name]">{{filterValueOption}}</option>
+              </select>
+            </div>
+            <div class="col-sm-1">
+              <button type="button" class="btn btn-default" (click)="removeFilter(filter)">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
       </span>
-
-      <div class="form-group">
-        <label for="selectFilterType" class="col-sm-3 control-label">Add Filter</label>
-        <div class="col-sm-9">
-          <select id="selectFilterType" class="form-control input-sm" [(ngModel)]="selectedFilterType" (change)="addType()">
-            <option *ngFor="let filterType of filterTypes" [ngValue]="filterType">{{filterType.name}}</option>
-          </select>
-        </div>
-      </div>
-
-      <ng-container *ngIf="filters.length > 0">
-        <div class="form-group" *ngFor="let filter of filters">
-          <label class="col-sm-3 control-label"></label>
-          <div class="col-sm-3">
-            <input class="form-control" disabled type="text" value="{{filter.name}}">
-          </div>
-          <div class="col-sm-1">
-            <input class="form-control" disabled type="text" value="{{comparatorOptionsMap[filter.comp]}}">
-          </div>
-          <div class="col-sm-4">
-            <input class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
-            <datalist id="filterOptionList">
-              <option *ngFor="let filterValueOption of filterValueOptions[filter.name]">{{filterValueOption}}</option>
-            </datalist>
-          </div>
-          <div class="col-sm-1">
-            <button type="button" class="btn btn-default" (click)="removeFilter(filter)">
-              <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-            </button>
-          </div>
-        </div>
-      </ng-container>
-
     </div>
 
   </div>
