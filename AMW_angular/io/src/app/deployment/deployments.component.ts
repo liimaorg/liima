@@ -28,6 +28,8 @@ export class DeploymentsComponent implements OnInit {
   // to be added
   selectedFilterType: DeploymentFilterType;
 
+  defaultComparator: string = 'eq';
+
   // already set
   filters: DeploymentFilter[] = [];
 
@@ -80,7 +82,7 @@ export class DeploymentsComponent implements OnInit {
       }
 
       newFilter.name = this.selectedFilterType.name;
-      newFilter.comp = 'eq';
+      newFilter.comp = this.defaultComparator;
       newFilter.val = this.selectedFilterType.type === 'booleanType' ? 'true' : '';
       newFilter.type = this.selectedFilterType.type;
       newFilter.compOptions = this.comparatorOptionsForType(this.selectedFilterType.type);
@@ -129,6 +131,7 @@ export class DeploymentsComponent implements OnInit {
         let i: number = _.findIndex(this.filterTypes, ['name', filter.name])
         if (i >= 0) {
           filter.compOptions = this.comparatorOptionsForType(this.filterTypes[i].type);
+          filter.comp = filter.comp ? filter.comp : this.defaultComparator;
           filter.type = this.filterTypes[i].type;
           this.filters.push(filter);
           this.filterValueOptions[filter.name] = [];
