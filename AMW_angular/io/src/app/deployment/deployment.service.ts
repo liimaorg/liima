@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
+import { ComparatorFilterOption } from './comparator-filter-option';
 import { Deployment } from './deployment';
+import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentRequest } from './deployment-request';
 import { DeploymentParameter } from './deployment-parameter';
 
@@ -64,6 +66,36 @@ export class DeploymentService {
     });
     let resource$ = this.http
       .get(`${this.baseUrl}/deployments/canRequestDeployment/${resourceGroupId}`, options)
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
+  getAllDeploymentFilterTypes(): Observable<DeploymentFilterType[]> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/deploymentFilterTypes/`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
+  getAllComparatorFilterOptions(): Observable<ComparatorFilterOption[]> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/comparatorFilterOptions/`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
+  getFilterOptionValues(filterName: string): Observable<string[]> {
+    let param = new URLSearchParams();
+    param.append('filterName', filterName);
+    let options = new RequestOptions({
+      search: param,
+      headers: this.getHeaders()
+    });
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/filterOptionValues/`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
     return resource$;

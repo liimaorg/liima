@@ -85,7 +85,7 @@ public class CustomFilter {
     private ComparatorFilterOption selectedComparatorFilterOption;
 
     public static CustomFilterBuilder builder(DeploymentFilterTypes deploymentFilterTypes) {
-        ComparatorFilterOption defaultComparator = ComparatorFilterOption.equals;
+        ComparatorFilterOption defaultComparator = ComparatorFilterOption.eq;
 
         return new Builder().filterType(deploymentFilterTypes.getFilterType())
                 .filterDisplayName(deploymentFilterTypes.getFilterDisplayName())
@@ -95,7 +95,7 @@ public class CustomFilter {
     }
 
     public static CustomFilterBuilder builder(ShakedownTestFilterTypes shakedownTestFilterTypes) {
-        ComparatorFilterOption defaultComperator = ComparatorFilterOption.equals;
+        ComparatorFilterOption defaultComperator = ComparatorFilterOption.eq;
         return new Builder().filterType(shakedownTestFilterTypes.getFilterType())
                 .filterDisplayName(shakedownTestFilterTypes.getFilterDisplayName())
                 .deploymentTableColumnName(shakedownTestFilterTypes.getFilterTabColumnName())
@@ -153,11 +153,11 @@ public class CustomFilter {
         List<ComparatorFilterOption> result = new ArrayList<>();
         for (ComparatorFilterOption comperatorfilteroption : getComparatorSelectionList()) {
             if (isBooleanType()) {
-                if (comperatorfilteroption.equals(ComparatorFilterOption.equals)) {
+                if (comperatorfilteroption.equals(ComparatorFilterOption.eq)) {
                     result.add(comperatorfilteroption);
                 }
             } else if (isStringType() || isEnumType()) {
-                if (comperatorfilteroption.equals(ComparatorFilterOption.equals)) {
+                if (comperatorfilteroption.equals(ComparatorFilterOption.eq)) {
                     result.add(comperatorfilteroption);
                 }
             } else {

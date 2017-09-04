@@ -1,0 +1,56 @@
+<div class="row page-header">
+  <div class="col-md-4">
+    <h1>{{appState.get('pageTitle')}}</h1>
+  </div>
+</div>
+
+<div class="col-sm-10 main-full">
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <h3 class="panel-title pull-left">Filter</h3>
+    </div>
+
+    <div class="panel-body">
+      <span class="form-horizontal">
+
+        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="successMessage"></span></div>
+        <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="errorMessage"></span></div>
+
+      </span>
+
+      <div class="form-group">
+        <label for="selectFilterType" class="col-sm-3 control-label">Add Filter</label>
+        <div class="col-sm-9">
+          <select id="selectFilterType" class="form-control input-sm" [(ngModel)]="selectedFilterType" (change)="addType()">
+            <option *ngFor="let filterType of filterTypes" [ngValue]="filterType">{{filterType.name}}</option>
+          </select>
+        </div>
+      </div>
+
+      <ng-container *ngIf="filters.length > 0">
+        <div class="form-group" *ngFor="let filter of filters">
+          <label class="col-sm-3 control-label"></label>
+          <div class="col-sm-3">
+            <input class="form-control" disabled type="text" value="{{filter.name}}">
+          </div>
+          <div class="col-sm-1">
+            <input class="form-control" disabled type="text" value="{{comparatorOptionsMap[filter.comp]}}">
+          </div>
+          <div class="col-sm-4">
+            <input class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
+            <datalist id="filterOptionList">
+              <option *ngFor="let filterValueOption of filterValueOptions[filter.name]">{{filterValueOption}}</option>
+            </datalist>
+          </div>
+          <div class="col-sm-1">
+            <button type="button" class="btn btn-default" (click)="removeFilter(filter)">
+              <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+
+  </div>
+</div>

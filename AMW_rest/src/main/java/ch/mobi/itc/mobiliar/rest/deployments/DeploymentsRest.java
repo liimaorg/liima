@@ -20,10 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.deployments;
 
-import ch.mobi.itc.mobiliar.rest.dtos.AppWithVersionDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.DeploymentDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.DeploymentParameterDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.DeploymentRequestDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.*;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
@@ -132,12 +129,12 @@ public class DeploymentsRest {
             filters.add(deploymentStateFilter);
         }
         if (fromDate != null) {
-            CustomFilter deploymentDateFromFilter = CustomFilter.builder(DEPLOYMENT_DATE).comparatorSelection(ComparatorFilterOption.greaterequals).build();
+            CustomFilter deploymentDateFromFilter = CustomFilter.builder(DEPLOYMENT_DATE).comparatorSelection(ComparatorFilterOption.gte).build();
             deploymentDateFromFilter.setDateValue(new Date(fromDate));
             filters.add(deploymentDateFromFilter);
         }
         if (toDate != null) {
-            CustomFilter deploymentDateFilter = CustomFilter.builder(DEPLOYMENT_DATE).comparatorSelection(ComparatorFilterOption.smallerequals).build();
+            CustomFilter deploymentDateFilter = CustomFilter.builder(DEPLOYMENT_DATE).comparatorSelection(ComparatorFilterOption.lte).build();
             deploymentDateFilter.setDateValue(new Date(toDate));
             filters.add(deploymentDateFilter);
         }
@@ -215,6 +212,35 @@ public class DeploymentsRest {
             deploymentParameters.add(new DeploymentParameterDTO(key.getName(), null));
         }
         return Response.status(Status.OK).entity(deploymentParameters).build();
+    }
+
+    @GET
+    @Path("/deploymentFilterTypes")
+    @ApiOperation(value = "Returns all available DeploymentFilterTypes - used by Angular")
+    public Response getAllDeploymentFilterTypes() {
+        List<DeploymentFilterTypeDTO> deploymentFilterTypes = new ArrayList<>();
+        for (DeploymentFilterTypes filterType : deploymentBoundary.getDeploymentFilterTypes()) {
+            deploymentFilterTypes.add(new DeploymentFilterTypeDTO(filterType.getFilterDisplayName(), filterType.getFilterType().name()));
+        }
+        return Response.status(Status.OK).entity(deploymentFilterTypes).build();
+    }
+
+    @GET
+    @Path("/comparatorFilterOptions")
+    @ApiOperation(value = "Returns all available ComparatorFilterOptions - used by Angular")
+    public Response getAllComparatorFilterOptions() {
+        List<ComparatorFilterOptionDTO> comparatorFilterOptions = new ArrayList<>();
+        for (ComparatorFilterOption filterOption : deploymentBoundary.getComparatorFilterOptions()) {
+            comparatorFilterOptions.add(new ComparatorFilterOptionDTO(filterOption.name(), filterOption.getDisplayName()));
+        }
+        return Response.status(Status.OK).entity(comparatorFilterOptions).build();
+    }
+
+    @GET
+    @Path("/filterOptionValues")
+    @ApiOperation(value = "Returns all available option values for a specific Filter - used by Angular")
+    public Response getFilterOptionValues(@ApiParam("Filter name") @QueryParam("filterName") String filterName) {
+        return Response.status(Status.OK).entity(deploymentBoundary.getFilterOptionValues(filterName)).build();
     }
 
     /**

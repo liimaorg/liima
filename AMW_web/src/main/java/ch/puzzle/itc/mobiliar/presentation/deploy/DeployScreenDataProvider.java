@@ -286,7 +286,7 @@ public class DeployScreenDataProvider implements Serializable {
                 CustomFilter filter;
                 filter = CustomFilter.builder(selectedFilter).build();
                 if (selectedFilter.getFilterType().equals(FilterType.IntegerType)) {
-                    filter.setComparatorSelection(ComparatorFilterOption.equals);
+                    filter.setComparatorSelection(ComparatorFilterOption.eq);
                 } else {
                     ComparatorFilterOption comperatorSelection = filter.getTypedComparatorSelectionList().isEmpty() ?
                             null :

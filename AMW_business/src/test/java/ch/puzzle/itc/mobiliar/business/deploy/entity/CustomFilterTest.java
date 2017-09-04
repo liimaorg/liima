@@ -521,7 +521,7 @@ public class CustomFilterTest {
         // when
         String sqlComperator = c.getSqlComperator();
         // then
-        assertThat(sqlComperator, is(ComparatorFilterOption.equals.getSqlStringComperator()));
+        assertThat(sqlComperator, is(ComparatorFilterOption.eq.getSqlStringComperator()));
     }
 
     @Test
@@ -531,7 +531,7 @@ public class CustomFilterTest {
                 .filterDisplayName("filterDisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
                 .build();
-        c.setComparatorSelection(ComparatorFilterOption.equals);
+        c.setComparatorSelection(ComparatorFilterOption.eq);
 
         // when
         String sqlComperator = c.getSqlComperator();
@@ -546,7 +546,7 @@ public class CustomFilterTest {
                 .filterDisplayName("filterDisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
                 .build();
-        c.setComparatorSelection(ComparatorFilterOption.equals);
+        c.setComparatorSelection(ComparatorFilterOption.eq);
 
         // when
         String sqlComperator = c.getSqlComperator();
@@ -561,7 +561,7 @@ public class CustomFilterTest {
                 .filterDisplayName("filterDisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
                 .build();
-        c.setComparatorSelection(ComparatorFilterOption.equals);
+        c.setComparatorSelection(ComparatorFilterOption.eq);
 
         // when
         String sqlComperator = c.getSqlComperator();
@@ -576,7 +576,7 @@ public class CustomFilterTest {
                 .filterDisplayName("filterDisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
                 .build();
-        c.setComparatorSelection(ComparatorFilterOption.equals);
+        c.setComparatorSelection(ComparatorFilterOption.eq);
 
         // when
         String sqlComperator = c.getSqlComperator();
@@ -591,7 +591,7 @@ public class CustomFilterTest {
                 .filterDisplayName("filterDisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
                 .build();
-        c.setComparatorSelection(ComparatorFilterOption.equals);
+        c.setComparatorSelection(ComparatorFilterOption.eq);
 
         // when
         String parameterName = c.getParameterName();
@@ -606,7 +606,7 @@ public class CustomFilterTest {
                 .filterDisplayName("filterDisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
                 .build();
-        c.setComparatorSelection(ComparatorFilterOption.equals);
+        c.setComparatorSelection(ComparatorFilterOption.eq);
 
         // when
         String parameterName = c.getParameterName();
@@ -644,7 +644,7 @@ public class CustomFilterTest {
         CustomFilter c = CustomFilter.builder(stringType)
                 .filterDisplayName("filter DisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
-                .comparatorSelection(ComparatorFilterOption.equals)
+                .comparatorSelection(ComparatorFilterOption.eq)
                 .build();
         c.setValue("test");
         // then
@@ -658,7 +658,7 @@ public class CustomFilterTest {
                 .filterDisplayName("filter DisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
                 .build();
-        c.setComparatorSelection(ComparatorFilterOption.equals);
+        c.setComparatorSelection(ComparatorFilterOption.eq);
         c.setValue("");
 
         // then
@@ -672,7 +672,7 @@ public class CustomFilterTest {
                 .filterDisplayName("filter DisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
                 .build();
-        c.setComparatorSelection(ComparatorFilterOption.equals);
+        c.setComparatorSelection(ComparatorFilterOption.eq);
         c.setValue(null);
 
         // then
@@ -686,7 +686,7 @@ public class CustomFilterTest {
                 .filterDisplayName("filter DisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
                 .build();
-        c.setComparatorSelection(ComparatorFilterOption.equals);
+        c.setComparatorSelection(ComparatorFilterOption.eq);
         c.setNullableFilter(true);
         c.setValue(null);
 
@@ -701,7 +701,7 @@ public class CustomFilterTest {
                 .filterDisplayName("filter DisplayName")
                 .deploymentTableColumnName("deploymentTableColumnName")
                 .build();
-        c.setComparatorSelection(ComparatorFilterOption.equals);
+        c.setComparatorSelection(ComparatorFilterOption.eq);
         c.setNullableFilter(true);
         c.setValue("test");
 
