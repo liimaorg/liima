@@ -61,8 +61,7 @@ export class DeploymentsComponent implements OnInit {
         }
     });
 
-    this.getAllFilterTypes();
-    this.getAllComparatorOptions();
+    this.initTypeAndOptions();
 
   }
 
@@ -73,12 +72,18 @@ export class DeploymentsComponent implements OnInit {
       let newFilter: DeploymentFilter = <DeploymentFilter> {};
 
       if (!this.filterValueOptions[this.selectedFilterType.name]) {
-        this.getFilterOptionValues(this.selectedFilterType.name);
+        if (this.selectedFilterType.type === 'booleanType') {
+          this.filterValueOptions[this.selectedFilterType.name] = [ 'true', 'false' ];
+        } else {
+          this.getFilterOptionValues(this.selectedFilterType.name);
+        }
       }
 
       newFilter.name = this.selectedFilterType.name;
       newFilter.comp = 'eq';
-      newFilter.val = '';
+      newFilter.val = this.selectedFilterType.type === 'booleanType' ? 'true' : '';
+      newFilter.type = this.selectedFilterType.type;
+      newFilter.compOptions = this.comparatorOptionsForType(this.selectedFilterType.type);
       this.filters.unshift(newFilter);
     }
   }
@@ -87,20 +92,27 @@ export class DeploymentsComponent implements OnInit {
     _.remove(this.filters, {name: filter.name})
   }
 
-  private getAllFilterTypes() {
+  private comparatorOptionsForType(filterType: string) {
+    if (filterType === 'booleanType' || filterType === 'StringType' || filterType === 'ENUM_TYPE') {
+      return [{name: 'eq', displayName: 'is'}];
+    } else {
+      return this.comparatorOptions;
+    }
+  }
+
+  private initTypeAndOptions() {
     this.isLoading = true;
     this.deploymentService.getAllDeploymentFilterTypes().subscribe(
       /* happy path */ (r) => this.filterTypes = _.sortBy(r, 'name'),
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.populateFilters());
+      /* onComplete */ () => this.getAllComparatorOptions());
   }
 
   private getAllComparatorOptions() {
-    this.isLoading = true;
     this.deploymentService.getAllComparatorFilterOptions().subscribe(
       /* happy path */ (r) => this.comparatorOptions = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.populateMap());
+      /* onComplete */ () => { this.populateMap(), this.populateFilters(); });
   }
 
   private getFilterOptionValues(filterName: string) {
@@ -114,7 +126,10 @@ export class DeploymentsComponent implements OnInit {
   private populateFilters() {
     if (this.paramFilters) {
       this.paramFilters.forEach((filter) => {
-        if (_.findIndex(this.filterTypes, ['name', filter.name]) >= 0) {
+        let i: number = _.findIndex(this.filterTypes, ['name', filter.name])
+        if (i >= 0) {
+          filter.compOptions = this.comparatorOptionsForType(this.filterTypes[i].type);
+          filter.type = this.filterTypes[i].type;
           this.filters.push(filter);
           this.filterValueOptions[filter.name] = [];
         } else {
