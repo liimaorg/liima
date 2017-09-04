@@ -171,7 +171,7 @@
 
             <h:panelGroup rendered="${settingsDataProvider.mode=='myAmw'}">
                 <h:panelGroup id="myAmw" layout="block">
-                    <h:dataTable var="favorit" value="${usersettingsDataProvider.myAMWObjects}"
+                    <h:dataTable var="favorit" value="${userSettings.myAMWObjects}"
                         styleClass="well width100" rowClasses="odd-row,even-row"
                         id="amwlist">
                         <f:facet name="caption">
@@ -198,7 +198,7 @@
                             <div>
                                 <h:selectBooleanCheckbox value="#{favorit.email}"
                                     rendered="${favorit.asOrApp}">
-                                    <a4j:ajax listener="${usersettingsDataProvider.switchEmailNotification(favorit)}" />
+                                    <a4j:ajax listener="${userSettings.switchEmailNotification(favorit)}" />
                                 </h:selectBooleanCheckbox>
                             </div>
                         </h:column>
@@ -211,7 +211,7 @@
                             </f:facet>
                             <div>
                                 <a4j:commandLink
-                                    action="${usersettingsDataProvider.removeFavoriteResource(favorit.groupId)}"
+                                    action="${userSettings.removeFavoriteResource(favorit.groupId)}"
                                     render="myAmw">Remove from favorites</a4j:commandLink>
                             </div>
                         </h:column>
