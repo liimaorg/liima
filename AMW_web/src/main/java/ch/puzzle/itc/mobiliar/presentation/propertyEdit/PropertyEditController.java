@@ -27,7 +27,6 @@ import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationModel;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -39,42 +38,41 @@ import java.util.logging.Logger;
 @RequestScoped
 public class PropertyEditController {
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	@Inject
-	PropertyEditDataProvider propertyDataProvider;
+    @Inject
+    PropertyEditDataProvider propertyDataProvider;
 
-	@Inject
-	ResourceRelationModel resourceRelation;
+    @Inject
+    ResourceRelationModel resourceRelation;
 
-	@Inject
-	EditResourceView resource;
+    @Inject
+    EditResourceView resource;
 
-	public String save() {
-		String message;
-	     if(resource.isEditResource() && !NameChecker.isNameValid(resource.getResource().getName())) {
-			   GlobalMessageAppender
-					   .addErrorMessage(NameChecker.getErrorTextForResourceType(resource
+    public void save() {
+        String message;
+         if(resource.isEditResource() && !NameChecker.isNameValid(resource.getResource().getName())) {
+               GlobalMessageAppender
+                       .addErrorMessage(NameChecker.getErrorTextForResourceType(resource
                                .getResourceType().getName(), resource.getResource().getName()));
-		}
-		else {
-			message = "Changes successfully saved.";
-			try {
-				 propertyDataProvider.save();
-				 GlobalMessageAppender.addSuccessMessage(message);
-			}
+        }
+        else {
+            message = "Changes successfully saved.";
+             try {
+                 propertyDataProvider.save();
+                 resourceRelation.reloadValues();
+                 GlobalMessageAppender.addSuccessMessage(message);
+            }
             catch (ForeignableOwnerViolationException e) {
                 String errorMessage = "Edit resource not allowed by owner "+e.getViolatingOwner();
                 GlobalMessageAppender.addErrorMessage(errorMessage);
                 log.log(Level.SEVERE, errorMessage, e);
             }
-			catch (AMWException | ValidationException e) {
-				GlobalMessageAppender.addErrorMessage(e.getMessage());
-				log.log(Level.SEVERE, e.getMessage(), e);
-			}
-		}
-		return NavigationUtils.getRefreshOutcomeWithRelation(resourceRelation.getCurrentResourceRelationId());
-	}
-
+            catch (AMWException | ValidationException e) {
+                GlobalMessageAppender.addErrorMessage(e.getMessage());
+                log.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+    }
 }

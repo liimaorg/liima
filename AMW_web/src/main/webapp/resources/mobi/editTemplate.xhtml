@@ -1,147 +1,144 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:composite="http://java.sun.com/jsf/composite"
-	xmlns:mobi="http://java.sun.com/jsf/composite/mobi"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:a4j="http://richfaces.org/a4j"
-	xmlns:rich="http://richfaces.org/rich">
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:composite="http://java.sun.com/jsf/composite"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich">
 
 <composite:interface>
-	<composite:attribute name="isRelation" default="${false}"
-		shortDescription="defines if it is a relation" />
+    <composite:attribute name="isRelation" default="${false}"
+        shortDescription="defines if it is a relation" />
 </composite:interface>
 
 <composite:implementation>
-	<h:panelGroup id="template_${cc.attrs.isRelation}" rendered="${!cc.attrs.isRelation or resourceRelationModel.currentRelationUniqueIdentifier ne null}">
-		<!--  RESOURCE TEMPLATES -->
-		<div class="well">
-			<nav class="actionbar">
-			<ul>
-				<li>
-					<div style="display: inline-block; float: right;">
-						<h:link 
-							rendered="#{(!templateEditDataProvider.editResource or !cc.attrs.isRelation or resourceRelationModel.consumedRelation) and templateEditDataProvider.canAdd}"
-							outcome="editTemplateView" type="button" styleClass="btn light right ${templateEditDataProvider.testing ? 'testing' :  ''}" includeViewParams="true">
-							<f:param name="rel" value="#{!cc.attrs.isRelation ? null : resourceRelationModel.currentRelationUniqueIdentifier}" />
-							<f:param name="templ" value="${instanceTemplate.id}" />
-							<i
-								class="icon ${templateEditDataProvider.testing ? 'icon-addGrey' :  'icon-add'}" />New <h:outputText
-								value="Test-" rendered="${templateEditDataProvider.testing}" />Template
-						</h:link>
-					</div>
-				</li>
-			</ul>
-			</nav>
+    <h:panelGroup id="template_${cc.attrs.isRelation}" rendered="${!cc.attrs.isRelation or resourceRelationModel.currentRelationUniqueIdentifier ne null}">
+        <!--  RESOURCE TEMPLATES -->
+        <div class="well">
+            <nav class="actionbar">
+            <ul>
+                <li>
+                    <div style="display: inline-block; float: right;">
+                        <h:link rendered="#{(!templateEditDataProvider.editResource or !cc.attrs.isRelation or resourceRelationModel.consumedRelation) and templateEditDataProvider.canAdd}"
+                            outcome="editTemplateView" type="button" styleClass="btn light right ${templateEditDataProvider.testing ? 'testing' :  ''}" includeViewParams="false">
+                            <f:param name="rel" value="#{!cc.attrs.isRelation ? null : resourceRelationModel.currentRelationUniqueIdentifier}" />
+                            <f:param name="templ" value="${instanceTemplate.id}" />
+                            <f:param name="id" value="#{editResourceView.resourceIdFromParam}" />
+                            <f:param name="resTypId" value="#{editResourceView.resourceTypeIdFromParam}" />
+                            <i class="icon ${templateEditDataProvider.testing ? 'icon-addGrey' :  'icon-add'}" />
+                            New  <h:outputText value="Test-" rendered="${templateEditDataProvider.testing}" />Template
+                        </h:link>
+                    </div>
+                </li>
+            </ul>
+            </nav>
 
-			<h2>
-				<h:outputText
-					value="${cc.attrs.isRelation ? (templateEditDataProvider.testing ? 'Relationship Test Templates' : 'Relationship Templates') : (templateEditDataProvider.testing ? 'Testing Templates' : 'Templates')}" />
-			</h2>
-			<hr />
-			<div id="template_${cc.attrs.isRelation}_list" class="max_70vh ajaxScroll">
-				<h:panelGroup id="instanceTemplates">
-					<h:panelGroup
-						rendered="${!templateEditDataProvider.getInstanceTemplates(cc.attrs.isRelation).isEmpty() and templateEditDataProvider.canListInstanceTemplates}">
-						<h3>
-							Instance
-							<h:outputText value="test-" rendered="${templateEditDataProvider.testing}" />
-							templates
-						</h3>
-						<h:dataTable var="instanceTemplate"
-							value="${templateEditDataProvider.getInstanceTemplates(cc.attrs.isRelation)}"
-							columnClasses="paddingRight10 ,last,last">
-							<h:column>
-								<span class="ellipsisRight inlineBlock width100" title="#{instanceTemplate.name}">#{instanceTemplate.name}</span>
-								<span class="meta ellipsisRight inlineBlock width100" title="#{instanceTemplate.targetPath}">#{instanceTemplate.targetPath}</span>
-							</h:column>
-							<h:column rendered="#{templateEditDataProvider.canRead}">
+            <h2>
+                <h:outputText
+                    value="${cc.attrs.isRelation ? (templateEditDataProvider.testing ? 'Relationship Test Templates' : 'Relationship Templates') : (templateEditDataProvider.testing ? 'Testing Templates' : 'Templates')}" />
+            </h2>
+            <hr />
+            <div id="template_${cc.attrs.isRelation}_list" class="max_70vh ajaxScroll">
+                <h:panelGroup id="instanceTemplates">
+                    <h:panelGroup
+                        rendered="${!templateEditDataProvider.getInstanceTemplates(cc.attrs.isRelation).isEmpty() and templateEditDataProvider.canListInstanceTemplates}">
+                        <h3>
+                            Instance
+                            <h:outputText value="test-" rendered="${templateEditDataProvider.testing}" />
+                            templates
+                        </h3>
+                        <h:dataTable var="instanceTemplate"
+                            value="${templateEditDataProvider.getInstanceTemplates(cc.attrs.isRelation)}"
+                            columnClasses="paddingRight10 ,last,last">
+                            <h:column>
+                                <span class="ellipsisRight inlineBlock width100" title="#{instanceTemplate.name}">#{instanceTemplate.name}</span>
+                                <span class="meta ellipsisRight inlineBlock width100" title="#{instanceTemplate.targetPath}">#{instanceTemplate.targetPath}</span>
+                            </h:column>
+                            <h:column rendered="#{templateEditDataProvider.canRead}">
+                                <h:link outcome="editTemplateView" includeViewParams="true">
+                                    <f:param name="rel" value="#{!cc.attrs.isRelation ? null : editResourceView.relationIdViewParam}"/>
+                                    <f:param name="templ" value="${instanceTemplate.id}" />
+                                Edit
+                            </h:link>
+                            </h:column>
+                            <h:column rendered="#{templateEditDataProvider.canDelete}">
+                                <h:commandLink value="Delete"
+                                    onclick="deleteTemplate_${cc.attrs.isRelation}(${instanceTemplate.id}, ${cc.attrs.isRelation});">
+                                    <f:ajax execute="@this"></f:ajax>
+                                </h:commandLink>
+                            </h:column>
+                        </h:dataTable>
+                    </h:panelGroup>
+                </h:panelGroup>
+                <h:panelGroup
+                    rendered="#{!templateEditDataProvider.getTypeTemplates(cc.attrs.isRelation).isEmpty() and templateEditDataProvider.canListResTypeTemplates}">
+                    <h3>
+                        <h:outputText
+                            value="${cc.attrs.isRelation ? (templateEditDataProvider.testing ? 'Resource Type Relationship Test Template' : 'Resource Type Relationship Templates') : (templateEditDataProvider.testing ? 'Resource Type Test Template' : 'Resource Type Templates')}" />
+                    </h3>
+                    <h:dataTable var="resTypeTemplate"
+                        value="${templateEditDataProvider.getTypeTemplates(cc.attrs.isRelation)}"
+                        columnClasses=" , last, last">
+                        <h:column style="border-left:0; border-right:0;">
+                            <h:outputText value="#{resTypeTemplate.name}" title="#{resTypeTemplate.name}" />
+                            <br />
+                            <span class="meta"><h:outputText
+                                    value="#{resTypeTemplate.targetPath}" /></span>
+                        </h:column>
+                        <h:column
+                            rendered="${!templateEditDataProvider.editResource and templateEditDataProvider.canRead}">
+                            <h:link outcome="editTemplateView" includeViewParams="true">
+                                <f:param name="rel" value="#{!cc.attrs.isRelation ? null : resourceRelationModel.currentRelationUniqueIdentifier}" />
+                                <f:param name="templ" value="${resTypeTemplate.id}" />
+                                Edit
+                            </h:link>
+                        </h:column>
+                        <h:column
+                            rendered="${!templateEditDataProvider.editResource and templateEditDataProvider.canDelete}">
+                            <a4j:commandLink value="Delete"
+                                onclick="deleteTemplate_${cc.attrs.isRelation}(${resTypeTemplate.id}, ${cc.attrs.isRelation});"
+                                execute="@none">
+                            </a4j:commandLink>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+            </div>
+        </div>
+    </h:panelGroup>
 
-								<h:link outcome="editTemplateView" includeViewParams="true">
-									<f:param name="rel" value="#{!cc.attrs.isRelation ? null : editResourceView.relationIdViewParam}"/>
-									<f:param name="templ" value="${instanceTemplate.id}" />
-								Edit
-							</h:link>
-							</h:column>
-							<h:column rendered="#{templateEditDataProvider.canDelete}">
-								<h:commandLink value="Delete"
-									onclick="deleteTemplate_${cc.attrs.isRelation}(${instanceTemplate.id}, ${cc.attrs.isRelation});">
-									<f:ajax execute="@this"></f:ajax>
-								</h:commandLink>
-							</h:column>
-						</h:dataTable>
-					</h:panelGroup>
-				</h:panelGroup>
-				<h:panelGroup
-					rendered="#{!templateEditDataProvider.getTypeTemplates(cc.attrs.isRelation).isEmpty() and templateEditDataProvider.canListResTypeTemplates}">
-					<h3>
-						<h:outputText
-							value="${cc.attrs.isRelation ? (templateEditDataProvider.testing ? 'Resource Type Relationship Test Template' : 'Resource Type Relationship Templates') : (templateEditDataProvider.testing ? 'Resource Type Test Template' : 'Resource Type Templates')}" />
-					</h3>
-					<h:dataTable var="resTypeTemplate"
-						value="${templateEditDataProvider.getTypeTemplates(cc.attrs.isRelation)}"
-						columnClasses=" , last, last">
-						<h:column style="border-left:0px; border-right:0px;">
-							<h:outputText value="#{resTypeTemplate.name}" title="#{resTypeTemplate.name}" />
-							<br />
-							<span class="meta"><h:outputText
-									value="#{resTypeTemplate.targetPath}" /></span>
-						</h:column>
-						<h:column
-							rendered="${!templateEditDataProvider.editResource and templateEditDataProvider.canRead}">
-							<h:link outcome="editTemplateView" includeViewParams="true">
-								<f:param name="rel" value="#{!cc.attrs.isRelation ? null : resourceRelationModel.currentRelationUniqueIdentifier}" />
-								<f:param name="templ" value="${resTypeTemplate.id}" />
-								Edit
-							</h:link>
-						</h:column>
-						<h:column
-							rendered="${!templateEditDataProvider.editResource and templateEditDataProvider.canDelete}">
-							<a4j:commandLink value="Delete"
-								onclick="deleteTemplate_${cc.attrs.isRelation}(${resTypeTemplate.id}, ${cc.attrs.isRelation});"
-								execute="@none">
-							</a4j:commandLink>
-						</h:column>
-					</h:dataTable>
-				</h:panelGroup>
-			</div>
-		</div>
-	</h:panelGroup>
+    <a4j:jsFunction name="deleteTemplate_${cc.attrs.isRelation}"
+        execute="@this"
+        oncomplete="${rich:component('removeTemplatePopup_'.concat(cc.attrs.isRelation))}.show();"
+        render="removeTemplatePopup_${cc.attrs.isRelation}">
+        <a4j:param name="currentId"    assignTo="#{templateEditDataProvider.removeTemplateId}" />
+        <a4j:param name="isResRel"
+            assignTo="#{templateEditDataProvider.editOrCreateRelationTemplate}" />
+    </a4j:jsFunction>
 
-	<a4j:jsFunction name="deleteTemplate_${cc.attrs.isRelation}"
-		execute="@this"
-		oncomplete="${rich:component('removeTemplatePopup_'.concat(cc.attrs.isRelation))}.show();"
-		render="removeTemplatePopup_${cc.attrs.isRelation}">
-		<a4j:param name="currentId"	assignTo="#{templateEditDataProvider.removeTemplateId}" />
-		<a4j:param name="isResRel"
-			assignTo="#{templateEditDataProvider.editOrCreateRelationTemplate}" />
-	</a4j:jsFunction>
-
-	<rich:popupPanel id="removeTemplatePopup_${cc.attrs.isRelation}"
-		moveable="true" width="800" autosized="true"
-		headerClass="${templateEditDataProvider.testing ? 'testing' : ''}">
-		<f:facet name="header">
-			<h2>
-				<h:outputText value="Remove Template" />
-			</h2>
-		</f:facet>
-		<f:facet name="controls">
-			<h:outputLink value="#"
-				styleClass="close icon icon-close icon-replace"
-				onclick="#{rich:component('removeTemplatePopup_'.concat(cc.attrs.isRelation))}.hide(); return false;">
-					x
-					</h:outputLink>
-		</f:facet>
-		<h:panelGrid style="margin-bottom:10px;">Are you sure you want to delete the selected template?</h:panelGrid>
-		<h:commandLink styleClass="btn primary right" value="Delete"
-			onclick="showLoader();">
-			<a4j:ajax listener="#{templateEditDataProvider.remove()}"
-				execute="@this"
-				oncomplete="#{rich:component('removeTemplatePopup_'.concat(cc.attrs.isRelation))}.hide(); hideLoader();"
-				render="template_${cc.attrs.isRelation}"/>
-		</h:commandLink>
-	</rich:popupPanel>
+    <rich:popupPanel id="removeTemplatePopup_${cc.attrs.isRelation}"
+        moveable="true" width="800" autosized="true"
+        headerClass="${templateEditDataProvider.testing ? 'testing' : ''}">
+        <f:facet name="header">
+            <h2>
+                <h:outputText value="Remove Template" />
+            </h2>
+        </f:facet>
+        <f:facet name="controls">
+            <h:outputLink value="#"
+                styleClass="close icon icon-close icon-replace"
+                onclick="#{rich:component('removeTemplatePopup_'.concat(cc.attrs.isRelation))}.hide(); return false;">
+                    x
+                    </h:outputLink>
+        </f:facet>
+        <h:panelGrid style="margin-bottom:10px;">Are you sure you want to delete the selected template?</h:panelGrid>
+        <h:commandLink styleClass="btn primary right" value="Delete"
+            onclick="showLoader();">
+            <a4j:ajax listener="#{templateEditDataProvider.remove()}"
+                execute="@this"
+                oncomplete="#{rich:component('removeTemplatePopup_'.concat(cc.attrs.isRelation))}.hide(); hideLoader();"
+                render="template_${cc.attrs.isRelation}"/>
+        </h:commandLink>
+    </rich:popupPanel>
 
 </composite:implementation>
 </html>

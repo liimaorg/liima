@@ -3,8 +3,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:composite="http://java.sun.com/jsf/composite"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:a4j="http://richfaces.org/a4j">
+      xmlns:rich="http://richfaces.org/rich">
 <composite:interface/>
 
 <composite:implementation>
@@ -64,12 +63,11 @@
                     </div>
                 </div>
             </h:panelGroup>
-            <a4j:commandLink styleClass="btn primary right" value="Create"
-                             execute="@all"
-                             action="${propertyTypeDataProvider.createByPropertyTypeEntity()}"
-                             oncomplete="#{rich:component('createPropertyTypePopup')}.hide(); return false"
-                             render="@all, propertyTypes"/>
 
+            <h:commandLink styleClass="btn primary right"
+                           type="button"
+                           value="Create"
+                           action="${propertyTypeDataProvider.createByPropertyTypeEntity()}"/>
         </rich:popupPanel>
 </composite:implementation>
 </html>
