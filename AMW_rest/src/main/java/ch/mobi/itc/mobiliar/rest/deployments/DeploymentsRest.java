@@ -120,22 +120,24 @@ public class DeploymentsRest {
         List<DeploymentDTO> deploymentDtos = new ArrayList<>();
 
         for (DeploymentEntity deployment : result.getA()) {
-            deploymentDtos.add(createDeploymentDTOContainingPermissions(deployment));
+            DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
+            deploymentDTO.setActions(createDeploymentActionsDTO(deployment));
+            deploymentDtos.add(deploymentDTO);
         }
 
         return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDtos).build();
     }
 
-    private DeploymentDTO createDeploymentDTOContainingPermissions(DeploymentEntity deployment) {
-        DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
-        deploymentDTO.setConfirmPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment));
-        deploymentDTO.setRejectPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment));
-        deploymentDTO.setCancelPossible(deploymentBoundary.isCancelPossible(deployment).isPossible());
-        deploymentDTO.setRedeployPossible(permissionService.hasPermissionForDeploymentCreation(deployment));
-        deploymentDTO.setHasLogFiles(deploymentBoundary.getLogFileNames(deployment.getId()).length > 0);
-        deploymentDTO.setEditPossible((deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment))
+    private DeploymentActionsDTO createDeploymentActionsDTO(DeploymentEntity deployment) {
+        DeploymentActionsDTO actionsDTO = new DeploymentActionsDTO();
+        actionsDTO.setConfirmPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment));
+        actionsDTO.setRejectPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment));
+        actionsDTO.setCancelPossible(deploymentBoundary.isCancelPossible(deployment).isPossible());
+        actionsDTO.setRedeployPossible(permissionService.hasPermissionForDeploymentCreation(deployment));
+        actionsDTO.setHasLogFiles(deploymentBoundary.getLogFileNames(deployment.getId()).length > 0);
+        actionsDTO.setEditPossible((deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment))
                 && (permissionService.hasPermissionToCreateDeployment() || permissionService.hasPermissionToEditDeployment()));
-        return deploymentDTO;
+        return actionsDTO;
     }
 
     private CustomFilter createCustomFilterByDeploymentFilterDTO(DeploymentFilterDTO filterDTO) {
