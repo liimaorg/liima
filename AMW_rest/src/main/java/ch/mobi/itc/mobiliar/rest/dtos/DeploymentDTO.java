@@ -20,89 +20,83 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
+import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
-import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import lombok.Data;
+import java.util.*;
 
 @XmlRootElement(name = "deployment")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @Data
+@NoArgsConstructor
 public class DeploymentDTO {
 
-	private Integer id;
-	private Integer trackingId;
-	private DeploymentEntity.DeploymentState state;
-	private Date deploymentDate;
-	private String appServerName;
-	private Integer appServerId;
-	private List<AppWithVersionDTO> appsWithVersion = new LinkedList<>();
-	private List<DeploymentParameterDTO> deploymentParameters = new LinkedList<>();
-	private String environmentName;
-	private String releaseName;
-	private String runtimeName;
-	private String requestUser;
-	private String confirmUser;
-	private String cancelUser;
-	private Set<NodeJobDTO> nodeJobs = new HashSet<>();
-	
-	public DeploymentDTO() {}
-	
+    private Integer id;
+    private Integer trackingId;
+    private DeploymentEntity.DeploymentState state;
+    private Date deploymentDate;
+    private String appServerName;
+    private Integer appServerId;
+    private List<AppWithVersionDTO> appsWithVersion = new LinkedList<>();
+    private List<DeploymentParameterDTO> deploymentParameters = new LinkedList<>();
+    private String environmentName;
+    private String releaseName;
+    private String runtimeName;
+    private String requestUser;
+    private String confirmUser;
+    private String cancelUser;
+    private Set<NodeJobDTO> nodeJobs = new HashSet<>();
+    
+    public DeploymentDTO(DeploymentEntity entity) {
+        this.id = entity.getId();
+        this.trackingId = entity.getTrackingId();
+        this.state = entity.getDeploymentState();
+        this.appServerName = entity.getResourceGroup().getName();
+        this.appServerId = entity.getResourceGroup().getId();
+        for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
+            appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
+        }
+        for (DeploymentParameter param : entity.getDeploymentParameters()) {
+            deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
+        }
+        this.deploymentDate = entity.getDeploymentDate();
+        this.environmentName = entity.getContext().getName();
+        this.setReleaseName(entity.getRelease().getName());
+        this.setRuntimeName(entity.getRuntime().getName());
+        this.setRequestUser(entity.getDeploymentRequestUser());
+        this.setConfirmUser(entity.getDeploymentConfirmationUser());
+        this.setCancelUser(entity.getDeploymentCancelUser());
+        for (NodeJobEntity job : entity.getNodeJobs()) {
+            nodeJobs.add(new NodeJobDTO(job));
+        }
+    }
 
-	public DeploymentDTO(DeploymentEntity entity) {
-		this.id = entity.getId();
-		this.trackingId = entity.getTrackingId();
-		this.state = entity.getDeploymentState();
-		this.appServerName = entity.getResourceGroup().getName();
-		this.appServerId = entity.getResourceGroup().getId();
-		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
-			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
-		}
-		for (DeploymentParameter param : entity.getDeploymentParameters()) {
-			deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
-		}
-		this.deploymentDate = entity.getDeploymentDate();
-		this.environmentName = entity.getContext().getName();
-		this.setReleaseName(entity.getRelease().getName());
-		this.setRuntimeName(entity.getRuntime().getName());
-		this.setRequestUser(entity.getDeploymentRequestUser());
-		this.setConfirmUser(entity.getDeploymentConfirmationUser());
-		this.setCancelUser(entity.getDeploymentCancelUser());
-		for (NodeJobEntity job : entity.getNodeJobs()) {
-			nodeJobs.add(new NodeJobDTO(job));
-		}
-	}
+    /**
+     * @deprecated Only here for backwards compatibility of the rest API
+     */
+    @Deprecated
+    public List<AppWithMvnVersionDTO> getAppsWithMvnVersion() {
+        List<AppWithMvnVersionDTO> appsWithMvnVersion = new LinkedList<>();
 
-	/**
-	 * @deprecated Only here for backwards compatibility of the rest API
-	 */
-	@Deprecated
-	public List<AppWithMvnVersionDTO> getAppsWithMvnVersion() {
-		List<AppWithMvnVersionDTO> appsWithMvnVersion = new LinkedList<>();
-
-		for(AppWithVersionDTO app : this.appsWithVersion) {
-			appsWithMvnVersion.add(new AppWithMvnVersionDTO(app.getApplicationName(), app.getVersion()));
-		}
-		
-		return appsWithMvnVersion;
-	}
-	
-	/**
-	 * @deprecated Only here for backwards compatibility of the rest API
-	 */
-	@Deprecated
-	public String getCancleUser() {
-		return this.cancelUser;
-	}
+        for(AppWithVersionDTO app : this.appsWithVersion) {
+            appsWithMvnVersion.add(new AppWithMvnVersionDTO(app.getApplicationName(), app.getVersion()));
+        }
+        
+        return appsWithMvnVersion;
+    }
+    
+    /**
+     * @deprecated Only here for backwards compatibility of the rest API
+     */
+    @Deprecated
+    public String getCancleUser() {
+        return this.cancelUser;
+    }
 }
