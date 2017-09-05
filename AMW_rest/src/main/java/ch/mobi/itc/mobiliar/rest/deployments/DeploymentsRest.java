@@ -51,6 +51,8 @@ import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -92,6 +94,21 @@ public class DeploymentsRest {
     private PermissionBoundary permissionBoundary;
     @Inject
     private ContextLocator contextLocator;
+
+
+    @GET
+    @Path("/filter")
+    @ApiOperation(value = "returns all Deplyoments matching the list of json filters")
+    public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters) {
+        try {
+            DeploymentFilterDTO[] filterDTOs = new Gson().fromJson(jsonListOfFilters, DeploymentFilterDTO[].class);
+        } catch (JsonSyntaxException e) {
+            String msg = "json is not a valid representation for an object of type DeploymentFilterDTO";
+            String detail = "example: [{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"Latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
+            return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto(msg, detail)).build();
+        }
+        return null;
+    }
 
     /**
      * Query for deployments. All parameters are optional.
