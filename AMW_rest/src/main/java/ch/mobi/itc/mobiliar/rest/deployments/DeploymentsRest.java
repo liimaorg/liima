@@ -149,7 +149,7 @@ public class DeploymentsRest {
 
     private CustomFilter createCustomFilterByDeploymentFilterDTO(DeploymentFilterDTO filterDTO) {
         DeploymentFilterTypes filterType = DeploymentFilterTypes.getByDisplayName(filterDTO.getName());
-        ComparatorFilterOption filterOption = ComparatorFilterOption.getByDisplayName(filterDTO.getComp());
+        ComparatorFilterOption filterOption = ComparatorFilterOption.valueOf(filterDTO.getComp());
         CustomFilter filter = CustomFilter
                 .builder(filterType)
                 .comparatorSelection(filterOption)
