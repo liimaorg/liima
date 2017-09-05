@@ -1,6 +1,7 @@
 import { Deployment } from './deployment';
 import { DeploymentParameter } from './deployment-parameter';
 import { AppWithVersion } from './app-with-version';
+import { DeploymentAction } from './deployment-action';
 
 export interface Deployment {
   id: number;
@@ -17,4 +18,5 @@ export interface Deployment {
   requestUser: string;
   confirmUser: string;
   cancleUser: string;
+  actions: DeploymentAction;
 }

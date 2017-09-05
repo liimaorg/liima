@@ -8,6 +8,7 @@ import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
+import {Deployment} from "./deployment";
 
 declare var $: any;
 
@@ -36,6 +37,9 @@ export class DeploymentsComponent implements OnInit {
 
   // already set
   filters: DeploymentFilter[] = [];
+
+  // filtered deployments
+  deployments: Deployment[] = []
 
   errorMessage: string = '';
   successMessage: string = '';
@@ -92,12 +96,12 @@ export class DeploymentsComponent implements OnInit {
 
   applyFilter() {
     let finalFilters: DeploymentFilter[] = [];
-    console.log(this.filters);
     this.filters.forEach((filter) => {
       finalFilters.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
     });
-    console.log(finalFilters);
-    this.goTo(JSON.stringify(finalFilters));
+    let filterString: string = JSON.stringify(finalFilters);
+    this.getFilteredDeployments(filterString);
+    this.goTo(filterString);
   }
 
   private enableDatepicker(filterType: string) {
@@ -152,6 +156,14 @@ export class DeploymentsComponent implements OnInit {
       /* onComplete */ () => filter.valOptions = this.filterValueOptions[filter.name]);
   }
 
+  private getFilteredDeployments(filterString: string) {
+    this.isLoading = true;
+    this.deploymentService.getFilteredDeployments(filterString).subscribe(
+      /* happy path */ (r) => this.deployments = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => this.isLoading = false);
+  }
+
   private enhanceParamFilter() {
     if (this.paramFilters) {
       this.paramFilters.forEach((filter) => {
@@ -179,7 +191,6 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private goTo(destination: string) {
-    console.log(destination);
     this.location.go('/deployments?filter=' + destination);
   }
 

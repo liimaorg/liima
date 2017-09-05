@@ -22,6 +22,20 @@ export class DeploymentService {
     return resource$;
   }
 
+  getFilteredDeployments(filterString: string): Observable<Deployment[]> {
+    let param = new URLSearchParams();
+    param.append('filters', filterString);
+    let options = new RequestOptions({
+      search: param,
+      headers: this.getHeaders()
+    });
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/filter`, options)
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   get(deploymentId: number): Observable<Deployment> {
     let resource$ = this.http
       .get(`${this.baseUrl}/deployments/${deploymentId}`, {headers: this.getHeaders()})

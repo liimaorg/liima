@@ -39,13 +39,13 @@
               </div>
               <ng-container *ngIf="filter.type != 'DateType'">
                 <div class="col-sm-4" *ngIf="filter.type !== 'booleanType'">
-                  <input class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
+                  <input class="form-control" list="filterOptionList" type="text" [(ngModel)]="filter.val">
                   <datalist id="filterOptionList">
                     <option *ngFor="let filterValueOption of filter.valOptions">{{filterValueOption}}</option>
                   </datalist>
                 </div>
                 <div class="col-sm-4" *ngIf="filter.type === 'booleanType'">
-                  <select class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
+                  <select class="form-control" list="filterOptionList" type="text" [(ngModel)]="filter.val">
                     <option *ngFor="let filterValueOption of filter.valOptions">{{filterValueOption}}</option>
                   </select>
                 </div>
