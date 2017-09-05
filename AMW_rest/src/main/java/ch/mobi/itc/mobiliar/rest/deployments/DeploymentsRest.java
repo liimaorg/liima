@@ -45,12 +45,15 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvide
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -81,6 +84,8 @@ public class DeploymentsRest {
     @Inject
     private ResourceDependencyResolverService dependencyResolverService;
     @Inject
+    private PermissionService permissionService;
+    @Inject
     private ResourceGroupPersistenceService resourceGroupService;
     @Inject
     private ResourceTypeProvider resourceTypeProvider;
@@ -93,6 +98,66 @@ public class DeploymentsRest {
     @Inject
     private ContextLocator contextLocator;
 
+
+    @GET
+    @Path("/filter")
+    @ApiOperation(value = "returns all Deployments matching the list of json filters")
+    public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters) {
+        DeploymentFilterDTO[] filterDTOs;
+        try {
+            filterDTOs = new Gson().fromJson(jsonListOfFilters, DeploymentFilterDTO[].class);
+        } catch (JsonSyntaxException e) {
+            String msg = String.format("json is not a valid representation for an object of type %s", DeploymentFilterDTO.class.getSimpleName());
+            String detail = "example: [{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"Latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
+            return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto(msg, detail)).build();
+        }
+        LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
+        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(true, 0, null, filters, null, null, null);
+        List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
+        return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
+    }
+
+    private LinkedList<CustomFilter> createCustomFilters(DeploymentFilterDTO[] filterDTOs) {
+        LinkedList<CustomFilter> filters = new LinkedList<>();
+        for (DeploymentFilterDTO filterDTO : filterDTOs) {
+            filters.add(createCustomFilterByDeploymentFilterDTO(filterDTO));
+        }
+        return filters;
+    }
+
+    private List<DeploymentDTO> createDeploymentDTOs(Tuple<Set<DeploymentEntity>, Integer> result) {
+        List<DeploymentDTO> deploymentDTOs = new ArrayList<>();
+        for (DeploymentEntity deployment : result.getA()) {
+            DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
+            deploymentDTO.setActions(createDeploymentActionsDTO(deployment));
+            deploymentDTOs.add(deploymentDTO);
+        }
+        return deploymentDTOs;
+    }
+
+    private DeploymentActionsDTO createDeploymentActionsDTO(DeploymentEntity deployment) {
+        DeploymentActionsDTO actionsDTO = new DeploymentActionsDTO();
+        actionsDTO.setConfirmPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment));
+        actionsDTO.setRejectPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment));
+        actionsDTO.setCancelPossible(deploymentBoundary.isCancelPossible(deployment).isPossible());
+        actionsDTO.setRedeployPossible(permissionService.hasPermissionForDeploymentCreation(deployment));
+        actionsDTO.setHasLogFiles(deploymentBoundary.getLogFileNames(deployment.getId()).length > 0);
+        actionsDTO.setEditPossible((deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment))
+                && (permissionService.hasPermissionToCreateDeployment() || permissionService.hasPermissionToEditDeployment()));
+        return actionsDTO;
+    }
+
+    private CustomFilter createCustomFilterByDeploymentFilterDTO(DeploymentFilterDTO filterDTO) {
+        DeploymentFilterTypes filterType = DeploymentFilterTypes.getByDisplayName(filterDTO.getName());
+        ComparatorFilterOption filterOption = ComparatorFilterOption.getByDisplayName(filterDTO.getComp());
+        CustomFilter filter = CustomFilter
+                .builder(filterType)
+                .comparatorSelection(filterOption)
+                .build();
+        filter.setValue(filterDTO.getVal());
+        return filter;
+    }
+
     /**
      * Query for deployments. All parameters are optional.
      * Date format: epoch timestamp (number of milliseconds since January 1st, 1970, UTC)
@@ -100,10 +165,10 @@ public class DeploymentsRest {
      * @return the deployments. The header X-Total-Count contains the total result count.
      **/
     @GET
-    @ApiOperation(value = "returns all Deplyoments matching the optional filter Query Params")
+    @ApiOperation(value = "returns all Deployments matching the optional filter Query Params")
     public Response getDeployments(
             @ApiParam("Tracking ID") @QueryParam("trackingId") Integer trackingId,
-            @ApiParam("Deplyoment State") @QueryParam("deploymentState") DeploymentState deploymentState,
+            @ApiParam("Deployments State") @QueryParam("deploymentState") DeploymentState deploymentState,
             @ApiParam("Application Server Name") @QueryParam("appServerName") List<String> appServerNames,
             @ApiParam("Application Name") @QueryParam("appName") List<String> appNames,
             @ApiParam("Runtime Name") @QueryParam("runtimeName") List<String> runtimeNames,
@@ -162,13 +227,13 @@ public class DeploymentsRest {
 
         Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, offset, maxResults, filters, null, null, null);
 
-        List<DeploymentDTO> deploymentDtos = new ArrayList<>();
+        List<DeploymentDTO> deploymentDTOs = new ArrayList<>();
 
         for (DeploymentEntity entity : result.getA()) {
-            deploymentDtos.add(new DeploymentDTO(entity));
+            deploymentDTOs.add(new DeploymentDTO(entity));
         }
 
-        return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDtos).build();
+        return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDTOs).build();
     }
 
     private void createFiltersAndAddToList(DeploymentFilterTypes deploymentFilterType, List<String> values, LinkedList<CustomFilter> filters) {
@@ -255,7 +320,7 @@ public class DeploymentsRest {
         Integer trackingId;
         ResourceEntity appServer;
         Set<ResourceEntity> apps;
-        ContextEntity environement = null;
+        ContextEntity environments = null;
         List<ApplicationWithVersion> applicationsWithVersion;
         LinkedList<CustomFilter> filters = new LinkedList<>();
         ReleaseEntity release;
@@ -295,9 +360,9 @@ public class DeploymentsRest {
         // get the id of the Environment
         if (request.getEnvironmentName() != null) {
             try {
-                environement = environmentsService.getContextByName(request.getEnvironmentName());
+                environments = environmentsService.getContextByName(request.getEnvironmentName());
             } catch (RuntimeException e) {
-                return catchNoResultException(e, "Environement " + request.getEnvironmentName() + " not found.");
+                return catchNoResultException(e, "Environment " + request.getEnvironmentName() + " not found.");
             }
         }
 
@@ -323,14 +388,14 @@ public class DeploymentsRest {
         }
 
         // check whether the AS has at least one node with hostname to deploy to
-        if (environement != null) {
-            boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environement, request.getStateToDeploy());
+        if (environments != null) {
+            boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environments, request.getStateToDeploy());
             if (!hasNode) {
                 return Response.status(Status.BAD_REQUEST)
-                        .entity(new ExceptionDto("No active Node found on Environement " + request.getEnvironmentName()))
+                        .entity(new ExceptionDto("No active Node found on Environment " + request.getEnvironmentName()))
                         .build();
             }
-            contexts.add(environement.getId());
+            contexts.add(environments.getId());
         } else if (request.getContextIds() != null && !request.getContextIds().isEmpty()) {
             contexts.addAll(request.getContextIds());
         }

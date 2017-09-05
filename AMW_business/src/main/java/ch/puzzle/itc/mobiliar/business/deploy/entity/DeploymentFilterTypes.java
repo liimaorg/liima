@@ -67,4 +67,14 @@ public enum DeploymentFilterTypes {
     public String getFilterTableJoining() {
         return filterTableJoining;
     }
+
+    public static DeploymentFilterTypes getByDisplayName(String displayName) {
+        for (DeploymentFilterTypes filterType : values()) {
+            if (filterType.getFilterDisplayName().equals(displayName)) {
+                return filterType;
+            }
+        }
+        return null;
+    }
+
 }
