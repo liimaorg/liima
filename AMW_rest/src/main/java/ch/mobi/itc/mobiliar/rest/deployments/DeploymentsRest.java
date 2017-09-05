@@ -45,6 +45,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvide
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
@@ -83,6 +84,8 @@ public class DeploymentsRest {
     @Inject
     private ResourceDependencyResolverService dependencyResolverService;
     @Inject
+    private PermissionService permissionService;
+    @Inject
     private ResourceGroupPersistenceService resourceGroupService;
     @Inject
     private ResourceTypeProvider resourceTypeProvider;
@@ -116,11 +119,23 @@ public class DeploymentsRest {
         Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 100, filters, null, null, null);
         List<DeploymentDTO> deploymentDtos = new ArrayList<>();
 
-        for (DeploymentEntity entity : result.getA()) {
-            deploymentDtos.add(new DeploymentDTO(entity));
+        for (DeploymentEntity deployment : result.getA()) {
+            deploymentDtos.add(createDeploymentDTOContainingPermissions(deployment));
         }
 
         return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDtos).build();
+    }
+
+    private DeploymentDTO createDeploymentDTOContainingPermissions(DeploymentEntity deployment) {
+        DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
+        deploymentDTO.setConfirmPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment));
+        deploymentDTO.setRejectPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment));
+        deploymentDTO.setCancelPossible(deploymentBoundary.isCancelPossible(deployment).isPossible());
+        deploymentDTO.setRedeployPossible(permissionService.hasPermissionForDeploymentCreation(deployment));
+        deploymentDTO.setHasLogFiles(deploymentBoundary.getLogFileNames(deployment.getId()).length > 0);
+        deploymentDTO.setEditPossible((deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment))
+                && (permissionService.hasPermissionToCreateDeployment() || permissionService.hasPermissionToEditDeployment()));
+        return deploymentDTO;
     }
 
     private CustomFilter createCustomFilterByDeploymentFilterDTO(DeploymentFilterDTO filterDTO) {
