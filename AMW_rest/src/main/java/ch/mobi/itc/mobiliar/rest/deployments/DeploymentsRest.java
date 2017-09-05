@@ -104,7 +104,7 @@ public class DeploymentsRest {
         try {
             filterDTOs = new Gson().fromJson(jsonListOfFilters, DeploymentFilterDTO[].class);
         } catch (JsonSyntaxException e) {
-            String msg = "json is not a valid representation for an object of type DeploymentFilterDTO";
+            String msg = String.format("json is not a valid representation for an object of type %s", DeploymentFilterDTO.class.getSimpleName());
             String detail = "example: [{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"Latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
             return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto(msg, detail)).build();
         }
