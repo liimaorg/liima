@@ -422,10 +422,13 @@ public class EditResourceView implements Serializable {
         appServerNameFilter.put("val", getApplicationServerName());
         jsonArray.add(appServerNameFilter);
 
-        JSONObject envNameFilter = new JSONObject();
-        envNameFilter.put("name", ENVIRONMENT_NAME.getFilterDisplayName());
-        envNameFilter.put("val", getEnvironmentName());
-        jsonArray.add(appServerNameFilter);
+        String envName = getEnvironmentName();
+        if (StringUtils.isNotEmpty(envName)) {
+            JSONObject envNameFilter = new JSONObject();
+            envNameFilter.put("name", ENVIRONMENT_NAME.getFilterDisplayName());
+            envNameFilter.put("val", envName);
+            jsonArray.add(envNameFilter);
+        }
         return jsonArray.toString();
     }
 }
