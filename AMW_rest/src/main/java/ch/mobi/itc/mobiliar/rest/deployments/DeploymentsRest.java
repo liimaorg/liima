@@ -111,21 +111,28 @@ public class DeploymentsRest {
             String detail = "example: [{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"Latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
             return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto(msg, detail)).build();
         }
+        LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
+        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(true, 0, null, filters, null, null, null);
+        List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
+        return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
+    }
+
+    private LinkedList<CustomFilter> createCustomFilters(DeploymentFilterDTO[] filterDTOs) {
         LinkedList<CustomFilter> filters = new LinkedList<>();
         for (DeploymentFilterDTO filterDTO : filterDTOs) {
             filters.add(createCustomFilterByDeploymentFilterDTO(filterDTO));
         }
+        return filters;
+    }
 
-        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 100, filters, null, null, null);
+    private List<DeploymentDTO> createDeploymentDTOs(Tuple<Set<DeploymentEntity>, Integer> result) {
         List<DeploymentDTO> deploymentDtos = new ArrayList<>();
-
         for (DeploymentEntity deployment : result.getA()) {
             DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
             deploymentDTO.setActions(createDeploymentActionsDTO(deployment));
             deploymentDtos.add(deploymentDTO);
         }
-
-        return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDtos).build();
+        return deploymentDtos;
     }
 
     private DeploymentActionsDTO createDeploymentActionsDTO(DeploymentEntity deployment) {
