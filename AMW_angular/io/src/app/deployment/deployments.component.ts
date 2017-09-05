@@ -1,11 +1,14 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AppState } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
+import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
+
+declare var $: any;
 
 @Component({
   selector: 'amw-deployments',
@@ -38,6 +41,7 @@ export class DeploymentsComponent implements OnInit {
   isLoading: boolean = false;
 
   constructor(private activatedRoute: ActivatedRoute,
+              private ngZone: NgZone,
               private deploymentService: DeploymentService,
               public appState: AppState) {
   }
@@ -59,7 +63,6 @@ export class DeploymentsComponent implements OnInit {
             console.log(e);
             this.errorMessage = 'Error parsing filter';
           }
-          //this.filters = JSON.parse(decodeURIComponent(param['filters']));
         }
     });
 
@@ -67,7 +70,7 @@ export class DeploymentsComponent implements OnInit {
 
   }
 
-  addType() {
+  addFilter() {
     if (this.selectedFilterType) {
       console.log('type: ' + this.selectedFilterType.type);
 
@@ -87,11 +90,20 @@ export class DeploymentsComponent implements OnInit {
       newFilter.type = this.selectedFilterType.type;
       newFilter.compOptions = this.comparatorOptionsForType(this.selectedFilterType.type);
       this.filters.unshift(newFilter);
+      this.enableDatepicker(this.selectedFilterType.type);
     }
   }
 
   removeFilter(filter: DeploymentFilter) {
-    _.remove(this.filters, {name: filter.name})
+    _.remove(this.filters, {name: filter.name});
+  }
+
+  private enableDatepicker(filterType: string) {
+    if (filterType === 'DateType') {
+      this.ngZone.onMicrotaskEmpty.first().subscribe(() => {
+        $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
+      });
+    }
   }
 
   private comparatorOptionsForType(filterType: string) {
@@ -114,7 +126,9 @@ export class DeploymentsComponent implements OnInit {
     this.deploymentService.getAllComparatorFilterOptions().subscribe(
       /* happy path */ (r) => this.comparatorOptions = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => { this.populateMap(), this.populateFilters(); });
+      /* onComplete */ () => { this.populateMap();
+                               this.enhanceParamFilter();
+      });
   }
 
   private getFilterOptionValues(filterName: string) {
@@ -125,20 +139,21 @@ export class DeploymentsComponent implements OnInit {
       /* onComplete */ () => this.isLoading = false);
   }
 
-  private populateFilters() {
+  private enhanceParamFilter() {
     if (this.paramFilters) {
       this.paramFilters.forEach((filter) => {
-        let i: number = _.findIndex(this.filterTypes, ['name', filter.name])
+        let i: number = _.findIndex(this.filterTypes, ['name', filter.name]);
         if (i >= 0) {
           filter.compOptions = this.comparatorOptionsForType(this.filterTypes[i].type);
-          filter.comp = filter.comp ? filter.comp : this.defaultComparator;
+          filter.comp = !filter.comp ? this.defaultComparator : filter.comp;
           filter.type = this.filterTypes[i].type;
-          this.filters.push(filter);
           this.filterValueOptions[filter.name] = [];
+          this.filters.push(filter);
+          this.enableDatepicker(filter.type);
         } else {
           this.errorMessage = 'Error parsing filter';
         }
-      })
+      });
     }
     this.isLoading = false;
   }
@@ -151,5 +166,3 @@ export class DeploymentsComponent implements OnInit {
   }
 
 }
-
-

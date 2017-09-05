@@ -19,7 +19,7 @@
         <div class="form-group">
           <label for="selectFilterType" class="col-sm-3 control-label">Add Filter</label>
           <div class="col-sm-9">
-            <select id="selectFilterType" class="form-control input-sm" [(ngModel)]="selectedFilterType" (change)="addType()">
+            <select id="selectFilterType" class="form-control input-sm" [(ngModel)]="selectedFilterType" (change)="addFilter()">
               <option *ngFor="let filterType of filterTypes" [ngValue]="filterType">{{filterType.name}}</option>
             </select>
           </div>
@@ -37,16 +37,25 @@
                   <option *ngFor="let compOption of filter.compOptions" [ngValue]="compOption.name">{{compOption.displayName}}</option>
                 </select>
               </div>
-              <div class="col-sm-4" *ngIf="filter.type !== 'booleanType'">
-                <input class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
-                <datalist id="filterOptionList">
-                  <option *ngFor="let filterValueOption of filterValueOptions[filter.name]">{{filterValueOption}}</option>
-                </datalist>
-              </div>
-              <div class="col-sm-4" *ngIf="filter.type === 'booleanType'">
-                <select class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
-                  <option *ngFor="let filterValueOption of filterValueOptions[filter.name]">{{filterValueOption}}</option>
-                </select>
+              <ng-container *ngIf="filter.type != 'DateType'">
+                <div class="col-sm-4" *ngIf="filter.type !== 'booleanType'">
+                  <input class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
+                  <datalist id="filterOptionList">
+                    <option *ngFor="let filterValueOption of filterValueOptions[filter.name]">{{filterValueOption}}</option>
+                  </datalist>
+                </div>
+                <div class="col-sm-4" *ngIf="filter.type === 'booleanType'">
+                  <select class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
+                    <option *ngFor="let filterValueOption of filterValueOptions[filter.name]">{{filterValueOption}}</option>
+                  </select>
+                </div>
+              </ng-container>
+              <div class="col-sm-4" *ngIf="filter.type === 'DateType'">
+                <div class="input-group date datepicker">
+                  <input type="text" class="form-control" #datePicker [ngModel]="filter.val"
+                         (blur)="filter.val = datePicker.value">
+                  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
               </div>
             </ng-container>
             <div class="col-sm-1">
