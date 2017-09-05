@@ -52,7 +52,7 @@
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
                         More
-                        <b class="caret"></b>
+                        <b class="caret" />
                     </a>
                     <ul class="dropdown-menu">
                         <li>
@@ -107,7 +107,7 @@
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
                         Analyze
-                        <b class="caret"></b>
+                        <b class="caret" />
                     </a>
                     <ul class="dropdown-menu">
 
@@ -140,7 +140,7 @@
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
                         Release
-                        <b class="caret"></b>
+                        <b class="caret" />
                     </a>
                     <ul class="dropdown-menu">
                         <li>
@@ -178,7 +178,7 @@
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
                         Go to
-                        <b class="caret"></b>
+                        <b class="caret" />
                     </a>
                     <ul class="dropdown-menu">
                         <li>
@@ -211,12 +211,12 @@
                                 <f:param name="environment_name" value="${editResourceView.environmentName}"/>
                             </h:link>
 
-                            <h:outputLink value="/AMW_angular/#/deployments"
-                                    styleClass="btn light"
-                                    rendered="${editResourceView.canShowDeploymentLink and editResourceView.angularDeploymentLink}">
-                                <f:param name="filter" value="${editResourceView.deploymentLinkAngular}"  />
-                                Deployments
-                            </h:outputLink>
+                            <ui:fragment rendered="${editResourceView.canShowDeploymentLink and editResourceView.angularDeploymentLink}">
+                                <a href="/AMW_angular/#/deployments?filter=${editResourceView.deploymentLinkAngular}">
+                                    Deployments
+                                </a>
+                            </ui:fragment>
+
                         </li>
                     </ul>
                 </li>
@@ -258,7 +258,7 @@
                         <hr/>
                         <h:panelGroup id="resProps" styleClass="max_70vh ajaxScroll">
                             <h:panelGroup>
-                                <table class="propertyTable" style="margin: 0px;">
+                                <table class="propertyTable" style="margin: 0;">
                                     <h:panelGroup rendered="#{editResourceView.isGlobalContext()}">
                                         <tr>
                                             <td>

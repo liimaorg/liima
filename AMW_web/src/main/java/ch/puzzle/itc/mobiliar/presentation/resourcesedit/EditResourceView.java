@@ -40,12 +40,18 @@ import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelecte
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.events.SelectedRelationId;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.io.Serializable;
+
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.APPLICATION_NAME;
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.APPSERVER_NAME;
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.ENVIRONMENT_NAME;
 
 @ViewBackingBean
 public class EditResourceView implements Serializable {
@@ -405,6 +411,24 @@ public class EditResourceView implements Serializable {
 
 
     public String getDeploymentLinkAngular() {
-        return "[{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
+        JSONArray jsonArray = new JSONArray();
+        JSONObject appFilter = new JSONObject();
+        appFilter.put("name", APPLICATION_NAME.getFilterDisplayName());
+        appFilter.put("val", getApplicationName());
+        jsonArray.add(appFilter);
+
+        JSONObject appServerNameFilter = new JSONObject();
+        appServerNameFilter.put("name", APPSERVER_NAME.getFilterDisplayName());
+        appServerNameFilter.put("val", getApplicationServerName());
+        jsonArray.add(appServerNameFilter);
+
+        String envName = getEnvironmentName();
+        if (StringUtils.isNotEmpty(envName)) {
+            JSONObject envNameFilter = new JSONObject();
+            envNameFilter.put("name", ENVIRONMENT_NAME.getFilterDisplayName());
+            envNameFilter.put("val", envName);
+            jsonArray.add(envNameFilter);
+        }
+        return jsonArray.toString();
     }
 }
