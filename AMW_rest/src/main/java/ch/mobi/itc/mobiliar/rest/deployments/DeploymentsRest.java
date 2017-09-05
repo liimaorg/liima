@@ -100,14 +100,34 @@ public class DeploymentsRest {
     @Path("/filter")
     @ApiOperation(value = "returns all Deplyoments matching the list of json filters")
     public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters) {
+        DeploymentFilterDTO[] filterDTOs;
         try {
-            DeploymentFilterDTO[] filterDTOs = new Gson().fromJson(jsonListOfFilters, DeploymentFilterDTO[].class);
+            filterDTOs = new Gson().fromJson(jsonListOfFilters, DeploymentFilterDTO[].class);
         } catch (JsonSyntaxException e) {
             String msg = "json is not a valid representation for an object of type DeploymentFilterDTO";
             String detail = "example: [{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"Latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
             return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto(msg, detail)).build();
         }
-        return null;
+        LinkedList<CustomFilter> filters = new LinkedList<>();
+        for (DeploymentFilterDTO filterDTO : filterDTOs) {
+            DeploymentFilterTypes filterType = DeploymentFilterTypes.getByDisplayName(filterDTO.getName());
+            ComparatorFilterOption filterOption = ComparatorFilterOption.getByDisplayName(filterDTO.getComp());
+            CustomFilter filter = CustomFilter
+                    .builder(filterType)
+                    .comparatorSelection(filterOption)
+                    .value(filterDTO.getVal())
+                    .build();
+            filters.add(filter);
+        }
+
+        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 100, filters, null, null, null);
+        List<DeploymentDTO> deploymentDtos = new ArrayList<>();
+
+        for (DeploymentEntity entity : result.getA()) {
+            deploymentDtos.add(new DeploymentDTO(entity));
+        }
+
+        return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDtos).build();
     }
 
     /**
