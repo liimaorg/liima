@@ -110,14 +110,7 @@ public class DeploymentsRest {
         }
         LinkedList<CustomFilter> filters = new LinkedList<>();
         for (DeploymentFilterDTO filterDTO : filterDTOs) {
-            DeploymentFilterTypes filterType = DeploymentFilterTypes.getByDisplayName(filterDTO.getName());
-            ComparatorFilterOption filterOption = ComparatorFilterOption.getByDisplayName(filterDTO.getComp());
-            CustomFilter filter = CustomFilter
-                    .builder(filterType)
-                    .comparatorSelection(filterOption)
-                    .value(filterDTO.getVal())
-                    .build();
-            filters.add(filter);
+            filters.add(createCustomFilterByDeploymentFilterDTO(filterDTO));
         }
 
         Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 100, filters, null, null, null);
@@ -128,6 +121,16 @@ public class DeploymentsRest {
         }
 
         return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDtos).build();
+    }
+
+    private CustomFilter createCustomFilterByDeploymentFilterDTO(DeploymentFilterDTO filterDTO) {
+        DeploymentFilterTypes filterType = DeploymentFilterTypes.getByDisplayName(filterDTO.getName());
+        ComparatorFilterOption filterOption = ComparatorFilterOption.getByDisplayName(filterDTO.getComp());
+        return CustomFilter
+                .builder(filterType)
+                .comparatorSelection(filterOption)
+                .value(filterDTO.getVal())
+                .build();
     }
 
     /**
