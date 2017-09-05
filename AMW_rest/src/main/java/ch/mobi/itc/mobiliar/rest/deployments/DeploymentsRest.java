@@ -126,11 +126,12 @@ public class DeploymentsRest {
     private CustomFilter createCustomFilterByDeploymentFilterDTO(DeploymentFilterDTO filterDTO) {
         DeploymentFilterTypes filterType = DeploymentFilterTypes.getByDisplayName(filterDTO.getName());
         ComparatorFilterOption filterOption = ComparatorFilterOption.getByDisplayName(filterDTO.getComp());
-        return CustomFilter
+        CustomFilter filter = CustomFilter
                 .builder(filterType)
                 .comparatorSelection(filterOption)
-                .value(filterDTO.getVal())
                 .build();
+        filter.setValue(filterDTO.getVal());
+        return filter;
     }
 
     /**
