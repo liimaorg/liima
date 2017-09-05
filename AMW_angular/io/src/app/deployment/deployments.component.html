@@ -41,12 +41,12 @@
                 <div class="col-sm-4" *ngIf="filter.type !== 'booleanType'">
                   <input class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
                   <datalist id="filterOptionList">
-                    <option *ngFor="let filterValueOption of filterValueOptions[filter.name]">{{filterValueOption}}</option>
+                    <option *ngFor="let filterValueOption of filter.valOptions">{{filterValueOption}}</option>
                   </datalist>
                 </div>
                 <div class="col-sm-4" *ngIf="filter.type === 'booleanType'">
                   <select class="form-control" list="filterOptionList" type="text" value="{{filter.val}}">
-                    <option *ngFor="let filterValueOption of filterValueOptions[filter.name]">{{filterValueOption}}</option>
+                    <option *ngFor="let filterValueOption of filter.valOptions">{{filterValueOption}}</option>
                   </select>
                 </div>
               </ng-container>
@@ -65,6 +65,12 @@
             </div>
           </div>
         </ng-container>
+
+        <div class="form-group">
+          <div class="col-sm-offset-3 col-sm-10">
+            <button type="submit" class="btn btn-primary" (click)="applyFilter()">Apply filter</button>
+          </div>
+        </div>
 
       </span>
     </div>

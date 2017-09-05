@@ -1,4 +1,5 @@
 import { Component, OnInit, NgZone } from '@angular/core';
+import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { AppState } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
@@ -17,6 +18,8 @@ declare var $: any;
 
 export class DeploymentsComponent implements OnInit {
 
+  defaultComparator: string = 'eq';
+
   // initially by queryParam
   paramFilters: DeploymentFilter[] = [];
 
@@ -31,8 +34,6 @@ export class DeploymentsComponent implements OnInit {
   // to be added
   selectedFilterType: DeploymentFilterType;
 
-  defaultComparator: string = 'eq';
-
   // already set
   filters: DeploymentFilter[] = [];
 
@@ -42,6 +43,7 @@ export class DeploymentsComponent implements OnInit {
 
   constructor(private activatedRoute: ActivatedRoute,
               private ngZone: NgZone,
+              private location: Location,
               private deploymentService: DeploymentService,
               public appState: AppState) {
   }
@@ -72,30 +74,30 @@ export class DeploymentsComponent implements OnInit {
 
   addFilter() {
     if (this.selectedFilterType) {
-      console.log('type: ' + this.selectedFilterType.type);
-
       let newFilter: DeploymentFilter = <DeploymentFilter> {};
-
-      if (!this.filterValueOptions[this.selectedFilterType.name]) {
-        if (this.selectedFilterType.type === 'booleanType') {
-          this.filterValueOptions[this.selectedFilterType.name] = [ 'true', 'false' ];
-        } else {
-          this.getFilterOptionValues(this.selectedFilterType.name);
-        }
-      }
-
       newFilter.name = this.selectedFilterType.name;
       newFilter.comp = this.defaultComparator;
       newFilter.val = this.selectedFilterType.type === 'booleanType' ? 'true' : '';
       newFilter.type = this.selectedFilterType.type;
       newFilter.compOptions = this.comparatorOptionsForType(this.selectedFilterType.type);
+      this.setValueOptionsForFilter(newFilter);
       this.filters.unshift(newFilter);
-      this.enableDatepicker(this.selectedFilterType.type);
+      this.enableDatepicker(newFilter.type);
     }
   }
 
   removeFilter(filter: DeploymentFilter) {
-    _.remove(this.filters, {name: filter.name});
+    _.remove(this.filters, {name: filter.name, comp: filter.comp, val: filter.val});
+  }
+
+  applyFilter() {
+    let finalFilters: DeploymentFilter[] = [];
+    console.log(this.filters);
+    this.filters.forEach((filter) => {
+      finalFilters.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+    });
+    console.log(finalFilters);
+    this.goTo(JSON.stringify(finalFilters));
   }
 
   private enableDatepicker(filterType: string) {
@@ -112,6 +114,18 @@ export class DeploymentsComponent implements OnInit {
     } else {
       return this.comparatorOptions;
     }
+  }
+
+  private setValueOptionsForFilter(filter: DeploymentFilter) {
+    console.log('valueOptionsForFilter ' + filter.name + ', ' + filter.type);
+    if (!this.filterValueOptions[filter.name]) {
+      if (filter.type === 'booleanType') {
+        filter.valOptions = this.filterValueOptions[filter.name] = [ 'true', 'false' ];
+      } else {
+        this.getAndSetFilterOptionValues(filter);
+      }
+    }
+    filter.valOptions = this.filterValueOptions[filter.name];
   }
 
   private initTypeAndOptions() {
@@ -131,12 +145,11 @@ export class DeploymentsComponent implements OnInit {
       });
   }
 
-  private getFilterOptionValues(filterName: string) {
-    this.isLoading = true;
-    this.deploymentService.getFilterOptionValues(filterName).subscribe(
-      /* happy path */ (r) => this.filterValueOptions[filterName] = r,
+  private getAndSetFilterOptionValues(filter: DeploymentFilter) {
+    this.deploymentService.getFilterOptionValues(filter.name).subscribe(
+      /* happy path */ (r) => this.filterValueOptions[filter.name] = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.isLoading = false);
+      /* onComplete */ () => filter.valOptions = this.filterValueOptions[filter.name]);
   }
 
   private enhanceParamFilter() {
@@ -144,10 +157,10 @@ export class DeploymentsComponent implements OnInit {
       this.paramFilters.forEach((filter) => {
         let i: number = _.findIndex(this.filterTypes, ['name', filter.name]);
         if (i >= 0) {
-          filter.compOptions = this.comparatorOptionsForType(this.filterTypes[i].type);
-          filter.comp = !filter.comp ? this.defaultComparator : filter.comp;
           filter.type = this.filterTypes[i].type;
-          this.filterValueOptions[filter.name] = [];
+          filter.compOptions = this.comparatorOptionsForType(filter.type);
+          filter.comp = !filter.comp ? this.defaultComparator : filter.comp;
+          this.setValueOptionsForFilter(filter);
           this.filters.push(filter);
           this.enableDatepicker(filter.type);
         } else {
@@ -163,6 +176,11 @@ export class DeploymentsComponent implements OnInit {
       this.comparatorOptionsMap[option.name] = option.displayName;
     });
     this.isLoading = false;
+  }
+
+  private goTo(destination: string) {
+    console.log(destination);
+    this.location.go('/deployments?filter=' + destination);
   }
 
 }

@@ -6,4 +6,5 @@ export interface DeploymentFilter {
   val: string;
   type: string;
   compOptions: ComparatorFilterOption[];
+  valOptions: string[];
 }
