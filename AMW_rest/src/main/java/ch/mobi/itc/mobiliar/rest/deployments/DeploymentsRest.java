@@ -101,7 +101,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/filter")
-    @ApiOperation(value = "returns all Deplyoments matching the list of json filters")
+    @ApiOperation(value = "returns all Deployments matching the list of json filters")
     public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters) {
         DeploymentFilterDTO[] filterDTOs;
         try {
@@ -126,13 +126,13 @@ public class DeploymentsRest {
     }
 
     private List<DeploymentDTO> createDeploymentDTOs(Tuple<Set<DeploymentEntity>, Integer> result) {
-        List<DeploymentDTO> deploymentDtos = new ArrayList<>();
+        List<DeploymentDTO> deploymentDTOs = new ArrayList<>();
         for (DeploymentEntity deployment : result.getA()) {
             DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
             deploymentDTO.setActions(createDeploymentActionsDTO(deployment));
-            deploymentDtos.add(deploymentDTO);
+            deploymentDTOs.add(deploymentDTO);
         }
-        return deploymentDtos;
+        return deploymentDTOs;
     }
 
     private DeploymentActionsDTO createDeploymentActionsDTO(DeploymentEntity deployment) {
@@ -165,10 +165,10 @@ public class DeploymentsRest {
      * @return the deployments. The header X-Total-Count contains the total result count.
      **/
     @GET
-    @ApiOperation(value = "returns all Deplyoments matching the optional filter Query Params")
+    @ApiOperation(value = "returns all Deployments matching the optional filter Query Params")
     public Response getDeployments(
             @ApiParam("Tracking ID") @QueryParam("trackingId") Integer trackingId,
-            @ApiParam("Deplyoment State") @QueryParam("deploymentState") DeploymentState deploymentState,
+            @ApiParam("Deployments State") @QueryParam("deploymentState") DeploymentState deploymentState,
             @ApiParam("Application Server Name") @QueryParam("appServerName") List<String> appServerNames,
             @ApiParam("Application Name") @QueryParam("appName") List<String> appNames,
             @ApiParam("Runtime Name") @QueryParam("runtimeName") List<String> runtimeNames,
@@ -227,13 +227,13 @@ public class DeploymentsRest {
 
         Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, offset, maxResults, filters, null, null, null);
 
-        List<DeploymentDTO> deploymentDtos = new ArrayList<>();
+        List<DeploymentDTO> deploymentDTOs = new ArrayList<>();
 
         for (DeploymentEntity entity : result.getA()) {
-            deploymentDtos.add(new DeploymentDTO(entity));
+            deploymentDTOs.add(new DeploymentDTO(entity));
         }
 
-        return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDtos).build();
+        return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDTOs).build();
     }
 
     private void createFiltersAndAddToList(DeploymentFilterTypes deploymentFilterType, List<String> values, LinkedList<CustomFilter> filters) {
@@ -320,7 +320,7 @@ public class DeploymentsRest {
         Integer trackingId;
         ResourceEntity appServer;
         Set<ResourceEntity> apps;
-        ContextEntity environement = null;
+        ContextEntity environments = null;
         List<ApplicationWithVersion> applicationsWithVersion;
         LinkedList<CustomFilter> filters = new LinkedList<>();
         ReleaseEntity release;
@@ -360,9 +360,9 @@ public class DeploymentsRest {
         // get the id of the Environment
         if (request.getEnvironmentName() != null) {
             try {
-                environement = environmentsService.getContextByName(request.getEnvironmentName());
+                environments = environmentsService.getContextByName(request.getEnvironmentName());
             } catch (RuntimeException e) {
-                return catchNoResultException(e, "Environement " + request.getEnvironmentName() + " not found.");
+                return catchNoResultException(e, "Environment " + request.getEnvironmentName() + " not found.");
             }
         }
 
@@ -388,14 +388,14 @@ public class DeploymentsRest {
         }
 
         // check whether the AS has at least one node with hostname to deploy to
-        if (environement != null) {
-            boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environement, request.getStateToDeploy());
+        if (environments != null) {
+            boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environments, request.getStateToDeploy());
             if (!hasNode) {
                 return Response.status(Status.BAD_REQUEST)
-                        .entity(new ExceptionDto("No active Node found on Environement " + request.getEnvironmentName()))
+                        .entity(new ExceptionDto("No active Node found on Environment " + request.getEnvironmentName()))
                         .build();
             }
-            contexts.add(environement.getId());
+            contexts.add(environments.getId());
         } else if (request.getContextIds() != null && !request.getContextIds().isEmpty()) {
             contexts.addAll(request.getContextIds());
         }
