@@ -53,6 +53,13 @@ public class DeploymentDTO {
     private String confirmUser;
     private String cancelUser;
     private Set<NodeJobDTO> nodeJobs = new HashSet<>();
+
+    private boolean confirmPossible;
+    private boolean rejectPossible;
+    private boolean cancelPossible;
+    private boolean redeployPossible;
+    private boolean hasLogFiles;
+    private boolean editPossible;
     
     public DeploymentDTO(DeploymentEntity entity) {
         this.id = entity.getId();
