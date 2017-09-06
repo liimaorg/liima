@@ -3,12 +3,13 @@ import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { AppState } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
+import { Deployment } from './deployment';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
-import {Deployment} from "./deployment";
+import * as moment from 'moment';
 
 declare var $: any;
 
@@ -95,13 +96,25 @@ export class DeploymentsComponent implements OnInit {
   }
 
   applyFilter() {
-    let finalFilters: DeploymentFilter[] = [];
+    let filtersForBackend: DeploymentFilter[] = [];
+    let filtersForParam: DeploymentFilter[] = [];
+    this.errorMessage = '';
     this.filters.forEach((filter) => {
-      finalFilters.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+      filtersForParam.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+      if (filter.type === 'DateType') {
+        let dateTime = moment(filter.val, 'DD.MM.YYYY hh:mm');
+        if (!dateTime || !dateTime.isValid()) {
+          this.errorMessage = 'Invalid date';
+        }
+        filtersForBackend.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: dateTime.valueOf().toString()});
+      } else {
+        filtersForBackend.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+      }
     });
-    let filterString: string = JSON.stringify(finalFilters);
-    this.getFilteredDeployments(filterString);
-    this.goTo(filterString);
+    if (!this.errorMessage) {
+      this.getFilteredDeployments(JSON.stringify(filtersForBackend));
+      this.goTo(JSON.stringify(filtersForParam));
+    }
   }
 
   private enableDatepicker(filterType: string) {
