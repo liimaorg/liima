@@ -17,12 +17,4 @@ public enum ComparatorFilterOption {
     private String sqlStringComperator;
     private String sqlBoolComperator;
 
-    public static ComparatorFilterOption getByDisplayName(String displayName) {
-        for (ComparatorFilterOption filterOption : values()) {
-            if (filterOption.getDisplayName().equals(displayName)) {
-                return filterOption;
-            }
-        }
-        return null;
-    }
 }
