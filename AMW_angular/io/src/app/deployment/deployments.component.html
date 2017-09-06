@@ -73,7 +73,11 @@
           <div class="col-sm-offset-2 col-sm-10">
             <button type="submit" class="btn btn-primary" [attr.disabled]="filters.length < 1 ? '' : null" (click)="applyFilter()">Apply filter</button>
             <ng-container *ngIf="hasPermissionToRequestDeployments">
-              <a href="#/deployment/"><button type="submit" class="btn btn-primary">Add deployment</button></a>
+              <a href="#/deployment/">
+                <button type="submit" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add deployment
+                </button>
+              </a>
             </ng-container>
           </div>
         </div>
