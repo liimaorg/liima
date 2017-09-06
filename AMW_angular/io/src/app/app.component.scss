@@ -257,3 +257,15 @@ ul.nob {
   padding-left: 16px;
 }
 
+/*
+ * Pretend to be a link
+ */
+span.link {
+  color: #337ab7;
+  text-decoration: none;
+  cursor: pointer;
+}
+span.link:hover {
+  color: #23527c;
+  text-decoration: underline;
+}
