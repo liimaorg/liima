@@ -27,7 +27,7 @@ import lombok.Data;
 public class DeploymentFilterDTO {
     
     private String name;
-    private String comp = ComparatorFilterOption.eq.getDisplayName();
+    private String comp = ComparatorFilterOption.eq.name();
     private String val;
 
 }
