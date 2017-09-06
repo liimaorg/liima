@@ -1,0 +1,37 @@
+<div class="panel panel-default">
+  <div class="panel-heading">Deployments</div>
+  <div class="table-responsive">
+    <table class="table table-xs" *ngIf="(deployments.length > 0)">
+      <tr>
+        <th>Tracking id</th>
+        <th>State</th>
+        <th>App Server</th>
+        <th>Release</th>
+        <th>Env</th>
+        <th>Deployment date</th>
+        <th>Actions</th>
+        <th></th>
+      </tr>
+      <tr *ngFor="let deployment of deployments">
+        <td>{{deployment.trackingId}}</td>
+        <td>{{deployment.state}}</td>
+        <td><a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>
+            <ul class="nob">
+              <li *ngFor="let appWithVersion of deployment.appsWithVersion"><a href="/AMW_web/pages/editResourceView.xhtml?id={{appWithVersion.applicationId}}&ctx=1">{{appWithVersion.applicationName}}</a> ({{appWithVersion.version}})</li>
+            </ul>
+        </td>
+        <td>{{deployment.releaseName}}</td>
+        <td>{{deployment.environmentName}}</td>
+        <td>{{deployment.deploymentDate}}</td>
+        <td>
+          <a href="" *ngIf="deployment.actions.confirmPossible">confirm</a>
+          <a href="" *ngIf="deployment.actions.rejectPossible">reject</a>
+          <a href="" *ngIf="deployment.actions.cancelPossible">cancel</a>
+          <a href="deployment/{{deployment.trackingId}}" *ngIf="deployment.actions.redeployPossible">redeploy</a>
+          <a href="" *ngIf="deployment.actions.editPossible">edit</a>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
