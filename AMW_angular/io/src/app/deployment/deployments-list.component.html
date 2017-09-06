@@ -5,7 +5,7 @@
       <tr>
         <th>Tracking id</th>
         <th>State</th>
-        <th>App Server</th>
+        <th>App server</th>
         <th>Release</th>
         <th>Env</th>
         <th>Deployment date</th>
@@ -14,7 +14,7 @@
       </tr>
       <tr *ngFor="let deployment of deployments">
         <td>{{deployment.trackingId}}</td>
-        <td>{{deployment.state}}</td>
+        <td>{{deployment.state}} <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Show details about this deployment" (click)="showDetails(deployment.id)"></span></td>
         <td><a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>
             <ul class="nob">
               <li *ngFor="let appWithVersion of deployment.appsWithVersion"><a href="/AMW_web/pages/editResourceView.xhtml?id={{appWithVersion.applicationId}}&ctx=1">{{appWithVersion.applicationName}}</a> ({{appWithVersion.version}})</li>
@@ -24,7 +24,7 @@
         <td>{{deployment.environmentName}}</td>
         <td>
           <ng-container *ngIf="deployment.actions.editPossible">
-            <a href="TODO">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</a>
+            <span class="link" (click)="showEdit(deployment.id)">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
           </ng-container>
           <ng-container *ngIf="!deployment.actions.editPossible">
             {{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}
@@ -32,13 +32,13 @@
         </td>
         <td>
           <ng-container *ngIf="deployment.actions.confirmPossible">
-            <a href="TODO">confirm</a><br>
+            <span class="link" (click)="showConfirm(deployment.id)">confirm</span><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.rejectPossible">
-            <a href="TODO">reject</a><br>
+            <span class="link" (click)="showReject(deployment.id)">reject</span><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.cancelPossible">
-            <a href="TODO">cancel</a><br>
+            <span class="link" (click)="showCancel(deployment.id)">cancel</span><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.redeployPossible">
             <a href="#/deployment/{{deployment.id}}">redeploy</a><br>
@@ -49,3 +49,98 @@
   </div>
 </div>
 
+<div id="deploymentDetails" class="modal fade">
+  <ng-container *ngIf="deployment">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Details for deployment #{{deployment.id}} [tracking id: {{deployment.trackingId}}]</h4>
+        <h4 class="modal-title"> app server: {{deployment.appServerName}}</h4>
+      </div>
+      <div class="modal-body">
+        <p>// TODO</p>
+        <p class="text-warning"><small>Show some additional information</small></p>
+      </div>
+    </div>
+  </div>
+  </ng-container>
+</div>
+
+<div id="deploymentModification" class="modal fade">
+  <ng-container *ngIf="deployment">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Change deployment date of deployment #{{deployment.id}} for app server {{deployment.appServerName}}</h4>
+        </div>
+        <div class="modal-body">
+          <p>// TODO</p>
+          <p class="text-warning"><small>Show DateTimePicker</small></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="doEdit()">Save</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<div id="deploymentConfirmation" class="modal fade">
+  <ng-container *ngIf="deployment">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Confirm deployment #{{deployment.id}} for app server {{deployment.appServerName}}</h4>
+      </div>
+      <div class="modal-body">
+        <p>// TODO</p>
+        <p class="text-warning"><small>Show some options</small></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="doConfirm()">Confirm</button>
+      </div>
+    </div>
+  </div>
+  </ng-container>
+</div>
+
+<div id="deploymentRejection" class="modal fade">
+  <ng-container *ngIf="deployment">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Reject deployment #{{deployment.id}} for app server {{deployment.appServerName}}</h4>
+        </div>
+        <div class="modal-body">
+          <p class="text-warning"><small>Are you sure that you want to reject this deployment?</small></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="doReject()">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<div id="deploymentCancelation" class="modal fade">
+  <ng-container *ngIf="deployment">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Cancel deployment #{{deployment.id}} for app server {{deployment.appServerName}}</h4>
+        </div>
+        <div class="modal-body">
+          <p class="text-warning"><small>Are you sure that you want to cancel this deployment?</small></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="doCancel()">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
