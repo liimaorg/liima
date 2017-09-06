@@ -95,6 +95,10 @@ export class DeploymentsComponent implements OnInit {
     _.remove(this.filters, {name: filter.name, comp: filter.comp, val: filter.val});
   }
 
+  clearFilters() {
+    this.filters = [];
+  }
+
   applyFilter() {
     let filtersForBackend: DeploymentFilter[] = [];
     let filtersForParam: DeploymentFilter[] = [];
