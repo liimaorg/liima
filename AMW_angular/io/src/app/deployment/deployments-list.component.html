@@ -22,22 +22,26 @@
         </td>
         <td>{{deployment.releaseName}}</td>
         <td>{{deployment.environmentName}}</td>
-        <td>{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</td>
+        <td>
+          <ng-container *ngIf="deployment.actions.editPossible">
+            <a href="TODO">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</a>
+          </ng-container>
+          <ng-container *ngIf="!deployment.actions.editPossible">
+            {{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}
+          </ng-container>
+        </td>
         <td>
           <ng-container *ngIf="deployment.actions.confirmPossible">
-            <a href="">confirm</a><br>
+            <a href="TODO">confirm</a><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.rejectPossible">
-            <a href="">reject</a><br>
+            <a href="TODO">reject</a><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.cancelPossible">
-            <a href="">cancel</a><br>
+            <a href="TODO">cancel</a><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.redeployPossible">
             <a href="#/deployment/{{deployment.id}}">redeploy</a><br>
-          </ng-container>
-          <ng-container *ngIf="deployment.actions.editPossible">
-            <a href="">edit</a><br>
           </ng-container>
         </td>
       </tr>
