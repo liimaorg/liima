@@ -63,9 +63,9 @@ export class DeploymentsComponent implements OnInit {
 
     this.activatedRoute.queryParams.subscribe(
       (param: any) => {
-        if (param['filter']) {
+        if (param['filters']) {
           try {
-            this.paramFilters = JSON.parse(param['filter']);
+            this.paramFilters = JSON.parse(param['filters']);
           } catch (e) {
             console.log(e);
             this.errorMessage = 'Error parsing filter';
@@ -204,7 +204,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private goTo(destination: string) {
-    this.location.go('/deployments?filter=' + destination);
+    this.location.go('/deployments?filters=' + destination);
   }
 
 }
