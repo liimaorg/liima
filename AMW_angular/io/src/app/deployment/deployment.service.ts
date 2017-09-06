@@ -85,6 +85,14 @@ export class DeploymentService {
     return resource$;
   }
 
+  canRequestDeployments(): Observable<boolean> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/canRequestDeployment/`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   getAllDeploymentFilterTypes(): Observable<DeploymentFilterType[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/deployments/deploymentFilterTypes/`, {headers: this.getHeaders()})

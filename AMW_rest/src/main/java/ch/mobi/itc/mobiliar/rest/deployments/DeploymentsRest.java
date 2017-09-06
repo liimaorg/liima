@@ -484,7 +484,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/canDeploy/{resourceGroupId}")
-    @ApiOperation(value = "Checks if caller is allowed to deploy a given ResourceGroup on the specified Environment(s)  - used by Angular")
+    @ApiOperation(value = "Checks if caller is allowed to deploy a given ResourceGroup on the specified Environment(s) - used by Angular")
     public Response canDeploy(@PathParam("resourceGroupId") Integer resourceGroupId,
                               @QueryParam("contextId") Set<Integer> contextIds) {
         ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
@@ -505,7 +505,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/canRequestDeployment/{resourceGroupId}")
-    @ApiOperation(value = "Checks if caller is allowed to request a deployment a given ResourceGroup on the specified Environment(s)  - used by Angular")
+    @ApiOperation(value = "Checks if caller is allowed to request a deployment a given ResourceGroup on the specified Environment(s) - used by Angular")
     public Response canRequestDeployment(@PathParam("resourceGroupId") Integer resourceGroupId,
                               @QueryParam("contextId") Set<Integer> contextIds) {
         ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
@@ -521,6 +521,13 @@ public class DeploymentsRest {
             }
         }
         return Response.ok(hasPermission).build();
+    }
+
+    @GET
+    @Path("/canRequestDeployment/")
+    @ApiOperation(value = "Checks if the caller is allowed to request a deployment at all - used by Angular")
+    public Response canRequestDeployment() {
+        return Response.ok(permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.CREATE)).build();
     }
 
     /**

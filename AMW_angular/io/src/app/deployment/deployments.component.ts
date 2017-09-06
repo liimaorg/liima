@@ -29,6 +29,7 @@ export class DeploymentsComponent implements OnInit {
   filterTypes: DeploymentFilterType[] = [];
   comparatorOptions: ComparatorFilterOption[] = [];
   comparatorOptionsMap: { [key: string]: string } = {};
+  hasPermissionToRequestDeployments: boolean = false;
 
   // available filterValues (if any)
   filterValueOptions: { [key: string]: string[] } = {};
@@ -40,7 +41,7 @@ export class DeploymentsComponent implements OnInit {
   filters: DeploymentFilter[] = [];
 
   // filtered deployments
-  deployments: Deployment[] = []
+  deployments: Deployment[] = [];
 
   errorMessage: string = '';
   successMessage: string = '';
@@ -74,6 +75,7 @@ export class DeploymentsComponent implements OnInit {
     });
 
     this.initTypeAndOptions();
+    this.canRequestDeployments();
 
   }
 
@@ -179,6 +181,12 @@ export class DeploymentsComponent implements OnInit {
       /* happy path */ (r) => this.deployments = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
+  }
+
+  private canRequestDeployments() {
+      this.deploymentService.canRequestDeployments().subscribe(
+        /* happy path */ (r) => this.hasPermissionToRequestDeployments = r,
+        /* error path */ (e) => this.errorMessage = e);
   }
 
   private enhanceParamFilter() {
