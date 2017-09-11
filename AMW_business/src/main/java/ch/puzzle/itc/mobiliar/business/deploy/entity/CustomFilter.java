@@ -171,6 +171,7 @@ public class CustomFilter {
         this.alwaysAutoComplete = alwaysAutoComplete;
     }
 
+    @Deprecated
     public void setValue(String filterValue) {
         if (StringUtils.isEmpty(filterValue)) {
             this.value = null;
@@ -193,6 +194,38 @@ public class CustomFilter {
             // Date type is handled differently: The JSF component directly sets its value directly through setDateValue
             else if (isLabeledDateType()) {
                 this.value = CustomFilter.convertStringToDate(filterValue);
+            }
+        }
+    }
+
+    public void setValueFromRest(String filterValue) {
+        if (StringUtils.isEmpty(filterValue)) {
+            this.value = null;
+        }
+        else {
+            switch (filterType) {
+                case booleanType:
+                    this.value = Boolean.valueOf(filterValue);
+                    break;
+                case StringType:
+                case ENUM_TYPE:
+                    this.value = filterValue;
+                    break;
+                case IntegerType:
+                    try {
+                        this.value = Integer.valueOf(filterValue.trim());
+                    }
+                    catch (NumberFormatException e) {
+                        this.value = null;
+                    }
+                    break;
+                case DateType:
+                case LabeledDateType:
+                    this.value = new Date(Long.valueOf(filterValue));
+                    break;
+                default:
+                    this.value = StringUtils.EMPTY;
+                    break;
             }
         }
     }

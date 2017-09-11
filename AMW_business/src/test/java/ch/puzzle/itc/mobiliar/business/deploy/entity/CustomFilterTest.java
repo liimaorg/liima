@@ -709,4 +709,374 @@ public class CustomFilterTest {
         assertTrue(c.isValidForSqlQuery());
     }
 
+    // ---
+
+    @Test
+    public void test_isValidForSqlQuery_String_empty_valueForRest() {
+        // given
+        CustomFilter c = CustomFilter.builder(stringType)
+                .filterDisplayName("filter DisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        c.setComparatorSelection(ComparatorFilterOption.eq);
+        c.setValueFromRest("");
+
+        // then
+        assertFalse(c.isValidForSqlQuery());
+    }
+
+    @Test
+    public void test_isValidForSqlQuery_String_null_andNullable_forRest() {
+        // given
+        CustomFilter c = CustomFilter.builder(stringType)
+                .filterDisplayName("filter DisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        c.setComparatorSelection(ComparatorFilterOption.eq);
+        c.setNullableFilter(true);
+        c.setValueFromRest(null);
+
+        // then
+        assertTrue(c.isValidForSqlQuery());
+    }
+
+    @Test
+    public void test_isValidForSqlQuery_String_ok_forRest() {
+        // given
+        CustomFilter c = CustomFilter.builder(stringType)
+                .filterDisplayName("filter DisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .comparatorSelection(ComparatorFilterOption.eq)
+                .build();
+        c.setValueFromRest("test");
+        // then
+        assertTrue(c.isValidForSqlQuery());
+    }
+
+    @Test
+    public void test_isValidForSqlQuery_String_val_andNullable_forRest() {
+        // given
+        CustomFilter c = CustomFilter.builder(stringType)
+                .filterDisplayName("filter DisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        c.setComparatorSelection(ComparatorFilterOption.eq);
+        c.setNullableFilter(true);
+        c.setValueFromRest("test");
+
+        // then
+        assertTrue(c.isValidForSqlQuery());
+    }
+
+    @Test
+    public void test_setValueFromRest_boolean_false() {
+        // given
+        CustomFilter c = CustomFilter.builder(booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest("false");
+        // then
+        assertEquals(FilterType.booleanType, c.getFilterType());
+        assertEquals(false, c.getBooleanValue());
+        assertEquals("false", c.getValue());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_boolean_notBoolean() {
+        // given
+        CustomFilter c = CustomFilter.builder(booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest("test");
+        // then
+        assertEquals(FilterType.booleanType, c.getFilterType());
+        assertEquals(false, c.getBooleanValue());
+        assertEquals("false", c.getValue());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_boolean_notBoolean2() {
+        // given
+        CustomFilter c = CustomFilter.builder(booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest("1");
+        // then
+        assertEquals(FilterType.booleanType, c.getFilterType());
+        assertEquals(false, c.getBooleanValue());
+        assertEquals("false", c.getValue());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_boolean_null() {
+        // given
+        CustomFilter c = CustomFilter.builder(booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest(null);
+        // then
+        assertEquals(FilterType.booleanType, c.getFilterType());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(null, c.getValue());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+
+    @Test
+    public void test_setValueFromRest_boolean_true() {
+        // given
+        CustomFilter c = CustomFilter.builder(booleanType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest("true");
+        // then
+        assertEquals(FilterType.booleanType, c.getFilterType());
+        assertEquals(true, c.getBooleanValue());
+        assertEquals("true", c.getValue());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_Date() {
+        // given
+        CustomFilter c = CustomFilter.builder(dateType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        long timeInMillis = System.currentTimeMillis();
+        Date date = new Date(timeInMillis);
+        // when
+        c.setValueFromRest(String.valueOf(timeInMillis));
+        // then
+        assertEquals(FilterType.DateType, c.getFilterType());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(date, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_Integer() {
+        // given
+        CustomFilter c = CustomFilter.builder(integerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest("2");
+        // then
+        assertEquals(FilterType.IntegerType, c.getFilterType());
+        assertEquals(null, c.getStringValue());
+        assertEquals("2", c.getValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(Integer.valueOf(2), c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_Integer_0() {
+        // given
+        CustomFilter c = CustomFilter.builder(integerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest("0");
+        // then
+        assertEquals(FilterType.IntegerType, c.getFilterType());
+        assertEquals(null, c.getStringValue());
+        assertEquals("0", c.getValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(Integer.valueOf(0), c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_Integer_empty() {
+        // given
+        CustomFilter c = CustomFilter.builder(integerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest("");
+        // then
+        assertEquals(FilterType.IntegerType, c.getFilterType());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_Integer_noInt() {
+        // given
+        CustomFilter c = CustomFilter.builder(integerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest("asdf");
+        // then
+        assertEquals(FilterType.IntegerType, c.getFilterType());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_Integer_null() {
+        // given
+        CustomFilter c = CustomFilter.builder(integerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest(null);
+        // then
+        assertEquals(FilterType.IntegerType, c.getFilterType());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_Integer_trailing_spaces() {
+        // given
+        CustomFilter c = CustomFilter.builder(integerType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest(" 3 ");
+        // then
+        assertEquals(FilterType.IntegerType, c.getFilterType());
+        assertEquals(null, c.getStringValue());
+        assertEquals("3", c.getValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(Integer.valueOf(3), c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_LabeledDate() {
+        // given
+        CustomFilter c = CustomFilter.builder(labeledDateType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        Date d = new Date();
+        String date = CustomFilter.convertDateToString(d);
+        // when
+        c.setValueFromRest(date);
+        // then
+        assertEquals(FilterType.LabeledDateType, c.getFilterType());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(d.getTime(), c.getDateValue().getTime());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_SpecialFilter() {
+        // given
+        CustomFilter c = CustomFilter.builder(specialFilterType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+
+        // when
+        // does nothing still is ""
+        c.setValueFromRest("spez");
+        // then
+        assertEquals(FilterType.SpecialFilterType, c.getFilterType());
+        assertEquals(null, c.getStringValue());
+        assertEquals("", c.getValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_String() {
+        // given
+        CustomFilter c = CustomFilter.builder(stringType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest("str");
+        // then
+        assertEquals(FilterType.StringType, c.getFilterType());
+        assertEquals("str", c.getStringValue());
+        assertEquals("str", c.getValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_String_empty() {
+        // given
+        CustomFilter c = CustomFilter.builder(stringType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest("");
+        // then
+        assertEquals(FilterType.StringType, c.getFilterType());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
+    @Test
+    public void test_setValueFromRest_String_null() {
+        // given
+        CustomFilter c = CustomFilter.builder(stringType)
+                .filterDisplayName("filterDisplayName")
+                .deploymentTableColumnName("deploymentTableColumnName")
+                .build();
+        // when
+        c.setValueFromRest(null);
+        // then
+        assertEquals(FilterType.StringType, c.getFilterType());
+        assertEquals(null, c.getStringValue());
+        assertEquals(null, c.getValue());
+        assertEquals(null, c.getBooleanValue());
+        assertEquals(null, c.getDateValue());
+        assertEquals(null, c.getIntegerValue());
+    }
+
 }
