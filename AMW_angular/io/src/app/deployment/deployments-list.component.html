@@ -81,9 +81,11 @@
         </ng-container>
         <ng-container *ngIf="deployment.deploymentParameters.length > 0">
           <h4>deployment parameter</h4>
-          <ul *ngFor="let param of deployment.deploymentParameters">
-            <li>{{param.key}}: {{param.value}}</li>
-          </ul>
+          <p>
+            <ng-container *ngFor="let param of deployment.deploymentParameters">
+              {{param.key}}: {{param.value}}<br>
+            </ng-container>
+          </p>
         </ng-container>
         <ng-container *ngIf="deploymentDetail && deploymentDetail.stateMessage">
           <h4>state message</h4>
