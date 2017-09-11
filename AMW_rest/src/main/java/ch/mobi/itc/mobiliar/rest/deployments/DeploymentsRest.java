@@ -149,6 +149,9 @@ public class DeploymentsRest {
 
     private CustomFilter createCustomFilterByDeploymentFilterDTO(DeploymentFilterDTO filterDTO) {
         DeploymentFilterTypes filterType = DeploymentFilterTypes.getByDisplayName(filterDTO.getName());
+        if (filterDTO.getName().equals("Release")) {
+            filterDTO.setVal(Long.toString(deploymentBoundary.getReleaseByName(filterDTO.getVal()).getInstallationInProductionAt().getTime()));
+        }
         ComparatorFilterOption filterOption = ComparatorFilterOption.valueOf(filterDTO.getComp());
         CustomFilter filter = CustomFilter
                 .builder(filterType)

@@ -1253,6 +1253,10 @@ public class DeploymentBoundary {
         return env;
     }
 
+    public ReleaseEntity getReleaseByName(String releaseName) {
+        return releaseMgmtService.findByName(releaseName);
+    }
+
     private List<ReleaseEntity> getReleases() {
         return releaseMgmtService.loadAllReleases(false);
     }
