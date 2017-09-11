@@ -43,6 +43,9 @@
           <ng-container *ngIf="deployment.actions.redeployPossible">
             <a href="#/deployment/{{deployment.id}}">redeploy</a><br>
           </ng-container>
+          <ng-container *ngIf="deployment.actions.hasLogFiles">
+            <a href="/AMW_web/pages/logView.xhtml?deploymentId={{deployment.id}}">logs</a><br>
+          </ng-container>
         </td>
       </tr>
     </table>
