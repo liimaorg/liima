@@ -157,7 +157,7 @@ public class DeploymentsRest {
                 .builder(filterType)
                 .comparatorSelection(filterOption)
                 .build();
-        filter.setValue(filterDTO.getVal());
+        filter.setValueFromRest(filterDTO.getVal());
         return filter;
     }
 
