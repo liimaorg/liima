@@ -7,7 +7,7 @@ export interface Deployment {
   id: number;
   trackingId: number;
   state: string,
-  deploymentDate: Date,
+  deploymentDate: number,
   appServerName: string,
   appServerId: number,
   appsWithVersion: AppWithVersion[];

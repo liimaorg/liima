@@ -123,6 +123,21 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
+  setDeploymentDate(deployment: Deployment) {
+    if (deployment) {
+      this.deploymentService.setDeploymentDate(deployment.id, deployment.deploymentDate).subscribe(
+        /* happy path */ (r) => this.updateDeploymentsList(deployment),
+        /* error path */ (e) => this.errorMessage = e
+      );
+    }
+  }
+
+  private updateDeploymentsList(deployment: Deployment) {
+    console.log(this.deployments[_.findIndex(this.deployments, {id: deployment.id})]);
+    this.deployments.splice(_.findIndex(this.deployments, {id: deployment.id}), 1, deployment);
+    console.log(this.deployments[_.findIndex(this.deployments, {id: deployment.id})]);
+  }
+
   private enableDatepicker(filterType: string) {
     if (filterType === 'DateType') {
       this.ngZone.onMicrotaskEmpty.first().subscribe(() => {
@@ -179,8 +194,8 @@ export class DeploymentsComponent implements OnInit {
     this.isLoading = true;
     this.deploymentService.getFilteredDeployments(filterString).subscribe(
       /* happy path */ (r) => this.deployments = r,
-      /* error path */ (e) => { this.errorMessage = e,
-                                this.isLoading = false },
+      /* error path */ (e) => { this.errorMessage = e;
+                                this.isLoading = false; },
       /* onComplete */ () => this.isLoading = false);
   }
 

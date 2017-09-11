@@ -123,6 +123,14 @@ export class DeploymentService {
     return resource$;
   }
 
+  setDeploymentDate(deploymentId: number, deploymentDate: number) {
+    let resource$ = this.http
+      .put(`${this.baseUrl}/deployments/${deploymentId}/date`, deploymentDate, {headers: this.postHeaders()})
+      .map(this.extractPayload)
+      .catch(handleError);
+    return resource$;
+  }
+
   private getHeaders() {
     let headers = new Headers();
     headers.append('Accept', 'application/json');
@@ -134,6 +142,11 @@ export class DeploymentService {
     headers.append('Content-Type', 'application/json');
     headers.append('Accept', 'application/json');
     return headers;
+  }
+
+  // to json without throwing an error if response is empty
+  private extractPayload(res: Response) {
+    return res.text() ? res.json() : {};
   }
 }
 

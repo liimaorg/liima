@@ -485,6 +485,25 @@ public class DeploymentsRest {
 
     }
 
+    @PUT
+    @Path("/{id : \\d+}/date")
+    @ApiOperation(value = "Update the DeploymentDate of a Deployment - used by Angular")
+    public Response changeDeploymentDate(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId, @ApiParam("New date") long date) {
+        Date newDate = new Date(date);
+
+        if (newDate == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto("Invalid deployment date")).build();
+        }
+
+        try {
+            deploymentBoundary.changeDeploymentDate(deploymentId, newDate);
+        } catch (RuntimeException e) {
+            return catchDeploymentStateException(e);
+        }
+
+        return Response.status(Response.Status.OK).build();
+    }
+
     @GET
     @Path("/canDeploy/{resourceGroupId}")
     @ApiOperation(value = "Checks if caller is allowed to deploy a given ResourceGroup on the specified Environment(s) - used by Angular")

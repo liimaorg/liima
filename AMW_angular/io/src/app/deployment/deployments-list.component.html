@@ -24,7 +24,7 @@
         <td>{{deployment.environmentName}}</td>
         <td>
           <ng-container *ngIf="deployment.actions.editPossible">
-            <span class="link" (click)="showEdit(deployment.id)">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
+            <span class="link" (click)="showEdit(deployment.id)" title="change the deployment date">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
           </ng-container>
           <ng-container *ngIf="!deployment.actions.editPossible">
             {{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}
@@ -76,8 +76,12 @@
           <h4 class="modal-title">Change deployment date of deployment #{{deployment.id}} for app server {{deployment.appServerName}}</h4>
         </div>
         <div class="modal-body">
-          <p>// TODO</p>
-          <p class="text-warning"><small>Show DateTimePicker</small></p>
+          <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="errorMessage"></span></div>
+          <div class="input-group date datepicker">
+            <input type="text" class="form-control" #datePicker [ngModel]="deployment.deploymentDate | date:'dd.MM.y HH:mm'"
+                   (blur)="deploymentDate = datePicker.value">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" (click)="doEdit()">Save</button>
