@@ -179,7 +179,8 @@ export class DeploymentsComponent implements OnInit {
     this.isLoading = true;
     this.deploymentService.getFilteredDeployments(filterString).subscribe(
       /* happy path */ (r) => this.deployments = r,
-      /* error path */ (e) => this.errorMessage = e,
+      /* error path */ (e) => { this.errorMessage = e,
+                                this.isLoading = false },
       /* onComplete */ () => this.isLoading = false);
   }
 
