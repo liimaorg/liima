@@ -8,6 +8,9 @@ export interface Deployment {
   trackingId: number;
   state: string,
   deploymentDate: number,
+  deploymentJobCreationDate: number,
+  deploymentConfirmationDate: number,
+  deploymentCancelDate: number,
   appServerName: string,
   appServerId: number,
   appsWithVersion: AppWithVersion[];

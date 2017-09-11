@@ -133,9 +133,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private updateDeploymentsList(deployment: Deployment) {
-    console.log(this.deployments[_.findIndex(this.deployments, {id: deployment.id})]);
     this.deployments.splice(_.findIndex(this.deployments, {id: deployment.id}), 1, deployment);
-    console.log(this.deployments[_.findIndex(this.deployments, {id: deployment.id})]);
   }
 
   private enableDatepicker(filterType: string) {

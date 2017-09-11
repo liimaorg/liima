@@ -42,6 +42,9 @@ public class DeploymentDTO {
     private Integer trackingId;
     private DeploymentEntity.DeploymentState state;
     private Date deploymentDate;
+    private Date deploymentJobCreationDate;
+    private Date deploymentConfirmationDate;
+    private Date deploymentCancelDate;
     private String appServerName;
     private Integer appServerId;
     private List<AppWithVersionDTO> appsWithVersion = new LinkedList<>();
@@ -69,6 +72,9 @@ public class DeploymentDTO {
             deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
         }
         this.deploymentDate = entity.getDeploymentDate();
+        this.deploymentJobCreationDate = entity.getDeploymentJobCreationDate();
+        this.deploymentConfirmationDate = entity.getDeploymentConfirmationDate();
+        this.deploymentCancelDate = entity.getDeploymentCancelDate();
         this.environmentName = entity.getContext().getName();
         this.setReleaseName(entity.getRelease().getName());
         this.setRuntimeName(entity.getRuntime().getName());

@@ -106,7 +106,7 @@ public class DeploymentEntity implements Serializable {
             this.allowedTransitions = Arrays.asList(allowedTransitions);
         }
 
-        private DeploymentState(String displayName) {
+        DeploymentState(String displayName) {
             this.displayName = displayName;
         }
 
@@ -260,19 +260,13 @@ public class DeploymentEntity implements Serializable {
     }
 
     public boolean isRunning() {
-        if (deploymentState == DeploymentState.PRE_DEPLOYMENT || deploymentState == DeploymentState.simulating
-                || deploymentState == DeploymentState.progress) {
-            return true;
-        }
-        return false;
+        return deploymentState == DeploymentState.PRE_DEPLOYMENT || deploymentState == DeploymentState.simulating
+                || deploymentState == DeploymentState.progress;
     }
 
     public boolean isExecuted() {
-        if (deploymentState == DeploymentState.failed || deploymentState == DeploymentState.success
-                || deploymentState == DeploymentState.canceled || deploymentState == DeploymentState.rejected) {
-            return true;
-        }
-        return false;
+        return deploymentState == DeploymentState.failed || deploymentState == DeploymentState.success
+                || deploymentState == DeploymentState.canceled || deploymentState == DeploymentState.rejected;
     }
 
     public boolean isMutable() {
@@ -344,7 +338,7 @@ public class DeploymentEntity implements Serializable {
         if (applicationsWithVersionList != null) {
             return applicationsWithVersionList;
         }
-        List<ApplicationWithVersion> result = new ArrayList<DeploymentEntity.ApplicationWithVersion>();
+        List<ApplicationWithVersion> result = new ArrayList<>();
         if(applicationsWithVersion !=  null) {
             JSONArray o1 = JSONArray.fromObject(applicationsWithVersion);
             for (Object object : o1) {
@@ -400,8 +394,6 @@ public class DeploymentEntity implements Serializable {
         }
 
     }
-
-    ;
 
     public boolean isDeploymentDelayed() {
         return !isExecuted()

@@ -21,7 +21,7 @@
             </ul>
         </td>
         <td>{{deployment.releaseName}}</td>
-        <td>{{deployment.environmentName}}</td>
+        <td><strong>{{deployment.environmentName}}</strong></td>
         <td>
           <ng-container *ngIf="deployment.actions.editPossible">
             <span class="link" (click)="showEdit(deployment.id)" title="change the deployment date">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
@@ -55,12 +55,40 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">Details for deployment #{{deployment.id}} [tracking id: {{deployment.trackingId}}]</h4>
-        <h4 class="modal-title"> app server: {{deployment.appServerName}}</h4>
+        <h4 class="modal-title">Details for deployment #{{deployment.id}} [tracking id: {{deployment.trackingId}}] for
+          app server: {{deployment.appServerName}}</h4>
       </div>
       <div class="modal-body">
-        <p>// TODO</p>
-        <p class="text-warning"><small>Show some additional information</small></p>
+        <h4>{{deployment.state}}</h4>
+        <p>requested by: {{deployment.requestUser}}</p>
+        <p>created at: {{deployment.deploymentJobCreationDate | date:'dd.MM.y HH:mm'}}</p>
+        <ng-container *ngIf="deployment.confirmUser && deployment.state !== 'rejected'">
+          <p>confirmed by: {{deployment.confirmUser}}</p>
+          <p>confirmed at: {{deployment.deploymentConfirmationDate | date:'dd.MM.y HH:mm'}}</p>
+        </ng-container>
+        <ng-container *ngIf="deployment.confirmUser && deployment.state === 'rejected'">
+          <p>rejected by: {{deployment.confirmUser}}</p>
+          <p>rejected at: {{deployment.deploymentConfirmationDate | date:'dd.MM.y HH:mm'}}</p>
+        </ng-container>
+        <ng-container *ngIf="deploymentDetail && deploymentDetail.deploymentDelayed">
+          <h4>deployment job delayed</h4>
+          <p>planed deployment date: {{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</p>
+        </ng-container>
+        <ng-container *ngIf="deployment.cancelUser">
+          <p>deployment job canceled</p>
+          <p>canceled by: {{deployment.cancelUser}}</p>
+          <p>canceled at: {{deployment.deploymentCancelDate | date:'dd.MM.y HH:mm'}}</p>
+        </ng-container>
+        <ng-container *ngIf="deployment.deploymentParameters.length > 0">
+          <h4>deployment parameter</h4>
+          <ul *ngFor="let param of deployment.deploymentParameters">
+            <li>{{param.key}}: {{param.value}}</li>
+          </ul>
+        </ng-container>
+        <ng-container *ngIf="deploymentDetail && deploymentDetail.stateMessage">
+          <h4>state message</h4>
+          <p [innerHTML]="deploymentDetail.stateMessage"></p>
+        </ng-container>
       </div>
     </div>
   </div>

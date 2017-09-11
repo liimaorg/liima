@@ -1,5 +1,7 @@
 import { Component, Input, Output, EventEmitter, NgZone } from '@angular/core';
 import { Deployment } from './deployment';
+import { DeploymentDetail } from './deployment-detail';
+import { DeploymentService } from './deployment.service';
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -20,14 +22,18 @@ export class DeploymentsListComponent {
 
   deploymentDate: number;
 
+  deploymentDetail: DeploymentDetail;
+
   errorMessage: string = '';
 
-  constructor(private ngZone: NgZone) {
+  constructor(private ngZone: NgZone,
+              private deploymentService: DeploymentService) {
   }
 
   showDetails(deploymentId: number) {
+    delete this.deploymentDetail;
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    console.log('TODO: fetch some additional information for deployment ' + deploymentId);
+    this.getDetail(deploymentId);
     $('#deploymentDetails').modal('show');
   }
 
@@ -92,6 +98,12 @@ export class DeploymentsListComponent {
       $('#deploymentCancelation').modal('hide');
       delete this.deployment;
     }
+  }
+
+  private getDetail(deploymentId: number) {
+    this.deploymentService.getDeploymentDetail(deploymentId).subscribe(
+      /* happy path */ (r) => this.deploymentDetail = r,
+      /* error path */ (e) => this.errorMessage = e);
   }
 
 }

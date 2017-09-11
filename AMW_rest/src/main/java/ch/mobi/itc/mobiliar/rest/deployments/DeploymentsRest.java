@@ -490,18 +490,29 @@ public class DeploymentsRest {
     @ApiOperation(value = "Update the DeploymentDate of a Deployment - used by Angular")
     public Response changeDeploymentDate(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId, @ApiParam("New date") long date) {
         Date newDate = new Date(date);
-
         if (newDate == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto("Invalid deployment date")).build();
         }
-
         try {
             deploymentBoundary.changeDeploymentDate(deploymentId, newDate);
         } catch (RuntimeException e) {
             return catchDeploymentStateException(e);
         }
-
         return Response.status(Response.Status.OK).build();
+    }
+
+    @GET
+    @Path("/{id : \\d+}/detail")
+    @ApiOperation(value = "Get detail information of a Deployment - used by Angular")
+    public Response getDeploymentDetail(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId) {
+        DeploymentEntity deployment;
+        try {
+            deployment = deploymentBoundary.getDeploymentById(deploymentId);
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto("Deployment with id "
+                    + deploymentId + "not found" )).build();
+        }
+        return Response.status(Response.Status.OK).entity(new DeploymentDetailDTO(deployment)).build();
     }
 
     @GET
