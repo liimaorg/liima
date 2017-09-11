@@ -60,24 +60,24 @@
       </div>
       <div class="modal-body">
         <h4>{{deployment.state}}</h4>
-        <p>requested by: {{deployment.requestUser}}</p>
-        <p>created at: {{deployment.deploymentJobCreationDate | date:'dd.MM.y HH:mm'}}</p>
+        <p>requested by: {{deployment.requestUser}}<br>
+        created at: {{deployment.deploymentJobCreationDate | date:'dd.MM.y HH:mm'}}</p>
         <ng-container *ngIf="deployment.confirmUser && deployment.state !== 'rejected'">
-          <p>confirmed by: {{deployment.confirmUser}}</p>
-          <p>confirmed at: {{deployment.deploymentConfirmationDate | date:'dd.MM.y HH:mm'}}</p>
+          <p>confirmed by: {{deployment.confirmUser}}<br>
+          confirmed at: {{deployment.deploymentConfirmationDate | date:'dd.MM.y HH:mm'}}</p>
         </ng-container>
         <ng-container *ngIf="deployment.confirmUser && deployment.state === 'rejected'">
-          <p>rejected by: {{deployment.confirmUser}}</p>
-          <p>rejected at: {{deployment.deploymentConfirmationDate | date:'dd.MM.y HH:mm'}}</p>
+          <p>rejected by: {{deployment.confirmUser}}<br>
+          rejected at: {{deployment.deploymentConfirmationDate | date:'dd.MM.y HH:mm'}}</p>
         </ng-container>
         <ng-container *ngIf="deploymentDetail && deploymentDetail.deploymentDelayed">
           <h4>deployment job delayed</h4>
           <p>planed deployment date: {{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</p>
         </ng-container>
         <ng-container *ngIf="deployment.cancelUser">
-          <p>deployment job canceled</p>
-          <p>canceled by: {{deployment.cancelUser}}</p>
-          <p>canceled at: {{deployment.deploymentCancelDate | date:'dd.MM.y HH:mm'}}</p>
+          <h4>deployment job canceled</h4>
+          <p>canceled by: {{deployment.cancelUser}}<br>
+          canceled at: {{deployment.deploymentCancelDate | date:'dd.MM.y HH:mm'}}</p>
         </ng-container>
         <ng-container *ngIf="deployment.deploymentParameters.length > 0">
           <h4>deployment parameter</h4>
