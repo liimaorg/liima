@@ -270,7 +270,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   private reorderRestrictions(restrictions: Restriction[]) {
     this.restrictions = _.sortBy(restrictions, [function(s: Restriction) {
-      return s.permission.name.replace(/[_]/, ''); }, 'action'])
+      return s.permission.name.replace(/[_]/, ''); }, 'action']);
   }
 
   private extractEnvironmentGroups() {

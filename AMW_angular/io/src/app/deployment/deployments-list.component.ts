@@ -17,6 +17,7 @@ export class DeploymentsListComponent {
 
   @Input() deployments: Deployment[] = [];
   @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
+  @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   deployment: Deployment;
 
@@ -25,6 +26,8 @@ export class DeploymentsListComponent {
   deploymentStateMessage: DeploymentStateMessage;
 
   errorMessage: string = '';
+
+  allSelected: boolean = false;
 
   constructor(private ngZone: NgZone,
               private deploymentService: DeploymentService) {
@@ -37,9 +40,9 @@ export class DeploymentsListComponent {
     $('#deploymentDetails').modal('show');
   }
 
-  showEdit(deploymentId: number) {
+  showDateChange(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    $('#deploymentModification').modal('show');
+    $('#deploymentDateChange').modal('show');
     this.ngZone.onMicrotaskEmpty.first().subscribe(() => {
       $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
     });
@@ -68,7 +71,7 @@ export class DeploymentsListComponent {
     }
   }
 
-  doEdit() {
+  doDateChange() {
     if (this.deployment) {
       this.errorMessage = '';
       let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
@@ -77,7 +80,7 @@ export class DeploymentsListComponent {
       } else {
         this.deployment.deploymentDate = dateTime.valueOf();
         this.editDeploymentDate.emit(this.deployment);
-        $('#deploymentModification').modal('hide');
+        $('#deploymentDateChange').modal('hide');
         delete this.deployment;
         delete this.deploymentDate;
       }
@@ -98,6 +101,11 @@ export class DeploymentsListComponent {
       $('#deploymentCancelation').modal('hide');
       delete this.deployment;
     }
+  }
+
+  switchAllDeployments() {
+    this.allSelected = !this.allSelected;
+    this.selectAllDeployments.emit(this.allSelected);
   }
 
   private getDeploymentStateMessage(deploymentId: number) {

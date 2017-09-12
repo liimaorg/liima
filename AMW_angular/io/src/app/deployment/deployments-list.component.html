@@ -3,17 +3,16 @@
   <div class="table-responsive">
     <table class="table table-sm" *ngIf="(deployments.length > 0)">
       <tr>
-        <th>Tracking id</th>
+        <th><input type="checkbox" (click)="switchAllDeployments()"> Tracking id</th>
         <th>State</th>
         <th>App server</th>
         <th>Release</th>
         <th>Env</th>
         <th>Deployment date</th>
         <th>Actions</th>
-        <th></th>
       </tr>
       <tr *ngFor="let deployment of deployments">
-        <td>{{deployment.trackingId}}</td>
+        <td><input type="checkbox" [(ngModel)]="deployment.selected"> {{deployment.trackingId}}</td>
         <td>{{deployment.state}} <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Show details about this deployment" (click)="showDetails(deployment.id)"></span></td>
         <td><a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>
             <ul class="nob">
@@ -24,7 +23,7 @@
         <td><strong>{{deployment.environmentName}}</strong></td>
         <td>
           <ng-container *ngIf="deployment.actions.editPossible">
-            <span class="link" (click)="showEdit(deployment.id)" title="change the deployment date">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
+            <span class="link" (click)="showDateChange(deployment.id)" title="change the deployment date">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
           </ng-container>
           <ng-container *ngIf="!deployment.actions.editPossible">
             <span [attr.class]="deployment.deploymentDelayed ? 'delayed' : null">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
@@ -100,7 +99,7 @@
   </ng-container>
 </div>
 
-<div id="deploymentModification" class="modal fade">
+<div id="deploymentDateChange" class="modal fade">
   <ng-container *ngIf="deployment">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -117,7 +116,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" (click)="doEdit()">Save</button>
+          <button type="button" class="btn btn-primary" (click)="doDateChange()">Save</button>
         </div>
       </div>
     </div>

@@ -31,6 +31,12 @@ export class DeploymentsComponent implements OnInit {
   comparatorOptionsMap: { [key: string]: string } = {};
   hasPermissionToRequestDeployments: boolean = false;
 
+  // available edit actions
+  editActions: string[] = ['Change date', 'Confirm', 'Reject', 'Cancel'];
+  selectedEditAction: string = this.editActions[0];
+  // for deployment date change
+  deploymentDate: number;
+
   // available filterValues (if any)
   filterValueOptions: { [key: string]: string[] } = {};
 
@@ -68,7 +74,7 @@ export class DeploymentsComponent implements OnInit {
           try {
             this.paramFilters = JSON.parse(param['filters']);
           } catch (e) {
-            console.log(e);
+            console.error(e);
             this.errorMessage = 'Error parsing filter';
           }
         }
@@ -123,13 +129,75 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
-  setDeploymentDate(deployment: Deployment) {
+  changeDeploymentDate(deployment: Deployment) {
     if (deployment) {
-      this.deploymentService.setDeploymentDate(deployment.id, deployment.deploymentDate).subscribe(
-        /* happy path */ (r) => r,
-        /* error path */ (e) => this.errorMessage = e,
-        /* on complete */ () => this.reloadDeployment(deployment)
-      );
+      this.setDeploymentDate(deployment, deployment.deploymentDate);
+    }
+  }
+
+  setDeploymentDate(deployment: Deployment, deploymentDate: number) {
+    this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
+      /* happy path */ (r) => r,
+      /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
+      /* on complete */ () => this.reloadDeployment(deployment)
+    );
+  }
+
+  changeEditAction() {
+    if (this.selectedEditAction === 'Change date') {
+      this.addDatePicker();
+    }
+  }
+
+  switchDeployments(enable: boolean) {
+    this.deployments.forEach((deployment) => deployment.selected = enable);
+  }
+
+  editableDeployments(): boolean {
+    return (_.findIndex(this.deployments, {selected: true}) !== -1);
+  }
+
+  showEdit() {
+    if (this.editableDeployments()) {
+      this.addDatePicker();
+      $('#deploymentsEdit').modal('show');
+    }
+  }
+
+  doEdit() {
+    if (this.editableDeployments()) {
+      this.errorMessage = '';
+      switch (this.selectedEditAction) {
+        // date
+        case this.editActions[0]:
+          this.setDeploymentDates();
+          break;
+        // confirm
+        case this.editActions[1]:
+          console.log('TODO: ' + this.selectedEditAction);
+          break;
+        // reject
+        case this.editActions[2]:
+          console.log('TODO: ' + this.selectedEditAction);
+          break;
+        // cancel
+        case this.editActions[3]:
+          console.log('TODO: ' + this.selectedEditAction);
+          break;
+        default:
+          console.error('Unknown EditAction' + this.selectedEditAction);
+          break;
+      }
+      $('#deploymentsEdit').modal('hide');
+    }
+  }
+
+  private setDeploymentDates() {
+    let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
+    if (!dateTime || !dateTime.isValid()) {
+      this.errorMessage = 'Invalid date';
+    } else {
+      _.filter(this.deployments, {selected: true}).forEach((deployment) => this.setDeploymentDate(deployment, dateTime.valueOf()));
     }
   }
 
@@ -143,16 +211,19 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private updateDeploymentsList(deployment: Deployment) {
-    console.log(deployment);
     this.deployments.splice(_.findIndex(this.deployments, {id: deployment.id}), 1, deployment);
   }
 
   private enableDatepicker(filterType: string) {
     if (filterType === 'DateType') {
-      this.ngZone.onMicrotaskEmpty.first().subscribe(() => {
-        $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
-      });
+      this.addDatePicker();
     }
+  }
+
+  private addDatePicker() {
+    this.ngZone.onMicrotaskEmpty.first().subscribe(() => {
+      $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
+    });
   }
 
   private comparatorOptionsForType(filterType: string) {
