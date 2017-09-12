@@ -25,6 +25,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.DeploymentDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentRequestDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
@@ -42,10 +43,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvide
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -60,9 +59,16 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 public class DeploymentTest {
@@ -418,6 +424,19 @@ public class DeploymentTest {
 		
 	    ExceptionDto exception = (ExceptionDto) response.getEntity();
 	    assertTrue(exception.getDetail().length() > 0);
+	}
+
+	@Test
+	public void shouldHandleIllegalStateInUpdateState() {
+		// given
+		String illegalState = "dudu";
+
+		// when
+		Response response = deploymentRestService.updateState(1, illegalState);
+
+		// then
+		assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+
 	}
 	
 	private ReleaseEntity mockRelease(){

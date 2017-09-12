@@ -23,11 +23,8 @@ package ch.mobi.itc.mobiliar.rest.deployments;
 import ch.mobi.itc.mobiliar.rest.dtos.*;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
@@ -69,7 +66,6 @@ import java.util.*;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
 
-//for transactions
 @Stateless
 @Path("/deployments")
 @Api(value = "/deployments", description = "Managing deployment resources")
@@ -508,13 +504,26 @@ public class DeploymentsRest {
 
 
     @PUT
-    @Path("/{id : \\d+}/cancel")
-    @ApiOperation(value = "Cancels a deployment - used by Angular")
-    public Response cancelDeployment(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId) {
-//        DeploymentEntity d = deploymentBoundary.cancelDeployment(deploymentId);
-//        return Response.status(Status.OK).entity(d).build();
+    @Path("/{id : \\d+}/updateState")
+    @Consumes("text/plain")
+    @ApiOperation(value = "Update state of a deployment - used by Angular")
+    public Response updateState(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId,
+                                @ApiParam("state as string") String statusStr) {
+        DeploymentState state;
+        try {
+            state = DeploymentState.valueOf(statusStr);
+        } catch (IllegalArgumentException e) {
+            String possibleValues = Arrays.toString(DeploymentState.values());
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto(String.format("invalid state. must be one of %s", possibleValues) )).build();
+        }
 
-        System.out.println("TODO");
+        switch (state) {
+            case canceled:
+                deploymentBoundary.cancelDeployment(deploymentId);
+                break;
+            default:
+                return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ExceptionDto(String.format("State '%s' not implemented yet", state.toString()) )).build();
+        }
         return Response.status(Status.OK).build();
     }
 
