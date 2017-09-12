@@ -60,7 +60,7 @@ export class DeploymentService {
 
   cancelDeployment(deploymentId: number): Observable<string> {
     let resource$ = this.http
-      .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, "cancel",{headers: this.getHeaders()})
+      .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, "canceled",{headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
     return resource$;
