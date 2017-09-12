@@ -97,7 +97,11 @@ export class DeploymentsListComponent {
 
   doCancel() {
     if (this.deployment) {
-      console.log('TODO: cancel deployment');
+      console.log('TODO: cancel deployment??');
+      this.deploymentService.cancelDeployment(this.deployment.id).subscribe(
+        /* happy path */ (r) => r,
+        /* error path */ (e) => this.errorMessage = e
+      );
       $('#deploymentCancelation').modal('hide');
       delete this.deployment;
     }

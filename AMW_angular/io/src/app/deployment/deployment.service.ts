@@ -58,6 +58,14 @@ export class DeploymentService {
       .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
   }
 
+  cancelDeployment(deploymentId: number): Observable<string> {
+    let resource$ = this.http
+      .put(`${this.baseUrl}/deployments/${deploymentId}/cancel`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   getAllDeploymentParameterKeys(): Observable<DeploymentParameter[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/deployments/deploymentParameterKeys/`, {headers: this.getHeaders()})
