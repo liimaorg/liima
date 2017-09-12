@@ -192,6 +192,16 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
+  cancelDeployment(deployment: Deployment) {
+    if (deployment) {
+      this.deploymentService.cancelDeployment(deployment.id).subscribe(
+        /* happy path */ (r) => r,
+        /* error path */ (e) => this.errorMessage = e,
+        /* onComplete */ () => this.reloadDeployment(deployment)
+      );
+    }
+  }
+
   private setDeploymentDates() {
     let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
     if (!dateTime || !dateTime.isValid()) {

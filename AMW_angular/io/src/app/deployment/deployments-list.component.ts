@@ -18,6 +18,7 @@ export class DeploymentsListComponent {
   @Input() deployments: Deployment[] = [];
   @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
 
   deployment: Deployment;
 
@@ -97,11 +98,7 @@ export class DeploymentsListComponent {
 
   doCancel() {
     if (this.deployment) {
-      console.log('TODO: cancel deployment??');
-      this.deploymentService.cancelDeployment(this.deployment.id).subscribe(
-        /* happy path */ (r) => r,
-        /* error path */ (e) => this.errorMessage = e
-      );
+      this.doCancelDeployment.emit(this.deployment);
       $('#deploymentCancelation').modal('hide');
       delete this.deployment;
     }
