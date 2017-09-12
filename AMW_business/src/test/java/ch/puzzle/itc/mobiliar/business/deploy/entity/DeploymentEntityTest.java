@@ -21,7 +21,6 @@
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 
 import org.junit.Test;
@@ -99,7 +98,7 @@ public class DeploymentEntityTest {
 		// then
 		assertTrue(deploymentEntity.getDeploymentConfirmed());
 		assertEquals("foo", deploymentEntity.getDeploymentConfirmationUser());
-		assertEquals(DeploymentEntity.DeploymentState.scheduled, deploymentEntity.getDeploymentState());
+		assertEquals(DeploymentState.scheduled, deploymentEntity.getDeploymentState());
 	}
 
 	@Test
@@ -114,7 +113,7 @@ public class DeploymentEntityTest {
 		// then
 		assertFalse(deploymentEntity.getDeploymentConfirmed());
 		assertEquals("foo", deploymentEntity.getDeploymentConfirmationUser());
-		assertEquals(DeploymentEntity.DeploymentState.rejected, deploymentEntity.getDeploymentState());
+		assertEquals(DeploymentState.rejected, deploymentEntity.getDeploymentState());
 	}
 
 	@Test
@@ -139,7 +138,7 @@ public class DeploymentEntityTest {
 		DeploymentState dState = deploymentEntity.getDeploymentState();
 
 		// then
-		assertEquals(DeploymentEntity.DeploymentState.scheduled, dState);
+		assertEquals(DeploymentState.scheduled, dState);
 	}
 
 }

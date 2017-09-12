@@ -21,7 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +66,7 @@ public class CommonFilterServicePersistenceTest {
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ") ;
         List<CustomFilter> filters = new ArrayList<>();
         CustomFilter filter = CustomFilter.builder(DEPLOYMENT_STATE)
-                .enumType(DeploymentEntity.DeploymentState.class)
+                .enumType(DeploymentState.class)
                 .isSelected(true)
                 .build();
         filter.setValue("success");
@@ -88,14 +88,14 @@ public class CommonFilterServicePersistenceTest {
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ") ;
         List<CustomFilter> filters = new ArrayList<>();
         CustomFilter filter = CustomFilter.builder(DEPLOYMENT_STATE)
-                .enumType(DeploymentEntity.DeploymentState.class)
+                .enumType(DeploymentState.class)
                 .isSelected(true)
                 .build();
         filter.setValue("success");
         filters.add(filter);
 
         filter = CustomFilter.builder(CONFIRMATION_USER)
-                .enumType(DeploymentEntity.DeploymentState.class)
+                .enumType(DeploymentState.class)
                 .isSelected(true)
                 .build();
         filter.setValue("test");
@@ -124,7 +124,7 @@ public class CommonFilterServicePersistenceTest {
 
         filter = CustomFilter.builder(DEPLOYMENT_PARAMETER)
                 .isSelected(true)
-                .enumType(DeploymentEntity.DeploymentState.class)
+                .enumType(DeploymentState.class)
                 .build();
         filter.setValue("test");
         filters.add(filter);

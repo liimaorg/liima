@@ -22,6 +22,7 @@ package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import lombok.Data;
@@ -40,7 +41,7 @@ public class DeploymentDTO {
 
     private Integer id;
     private Integer trackingId;
-    private DeploymentEntity.DeploymentState state;
+    private DeploymentState state;
     private Date deploymentDate;
     private Date deploymentJobCreationDate;
     private Date deploymentConfirmationDate;

@@ -24,7 +24,6 @@ import ch.puzzle.itc.mobiliar.business.database.control.SequencesService;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent.DeploymentEventType;

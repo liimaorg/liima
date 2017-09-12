@@ -22,7 +22,6 @@ package ch.puzzle.itc.mobiliar.presentation.deploy;
 
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService.SortingDirectionType;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
