@@ -126,13 +126,24 @@ export class DeploymentsComponent implements OnInit {
   setDeploymentDate(deployment: Deployment) {
     if (deployment) {
       this.deploymentService.setDeploymentDate(deployment.id, deployment.deploymentDate).subscribe(
-        /* happy path */ (r) => this.updateDeploymentsList(deployment),
-        /* error path */ (e) => this.errorMessage = e
+        /* happy path */ (r) => r,
+        /* error path */ (e) => this.errorMessage = e,
+        /* on complete */ () => this.reloadDeployment(deployment)
       );
     }
   }
 
+  private reloadDeployment(deployment: Deployment) {
+    let reloadedDeployment: Deployment;
+    this.deploymentService.getWithActions(deployment.id).subscribe(
+      /* happy path */ (r) => reloadedDeployment = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* on complete */ () => this.updateDeploymentsList(reloadedDeployment)
+    );
+  }
+
   private updateDeploymentsList(deployment: Deployment) {
+    console.log(deployment);
     this.deployments.splice(_.findIndex(this.deployments, {id: deployment.id}), 1, deployment);
   }
 

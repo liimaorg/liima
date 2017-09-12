@@ -55,6 +55,7 @@ public class DeploymentDTO {
     private String requestUser;
     private String confirmUser;
     private String cancelUser;
+    private boolean deploymentDelayed;
     private Set<NodeJobDTO> nodeJobs = new HashSet<>();
 
     private DeploymentActionsDTO actions;
@@ -81,6 +82,7 @@ public class DeploymentDTO {
         this.setRequestUser(entity.getDeploymentRequestUser());
         this.setConfirmUser(entity.getDeploymentConfirmationUser());
         this.setCancelUser(entity.getDeploymentCancelUser());
+        this.setDeploymentDelayed(entity.isDeploymentDelayed());
         for (NodeJobEntity job : entity.getNodeJobs()) {
             nodeJobs.add(new NodeJobDTO(job));
         }

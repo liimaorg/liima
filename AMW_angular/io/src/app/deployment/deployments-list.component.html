@@ -27,7 +27,7 @@
             <span class="link" (click)="showEdit(deployment.id)" title="change the deployment date">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
           </ng-container>
           <ng-container *ngIf="!deployment.actions.editPossible">
-            {{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}
+            <span [attr.class]="deployment.deploymentDelayed ? 'delayed' : null">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
           </ng-container>
         </td>
         <td>
@@ -73,7 +73,7 @@
           <p>rejected by: {{deployment.confirmUser}}<br>
           rejected at: {{deployment.deploymentConfirmationDate | date:'dd.MM.y HH:mm'}}</p>
         </ng-container>
-        <ng-container *ngIf="deploymentDetail && deploymentDetail.deploymentDelayed">
+        <ng-container *ngIf="deployment.deploymentDelayed">
           <h4>deployment job delayed</h4>
           <p>planed deployment date: {{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</p>
         </ng-container>
@@ -90,9 +90,9 @@
             </ng-container>
           </p>
         </ng-container>
-        <ng-container *ngIf="deploymentDetail && deploymentDetail.stateMessage">
+        <ng-container *ngIf="deploymentStateMessage && deploymentStateMessage.stateMessage">
           <h4>state message</h4>
-          <p [innerHTML]="deploymentDetail.stateMessage"></p>
+          <p [innerHTML]="deploymentStateMessage.stateMessage"></p>
         </ng-container>
       </div>
     </div>

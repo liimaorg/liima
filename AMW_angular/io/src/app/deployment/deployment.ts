@@ -20,6 +20,7 @@ export interface Deployment {
   runtimeName: string;
   requestUser: string;
   confirmUser: string;
-  cancleUser: string;
+  cancelUser: string;
+  deploymentDelayed: boolean;
   actions: DeploymentAction;
 }

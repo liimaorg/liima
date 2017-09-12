@@ -128,11 +128,15 @@ public class DeploymentsRest {
     private List<DeploymentDTO> createDeploymentDTOs(Tuple<Set<DeploymentEntity>, Integer> result) {
         List<DeploymentDTO> deploymentDTOs = new ArrayList<>();
         for (DeploymentEntity deployment : result.getA()) {
-            DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
-            deploymentDTO.setActions(createDeploymentActionsDTO(deployment));
-            deploymentDTOs.add(deploymentDTO);
+            deploymentDTOs.add(createDeploymentDTO(deployment));
         }
         return deploymentDTOs;
+    }
+
+    private DeploymentDTO createDeploymentDTO(DeploymentEntity deployment) {
+        DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
+        deploymentDTO.setActions(createDeploymentActionsDTO(deployment));
+        return deploymentDTO;
     }
 
     private DeploymentActionsDTO createDeploymentActionsDTO(DeploymentEntity deployment) {
@@ -502,8 +506,8 @@ public class DeploymentsRest {
     }
 
     @GET
-    @Path("/{id : \\d+}/detail")
-    @ApiOperation(value = "Get detail information of a Deployment - used by Angular")
+    @Path("/{id : \\d+}/stateMessage")
+    @ApiOperation(value = "Get state message of a Deployment - used by Angular")
     public Response getDeploymentDetail(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId) {
         DeploymentEntity deployment;
         try {
@@ -512,7 +516,23 @@ public class DeploymentsRest {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto("Deployment with id "
                     + deploymentId + "not found" )).build();
         }
-        return Response.status(Response.Status.OK).entity(new DeploymentDetailDTO(deployment)).build();
+        return Response.status(Response.Status.OK).entity(new DeploymentStateMessageDTO(deployment)).build();
+    }
+
+    @GET
+    @Path("/{id : \\d+}/withActions")
+    // support digit only
+    @ApiOperation(value = "Get a Deployment including actions by id - used by Angular")
+    public Response getDeploymentWithActions(@ApiParam("Deployment ID") @PathParam("id") Integer id) {
+        DeploymentEntity result;
+
+        try {
+            result = deploymentBoundary.getDeploymentById(id);
+        } catch (RuntimeException e) {
+            return catchNoResultException(e, "Deployment with id " + id + " not found.");
+        }
+
+        return Response.status(Status.OK).entity(createDeploymentDTO(result)).build();
     }
 
     @GET

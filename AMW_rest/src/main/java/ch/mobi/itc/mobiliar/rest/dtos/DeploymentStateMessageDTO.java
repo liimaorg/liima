@@ -26,15 +26,13 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class DeploymentDetailDTO {
+public class DeploymentStateMessageDTO {
 
-    private Integer id;
+    private Integer deploymentId;
     private String stateMessage;
-    private boolean deploymentDelayed;
 
-    public DeploymentDetailDTO(DeploymentEntity entity) {
-        this.setId(entity.getId());
+    public DeploymentStateMessageDTO(DeploymentEntity entity) {
+        this.setDeploymentId(entity.getId());
         this.setStateMessage(entity.getStateMessageAsHtml());
-        this.setDeploymentDelayed(entity.isDeploymentDelayed());
     }
 }
