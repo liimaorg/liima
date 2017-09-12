@@ -99,6 +99,7 @@ public class DeploymentsRest {
     private ContextLocator contextLocator;
 
 
+
     @GET
     @Path("/filter")
     @ApiOperation(value = "returns all Deployments matching the list of json filters")
@@ -505,6 +506,18 @@ public class DeploymentsRest {
         return Response.status(Response.Status.OK).build();
     }
 
+
+    @PUT
+    @Path("/{id : \\d+}/cancel")
+    @ApiOperation(value = "Cancels a deployment - used by Angular")
+    public Response cancelDeployment(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId) {
+//        DeploymentEntity d = deploymentBoundary.cancelDeployment(deploymentId);
+//        return Response.status(Status.OK).entity(d).build();
+
+        System.out.println("TODO");
+        return Response.status(Status.OK).build();
+    }
+
     @GET
     @Path("/{id : \\d+}/stateMessage")
     @ApiOperation(value = "Get state message of a Deployment - used by Angular")
@@ -580,6 +593,7 @@ public class DeploymentsRest {
     @Path("/canRequestDeployment/")
     @ApiOperation(value = "Checks if the caller is allowed to request a deployment at all - used by Angular")
     public Response canRequestDeployment() {
+
         return Response.ok(permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.CREATE)).build();
     }
 
