@@ -343,6 +343,17 @@ export class DeploymentsComponent implements OnInit {
     );
   }
 
+
+  rejectDeployment(deployment: Deployment) {
+    if (deployment) {
+      this.deploymentService.rejectDeployment(deployment.id).subscribe(
+        /* happy path */ (r) => r,
+        /* error path */ (e) => this.errorMessage = e,
+        /* onComplete */ () => this.reloadDeployment(deployment)
+      );
+    }
+  }
+
   private setDeploymentDates() {
     let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
     if (!dateTime || !dateTime.isValid()) {

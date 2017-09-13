@@ -28,6 +28,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
@@ -428,17 +429,45 @@ public class DeploymentTest {
 
 	@Test
 	public void shouldHandleIllegalStateInUpdateState() {
-		// given
-		String illegalState = "dudu";
+        // given
+        String illegalState = "dudu";
 
-		// when
-		Response response = deploymentRestService.updateState(1, illegalState);
+        // when
+        Response response = deploymentRestService.updateState(1, illegalState);
 
-		// then
-		assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+        // then
+        assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+    }
 
-	}
-	
+
+    @Test
+    public void shouldHandleCancelInUpdateState() {
+        // given
+        String cancelState = DeploymentState.canceled.name();
+        Integer deploymentId = 1;
+
+        // when
+        Response response = deploymentRestService.updateState(deploymentId, cancelState);
+
+        // then
+        verify(deploymentBoundary).cancelDeployment(deploymentId);
+        assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+    }
+
+    @Test
+    public void shouldHandleRejectInUpdateState() {
+        // given
+        String cancelState = DeploymentState.rejected.name();
+        Integer deploymentId = 1;
+
+        // when
+        Response response = deploymentRestService.updateState(deploymentId, cancelState);
+
+        // then
+        verify(deploymentBoundary).rejectDeployment(deploymentId);
+        assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+    }
+
 	private ReleaseEntity mockRelease(){
 		ReleaseEntity mock = mock(ReleaseEntity.class);
 		Calendar cal = new GregorianCalendar();

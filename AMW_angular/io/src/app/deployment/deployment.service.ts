@@ -66,6 +66,14 @@ export class DeploymentService {
     return resource$;
   }
 
+  rejectDeployment(deploymentId: number) {
+    let resource$ = this.http
+      .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, "rejected",{headers: this.getHeaders()})
+      .map(this.extractPayload)
+      .catch(handleError);
+    return resource$;
+  }
+
   getAllDeploymentParameterKeys(): Observable<DeploymentParameter[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/deployments/deploymentParameterKeys/`, {headers: this.getHeaders()})

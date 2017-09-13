@@ -521,8 +521,11 @@ public class DeploymentsRest {
             case canceled:
                 deploymentBoundary.cancelDeployment(deploymentId);
                 break;
+            case rejected:
+                deploymentBoundary.rejectDeployment(deploymentId);
+                break;
             default:
-                return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ExceptionDto(String.format("State '%s' not implemented yet", state.toString()) )).build();
+                return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ExceptionDto(String.format("Change state to '%s' not implemented yet", state.toString()) )).build();
         }
         return Response.status(Status.OK).build();
     }

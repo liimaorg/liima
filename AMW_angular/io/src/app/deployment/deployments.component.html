@@ -92,7 +92,8 @@
             <amw-deployments-list [deployments]="deployments"
                                   (editDeploymentDate)='changeDeploymentDate($event)'
                                   (selectAllDeployments)='switchDeployments($event)'
-                                  (doCancelDeployment)='cancelDeployment($event)'>
+                                  (doCancelDeployment)='cancelDeployment($event)'
+                                  (doRejectDeployment)='rejectDeployment($event)'>
             </amw-deployments-list>
           </div>
         </div>
