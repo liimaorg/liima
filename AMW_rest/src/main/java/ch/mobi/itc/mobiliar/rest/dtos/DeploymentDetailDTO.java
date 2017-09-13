@@ -24,15 +24,25 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
-public class DeploymentStateMessageDTO {
+public class DeploymentDetailDTO {
 
     private Integer deploymentId;
     private String stateMessage;
+    private boolean buildSuccess;
+    private boolean executed;
+    private boolean deploymentConfirmed;
+    private Date stateToDeploy;
 
-    public DeploymentStateMessageDTO(DeploymentEntity entity) {
+    public DeploymentDetailDTO(DeploymentEntity entity) {
         this.setDeploymentId(entity.getId());
-        this.setStateMessage(entity.getStateMessageAsHtml());
+        this.setStateMessage(entity.getStateMessage());
+        this.setBuildSuccess(entity.isBuildSuccess());
+        this.setExecuted(entity.isExecuted());
+        this.setDeploymentConfirmed(entity.getDeploymentConfirmed() != null ? entity.getDeploymentConfirmed() : false);
+        this.setStateToDeploy(entity.getStateToDeploy());
     }
 }

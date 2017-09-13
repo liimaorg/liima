@@ -89,9 +89,9 @@
             </ng-container>
           </p>
         </ng-container>
-        <ng-container *ngIf="deploymentStateMessage && deploymentStateMessage.stateMessage">
+        <ng-container *ngIf="deploymentDetail && deploymentDetail.stateMessage">
           <h4>state message</h4>
-          <p [innerHTML]="deploymentStateMessage.stateMessage"></p>
+          <pre>{{deploymentDetail.stateMessage}}</pre>
         </ng-container>
       </div>
     </div>

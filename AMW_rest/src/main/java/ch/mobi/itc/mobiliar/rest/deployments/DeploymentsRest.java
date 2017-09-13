@@ -528,8 +528,8 @@ public class DeploymentsRest {
     }
 
     @GET
-    @Path("/{id : \\d+}/stateMessage")
-    @ApiOperation(value = "Get state message of a Deployment - used by Angular")
+    @Path("/{id : \\d+}/detail")
+    @ApiOperation(value = "Get detail information of a Deployment - used by Angular")
     public Response getDeploymentDetail(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId) {
         DeploymentEntity deployment;
         try {
@@ -538,7 +538,7 @@ public class DeploymentsRest {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto("Deployment with id "
                     + deploymentId + "not found" )).build();
         }
-        return Response.status(Response.Status.OK).entity(new DeploymentStateMessageDTO(deployment)).build();
+        return Response.status(Response.Status.OK).entity(new DeploymentDetailDTO(deployment)).build();
     }
 
     @GET

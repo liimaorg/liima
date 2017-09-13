@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { AppState } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
 import { Deployment } from './deployment';
+import { DeploymentDetail } from './deployment-detail';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
@@ -48,6 +49,11 @@ export class DeploymentsComponent implements OnInit {
 
   // filtered deployments
   deployments: Deployment[] = [];
+
+  // csv export
+  deploymentDetailMap: { [key: number]: DeploymentDetail } = {};
+  csvReadyObjects: any[] = [];
+  csvDocument: string;
 
   errorMessage: string = '';
   successMessage: string = '';
@@ -114,7 +120,7 @@ export class DeploymentsComponent implements OnInit {
     this.filters.forEach((filter) => {
       filtersForParam.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
       if (filter.type === 'DateType') {
-        let dateTime = moment(filter.val, 'DD.MM.YYYY hh:mm');
+        let dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
         if (!dateTime || !dateTime.isValid()) {
           this.errorMessage = 'Invalid date';
         }
@@ -202,8 +208,143 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
+  exportCSV() {
+    this.deployments.forEach((deployment) => {
+      this.getDeploymentDetail(deployment);
+    });
+  }
+
+  private populateCsvRows(deployment: Deployment) {
+    let detail: DeploymentDetail = this.deploymentDetailMap[deployment.id];
+    let csvReadyObject: any = {
+      id: deployment['id'],
+      trackingId: deployment['trackingId'],
+      state: deployment['state'],
+      buildSuccess: detail.buildSuccess,
+      executed: detail.executed,
+      appServerName: deployment['appServerName'],
+      appsWithVersion: deployment['appsWithVersion'],
+      releaseName: deployment['releaseName'],
+      environmentName: deployment['environmentName'],
+      runtimeName: deployment['runtimeName'],
+      deploymentParameters: deployment['deploymentParameters'],
+      deploymentJobCreationDate: deployment['deploymentJobCreationDate'],
+      requestUser: deployment['requestUser'],
+      deploymentDate: deployment['deploymentDate'],
+      stateToDeploy: detail.stateToDeploy,
+      deploymentConfirmed: 'Deployment confirmed',
+      deploymentConfirmationDate: deployment['deploymentConfirmationDate'],
+      confirmUser: deployment['confirmUser'],
+      deploymentCancelDate: deployment['deploymentCancelDate'],
+      cancelUser: deployment['cancelUser'],
+      stateMessage: detail.stateMessage
+    };
+    this.csvReadyObjects.push(csvReadyObject);
+    if (this.csvReadyObjects.length === this.deployments.length) {
+      this.csvDocument = this.createCSV();
+      let docName: string = 'deployments_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
+      this.pushDownload(docName);
+    }
+  }
+
+  private createCSV(): string {
+    let labels: string = '';
+    let content: string = '';
+    let labelsMap: string[]  = [
+      'Id',
+      'Tracking Id',
+      'Deployment state',
+      'Build success',
+      'Deployment executed',
+      'App server',
+      'Applications',
+      'Deployment release',
+      'Environment',
+      'Target platform',
+      'Deployment parameters',
+      'Creation date',
+      'Request user',
+      'Deployment date',
+      'Configuration to deploy',
+      'Deployment confirmed',
+      'Confirmation date',
+      'Confirmation user',
+      'Cancel date',
+      'Cancel user',
+      'Status message'
+    ];
+
+    labelsMap.forEach((label) => {
+      labels += label + ',';
+    });
+    content += labels.slice(0, -1) + '\n';
+
+    this.csvReadyObjects.forEach((deployment) => {
+      let line: string = '';
+      for (const field of Object.keys(deployment)) {
+        switch (field) {
+          case 'id':
+          case 'trackingId':
+            line += deployment[field].toString() + ',';
+            break;
+          case 'deploymentDate':
+          case 'deploymentJobCreationDate':
+          case 'deploymentConfirmationDate':
+          case 'deploymentCancelDate':
+          case 'stateToDeploy':
+            line += deployment[field] ? '"' + moment(deployment[field]).format('YYYY-MM-DD HH:mm').toString() + '",' : ',';
+            break;
+          case 'appsWithVersion':
+            deployment[field].forEach((appsWithVersion) => {
+              line += '"' + appsWithVersion['applicationName'] + ' ' + appsWithVersion['version'] + '\n"';
+            });
+            line += ',';
+            break;
+          case 'deploymentParameters':
+            deployment[field].forEach((deploymentParameter) => {
+              line += '"' + deploymentParameter['key'] + ' ' + deploymentParameter['value'] + '\n"';
+            });
+            line += ',';
+            break;
+          default:
+            line += deployment[field] !== null ? '"' + deployment[field] + '",' : ',';
+            break;
+        }
+
+      }
+      line = line.slice(0, -1);
+      content += line + '\n';
+    });
+    return content;
+  }
+
+  private pushDownload(docName: string) {
+    let blob = new Blob([this.csvDocument], { type: 'text/csv' });
+    let url = window.URL.createObjectURL(blob);
+    if (navigator.msSaveOrOpenBlob) {
+      navigator.msSaveBlob(blob, docName);
+    } else {
+      let a = document.createElement('a');
+      a.href = url;
+      a.download = docName;
+      a.setAttribute('style', 'display:none;');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+    window.URL.revokeObjectURL(url);
+  }
+
+  private getDeploymentDetail(deployment: Deployment) {
+    this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
+      /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* on complete */ () => this.populateCsvRows(deployment)
+    );
+  }
+
   private setDeploymentDates() {
-    let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
+    let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
     if (!dateTime || !dateTime.isValid()) {
       this.errorMessage = 'Invalid date';
     } else {

@@ -6,7 +6,7 @@ import { Deployment } from './deployment';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentRequest } from './deployment-request';
 import { DeploymentParameter } from './deployment-parameter';
-import { DeploymentStateMessage } from './deployment-state-message';
+import { DeploymentDetail } from './deployment-detail';
 
 @Injectable()
 export class DeploymentService {
@@ -60,7 +60,7 @@ export class DeploymentService {
 
   cancelDeployment(deploymentId: number) {
     let resource$ = this.http
-      .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, "canceled",{headers: this.getHeaders()})
+      .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, 'canceled', {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
     return resource$;
@@ -140,9 +140,9 @@ export class DeploymentService {
     return resource$;
   }
 
-  getDeploymentStateMessage(deploymentId: number): Observable<DeploymentStateMessage> {
+  getDeploymentDetail(deploymentId: number): Observable<DeploymentDetail> {
     let resource$ = this.http
-      .get(`${this.baseUrl}/deployments/${deploymentId}/stateMessage`, {headers: this.getHeaders()})
+      .get(`${this.baseUrl}/deployments/${deploymentId}/detail`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
     return resource$;

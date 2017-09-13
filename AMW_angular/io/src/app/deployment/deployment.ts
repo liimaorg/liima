@@ -6,13 +6,13 @@ import { DeploymentAction } from './deployment-action';
 export interface Deployment {
   id: number;
   trackingId: number;
-  state: string,
-  deploymentDate: number,
-  deploymentJobCreationDate: number,
-  deploymentConfirmationDate: number,
-  deploymentCancelDate: number,
-  appServerName: string,
-  appServerId: number,
+  state: string;
+  deploymentDate: number;
+  deploymentJobCreationDate: number;
+  deploymentConfirmationDate: number;
+  deploymentCancelDate: number;
+  appServerName: string;
+  appServerId: number;
   appsWithVersion: AppWithVersion[];
   deploymentParameters: DeploymentParameter[];
   environmentName: string;

@@ -74,6 +74,8 @@
           <div class="col-sm-offset-2 col-sm-10">
             <button type="submit" class="btn btn-primary" [attr.disabled]="filters.length < 1 ? '' : null" (click)="applyFilter()">Apply filter</button>
             <button type="submit" class="btn btn-danger" [attr.disabled]="filters.length < 1 ? '' : null" (click)="clearFilters()">Clear filters</button>
+            <button type="submit" class="btn btn-default" [attr.disabled]="deployments.length < 1 ? '' : null" (click)="exportCSV()">
+              <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export</button>
             <button type="submit" class="btn btn-default" [attr.disabled]="editableDeployments() ? null : ''" (click)="showEdit()">Edit deployments</button>
             <ng-container *ngIf="hasPermissionToRequestDeployments">
               <a href="#/deployment/">

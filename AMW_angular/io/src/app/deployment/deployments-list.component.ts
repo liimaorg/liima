@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, NgZone } from '@angular/core';
 import { Deployment } from './deployment';
-import { DeploymentStateMessage } from './deployment-state-message';
+import { DeploymentDetail } from './deployment-detail';
 import { DeploymentService } from './deployment.service';
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
@@ -24,7 +24,7 @@ export class DeploymentsListComponent {
 
   deploymentDate: number;
 
-  deploymentStateMessage: DeploymentStateMessage;
+  deploymentDetail: DeploymentDetail;
 
   errorMessage: string = '';
 
@@ -35,9 +35,9 @@ export class DeploymentsListComponent {
   }
 
   showDetails(deploymentId: number) {
-    delete this.deploymentStateMessage;
+    delete this.deploymentDetail;
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    this.getDeploymentStateMessage(deploymentId);
+    this.getDeploymentDetail(deploymentId);
     $('#deploymentDetails').modal('show');
   }
 
@@ -109,9 +109,9 @@ export class DeploymentsListComponent {
     this.selectAllDeployments.emit(this.allSelected);
   }
 
-  private getDeploymentStateMessage(deploymentId: number) {
-    this.deploymentService.getDeploymentStateMessage(deploymentId).subscribe(
-      /* happy path */ (r) => this.deploymentStateMessage = r,
+  private getDeploymentDetail(deploymentId: number) {
+    this.deploymentService.getDeploymentDetail(deploymentId).subscribe(
+      /* happy path */ (r) => this.deploymentDetail = r,
       /* error path */ (e) => this.errorMessage = e);
   }
 
