@@ -209,6 +209,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   exportCSV() {
+    this.isLoading = true;
     this.deployments.forEach((deployment) => {
       this.getDeploymentDetail(deployment);
     });
@@ -319,6 +320,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private pushDownload(docName: string) {
+    this.isLoading = false;
     let blob = new Blob([this.csvDocument], { type: 'text/csv' });
     let url = window.URL.createObjectURL(blob);
     if (navigator.msSaveOrOpenBlob) {
