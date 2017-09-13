@@ -19,6 +19,7 @@ export class DeploymentsListComponent {
   @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
+  @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
 
   deployment: Deployment;
 
@@ -90,7 +91,7 @@ export class DeploymentsListComponent {
 
   doReject() {
     if (this.deployment) {
-      console.log('TODO: reject deployment');
+      this.doRejectDeployment.emit(this.deployment);
       $('#deploymentRejection').modal('hide');
       delete this.deployment;
     }
