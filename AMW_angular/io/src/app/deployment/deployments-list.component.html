@@ -123,6 +123,8 @@
   </ng-container>
 </div>
 
+
+
 <div id="deploymentConfirmation" class="modal fade">
   <ng-container *ngIf="deployment">
   <div class="modal-dialog">
@@ -132,8 +134,31 @@
         <h4 class="modal-title">Confirm deployment #{{deployment.id}} for app server {{deployment.appServerName}}</h4>
       </div>
       <div class="modal-body">
-        <p>// TODO</p>
-        <p class="text-warning"><small>Show some options</small></p>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-1"><input type="checkbox"></div>
+            <div class="col-sm-10"><span>send an email when deployed</span></div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-1"><input type="checkbox"></div>
+            <div class="col-sm-11"><span>simulate before deployment</span></div>
+          </div>
+
+          <!--rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}-->
+          <div class="row">
+            <div class="col-sm-1"><input type="checkbox"></div>
+            <div class="col-sm-11"><span>execute shakedown tests when deployed</span></div>
+          </div>
+
+          <!--disabled="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment==false}"-->
+          <div class="row">
+            <div class="col-sm-1 col-md-offset-1"><input type="checkbox"></div>
+            <div class="col-sm-10"><span>test neighbourhood</span></div>
+          </div>
+
+        </div>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="doConfirm()">Confirm</button>
