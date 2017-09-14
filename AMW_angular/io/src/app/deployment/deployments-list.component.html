@@ -100,7 +100,7 @@
 </div>
 
 <div id="deploymentDateChange" class="modal fade">
-  <ng-container *ngIf="deployment">
+  <ng-container *ngIf="deployment && deploymentDetail">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -126,7 +126,7 @@
 
 
 <div id="deploymentConfirmation" class="modal fade">
-  <ng-container *ngIf="deployment">
+  <ng-container *ngIf="deploymentDetail">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -136,24 +136,24 @@
       <div class="modal-body">
         <div class="modal-body">
           <div class="row">
-            <div class="col-sm-1"><input type="checkbox" [ngModel]="deployment.sendEmailWhenDeployed"></div>
+            <div class="col-sm-1"><input type="checkbox" [ngModel]="deploymentDetail.sendEmailWhenDeployed"></div>
             <div class="col-sm-10"><span>send an email when deployed</span></div>
           </div>
 
           <div class="row">
-            <div class="col-sm-1"><input type="checkbox" [ngModel]="deployment.simulateBeforeDeployment"></div>
+            <div class="col-sm-1"><input type="checkbox" [ngModel]="deploymentDetail.simulateBeforeDeployment"></div>
             <div class="col-sm-11"><span>simulate before deployment</span></div>
           </div>
 
           <!--rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}-->
           <div class="row">
-            <div class="col-sm-1"><input type="checkbox" [ngModel]="deployment.shakedownTestsWhenDeployed"></div>
+            <div class="col-sm-1"><input type="checkbox" [ngModel]="deploymentDetail.shakedownTestsWhenDeployed"></div>
             <div class="col-sm-11"><span>execute shakedown tests when deployed</span></div>
           </div>
 
           <!--disabled="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment==false}"-->
           <div class="row">
-            <div class="col-sm-1 col-md-offset-1"><input type="checkbox" [ngModel]="deployment.neighbourhoodTest"></div>
+            <div class="col-sm-1 col-md-offset-1"><input type="checkbox" [ngModel]="deploymentDetail.neighbourhoodTest"></div>
             <div class="col-sm-10"><span>test neighbourhood</span></div>
           </div>
 
