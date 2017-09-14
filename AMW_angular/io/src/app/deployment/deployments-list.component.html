@@ -136,25 +136,38 @@
       <div class="modal-body">
         <div class="modal-body">
           <div class="row">
-            <div class="col-sm-1"><input type="checkbox"></div>
+            <div class="col-sm-1"><input type="checkbox" [ngModel]="deployment.sendEmailWhenDeployed"></div>
             <div class="col-sm-10"><span>send an email when deployed</span></div>
           </div>
 
           <div class="row">
-            <div class="col-sm-1"><input type="checkbox"></div>
+            <div class="col-sm-1"><input type="checkbox" [ngModel]="deployment.simulateBeforeDeployment"></div>
             <div class="col-sm-11"><span>simulate before deployment</span></div>
           </div>
 
           <!--rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}-->
           <div class="row">
-            <div class="col-sm-1"><input type="checkbox"></div>
+            <div class="col-sm-1"><input type="checkbox" [ngModel]="deployment.shakedownTestsWhenDeployed"></div>
             <div class="col-sm-11"><span>execute shakedown tests when deployed</span></div>
           </div>
 
           <!--disabled="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment==false}"-->
           <div class="row">
-            <div class="col-sm-1 col-md-offset-1"><input type="checkbox"></div>
+            <div class="col-sm-1 col-md-offset-1"><input type="checkbox" [ngModel]="deployment.neighbourhoodTest"></div>
             <div class="col-sm-10"><span>test neighbourhood</span></div>
+          </div>
+
+          <div class="checkbox" *ngIf="hasPermissionShakedownTest">
+            <label>
+              <input type="checkbox" [(ngModel)]="doExecuteShakedownTest">
+              execute shakedown tests when deployed
+            </label>
+          </div>
+          <div class="checkbox" *ngIf="doExecuteShakedownTest">
+            <label>
+              <input type="checkbox" [(ngModel)]="doNeighbourhoodTest">
+              test neighbourhood
+            </label>
           </div>
 
         </div>

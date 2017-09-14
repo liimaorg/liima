@@ -52,7 +52,19 @@ export class DeploymentsListComponent {
 
   showConfirm(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    $('#deploymentConfirmation').modal('show');
+    // this.getDeploymentDetail(deploymentId);
+    this.deploymentService.getDeploymentDetail(deploymentId).subscribe(
+      /* happy path */ (r) => this.setConfirmValuesOnDeployment(r),
+      /* error path */ (e) => this.errorMessage = e,
+                        () => $('#deploymentConfirmation').modal('show'));
+
+  }
+
+  setConfirmValuesOnDeployment(deploymentDetail: DeploymentDetail) {
+    this.deployment.sendEmailWhenDeployed = deploymentDetail.sendEmailWhenDeployed;
+    this.deployment.simulateBeforeDeployment = deploymentDetail.simulateBeforeDeployment;
+    this.deployment.shakedownTestsWhenDeployed = deploymentDetail.shakedownTestsWhenDeployed;
+    this.deployment.neighbourhoodTest = deploymentDetail.neighbourhoodTest;
   }
 
   showReject(deploymentId: number) {

@@ -24,4 +24,9 @@ export interface Deployment {
   deploymentDelayed: boolean;
   selected: boolean;
   actions: DeploymentAction;
+
+  sendEmailWhenDeployed: boolean;
+  simulateBeforeDeployment: boolean;
+  shakedownTestsWhenDeployed: boolean;
+  neighbourhoodTest: boolean;
 }
