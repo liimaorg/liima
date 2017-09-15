@@ -54,7 +54,9 @@ export class DeploymentService {
   }
 
   createDeployment(deploymentRequest: DeploymentRequest): Observable<Deployment> {
-    return this.http.post(`${this.baseUrl}/deployments`, deploymentRequest, {headers: this.postHeaders()}).map((res: Response) => res.json())
+    return this.http
+      .post(`${this.baseUrl}/deployments`, deploymentRequest, {headers: this.postHeaders()})
+      .map((res: Response) => res.json())
       .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
   }
 

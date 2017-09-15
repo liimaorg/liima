@@ -312,7 +312,7 @@ public class DeploymentBoundary {
      * @param deployment
      * @return
      */
-    private DeploymentEntity saveDeployment(DeploymentEntity deployment) {
+    protected DeploymentEntity saveDeployment(DeploymentEntity deployment) {
         //TODO hack (YP): calling merge on deployment will also call merge on deployment.resource. Because ResrouceEntity has a lot
         //           of "cascade = ALL" annotations all those properties will be loaded too before merge. This will cause about 800 queries.
         //           With this hack the deployment.resouce is attached and the cascades will be ignored.
