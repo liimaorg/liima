@@ -66,6 +66,14 @@ export class DeploymentService {
     return resource$;
   }
 
+  confirmDeployment(deploymentDetail: DeploymentDetail) {
+    let resource$ = this.http
+      .patch(`${this.baseUrl}/deployments/${deploymentDetail.deploymentId}/confirm`, deploymentDetail, {headers: this.getHeaders()})
+      .map(this.extractPayload)
+      .catch(handleError);
+    return resource$;
+  }
+
   rejectDeployment(deploymentId: number) {
     let resource$ = this.http
       .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, "rejected",{headers: this.getHeaders()})

@@ -21,6 +21,7 @@ export class DeploymentsListComponent {
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
+  @Output() doConfirmDeployment: EventEmitter<DeploymentDetail> = new EventEmitter<DeploymentDetail>();
 
   deployment: Deployment;
 
@@ -78,14 +79,6 @@ export class DeploymentsListComponent {
     $('#deploymentCancelation').modal('show');
   }
 
-  doConfirm() {
-    if (this.deployment) {
-      console.log('TODO: confirm deployment');
-      $('#deploymentConfirmation').modal('hide');
-      delete this.deployment;
-    }
-  }
-
   doDateChange() {
     if (this.deployment) {
       this.errorMessage = '';
@@ -115,6 +108,15 @@ export class DeploymentsListComponent {
       this.doCancelDeployment.emit(this.deployment);
       $('#deploymentCancelation').modal('hide');
       delete this.deployment;
+    }
+  }
+
+  doConfirm() {
+    if (this.deployment && this.deploymentDetail) {
+      this.doConfirmDeployment.emit(this.deploymentDetail);
+      $('#deploymentConfirmation').modal('hide');
+      delete this.deployment;
+      delete this.deploymentDetail;
     }
   }
 

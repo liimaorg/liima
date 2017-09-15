@@ -356,6 +356,16 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
+  confirmDeployment(deploymentDetail: DeploymentDetail) {
+    if (deploymentDetail) {
+      this.deploymentService.confirmDeployment(deploymentDetail).subscribe(
+        /* happy path */ (r) => r,
+        /* error path */ (e) => this.errorMessage = e,
+        /* onComplete */  () => this.reloadDeploymentById(deploymentDetail.deploymentId)
+      );
+    }
+  }
+
   private setDeploymentDates() {
     let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
     if (!dateTime || !dateTime.isValid()) {
@@ -368,6 +378,15 @@ export class DeploymentsComponent implements OnInit {
   private reloadDeployment(deployment: Deployment) {
     let reloadedDeployment: Deployment;
     this.deploymentService.getWithActions(deployment.id).subscribe(
+      /* happy path */ (r) => reloadedDeployment = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* on complete */ () => this.updateDeploymentsList(reloadedDeployment)
+    );
+  }
+
+  private reloadDeploymentById(deploymentId: number) {
+    let reloadedDeployment: Deployment;
+    this.deploymentService.getWithActions(deploymentId).subscribe(
       /* happy path */ (r) => reloadedDeployment = r,
       /* error path */ (e) => this.errorMessage = e,
       /* on complete */ () => this.updateDeploymentsList(reloadedDeployment)
