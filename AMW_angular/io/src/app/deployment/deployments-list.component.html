@@ -135,37 +135,29 @@
       </div>
       <div class="modal-body">
         <div class="modal-body">
-          <div class="row">
-            <div class="col-sm-1"><input type="checkbox" [ngModel]="deploymentDetail.sendEmailWhenDeployed"></div>
-            <div class="col-sm-10"><span>send an email when deployed</span></div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" [ngModel]="deploymentDetail.sendEmailWhenDeployed">
+              send an email when deployed
+            </label>
           </div>
 
-          <div class="row">
-            <div class="col-sm-1"><input type="checkbox" [ngModel]="deploymentDetail.simulateBeforeDeployment"></div>
-            <div class="col-sm-11"><span>simulate before deployment</span></div>
-          </div>
-
-          <!--rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}-->
-          <div class="row">
-            <div class="col-sm-1"><input type="checkbox" [ngModel]="deploymentDetail.shakedownTestsWhenDeployed"></div>
-            <div class="col-sm-11"><span>execute shakedown tests when deployed</span></div>
-          </div>
-
-          <!--disabled="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment==false}"-->
-          <div class="row">
-            <div class="col-sm-1 col-md-offset-1"><input type="checkbox" [ngModel]="deploymentDetail.neighbourhoodTest"></div>
-            <div class="col-sm-10"><span>test neighbourhood</span></div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" [ngModel]="deploymentDetail.simulateBeforeDeployment">
+              simulate before deployment
+            </label>
           </div>
 
           <div class="checkbox" *ngIf="hasPermissionShakedownTest">
             <label>
-              <input type="checkbox" [(ngModel)]="doExecuteShakedownTest">
+              <input type="checkbox" [(ngModel)]="deploymentDetail.shakedownTestsWhenDeployed">
               execute shakedown tests when deployed
             </label>
           </div>
-          <div class="checkbox" *ngIf="doExecuteShakedownTest">
+          <div class="checkbox" *ngIf="deploymentDetail.shakedownTestsWhenDeployed">
             <label>
-              <input type="checkbox" [(ngModel)]="doNeighbourhoodTest">
+              <input type="checkbox" [(ngModel)]="deploymentDetail.neighbourhoodTest">
               test neighbourhood
             </label>
           </div>

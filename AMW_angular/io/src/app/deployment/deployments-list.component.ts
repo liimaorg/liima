@@ -5,6 +5,7 @@ import { DeploymentService } from './deployment.service';
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import {ResourceService} from "../resource/resource.service";
 
 declare var $: any;
 
@@ -27,12 +28,15 @@ export class DeploymentsListComponent {
 
   deploymentDetail: DeploymentDetail;
 
+  hasPermissionShakedownTest: boolean = null;
+
   errorMessage: string = '';
 
   allSelected: boolean = false;
 
   constructor(private ngZone: NgZone,
-              private deploymentService: DeploymentService) {
+              private deploymentService: DeploymentService,
+              private resourceService: ResourceService) {
   }
 
   showDetails(deploymentId: number) {
@@ -53,11 +57,15 @@ export class DeploymentsListComponent {
   showConfirm(deploymentId: number) {
     delete this.deploymentDetail;
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    // this.getDeploymentDetail(deploymentId);
+    if (this.hasPermissionShakedownTest == null) {
+      this.resourceService.canCreateShakedownTest(this.deployment.appServerId).subscribe(
+        /* happy path */ (r) => this.hasPermissionShakedownTest = r,
+        /* error path */ (e) => this.errorMessage = e);
+    }
     this.deploymentService.getDeploymentDetail(deploymentId).subscribe(
       /* happy path */ (r) => this.deploymentDetail = r,
       /* error path */ (e) => this.errorMessage = e,
-      () => $('#deploymentConfirmation').modal('show'));
+                        () => $('#deploymentConfirmation').modal('show'));
   }
 
   showReject(deploymentId: number) {
