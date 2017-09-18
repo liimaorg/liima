@@ -199,44 +199,24 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
-  private setDeploymentDate(deployment: Deployment, deploymentDate: number) {
-    this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
-      /* happy path */ (r) => r,
-      /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
-      /* on complete */ () => this.reloadDeployment(deployment.id)
-    );
-  }
-
-  private confirmSelectedDeployments() {
-    this.deployments.filter(deployment => deployment.selected === true).forEach((deployment) => {
-      this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
-        /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
+  confirmDeployment(deploymentDetail: DeploymentDetail) {
+    if (deploymentDetail) {
+      this.deploymentService.confirmDeployment(deploymentDetail).subscribe(
+        /* happy path */ (r) => r,
         /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
-        /* on complete */ () => this.applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deployment.id)
+        /* onComplete */ () => this.reloadDeployment(deploymentDetail.deploymentId)
       );
-    });
+    }
   }
 
-  private rejectSelectedDeployments() {
-    this.deployments.filter(deployment => deployment.selected === true).forEach( (deployment) => {
-      this.rejectDeployment(deployment)
-    });
-  }
-
-  private cancelSelectedDeployments() {
-    let selectedDeployments =  this.deployments.filter(deployment => deployment.selected === true);
-    selectedDeployments.forEach( (deployment) => {
-      this.cancelDeployment(deployment)
-    });
-  }
-
-  private applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deploymentId: number) {
-    let deploymentDetail = this.deploymentDetailMap[deploymentId];
-    deploymentDetail.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
-    deploymentDetail.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
-    deploymentDetail.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
-    deploymentDetail.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
-    this.confirmDeployment(deploymentDetail);
+  rejectDeployment(deployment: Deployment) {
+    if (deployment) {
+      this.deploymentService.rejectDeployment(deployment.id).subscribe(
+        /* happy path */ (r) => r,
+        /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
+        /* onComplete */ () => this.reloadDeployment(deployment.id)
+      );
+    }
   }
 
   cancelDeployment(deployment: Deployment) {
@@ -386,25 +366,35 @@ export class DeploymentsComponent implements OnInit {
     );
   }
 
-
-  rejectDeployment(deployment: Deployment) {
-    if (deployment) {
-      this.deploymentService.rejectDeployment(deployment.id).subscribe(
-        /* happy path */ (r) => r,
-        /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
-        /* onComplete */ () => this.reloadDeployment(deployment.id)
+  private confirmSelectedDeployments() {
+    this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
+      this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
+        /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
+        /* error path */ (e) => e,
+        /* on complete */ () => this.applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deployment.id)
       );
-    }
+    });
   }
 
-  confirmDeployment(deploymentDetail: DeploymentDetail) {
-    if (deploymentDetail) {
-      this.deploymentService.confirmDeployment(deploymentDetail).subscribe(
-        /* happy path */ (r) => r,
-        /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */  () => this.reloadDeployment(deploymentDetail.deploymentId)
-      );
-    }
+  private rejectSelectedDeployments() {
+    this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
+      this.rejectDeployment(deployment);
+    });
+  }
+
+  private cancelSelectedDeployments() {
+    this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
+      this.cancelDeployment(deployment);
+    });
+  }
+
+  private applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deploymentId: number) {
+    let deploymentDetail = this.deploymentDetailMap[deploymentId];
+    deploymentDetail.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
+    deploymentDetail.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
+    deploymentDetail.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
+    deploymentDetail.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
+    this.confirmDeployment(deploymentDetail);
   }
 
   private setSelectedDeploymentDates() {
@@ -414,6 +404,14 @@ export class DeploymentsComponent implements OnInit {
     } else {
       _.filter(this.deployments, {selected: true}).forEach((deployment) => this.setDeploymentDate(deployment, dateTime.valueOf()));
     }
+  }
+
+  private setDeploymentDate(deployment: Deployment, deploymentDate: number) {
+    this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
+      /* happy path */ (r) => r,
+      /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
+      /* on complete */ () => this.reloadDeployment(deployment.id)
+    );
   }
 
   private reloadDeployment(deploymentId: number) {
