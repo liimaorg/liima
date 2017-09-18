@@ -135,36 +135,30 @@
           </ng-container>
 
           <!-- Confirm Options -->
-          <ng-container *ngIf="selectedEditAction === 'Confirm'">
+          <ng-container *ngIf="selectedEditAction === 'Confirm' && confirmationAttributes">
           <div class="checkbox">
             <label>
-              <!--<input type="checkbox" [ngModel]="deploymentDetail.sendEmailWhenDeployed">-->
-              <input type="checkbox">
+              <input type="checkbox" [ngModel]="confirmationAttributes.sendEmailWhenDeployed">
               send an email when deployed
             </label>
           </div>
 
           <div class="checkbox">
             <label>
-              <!--<input type="checkbox" [ngModel]="deploymentDetail.simulateBeforeDeployment">-->
-              <input type="checkbox">
+              <input type="checkbox" [ngModel]="confirmationAttributes.simulateBeforeDeployment">
               simulate before deployment
             </label>
           </div>
 
-          <div class="checkbox">
-          <!--<div class="checkbox" *ngIf="hasPermissionShakedownTest">-->
+          <div class="checkbox" *ngIf="hasPermissionShakedownTest">
             <label>
-              <!--<input type="checkbox" [(ngModel)]="deploymentDetail.shakedownTestsWhenDeployed">-->
-              <input type="checkbox">
+              <input type="checkbox" [(ngModel)]="confirmationAttributes.shakedownTestsWhenDeployed">
               execute shakedown tests when deployed
             </label>
           </div>
-          <!--<div class="checkbox" *ngIf="deploymentDetail.shakedownTestsWhenDeployed">-->
-          <div class="checkbox">
+          <div class="checkbox" *ngIf="confirmationAttributes.shakedownTestsWhenDeployed">
             <label>
-              <!--<input type="checkbox" [(ngModel)]="deploymentDetail.neighbourhoodTest">-->
-              <input type="checkbox">
+              <input type="checkbox" [(ngModel)]="confirmationAttributes.neighbourhoodTest">
               test neighbourhood
             </label>
           </div>

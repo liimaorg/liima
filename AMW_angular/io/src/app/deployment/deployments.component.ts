@@ -8,6 +8,7 @@ import { DeploymentDetail } from './deployment-detail';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
+import { ResourceService } from "../resource/resource.service";
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -35,8 +36,10 @@ export class DeploymentsComponent implements OnInit {
   // available edit actions
   editActions: string[] = ['Change date', 'Confirm', 'Reject', 'Cancel'];
   selectedEditAction: string = this.editActions[0];
-  // for deployment date change
-  deploymentDate: number;
+  // confirmation dialog / edit multiple deployments
+  hasPermissionShakedownTest: boolean = false;
+  deploymentDate: number; // for deployment date change
+  confirmationAttributes: DeploymentDetail;
 
   // available filterValues (if any)
   filterValueOptions: { [key: string]: string[] } = {};
@@ -63,6 +66,7 @@ export class DeploymentsComponent implements OnInit {
               private ngZone: NgZone,
               private location: Location,
               private deploymentService: DeploymentService,
+              private resourceService: ResourceService,
               public appState: AppState) {
   }
 
@@ -166,7 +170,14 @@ export class DeploymentsComponent implements OnInit {
   showEdit() {
     if (this.editableDeployments()) {
       this.addDatePicker();
-      $('#deploymentsEdit').modal('show');
+      this.confirmationAttributes = <DeploymentDetail> {};
+      // get shakeDownTestPermission for first element
+      let indexOfFirstSelectedElem = _.findIndex(this.deployments, {selected: true});
+      let firstDeployment = this.deployments[indexOfFirstSelectedElem];
+      this.resourceService.canCreateShakedownTest(firstDeployment.appServerId).subscribe(
+        /* happy path */ (r) => this.hasPermissionShakedownTest = r,
+        /* error path */ (e) => this.errorMessage = e,
+        /* onComplete */  () => $('#deploymentsEdit').modal('show'));
     }
   }
 
