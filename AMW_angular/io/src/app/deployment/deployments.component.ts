@@ -195,7 +195,7 @@ export class DeploymentsComponent implements OnInit {
           break;
         // reject
         case this.editActions[2]:
-          console.log('TODO: ' + this.selectedEditAction);
+          this.rejectDeployments();
           break;
         // cancel
         case this.editActions[3]:
@@ -218,6 +218,13 @@ export class DeploymentsComponent implements OnInit {
         /* on complete */ () => this.applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deployment.id)
       );
     }
+  }
+
+  private rejectDeployments() {
+    let selectedDeployments =  this.deployments.filter(deployment => deployment.selected === true);
+    selectedDeployments.forEach( (deployment)=> {
+      this.rejectDeployment(deployment)
+    });
   }
 
   private applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deploymentId: number) {
