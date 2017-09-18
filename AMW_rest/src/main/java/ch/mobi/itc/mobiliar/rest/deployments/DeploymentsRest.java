@@ -468,12 +468,17 @@ public class DeploymentsRest {
     @ApiOperation(value = "Confirm a deployment")
     public Response confirmDeployment(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId,
                                       @ApiParam("New status") DeploymentDetailDTO deploymentDetailDTO) {
-        deploymentBoundary.confirmDeployment(deploymentId,
-                deploymentDetailDTO.isSendEmailWhenDeployed(),
-                deploymentDetailDTO.isShakedownTestsWhenDeployed(),
-                deploymentDetailDTO.isNeighbourhoodTest(),
-                deploymentDetailDTO.isSimulateBeforeDeployment());
-        return Response.status(Response.Status.OK).build();
+        try{
+            deploymentBoundary.confirmDeployment(deploymentId,
+                    deploymentDetailDTO.isSendEmailWhenDeployed(),
+                    deploymentDetailDTO.isShakedownTestsWhenDeployed(),
+                    deploymentDetailDTO.isNeighbourhoodTest(),
+                    deploymentDetailDTO.isSimulateBeforeDeployment());
+            return Response.status(Response.Status.OK).build();
+        } catch (RuntimeException e) {
+            return catchDeploymentStateException(e);
+        }
+
     }
 
     @PUT
@@ -533,17 +538,21 @@ public class DeploymentsRest {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto(String.format("invalid state. must be one of %s", possibleValues) )).build();
         }
 
-        switch (state) {
-            case canceled:
-                deploymentBoundary.cancelDeployment(deploymentId);
-                break;
-            case rejected:
-                deploymentBoundary.rejectDeployment(deploymentId);
-                break;
-            default:
-                return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ExceptionDto(String.format("Change state to '%s' not implemented yet", state.toString()) )).build();
+        try {
+            switch (state) {
+                case canceled:
+                    deploymentBoundary.cancelDeployment(deploymentId);
+                    break;
+                case rejected:
+                    deploymentBoundary.rejectDeployment(deploymentId);
+                    break;
+                default:
+                    return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ExceptionDto(String.format("Change state to '%s' not implemented yet", state.toString()) )).build();
+            }
+            return Response.status(Status.OK).build();
+        } catch (RuntimeException e) {
+            return catchDeploymentStateException(e);
         }
-        return Response.status(Status.OK).build();
     }
 
     @GET
