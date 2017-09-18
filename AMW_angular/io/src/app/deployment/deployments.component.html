@@ -138,14 +138,14 @@
           <ng-container *ngIf="selectedEditAction === 'Confirm' && confirmationAttributes">
           <div class="checkbox">
             <label>
-              <input type="checkbox" [ngModel]="confirmationAttributes.sendEmailWhenDeployed">
+              <input type="checkbox" [(ngModel)]="confirmationAttributes.sendEmailWhenDeployed">
               send an email when deployed
             </label>
           </div>
 
           <div class="checkbox">
             <label>
-              <input type="checkbox" [ngModel]="confirmationAttributes.simulateBeforeDeployment">
+              <input type="checkbox" [(ngModel)]="confirmationAttributes.simulateBeforeDeployment">
               simulate before deployment
             </label>
           </div>

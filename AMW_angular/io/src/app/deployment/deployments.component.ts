@@ -191,7 +191,7 @@ export class DeploymentsComponent implements OnInit {
           break;
         // confirm
         case this.editActions[1]:
-          console.log('TODO: ' + this.selectedEditAction);
+          this.confirmSelectedDeployments();
           break;
         // reject
         case this.editActions[2]:
@@ -209,6 +209,27 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
+  private confirmSelectedDeployments() {
+    let selectedDeployments =  this.deployments.filter(deployment => deployment.selected === true);
+    for (let deployment of selectedDeployments) {
+      this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
+        /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
+        /* error path */ (e) => this.errorMessage = e,
+        /* on complete */ () => this.applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deployment.id)
+      );
+    }
+  }
+
+  private applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deploymentId: number) {
+    let deploymentDetail = this.deploymentDetailMap[deploymentId];
+    deploymentDetail.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
+    deploymentDetail.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
+    deploymentDetail.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
+    deploymentDetail.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
+    this.confirmDeployment(deploymentDetail);
+    this.confirmationAttributes = <DeploymentDetail> {};
+  }
+
   cancelDeployment(deployment: Deployment) {
     if (deployment) {
       this.deploymentService.cancelDeployment(deployment.id).subscribe(
@@ -222,7 +243,7 @@ export class DeploymentsComponent implements OnInit {
   exportCSV() {
     this.isLoading = true;
     this.deployments.forEach((deployment) => {
-      this.getDeploymentDetail(deployment);
+      this.getDeploymentDetailForCsvExport(deployment);
     });
   }
 
@@ -348,7 +369,7 @@ export class DeploymentsComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
-  private getDeploymentDetail(deployment: Deployment) {
+  private getDeploymentDetailForCsvExport(deployment: Deployment) {
     this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
       /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
       /* error path */ (e) => this.errorMessage = e,
