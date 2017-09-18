@@ -71,7 +71,6 @@ export class DeploymentsComponent implements OnInit {
   }
 
   ngOnInit() {
-
     this.appState.set('navShow', false);
     this.appState.set('navTitle', 'Deployments');
     this.appState.set('pageTitle', 'Deployments');
@@ -92,7 +91,6 @@ export class DeploymentsComponent implements OnInit {
 
     this.initTypeAndOptions();
     this.canRequestDeployments();
-
   }
 
   addFilter() {
@@ -143,14 +141,6 @@ export class DeploymentsComponent implements OnInit {
     if (deployment) {
       this.setDeploymentDate(deployment, deployment.deploymentDate);
     }
-  }
-
-  setDeploymentDate(deployment: Deployment, deploymentDate: number) {
-    this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
-      /* happy path */ (r) => r,
-      /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
-      /* on complete */ () => this.reloadDeployment(deployment.id)
-    );
   }
 
   changeEditAction() {
@@ -207,6 +197,14 @@ export class DeploymentsComponent implements OnInit {
       }
       $('#deploymentsEdit').modal('hide');
     }
+  }
+
+  private setDeploymentDate(deployment: Deployment, deploymentDate: number) {
+    this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
+      /* happy path */ (r) => r,
+      /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
+      /* on complete */ () => this.reloadDeployment(deployment.id)
+    );
   }
 
   private confirmSelectedDeployments() {
