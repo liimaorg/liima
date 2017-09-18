@@ -8,7 +8,7 @@ import { DeploymentDetail } from './deployment-detail';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
-import { ResourceService } from "../resource/resource.service";
+import { ResourceService } from '../resource/resource.service';
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -187,7 +187,7 @@ export class DeploymentsComponent implements OnInit {
       switch (this.selectedEditAction) {
         // date
         case this.editActions[0]:
-          this.setDeploymentDates();
+          this.setSelectedDeploymentDates();
           break;
         // confirm
         case this.editActions[1]:
@@ -195,11 +195,11 @@ export class DeploymentsComponent implements OnInit {
           break;
         // reject
         case this.editActions[2]:
-          this.rejectDeployments();
+          this.rejectSelectedDeployments();
           break;
         // cancel
         case this.editActions[3]:
-          this.cancelDeployments();
+          this.cancelSelectedDeployments();
           break;
         default:
           console.error('Unknown EditAction' + this.selectedEditAction);
@@ -210,24 +210,22 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private confirmSelectedDeployments() {
-    let selectedDeployments = this.deployments.filter(deployment => deployment.selected === true);
-    selectedDeployments.forEach((deployment) => {
+    this.deployments.filter(deployment => deployment.selected === true).forEach((deployment) => {
       this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
         /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
-        /* error path */ (e) => this.errorMessage = e,
+        /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
         /* on complete */ () => this.applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deployment.id)
       );
     });
   }
 
-  private rejectDeployments() {
-    let selectedDeployments =  this.deployments.filter(deployment => deployment.selected === true);
-    selectedDeployments.forEach( (deployment) => {
+  private rejectSelectedDeployments() {
+    this.deployments.filter(deployment => deployment.selected === true).forEach( (deployment) => {
       this.rejectDeployment(deployment)
     });
   }
 
-  private cancelDeployments() {
+  private cancelSelectedDeployments() {
     let selectedDeployments =  this.deployments.filter(deployment => deployment.selected === true);
     selectedDeployments.forEach( (deployment) => {
       this.cancelDeployment(deployment)
@@ -241,14 +239,13 @@ export class DeploymentsComponent implements OnInit {
     deploymentDetail.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
     deploymentDetail.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
     this.confirmDeployment(deploymentDetail);
-    this.confirmationAttributes = <DeploymentDetail> {};
   }
 
   cancelDeployment(deployment: Deployment) {
     if (deployment) {
       this.deploymentService.cancelDeployment(deployment.id).subscribe(
         /* happy path */ (r) => r,
-        /* error path */ (e) => this.errorMessage = e,
+        /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
         /* onComplete */ () => this.reloadDeployment(deployment.id)
       );
     }
@@ -396,7 +393,7 @@ export class DeploymentsComponent implements OnInit {
     if (deployment) {
       this.deploymentService.rejectDeployment(deployment.id).subscribe(
         /* happy path */ (r) => r,
-        /* error path */ (e) => this.errorMessage = e,
+        /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
         /* onComplete */ () => this.reloadDeployment(deployment.id)
       );
     }
@@ -412,7 +409,7 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
-  private setDeploymentDates() {
+  private setSelectedDeploymentDates() {
     let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
     if (!dateTime || !dateTime.isValid()) {
       this.errorMessage = 'Invalid date';
