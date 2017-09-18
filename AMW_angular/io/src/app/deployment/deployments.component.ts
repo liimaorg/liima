@@ -210,14 +210,14 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private confirmSelectedDeployments() {
-    let selectedDeployments =  this.deployments.filter(deployment => deployment.selected === true);
-    for (let deployment of selectedDeployments) {
+    let selectedDeployments = this.deployments.filter(deployment => deployment.selected === true);
+    selectedDeployments.forEach((deployment) => {
       this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
         /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
         /* error path */ (e) => this.errorMessage = e,
         /* on complete */ () => this.applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deployment.id)
       );
-    }
+    });
   }
 
   private rejectDeployments() {
