@@ -24,8 +24,10 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
+@XmlRootElement(name = "deploymentDetail")
 @Data
 @NoArgsConstructor
 public class DeploymentDetailDTO {
