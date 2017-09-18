@@ -133,8 +133,42 @@
               </div>
             </div>
           </ng-container>
+
+          <!-- Confirm Options -->
           <ng-container *ngIf="selectedEditAction === 'Confirm'">
-              <p class="text-warning"><small>Show some options</small></p>
+          <div class="checkbox">
+            <label>
+              <!--<input type="checkbox" [ngModel]="deploymentDetail.sendEmailWhenDeployed">-->
+              <input type="checkbox">
+              send an email when deployed
+            </label>
+          </div>
+
+          <div class="checkbox">
+            <label>
+              <!--<input type="checkbox" [ngModel]="deploymentDetail.simulateBeforeDeployment">-->
+              <input type="checkbox">
+              simulate before deployment
+            </label>
+          </div>
+
+          <div class="checkbox">
+          <!--<div class="checkbox" *ngIf="hasPermissionShakedownTest">-->
+            <label>
+              <!--<input type="checkbox" [(ngModel)]="deploymentDetail.shakedownTestsWhenDeployed">-->
+              <input type="checkbox">
+              execute shakedown tests when deployed
+            </label>
+          </div>
+          <!--<div class="checkbox" *ngIf="deploymentDetail.shakedownTestsWhenDeployed">-->
+          <div class="checkbox">
+            <label>
+              <!--<input type="checkbox" [(ngModel)]="deploymentDetail.neighbourhoodTest">-->
+              <input type="checkbox">
+              test neighbourhood
+            </label>
+          </div>
+
           </ng-container>
           </span>
         </div>
