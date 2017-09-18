@@ -58,7 +58,7 @@ export class DeploymentsListComponent {
   showConfirm(deploymentId: number) {
     delete this.deploymentDetail;
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    if (this.hasPermissionShakedownTest == null) {
+    if (this.hasPermissionShakedownTest === null) {
       this.resourceService.canCreateShakedownTest(this.deployment.appServerId).subscribe(
         /* happy path */ (r) => this.hasPermissionShakedownTest = r,
         /* error path */ (e) => this.errorMessage = e);
@@ -66,7 +66,7 @@ export class DeploymentsListComponent {
     this.deploymentService.getDeploymentDetail(deploymentId).subscribe(
       /* happy path */ (r) => this.deploymentDetail = r,
       /* error path */ (e) => this.errorMessage = e,
-                        () => $('#deploymentConfirmation').modal('show'));
+      /* onComplete */  () => $('#deploymentConfirmation').modal('show'));
   }
 
   showReject(deploymentId: number) {

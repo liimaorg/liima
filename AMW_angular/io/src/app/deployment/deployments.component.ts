@@ -145,7 +145,7 @@ export class DeploymentsComponent implements OnInit {
     this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
       /* happy path */ (r) => r,
       /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
-      /* on complete */ () => this.reloadDeployment(deployment)
+      /* on complete */ () => this.reloadDeployment(deployment.id)
     );
   }
 
@@ -203,7 +203,7 @@ export class DeploymentsComponent implements OnInit {
       this.deploymentService.cancelDeployment(deployment.id).subscribe(
         /* happy path */ (r) => r,
         /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */ () => this.reloadDeployment(deployment)
+        /* onComplete */ () => this.reloadDeployment(deployment.id)
       );
     }
   }
@@ -351,7 +351,7 @@ export class DeploymentsComponent implements OnInit {
       this.deploymentService.rejectDeployment(deployment.id).subscribe(
         /* happy path */ (r) => r,
         /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */ () => this.reloadDeployment(deployment)
+        /* onComplete */ () => this.reloadDeployment(deployment.id)
       );
     }
   }
@@ -361,7 +361,7 @@ export class DeploymentsComponent implements OnInit {
       this.deploymentService.confirmDeployment(deploymentDetail).subscribe(
         /* happy path */ (r) => r,
         /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */  () => this.reloadDeploymentById(deploymentDetail.deploymentId)
+        /* onComplete */  () => this.reloadDeployment(deploymentDetail.deploymentId)
       );
     }
   }
@@ -375,16 +375,7 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
-  private reloadDeployment(deployment: Deployment) {
-    let reloadedDeployment: Deployment;
-    this.deploymentService.getWithActions(deployment.id).subscribe(
-      /* happy path */ (r) => reloadedDeployment = r,
-      /* error path */ (e) => this.errorMessage = e,
-      /* on complete */ () => this.updateDeploymentsList(reloadedDeployment)
-    );
-  }
-
-  private reloadDeploymentById(deploymentId: number) {
+  private reloadDeployment(deploymentId: number) {
     let reloadedDeployment: Deployment;
     this.deploymentService.getWithActions(deploymentId).subscribe(
       /* happy path */ (r) => reloadedDeployment = r,

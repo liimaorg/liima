@@ -49,7 +49,8 @@ import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -63,7 +64,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.ValidationException;
-import java.lang.reflect.Type;
 import java.util.*;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
@@ -467,18 +467,7 @@ public class DeploymentsRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Confirm a deployment")
     public Response confirmDeployment(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId,
-                                      @ApiParam("New status") String deploymentDetailDTOAsString) {
-        GsonBuilder builder = new GsonBuilder();
-        // Register an adapter to manage the date types as long values
-        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-            @Override
-            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                return new Date(json.getAsJsonPrimitive().getAsLong());
-            }
-        });
-
-        DeploymentDetailDTO deploymentDetailDTO = builder.create().fromJson(deploymentDetailDTOAsString, DeploymentDetailDTO.class);
-
+                                      @ApiParam("New status") DeploymentDetailDTO deploymentDetailDTO) {
         deploymentBoundary.confirmDeployment(deploymentId,
                 deploymentDetailDTO.isSendEmailWhenDeployed(),
                 deploymentDetailDTO.isShakedownTestsWhenDeployed(),
