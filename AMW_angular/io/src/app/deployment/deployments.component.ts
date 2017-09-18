@@ -199,7 +199,7 @@ export class DeploymentsComponent implements OnInit {
           break;
         // cancel
         case this.editActions[3]:
-          console.log('TODO: ' + this.selectedEditAction);
+          this.cancelDeployments();
           break;
         default:
           console.error('Unknown EditAction' + this.selectedEditAction);
@@ -222,8 +222,15 @@ export class DeploymentsComponent implements OnInit {
 
   private rejectDeployments() {
     let selectedDeployments =  this.deployments.filter(deployment => deployment.selected === true);
-    selectedDeployments.forEach( (deployment)=> {
+    selectedDeployments.forEach( (deployment) => {
       this.rejectDeployment(deployment)
+    });
+  }
+
+  private cancelDeployments() {
+    let selectedDeployments =  this.deployments.filter(deployment => deployment.selected === true);
+    selectedDeployments.forEach( (deployment) => {
+      this.cancelDeployment(deployment)
     });
   }
 
