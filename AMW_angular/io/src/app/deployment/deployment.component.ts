@@ -8,6 +8,7 @@ import { Resource } from '../resource/resource';
 import { Release } from '../resource/release';
 import { Relation } from '../resource/relation';
 import { Deployment } from './deployment';
+import { DeploymentFilter } from './deployment-filter';
 import { DeploymentParameter } from './deployment-parameter';
 import { DeploymentService } from './deployment.service';
 import { EnvironmentService } from './environment.service';
@@ -361,7 +362,19 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private composeSuccessMessage() {
-    let link: string = '<a href="/AMW_web/pages/deploy.xhtml?tracking_id=' + this.deploymentResponse.trackingId + '">Tracking Id ' + this.deploymentResponse.trackingId + '</a>';
+
+    let link: string;
+    if (this.deploymentService.isAngularDeploymentsGuiActive()) {
+      // let filter: DeploymentFilter =  {"name":"Tracking Id","comp":"eq","val": this.deploymentResponse.trackingId};
+      let newFilter: DeploymentFilter = <DeploymentFilter> {};
+      newFilter.name = 'Tracking Id';
+      newFilter.val = this.deploymentResponse.trackingId.toString();
+      let filtersParam: DeploymentFilter[] = [];
+      filtersParam.push(newFilter);
+      link = '<a href="/AMW_angular/deployments?filters=' + JSON.stringify(filtersParam).replace(/[\"]/g, '\'') + '">Tracking Id ' + this.deploymentResponse.trackingId + '</a>';
+    } else {
+      link ='<a href="/AMW_web/pages/deploy.xhtml?tracking_id=' + this.deploymentResponse.trackingId + '">Tracking Id ' + this.deploymentResponse.trackingId + '</a>';
+    }
     this.successMessage = 'Deployment created: <strong>' + link + '</strong>';
   }
 
