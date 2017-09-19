@@ -3,7 +3,7 @@
   <div class="table-responsive">
     <table class="table table-sm" [mfData]="deployments" #mf="mfDataTable" *ngIf="(deployments.length > 0)">
       <tr>
-        <th><input type="checkbox" (click)="switchAllDeployments()"> <mfDefaultSorter by="trackingId">Tracking id</mfDefaultSorter></th>
+        <th class="has-checkbox"><input type="checkbox" (click)="switchAllDeployments()"> <mfDefaultSorter by="trackingId">Tracking id</mfDefaultSorter></th>
         <th><mfDefaultSorter by="state">State</mfDefaultSorter></th>
         <th><mfDefaultSorter by="appServerName">App server</mfDefaultSorter></th>
         <th><mfDefaultSorter by="releaseName">Release</mfDefaultSorter></th>
@@ -12,7 +12,7 @@
         <th>Actions</th>
       </tr>
       <tr *ngFor="let deployment of mf.data">
-        <td><input type="checkbox" [(ngModel)]="deployment.selected"> {{deployment.trackingId}}</td>
+        <td class="has-checkbox"><input type="checkbox" [(ngModel)]="deployment.selected"> {{deployment.trackingId}}</td>
         <td>{{deployment.state}} <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Show details about this deployment" (click)="showDetails(deployment.id)"></span></td>
         <td><a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>
             <ul class="nob">

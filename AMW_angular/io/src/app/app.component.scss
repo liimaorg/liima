@@ -257,9 +257,17 @@ ul.nob {
   padding-left: 16px;
 }
 
-input[type="checkbox"] {
-  margin: 0;
+/*
+ * Nicer alignement of text following a checkbox
+ */
+th.has-checkbox,
+td.has-checkbox {
+  input[type="checkbox"] {
+    margin-top: -2px;
+    vertical-align: middle;
+  }
 }
+
 
 /*
  * Pretend to be a link
