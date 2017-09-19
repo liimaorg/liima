@@ -8,8 +8,8 @@
 <ui:composition template="templates/template.xhtml">
 	<f:metadata>
 		<f:viewParam name="file" value="#{logView.file}" />
-		<f:viewParam name="deploymentId"
-			value="#{logView.deploymentId}" />
+		<f:viewParam name="deploymentId" value="#{logView.deploymentId}" />
+		<f:viewParam name="filters" value="#{logView.filters}" />
 	</f:metadata>
 
 	<ui:param name="screen" value="logView" />
@@ -17,9 +17,22 @@
 
 	<!--  HEADER -->
 	<ui:define name="backlink">
-		<h:link outcome="deploy" value="Back to Deploy" styleClass="btn back"
-			onclick="showLoader();">
-		</h:link>
+		<!-- JSF Link -->
+		<ui:fragment rendered="#{not logView.showAngularBacklink}">
+			<h:link outcome="deploy"
+					value="Back to Deploy"
+					styleClass="btn back"
+					onclick="showLoader();">
+			</h:link>
+		</ui:fragment>
+		<!-- Angular Link -->
+		<ui:fragment rendered="#{logView.showAngularBacklink}">
+			<a class="btn back"
+			   href="/AMW_angular/#/deployments?filters=${logView.filters}">
+				Back to Deploy
+			</a>
+		</ui:fragment>
+
 	</ui:define>
 
 	<ui:define name="pagetitle">
