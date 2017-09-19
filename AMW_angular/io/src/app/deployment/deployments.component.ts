@@ -85,7 +85,7 @@ export class DeploymentsComponent implements OnInit {
       (param: any) => {
         if (param['filters']) {
           try {
-            this.paramFilters = JSON.parse(param['filters'].replace(/[']/g, '"'));
+            this.paramFilters = JSON.parse(param['filters']);
           } catch (e) {
             console.error(e);
             this.errorMessage = 'Error parsing filter';
