@@ -1,6 +1,6 @@
 {
    "appServerName":"prest",
-   "appsWithMvnVersion":[
+   "appsWithVersion":[
       {
          "applicationName":"ch_mobi_prest"
       }

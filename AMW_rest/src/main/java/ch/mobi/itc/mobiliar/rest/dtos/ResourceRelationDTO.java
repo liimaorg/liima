@@ -35,11 +35,7 @@ public class ResourceRelationDTO {
 
     private String relatedResourceName;
     private String relatedResourceRelease;
-    /**
-     * @deprecated will be replaced by relationName by v1.14
-     */
-    @Deprecated
-    private String identifier;
+
     private String relationName;
     private String type;
     private List<TemplateDTO> templates;
@@ -51,7 +47,6 @@ public class ResourceRelationDTO {
         relatedResourceName = relation.getSlaveResource().getName();
         relatedResourceRelease = relation.getSlaveResource().getRelease().getName();
         relationName = relation.buildIdentifer();
-        identifier = relationName;
         type = relation.getResourceRelationType().getResourceTypeB().getName();
     }
 }
