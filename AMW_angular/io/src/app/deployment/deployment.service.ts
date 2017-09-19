@@ -174,6 +174,14 @@ export class DeploymentService {
     return resource$;
   }
 
+  isAngularDeploymentsGuiActive(): Observable<boolean> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/isAngularDeploymentsGuiActive/`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   private getHeaders() {
     let headers = new Headers();
     headers.append('Accept', 'application/json');
