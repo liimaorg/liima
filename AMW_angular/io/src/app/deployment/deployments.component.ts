@@ -91,18 +91,11 @@ export class DeploymentsComponent implements OnInit {
             this.errorMessage = 'Error parsing filter';
           }
         }
-        if (param['autoload']) {
-          if (param['autoload'] === 'true') {
-            this.initTypeAndOptions();
-            this.autoload = true;
-          }
-        }
+        this.autoload = (param['autoload'] && param['autoload'] === 'true') ? true : false;
+        this.initTypeAndOptions();
+        this.canRequestDeployments();
     });
 
-    if (!this.autoload) {
-      this.initTypeAndOptions();
-      this.canRequestDeployments();
-    }
   }
 
   addFilter() {
@@ -459,7 +452,6 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private setValueOptionsForFilter(filter: DeploymentFilter) {
-    console.log('valueOptionsForFilter ' + filter.name + ', ' + filter.type);
     if (!this.filterValueOptions[filter.name]) {
       if (filter.type === 'booleanType') {
         filter.valOptions = this.filterValueOptions[filter.name] = [ 'true', 'false' ];
