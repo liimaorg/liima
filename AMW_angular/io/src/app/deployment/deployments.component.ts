@@ -26,6 +26,10 @@ export class DeploymentsComponent implements OnInit {
 
   // initially by queryParam
   paramFilters: DeploymentFilter[] = [];
+  autoload: boolean;
+
+  // value of filters parameter. Used to pass as json object to the logView.xhtml
+  filtersInUrl: DeploymentFilter[];
 
   // valid for all, loaded once
   filterTypes: DeploymentFilterType[] = [];
@@ -87,10 +91,18 @@ export class DeploymentsComponent implements OnInit {
             this.errorMessage = 'Error parsing filter';
           }
         }
+        if (param['autoload']) {
+          if (param['autoload'] === 'true') {
+            this.initTypeAndOptions();
+            this.autoload = true;
+          }
+        }
     });
 
-    this.initTypeAndOptions();
-    this.canRequestDeployments();
+    if (!this.autoload) {
+      this.initTypeAndOptions();
+      this.canRequestDeployments();
+    }
   }
 
   addFilter() {
@@ -133,7 +145,8 @@ export class DeploymentsComponent implements OnInit {
     });
     if (!this.errorMessage) {
       this.getFilteredDeployments(JSON.stringify(filtersForBackend));
-      this.goTo(JSON.stringify(filtersForParam));
+      this.filtersInUrl = filtersForParam;
+      this.goTo(JSON.stringify(this.filtersInUrl));
     }
   }
 
@@ -511,6 +524,9 @@ export class DeploymentsComponent implements OnInit {
           this.errorMessage = 'Error parsing filter';
         }
       });
+      if (this.autoload) {
+        this.applyFilter();
+      }
     }
     this.isLoading = false;
   }
