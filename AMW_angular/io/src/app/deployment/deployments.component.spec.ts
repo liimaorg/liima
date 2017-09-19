@@ -23,7 +23,7 @@ class DummyComponent {
 }
 
 describe('DeploymentsComponent (with query params)', () => {
-  let filter: string = JSON.stringify([{name: 'Application', val: 'test'}, {name: 'Confirmed on', val: '12.12.2012 12:12'}]);
+  let filter: string = JSON.stringify([{name: 'Application', val: 'test'}, {name: 'Confirmed on', comp: 'lt', val: '12.12.2012 12:12'}]);
   // provide our implementations or mocks to the dependency injector
   beforeEach(() => TestBed.configureTestingModule({
     imports: [
@@ -87,7 +87,7 @@ describe('DeploymentsComponent (with query params)', () => {
       expect(deploymentsComponent.paramFilters[0].compOptions.length).toEqual(1);
       expect(deploymentsComponent.paramFilters[1].compOptions.length).toEqual(3);
       expect(deploymentsComponent.paramFilters[0].comp).toEqual('eq');
-      expect(deploymentsComponent.paramFilters[1].comp).toEqual('eq');
+      expect(deploymentsComponent.paramFilters[1].comp).toEqual('lt');
   }));
 
   it('should enhance filters with the right option values on ngOnInit',
