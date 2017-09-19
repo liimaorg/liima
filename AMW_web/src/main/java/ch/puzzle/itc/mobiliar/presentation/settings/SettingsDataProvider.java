@@ -18,19 +18,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.puzzle.itc.mobiliar.presentation.util;
+package ch.puzzle.itc.mobiliar.presentation.settings;
+
+import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
+import lombok.Data;
 
 import javax.faces.context.FacesContext;
+import java.io.Serializable;
 
-public class NavigationUtils {
+@Data
+@SuppressWarnings("serial")
+@CompositeBackingBean
+public class SettingsDataProvider implements Serializable {
 
-    public static String getRefreshOutcomeWithAdditionalParam(String param) {
-        return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&"
-                + param;
-    }
+	public static String PARAM_MODE = "mode";
+	private static String MODE_ENV = "env";
 
-    public static String getRefreshOutcomeWithResource(Integer resourceId) {
-        return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&id="
-                + resourceId;
+    String mode;
+
+    public void init() {
+        if (mode == null) {
+            String modeParam = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_MODE);
+            if (modeParam == null) {
+                this.mode = MODE_ENV;
+            } else {
+                this.mode = modeParam;
+            }
+
+        }
     }
 }

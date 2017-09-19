@@ -46,6 +46,7 @@ import ch.puzzle.itc.mobiliar.presentation.Selected;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationModel;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.DataProviderHelper;
+import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
@@ -74,6 +75,9 @@ public class PropertyEditDataProvider implements Serializable {
     @Inject
     @Selected
     private ContextEntity currentContext;
+
+    @Inject
+    EditResourceView resourceView;
 
     List<ResourceEditProperty> resourceEditProperties;
 
@@ -151,35 +155,11 @@ public class PropertyEditDataProvider implements Serializable {
     }
 
     public void onChangedResource(@Observes ResourceEntity resourceEntity) throws GeneralDBException {
-        filteredResourceProperties = new ArrayList<>();
-        resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResource(
-                resourceEntity.getId(), getContextId()));
-        filterHostNameAndActiveFromNode();
-        editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
-                currentContext, userSettings.isTestingMode());
-        canChangeRuntime = permissionBoundary.hasPermission(Permission.RESOURCE, currentContext, Action.UPDATE, resourceEntity, null);
-        canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, currentContext, Action.ALL,
-                resourceEntity, null);
-        group = ResourceGroup.createByResource(resourceEntity.getResourceGroup());
-
-        resourceOrResourceType = resourceEntity;
-
-        loadResourceRelationEditProperties();
+        reloadResourceEditProperties(resourceEntity);
     }
 
     public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) throws GeneralDBException {
-        filteredResourceProperties = new ArrayList<>();
-        resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResourceType(
-                resourceTypeEntity.getId(), getContextId()));
-        editableProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE, currentContext, Action.UPDATE,
-                null, resourceTypeEntity);
-        canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, currentContext, Action.ALL,
-                null, resourceTypeEntity);
-        canChangeRuntime = false;
-        group = null;
-        resourceOrResourceType = resourceTypeEntity;
-
-        loadResourceRelationEditProperties();
+        reloadResourceTypeEditProperties(resourceTypeEntity);
     }
 
     public Integer getContextId() {
@@ -219,29 +199,25 @@ public class PropertyEditDataProvider implements Serializable {
 
     private void filterHostNameAndActiveFromNode() {
         if (isNode() && !currentContext.isEnvironment() && resourceEditProperties != null) {
-            Iterator<ResourceEditProperty> it = resourceEditProperties.iterator();
-            while (it.hasNext()) {
-                ResourceEditProperty p = it.next();
-                if (AppServerRelationsTemplateProcessor.HOST_NAME.equals(p.getTechnicalKey())
-                        || AppServerRelationsTemplateProcessor.NODE_ACTIVE.equals(p.getTechnicalKey())) {
-                    filteredResourceProperties.add(p);
-                    it.remove();
-                }
-            }
+            filterHostNameAndActive(resourceEditProperties);
         }
     }
 
     private void filterHostNameAndActiveFromRelatedNode(ResourceEditRelation relation) {
         if (relation.getSlaveTypeName().equals(DefaultResourceTypeDefinition.NODE.name())
                 && !currentContext.isEnvironment() && currentRelationProperties != null) {
-            Iterator<ResourceEditProperty> it = currentRelationProperties.iterator();
-            while (it.hasNext()) {
-                ResourceEditProperty p = it.next();
-                if (AppServerRelationsTemplateProcessor.HOST_NAME.equals(p.getTechnicalKey())
-                        || AppServerRelationsTemplateProcessor.NODE_ACTIVE.equals(p.getTechnicalKey())) {
-                    filteredRelationProperties.add(p);
-                    it.remove();
-                }
+            filterHostNameAndActive(currentRelationProperties);
+        }
+    }
+
+    private void filterHostNameAndActive(List<ResourceEditProperty> props) {
+        Iterator<ResourceEditProperty> it = props.iterator();
+        while (it.hasNext()) {
+            ResourceEditProperty p = it.next();
+            if (AppServerRelationsTemplateProcessor.HOST_NAME.equals(p.getTechnicalKey())
+                    || AppServerRelationsTemplateProcessor.NODE_ACTIVE.equals(p.getTechnicalKey())) {
+                filteredRelationProperties.add(p);
+                it.remove();
             }
         }
     }
@@ -299,6 +275,7 @@ public class PropertyEditDataProvider implements Serializable {
                     getNameOfResourceOrResourceType(),
                     typeRelationIdentifier);
         }
+        reloadResourceEditProperties();
     }
 
     private void preventDuplicateIdentifiers() throws AMWException {
@@ -308,7 +285,7 @@ public class PropertyEditDataProvider implements Serializable {
                 if (consumedRelation.getSlaveName().equals(relationIdentifier)) {
                     throw new AMWException("RelationName '" + relationIdentifier + "' is not allowed");
                 }
-                if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier)) {
+                if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier) && ! consumedRelation.equals(resourceRelation.getResourceRelation())) {
                     throw new AMWException("RelationName '" + relationIdentifier + "' is already taken");
                 }
             }
@@ -389,7 +366,53 @@ public class PropertyEditDataProvider implements Serializable {
         return sortedList;
     }
 
-    public List<ResourceEditProperty> getCurrentRelationProperties() {
+    public void reloadResourceEditProperties() {
+        if (resourceView.getResource() != null) {
+            reloadResourceEditProperties(resourceView.getResource());
+        } else if (resourceView.getResourceType() != null) {
+            reloadResourceTypeEditProperties(resourceView.getResourceType());
+        }
+    }
+
+    private List<ResourceEditProperty> reloadResourceEditProperties(ResourceEntity resourceEntity) {
+        filteredResourceProperties = new ArrayList<>();
+        resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResource(
+                resourceEntity.getId(), getContextId()));
+        filterHostNameAndActiveFromNode();
+        editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
+                currentContext, userSettings.isTestingMode());
+        canChangeRuntime = permissionBoundary.hasPermission(Permission.RESOURCE, currentContext, Action.UPDATE,
+                resourceEntity, null);
+        canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, currentContext, Action.ALL,
+                resourceEntity, null);
+        group = ResourceGroup.createByResource(resourceEntity.getResourceGroup());
+
+        resourceOrResourceType = resourceEntity;
+
+        loadResourceRelationEditProperties();
+        return filteredResourceProperties;
+    }
+
+    private List<ResourceEditProperty> reloadResourceTypeEditProperties(ResourceTypeEntity resourceTypeEntity) {
+        filteredResourceProperties = new ArrayList<>();
+        resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResourceType(
+                resourceTypeEntity.getId(), getContextId()));
+        editableProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE, currentContext, Action.UPDATE,
+                null, resourceTypeEntity);
+        canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, currentContext, Action.ALL,
+                null, resourceTypeEntity);
+        canChangeRuntime = false;
+        group = null;
+        resourceOrResourceType = resourceTypeEntity;
+
+        loadResourceRelationEditProperties();
+        return resourceEditProperties;
+    }
+
+
+
+
+        public List<ResourceEditProperty> getCurrentRelationProperties() {
         List<ResourceEditProperty> sortedList = new ArrayList<>(currentRelationProperties);
         Collections.sort(sortedList);
         return sortedList;
