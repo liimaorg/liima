@@ -12,10 +12,10 @@ curl -v -H "Content-Type: application/json" -X POST --data "@prest.json" -u u112
    "executeShakedownTest": false, (optional, default false)
    "neighbourhoodTest": false, (optional, default false)
    "sendEmail": false, (optional, default false)
-   "appsWithMvnVersion":[ (must contain all applications)
+   "appsWithVersion":[ (must contain all applications)
       {
          "applicationName":"ch_mobi_prest",
-         "mavenVersion":"1.0.21"
+         "version":"1.0.21"
       }
    ],
    "environmentName":"V"
@@ -35,10 +35,10 @@ curl -v -H "Content-Type: application/json" -X POST --data "@prest.json" -u u112
    "state":"scheduled",
    "deploymentDate":1384804324074,
    "appServerName":"prest",
-   "appsWithMvnVersion":[
+   "appsWithVersion":[
       {
          "applicationName":"ch_mobi_prest",
-         "mavenVersion":"1.0.21"
+         "version":"1.0.21"
       }
    ],
    "environmentName":"V"
@@ -59,10 +59,10 @@ curl -v -H "Content-Type: application/json" -X GET -u u112324:u112324 http://loc
    "state":"scheduled",
    "deploymentDate":1384804324074,
    "appServerName":"prest",
-   "appsWithMvnVersion":[
+   "appsWithVersion":[
       {
          "applicationName":"ch_mobi_prest",
-         "mavenVersion":"1.0.21"
+         "version":"1.0.21"
       }
    ],
   "environmentName":"V",
@@ -85,10 +85,10 @@ curl -v -u u112324:u112324 "http://localhost:8080/AMW_rest/resources/deployments
       "state":"success",
       "deploymentDate":1373904071375,
       "appServerName":"vnkey",
-      "appsWithMvnVersion":[
+      "appsWithVersion":[
          {
             "applicationName":"ch_mobi_contractmanagement_VNKey",
-            "mavenVersion":"1.0.3"
+            "version":"1.0.3"
          }
       ],
       "environmentName":"V",

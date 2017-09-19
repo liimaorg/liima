@@ -175,7 +175,7 @@ public class ResourceRelationsRest {
                 //eg standardJob_1
                 tempName = resRel.getRelatedResourceName() + "_" + temp.getRelatedResourceIdentifier();
             }
-            if (tempName.equals(resRel.getIdentifier())) {
+            if (tempName.equals(resRel.getRelationName())) {
                 templatesToAdd.add(temp);
             }
         }

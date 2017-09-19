@@ -88,26 +88,4 @@ public class DeploymentDTO {
             nodeJobs.add(new NodeJobDTO(job));
         }
     }
-
-    /**
-     * @deprecated Only here for backwards compatibility of the rest API
-     */
-    @Deprecated
-    public List<AppWithMvnVersionDTO> getAppsWithMvnVersion() {
-        List<AppWithMvnVersionDTO> appsWithMvnVersion = new LinkedList<>();
-
-        for(AppWithVersionDTO app : this.appsWithVersion) {
-            appsWithMvnVersion.add(new AppWithMvnVersionDTO(app.getApplicationName(), app.getVersion()));
-        }
-        
-        return appsWithMvnVersion;
-    }
-    
-    /**
-     * @deprecated Only here for backwards compatibility of the rest API
-     */
-    @Deprecated
-    public String getCancleUser() {
-        return this.cancelUser;
-    }
 }

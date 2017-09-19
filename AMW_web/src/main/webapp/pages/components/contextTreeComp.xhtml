@@ -1,45 +1,40 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
 
-	<h:panelGroup layout="block" id="contextTreeComp" rendered="#{securityDataProvider.hasPermission('ENV_PANEL_LIST')}">
-		<aside> <nav class="primary"> <c:if
-			test="#{contextDataProvider.init(contextChangeHandler)}" />
-		<ul>
-			<li
-				class="${contextDataProvider.isCurrentContext(null) eq true ? 'current' : ''}">
-				<h:link value="Global">
-					<f:param name="id" value="${resourceId}" />
-					<f:param name="ctx" value="${contextDataProvider.globalContextId}" />
-				</h:link>
-			</li>
-			<ui:repeat var="context"
-				value="${contextDataProvider.getChildrenForContext(null)}">
-				<li
-					class="${contextDataProvider.isCurrentContext(context.id) eq true ? 'current' : ''} level2">
-
-					<h:link value="${context.name}">
-						<f:param name="id" value="${resourceId}" />
-						<f:param name="ctx" value="${context.id}" />
-					</h:link>
-
-				</li>
-				<ui:repeat var="context2"
-					value="${contextDataProvider.getChildrenForContext(context.id)}">
-					<li
-						class="${contextDataProvider.isCurrentContext(context2.id) eq true ? 'current' : ''} level3">
-						<h:link value="${context2.name}">
-							<f:param name="id" value="${resourceId}" />
-							<f:param name="ctx" value="${context2.id}" />
-						</h:link>
-					</li>
-				</ui:repeat>
-			</ui:repeat>
-		</ul>
-		</nav> </aside>
-	</h:panelGroup>
+    <h:panelGroup layout="block" id="contextTreeComp"
+                  rendered="#{securityDataProvider.hasPermission('ENV_PANEL_LIST')}">
+        <aside>
+            <nav class="primary">
+                <ul>
+                    <li class="${contextDataProvider.isCurrentContext(null) eq true ? 'current' : ''}">
+                        <h:link value="Global">
+                            <f:param name="id" value="${resourceId}"/>
+                            <f:param name="ctx" value="${contextDataProvider.globalContextId}"/>
+                        </h:link>
+                    </li>
+                    <ui:repeat var="context"
+                               value="${contextDataProvider.getChildrenForContext(null)}">
+                        <li class="${contextDataProvider.isCurrentContext(context.id) eq true ? 'current' : ''} level2">
+                            <h:link value="${context.name}">
+                                <f:param name="id" value="${resourceId}"/>
+                                <f:param name="ctx" value="${context.id}"/>
+                            </h:link>
+                        </li>
+                        <ui:repeat var="context2" value="${contextDataProvider.getChildrenForContext(context.id)}">
+                            <li class="${contextDataProvider.isCurrentContext(context2.id) eq true ? 'current' : ''} level3">
+                                <h:link value="${context2.name}">
+                                    <f:param name="id" value="${resourceId}"/>
+                                    <f:param name="ctx" value="${context2.id}"/>
+                                </h:link>
+                            </li>
+                        </ui:repeat>
+                    </ui:repeat>
+                </ul>
+            </nav>
+        </aside>
+    </h:panelGroup>
 </ui:composition>
 
 

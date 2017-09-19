@@ -31,7 +31,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CopyResource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -40,7 +39,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.presentation.common.ResourceTypeDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
 import lombok.Getter;
 
 import javax.faces.bean.ViewScoped;
@@ -138,7 +136,7 @@ public class CopyResourceDataProvider implements Serializable {
 		}
 	}
 
-	public String copyFromResource(Integer selectedGroup) {
+	public void copyFromResource(Integer selectedGroup) {
 		try {
 			copyFromResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup)
 					.getSelectedResourceId());
@@ -148,12 +146,10 @@ public class CopyResourceDataProvider implements Serializable {
 		catch (AMWException e){
 			GlobalMessageAppender.addErrorMessage(e.getMessage());
 		}
-		return NavigationUtils.getRefreshOutcome();
 	}
 
-	public String copyFromPredecessorResource(Integer selectedGroup) {
+	public void copyFromPredecessorResource(Integer selectedGroup) {
 		copyFromPredecessorResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup));
-		return NavigationUtils.getRefreshOutcome();
 	}
 
 	/**

@@ -51,23 +51,6 @@ public class DeploymentRequestDTO {
 	public DeploymentRequestDTO() {	
 	}
 	
-	/**
-	 * @deprecated Only here for backwards compatibility of the rest API
-	 */
-	@Deprecated
-	public void setAppsWithMvnVersion(List<AppWithMvnVersionDTO> appsWithMvnVersion) {
-		if (appsWithMvnVersion == null) {
-			this.appsWithVersion = null;
-			return;
-		}
-		
-		this.appsWithVersion = new LinkedList<>();
-		
-		for(AppWithMvnVersionDTO app : appsWithMvnVersion) {
-			this.appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getMavenVersion()));
-		}
-	}
-	
 	//copy constructor
 	public DeploymentRequestDTO(DeploymentRequestDTO deploymentRequestDto) {
 		appServerName = deploymentRequestDto.appServerName;

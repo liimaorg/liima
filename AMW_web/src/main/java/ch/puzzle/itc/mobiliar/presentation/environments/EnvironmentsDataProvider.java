@@ -24,7 +24,10 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.ContextDataProvider;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.Map;
@@ -34,8 +37,13 @@ import java.util.TreeMap;
 public class EnvironmentsDataProvider implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	@Getter
+	@Setter
 	private String newName;
+
+	@Getter
+	@Setter
 	private ContextEntity currentContext;
 	
 	@Inject
@@ -45,6 +53,14 @@ public class EnvironmentsDataProvider implements Serializable {
 	private ContextDataProvider context;
 
 	private Map<Integer, String> currentContextTypeNames;
+
+	public void loadContext() {
+		String ctxString = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ctx");
+		Integer contextId = ctxString == null ? null : Integer.valueOf(ctxString);
+		context.setContextId(contextId);
+		currentContext = controller.loadContextWithType(context.getContextId());
+	}
+
 
 	private String getCurrentContextTypeName() {
 		String contextTypeName;
@@ -59,10 +75,6 @@ public class EnvironmentsDataProvider implements Serializable {
 			contextTypeName = currentContextTypeNames.get(context.getContextId());
 		}
 		return contextTypeName;
-	}
-	
-	public ContextEntity getCurrentContext(){
-		return currentContext;
 	}
 
 	public boolean getIsEnv() {
@@ -115,17 +127,8 @@ public class EnvironmentsDataProvider implements Serializable {
 		context.setContextId(context.getGlobalContextId());
 	}
 
-	public String getNewName() {
-		return newName;
-	}
-
-	public void setNewName(String newName) {
-		this.newName = newName;
-	}
-
 	private void resetPopupFields(){
 		newName = null;
 	}
-
 
 }
