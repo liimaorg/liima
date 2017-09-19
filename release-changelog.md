@@ -8,7 +8,7 @@ This release contains mostly bug fixes and some small features.
 * New rest methods: add resources, add resource release, copy resources, add resource relation: [#57](https://github.com/liimaorg/liima/issues/57)
 
 ## Bug fixes
-* Date filter comparator got reset when a new filter gets added: [#132](https://github.com/liimaorg/liima/issues/132)
+* Date filter comparator gets reset when a new filter gets added: [#132](https://github.com/liimaorg/liima/issues/132)
 * Under certain circumstances the wrong version was select in a new deployment: [#127](https://github.com/liimaorg/liima/issues/127), [#113](https://github.com/liimaorg/liima/issues/113)
 * Added a check to redeploy which makes sure the redeployed App/AppServer matches the current App names and release: [#52](https://github.com/liimaorg/liima/issues/52) 
 * In the `add related resource` popup Apps were shown: [#112](https://github.com/liimaorg/liima/issues/112)

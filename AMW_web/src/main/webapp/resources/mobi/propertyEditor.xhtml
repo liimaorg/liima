@@ -43,8 +43,10 @@
 
             <!-- RESET -->
             <h:panelGroup
-                    rendered="${(cc.attrs.property.propertyValue!=null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and (propertyEditDataProvider.editableProperties) }">
-                <h:selectBooleanCheckbox id="resetBox" value="#{cc.attrs.property.reset}" styleClass="${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} resetBox"
+                    rendered="${(cc.attrs.property.propertyValue != null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and (propertyEditDataProvider.editableProperties) }">
+                <h:selectBooleanCheckbox id="resetBox"
+                                         value="#{cc.attrs.property.reset}"
+                                         styleClass="${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} resetBox"
                                          onclick="checkReset(this, '${cc.attrs.property.replacedValue}', '${cc.attrs.property.propertyValue}');"/>
                 <h:outputLabel styleClass="inlineBlock" for="resetBox" value="Reset"/>
             </h:panelGroup>

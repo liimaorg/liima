@@ -16,10 +16,11 @@
                 <ul>
                     <li>
                         <div style="display: inline-block; float: right;">
-                            <h:link
-                                    rendered="${editFunction.canAdd}"
-                                    outcome="editFunctionView" type="button" styleClass="btn light right}" includeViewParams="true">
-
+                            <h:link rendered="${editFunction.canAdd}"
+                                    outcome="editFunctionView"
+                                    type="button"
+                                    styleClass="btn light right}"
+                                    includeViewParams="false">
                                 <f:param name="resid" value="#{editFunction.resourceId}"/>
                                 <f:param name="resTypId" value="${editFunction.resourceTypeId}"/>
                                 <f:param name="functionId" value="${editFunction.functionId}"/>
@@ -38,10 +39,7 @@
                 <h:panelGroup id="instanceFunctions">
                     <h:panelGroup
                             rendered="${!editFunction.resourceOrTypeInstanceFunctions.isEmpty() and editFunction.canShowInstanceFunctions}">
-                        <h3>
-                            <h:outputText
-                                    value="${editFunction.instanceTitle}"/>
-                        </h3>
+                        <h3> <h:outputText value="${editFunction.instanceTitle}"/> </h3>
                         <h:dataTable var="instanceFunction"
                                      value="${editFunction.resourceOrTypeInstanceFunctions}"
                                      columnClasses="paddingRight10 ,last,last">
@@ -50,7 +48,8 @@
                                     <span class="meta ellipsisRight inlineBlock width100" title="#{instanceFunction.getCommaseparatedMikNames()}">#{instanceFunction.getCommaseparatedMikNames()} </span>
                                 </h:column>
                                 <h:column rendered="#{editFunction.canEdit or editFunction.canShowInstanceFunctions}">
-                                    <h:link outcome="editFunctionView" includeViewParams="true">
+                                    <h:link outcome="editFunctionView"
+                                            includeViewParams="false">
                                         <f:param name="rel" value="#{editFunction.relationId}"/>
                                         <f:param name="resid" value="#{editFunction.resourceId}"/>
                                         <f:param name="resTypId" value="${editFunction.resourceTypeId}"/>
@@ -104,7 +103,6 @@
 
         </div>
     </h:panelGroup>
-
 
     <a4j:jsFunction name="deleteFunction"
                     execute="@this"

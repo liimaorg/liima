@@ -18,32 +18,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.mobi.itc.mobiliar.rest.dtos;
+package ch.puzzle.itc.mobiliar.presentation.settings;
 
+import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import lombok.Data;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.faces.context.FacesContext;
+import java.io.Serializable;
 
-/**
-* @deprecated Only here for backwards compatibility of the rest API
-*/
-@XmlRootElement(name = "appWithMvnVersion")
-@XmlAccessorType(XmlAccessType.FIELD)
 @Data
-@Deprecated
-public class AppWithMvnVersionDTO {
+@SuppressWarnings("serial")
+@CompositeBackingBean
+public class SettingsDataProvider implements Serializable {
 
-	private String applicationName;
-	private String mavenVersion;
+	public static String PARAM_MODE = "mode";
+	private static String MODE_ENV = "env";
 
-	public AppWithMvnVersionDTO() {
-	}
+    String mode;
 
-	public AppWithMvnVersionDTO(String applicationName, String mavenVersion) {
-		this.applicationName = applicationName;
-		this.mavenVersion = mavenVersion;
-	}
+    public void init() {
+        if (mode == null) {
+            String modeParam = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_MODE);
+            if (modeParam == null) {
+                this.mode = MODE_ENV;
+            } else {
+                this.mode = modeParam;
+            }
 
+        }
+    }
 }

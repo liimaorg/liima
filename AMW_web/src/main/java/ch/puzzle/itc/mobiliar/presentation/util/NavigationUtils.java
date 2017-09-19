@@ -24,34 +24,13 @@ import javax.faces.context.FacesContext;
 
 public class NavigationUtils {
 
-    public static String getRefreshOutcome() {
-        return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true";
-    }
-
     public static String getRefreshOutcomeWithAdditionalParam(String param) {
         return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&"
                 + param;
     }
 
-    public static String getRefreshOutcomeWithAdditionalParams(String[] params) {
-        StringBuilder sb = new StringBuilder(FacesContext.getCurrentInstance().getViewRoot().getViewId());
-        sb.append("?faces-redirect=true");
-        for (String param : params) {
-            sb.append("&").append(param);
-        }
-        return sb.toString();
-    }
-
     public static String getRefreshOutcomeWithResource(Integer resourceId) {
         return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&id="
                 + resourceId;
-    }
-
-    public static String getRefreshOutcomeWithRelation(Integer relationId) {
-        if (relationId != null) {
-            return FacesContext.getCurrentInstance().getViewRoot().getViewId()
-                    + "?faces-redirect=true&rel=" + relationId;
-        }
-        return getRefreshOutcome();
     }
 }

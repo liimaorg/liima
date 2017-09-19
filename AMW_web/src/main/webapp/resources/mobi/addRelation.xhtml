@@ -147,7 +147,7 @@
                                                 oncomplete="updateElements();hideLoader();refreshChanges();refreshSubChanges();"/>
                                 </h:commandLink></td>
                                 <td><h:commandLink value="Add as provided Resource"
-                                                   rendered="#{editResourceView.editResource and relationDataProvider.canAddAsProvidedRelation(selectableItem) and relationDataProvider.canBeAddedAsProvidedResource(selectableItem)}"
+                                                   rendered="#{editResourceView.editResource and relationDataProvider.canAddAsProvidedRelation(selectableItem)}"
                                                    onclick="if(confirmLeave(event) &amp;&amp; confirmMatchingRelease(#{editResourceView.existsForThisRelease(selectableItem)})){#{rich:component('addRelationPopup')}.hide();showLoader();}else{return false;}">
                                     <a4j:ajax
                                             listener="#{relationDataProvider.addProvidedResource(selectableItem)}"
