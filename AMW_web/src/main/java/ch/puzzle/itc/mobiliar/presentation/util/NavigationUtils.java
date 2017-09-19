@@ -21,57 +21,8 @@
 package ch.puzzle.itc.mobiliar.presentation.util;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class NavigationUtils {
-
-    public static boolean isParameterSet(String key, Object value) {
-        Object existing = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(key);
-        return existing != null && existing.equals(value);
-    }
-
-     public static void serverSideReload(){
-        serverSideRedirect(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getQueryString());
-    }
-
-    public static void serverSideRedirect(String... paramKeyValues) {
-        Map<String, String> params = new HashMap<>();
-        for(String keyValue : paramKeyValues){
-            String[] split = keyValue.split("=");
-            if(split.length==2){
-                params.put(split[0], split[1]);
-            }
-        }
-        serverSideRedirect(params);
-    }
-
-    public static void serverSideRedirect(Map<String, String> paramKeyValues) {
-        StringBuilder sb = new StringBuilder();
-        for(String paramKey : paramKeyValues.keySet()){
-             if(sb.length()>0){
-                sb.append('&');
-            }
-            sb.append(paramKey);
-            sb.append('=');
-            sb.append(paramKeyValues.get(paramKey));
-        }
-        serverSideRedirect(sb.toString());
-    }
-
-    public static void serverSideRedirect(String queryString) {
-        FacesContext facesCtx = FacesContext.getCurrentInstance();
-        String pageUrl = facesCtx.getApplication().getViewHandler().getResourceURL(facesCtx, facesCtx.getViewRoot()
-               .getViewId());
-       try {
-          facesCtx.getExternalContext().redirect(pageUrl + '?' + queryString);
-       }
-       catch (IOException e) {
-          GlobalMessageAppender.addErrorMessage("Redirection to "+pageUrl+" was not successful!");
-       }
-    }
 
     public static String getRefreshOutcomeWithAdditionalParam(String param) {
         return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&"

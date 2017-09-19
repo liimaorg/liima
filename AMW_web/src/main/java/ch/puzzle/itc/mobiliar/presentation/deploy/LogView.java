@@ -25,10 +25,11 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -53,6 +54,10 @@ public class LogView implements Serializable {
 	@Getter
 	List<String> availableLogFiles;
 
+	@Getter
+	@Setter
+	String filters;
+
 	@Inject
     DeploymentBoundary deploymentBoundary;
 
@@ -74,13 +79,15 @@ public class LogView implements Serializable {
 	}
 
 	public void setFile(String file) {
-		if (NavigationUtils.isParameterSet("file", file)) {
+		if (isParameterSet("file", file) || StringUtils.isNotEmpty(file)) {
 			this.file = file;
 			loadFileContent();
 		}
-		else {
-			NavigationUtils.serverSideRedirect("file=" + file, "deploymentId=" + deploymentId);
-		}
+	}
+
+	private boolean isParameterSet(String key, Object value) {
+		Object existing = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(key);
+		return existing != null && existing.equals(value);
 	}
 
 	public void setDeploymentId(Integer deploymentId) {
