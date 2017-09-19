@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter, NgZone } from '@angular/core';
+import { ResourceService } from '../resource/resource.service';
 import { Deployment } from './deployment';
 import { DeploymentDetail } from './deployment-detail';
 import { DeploymentFilter } from './deployment-filter';
@@ -6,7 +7,6 @@ import { DeploymentService } from './deployment.service';
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import {ResourceService} from "../resource/resource.service";
 
 declare var $: any;
 
