@@ -168,7 +168,7 @@ export class DeploymentService {
 
   setDeploymentDate(deploymentId: number, deploymentDate: number) {
     let resource$ = this.http
-      .put(`${this.baseUrl}/deployments/${deploymentId}/date`, deploymentDate, {headers: this.postHeaders()})
+      .patch(`${this.baseUrl}/deployments/${deploymentId}/date`, deploymentDate, {headers: this.postHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
     return resource$;

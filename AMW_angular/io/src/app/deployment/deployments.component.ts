@@ -232,6 +232,7 @@ export class DeploymentsComponent implements OnInit {
 
   exportCSV() {
     this.isLoading = true;
+    this.errorMessage = 'Generating your CSV.<br>Please hold on, depending on the requested data this may take a while';
     this.deployments.forEach((deployment) => {
       this.getDeploymentDetailForCsvExport(deployment);
     });
@@ -267,6 +268,7 @@ export class DeploymentsComponent implements OnInit {
       this.csvDocument = this.createCSV();
       let docName: string = 'deployments_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
       this.pushDownload(docName);
+      this.errorMessage = '';
     }
   }
 

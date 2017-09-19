@@ -507,7 +507,7 @@ public class DeploymentsRest {
 
     }
 
-    @PUT
+    @PATCH
     @Path("/{id : \\d+}/date")
     @ApiOperation(value = "Update the DeploymentDate of a Deployment - used by Angular")
     public Response changeDeploymentDate(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId, @ApiParam("New date") long date) {
