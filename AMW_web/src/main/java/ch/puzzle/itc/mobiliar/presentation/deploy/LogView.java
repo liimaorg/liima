@@ -23,18 +23,22 @@ package ch.puzzle.itc.mobiliar.presentation.deploy;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI;
 
 @ViewBackingBean
 public class LogView implements Serializable {
@@ -53,6 +57,10 @@ public class LogView implements Serializable {
 	@Getter
 	List<String> availableLogFiles;
 
+	@Getter
+	@Setter
+	String filters;
+
 	@Inject
     DeploymentBoundary deploymentBoundary;
 
@@ -64,6 +72,10 @@ public class LogView implements Serializable {
 
 	DeploymentEntity deployment;
 
+	public boolean isShowAngularBacklink() {
+		return ! ConfigurationService.getPropertyAsBoolean(FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI);
+	}
+
 	public String getApplicationServerName() {
 		if (deployment != null && deployment.getResource() != null) {
 			return deployment.getResource().getName() + " " + deployment.getRelease().getName();
@@ -74,13 +86,15 @@ public class LogView implements Serializable {
 	}
 
 	public void setFile(String file) {
-		if (NavigationUtils.isParameterSet("file", file)) {
+		if (isParameterSet("file", file) || StringUtils.isNotEmpty(file)) {
 			this.file = file;
 			loadFileContent();
 		}
-		else {
-			NavigationUtils.serverSideRedirect("file=" + file, "deploymentId=" + deploymentId);
-		}
+	}
+
+	private boolean isParameterSet(String key, Object value) {
+		Object existing = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(key);
+		return existing != null && existing.equals(value);
 	}
 
 	public void setDeploymentId(Integer deploymentId) {

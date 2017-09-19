@@ -21,85 +21,37 @@
 package ch.puzzle.itc.mobiliar.presentation.util;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class NavigationUtils {
 
-	public static boolean isParameterSet(String key, Object value) {
-		Object existing = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(key);
-		return existing != null && existing.equals(value);
-	}
-
-     public static void serverSideReload(){
-	    serverSideRedirect(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getQueryString());
-	}
-
-	public static void serverSideRedirect(String... paramKeyValues) {
-		Map<String, String> params = new HashMap<>();
-		for(String keyValue : paramKeyValues){
-			String[] split = keyValue.split("=");
-			if(split.length==2){
-				params.put(split[0], split[1]);
-			}
-		}
-		serverSideRedirect(params);
-	}
-
-	public static void serverSideRedirect(Map<String, String> paramKeyValues) {
-		StringBuilder sb = new StringBuilder();
-		for(String paramKey : paramKeyValues.keySet()){
-		     if(sb.length()>0){
-			    sb.append('&');
-			}
-			sb.append(paramKey);
-			sb.append('=');
-			sb.append(paramKeyValues.get(paramKey));
-		}
-		serverSideRedirect(sb.toString());
-	}
-
-    public static void serverSideRedirect(String queryString) {
-	   String pageUrl = FacesContext.getCurrentInstance().getApplication().getViewHandler().getResourceURL(FacesContext.getCurrentInstance(), FacesContext.getCurrentInstance().getViewRoot()
-			   .getViewId());
-	   try {
-		  FacesContext.getCurrentInstance().getExternalContext().redirect(pageUrl + '?' + queryString);
-	   }
-	   catch (IOException e) {
-		  GlobalMessageAppender.addErrorMessage("Redirection to "+pageUrl+" was not successful!");
-	   }
+    public static String getRefreshOutcome() {
+        return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true";
     }
 
-	public static String getRefreshOutcome() {
-		return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true";
-	}
+    public static String getRefreshOutcomeWithAdditionalParam(String param) {
+        return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&"
+                + param;
+    }
 
-	public static String getRefreshOutcomeWithAdditionalParam(String param) {
-		return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&"
-				+ param;
-	}
+    public static String getRefreshOutcomeWithAdditionalParams(String[] params) {
+        StringBuilder sb = new StringBuilder(FacesContext.getCurrentInstance().getViewRoot().getViewId());
+        sb.append("?faces-redirect=true");
+        for (String param : params) {
+            sb.append("&").append(param);
+        }
+        return sb.toString();
+    }
 
-	public static String getRefreshOutcomeWithAdditionalParams(String[] params) {
-		StringBuilder sb = new StringBuilder(FacesContext.getCurrentInstance().getViewRoot().getViewId());
-		sb.append("?faces-redirect=true");
-		for (String param : params) {
-			sb.append("&").append(param);
-		}
-		return sb.toString();
-	}
+    public static String getRefreshOutcomeWithResource(Integer resourceId) {
+        return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&id="
+                + resourceId;
+    }
 
-	public static String getRefreshOutcomeWithResource(Integer resourceId) {
-		return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&id="
-				+ resourceId;
-	}
-
-	public static String getRefreshOutcomeWithRelation(Integer relationId) {
-		if (relationId != null) {
-			return FacesContext.getCurrentInstance().getViewRoot().getViewId()
-					+ "?faces-redirect=true&rel=" + relationId;
-		}
-		return getRefreshOutcome();
-	}
+    public static String getRefreshOutcomeWithRelation(Integer relationId) {
+        if (relationId != null) {
+            return FacesContext.getCurrentInstance().getViewRoot().getViewId()
+                    + "?faces-redirect=true&rel=" + relationId;
+        }
+        return getRefreshOutcome();
+    }
 }
