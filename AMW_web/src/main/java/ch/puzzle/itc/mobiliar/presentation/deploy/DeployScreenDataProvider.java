@@ -148,6 +148,7 @@ public class DeployScreenDataProvider implements Serializable {
     private deployscreenColDescriptor sortingColumn = deployscreenColDescriptor.DEPLOY_TIME;
 
     private static final boolean useAngular = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_GUI));
+    private static final boolean useAngularDeployment = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI));
 
     @Getter
     @Setter
@@ -259,6 +260,10 @@ public class DeployScreenDataProvider implements Serializable {
 
     public boolean isAngularEnabled() {
         return useAngular;
+    }
+
+    public boolean isAngularDeploymentEnabled() {
+        return useAngularDeployment;
     }
 
     class MyComparator implements Comparator<DeploymentFilterTypes> {
