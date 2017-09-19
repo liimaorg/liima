@@ -167,7 +167,8 @@ export class DeploymentsComponent implements OnInit {
       this.resourceService.canCreateShakedownTest(firstDeployment.appServerId).subscribe(
         /* happy path */ (r) => this.hasPermissionShakedownTest = r,
         /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */  () => $('#deploymentsEdit').modal('show'));
+        /* onComplete */  () => $('#deploymentsEdit').modal('show')
+      );
     }
   }
 
@@ -236,7 +237,7 @@ export class DeploymentsComponent implements OnInit {
     });
   }
 
-  private populateCsvRows(deployment: Deployment) {
+  private populateCSVrows(deployment: Deployment) {
     let detail: DeploymentDetail = this.deploymentDetailMap[deployment.id];
     let csvReadyObject: any = {
       id: deployment['id'],
@@ -270,37 +271,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private createCSV(): string {
-    let labels: string = '';
-    let content: string = '';
-    let labelsMap: string[]  = [
-      'Id',
-      'Tracking Id',
-      'Deployment state',
-      'Build success',
-      'Deployment executed',
-      'App server',
-      'Applications',
-      'Deployment release',
-      'Environment',
-      'Target platform',
-      'Deployment parameters',
-      'Creation date',
-      'Request user',
-      'Deployment date',
-      'Configuration to deploy',
-      'Deployment confirmed',
-      'Confirmation date',
-      'Confirmation user',
-      'Cancel date',
-      'Cancel user',
-      'Status message'
-    ];
-
-    labelsMap.forEach((label) => {
-      labels += label + ',';
-    });
-    content += labels.slice(0, -1) + '\n';
-
+    let content: string = this.createCSVTitles();
     this.csvReadyObjects.forEach((deployment) => {
       let line: string = '';
       for (const field of Object.keys(deployment)) {
@@ -332,12 +303,37 @@ export class DeploymentsComponent implements OnInit {
             line += deployment[field] !== null ? '"' + deployment[field] + '",' : ',';
             break;
         }
-
       }
-      line = line.slice(0, -1);
-      content += line + '\n';
+      content += line.slice(0, -1) + '\n';
     });
     return content;
+  }
+
+  private createCSVTitles(): string {
+    let labelsArray: string[]  = [
+      'Id',
+      'Tracking Id',
+      'Deployment state',
+      'Build success',
+      'Deployment executed',
+      'App server',
+      'Applications',
+      'Deployment release',
+      'Environment',
+      'Target platform',
+      'Deployment parameters',
+      'Creation date',
+      'Request user',
+      'Deployment date',
+      'Configuration to deploy',
+      'Deployment confirmed',
+      'Confirmation date',
+      'Confirmation user',
+      'Cancel date',
+      'Cancel user',
+      'Status message'
+    ];
+    return labelsArray.join(',') + '\n';
   }
 
   private pushDownload(docName: string) {
@@ -362,7 +358,7 @@ export class DeploymentsComponent implements OnInit {
     this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
       /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* on complete */ () => this.populateCsvRows(deployment)
+      /* on complete */ () => this.populateCSVrows(deployment)
     );
   }
 

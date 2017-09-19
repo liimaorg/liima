@@ -9,6 +9,8 @@ import { Observable } from 'rxjs';
 import { AppState } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
 import { DeploymentsComponent } from './deployments.component';
+import { Deployment } from './deployment';
+import { DeploymentDetail } from './deployment-detail';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
@@ -34,7 +36,7 @@ describe('DeploymentsComponent (with query params)', () => {
       BaseRequestOptions, {
         provide: ActivatedRoute,
         useValue: {
-          queryParams: Observable.of({filters: [ filter ]})
+          queryParams: Observable.of({filters: filter})
         },
       },
       MockBackend,
@@ -106,6 +108,55 @@ describe('DeploymentsComponent (with query params)', () => {
       // then
       expect(deploymentsComponent.paramFilters[0].valOptions.length).toEqual(2);
       expect(deploymentsComponent.paramFilters[1].valOptions.length).toEqual(0);
+  }));
+
+});
+
+describe('DeploymentsComponent (with illegal query params)', () => {
+  // provide our implementations or mocks to the dependency injector
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [
+      CommonModule,
+      RouterTestingModule.withRoutes([
+        {path: 'deployments', component: DummyComponent}
+      ])
+    ],
+    providers: [
+      BaseRequestOptions, {
+        provide: ActivatedRoute,
+        useValue: {
+          queryParams: Observable.of({filters: 'faulty'})
+        },
+      },
+      MockBackend,
+      {
+        provide: Http,
+        useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+          return new Http(backend, defaultOptions);
+        },
+        deps: [MockBackend, BaseRequestOptions]
+      },
+      DeploymentService,
+      ResourceService,
+      DeploymentsComponent,
+      AppState
+    ],
+    declarations: [DummyComponent],
+  }));
+
+  it('should display error message on faulty filters params on ngOnInit',
+    inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+      // given
+      let deploymentFilters: DeploymentFilterType[] = [ { name: 'Application', type: 'StringType' }, { name: 'Confirmed on', type: 'DateType' } ];
+      spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
+      spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of([]));
+
+      // when
+      deploymentsComponent.ngOnInit();
+
+      // then
+      expect(deploymentsComponent.errorMessage).toEqual('Error parsing filter');
+      expect(deploymentsComponent.paramFilters.length).toEqual(0);
   }));
 
 });
@@ -193,4 +244,68 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters));
   }));
 
+  it('should check permission on showEdit',
+    inject([DeploymentsComponent, DeploymentService, ResourceService],
+      (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
+      // given
+      deploymentsComponent.deployments = [ <Deployment> { id: 1, appServerId: 12, selected: false }, <Deployment> { id: 21, appServerId: 22, selected: true } ];
+      spyOn(resourceService, 'canCreateShakedownTest').and.returnValue(Observable.of(true));
+
+      // when
+      deploymentsComponent.showEdit();
+
+      // then
+      expect(resourceService.canCreateShakedownTest).toHaveBeenCalledWith(22);
+  }));
+
+  it('should confirm a deployment and reload it',
+    inject([DeploymentsComponent, DeploymentService],
+      (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+      // given
+      let detail: DeploymentDetail = <DeploymentDetail> { deploymentId: 1 };
+      let deployment: Deployment = <Deployment> { id: 1 };
+      spyOn(deploymentService, 'confirmDeployment').and.returnValue(Observable.of());
+      spyOn(deploymentService, 'getWithActions').and.returnValue(Observable.of(deployment));
+
+      // when
+      deploymentsComponent.confirmDeployment(detail);
+
+      // then
+      expect(deploymentService.confirmDeployment).toHaveBeenCalledWith(detail);
+      expect(deploymentService.getWithActions).toHaveBeenCalledWith(detail.deploymentId);
+  }));
+
+  it('should reject a deployment and reload it',
+    inject([DeploymentsComponent, DeploymentService],
+      (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+      // given
+      let deployment: Deployment = <Deployment> { id: 2 };
+      spyOn(deploymentService, 'rejectDeployment').and.returnValue(Observable.of());
+      spyOn(deploymentService, 'getWithActions').and.returnValue(Observable.of(deployment));
+
+      // when
+      deploymentsComponent.rejectDeployment(deployment);
+
+      // then
+      expect(deploymentService.rejectDeployment).toHaveBeenCalledWith(deployment.id);
+      expect(deploymentService.getWithActions).toHaveBeenCalledWith(deployment.id);
+  }));
+
+  it('should cancel a deployment and reload it',
+    inject([DeploymentsComponent, DeploymentService],
+      (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+      // given
+      let deployment: Deployment = <Deployment> { id: 3 };
+      spyOn(deploymentService, 'cancelDeployment').and.returnValue(Observable.of());
+      spyOn(deploymentService, 'getWithActions').and.returnValue(Observable.of(deployment));
+
+      // when
+      deploymentsComponent.cancelDeployment(deployment);
+
+      // then
+      expect(deploymentService.cancelDeployment).toHaveBeenCalledWith(deployment.id);
+      expect(deploymentService.getWithActions).toHaveBeenCalledWith(deployment.id);
+  }));
+
 });
+
