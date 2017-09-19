@@ -18,7 +18,7 @@ declare var $: any;
 export class DeploymentsListComponent {
 
   @Input() deployments: Deployment[] = [];
-  @Input() filters: DeploymentFilter[] = [];
+  @Input() filtersInUrl: DeploymentFilter[];
   @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();

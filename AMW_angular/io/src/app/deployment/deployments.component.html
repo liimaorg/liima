@@ -90,7 +90,7 @@
         <div class="form-group" *ngIf="deployments.length > 0">
           <div class="col-sm-offset-2 col-sm-10">
             <amw-deployments-list [deployments]="deployments"
-                                  [filters]="filters"
+                                  [filtersInUrl]="filtersInUrl"
                                   (editDeploymentDate)='changeDeploymentDate($event)'
                                   (selectAllDeployments)='switchDeployments($event)'
                                   (doCancelDeployment)='cancelDeployment($event)'

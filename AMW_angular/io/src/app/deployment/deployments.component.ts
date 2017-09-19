@@ -27,6 +27,9 @@ export class DeploymentsComponent implements OnInit {
   // initially by queryParam
   paramFilters: DeploymentFilter[] = [];
 
+  // value of filters parameter. Used to pass as json object to the logView.xhtml
+  filtersInUrl: DeploymentFilter[];
+
   // valid for all, loaded once
   filterTypes: DeploymentFilterType[] = [];
   comparatorOptions: ComparatorFilterOption[] = [];
@@ -133,7 +136,8 @@ export class DeploymentsComponent implements OnInit {
     });
     if (!this.errorMessage) {
       this.getFilteredDeployments(JSON.stringify(filtersForBackend));
-      this.goTo(JSON.stringify(filtersForParam));
+      this.filtersInUrl = filtersForParam;
+      this.goTo(JSON.stringify(this.filtersInUrl));
     }
   }
 
