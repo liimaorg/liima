@@ -47,6 +47,7 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import com.google.gson.Gson;
@@ -67,6 +68,7 @@ import javax.xml.bind.ValidationException;
 import java.util.*;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
+import static ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI;
 
 @Stateless
 @Path("/deployments")
@@ -632,6 +634,14 @@ public class DeploymentsRest {
     public Response canRequestDeployment() {
 
         return Response.ok(permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.CREATE)).build();
+    }
+
+    @GET
+    @Path("/isAngularDeploymentsGuiActive")
+    @ApiOperation(value = "Check if angular deployments gui is active - used by Angular")
+    public Response isAngularDeploymentsGuiActive() {
+        boolean isActive = ! ConfigurationService.getPropertyAsBoolean(FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI);
+        return Response.ok(isActive).build();
     }
 
     /**
