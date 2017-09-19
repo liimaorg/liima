@@ -78,7 +78,7 @@ export class DeploymentService {
 
   rejectDeployment(deploymentId: number) {
     let resource$ = this.http
-      .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, "rejected",{headers: this.getHeaders()})
+      .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, 'rejected', {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
     return resource$;
