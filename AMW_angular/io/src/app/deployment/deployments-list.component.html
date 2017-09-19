@@ -1,17 +1,17 @@
 <div class="panel panel-default">
   <div class="panel-heading">Deployments</div>
   <div class="table-responsive">
-    <table class="table table-sm" *ngIf="(deployments.length > 0)">
+    <table class="table table-sm" [mfData]="deployments" #mf="mfDataTable" *ngIf="(deployments.length > 0)">
       <tr>
-        <th><input type="checkbox" (click)="switchAllDeployments()"> Tracking id</th>
-        <th>State</th>
-        <th>App server</th>
-        <th>Release</th>
-        <th>Env</th>
-        <th>Deployment date</th>
+        <th><input type="checkbox" (click)="switchAllDeployments()"> <mfDefaultSorter by="trackingId">Tracking id</mfDefaultSorter></th>
+        <th><mfDefaultSorter by="state">State</mfDefaultSorter></th>
+        <th><mfDefaultSorter by="appServerName">App server</mfDefaultSorter></th>
+        <th><mfDefaultSorter by="release">Release</mfDefaultSorter></th>
+        <th><mfDefaultSorter by="environmentName">Env</mfDefaultSorter></th>
+        <th><mfDefaultSorter by="deploymentDate">Deployment date</mfDefaultSorter></th>
         <th>Actions</th>
       </tr>
-      <tr *ngFor="let deployment of deployments">
+      <tr *ngFor="let deployment of mf.data">
         <td><input type="checkbox" [(ngModel)]="deployment.selected"> {{deployment.trackingId}}</td>
         <td>{{deployment.state}} <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Show details about this deployment" (click)="showDetails(deployment.id)"></span></td>
         <td><a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>
