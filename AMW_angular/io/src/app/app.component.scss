@@ -268,7 +268,6 @@ td.has-checkbox {
   }
 }
 
-
 /*
  * Pretend to be a link
  */
@@ -286,5 +285,30 @@ span.link:hover {
  * Deployment screen
  */
 span.delayed {
-  color: red;
+  color: #db4a4a;
+}
+
+tr.requested {
+  background-color: #f9f2f4;
+}
+
+tr.pre_deploy,
+tr.progress {
+  background-color: #d9edf7;
+}
+
+tr.delayed,
+tr.failed {
+  background-color: #d09898;
+}
+
+tr.scheduled,
+tr.simulating,
+tr.success {
+  background-color: #dff0d8;
+}
+
+tr.canceled,
+tr.rejected {
+  background-color: #f2dede;
 }

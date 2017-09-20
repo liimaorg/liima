@@ -462,6 +462,21 @@ export class DeploymentsComponent implements OnInit {
     filter.valOptions = this.filterValueOptions[filter.name];
   }
 
+  private mapStates() {
+    this.deployments.forEach((deployment) => {
+      switch (deployment.state) {
+        case 'PRE_DEPLOYMENT':
+          deployment.state = 'pre_deploy';
+          break;
+        case 'READY_FOR_DEPLOYMENT':
+          deployment.state = 'ready_for_deploy';
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
   private initTypeAndOptions() {
     this.isLoading = true;
     this.deploymentService.getAllDeploymentFilterTypes().subscribe(
@@ -492,7 +507,8 @@ export class DeploymentsComponent implements OnInit {
       /* happy path */ (r) => this.deployments = r,
       /* error path */ (e) => { this.errorMessage = e;
                                 this.isLoading = false; },
-      /* onComplete */ () => this.isLoading = false);
+      /* onComplete */ () => { this.isLoading = false;
+                               this.mapStates();});
   }
 
   private canRequestDeployments() {
