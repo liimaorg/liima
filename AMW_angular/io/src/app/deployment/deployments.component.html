@@ -27,6 +27,11 @@
               <option *ngFor="let filterType of filterTypes" [ngValue]="filterType">{{filterType.name}}</option>
             </select>
           </div>
+          <div class="col-sm-1">
+              <button type="button" class="btn btn-primary" [attr.disabled]="selectedFilterType ? null : ''" (click)="addFilter()">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              </button>
+          </div>
         </div>
 
         <ng-container *ngIf="filters.length > 0">

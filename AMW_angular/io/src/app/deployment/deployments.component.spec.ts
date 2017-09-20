@@ -315,6 +315,33 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters));
   }));
 
+  it('should sort out filters without a value on apply filters',
+    inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+      // given
+      let expectedFilters: DeploymentFilter[]  = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'false' },
+        <DeploymentFilter> { name: 'Application', comp: 'eq', val: 'TestApp' },
+        <DeploymentFilter> { name: 'Latest deployment', comp: 'eq', val: '' } ];
+      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'false', type: 'booleanType' },
+        <DeploymentFilter> { name: 'Application', comp: 'eq', val: 'TestApp', type: 'StringType' },
+        <DeploymentFilter> { name: 'Application Server', comp: 'eq', val: '', type: 'StringType' },
+        <DeploymentFilter> { name: 'Latest deployment', comp: 'eq', val: '', type: 'SpecialFilterType' } ];
+      let deploymentFilters: DeploymentFilterType[] = [ { name: 'Application', type: 'StringType' },
+        { name: 'Application Server', type: 'StringType' }, { name: 'Confirmed on', type: 'DateType' },
+        { name: 'Latest deployment', type: 'SpecialFilterType' } ];
+      let comparatorOptions: ComparatorFilterOption[] = [ { name: 'lt', displayName: '<'}, { name: 'eq', displayName: 'is' },
+        { name: 'neq', displayName: 'is not' }];
+      spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
+      spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of(comparatorOptions));
+      spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(Observable.of([]));
+
+      // when
+      deploymentsComponent.applyFilter();
+
+      // then
+      expect(deploymentsComponent.filters.length).toEqual(3);
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters));
+  }));
+
   it('should check permission on showEdit',
     inject([DeploymentsComponent, DeploymentService, ResourceService],
       (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {

@@ -123,19 +123,30 @@ export class DeploymentsComponent implements OnInit {
   applyFilter() {
     let filtersForBackend: DeploymentFilter[] = [];
     let filtersForParam: DeploymentFilter[] = [];
+    let filtersToBeRemoved: DeploymentFilter[] = [];
     this.errorMessage = '';
     this.filters.forEach((filter) => {
-      filtersForParam.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
-      if (filter.type === 'DateType') {
-        let dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
-        if (!dateTime || !dateTime.isValid()) {
-          this.errorMessage = 'Invalid date';
+      if (filter.val || filter.type === 'SpecialFilterType') {
+        filtersForParam.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+        if (filter.type === 'DateType') {
+          let dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
+          if (!dateTime || !dateTime.isValid()) {
+            this.errorMessage = 'Invalid date';
+          }
+          filtersForBackend.push(<DeploymentFilter> {
+            name: filter.name,
+            comp: filter.comp,
+            val: dateTime.valueOf().toString()
+          });
+        } else {
+          filtersForBackend.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
         }
-        filtersForBackend.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: dateTime.valueOf().toString()});
       } else {
-        filtersForBackend.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+        filtersToBeRemoved.push(filter);
       }
     });
+    filtersToBeRemoved.forEach((filter) => this.removeFilter(filter));
+
     if (!this.errorMessage) {
       this.getFilteredDeployments(JSON.stringify(filtersForBackend));
       this.filtersInUrl = filtersForParam;
@@ -508,7 +519,8 @@ export class DeploymentsComponent implements OnInit {
       /* error path */ (e) => { this.errorMessage = e;
                                 this.isLoading = false; },
       /* onComplete */ () => { this.isLoading = false;
-                               this.mapStates();});
+                               this.mapStates();
+      });
   }
 
   private canRequestDeployments() {
