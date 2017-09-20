@@ -145,8 +145,25 @@ public class DeploymentBoundary {
 
         StringBuilder stringQuery = new StringBuilder();
 
+        DeploymentState lastDeploymentState = null;
+
         if (isLastDeploymentForAsEnvFilterSet(filter)) {
-            stringQuery.append(getListOfLastDeploymentsForAppServerAndContextQuery(false));
+            if (filter.size() > 0) {
+                for (CustomFilter customFilter : filter) {
+                    if (customFilter.getFilterDisplayName().equals("State")) {
+                        lastDeploymentState = DeploymentState.getByString(customFilter.getValue());
+                        // we always want the latest
+                        colToSort = DeploymentFilterTypes.DEPLOYMENT_DATE.getFilterTabColumnName();
+                        sortingDirection = CommonFilterService.SortingDirectionType.DESC;
+                    }
+                }
+            }
+
+            if (lastDeploymentState == null) {
+                stringQuery.append(getListOfLastDeploymentsForAppServerAndContextQuery(false));
+            } else {
+                stringQuery.append("select " + DEPLOYMENT_QL_ALIAS + " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " ");
+            }
             commonFilterService.appendWhereAndMyAmwParameter(myAmw, stringQuery, "and " + getEntityDependantMyAmwParameterQl());
         } else {
             stringQuery.append("select " + DEPLOYMENT_QL_ALIAS + " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " ");
@@ -157,7 +174,7 @@ public class DeploymentBoundary {
 
         boolean lowerSortCol = DeploymentFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, isLastDeploymentForAsEnvFilterSet(filter));
+        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, isLastDeploymentForAsEnvFilterSet(filter), false);
 
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
 
@@ -165,14 +182,26 @@ public class DeploymentBoundary {
         List<DeploymentEntity> resultList = query.getResultList();
 
         Set<DeploymentEntity> deployments = new LinkedHashSet<>();
-        deployments.addAll(resultList);
+
+        if (lastDeploymentState == null) {
+            deployments.addAll(resultList);
+        } else {
+            HashMap<ContextEntity, DeploymentEntity> latestByContext = new HashMap<>();
+            for (DeploymentEntity deployment : resultList) {
+                if (!latestByContext.containsKey(deployment.getContext())) {
+                    latestByContext.put(deployment.getContext(), deployment);
+                }
+            }
+            deployments = new HashSet<>(latestByContext.values());
+        }
 
         if (doPageingCalculation) {
             String countQueryString = baseQuery.replace("select " + DEPLOYMENT_QL_ALIAS, "select count(" + DEPLOYMENT_QL_ALIAS + ".id)");
-            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, isLastDeploymentForAsEnvFilterSet(filter));
+            // last param needs to be true if we are dealing with a combination of "State" and "Latest deployment job for App Server and Env"
+            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, isLastDeploymentForAsEnvFilterSet(filter), lastDeploymentState != null);
 
             commonFilterService.setParameterToQuery(null, null, myAmw, countQuery);
-            totalItemsForCurrentFilter = ((Long) countQuery.getSingleResult()).intValue();
+            totalItemsForCurrentFilter = (lastDeploymentState == null) ? ((Long) countQuery.getSingleResult()).intValue() : countQuery.getResultList().size();
         }
 
         return new Tuple<>(deployments, totalItemsForCurrentFilter);

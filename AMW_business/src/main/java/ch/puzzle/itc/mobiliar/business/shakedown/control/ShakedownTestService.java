@@ -120,7 +120,7 @@ public class ShakedownTestService{
 		
 		boolean lowerSortCol = ShakedownTestFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-		Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, colToSort, sortingDirection, SHAKEDOWN_TEST_QL_ALIAS + ".id", lowerSortCol, false);
+		Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, colToSort, sortingDirection, SHAKEDOWN_TEST_QL_ALIAS + ".id", lowerSortCol, false, false);
 
 		query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAMWFilter, query);
 
@@ -132,7 +132,7 @@ public class ShakedownTestService{
 
 		if (doPageingCalculation) {
 			String countQueryString = "select count(" + SHAKEDOWN_TEST_QL_ALIAS + ".id) " + baseQuery;
-			Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, false);
+			Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, false, false);
 
 			commonFilterService.setParameterToQuery(null, null, myAMWFilter, countQuery);
 			totalItemsForCurrentFilter = ((Long) countQuery.getSingleResult()).intValue();
