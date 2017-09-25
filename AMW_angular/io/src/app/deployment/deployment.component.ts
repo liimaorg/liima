@@ -85,8 +85,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    console.log('hello `Deployment` component');
-
     this.appState.set('navShow', false);
     this.appState.set('navTitle', 'Deployments');
 
