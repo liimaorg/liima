@@ -1117,8 +1117,8 @@ public class DeploymentBoundaryPersistenceTest
 		assertThat(result1.getA().size(), is(2));
 		assertThat(result1.getB(), is(2));
 		Iterator<DeploymentEntity> it = result1.getA().iterator();
-		assertEquals(d1, it.next());
-		assertEquals(d2, it.next());
+		assertEquals(d1.getId(), it.next().getId());
+		assertEquals(d2.getId(), it.next().getId());
 
 		// when sorting by release descending (sorting should be ignored)
 		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
@@ -1128,8 +1128,8 @@ public class DeploymentBoundaryPersistenceTest
 		assertThat(result2.getA().size(), is(2));
 		assertThat(result2.getB(), is(2));
 		it = result2.getA().iterator();
-		assertEquals(d1, it.next());
-		assertEquals(d2, it.next());
+		assertEquals(d1.getId(), it.next().getId());
+		assertEquals(d2.getId(), it.next().getId());
 	}
 
 	@Test
@@ -1204,7 +1204,7 @@ public class DeploymentBoundaryPersistenceTest
 		assertThat(result1.getA().size(), is(1));
 		assertThat(result1.getB(), is(1));
 		Iterator<DeploymentEntity> it = result1.getA().iterator();
-		assertEquals(d3, it.next());
+		assertEquals(d3.getId(), it.next().getId());
 
 		// when sorting by release descending (sorting should be ignored)
 		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
@@ -1214,7 +1214,7 @@ public class DeploymentBoundaryPersistenceTest
 		assertThat(result2.getA().size(), is(1));
 		assertThat(result2.getB(), is(1));
 		it = result2.getA().iterator();
-		assertEquals(d3, it.next());
+		assertEquals(d3.getId(), it.next().getId());
 	}
 
 }
