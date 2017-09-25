@@ -148,14 +148,12 @@ public class DeploymentBoundary {
         DeploymentState lastDeploymentState = null;
 
         if (isLastDeploymentForAsEnvFilterSet(filter)) {
-            if (filter.size() > 0) {
-                for (CustomFilter customFilter : filter) {
-                    if (customFilter.getFilterDisplayName().equals("State")) {
-                        lastDeploymentState = DeploymentState.getByString(customFilter.getValue());
-                        // we always want the latest
-                        colToSort = DeploymentFilterTypes.DEPLOYMENT_DATE.getFilterTabColumnName();
-                        sortingDirection = CommonFilterService.SortingDirectionType.DESC;
-                    }
+            for (CustomFilter customFilter : filter) {
+                if (customFilter.getFilterDisplayName().equals("State")) {
+                    lastDeploymentState = DeploymentState.getByString(customFilter.getValue());
+                    // we always want the latest
+                    colToSort = DeploymentFilterTypes.DEPLOYMENT_DATE.getFilterTabColumnName();
+                    sortingDirection = CommonFilterService.SortingDirectionType.DESC;
                 }
             }
 
@@ -494,7 +492,7 @@ public class DeploymentBoundary {
      * @param node
      * @return the created NodeJobEntity
      */
-    public NodeJobEntity createAndPersistNodeJobEntity(DeploymentEntity deployment, ResourceEntity node) {
+    public NodeJobEntity createAndPersistNodeJobEntity(DeploymentEntity deployment) {
         NodeJobEntity nodeJobEntity = new NodeJobEntity();
         nodeJobEntity.setDeployment(deployment);
         nodeJobEntity.setDeploymentState(deployment.getDeploymentState());
