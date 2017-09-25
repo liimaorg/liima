@@ -21,11 +21,8 @@
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -731,7 +728,7 @@ public class DeploymentBoundaryPersistenceTest
 		persistDeploymentEntityForTest(d);
 
 		// when
-		deploymentBoundary.updateDeploymentInfo(GenerationModus.DEPLOY, d.getId(), "foo error", resource.getId(), null);
+		deploymentBoundary.updateDeploymentInfo(GenerationModus.DEPLOY, d.getId(), "foo error", resource.getId(), null, DeploymentFailureReason.deployment_script);
 
 		// then
 		DeploymentEntity afterUpdate = entityManager.find(DeploymentEntity.class, d.getId());
@@ -739,6 +736,7 @@ public class DeploymentBoundaryPersistenceTest
 		assertEquals(resource.getId(), afterUpdate.getResource().getId());
 		assertNotNull(d.getStateMessage());
 		assertEquals("foo error", afterUpdate.getStateMessage());
+		assertThat(afterUpdate.getReason(), is(DeploymentFailureReason.deployment_script));
 	}
 
 	

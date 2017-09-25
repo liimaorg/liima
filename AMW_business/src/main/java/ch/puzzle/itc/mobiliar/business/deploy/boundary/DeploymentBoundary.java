@@ -520,7 +520,8 @@ public class DeploymentBoundary {
 			}
 		}
         else {
-            updateDeploymentInfoAndSendNotification(GenerationModus.PREDEPLOY, deploymentId, "Deployment (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing at " + new Date(), deployment.getResource().getId(), null);
+            DeploymentFailureReason reason = DeploymentFailureReason.pre_deployment_script;
+            updateDeploymentInfoAndSendNotification(GenerationModus.PREDEPLOY, deploymentId, "Deployment (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing at " + new Date(), deployment.getResource().getId(), null, reason);
             log.info("Deployment " + deployment.getId() + " (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing");
         }
     }
@@ -845,10 +846,11 @@ public class DeploymentBoundary {
      * @param errorMessage     - the error message if any other
      * @param resourceId       - the ApplicationServe used for deployment
      * @param generationResult
+     * @param reason           - the DeploymentFailureReason (if any)
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public DeploymentEntity updateDeploymentInfo(GenerationModus generationModus, final Integer deploymentId, final String errorMessage, final Integer resourceId,
-                                                 final GenerationResult generationResult) {
+                                                 final GenerationResult generationResult, DeploymentFailureReason reason) {
 		// don't lock a deployment for predeployment as there is no need to update the deployment.
 		if (GenerationModus.PREDEPLOY.equals(generationModus) && errorMessage == null) {
 			log.fine("Predeploy script finished at " + new Date());
@@ -871,10 +873,18 @@ public class DeploymentBoundary {
             } else {
                 deployment.appendStateMessage(errorMessage);
                 deployment.setDeploymentState(DeploymentState.failed);
+                if (reason == null) {
+                    reason = DeploymentFailureReason.deployment_generation;
+                }
+                deployment.setReason(reason);
             }
         } else if (GenerationModus.PREDEPLOY.equals(generationModus)) {
             deployment.appendStateMessage(errorMessage);
             deployment.setDeploymentState(DeploymentState.failed);
+            if (reason == null) {
+                reason = DeploymentFailureReason.pre_deployment_generation;
+            }
+            deployment.setReason(reason);
         } else {
             if (errorMessage == null) {
                 String nodeInfo = getNodeInfoForDeployment(generationResult);
@@ -911,8 +921,8 @@ public class DeploymentBoundary {
      * @param resourceId       - the ApplicationServer resource used for deployment
      * @param generationResult
      */
-    public void updateDeploymentInfoAndSendNotification(GenerationModus generationModus, final Integer deploymentId, final String errorMessage, final Integer resourceId, final GenerationResult generationResult) {
-        DeploymentEntity deployment = updateDeploymentInfo(generationModus, deploymentId, errorMessage, resourceId, generationResult);
+    public void updateDeploymentInfoAndSendNotification(GenerationModus generationModus, final Integer deploymentId, final String errorMessage, final Integer resourceId, final GenerationResult generationResult, DeploymentFailureReason  reason) {
+        DeploymentEntity deployment = updateDeploymentInfo(generationModus, deploymentId, errorMessage, resourceId, generationResult, reason);
         if (generationModus != null && generationModus.isSendNotificationOnErrorGenerationModus()) {
             sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
         }

@@ -250,6 +250,11 @@ public class DeploymentEntity implements Serializable {
     private List<DeploymentParameter> deploymentParameters;
 
     @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private DeploymentFailureReason reason;
+
+    @Getter
     @Version
     private long v;
 

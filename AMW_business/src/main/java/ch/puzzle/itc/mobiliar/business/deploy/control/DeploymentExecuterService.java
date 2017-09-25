@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorDomainServiceWithAppServerRelations;
 import ch.puzzle.itc.mobiliar.business.generator.control.LockingService;
@@ -88,7 +89,7 @@ public class DeploymentExecuterService {
 			// catch all Exceptions during Generation
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Deployment not successful: " + deploymentId, e);
-			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, null, e);
+			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, null, e, DeploymentFailureReason.deployment_generation);
 		}
 
 		if (result != null && !result.hasErrors()) {

@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.deploy.scheduler;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentExecuterService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestExecuterService;
@@ -246,7 +247,7 @@ public class DeploymentScheduler {
 
 			deploymentBoundary.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(),
 					generationModus.getAction() + " was marked as failed because it reached the deplyoment timeout (" + timeout + " s) at " + new Date(),
-					deployment.getResource() != null ? deployment.getResource().getId() : null, null);
+					deployment.getResource() != null ? deployment.getResource().getId() : null, null, DeploymentFailureReason.timeout);
 		}
 	}
 
