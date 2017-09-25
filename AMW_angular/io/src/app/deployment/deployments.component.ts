@@ -95,7 +95,6 @@ export class DeploymentsComponent implements OnInit {
         this.initTypeAndOptions();
         this.canRequestDeployments();
     });
-
   }
 
   addFilter() {
@@ -113,7 +112,10 @@ export class DeploymentsComponent implements OnInit {
   }
 
   removeFilter(filter: DeploymentFilter) {
-    _.remove(this.filters, {name: filter.name, comp: filter.comp, val: filter.val});
+    let i: number = _.findIndex(this.filters, {name: filter.name, comp: filter.comp, val: filter.val});
+    if (i !== -1) {
+      this.filters.splice(i, 1);
+    }
   }
 
   clearFilters() {
@@ -253,6 +255,18 @@ export class DeploymentsComponent implements OnInit {
     this.deployments.forEach((deployment) => {
       this.getDeploymentDetailForCsvExport(deployment);
     });
+  }
+
+  copyURL() {
+    let url: string = decodeURIComponent(window.location.href);
+    $("body").append($('<input type="text" name="fname" class="textToCopyInput" style="opacity:0"/>')
+      .val(url)).find(".textToCopyInput").select();
+    try {
+      document.execCommand('copy');
+    } catch (e) {
+      window.prompt("Press Ctrl + C, then Enter to copy to clipboard", url);
+    }
+    $(".textToCopyInput").remove();
   }
 
   private populateCSVrows(deployment: Deployment) {
