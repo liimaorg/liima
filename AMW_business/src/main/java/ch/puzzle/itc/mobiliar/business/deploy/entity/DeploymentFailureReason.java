@@ -31,8 +31,8 @@ public enum DeploymentFailureReason {
     deployment_script("deployment_script"),
     node_missing("node_missing"),
     timeout("timeout"),
-    error_unexpected("unexpected_error"),
-    error_runtime("runtime_error");
+    unexpected_error("unexpected_error"),
+    runtime_error("runtime_error");
 
     private String displayName;
 
