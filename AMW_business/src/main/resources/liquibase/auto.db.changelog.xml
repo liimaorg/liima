@@ -135,4 +135,7 @@
     <include file="changesets/data/permissionMerge/correct_resource_release_copy_from_resource_update.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/newPermissions_cleanup.xml" relativeToChangelogFile="true"/>
 
+    <!--1.15.0-->
+    <include file="changesets/model/eternalDeployments/eternalDeployments_allowNull.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

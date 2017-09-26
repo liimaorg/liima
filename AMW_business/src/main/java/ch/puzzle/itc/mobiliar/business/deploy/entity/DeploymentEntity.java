@@ -250,6 +250,31 @@ public class DeploymentEntity implements Serializable {
     private List<DeploymentParameter> deploymentParameters;
 
     @Getter
+    @Setter
+    @Column(name = "ex_context_id")
+    private Integer exContextId;
+
+    @Getter
+    @Setter
+    @Column(name = "ex_release_id")
+    private Integer exReleaseId;
+
+    @Getter
+    @Setter
+    @Column(name = "ex_resource_id")
+    private Integer exResourceId;
+
+    @Getter
+    @Setter
+    @Column(name = "ex_resourcegroup_id")
+    private Integer exResourcegroupId;
+
+    @Getter
+    @Setter
+    @Column(name = "ex_runtime_resource_id")
+    private Integer exRuntimeResourceId;
+
+    @Getter
     @Version
     private long v;
 
