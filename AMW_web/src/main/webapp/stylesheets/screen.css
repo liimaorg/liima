@@ -2106,19 +2106,10 @@ div.well, div.rf-p {
   display: inline;
 }
 
-
 .deploy-checkbox {
-	margin-right: 7px;
+  margin-right: 7px;
 }
 
 span.reason {
-  font-size: 75%;
-  font-weight: bolder;
-  color: white;
-  background-color: red;
-  position: relative;
-  left: -190px;
-  top: -19px;
-  border-radius: 4px;
-  padding: 2px 5px;
+  font-size: 60%;
 }

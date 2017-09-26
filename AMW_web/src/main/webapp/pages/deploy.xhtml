@@ -212,9 +212,13 @@
                                             </a4j:commandLink>
                                         </f:facet>
                                         <div class="deploymentInfo nowrap">
-                                            <h:outputText
+                                            <h:outputText rendered="${deployment.reason == null}"
                                                     value="#{deployScreenDataProvider.getDeploymentStateText(deployment)}"
                                                     styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock"
+                                            />
+                                            <h:outputText rendered="${deployment.reason != null}"
+                                                          value="#{deployment.reason}"
+                                                          styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock reason"
                                             />
                                             <a4j:commandLink
                                                     oncomplete="#{rich:component('deploymentDetailPopup')}.show(); return false;"
@@ -234,7 +238,6 @@
                                                 <a4j:param assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
                                                         value="${deployment.id}"></a4j:param>
                                             </a4j:commandLink>
-                                            <h:outputText styleClass="reason" rendered="${deployment.reason != null}" value="${deployment.reason}" title="${deployment.reason}"/>
                                         </div>
                                     </h:column>
 
