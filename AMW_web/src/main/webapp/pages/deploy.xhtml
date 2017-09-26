@@ -234,8 +234,8 @@
                                                 <a4j:param assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
                                                         value="${deployment.id}"></a4j:param>
                                             </a4j:commandLink>
+                                            <h:outputText styleClass="reason ${deployment.reason}" rendered="${deployment.reason != null}" value="${deployment.reason}" title="${deployment.reason}"/>
                                         </div>
-
                                     </h:column>
 
                                     <h:column index="index" headerClass="nowrap">

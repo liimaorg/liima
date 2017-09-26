@@ -2110,3 +2110,34 @@ div.well, div.rf-p {
 .deploy-checkbox {
 	margin-right: 7px;
 }
+
+span.reason {
+  font-size: 75%;
+  font-weight: bolder;
+  color: white;
+  position: relative;
+  left: -190px;
+  top: -19px;
+  border-radius: 4px;
+  padding: 2px 5px;
+}
+
+span.pre_deployment_script,
+span.deployment_script {
+  background-color: red;
+}
+
+span.pre_deployment_generation,
+span.deployment_generation {
+  background-color: orangered;
+}
+
+span.node_missing,
+span.timeout {
+  background-color: darkorange;
+}
+
+span.unexpected_error,
+span.runtime_error {
+  background-color: blue;
+}
