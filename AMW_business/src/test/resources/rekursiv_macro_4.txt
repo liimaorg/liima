@@ -1,0 +1,156 @@
+<#macro printProps res=.data_model>
+  <#if res.amwproperties??>
+  <properties>
+    <#list res.amwproperties?keys as prop>
+      <property key="${prop}" value="${res.amwproperties[prop]}" />
+    </#list>
+  </properties>
+  </#if>
+</#macro>
+
+<#macro printPropsAsYaml res=.data_model>
+  <#if res.amwproperties??>
+${res.name}:
+    <#list res.amwproperties?keys as prop>
+  ${prop}: "${res.amwproperties[prop]}"
+    </#list>
+  </#if>
+</#macro>
+
+<#macro printPropsAsToml res=.data_model resName=res.name>
+  <#if res.amwproperties??>
+[${resName}]
+    <#list res.amwproperties?keys as prop>
+${prop} = "${res.amwproperties[prop]}"
+    </#list>
+    
+  </#if>
+</#macro>
+
+<#macro printPropsFull res=.data_model>
+  <#if res.amwproperties??>
+  <properties>
+    <#list res.amwproperties?keys as prop>
+      <#assign descriptor = res.amwproperties[prop]._descriptor >
+  	<property technicalKey="${descriptor.technicalKey}" displayName="${descriptor.displayName!'empty'}" key="${prop}" encrypt="${descriptor.encrypt?c}" keyOptional="${descriptor.keyOptional?c}" valueOptional="${descriptor.valueOptional?c}" validationLogic="${descriptor.validationLogic!'empty'}" propertyComment="${descriptor.propertyComment!'empty'}" exampleValue="${descriptor.exampleValue!'empty'}" machineInterpretationKey="${descriptor.machineInterpretationKey!'empty'}" tags="<#list descriptor.tags as tag>${tag}<#if tag_has_next>, </#if></#list>" value="${res.amwproperties[prop]}" />
+    </#list>
+  </properties>
+  </#if>
+</#macro>
+
+<#function getPropsWithTag tag res=.data_model>
+   <#assign result=[]>
+   <#if !res.amwproperties??>
+     <#return result>
+   </#if>
+   <#-- Only include node we are generating for -->
+   <#if res.amwproperties.excludeAppFromNode?? && res.id != node.id>
+     <#return result>
+   </#if>
+   
+  <#list res.amwproperties?keys as prop>
+    <#assign descriptor = res.amwproperties[prop]._descriptor >
+    <#if descriptor?is_hash>
+      <#if descriptor.hasTag(tag)>
+        <#assign result=result + [res.amwproperties[prop]]>
+      </#if>
+    </#if>
+  </#list>
+    
+  <#return result>
+</#function>
+
+<#function getAllPropsWithTag tag startRes=.data_model>
+   <#assign result=getPropsWithTag(tag, startRes)>
+
+
+   <#if startRes.consumedResTypes??>
+    <#list startRes.consumedResTypes?keys as restype>
+        <#list startRes.consumedResTypes[restype]?keys as instance>
+                 <#assign result=result + getAllPropsWithTag(tag, startRes.consumedResTypes[restype][instance])>
+        </#list>
+    </#list>
+  </#if>
+  
+   <#if startRes.providedResTypes??>
+    <#list startRes.providedResTypes?keys as restype>
+        <#list startRes.providedResTypes[restype]?keys as instance>
+                 <#assign result=result + getAllPropsWithTag(tag, startRes.providedResTypes[restype][instance])>
+        </#list>
+    </#list>
+  </#if>
+  
+  <#return result>
+</#function>
+
+<!-- recursion v5.0 -->
+<#macro printRec res path>
+<#if !res??>
+<empty path="${path}" />
+<#return>
+</#if>
+<resource name="${res.name}" path="${path}">
+  <@printPropsFull res/>
+  <consumedResTypes>
+  <#if res.consumedResTypes??>
+    <#list res.consumedResTypes?keys as restype>
+        <#list res.consumedResTypes[restype]?keys as instance>
+          <@printRec res.consumedResTypes[restype][instance] path+instance+"/" />
+        </#list>
+    </#list>
+  </#if>
+  </consumedResTypes>
+  <providedResTypes>
+  <#if res.providedResTypes??>
+    <#list res.providedResTypes?keys as restype>
+        <#list res.providedResTypes[restype]?keys as instance>
+      <@printRec res.providedResTypes[restype][instance] path+instance+"/" />
+        </#list>
+    </#list>
+  </#if>
+  </providedResTypes>
+</resource>
+</#macro>
+<dump start_res="${name}">
+<global >
+  <appServer>
+    <@printPropsFull appServer/>
+  </appServer>
+  <node>
+    <@printPropsFull node/>
+  </node>
+  <runtime>
+    <@printPropsFull runtime />
+  </runtime>
+  <env>
+    <properties>
+      <property name="id" value="${env.id}"/>
+      <property name="name" value="${env.name}"/>
+      <property name="domain" value="${env.domain}"/>
+    </properties>
+  </env>
+  <deployment>
+    <properties>
+      <property name="targetLogPrefix" value="${deployment.targetLogPrefix}"/>
+      <property name="generationStateDate" value="${deployment.generationStateDate}"/>
+      <property name="jobCreationDate" value="${deployment.jobCreationDate}"/>
+      <property name="trackingId" value="${deployment.trackingId!"empty"}"/>
+      <property name="confirmationUser" value="${deployment.confirmationUser!"empty"}"/>
+      <property name="confirmationDate" value="${deployment.confirmationDate}"/>
+      <property name="generationModus" value="${deployment.generationModus}"/>
+      <property name="amwLogFile" value="${deployment.amwLogFile}"/>
+      <property name="requestUser" value="${deployment.requestUser!"empty"}"/>
+    </properties>
+    <release>
+      <properties>
+        <property name="id" value="${deployment.release.id}"/>
+        <property name="name" value="${deployment.release.name}"/>
+        <property name="installationDate" value="${deployment.release.installationDate}"/>
+      </properties>
+    </release>
+  </deployment>
+</global>
+<resources>
+<@printRec .data_model "/" />
+</resources>
+</dump>

@@ -115,9 +115,9 @@ public class AppServerRelationProperties {
 		model.setProperties(properties);
 		model.setFunctions(functions);
 		model.setResourceEntity(owner);
-        Map<String, Map<String, AmwResourceTemplateModel>> transformConsumedRelated = transformRelated(consumed);
+        Map<String, Map<String, AmwResourceTemplateModel>> transformConsumedRelated = transformRelated(consumed, model);
 		model.setConsumedResTypes(transformConsumedRelated);
-		model.setProvidedResTypes(transformRelated(provided));
+		model.setProvidedResTypes(transformRelated(provided, model));
 
 		AmwAppServerNodeModel amwAppServerNodeModel = new AmwAppServerNodeModel();
 		addAppServerNodeViaResolver(amwAppServerNodeModel, resolver);
@@ -192,11 +192,12 @@ public class AppServerRelationProperties {
 		this.templatesCache = templatesCache;
 	}
 
-	private AmwResourceTemplateModel getPropertiesWithTemplates() {
+	private AmwResourceTemplateModel getPropertiesWithTemplates(AmwResourceTemplateModel parent) {
         AmwResourceTemplateModel model = new AmwResourceTemplateModel();
         model.setProperties(getProperties());
 		model.setFunctions(functions);
 		model.setResourceEntity(owner);
+		model.setParentResourceTemplateModel(parent);
         setTemplates(model);
         return model;
 	}
@@ -212,15 +213,15 @@ public class AppServerRelationProperties {
     }
 
 
-    private Map<String, Map<String, AmwResourceTemplateModel>> transformRelated(List<AppServerRelationProperties> relations) {
-		return transformRelatedInternal(relations, supportNesting);
+    private Map<String, Map<String, AmwResourceTemplateModel>> transformRelated(List<AppServerRelationProperties> relations, AmwResourceTemplateModel parent) {
+		return transformRelatedInternal(relations, supportNesting, parent);
 	}
 
-	private Map<String, Map<String, AmwResourceTemplateModel>> transformRelatedAndStop(List<AppServerRelationProperties> relations) {
-		return transformRelatedInternal(relations, false);
+	private Map<String, Map<String, AmwResourceTemplateModel>> transformRelatedAndStop(List<AppServerRelationProperties> relations, AmwResourceTemplateModel parent) {
+		return transformRelatedInternal(relations, false, parent);
 	}
 
-	private Map<String, Map<String,AmwResourceTemplateModel>> transformRelatedInternal(List<AppServerRelationProperties> relations, boolean transformNested) {
+	private Map<String, Map<String,AmwResourceTemplateModel>> transformRelatedInternal(List<AppServerRelationProperties> relations, boolean transformNested, AmwResourceTemplateModel parent) {
 		Map<String, Map<String,AmwResourceTemplateModel>> map = Maps.newLinkedHashMap();
 		for (AppServerRelationProperties relation : relations) {
 			ResourceEntity slave = relation.getOwner();
@@ -236,7 +237,7 @@ public class AppServerRelationProperties {
 			}
             Map<String,AmwResourceTemplateModel> typeMap = map.get(typeName);
 
-            AmwResourceTemplateModel relationModel = relation.getPropertiesWithTemplates();
+            AmwResourceTemplateModel relationModel = relation.getPropertiesWithTemplates(parent);
 
             typeMap.put(name, relationModel);
 
@@ -274,7 +275,7 @@ public class AppServerRelationProperties {
             }
             
 			if (transformNested) {
-				addRelated(relationModel, relation);
+				addRelated(relationModel, relation, relationModel);
 			}
 		}
 
@@ -293,11 +294,11 @@ public class AppServerRelationProperties {
 		}
 	}
 
-	private void addRelated(AmwResourceTemplateModel model, AppServerRelationProperties relation) {
-		Map<String, Map<String, AmwResourceTemplateModel>> transformConsumedProperties = transformRelated(relation.getConsumed());
+	private void addRelated(AmwResourceTemplateModel model, AppServerRelationProperties relation, AmwResourceTemplateModel parent) {
+		Map<String, Map<String, AmwResourceTemplateModel>> transformConsumedProperties = transformRelated(relation.getConsumed(), parent);
         model.setConsumedResTypes(transformConsumedProperties);
 
-        Map<String, Map<String, AmwResourceTemplateModel>> transformProvidedProperties = transformRelatedAndStop(relation.getProvided());
+        Map<String, Map<String, AmwResourceTemplateModel>> transformProvidedProperties = transformRelatedAndStop(relation.getProvided(), parent);
 		model.setProvidedResTypes(transformProvidedProperties);
 	}
 

@@ -23,6 +23,8 @@ package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -37,6 +39,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 
+import com.google.common.collect.Lists;
+
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -49,12 +53,11 @@ import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorUtils;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.EntityBuilder;
 import ch.puzzle.itc.mobiliar.test.EntityBuilderType;
-
-import com.google.common.collect.Lists;
 
 public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 
@@ -118,6 +121,13 @@ public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 		DeploymentEntity d = new DeploymentEntity();
 		d.setRuntime(builder.platform);
 		d.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
+		
+		ReleaseEntity release = new ReleaseEntity();
+		Calendar cal = new GregorianCalendar();
+		release.setId(-1);
+		release.setName("release");
+		cal.set(2014, Calendar.JANUARY, 1);
+		d.setRelease(release );
 
 	    GenerationContext context = new GenerationContext(this.context, builder.as, d, null,
 			    GenerationModus.SIMULATE,
