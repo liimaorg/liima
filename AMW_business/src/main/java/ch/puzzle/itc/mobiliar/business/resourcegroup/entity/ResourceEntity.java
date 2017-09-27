@@ -50,15 +50,19 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.*;
 
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
 
 /**
@@ -127,7 +131,8 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	@Setter
 	private ReleaseEntity release;
 
-	@OneToMany(cascade = ALL, mappedBy = "resource")
+	@OneToMany(cascade = { PERSIST, MERGE}, mappedBy = "resource")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@NotAudited
 	@Getter
 	@Setter

@@ -605,23 +605,28 @@ public class DeployScreenDataProvider implements Serializable {
 
 
     public boolean isCancelPossible(DeploymentEntity deployment) {
-        return deploymentBoundary.isCancelPossible(deployment).isPossible();
+        return !isHistoric(deployment) && deploymentBoundary.isCancelPossible(deployment).isPossible();
     }
 
     public boolean isConfirmPossible(DeploymentEntity deployment) {
-        return deploymentBoundary.isConfirmPossible(deployment).isPossible()&& permissionService.hasPermissionForDeploymentUpdate(deployment);
+        return !isHistoric(deployment) && deploymentBoundary.isConfirmPossible(deployment).isPossible()&& permissionService.hasPermissionForDeploymentUpdate(deployment);
     }
 
     public boolean isRejectPossible(DeploymentEntity deployment) {
-        return deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment);
+        return !isHistoric(deployment) && deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment);
     }
 
     public boolean isChangeDeploymentDatePossible(DeploymentEntity deployment) {
-        return deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment);
+        return !isHistoric(deployment) && deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment);
     }
 
     public boolean isRedeployPossible(DeploymentEntity deployment) {
-        return permissionService.hasPermissionForDeploymentCreation(deployment);
+        return !isHistoric(deployment) && permissionService.hasPermissionForDeploymentCreation(deployment);
+    }
+
+    public boolean isHistoric(DeploymentEntity deployment) {
+        // TODO check context, runtime etc. as well
+        return deployment.getResourceGroup() == null;
     }
 
     public void reloadDeployments(boolean countAgain) {

@@ -5,12 +5,9 @@
 
     <changeSet author="rgalante" id="eternalDeployments_allowNull">
 
-        <dropNotNullConstraint tableName="TAMW_deployment"
-                               columnName="release_id" />
-        <dropNotNullConstraint tableName="TAMW_deployment"
-                               columnName="resourcegroup_id" />
-        <dropNotNullConstraint tableName="TAMW_deployment"
-                               columnName="runtime_resource_id" />
+        <dropNotNullConstraint tableName="TAMW_deployment" columnDataType="INTEGER" columnName="release_id" />
+        <dropNotNullConstraint tableName="TAMW_deployment" columnDataType="INTEGER" columnName="resourcegroup_id" />
+        <dropNotNullConstraint tableName="TAMW_deployment" columnDataType="INTEGER" columnName="runtime_resource_id" />
 
         <addColumn tableName="TAMW_deployment">
             <column name="ex_context_id" type="INTEGER" />

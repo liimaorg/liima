@@ -32,8 +32,8 @@ import javax.inject.Named;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourcesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
@@ -50,7 +50,7 @@ import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 public class ResourceListController {
 
 	@Inject
-	private ResourcesScreenDomainService resourcesScreenService;
+	private ResourceBoundary resourceBoundary;
 
 	@Inject
 	private ResourceGroupLocator resourceGroupLocator;
@@ -88,10 +88,10 @@ public class ResourceListController {
 		  if (resourceId != null) {
 			 try {
 				if (isDefaultResourceType) {
-				    resourcesScreenService.removeResourceEntityOfDefaultResType(ForeignableOwner.getSystemOwner(), resourceId);
+				    resourceBoundary.removeResourceEntityOfDefaultResType(ForeignableOwner.getSystemOwner(), resourceId);
 				}
 				else {
-				    resourcesScreenService.removeResource(ForeignableOwner.getSystemOwner(), resourceId);
+				    resourceBoundary.removeResource(ForeignableOwner.getSystemOwner(), resourceId);
 				}
 				String message = "Resource " + resourceName + " (" + releaseName + ") "
 						+ " successfully deleted";

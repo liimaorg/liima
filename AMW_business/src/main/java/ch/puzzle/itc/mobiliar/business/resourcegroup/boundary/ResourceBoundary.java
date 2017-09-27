@@ -22,11 +22,14 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
+import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
@@ -34,10 +37,7 @@ import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import javax.ejb.Stateless;
@@ -46,6 +46,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Stateless
@@ -80,7 +81,13 @@ public class ResourceBoundary {
     private ResourceGroupRepository resourceGroupRepository;
 
     @Inject
-    ResourceTypeRepository resourceTypeRepository;
+    private ResourceRepository resourceRepository;
+
+    @Inject
+    private ResourceTypeRepository resourceTypeRepository;
+
+    @Inject
+    private ForeignableService foreignableService;
 
     /**
      * Create new instance resourceType (any resourceType)
@@ -285,6 +292,80 @@ public class ResourceBoundary {
                 entityManager.merge(resourceEntity);
             }
         }
+    }
+
+    public void deleteApplicationServerById(int id) throws ResourceNotFoundException,
+            ResourceNotDeletableException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+        doRemoveResourceEntity(ForeignableOwner.getSystemOwner(), id, false);
+    }
+
+    public void removeResource(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+        doRemoveResourceEntity(deletingOwner, resourceId, false);
+    }
+
+    public void removeResourceEntityOfDefaultResType(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+        doRemoveResourceEntity(deletingOwner, resourceId, true);
+    }
+
+    public void deleteApplicationById(ForeignableOwner deletingOwner, int applicationResId) throws ResourceNotFoundException,
+            ResourceNotDeletableException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+        doRemoveResourceEntity(deletingOwner, applicationResId, false);
+    }
+
+    private void doRemoveResourceEntity(ForeignableOwner deletingOwner, Integer resourceId, boolean isDefaultResType) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+
+        ResourceEntity resourceEntity = commonService.getResourceEntityById(resourceId);
+
+        foreignableService.verifyDeletableByOwner(deletingOwner, resourceEntity);
+
+        if (resourceEntity == null) {
+            String message = "Die zu löschende Ressource ist nicht vorhanden";
+            log.info(message);
+            throw new ResourceNotFoundException(message);
+        }
+
+        if ( !permissionBoundary.hasPermission(Permission.RESOURCE,
+                contextDomainService.getGlobalResourceContextEntity(), Action.DELETE, resourceEntity, resourceEntity.getResourceType())) {
+            throw new NotAuthorizedException();
+        }
+
+        Integer groupId = resourceEntity.getResourceGroup().getId();
+        //Special logic for the removal of an application server: If the current application server instance is the only release previously consuming this resource, the relation has to be attached to the default application server container.
+        if (resourceEntity.getResourceType().getName().equals(DefaultResourceTypeDefinition.APPLICATIONSERVER.name())) {
+            ApplicationServer applicationCollectorGroup = commonService.createOrGetApplicationCollectorServer();
+            List<ResourceEntity> resources = resourceEntity.getConsumedRelatedResourcesByResourceType(DefaultResourceTypeDefinition.APPLICATION);
+            if (!resources.isEmpty()) {
+                for (ResourceEntity res : resources) {
+                    if (countNumberOfConsumedSlaveRelations(res) == 1) {
+                        res.changeResourceRelation(resourceEntity, applicationCollectorGroup.getEntity(),
+                                resourceTypeProvider.getOrCreateResourceRelationType(resourceEntity
+                                                .getResourceType(),
+                                        applicationCollectorGroup.getResourceType()
+                                                .getEntity(), null));
+                        log.info("Resource with id " + res.getId()
+                                + " has been assigned to the default app server (applications without appservers)");
+                    }
+                }
+            }
+
+        }
+        resourceRepository.remove(resourceEntity);
+        log.info("Resource with id: " + resourceEntity.getId() + " is going to be removed from the database...");
+
+        // delete group if deleted resource was the only group member
+        //ResourceGroupEntity group = resourceGroupService.getById(groupId);
+        ResourceGroupEntity group = resourceGroupRepository.find(groupId);
+        if (group != null
+                && (group.getResources() == null || group.getResources().isEmpty() || (group
+                .getResources().size() == 1 && group.getResources().iterator().next().getId()
+                .equals(resourceEntity.getId())))) {
+            resourceGroupRepository.remove(group);
+            //resourceGroupService.deleteResourceGroupEntity(groupId);
+        }
+    }
+
+    private long countNumberOfConsumedSlaveRelations(ResourceEntity res){
+        return entityManager.createQuery("select count(a.id) from ResourceEntity r left join r.consumedSlaveRelations a where r=:res", Long.class).setParameter("res", res).getSingleResult();
     }
 
 }
