@@ -91,37 +91,7 @@ public class EnvironmentsScreenDomainService {
 		}
 
 	}
-	
-	/**
-	 * all defined property values for any application, resource or relation between them as well as any sub context will be lost. 
-	 * @param contextId
-	 * @throws AMWException
-	 */
-	@HasPermission(permission = Permission.REMOVE_ENV_OR_DOM)
-	public String deleteContext(Integer contextId) throws AMWException{
-		String contextName = null;
-		ContextEntity context = contextDomainService.getContextEntityById(contextId);
-		contextName = context.getName();
-		if(!context.getContextType().getName().equals(ContextNames.GLOBAL.name())){
-			
-			context.getContextType().getContexts().remove(context);
-			if(context.getParent()!=null){
-				context.getParent().getChildren().remove(context);
-			}
-			if(context.getChildren()!=null){
-				for(ContextEntity c : context.getChildren()){
-					securityService.deleteRestrictionsWithContext(c);
-				}
-			}
 
-			securityService.deleteRestrictionsWithContext(context);
-			entityManager.remove(context);
-		} else {
-			throw new AMWException("Es wurde versucht den Kontext \"Global\" (id: "+contextId+" zu löschen.");
-		}
-		return contextName;
-	}
-	
 	/**
 	 * @throws ElementAlreadyExistsException 
 	 * Erstellt einen neuen Context anhand den Name und den superContext. Der Kontext ist an einen Benutzer zugewisen

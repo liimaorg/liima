@@ -605,28 +605,23 @@ public class DeployScreenDataProvider implements Serializable {
 
 
     public boolean isCancelPossible(DeploymentEntity deployment) {
-        return !isHistoric(deployment) && deploymentBoundary.isCancelPossible(deployment).isPossible();
+        return !deployment.isPreserved()  && deploymentBoundary.isCancelPossible(deployment).isPossible();
     }
 
     public boolean isConfirmPossible(DeploymentEntity deployment) {
-        return !isHistoric(deployment) && deploymentBoundary.isConfirmPossible(deployment).isPossible()&& permissionService.hasPermissionForDeploymentUpdate(deployment);
+        return !deployment.isPreserved()  && deploymentBoundary.isConfirmPossible(deployment).isPossible()&& permissionService.hasPermissionForDeploymentUpdate(deployment);
     }
 
     public boolean isRejectPossible(DeploymentEntity deployment) {
-        return !isHistoric(deployment) && deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment);
+        return !deployment.isPreserved()  && deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment);
     }
 
     public boolean isChangeDeploymentDatePossible(DeploymentEntity deployment) {
-        return !isHistoric(deployment) && deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment);
+        return !deployment.isPreserved()  && deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment);
     }
 
     public boolean isRedeployPossible(DeploymentEntity deployment) {
-        return !isHistoric(deployment) && permissionService.hasPermissionForDeploymentCreation(deployment);
-    }
-
-    public boolean isHistoric(DeploymentEntity deployment) {
-        // TODO check context, runtime etc. as well
-        return deployment.getResourceGroup() == null;
+        return !deployment.isPreserved() && permissionService.hasPermissionForDeploymentCreation(deployment);
     }
 
     public void reloadDeployments(boolean countAgain) {
