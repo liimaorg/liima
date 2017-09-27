@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -54,6 +55,9 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 
 	@Inject
 	ReleaseMgmtService releaseMgmtService;
+
+	@Inject
+	ReleaseLocator releaseLocator;
 
 	@Inject
     DeploymentBoundary deploymentBoundary;
@@ -117,11 +121,9 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 	private List<DeploymentEntity> deploymentsForCurrentRelease;
 
 	public void remove(){
-		if (releaseMgmtService.delete(currentRelease.getId().intValue())) {
-			GlobalMessageAppender.addSuccessMessage("Release " + currentRelease.getName()
-					+ " successfully removed.");
-			reload();
-		}
+		releaseLocator.delete(currentRelease);
+		GlobalMessageAppender.addSuccessMessage("Release " + currentRelease.getName() + " successfully removed.");
+		reload();
 	}
 
 	/**

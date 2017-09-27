@@ -124,17 +124,6 @@ public class ReleaseMgmtService {
 		return persistenceService.count();
 	}
 
-
-	/**
-	 * Deletes the given release from the database
-	 * 
-	 * @param id of release
-	 */
-	@HasPermission(permission = Permission.RELEASE, action = DELETE)
-	public boolean delete(int id) {
-		return persistenceService.deleteReleaseEntity(id);
-	}
-
 	/**
 	 * Persists the given new release.
 	 * 

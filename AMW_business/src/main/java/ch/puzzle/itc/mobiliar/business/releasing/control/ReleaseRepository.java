@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.releasing.control;
 
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
@@ -27,6 +28,7 @@ import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Set;
 
 public class ReleaseRepository extends BaseRepository<ReleaseEntity> {
 
@@ -39,5 +41,19 @@ public class ReleaseRepository extends BaseRepository<ReleaseEntity> {
 
     public List<ReleaseEntity> getReleasesForResourceGroup(ResourceGroupEntity resgrp){
         return entityManager.createQuery("select r from ReleaseEntity r left join r.resources res left join res.resourceGroup resgrp where resgrp=:resgrp", ReleaseEntity.class).setParameter("resgrp", resgrp).getResultList();
+    }
+
+    @Override
+    protected void preRemove(ReleaseEntity release) {
+        // TODO load deployments
+        final Set<DeploymentEntity> deployments = release.getDeployments();
+        if (deployments != null) {
+            final Integer releaseId = release.getId();
+            for (DeploymentEntity deployment : deployments) {
+                deployment.setExReleaseId(releaseId);
+                deployment.setRelease(null);
+                entityManager.merge(deployment);
+            }
+        }
     }
 }
