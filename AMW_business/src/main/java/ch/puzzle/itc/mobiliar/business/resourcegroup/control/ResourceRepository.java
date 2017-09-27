@@ -130,7 +130,7 @@ public class ResourceRepository {
      */
     public void remove(ResourceEntity resource) {
         Integer resourceId = resource.getId();
-        if (resource.getDeployments().size() > 0) {
+        if (resource.getDeployments() != null) {
             for (DeploymentEntity deploymentEntity : resource.getDeployments()) {
                 deploymentEntity.setExResourceId(resourceId);
                 deploymentEntity.setResource(null);

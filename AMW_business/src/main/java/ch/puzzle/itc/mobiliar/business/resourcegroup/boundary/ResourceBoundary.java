@@ -360,7 +360,6 @@ public class ResourceBoundary {
                 .getResources().size() == 1 && group.getResources().iterator().next().getId()
                 .equals(resourceEntity.getId())))) {
             resourceGroupRepository.remove(group);
-            //resourceGroupService.deleteResourceGroupEntity(groupId);
         }
     }
 

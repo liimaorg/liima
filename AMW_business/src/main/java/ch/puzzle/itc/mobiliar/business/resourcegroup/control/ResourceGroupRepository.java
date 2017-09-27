@@ -183,7 +183,7 @@ public class ResourceGroupRepository {
     public void remove(ResourceGroupEntity resourceGroup) {
         final Integer resourceGroupId = resourceGroup.getId();
         for (ResourceEntity resource : resourceGroup.getResources()) {
-            if (resource.getDeployments().size() > 0) {
+            if (resource.getDeployments() != null) {
                 for (DeploymentEntity deploymentEntity : resource.getDeployments()) {
                     deploymentEntity.setExResourcegroupId(resourceGroupId);
                     deploymentEntity.setResourceGroup(null);
