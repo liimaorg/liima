@@ -27,6 +27,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.EnvironmentsScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.security.control.SecurityScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -51,6 +52,9 @@ public class EnvironmentsController implements Serializable {
 	
 	@Inject
 	SecurityScreenDomainService securityScreenDomainService;
+
+	@Inject
+	ContextLocator contextLocator;
 
 	@Inject
 	UserSettings userSettings;
@@ -153,7 +157,7 @@ public class EnvironmentsController implements Serializable {
 			} else {
 				try{
 
-					String deletedContextName =  envScreenService.deleteContext(contextId);
+					String deletedContextName =  contextLocator.deleteContext(contextId);
 					String message = "Context and Permission: " + deletedContextName + " successfully removed";
 					GlobalMessageAppender.addSuccessMessage(message);
 					return true;

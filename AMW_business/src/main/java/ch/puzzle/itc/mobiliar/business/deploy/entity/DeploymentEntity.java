@@ -284,6 +284,15 @@ public class DeploymentEntity implements Serializable {
         super();
     }
 
+    /**
+     * Returns true if the Resource, ResourceGroup, Runtime, Context or Release originally associated with this Deployment has been deleted
+     *
+     * @return
+     */
+    public boolean isPreserved() {
+        return exResourcegroupId != null || exResourceId != null || exContextId != null || exRuntimeResourceId != null || exReleaseId != null;
+    }
+
     public boolean isRunning() {
         if (deploymentState == DeploymentState.PRE_DEPLOYMENT || deploymentState == DeploymentState.simulating
                 || deploymentState == DeploymentState.progress) {

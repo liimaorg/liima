@@ -130,7 +130,7 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	@Setter
 	private ReleaseEntity release;
 
-	@OneToMany(cascade = { PERSIST, MERGE}, mappedBy = "resource")
+	@OneToMany(cascade = {PERSIST, MERGE}, mappedBy = "resource")
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@NotAudited
 	@Getter
