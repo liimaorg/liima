@@ -129,6 +129,14 @@ public class ResourceRepository {
      * @param resource
      */
     public void remove(ResourceEntity resource) {
+        if (resource.getResourceType().isRuntimeType()) {
+            removeRuntime(resource);
+        } else {
+            removeResource(resource);
+        }
+    }
+
+    private void removeResource(ResourceEntity resource) {
         Integer resourceId = resource.getId();
         if (resource.getDeployments() != null) {
             for (DeploymentEntity deploymentEntity : resource.getDeployments()) {
@@ -139,6 +147,19 @@ public class ResourceRepository {
         }
         entityManager.remove(resource);
         log.info("Resource with Id: " + resourceId + " was removed from the db");
+    }
+
+    private void removeRuntime(ResourceEntity resource) {
+        Integer resourceId = resource.getId();
+        if (resource.getDeploymentsOfRuntime() != null) {
+            for (DeploymentEntity deploymentEntity : resource.getDeploymentsOfRuntime()) {
+                deploymentEntity.setExRuntimeResourceId(resourceId);
+                deploymentEntity.setRuntime(null);
+                entityManager.merge(deploymentEntity);
+            }
+        }
+        entityManager.remove(resource);
+        log.info("Runtime with Id: " + resourceId + " was removed from the db");
     }
 
     public void removeResourceGroup(ResourceGroupEntity resourceGroup) {

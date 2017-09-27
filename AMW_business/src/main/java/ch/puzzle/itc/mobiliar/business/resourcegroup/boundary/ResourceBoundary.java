@@ -338,12 +338,9 @@ public class ResourceBoundary {
                 for (ResourceEntity res : resources) {
                     if (countNumberOfConsumedSlaveRelations(res) == 1) {
                         res.changeResourceRelation(resourceEntity, applicationCollectorGroup.getEntity(),
-                                resourceTypeProvider.getOrCreateResourceRelationType(resourceEntity
-                                                .getResourceType(),
-                                        applicationCollectorGroup.getResourceType()
-                                                .getEntity(), null));
-                        log.info("Resource with id " + res.getId()
-                                + " has been assigned to the default app server (applications without appservers)");
+                                resourceTypeProvider.getOrCreateResourceRelationType(resourceEntity.getResourceType(),
+                                        applicationCollectorGroup.getResourceType().getEntity(), null));
+                        log.info("Resource with id " + res.getId() + " has been assigned to the default app server (applications without appservers)");
                     }
                 }
             }
@@ -355,10 +352,8 @@ public class ResourceBoundary {
         // delete group if deleted resource was the only group member
         //ResourceGroupEntity group = resourceGroupService.getById(groupId);
         ResourceGroupEntity group = resourceGroupRepository.find(groupId);
-        if (group != null
-                && (group.getResources() == null || group.getResources().isEmpty() || (group
-                .getResources().size() == 1 && group.getResources().iterator().next().getId()
-                .equals(resourceEntity.getId())))) {
+        if (group != null && (group.getResources() == null || group.getResources().isEmpty() ||
+                (group.getResources().size() == 1 && group.getResources().iterator().next().getId().equals(resourceEntity.getId())))) {
             resourceGroupRepository.remove(group);
         }
     }

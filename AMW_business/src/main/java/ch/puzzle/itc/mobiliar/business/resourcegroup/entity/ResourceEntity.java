@@ -161,8 +161,10 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	 * This field is for entity mapping only. It represents the relations between a runtime resource and its
 	 * corresponding deployments.
 	 */
-	@OneToMany(mappedBy = "runtime", cascade = ALL)
+	@OneToMany(cascade = {PERSIST, MERGE}, mappedBy = "runtime")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@NotAudited
+	@Getter
 	private Set<DeploymentEntity> deploymentsOfRuntime;
 
 
