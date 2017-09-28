@@ -26,6 +26,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import freemarker.template.*;
+import lombok.Getter;
 import lombok.Setter;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 
@@ -41,6 +42,7 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
 	public static final String RESERVED_PROPERTY_PROVIDEDRES = "providedResTypes";
 	public static final String RESERVED_PROPERTY_CONSUMEDRES = "consumedResTypes";
     private static final String RESERVED_PROPERTY_TEMPLATES = "templates";
+    private static final String PARENT = "parent";
 
     @Setter
     private String identifier;
@@ -74,6 +76,9 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
     @Setter
     ResourceEntity resourceEntity;
     
+    @Setter
+	private AmwResourceTemplateModel parentResourceTemplateModel;
+    
     private AmwTemplateModel baseModelForContextSwitch;
 
 	@Override
@@ -88,6 +93,8 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
             return getAsSimpleHash(AmwTemplateModelHelper.convertTemplatesToHash(templates), beansWrapper);
         }else if(AMW_PROPERTIES.equals(key)){
             return getAsSimpleHash(properties, beansWrapper);
+        }else if(PARENT.equals(key)){
+        	return parentResourceTemplateModel;
         }
 
         if(RESOURCE_TYPE_NAME.equals(key)){
@@ -180,6 +187,9 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
 		if(providedResTypes != null && !providedResTypes.isEmpty()){
 			return false;
 		}
+		if(parentResourceTemplateModel != null){
+			return false;
+		}
 		if(appServerNodeViaResolver != null && !appServerNodeViaResolver.isEmpty()){
 			return false;
 		}
@@ -211,6 +221,9 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
         }
         if(providedResTypes != null && !providedResTypes.isEmpty()){
             collection.add(RESERVED_PROPERTY_PROVIDEDRES);
+        }
+        if(parentResourceTemplateModel != null){
+            collection.add(PARENT);
         }
         collection.add(RESERVED_PROPERTY_TEMPLATES);
         collection.add(AMW_PROPERTIES);
@@ -245,6 +258,9 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
         }
         if(providedResTypes != null && !providedResTypes.isEmpty()){
             collection.add(getAsSimpleHash(providedResTypes, beansWrapper));
+        }
+        if(parentResourceTemplateModel != null){
+            collection.add(parentResourceTemplateModel);
         }
         if(templates != null && !templates.isEmpty()){
             collection.add(getAsSimpleHash(AmwTemplateModelHelper.convertTemplatesToHash(templates), beansWrapper));
