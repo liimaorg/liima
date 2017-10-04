@@ -1,9 +1,9 @@
 # v1.14.0
 
 ## New features
-* Access parent resource from template [#12]
-* Liima is now compatible with Java EE 7 and is tested on wildfy 10: [#9]
-* Docker image for Liima. The image can be found on [Dockerhub](https://hub.docker.com/r/liimaorg/liima/) [#82]
+* Access parent resource from template [#12](https://github.com/liimaorg/liima/issues/12)
+* Liima is now compatible with Java EE 7 and is tested on wildfy 10: [#9](https://github.com/liimaorg/liima/issues/9)
+* Docker image for Liima. The image can be found on [Dockerhub](https://hub.docker.com/r/liimaorg/liima/): [#82](https://github.com/liimaorg/liima/issues/82)
 
 ## API Changes
 * In this release the fields in the rest API that have been marked as depricated have been removed. Deteils see release [v1.13.0 API Changes](#api-changes)
