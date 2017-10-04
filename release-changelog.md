@@ -1,3 +1,13 @@
+# v1.14.0
+
+## New features
+* Access parent resource from template [#12]
+* Liima is now compatible with Java EE 7 and is tested on wildfy 10: [#9]
+* Docker image for Liima. The image can be found on [Dockerhub](https://hub.docker.com/r/liimaorg/liima/) [#82]
+
+## API Changes
+* In this release the fields in the rest API that have been marked as depricated have been removed. Deteils see release [v1.13.0 API Changes](#api-changes)
+
 # v1.13.1
 
 This release contains mostly bug fixes and some small features.
@@ -39,7 +49,7 @@ This release contains a new and enhanced permission system and bugfixes.
 * The Angular page `Create new deployment` showed the wrong apps and app versions for some releases [#113](https://github.com/liimaorg/liima/issues/113) and [#127](https://github.com/liimaorg/liima/issues/127)
 * The log dropdown of the deployment log page is sorted again [#128](https://github.com/liimaorg/liima/issues/128)
 
-## API Changes / Important for peripheral systems 
+## API Changes
 * In ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO the new property *relationName* will replace the property *identifier*. The property *identifier* will be removed by v1.14. The following REST URIs are concerned:
   * /resources
   * /resources/{resourceGroupName}/{releaseName}
