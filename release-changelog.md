@@ -1,7 +1,7 @@
 # v1.14.0
 
 ## New features
-* Access parent resource from template: [#12](https://github.com/liimaorg/liima/issues/12)
+* Access parent resource from template, e.g. in a resource consumed by an app `${appServer.consumedResTypes.APPLICATION?values[0].Version}` can now be writen as `${$parent.Version}`: [#12](https://github.com/liimaorg/liima/issues/12)
 * Liima is now compatible with Java EE 7 and is tested on wildfy 10: [#9](https://github.com/liimaorg/liima/issues/9)
 * Docker image for Liima. The image can be found on [Dockerhub](https://hub.docker.com/r/liimaorg/liima/): [#82](https://github.com/liimaorg/liima/issues/82)
 
