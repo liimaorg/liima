@@ -151,9 +151,8 @@ public class DeploymentBoundary {
             for (CustomFilter customFilter : filter) {
                 if (customFilter.getFilterDisplayName().equals("State")) {
                     lastDeploymentState = DeploymentState.getByString(customFilter.getValue());
-                    // we always want the latest
-                    colToSort = DeploymentFilterTypes.DEPLOYMENT_DATE.getFilterTabColumnName();
-                    sortingDirection = CommonFilterService.SortingDirectionType.DESC;
+                    maxResults = null;
+                    break;
                 }
             }
 
@@ -184,13 +183,7 @@ public class DeploymentBoundary {
         if (lastDeploymentState == null) {
             deployments.addAll(resultList);
         } else {
-            HashMap<ContextEntity, DeploymentEntity> latestByContext = new HashMap<>();
-            for (DeploymentEntity deployment : resultList) {
-                if (!latestByContext.containsKey(deployment.getContext())) {
-                    latestByContext.put(deployment.getContext(), deployment);
-                }
-            }
-            deployments = new HashSet<>(latestByContext.values());
+            deployments.addAll(latestPerContext(resultList));
         }
 
         if (doPageingCalculation) {
@@ -203,6 +196,20 @@ public class DeploymentBoundary {
         }
 
         return new Tuple<>(deployments, totalItemsForCurrentFilter);
+    }
+
+    private Collection latestPerContext(List<DeploymentEntity> resultList) {
+        HashMap<ContextEntity, DeploymentEntity> latestByContext = new HashMap<>();
+        for (DeploymentEntity deployment : resultList) {
+            if (!latestByContext.containsKey(deployment.getContext())) {
+                latestByContext.put(deployment.getContext(), deployment);
+            } else {
+                if (deployment.getDeploymentDate().after(latestByContext.get(deployment.getContext()).getDeploymentDate())) {
+                    latestByContext.put(deployment.getContext(), deployment);
+                }
+            }
+        }
+        return latestByContext.values();
     }
 
     private String getEntityDependantMyAmwParameterQl() {
@@ -489,7 +496,6 @@ public class DeploymentBoundary {
      * Create the NodeJobEntity for the given Development and node
      *
      * @param deployment
-     * @param node
      * @return the created NodeJobEntity
      */
     public NodeJobEntity createAndPersistNodeJobEntity(DeploymentEntity deployment) {
@@ -528,24 +534,24 @@ public class DeploymentBoundary {
     }
 
     public void handleNodeJobUpdate(Integer deploymentId) {
-		DeploymentEntity deployment = getDeploymentById(deploymentId);
-		log.fine("handleNodeJobUpdate called state: " + deployment.getDeploymentState());
+        DeploymentEntity deployment = getDeploymentById(deploymentId);
+        log.fine("handleNodeJobUpdate called state: " + deployment.getDeploymentState());
 
-		if (!deployment.isPredeploymentFinished()) {
-			return;
-		}
-		if (!DeploymentState.PRE_DEPLOYMENT.equals(deployment.getDeploymentState())) {
-			return;
-		}
+        if (!deployment.isPredeploymentFinished()) {
+            return;
+        }
+        if (!DeploymentState.PRE_DEPLOYMENT.equals(deployment.getDeploymentState())) {
+            return;
+        }
 
-		if (deployment.isPredeploymentSuccessful()) {
-			try {
-				handlePreDeploymentSuccessful(deployment);
-			} catch (OptimisticLockException e) {
-				// If it fails the deployment will be retried by the scheduler
-				return;
-			}
-		}
+        if (deployment.isPredeploymentSuccessful()) {
+            try {
+                handlePreDeploymentSuccessful(deployment);
+            } catch (OptimisticLockException e) {
+                // If it fails the deployment will be retried by the scheduler
+                return;
+            }
+        }
         else {
             updateDeploymentInfoAndSendNotification(GenerationModus.PREDEPLOY, deploymentId, "Deployment (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing at " + new Date(), deployment.getResource().getId(), null);
             log.info("Deployment " + deployment.getId() + " (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing");
@@ -554,7 +560,7 @@ public class DeploymentBoundary {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void handlePreDeploymentSuccessful(DeploymentEntity deployment) {
-		DeploymentState previousState = deployment.getDeploymentState();
+        DeploymentState previousState = deployment.getDeploymentState();
 
         deployment.setDeploymentState(DeploymentState.READY_FOR_DEPLOYMENT);
         deployment.appendStateMessage("All NodeJobs successful, updated deployment state from " + previousState + " to " + deployment.getDeploymentState() + " at " + new Date());
@@ -793,10 +799,10 @@ public class DeploymentBoundary {
     public List<DeploymentEntity> getFinishedPreDeployments() {
         TypedQuery<DeploymentEntity> query = em.createQuery(
                 "select "+ DEPLOYMENT_QL_ALIAS +" from "+ DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS
-                + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentState = :deploymentState"
-                + " and exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where deploymentState = :deploymentState)"
-                + " and not exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where status = :running and deploymentState = :deploymentState)",
-                		DeploymentEntity.class)
+                        + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentState = :deploymentState"
+                        + " and exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where deploymentState = :deploymentState)"
+                        + " and not exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where status = :running and deploymentState = :deploymentState)",
+                DeploymentEntity.class)
                 .setParameter("deploymentState", DeploymentState.PRE_DEPLOYMENT)
                 .setParameter("running", NodeJobStatus.RUNNING);
         return query.getResultList();
@@ -876,13 +882,13 @@ public class DeploymentBoundary {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public DeploymentEntity updateDeploymentInfo(GenerationModus generationModus, final Integer deploymentId, final String errorMessage, final Integer resourceId,
                                                  final GenerationResult generationResult) {
-		// don't lock a deployment for predeployment as there is no need to update the deployment.
-		if (GenerationModus.PREDEPLOY.equals(generationModus) && errorMessage == null) {
-			log.fine("Predeploy script finished at " + new Date());
-			return em.find(DeploymentEntity.class, deploymentId);
-		}
-		DeploymentEntity deployment = em.find(DeploymentEntity.class, deploymentId,
-				LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+        // don't lock a deployment for predeployment as there is no need to update the deployment.
+        if (GenerationModus.PREDEPLOY.equals(generationModus) && errorMessage == null) {
+            log.fine("Predeploy script finished at " + new Date());
+            return em.find(DeploymentEntity.class, deploymentId);
+        }
+        DeploymentEntity deployment = em.find(DeploymentEntity.class, deploymentId,
+                LockModeType.PESSIMISTIC_FORCE_INCREMENT);
 
         // set as used for deployment
         if (resourceId != null) {
@@ -1109,7 +1115,7 @@ public class DeploymentBoundary {
         Date now = new Date();
         checkValidation(isChangeDeploymentDatePossible(deployment), deployment);
 
-		if(newDate == null || newDate.before(now)) {
+        if(newDate == null || newDate.before(now)) {
             newDate = now;
         }
 
