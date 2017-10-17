@@ -43,17 +43,19 @@ public class ReleaseRepository extends BaseRepository<ReleaseEntity> {
         return entityManager.createQuery("select r from ReleaseEntity r left join r.resources res left join res.resourceGroup resgrp where resgrp=:resgrp", ReleaseEntity.class).setParameter("resgrp", resgrp).getResultList();
     }
 
-    @Override
-    protected void preRemove(ReleaseEntity release) {
-        // TODO load deployments
+    public void removeRelease(ReleaseEntity release) {
+        final Integer releaseId = release.getId();
+        release = getReleaseWithDeployments(releaseId);
         final Set<DeploymentEntity> deployments = release.getDeployments();
-        if (deployments != null) {
-            final Integer releaseId = release.getId();
-            for (DeploymentEntity deployment : deployments) {
-                deployment.setExReleaseId(releaseId);
-                deployment.setRelease(null);
-                entityManager.merge(deployment);
-            }
+        for (DeploymentEntity deployment : deployments) {
+            deployment.setExReleaseId(releaseId);
+            deployment.setRelease(null);
+            entityManager.merge(deployment);
         }
+        entityManager.remove(release);
+    }
+
+    private ReleaseEntity getReleaseWithDeployments(Integer releaseId){
+        return entityManager.createQuery("select r from ReleaseEntity r left join r.deployments where r.id =:releaseId", ReleaseEntity.class).setParameter("releaseId", releaseId).getSingleResult();
     }
 }

@@ -168,12 +168,6 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 				&& !resourcesForCurrentRelease.isEmpty();
 	}
 
-	public Integer countDeploymentsForCurrentRelease() {
-		return deploymentsForCurrentRelease != null
-				&& !deploymentsForCurrentRelease.isEmpty() ? deploymentsForCurrentRelease
-						.size() : null;
-	}
-
 	public List<ResourceTypeEntity> getResTypesForCurrentRelease() {
 		if (hasResourcesForCurrentRelease()) {
 			return new ArrayList<>(resourcesForCurrentRelease.keySet());

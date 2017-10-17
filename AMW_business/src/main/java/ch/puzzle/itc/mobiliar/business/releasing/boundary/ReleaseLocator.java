@@ -27,7 +27,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseRepository;
@@ -93,6 +92,6 @@ public class ReleaseLocator {
 
     @HasPermission(permission = Permission.RELEASE, action = DELETE)
     public void delete(ReleaseEntity release) {
-        releaseRepository.remove(release);
+        releaseRepository.removeRelease(release);
     }
 }
