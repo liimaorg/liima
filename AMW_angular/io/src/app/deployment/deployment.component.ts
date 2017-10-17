@@ -85,18 +85,17 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-
     this.appState.set('navShow', false);
     this.appState.set('navTitle', 'Deployments');
+
+    this.initEnvironments();
 
     this.activatedRoute.params.subscribe(
       (param: any) => {
         this.appserverName = param['appserverName'];
         this.releaseName = param['releaseName'];
         this.deploymentId = param['deploymentId'];
-      });
-
-    console.log('hello `Deployment` component');
+    });
 
     // a deploymentId MUST be numeric..
     if (this.deploymentId && !isNaN(this.deploymentId)) {
@@ -112,7 +111,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       this.appState.set('pageTitle', 'Create new deployment');
       this.initAppservers();
     }
-    this.initEnvironments();
   }
 
   ngAfterViewInit() {
