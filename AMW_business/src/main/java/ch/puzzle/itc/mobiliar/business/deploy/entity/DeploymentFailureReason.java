@@ -25,14 +25,14 @@ import lombok.Getter;
 @Getter
 public enum DeploymentFailureReason {
 
-    pre_deployment_generation("pre_deployment_generation"),
-    deployment_generation("deployment_generation"),
-    pre_deployment_script("pre_deployment_script"),
-    deployment_script("deployment_script"),
-    node_missing("node_missing"),
-    timeout("timeout"),
-    unexpected_error("unexpected_error"),
-    runtime_error("runtime_error");
+    PRE_DEPLOYMENT_GENERATION("pre deployment generation"),
+    DEPLOYMENT_GENERATION("deployment generation"),
+    PRE_DEPLOYMENT_SCRIPT("pre deployment script"),
+    DEPLOYMENT_SCRIPT("deployment script"),
+    NODE_MISSING("node missing"),
+    TIMEOUT("timeout"),
+    UNEXPECTED_ERROR("unexpected error"),
+    RUNTIME_ERROR("runtime error");
 
     private String displayName;
 

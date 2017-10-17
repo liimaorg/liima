@@ -466,7 +466,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
         String message = generationModus.getAction() + " failure at " + new Date() + ". Reason: " + e
                   .getMessage() + "\n";
         DeploymentFailureReason reason = (e instanceof GeneratorException && ((GeneratorException) e).getMissingObject().equals(MISSING.NODE)) ?
-                DeploymentFailureReason.node_missing : null;
+                DeploymentFailureReason.NODE_MISSING : null;
         deploymentBoundary.updateDeploymentInfo(generationModus, deployment.getId(), message,
                   deployment.getResource() != null ? deployment.getResource()
                             .getId() : null, null, reason);

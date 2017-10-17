@@ -71,13 +71,13 @@ public class DeploymentAsynchronousExecuter {
 		catch (ScriptExecutionException se) {
 			log.log(Level.SEVERE, "Deployment not successful: " +deployment.getId()+" (tracking id: " + deployment.getTrackingId()+")", se);
             DeploymentFailureReason reason = generationModus.equals(GenerationModus.DEPLOY) ?
-                    DeploymentFailureReason.deployment_script : generationModus.equals(GenerationModus.PREDEPLOY) ? DeploymentFailureReason.pre_deployment_script : DeploymentFailureReason.runtime_error;
+                    DeploymentFailureReason.DEPLOYMENT_SCRIPT : generationModus.equals(GenerationModus.PREDEPLOY) ? DeploymentFailureReason.PRE_DEPLOYMENT_SCRIPT : DeploymentFailureReason.RUNTIME_ERROR;
 			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, generationResult, se, reason);
 		}
 		catch (Exception e) {
 			log.log(Level.SEVERE, "Deployment not successful: " + deployment.getId()+" (tracking id: " + deployment.getTrackingId()+")", e);
             DeploymentFailureReason reason = generationModus.equals(GenerationModus.DEPLOY) ?
-                    DeploymentFailureReason.deployment_script : generationModus.equals(GenerationModus.PREDEPLOY) ? DeploymentFailureReason.pre_deployment_script : DeploymentFailureReason.unexpected_error;
+                    DeploymentFailureReason.DEPLOYMENT_SCRIPT : generationModus.equals(GenerationModus.PREDEPLOY) ? DeploymentFailureReason.PRE_DEPLOYMENT_SCRIPT : DeploymentFailureReason.UNEXPECTED_ERROR;
 			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, generationResult, e, reason);
 		}
 	}

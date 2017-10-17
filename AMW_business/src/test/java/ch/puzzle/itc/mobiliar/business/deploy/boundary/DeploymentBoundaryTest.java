@@ -149,7 +149,7 @@ public class DeploymentBoundaryTest
 		DeploymentEntity deploymentEntity = deploymentBoundary.updateDeploymentInfo(mode, deploymentId, errorMessage, resourceId, result, reason);
 
 		// then
-		assertThat(deploymentEntity.getReason(), is(DeploymentFailureReason.deployment_generation));
+		assertThat(deploymentEntity.getReason(), is(DeploymentFailureReason.DEPLOYMENT_GENERATION));
 
 	}
 
@@ -169,7 +169,7 @@ public class DeploymentBoundaryTest
 		DeploymentEntity deploymentEntity = deploymentBoundary.updateDeploymentInfo(mode, deploymentId, errorMessage, resourceId, result, reason);
 
 		// then
-		assertThat(deploymentEntity.getReason(), is(DeploymentFailureReason.pre_deployment_generation));
+		assertThat(deploymentEntity.getReason(), is(DeploymentFailureReason.PRE_DEPLOYMENT_GENERATION));
 
 	}
 
@@ -182,14 +182,14 @@ public class DeploymentBoundaryTest
 		String errorMessage = "Error";
 		Integer resourceId = null;
 		GenerationResult result = new GenerationResult();
-		DeploymentFailureReason reason = DeploymentFailureReason.node_missing;
+		DeploymentFailureReason reason = DeploymentFailureReason.NODE_MISSING;
 		when(em.find(DeploymentEntity.class, deploymentId, LockModeType.PESSIMISTIC_FORCE_INCREMENT)).thenReturn(new DeploymentEntity());
 
 		// when
 		DeploymentEntity deploymentEntity = deploymentBoundary.updateDeploymentInfo(mode, deploymentId, errorMessage, resourceId, result, reason);
 
 		// then
-		assertThat(deploymentEntity.getReason(), is(DeploymentFailureReason.node_missing));
+		assertThat(deploymentEntity.getReason(), is(DeploymentFailureReason.NODE_MISSING));
 
 	}
 

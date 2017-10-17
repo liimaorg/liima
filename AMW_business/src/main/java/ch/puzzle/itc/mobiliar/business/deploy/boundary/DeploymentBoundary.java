@@ -520,7 +520,7 @@ public class DeploymentBoundary {
 			}
 		}
         else {
-            updateDeploymentInfoAndSendNotification(GenerationModus.PREDEPLOY, deploymentId, "Deployment (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing at " + new Date(), deployment.getResource().getId(), null, DeploymentFailureReason.pre_deployment_script);
+            updateDeploymentInfoAndSendNotification(GenerationModus.PREDEPLOY, deploymentId, "Deployment (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing at " + new Date(), deployment.getResource().getId(), null, DeploymentFailureReason.PRE_DEPLOYMENT_SCRIPT);
             log.info("Deployment " + deployment.getId() + " (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing");
         }
     }
@@ -873,7 +873,7 @@ public class DeploymentBoundary {
                 deployment.appendStateMessage(errorMessage);
                 deployment.setDeploymentState(DeploymentState.failed);
                 if (reason == null) {
-                    reason = DeploymentFailureReason.deployment_generation;
+                    reason = DeploymentFailureReason.DEPLOYMENT_GENERATION;
                 }
                 deployment.setReason(reason);
             }
@@ -881,7 +881,7 @@ public class DeploymentBoundary {
             deployment.appendStateMessage(errorMessage);
             deployment.setDeploymentState(DeploymentState.failed);
             if (reason == null) {
-                reason = DeploymentFailureReason.pre_deployment_generation;
+                reason = DeploymentFailureReason.PRE_DEPLOYMENT_GENERATION;
             }
             deployment.setReason(reason);
         } else {

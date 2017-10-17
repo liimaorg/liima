@@ -90,7 +90,7 @@ public class DeploymentExecuterService {
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Deployment not successful: " + deploymentId, e);
 			DeploymentFailureReason reason = generationModus.equals(GenerationModus.DEPLOY) ?
-					DeploymentFailureReason.deployment_generation : generationModus.equals(GenerationModus.PREDEPLOY) ? DeploymentFailureReason.pre_deployment_generation : null;
+					DeploymentFailureReason.DEPLOYMENT_GENERATION : generationModus.equals(GenerationModus.PREDEPLOY) ? DeploymentFailureReason.PRE_DEPLOYMENT_GENERATION : null;
 			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, null, e, reason);
 		}
 

@@ -374,7 +374,7 @@ public class DeploymentSchedulerTest {
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
-				Matchers.<Integer>eq(null), Matchers.<GenerationResult>eq(null), Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.timeout));
+				Matchers.<Integer>eq(null), Matchers.<GenerationResult>eq(null), Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(log, times(2)).log(argThat(matchesLevel(Level.INFO)), anyString());
 	}
 
@@ -483,11 +483,11 @@ public class DeploymentSchedulerTest {
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
 				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), Matchers.<GenerationResult>eq(null),
-				Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.timeout));
+				Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(2)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
 				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), Matchers.<GenerationResult>eq(null),
-				Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.timeout));
+				Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(deploymentBoundary, times(0)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.PREDEPLOY), anyInt(),
 				anyString(), anyInt(), Matchers.<GenerationResult>any(), Matchers.<DeploymentFailureReason>any());
 		

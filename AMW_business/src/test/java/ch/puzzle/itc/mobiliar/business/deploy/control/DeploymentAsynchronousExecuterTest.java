@@ -125,7 +125,7 @@ public class DeploymentAsynchronousExecuterTest {
 		
 		// then
 		verify(deploymentExecutionResultHandlerService, times(0)).handleSuccessfulDeployment(any(GenerationModus.class), any(GenerationResult.class));
-		verify(deploymentExecutionResultHandlerService, times(1)).handleUnSuccessfulDeployment(GenerationModus.DEPLOY,deployment, result, se, DeploymentFailureReason.deployment_script);
+		verify(deploymentExecutionResultHandlerService, times(1)).handleUnSuccessfulDeployment(GenerationModus.DEPLOY,deployment, result, se, DeploymentFailureReason.DEPLOYMENT_SCRIPT);
 	}
 
 }

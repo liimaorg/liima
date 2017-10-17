@@ -247,7 +247,7 @@ public class DeploymentScheduler {
 
 			deploymentBoundary.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(),
 					generationModus.getAction() + " was marked as failed because it reached the deplyoment timeout (" + timeout + " s) at " + new Date(),
-					deployment.getResource() != null ? deployment.getResource().getId() : null, null, DeploymentFailureReason.timeout);
+					deployment.getResource() != null ? deployment.getResource().getId() : null, null, DeploymentFailureReason.TIMEOUT);
 		}
 	}
 
