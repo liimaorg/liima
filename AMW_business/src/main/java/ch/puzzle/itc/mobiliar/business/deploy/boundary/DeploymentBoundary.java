@@ -146,11 +146,14 @@ public class DeploymentBoundary {
         StringBuilder stringQuery = new StringBuilder();
 
         DeploymentState lastDeploymentState = null;
+        boolean hasLastDeploymentForAsEnvFilterSet = isLastDeploymentForAsEnvFilterSet(filter);
 
-        if (isLastDeploymentForAsEnvFilterSet(filter)) {
+        if (hasLastDeploymentForAsEnvFilterSet) {
             for (CustomFilter customFilter : filter) {
                 if (customFilter.getFilterDisplayName().equals("State")) {
                     lastDeploymentState = DeploymentState.getByString(customFilter.getValue());
+                    // sever side pagination and sorting does not work for this combination
+                    startIndex = null;
                     maxResults = null;
                     break;
                 }
@@ -171,7 +174,7 @@ public class DeploymentBoundary {
 
         boolean lowerSortCol = DeploymentFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, isLastDeploymentForAsEnvFilterSet(filter), false);
+        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, hasLastDeploymentForAsEnvFilterSet, false);
 
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
 
@@ -180,7 +183,7 @@ public class DeploymentBoundary {
 
         Set<DeploymentEntity> deployments = new LinkedHashSet<>();
 
-        if (lastDeploymentState == null) {
+        if (!hasLastDeploymentForAsEnvFilterSet) {
             deployments.addAll(resultList);
         } else {
             deployments.addAll(latestPerContext(resultList));
@@ -189,10 +192,14 @@ public class DeploymentBoundary {
         if (doPageingCalculation) {
             String countQueryString = baseQuery.replace("select " + DEPLOYMENT_QL_ALIAS, "select count(" + DEPLOYMENT_QL_ALIAS + ".id)");
             // last param needs to be true if we are dealing with a combination of "State" and "Latest deployment job for App Server and Env"
-            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, isLastDeploymentForAsEnvFilterSet(filter), lastDeploymentState != null);
+            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, hasLastDeploymentForAsEnvFilterSet, lastDeploymentState != null);
 
             commonFilterService.setParameterToQuery(null, null, myAmw, countQuery);
             totalItemsForCurrentFilter = (lastDeploymentState == null) ? ((Long) countQuery.getSingleResult()).intValue() : countQuery.getResultList().size();
+            // fix for the special case of multiple deployments on the same environment with exactly the same deployment date
+            if (hasLastDeploymentForAsEnvFilterSet && lastDeploymentState == null && deployments.size() != resultList.size()) {
+                totalItemsForCurrentFilter -= resultList.size() - deployments.size();
+            }
         }
 
         return new Tuple<>(deployments, totalItemsForCurrentFilter);
@@ -206,6 +213,9 @@ public class DeploymentBoundary {
             } else {
                 if (deployment.getDeploymentDate().after(latestByContext.get(deployment.getContext()).getDeploymentDate())) {
                     latestByContext.put(deployment.getContext(), deployment);
+                } else if (deployment.getDeploymentDate().equals(latestByContext.get(deployment.getContext()).getDeploymentDate())
+                        && deployment.getId() > latestByContext.get(deployment.getContext()).getId()) {
+                        latestByContext.put(deployment.getContext(), deployment);
                 }
             }
         }
