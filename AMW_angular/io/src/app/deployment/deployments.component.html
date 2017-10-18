@@ -28,8 +28,8 @@
             </select>
           </div>
           <div class="col-sm-1">
-              <button type="button" class="btn btn-primary" [attr.disabled]="selectedFilterType ? null : ''" (click)="addFilter()">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              <button type="button" class="btn btn-default" [attr.disabled]="selectedFilterType ? null : ''" (click)="addFilter()">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
               </button>
           </div>
         </div>
@@ -68,7 +68,7 @@
               </div>
             </ng-container>
             <div class="col-sm-1">
-              <button type="button" class="btn btn-danger" (click)="removeFilter(filter)">
+              <button type="button" class="btn btn-default" (click)="removeFilter(filter)">
                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
               </button>
             </div>

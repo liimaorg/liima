@@ -295,6 +295,33 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentsComponent.filters.length).toEqual(2);
   }));
 
+  it('should not add latest deployment job filter more than once',
+    inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+      // given
+      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true', type: 'booleanType' } ];
+      deploymentsComponent.selectedFilterType = { name: 'Latest deployment job for App Server and Env', type: 'SpecialFilterType' };
+      let deploymentFilters: DeploymentFilterType[] = [ { name: 'Latest deployment job for App Server and Env', type: 'SpecialFilterType' },
+        { name: 'Confirmed on', type: 'DateType' } ];
+      let comparatorOptions: ComparatorFilterOption[] = [ { name: 'lt', displayName: '<'}, { name: 'eq', displayName: 'is' },
+        { name: 'neq', displayName: 'is not' }];
+      spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
+      spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of(comparatorOptions));
+      expect(deploymentsComponent.filters.length).toEqual(1);
+
+      // when
+      deploymentsComponent.addFilter();
+
+      // then
+      expect(deploymentsComponent.filters.length).toEqual(2);
+
+      // when
+      deploymentsComponent.selectedFilterType = { name: 'Latest deployment job for App Server and Env', type: 'SpecialFilterType' };
+      deploymentsComponent.addFilter();
+
+      // then
+      expect(deploymentsComponent.filters.length).toEqual(2);
+  }));
+
   it('should apply filters',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given

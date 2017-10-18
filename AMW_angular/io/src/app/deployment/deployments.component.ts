@@ -79,8 +79,6 @@ export class DeploymentsComponent implements OnInit {
     this.appState.set('navTitle', 'Deployments');
     this.appState.set('pageTitle', 'Deployments');
 
-    console.log('hello `Deployments` component');
-
     this.activatedRoute.queryParams.subscribe(
       (param: any) => {
         if (param['filters']) {
@@ -98,7 +96,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   addFilter() {
-    if (this.selectedFilterType) {
+    if (this.selectedFilterType && this.canFilterBeAdded()) {
       let newFilter: DeploymentFilter = <DeploymentFilter> {};
       newFilter.name = this.selectedFilterType.name;
       newFilter.comp = this.defaultComparator;
@@ -267,6 +265,11 @@ export class DeploymentsComponent implements OnInit {
       window.prompt("Press Ctrl + C, then Enter to copy to clipboard", url);
     }
     $(".textToCopyInput").remove();
+  }
+
+  private canFilterBeAdded():boolean {
+    return this.selectedFilterType.name !== 'Latest deployment job for App Server and Env' ||
+      _.findIndex(this.filters, {name: this.selectedFilterType.name}) == -1;
   }
 
   private populateCSVrows(deployment: Deployment) {
