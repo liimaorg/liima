@@ -211,7 +211,7 @@ public class CustomFilter {
                     this.value = filterValue;
                     break;
                 case ENUM_TYPE:
-                    if (this.getFilterDisplayName().equals("State")) {
+                    if (this.getFilterDisplayName().equals(DeploymentFilterTypes.DEPLOYMENT_STATE.getFilterDisplayName())) {
                         this.enumType = DeploymentState.class;
                     }
                     this.value = filterValue;

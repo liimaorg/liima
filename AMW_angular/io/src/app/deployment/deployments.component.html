@@ -42,19 +42,19 @@
             </div>
             <ng-container *ngIf="filter.type !== 'SpecialFilterType'">
               <div class="col-sm-1">
-                <select id="selectFilterComp" class="form-control input-sm" [attr.disabled]="filter.compOptions.length == 1 ? '' : null" [(ngModel)]="filter.comp">
+                <select id="selectFilterComp" class="form-control" [attr.disabled]="filter.compOptions.length == 1 ? '' : null" [(ngModel)]="filter.comp">
                   <option *ngFor="let compOption of filter.compOptions" [ngValue]="compOption.name">{{compOption.displayName}}</option>
                 </select>
               </div>
-              <ng-container *ngIf="filter.type != 'DateType'">
-                <div class="col-sm-4" *ngIf="filter.type !== 'booleanType'">
+              <ng-container *ngIf="filter.type !== 'DateType'">
+                <div class="col-sm-4" *ngIf="filter.type !== 'booleanType' && filter.type !== 'ENUM_TYPE'">
                   <input class="form-control" list="filterOptionList" type="text" [(ngModel)]="filter.val">
                   <datalist id="filterOptionList">
                     <option *ngFor="let filterValueOption of filter.valOptions">{{filterValueOption}}</option>
                   </datalist>
                 </div>
-                <div class="col-sm-4" *ngIf="filter.type === 'booleanType'">
-                  <select class="form-control" list="filterOptionList" type="text" [(ngModel)]="filter.val">
+                <div class="col-sm-4" *ngIf="filter.type === 'booleanType' || filter.type === 'ENUM_TYPE'">
+                  <select class="form-control" [(ngModel)]="filter.val">
                     <option *ngFor="let filterValueOption of filter.valOptions">{{filterValueOption}}</option>
                   </select>
                 </div>
