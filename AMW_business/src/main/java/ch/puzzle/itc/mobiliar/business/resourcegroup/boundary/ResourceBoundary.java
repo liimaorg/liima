@@ -346,8 +346,8 @@ public class ResourceBoundary {
             }
 
         }
-        resourceRepository.remove(resourceEntity);
         log.info("Resource with id: " + resourceEntity.getId() + " is going to be removed from the database...");
+        resourceRepository.remove(resourceEntity);
 
         // delete group if deleted resource was the only group member
         //ResourceGroupEntity group = resourceGroupService.getById(groupId);
