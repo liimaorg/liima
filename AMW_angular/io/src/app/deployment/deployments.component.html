@@ -23,7 +23,7 @@
         <div class="form-group">
           <label for="selectFilterType" class="col-sm-2 control-label">Add filter</label>
           <div class="col-sm-9">
-            <select id="selectFilterType" class="form-control input-sm" [(ngModel)]="selectedFilterType" (change)="addFilter()">
+            <select id="selectFilterType" class="form-control" [(ngModel)]="selectedFilterType" (change)="addFilter()">
               <option *ngFor="let filterType of filterTypes" [ngValue]="filterType">{{filterType.name}}</option>
             </select>
           </div>
@@ -40,6 +40,9 @@
             <div class="col-sm-4">
               <input class="form-control" disabled type="text" value="{{filter.name}}">
             </div>
+            <ng-container *ngIf="filter.type === 'SpecialFilterType'">
+              <div class="col-sm-5"></div>
+            </ng-container>
             <ng-container *ngIf="filter.type !== 'SpecialFilterType'">
               <div class="col-sm-1">
                 <select id="selectFilterComp" class="form-control" [attr.disabled]="filter.compOptions.length == 1 ? '' : null" [(ngModel)]="filter.comp">
@@ -77,21 +80,21 @@
 
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-primary" [attr.disabled]="filters.length < 1 ? '' : null" (click)="applyFilter()">Apply filter</button>
-            <button type="submit" class="btn btn-danger" [attr.disabled]="filters.length < 1 ? '' : null" (click)="clearFilters()">Clear filters</button>
-            <button type="submit" class="btn btn-default" [attr.disabled]="deployments.length < 1 ? '' : null" (click)="exportCSV()">
+            <button type="submit" class="btn btn-primary btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="applyFilter()">Apply filter</button>
+            <button type="submit" class="btn btn-danger btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="clearFilters()">Clear filters</button>
+            <button type="submit" class="btn btn-default btn-main" [attr.disabled]="deployments.length < 1 ? '' : null" (click)="exportCSV()">
               <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export</button>
-            <button type="submit" class="btn btn-default" [attr.disabled]="editableDeployments() ? null : ''" (click)="showEdit()">
+            <button type="submit" class="btn btn-default btn-main" [attr.disabled]="editableDeployments() ? null : ''" (click)="showEdit()">
               <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> deployments
             </button>
             <ng-container *ngIf="hasPermissionToRequestDeployments">
               <a href="#/deployment/">
-                <button type="submit" class="btn btn-default">
+                <button type="submit" class="btn btn-default btn-main">
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> deployment
                 </button>
               </a>
             </ng-container>
-            <button class="btn btn-default" [attr.disabled]="filters.length < 1 ? '' : null" (click)="copyURL()">
+            <button class="btn btn-default btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="copyURL()">
               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> clipboard
             </button>
           </div>
