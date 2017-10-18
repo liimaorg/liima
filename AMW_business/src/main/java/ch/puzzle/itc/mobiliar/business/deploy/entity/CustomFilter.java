@@ -208,7 +208,12 @@ public class CustomFilter {
                     this.value = Boolean.valueOf(filterValue);
                     break;
                 case StringType:
+                    this.value = filterValue;
+                    break;
                 case ENUM_TYPE:
+                    if (this.getFilterDisplayName().equals("State")) {
+                        this.enumType = DeploymentState.class;
+                    }
                     this.value = filterValue;
                     break;
                 case IntegerType:
