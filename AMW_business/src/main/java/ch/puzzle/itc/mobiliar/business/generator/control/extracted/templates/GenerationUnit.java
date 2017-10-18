@@ -56,7 +56,9 @@ public class GenerationUnit {
 	@Getter
 	@Setter
 	private List<GlobalFunctionEntity> globalFunctionTemplates;
-
+	@Setter
+	private GenerationSubPackage parentGenerationSubPackage;
+	
 	public GenerationUnit(ResourceEntity slaveResource, ResourceEntity resource, AppServerRelationProperties properties, 
 			Set<TemplateDescriptorEntity> resourceTemplates, Set<TemplateDescriptorEntity> relationTemplates) {
 		this.slaveResource = slaveResource;
@@ -93,6 +95,10 @@ public class GenerationUnit {
 		AmwResourceTemplateModel model = new AmwResourceTemplateModel();
 		if (properties != null) {
 			model = properties.transformModel();
+		}
+		if(parentGenerationSubPackage != null && parentGenerationSubPackage.getPackageGenerationUnit() != null){
+			AmwResourceTemplateModel parent = parentGenerationSubPackage.getPackageGenerationUnit().getPropertiesAsModel();
+			model.setParentResourceTemplateModel(parent);
 		}
 		return model;
 	}

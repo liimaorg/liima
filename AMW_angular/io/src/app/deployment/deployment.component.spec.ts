@@ -63,17 +63,6 @@ describe('DeploymentComponent (create deployment)', () => {
     expect(deploymentComponent.isRedeployment).toBeFalsy();
   }));
 
-  it('should log ngOnInit', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
-    // given
-    spyOn(console, 'log');
-    expect(console.log).not.toHaveBeenCalled();
-    // when
-    deploymentComponent.ngOnInit();
-    // then
-    expect(deploymentComponent.isRedeployment).toBeFalsy();
-    expect(console.log).toHaveBeenCalled();
-  }));
-
   it('should not be ready for deployment', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
     expect(deploymentComponent.isReadyForDeployment()).toBeFalsy();
