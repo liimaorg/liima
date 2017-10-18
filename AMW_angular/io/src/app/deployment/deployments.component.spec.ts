@@ -432,5 +432,38 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentService.getWithActions).toHaveBeenCalledWith(deployment.id);
   }));
 
+  it('should log unknown edit actions on doEdit',
+    inject([DeploymentsComponent], (deploymentsComponent: DeploymentsComponent) => {
+      // given
+      deploymentsComponent.selectedEditAction = 'test';
+      deploymentsComponent.deployments = [ <Deployment> { id: 1, selected: true } ];
+      spyOn(console, 'error');
+
+      // when
+      deploymentsComponent.doEdit();
+
+      // then
+      expect(console.error).toHaveBeenCalled();
+  }));
+
+  it('should invoke the right deploymentService methods with right arguments on changeDeploymentDate',
+    inject([DeploymentsComponent, DeploymentService],
+      (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+      // given
+      let deployment: Deployment = <Deployment> { id: 3, deploymentDate: 1253765123 };
+      deploymentsComponent.deployments = [<Deployment> { id: 1, deploymentDate: 121212121 }, <Deployment> { id: 3, deploymentDate: 121212111 }, <Deployment> { id: 5, deploymentDate: 121212122 }];
+
+      spyOn(deploymentService, 'setDeploymentDate').and.returnValue(Observable.of());
+      spyOn(deploymentService, 'getWithActions').and.returnValue(Observable.of(deployment));
+
+      // when
+      deploymentsComponent.changeDeploymentDate(deployment);
+
+      // then
+      expect(deploymentService.setDeploymentDate).toHaveBeenCalledWith(deployment.id, deployment.deploymentDate);
+      expect(deploymentService.getWithActions).toHaveBeenCalledWith(deployment.id);
+      expect(deploymentsComponent.deployments[1].deploymentDate).toEqual(deployment.deploymentDate);
+  }));
+
 });
 

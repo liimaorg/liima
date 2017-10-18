@@ -267,9 +267,9 @@ export class DeploymentsComponent implements OnInit {
     $(".textToCopyInput").remove();
   }
 
-  private canFilterBeAdded():boolean {
+  private canFilterBeAdded(): boolean {
     return this.selectedFilterType.name !== 'Latest deployment job for App Server and Env' ||
-      _.findIndex(this.filters, {name: this.selectedFilterType.name}) == -1;
+      _.findIndex(this.filters, {name: this.selectedFilterType.name}) === -1;
   }
 
   private populateCSVrows(deployment: Deployment) {
