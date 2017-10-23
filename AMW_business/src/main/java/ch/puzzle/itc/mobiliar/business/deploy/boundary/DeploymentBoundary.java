@@ -47,6 +47,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
+import ch.puzzle.itc.mobiliar.business.utils.AuditService;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
@@ -121,6 +122,9 @@ public class DeploymentBoundary {
     CommonFilterService commonFilterService;
 
     @Inject
+    AuditService auditService;
+
+    @Inject
     protected EntityManager em;
 
     @Inject
@@ -176,6 +180,38 @@ public class DeploymentBoundary {
         }
 
         return new Tuple<>(deployments, totalItemsForCurrentFilter);
+    }
+
+    public String getDeletedContextName(DeploymentEntity deployment) {
+        if (deployment.getContext() == null) {
+            ContextEntity context = (ContextEntity) auditService.getDeletedEntity(new ContextEntity(), deployment.getExContextId());
+            return context.getName();
+        }
+        return deployment.getContext().getName();
+    }
+
+    public String getDeletedResourceName(DeploymentEntity deployment) {
+        if (deployment.getResource() == null) {
+            ResourceEntity res = (ResourceEntity) auditService.getDeletedEntity(new ResourceEntity(), deployment.getExResourceId());
+            return res.getName();
+        }
+        return deployment.getResource().getName();
+    }
+
+    public String getDeletedResourceGroupName(DeploymentEntity deployment) {
+        if (deployment.getResourceGroup() == null) {
+            ResourceGroupEntity resGrp = (ResourceGroupEntity) auditService.getDeletedEntity(new ResourceGroupEntity(), deployment.getExResourcegroupId());
+            return resGrp.getName();
+        }
+        return deployment.getResourceGroup().getName();
+    }
+
+    public String getDeletedReleaseName(DeploymentEntity deployment) {
+        if (deployment.getRelease() == null) {
+            ReleaseEntity rel = (ReleaseEntity) auditService.getDeletedEntity(new ReleaseEntity(), deployment.getExReleaseId());
+            return rel.getName();
+        }
+        return deployment.getRelease().getName();
     }
 
     private String getEntityDependantMyAmwParameterQl() {

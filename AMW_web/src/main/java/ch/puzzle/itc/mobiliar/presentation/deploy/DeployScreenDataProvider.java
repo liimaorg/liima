@@ -858,14 +858,6 @@ public class DeployScreenDataProvider implements Serializable {
         return deployment != null && deployment.isDeploymentDelayed();
     }
 
-    public String getRelease(DeploymentEntity deployment) {
-        String result = "";
-        if (deployment != null && deployment.getRelease() != null) {
-            result = deployment.getRelease().getName();
-        }
-        return result;
-    }
-
     public SortingDirectionType getSortingDirection() {
         return sortingDirection;
     }
@@ -916,6 +908,22 @@ public class DeployScreenDataProvider implements Serializable {
 
     public boolean hasDeploymentParameter() {
         return selectedDeployment != null && selectedDeployment.getDeploymentParameters() != null && !selectedDeployment.getDeploymentParameters().isEmpty();
+    }
+
+    public String getContextName(DeploymentEntity deployment) {
+        return deploymentBoundary.getDeletedContextName(deployment);
+    }
+
+    public String getResourceName(DeploymentEntity deployment) {
+        return deploymentBoundary.getDeletedResourceName(deployment);
+    }
+
+    public String getResourceGroupName(DeploymentEntity deployment) {
+        return deploymentBoundary.getDeletedResourceGroupName(deployment);
+    }
+
+    public String getReleaseName(DeploymentEntity deployment) {
+        return deploymentBoundary.getDeletedReleaseName(deployment);
     }
 
 }
