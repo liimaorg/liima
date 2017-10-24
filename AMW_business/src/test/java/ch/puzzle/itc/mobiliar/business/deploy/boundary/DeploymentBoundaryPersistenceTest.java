@@ -1047,14 +1047,20 @@ public class DeploymentBoundaryPersistenceTest
 	}
 
 	@Test
-	public void shouldReturnTheRightFilteredDeploymentsIfLatestDeploymentJobFilterAndStateSuccessAreSet() {
+	public void shouldReturnTheRightFilteredDeploymentsInTheRightOrderIfLatestDeploymentJobFilterAndStateSuccessAreSet() {
 		// given
 		Calendar cal = new GregorianCalendar();
-		ReleaseEntity release = new ReleaseEntity();
-		release.setName("release");
+		ReleaseEntity release1 = new ReleaseEntity();
+		release1.setName("release1");
 		cal.set(2014, Calendar.JANUARY, 1);
-		release.setInstallationInProductionAt(cal.getTime());
-		entityManager.persist(release);
+		release1.setInstallationInProductionAt(cal.getTime());
+		entityManager.persist(release1);
+
+		ReleaseEntity release2 = new ReleaseEntity();
+		release2.setName("release2");
+		cal.set(2014, Calendar.JANUARY, 2);
+		release2.setInstallationInProductionAt(cal.getTime());
+		entityManager.persist(release2);
 
 		ResourceEntity resource = ResourceEntityBuilder.createResourceEntity("Test", null);
 		entityManager.persist(resource);
@@ -1074,7 +1080,7 @@ public class DeploymentBoundaryPersistenceTest
 		cal.set(2014, Calendar.AUGUST, 1);
 		DeploymentEntity d1 = new DeploymentEntity();
 		d1.setDeploymentDate(cal.getTime());
-		d1.setRelease(release);
+		d1.setRelease(release1);
 		d1.setDeploymentState(DeploymentState.success);
 		d1.setResourceGroup(group);
 		d1.setContext(contextA);
@@ -1083,7 +1089,7 @@ public class DeploymentBoundaryPersistenceTest
 		cal.set(2014, Calendar.AUGUST, 11);
 		DeploymentEntity d2 = new DeploymentEntity();
 		d2.setDeploymentDate(cal.getTime());
-		d2.setRelease(release);
+		d2.setRelease(release2);
 		d2.setDeploymentState(DeploymentState.success);
 		d2.setResourceGroup(group);
 		d2.setContext(contextB);
@@ -1092,7 +1098,7 @@ public class DeploymentBoundaryPersistenceTest
 		cal.set(2014, Calendar.AUGUST, 21);
 		DeploymentEntity d3 = new DeploymentEntity();
 		d3.setDeploymentDate(cal.getTime());
-		d3.setRelease(release);
+		d3.setRelease(release2);
 		d3.setDeploymentState(DeploymentState.failed);
 		d3.setResourceGroup(group);
 		d3.setContext(contextA);
@@ -1109,7 +1115,7 @@ public class DeploymentBoundaryPersistenceTest
 		appServerFilter.setValue(group.getName());
 		filters.add(appServerFilter);
 
-		// when sorting by release ascending (sorting should be ignored)
+		// when sorting by release ascending
 		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
 		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
@@ -1118,10 +1124,10 @@ public class DeploymentBoundaryPersistenceTest
 		assertThat(result1.getA().size(), is(2));
 		assertThat(result1.getB(), is(2));
 		Iterator<DeploymentEntity> it = result1.getA().iterator();
-		assertThat(it.next().getId(), is(not(d3.getId())));
-		assertThat(it.next().getId(), is(not(d3.getId())));
+		assertThat(it.next().getRelease(), is(release1));
+		assertThat(it.next().getRelease(), is(release2));
 
-		// when sorting by release descending (sorting should be ignored)
+		// when sorting by release descending
 		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
 
 		// then
@@ -1129,8 +1135,8 @@ public class DeploymentBoundaryPersistenceTest
 		assertThat(result2.getA().size(), is(2));
 		assertThat(result2.getB(), is(2));
 		it = result2.getA().iterator();
-		assertThat(it.next().getId(), is(not(d3.getId())));
-		assertThat(it.next().getId(), is(not(d3.getId())));
+		assertThat(it.next().getRelease(), is(release2));
+		assertThat(it.next().getRelease(), is(release1));
 	}
 
 	@Test
@@ -1195,26 +1201,16 @@ public class DeploymentBoundaryPersistenceTest
 		CustomFilter appServerFilter = CustomFilter.builder(DeploymentFilterTypes.APPSERVER_NAME).build();
 		appServerFilter.setValue(group.getName());
 		filters.add(appServerFilter);
-
-		// when sorting by release ascending (sorting should be ignored)
 		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+
+		// when
+		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
-		assertNotNull(result1);
-		assertThat(result1.getA().size(), is(1));
-		assertThat(result1.getB(), is(1));
-		Iterator<DeploymentEntity> it = result1.getA().iterator();
-		assertEquals(d3.getId(), it.next().getId());
-
-		// when sorting by release descending (sorting should be ignored)
-		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
-
-		// then
-		assertNotNull(result2);
-		assertThat(result2.getA().size(), is(1));
-		assertThat(result2.getB(), is(1));
-		it = result2.getA().iterator();
+		assertNotNull(result);
+		assertThat(result.getA().size(), is(1));
+		assertThat(result.getB(), is(1));
+		Iterator<DeploymentEntity> it = result.getA().iterator();
 		assertEquals(d3.getId(), it.next().getId());
 	}
 
@@ -1281,26 +1277,16 @@ public class DeploymentBoundaryPersistenceTest
 		CustomFilter appServerFilter = CustomFilter.builder(DeploymentFilterTypes.APPSERVER_NAME).build();
 		appServerFilter.setValue(group.getName());
 		filters.add(appServerFilter);
-
-		// when sorting by release ascending (sorting should be ignored)
 		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+
+		// when
+		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
-		assertNotNull(result1);
-		assertThat(result1.getA().size(), is(1));
-		assertThat(result1.getB(), is(1));
-		Iterator<DeploymentEntity> it = result1.getA().iterator();
-		assertEquals(d3.getId(), it.next().getId());
-
-		// when sorting by release descending (sorting should be ignored)
-		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
-
-		// then
-		assertNotNull(result2);
-		assertThat(result2.getA().size(), is(1));
-		assertThat(result2.getB(), is(1));
-		it = result2.getA().iterator();
+		assertNotNull(result);
+		assertThat(result.getA().size(), is(1));
+		assertThat(result.getB(), is(1));
+		Iterator<DeploymentEntity> it = result.getA().iterator();
 		assertEquals(d3.getId(), it.next().getId());
 	}
 
@@ -1337,6 +1323,7 @@ public class DeploymentBoundaryPersistenceTest
 		d1.setDeploymentState(DeploymentState.failed);
 		d1.setResourceGroup(group);
 		d1.setContext(contextA);
+		d1.setTrackingId(1);
 		persistDeploymentEntityForTest(d1);
 
 		cal.set(2014, Calendar.AUGUST, 11);
@@ -1346,6 +1333,7 @@ public class DeploymentBoundaryPersistenceTest
 		d2.setDeploymentState(DeploymentState.success);
 		d2.setResourceGroup(group);
 		d2.setContext(contextB);
+		d2.setTrackingId(12);
 		persistDeploymentEntityForTest(d2);
 
 		cal.set(2014, Calendar.AUGUST, 1);
@@ -1355,6 +1343,7 @@ public class DeploymentBoundaryPersistenceTest
 		d3.setDeploymentState(DeploymentState.failed);
 		d3.setResourceGroup(group);
 		d3.setContext(contextA);
+		d3.setTrackingId(3);
 		persistDeploymentEntityForTest(d3);
 
 		List<CustomFilter> filters = new LinkedList<>();
@@ -1364,14 +1353,41 @@ public class DeploymentBoundaryPersistenceTest
 		appServerFilter.setValue(group.getName());
 		filters.add(appServerFilter);
 
-		// when
-		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+		// when sorted by tracking id asc
+		String colToSort = DeploymentFilterTypes.TRACKING_ID.getFilterTabColumnName();
+		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
-		assertNotNull(result);
-		assertThat(result.getA().size(), is(2));
-		assertThat(result.getB(), is(2));
+		assertNotNull(result1);
+		assertThat(result1.getA().size(), is(2));
+		Object[] deployments = result1.getA().toArray();
+		DeploymentEntity deployment0 = (DeploymentEntity) deployments[0];
+		assertThat(deployment0.getDeploymentState(), is(DeploymentState.failed));
+		assertThat(deployment0.getContext(), is(contextA));
+		assertThat(deployment0.getTrackingId(), is(3));
+		assertThat(deployment0.getId(), is(d3.getId()));
+		DeploymentEntity deployment1 = (DeploymentEntity) deployments[1];
+		assertThat(deployment1.getDeploymentState(), is(DeploymentState.success));
+		assertThat(deployment1.getTrackingId(), is(12));
+		assertThat(result1.getB(), is(2));
+
+		// when sorted by tracking id desc
+		colToSort = DeploymentFilterTypes.TRACKING_ID.getFilterTabColumnName();
+		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
+
+		// then
+		assertNotNull(result2);
+		assertThat(result2.getA().size(), is(2));
+		deployments = result2.getA().toArray();
+		deployment0 = (DeploymentEntity) deployments[0];
+		assertThat(deployment0.getDeploymentState(), is(DeploymentState.success));
+		assertThat(deployment0.getTrackingId(), is(12));
+		deployment1 = (DeploymentEntity) deployments[1];
+		assertThat(deployment1.getDeploymentState(), is(DeploymentState.failed));
+		assertThat(deployment1.getTrackingId(), is(3));
+		assertThat(deployment1.getId(), is(d3.getId()));
+		assertThat(result2.getB(), is(2));
+
 	}
 
 }

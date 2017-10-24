@@ -147,12 +147,16 @@ public class DeploymentBoundary {
 
         DeploymentState lastDeploymentState = null;
         boolean hasLastDeploymentForAsEnvFilterSet = isLastDeploymentForAsEnvFilterSet(filter);
+        Integer from = 0;
+        Integer to = 0;
 
         if (hasLastDeploymentForAsEnvFilterSet) {
             for (CustomFilter customFilter : filter) {
                 if (customFilter.getFilterDisplayName().equals("State")) {
                     lastDeploymentState = DeploymentState.getByString(customFilter.getValue());
-                    // sever side pagination and sorting does not work for this combination
+                    from = startIndex != null ? startIndex : 0;
+                    to = maxResults != null ? from+maxResults : from+200;
+                    // sever side pagination is done after fetching from db for this combination
                     startIndex = null;
                     maxResults = null;
                     break;
@@ -178,15 +182,19 @@ public class DeploymentBoundary {
 
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
 
+        Set<DeploymentEntity> deployments = new LinkedHashSet<>();
         // some stuff may be lazy loaded
         List<DeploymentEntity> resultList = query.getResultList();
-
-        Set<DeploymentEntity> deployments = new LinkedHashSet<>();
+        final int allResults = resultList.size();
 
         if (!hasLastDeploymentForAsEnvFilterSet) {
             deployments.addAll(resultList);
         } else {
-            deployments.addAll(latestPerContext(resultList));
+            resultList = specialSort(latestPerContext(resultList), colToSort, sortingDirection);
+            if (to > 0) {
+                resultList = new ArrayList<>(resultList.subList(from, to < resultList.size() ? to : resultList.size()));
+            }
+            deployments.addAll(resultList);
         }
 
         if (doPageingCalculation) {
@@ -197,15 +205,15 @@ public class DeploymentBoundary {
             commonFilterService.setParameterToQuery(null, null, myAmw, countQuery);
             totalItemsForCurrentFilter = (lastDeploymentState == null) ? ((Long) countQuery.getSingleResult()).intValue() : countQuery.getResultList().size();
             // fix for the special case of multiple deployments on the same environment with exactly the same deployment date
-            if (hasLastDeploymentForAsEnvFilterSet && lastDeploymentState == null && deployments.size() != resultList.size()) {
-                totalItemsForCurrentFilter -= resultList.size() - deployments.size();
+            if (hasLastDeploymentForAsEnvFilterSet && lastDeploymentState == null && deployments.size() != allResults) {
+                totalItemsForCurrentFilter -= allResults - deployments.size();
             }
         }
 
         return new Tuple<>(deployments, totalItemsForCurrentFilter);
     }
 
-    private Collection latestPerContext(List<DeploymentEntity> resultList) {
+    private List latestPerContext(List<DeploymentEntity> resultList) {
         HashMap<ContextEntity, DeploymentEntity> latestByContext = new HashMap<>();
         for (DeploymentEntity deployment : resultList) {
             if (!latestByContext.containsKey(deployment.getContext())) {
@@ -219,7 +227,68 @@ public class DeploymentBoundary {
                 }
             }
         }
-        return latestByContext.values();
+        return new ArrayList<>(latestByContext.values());
+    }
+
+    private List<DeploymentEntity> specialSort(List<DeploymentEntity> deploymentsList, String colToSort, CommonFilterService.SortingDirectionType sortingDirection) {
+        if (colToSort != null) {
+            switch (colToSort) {
+                case "d.trackingId":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getTrackingId().compareTo(o2.getTrackingId());
+                        }
+                    });
+                    break;
+                case "d.deploymentState":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getDeploymentState().getDisplayName().compareTo(o2.getDeploymentState().getDisplayName());
+                        }
+                    });
+                    break;
+                case "d.resourceGroup.name":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getResourceGroup().getName().compareTo(o2.getResourceGroup().getName());
+                        }
+                    });
+                    break;
+                case "d.release.installationInProductionAt":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getRelease().getInstallationInProductionAt().compareTo(o2.getRelease().getInstallationInProductionAt());
+                        }
+                    });
+                    break;
+                case "d.context.name":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getContext().getName().compareTo(o2.getContext().getName());
+                        }
+                    });
+                    break;
+                case "d.deploymentDate":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getDeploymentDate().compareTo(o2.getDeploymentDate());
+                        }
+                    });
+                    break;
+                default:
+            }
+
+            if (sortingDirection.equals(CommonFilterService.SortingDirectionType.DESC)) {
+                Collections.reverse(deploymentsList);
+            }
+        }
+        return deploymentsList;
     }
 
     private String getEntityDependantMyAmwParameterQl() {
