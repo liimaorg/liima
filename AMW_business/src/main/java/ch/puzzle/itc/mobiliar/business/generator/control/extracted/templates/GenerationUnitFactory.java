@@ -99,7 +99,7 @@ public class GenerationUnitFactory {
 		mainWorkSet.setGenerationOptions(options);
 
 		GenerationSubPackage generationUnitForResource = getGenerationUnitForResource(mainWorkSet, options,
-				templateExceptionHandler, applicationServer, excludedApplicationGroupIds, null, 0, true);
+				templateExceptionHandler, applicationServer, excludedApplicationGroupIds, null, 0, true, null);
 	     if(generationUnitForResource!=null) {
 		   mainWorkSet.addGenerationSubPackage(generationUnitForResource);
 	    	}
@@ -151,7 +151,8 @@ public class GenerationUnitFactory {
 	private GenerationSubPackage getGenerationUnitForResource(GenerationPackage mainWorkSet,
 			GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler,
 			ResourceEntity resource,  List<Integer> excludedApplicationGroupIds,
-			Set<TemplateDescriptorEntity> currentResourceTemplates, int walkingPathIndex, boolean generateTemplates) {
+			Set<TemplateDescriptorEntity> currentResourceTemplates, int walkingPathIndex, boolean generateTemplates, 
+			GenerationSubPackage parentResourceWorkSet) {
 		log.info(resource.getName());
 
 	     boolean isExcluded = excludedApplicationGroupIds!=null && excludedApplicationGroupIds.contains(
@@ -168,7 +169,7 @@ public class GenerationUnitFactory {
 		GenerationSubPackage resourceWorkSet = new GenerationSubPackage();
 
 		// generate consumedResources
-		handleConsumedRelations(mainWorkSet, options, templateExceptionHandler, resource, excludedApplicationGroupIds, walkingPathIndex, properties, resourceWorkSet, generateTemplates);
+		handleConsumedRelations(mainWorkSet, options, templateExceptionHandler, resource, excludedApplicationGroupIds, walkingPathIndex, properties, resourceWorkSet, generateTemplates, parentResourceWorkSet);
 
 		// is this resource a CPI which is connected to a PPI by softlink
 		handleSoftlinkRelation(options, templateExceptionHandler, resource, properties, options.getContext().getDeployment().getDeploymentStateDate());
@@ -185,12 +186,13 @@ public class GenerationUnitFactory {
 		GenerationUnit generationUnit = new GenerationUnit(resource, null, currentResourceTemplates, properties);
 		generationUnit.setPackageGenerationUnit(true);
 		generationUnit.setGlobalFunctionTemplates(options.getContext().getGlobalFunctions());
+		generationUnit.setParentGenerationSubPackage(parentResourceWorkSet);
 		resourceWorkSet.setPackageGenerationUnit(generationUnit);
 
 		return resourceWorkSet;
 	}
 
-	private void handleConsumedRelations(GenerationPackage mainWorkSet, GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler, ResourceEntity resource, List<Integer> excludedApplicationGroupIds, int walkingPathIndex, AppServerRelationProperties properties, GenerationSubPackage resourceWorkSet, boolean parentGenerateTemplates) {
+	private void handleConsumedRelations(GenerationPackage mainWorkSet, GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler, ResourceEntity resource, List<Integer> excludedApplicationGroupIds, int walkingPathIndex, AppServerRelationProperties properties, GenerationSubPackage resourceWorkSet, boolean parentGenerateTemplates, GenerationSubPackage parentResourceWorkSet) {
 		Set<ConsumedResourceRelationEntity> consumedMasterRelations = dependencyResolver.getConsumedMasterRelationsForRelease(resource, options.getContext().getTargetRelease());
 		List<ConsumedResourceRelationEntity> consumedMasterRelationsSorted = new ArrayList<>(
 				consumedMasterRelations);
@@ -200,17 +202,17 @@ public class GenerationUnitFactory {
 		for (ConsumedResourceRelationEntity resourceRelation : consumedMasterRelationsSorted) {
 
 		    ResourceEntity slave = resourceRelation.getSlaveResource();
-		    ResourceEntity res = options.getContext().getNode();
+		    ResourceEntity currentNode = options.getContext().getNode();
 
             boolean generateTemplates = parentGenerateTemplates;
 
 		    // filter all other nodes, do not generate the Nodetemplates of the oder node, to avoid that the templates get overwritten.
-		    if(slave!=null && res!=null && slave.getResourceType().isNodeResourceType() && !slave.getId().equals(res.getId())){
+		    if(slave!=null && currentNode!=null && slave.getResourceType().isNodeResourceType() && !slave.getId().equals(currentNode.getId())){
                 generateTemplates = false;
 		    }
 
 			createGenerationUnitForConsumedResource(mainWorkSet, options, templateExceptionHandler,
-					resource, walkingPathIndex, properties, resourceWorkSet, resourceRelation, excludedApplicationGroupIds,  slave, generateTemplates);
+					resource, walkingPathIndex, properties, resourceWorkSet, resourceRelation, excludedApplicationGroupIds,  slave, generateTemplates, parentResourceWorkSet);
 		}
 	}
 
@@ -345,12 +347,12 @@ public class GenerationUnitFactory {
 			GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler,
 			ResourceEntity resource, int walkingPathIndex, AppServerRelationProperties properties,
 			GenerationSubPackage resourceWorkSet, ConsumedResourceRelationEntity resourceRelation, List<Integer> excludedApplicationGroupIds,
-					ResourceEntity slave, boolean generateTemplates) {
+					ResourceEntity slave, boolean generateTemplates, GenerationSubPackage parentResourceWorkSet) {
 		
 		Set<TemplateDescriptorEntity> resourceTemplates = templatesForResource(options, slave);
 		// recursive call getGenerationUnitForResource does traverse the tree
 		GenerationSubPackage generationUnitForResource = getGenerationUnitForResource(mainWorkSet, options,
-				templateExceptionHandler, slave, excludedApplicationGroupIds, resourceTemplates, ++walkingPathIndex, generateTemplates);
+				templateExceptionHandler, slave, excludedApplicationGroupIds, resourceTemplates, ++walkingPathIndex, generateTemplates, resourceWorkSet);
 	     //There is no generation sub package - this means, that we ignore this consumed resource and therefore don't need to continue.
 	    if(generationUnitForResource==null){
 		    return;
@@ -365,7 +367,7 @@ public class GenerationUnitFactory {
 			mainWorkSet.addGenerationSubPackage(generationUnitForResource);
 		}
 
-		log.info(" (consumes): " + slave.getName());
+		log.info(" (consumes) level("+walkingPathIndex+"): " + slave.getName());
 
 		String identifier = resourceRelation.buildIdentifer();
 		AppServerRelationProperties slaveProperties = properties.addConsumedRelation(identifier, slave,
@@ -400,6 +402,7 @@ public class GenerationUnitFactory {
 
 	private void addUnit(GenerationSubPackage workSet, GenerationUnit generationUnit) {
 		log.info("adding workset for " + generationUnit.getSlaveResource().getName());
+		generationUnit.setParentGenerationSubPackage(workSet);
 		workSet.addGenerationUnit(generationUnit);
 	}
 

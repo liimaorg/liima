@@ -68,8 +68,6 @@ public class EntityBuilder {
 	private int templateDescriptorId = 0;
 	private int resourceTypeContextIds = 0;
 
-	private GeneratorUtils generatorUtils = new GeneratorUtils();
-
 	public ResourceEntity platform;
 	public ContextEntity context;
 	public ResourceEntity as;

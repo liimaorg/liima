@@ -49,7 +49,7 @@ import freemarker.template.TemplateModelException;
 public class TestUtils {
 	public static String readRecursionTemplate() {
 		try {
-			return Resources.toString(Resources.getResource("rekursiv_macro_3.txt"), Charsets.UTF_8);
+			return Resources.toString(Resources.getResource("rekursiv_macro_4.txt"), Charsets.UTF_8);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
