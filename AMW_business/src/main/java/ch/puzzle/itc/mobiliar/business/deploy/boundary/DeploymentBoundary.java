@@ -158,6 +158,9 @@ public class DeploymentBoundary {
         }
 
         String baseQuery = stringQuery.toString();
+        // left join required in order that order by works as expected on deployments having null references..
+        String nullFix = stringQuery.toString().replace(" from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " ", " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " left join fetch " + DEPLOYMENT_QL_ALIAS + ".release left join fetch " + DEPLOYMENT_QL_ALIAS + ".context ");
+        stringQuery = stringQuery.replace(0, nullFix.length()-1, nullFix);
 
         boolean lowerSortCol = DeploymentFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
