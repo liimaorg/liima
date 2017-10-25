@@ -223,16 +223,16 @@ public class RestrictionsRest {
     }
 
     /**
-     * Get all available PermissionEnum values
+     * Get all available (or user assignable) PermissionEnum values
      *
      * @return List<PermissionDTO>
      */
     @GET
     @Path("/permissionEnumValues/")
-    @ApiOperation(value = "Get all available PermissionEnum values")
-    public Response getPermissionEnumValues() {
+    @ApiOperation(value = "Get all available or user assignable PermissionEnum values")
+    public Response getPermissionEnumValues(@QueryParam("onlyUserAssignable") boolean onlyUserAssignable) {
         List<PermissionDTO> permissionNameList = new ArrayList<>();
-        final List<PermissionEntity> permissions = permissionBoundary.getAllAvailablePermissions();
+        final List<PermissionEntity> permissions = onlyUserAssignable ? permissionBoundary.getAllUserAssignablePermissions() : permissionBoundary.getAllAvailablePermissions();
         for (PermissionEntity permission : permissions) {
             permissionNameList.add(new PermissionDTO(Permission.valueOf(permission.getValue())));
         }

@@ -47,6 +47,8 @@ import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -413,6 +415,19 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
+     * Creates the required Restrictions needed to manage and delegate permissions for self created resources
+     *
+     * @param resource
+     * @throws AMWException
+     */
+    @HasPermission(permission = Permission.RESOURCE, action = Action.CREATE)
+    public void createSelfAssignedRestrictions(ResourceEntity resource) throws AMWException {
+        Integer resourceGroupId = resource.getResourceGroup().getId();
+        createRestriction(null, getUserName(), Permission.ASSIGN_REMOVE_PERMISSION.name(), resourceGroupId, null, null, null, null, new RestrictionEntity());
+        createRestriction(null, getUserName(), Permission.RESOURCE.name(), resourceGroupId, null, null, null, Action.UPDATE, new RestrictionEntity());
+    }
+
+    /**
      * Creates a new RestrictionEntity and returns its id
      *
      * @param roleName
@@ -429,6 +444,13 @@ public class PermissionBoundary implements Serializable {
                                      ResourceTypePermission resourceTypePermission, String contextName, Action action)
             throws AMWException {
         RestrictionEntity restriction = new RestrictionEntity();
+        return createRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
+                contextName, action, restriction);
+    }
+
+    private Integer createRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
+                                     ResourceTypePermission resourceTypePermission, String contextName, Action action, RestrictionEntity restriction)
+            throws AMWException {
         validateRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
                 contextName, action, restriction);
         final Integer id = restrictionRepository.create(restriction);
@@ -505,6 +527,7 @@ public class PermissionBoundary implements Serializable {
     /**
      * Returns a cached list of all Restrictions assigned to a specific UserRestriction (used by REST)
      *
+     * @param userName the specific User name - if omitted, the name of the logged in user is used instead
      * @return List<RestrictionEntity>
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
@@ -540,6 +563,23 @@ public class PermissionBoundary implements Serializable {
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public List<PermissionEntity> getAllAvailablePermissions() {
         return permissionRepository.getAllPermissions();
+    }
+
+    /**
+     * Returns a list of all Permissions, that can be assigned by a user (permission delegation)
+     *
+     * @return List<PermissionEntity>
+     */
+    public List<PermissionEntity> getAllUserAssignablePermissions() {
+        List<PermissionEntity> allPermissions = permissionRepository.getAllPermissions();
+        List<PermissionEntity> assignablePermissions = new ArrayList<>();
+        // TODO filter (by what?)
+        for (PermissionEntity permission : allPermissions) {
+            if (!Permission.valueOf(permission.getValue()).isOld()) {
+                assignablePermissions.add(permission);
+            }
+        }
+        return assignablePermissions;
     }
 
     private void validateRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,

@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" *ngIf="resourceTypes.length > 1">
         <label for="selectRTP" class="col-sm-3 control-label">Resource Type Categories</label>
         <div class="col-sm-9">
           <select id="selectRTP" class="form-control input-sm" [(ngModel)]="restriction.resourceTypePermission"
@@ -48,7 +48,7 @@
         </div>
       </div>
 
-      <div class="form-group" *ngIf="resourceTypes.length > 0 && isResourceTypeAssignable()">
+      <div class="form-group" *ngIf="resourceTypes.length > 1 && isResourceTypeAssignable()">
         <label for="selectResourceType" class="col-sm-3 control-label">Resource Type</label>
         <div class="col-sm-9">
           <input id="selectResourceType" class="form-control input-sm" list="resTypeList" type="text"

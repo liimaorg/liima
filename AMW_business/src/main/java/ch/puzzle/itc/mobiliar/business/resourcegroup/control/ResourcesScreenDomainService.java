@@ -122,6 +122,7 @@ public class ResourcesScreenDomainService {
         ResourceEntity resourceEntity = null;
         if (group == null) {
             // if group does not exists a new resource with a new group can be created
+            // TODO add Permission (?)
             resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
             log.info("Neue Resource " + newResourceName + "inkl. Gruppe erstellt für Release "
                     + release.getName());
@@ -136,6 +137,7 @@ public class ResourcesScreenDomainService {
             }
             if (resourceEntity == null) {
                 // if resource is null, a new resource for this release can be created in the existing group
+                // TODO add Permission (?)
                 resourceEntity = ResourceFactory.createNewResourceForOwner(group, creatingOwner);
                 log.info("Neue Resource " + newResourceName
                         + "für existierende Gruppe erstellt für Release " + release.getName());

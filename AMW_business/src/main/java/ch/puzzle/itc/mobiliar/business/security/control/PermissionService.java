@@ -163,6 +163,9 @@ public class PermissionService implements Serializable {
      * @return
      */
     public List<RestrictionEntity> getUserRestrictions(String userName) {
+        if (userName == null) {
+            userName = getCurrentUserName();
+        }
         if (permissionRepository.isReloadUserRestrictionsList() || userRestrictions == null) {
             userRestrictions = new ConcurrentHashMap<>();
         }

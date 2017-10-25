@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers } from '@angular/http';
+import { Http, Response, Headers, URLSearchParams, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Permission } from './permission';
 import { Restriction } from './restriction';
@@ -30,6 +30,20 @@ export class PermissionService {
   getAllPermissionEnumValues(): Observable<Permission[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/permissionEnumValues`, {headers: this.getHeaders()})
+      .map(this.extractPayload)
+      .catch(handleError);
+    return resource$;
+  }
+
+  getAllAssignablePermissionEnumValues(): Observable<Permission[]> {
+    let params: URLSearchParams = new URLSearchParams();
+    params.set('onlyUserAssignable', 'true');
+    let options = new RequestOptions({
+      search: params,
+      headers: this.getHeaders()
+    });
+    let resource$ = this.http
+      .get(`${this.baseUrl}/permissions/restrictions/permissionEnumValues`, options)
       .map(this.extractPayload)
       .catch(handleError);
     return resource$;

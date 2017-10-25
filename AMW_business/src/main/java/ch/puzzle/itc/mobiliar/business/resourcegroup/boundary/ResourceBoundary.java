@@ -34,12 +34,10 @@ import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -161,6 +159,12 @@ public class ResourceBoundary {
                 resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
                 log.info("Neue Resource " + newResourceName + "inkl. Gruppe erstellt für Release "
                         + release.getName());
+                // TODO add Restriction
+                try {
+                    permissionBoundary.createSelfAssignedRestrictions(resourceEntity);
+                } catch (AMWException e) {
+                    // TODO
+                }
             } else {
                 String message = "A " + anotherGroup.getResourceType().getName()+" with the same name: " + newResourceName
                         + " already exists.";
@@ -180,6 +184,12 @@ public class ResourceBoundary {
                 resourceEntity = ResourceFactory.createNewResourceForOwner(group, creatingOwner);
                 log.info("Neue Resource " + newResourceName
                         + "für existierende Gruppe erstellt für Release " + release.getName());
+                // TODO add Restriction
+                try {
+                    permissionBoundary.createSelfAssignedRestrictions(resourceEntity);
+                } catch (AMWException e) {
+                    // TODO
+                }
             } else {
                 // if resource with given name, type and release already exists throw an exeption
                 String message = "The "+type.getName()+" with name: " + newResourceName

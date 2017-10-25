@@ -221,8 +221,8 @@ public class ResourcesRest {
     @Path("/resourceGroups")
     @GET
     @ApiOperation(value = "Get all available ResourceGroups - used by Angular")
-    public List<ResourceDTO> getAllResourceGroups() throws ValidationException {
-        List<ResourceGroupEntity> resourceGroups = resourceGroupLocator.getAllResourceGroupsByName();
+    public List<ResourceDTO> getAllResourceGroups(@QueryParam("onlyUserAssignable") boolean onlyUserAssignable) throws ValidationException {
+        List<ResourceGroupEntity> resourceGroups = onlyUserAssignable ? resourceGroupLocator.getAllResourceGroupsByName() : resourceGroupLocator.getAllResourceGroupsByName();
         List<ResourceDTO> resourceDTOs = new ArrayList<>();
         for (ResourceGroupEntity resourceGroup : resourceGroups) {
             resourceDTOs.add(new ResourceDTO(resourceGroup, null));
