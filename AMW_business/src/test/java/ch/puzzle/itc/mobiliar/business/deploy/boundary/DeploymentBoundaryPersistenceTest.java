@@ -21,11 +21,8 @@
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -34,7 +31,6 @@ import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
@@ -731,7 +727,7 @@ public class DeploymentBoundaryPersistenceTest
 		persistDeploymentEntityForTest(d);
 
 		// when
-		deploymentBoundary.updateDeploymentInfo(GenerationModus.DEPLOY, d.getId(), "foo error", resource.getId(), null);
+		deploymentBoundary.updateDeploymentInfo(GenerationModus.DEPLOY, d.getId(), "foo error", resource.getId(), null, DeploymentFailureReason.DEPLOYMENT_SCRIPT);
 
 		// then
 		DeploymentEntity afterUpdate = entityManager.find(DeploymentEntity.class, d.getId());
@@ -739,6 +735,7 @@ public class DeploymentBoundaryPersistenceTest
 		assertEquals(resource.getId(), afterUpdate.getResource().getId());
 		assertNotNull(d.getStateMessage());
 		assertEquals("foo error", afterUpdate.getStateMessage());
+		assertThat(afterUpdate.getReason(), is(DeploymentFailureReason.DEPLOYMENT_SCRIPT));
 	}
 
 	

@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.deploy.control;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorDomainServiceWithAppServerRelations;
@@ -221,7 +222,7 @@ public class DeploymentExecuterServiceTest {
 		verify(deploymentBoundary, times(1)).getDeploymentById(deployment.getId());
 		verify(generatorDomainServiceWithAppServerRelations, times(1)).generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class));
 		verify(deploymentAsynchronousExecuter, times(0)).executeDeployment(any(GenerationResult.class), any(DeploymentEntity.class), any(GenerationModus.class));
-		verify(deploymentExecutionResultHandler, times(1)).handleUnSuccessfulDeployment(GenerationModus.DEPLOY, deployment,null, e);
+		verify(deploymentExecutionResultHandler, times(1)).handleUnSuccessfulDeployment(GenerationModus.DEPLOY, deployment,null, e, DeploymentFailureReason.DEPLOYMENT_GENERATION);
 		verify(locking, times(1)).markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY);
 	}
 
