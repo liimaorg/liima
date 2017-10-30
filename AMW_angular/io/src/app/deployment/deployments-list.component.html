@@ -91,7 +91,7 @@
         </ng-container>
         <ng-container *ngIf="deployment.reason">
           <h4>failure reason</h4>
-          <pre>{{failureReason[deployment.reason]}}</pre>
+          <p>{{failureReason[deployment.reason]}}</p>
         </ng-container>
         <ng-container *ngIf="deploymentDetail && deploymentDetail.stateMessage">
           <h4>state message</h4>
