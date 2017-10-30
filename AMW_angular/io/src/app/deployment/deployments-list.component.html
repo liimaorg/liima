@@ -13,7 +13,7 @@
       </tr>
       <tr *ngFor="let deployment of mf.data" class="{{deployment.state}}">
         <td class="has-checkbox"><input type="checkbox" [(ngModel)]="deployment.selected"> {{deployment.trackingId}}</td>
-        <td><span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Show details about this deployment" (click)="showDetails(deployment.id)"></span> {{deployment.state}}</td>
+        <td><span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Show details about this deployment" (click)="showDetails(deployment.id)"></span> {{deployment.reason ? failureReason[deployment.reason] : deployment.state}}</td>
         <td><a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>
             <ul class="nob">
               <li *ngFor="let appWithVersion of deployment.appsWithVersion"><a href="/AMW_web/pages/editResourceView.xhtml?id={{appWithVersion.applicationId}}&ctx=1">{{appWithVersion.applicationName}}</a> ({{appWithVersion.version}})</li>

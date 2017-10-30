@@ -11,6 +11,7 @@ export interface Deployment {
   deploymentJobCreationDate: number;
   deploymentConfirmationDate: number;
   deploymentCancelDate: number;
+  reason: string;
   appServerName: string;
   appServerId: number;
   appsWithVersion: AppWithVersion[];
