@@ -30,6 +30,10 @@ import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
+import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,6 +45,8 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributeView;
@@ -51,6 +57,11 @@ import java.util.logging.Logger;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeploymentBoundaryTest
@@ -66,9 +77,12 @@ public class DeploymentBoundaryTest
 	@Mock
 	private Logger log;
 
+	@Mock
+	private EntityManager em;
+
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
-	
+
 	@Test
 	public void deploymentCleanupEmptyFolder() throws Exception {
 		Properties properties = System.getProperties();
@@ -82,10 +96,10 @@ public class DeploymentBoundaryTest
 		properties.setProperty(ConfigKey.DEPLOYMENT_CLEANUP_AGE.getValue(), cleanupAge.toString());
 		System.setProperties(properties);
 
-		//when
+		// when
         deploymentBoundary.cleanupDeploymentFiles();
         
-        //then
+        // then
 		assertTrue(generatorFolder.exists());
 	}
 	
@@ -124,7 +138,7 @@ public class DeploymentBoundaryTest
 		// when
         deploymentBoundary.cleanupDeploymentFiles();
         
-		//then
+		// then
 		assertTrue(deployment1.exists());
 		assertFalse(testFile1.exists());
 		assertTrue(deployment2.exists());
@@ -175,5 +189,65 @@ public class DeploymentBoundaryTest
         assertThat(deploymentEntity.isCreateTestForNeighborhoodAfterDeployment(), is(neighbourhoodTest));
     }
 
+
+	@Test
+	public void shouldUpdateDeploymentInfoWithRightReasonIfModeIsDeployAndReasonIsNull() {
+
+		// given
+		GenerationModus mode = GenerationModus.DEPLOY;
+		Integer deploymentId = 1;
+		String errorMessage = "Error";
+		Integer resourceId = null;
+		GenerationResult result = new GenerationResult();
+		DeploymentFailureReason reason = null;
+		when(em.find(DeploymentEntity.class, deploymentId, LockModeType.PESSIMISTIC_FORCE_INCREMENT)).thenReturn(new DeploymentEntity());
+
+		// when
+		DeploymentEntity deploymentEntity = deploymentBoundary.updateDeploymentInfo(mode, deploymentId, errorMessage, resourceId, result, reason);
+
+		// then
+		assertThat(deploymentEntity.getReason(), is(DeploymentFailureReason.DEPLOYMENT_GENERATION));
+
+	}
+
+	@Test
+	public void shouldUpdateDeploymentInfoWithRightReasonIfModeIsPreDeployAndReasonIsNull() {
+
+		// given
+		GenerationModus mode = GenerationModus.PREDEPLOY;
+		Integer deploymentId = 1;
+		String errorMessage = "Error";
+		Integer resourceId = null;
+		GenerationResult result = new GenerationResult();
+		DeploymentFailureReason reason = null;
+		when(em.find(DeploymentEntity.class, deploymentId, LockModeType.PESSIMISTIC_FORCE_INCREMENT)).thenReturn(new DeploymentEntity());
+
+		// when
+		DeploymentEntity deploymentEntity = deploymentBoundary.updateDeploymentInfo(mode, deploymentId, errorMessage, resourceId, result, reason);
+
+		// then
+		assertThat(deploymentEntity.getReason(), is(DeploymentFailureReason.PRE_DEPLOYMENT_GENERATION));
+
+	}
+
+	@Test
+	public void shouldUpdateDeploymentInfoWithProvidedReasonIfReasonIsSet() {
+
+		// given
+		GenerationModus mode = GenerationModus.DEPLOY;
+		Integer deploymentId = 1;
+		String errorMessage = "Error";
+		Integer resourceId = null;
+		GenerationResult result = new GenerationResult();
+		DeploymentFailureReason reason = DeploymentFailureReason.NODE_MISSING;
+		when(em.find(DeploymentEntity.class, deploymentId, LockModeType.PESSIMISTIC_FORCE_INCREMENT)).thenReturn(new DeploymentEntity());
+
+		// when
+		DeploymentEntity deploymentEntity = deploymentBoundary.updateDeploymentInfo(mode, deploymentId, errorMessage, resourceId, result, reason);
+
+		// then
+		assertThat(deploymentEntity.getReason(), is(DeploymentFailureReason.NODE_MISSING));
+
+	}
 
 }

@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.generator.control;
 import ch.puzzle.itc.mobiliar.business.database.control.AmwAuditReader;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -461,13 +462,14 @@ public class GeneratorDomainServiceWithAppServerRelations {
      */
     private void handleException(GenerationModus generationModus, final Exception e,
               final DeploymentEntity deployment) {
-
         log.log(Level.WARNING, "Deployment fehlgeschlagen", e);
         String message = generationModus.getAction() + " failure at " + new Date() + ". Reason: " + e
                   .getMessage() + "\n";
+        DeploymentFailureReason reason = (e instanceof GeneratorException && ((GeneratorException) e).getMissingObject().equals(MISSING.NODE)) ?
+                DeploymentFailureReason.NODE_MISSING : null;
         deploymentBoundary.updateDeploymentInfo(generationModus, deployment.getId(), message,
                   deployment.getResource() != null ? deployment.getResource()
-                            .getId() : null, null);
+                            .getId() : null, null, reason);
         if (generationModus.isSendNotificationOnErrorGenerationModus()) {
             deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
         }
@@ -492,7 +494,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
         log.log(Level.WARNING, "Deployment fehlgeschlagen \n" + message.toString());
         deploymentBoundary.updateDeploymentInfo(generationModus, deployment.getId(), message.toString(),
                   deployment.getResource() != null ? deployment
-                            .getResource().getId() : null, generationResult);
+                            .getResource().getId() : null, generationResult, null);
         if (generationModus.isSendNotificationOnErrorGenerationModus()) {
             deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
         }

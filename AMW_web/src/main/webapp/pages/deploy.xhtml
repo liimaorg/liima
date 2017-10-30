@@ -202,7 +202,7 @@
                                         </h:panelGroup>
                                     </h:column>
 
-                                    <h:column index="index" headerClass="width_180 nowrap">
+                                    <h:column index="index" headerClass="width_200 nowrap">
                                         <f:facet name="header">
                                             <h:outputText value="State"/>
                                             <a4j:commandLink render="deployments" onclick="showLoader();"
@@ -212,9 +212,13 @@
                                             </a4j:commandLink>
                                         </f:facet>
                                         <div class="deploymentInfo nowrap">
-                                            <h:outputText
+                                            <h:outputText rendered="${deployment.reason == null}"
                                                     value="#{deployScreenDataProvider.getDeploymentStateText(deployment)}"
                                                     styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock"
+                                            />
+                                            <h:outputText rendered="${deployment.reason != null}"
+                                                          value="#{deployment.reason.displayName}"
+                                                          styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock reason"
                                             />
                                             <a4j:commandLink
                                                     oncomplete="#{rich:component('deploymentDetailPopup')}.show(); return false;"
@@ -235,7 +239,6 @@
                                                         value="${deployment.id}"></a4j:param>
                                             </a4j:commandLink>
                                         </div>
-
                                     </h:column>
 
                                     <h:column index="index" headerClass="nowrap">
@@ -778,6 +781,17 @@
                             </h:column>
 
                         </h:dataTable>
+                    </h:panelGroup>
+
+                    <h:panelGroup styleClass="well" layout="block"
+                                  rendered="${deployScreenDataProvider.selectedDeployment.reason != null}">
+                        <h2>
+                            <h:outputText value="Failure reason"/>
+                        </h2>
+                        <hr/>
+                        <div class="maxHeight500px width700px">
+                            <h:outputText value="${deployScreenDataProvider.selectedDeployment.reason.displayName}"/>
+                        </div>
                     </h:panelGroup>
 
                     <br/>

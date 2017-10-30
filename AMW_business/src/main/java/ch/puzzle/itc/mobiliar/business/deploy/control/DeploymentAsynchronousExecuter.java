@@ -20,8 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,11 +30,10 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.generator.control.*;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
-import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 import ch.puzzle.itc.mobiliar.common.exception.ScriptExecutionException;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
 @Stateless
 public class DeploymentAsynchronousExecuter {
@@ -73,11 +70,15 @@ public class DeploymentAsynchronousExecuter {
 		}
 		catch (ScriptExecutionException se) {
 			log.log(Level.SEVERE, "Deployment not successful: " +deployment.getId()+" (tracking id: " + deployment.getTrackingId()+")", se);
-			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, generationResult, se);
+            DeploymentFailureReason reason = generationModus.equals(GenerationModus.DEPLOY) ?
+                    DeploymentFailureReason.DEPLOYMENT_SCRIPT : generationModus.equals(GenerationModus.PREDEPLOY) ? DeploymentFailureReason.PRE_DEPLOYMENT_SCRIPT : DeploymentFailureReason.RUNTIME_ERROR;
+			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, generationResult, se, reason);
 		}
 		catch (Exception e) {
 			log.log(Level.SEVERE, "Deployment not successful: " + deployment.getId()+" (tracking id: " + deployment.getTrackingId()+")", e);
-			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, generationResult, e);
+            DeploymentFailureReason reason = generationModus.equals(GenerationModus.DEPLOY) ?
+                    DeploymentFailureReason.DEPLOYMENT_SCRIPT : generationModus.equals(GenerationModus.PREDEPLOY) ? DeploymentFailureReason.PRE_DEPLOYMENT_SCRIPT : DeploymentFailureReason.UNEXPECTED_ERROR;
+			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, generationResult, e, reason);
 		}
 	}
 
