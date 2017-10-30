@@ -44,6 +44,9 @@ public class DeploymentDTO {
 	private Integer trackingId;
 	private DeploymentState state;
 	private Date deploymentDate;
+	private Date deploymentJobCreationDate;
+	private Date deploymentConfirmationDate;
+	private Date deploymentCancelDate;
 	private DeploymentFailureReason reason;
 	private String appServerName;
 	private Integer appServerId;
@@ -55,6 +58,7 @@ public class DeploymentDTO {
 	private String requestUser;
 	private String confirmUser;
 	private String cancelUser;
+	private boolean deploymentDelayed;
 	private Set<NodeJobDTO> nodeJobs = new HashSet<>();
 
     private DeploymentActionsDTO actions;
@@ -72,6 +76,9 @@ public class DeploymentDTO {
 			deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
 		}
 		this.deploymentDate = entity.getDeploymentDate();
+		this.deploymentJobCreationDate = entity.getDeploymentJobCreationDate();
+		this.deploymentConfirmationDate = entity.getDeploymentConfirmationDate();
+		this.deploymentCancelDate = entity.getDeploymentCancelDate();
 		this.reason = entity.getReason();
 		this.environmentName = entity.getContext().getName();
 		this.setReleaseName(entity.getRelease().getName());
@@ -79,6 +86,7 @@ public class DeploymentDTO {
 		this.setRequestUser(entity.getDeploymentRequestUser());
 		this.setConfirmUser(entity.getDeploymentConfirmationUser());
 		this.setCancelUser(entity.getDeploymentCancelUser());
+		this.setDeploymentDelayed(entity.isDeploymentDelayed());
 		for (NodeJobEntity job : entity.getNodeJobs()) {
 			nodeJobs.add(new NodeJobDTO(job));
 		}
