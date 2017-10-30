@@ -637,11 +637,18 @@ public class DeploymentsRest {
     }
 
     @GET
-    @Path("/isAngularDeploymentsGuiActive")
+    @Path("/isAngularDeploymentsGuiActive/")
     @ApiOperation(value = "Check if angular deployments gui is active - used by Angular")
     public Response isAngularDeploymentsGuiActive() {
         boolean isActive = ! ConfigurationService.getPropertyAsBoolean(FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI);
         return Response.ok(isActive).build();
+    }
+
+    @GET
+    @Path("/csvSeparator/")
+    @ApiOperation(value = "Returns the configured csv separator - used by Angular")
+    public Response getCsvSeparator() {
+        return Response.ok(ConfigurationService.getProperty(ConfigurationService.ConfigKey.CSV_SEPARATOR)).build();
     }
 
     /**

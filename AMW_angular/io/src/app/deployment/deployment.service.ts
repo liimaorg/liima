@@ -182,6 +182,14 @@ export class DeploymentService {
     return resource$;
   }
 
+  getCsvSeparator(): Observable<string> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/deployments/csvSeparator/`, {headers: this.getHeaders()})
+      .map((response: Response) => response.text())
+      .catch(handleError);
+    return resource$;
+  }
+
   private getHeaders() {
     let headers = new Headers();
     headers.append('Accept', 'application/json');

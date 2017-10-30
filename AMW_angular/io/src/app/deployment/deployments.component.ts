@@ -36,6 +36,7 @@ export class DeploymentsComponent implements OnInit {
   comparatorOptions: ComparatorFilterOption[] = [];
   comparatorOptionsMap: { [key: string]: string } = {};
   hasPermissionToRequestDeployments: boolean = false;
+  csvSeparator: string = '';
 
   // available edit actions
   editActions: string[] = ['Change date', 'Confirm', 'Reject', 'Cancel'];
@@ -92,6 +93,7 @@ export class DeploymentsComponent implements OnInit {
         this.autoload = (param['autoload'] && param['autoload'] === 'true') ? true : false;
         this.initTypeAndOptions();
         this.canRequestDeployments();
+        this.getCsvSeparator();
     });
   }
 
@@ -314,29 +316,29 @@ export class DeploymentsComponent implements OnInit {
         switch (field) {
           case 'id':
           case 'trackingId':
-            line += deployment[field].toString() + ',';
+            line += deployment[field].toString() + this.csvSeparator;
             break;
           case 'deploymentDate':
           case 'deploymentJobCreationDate':
           case 'deploymentConfirmationDate':
           case 'deploymentCancelDate':
           case 'stateToDeploy':
-            line += deployment[field] ? '"' + moment(deployment[field]).format('YYYY-MM-DD HH:mm').toString() + '",' : ',';
+            line += deployment[field] ? '"' + moment(deployment[field]).format('YYYY-MM-DD HH:mm').toString() + '"' + this.csvSeparator : this.csvSeparator;
             break;
           case 'appsWithVersion':
             deployment[field].forEach((appsWithVersion) => {
               line += '"' + appsWithVersion['applicationName'] + ' ' + appsWithVersion['version'] + '\n"';
             });
-            line += ',';
+            line += this.csvSeparator;
             break;
           case 'deploymentParameters':
             deployment[field].forEach((deploymentParameter) => {
               line += '"' + deploymentParameter['key'] + ' ' + deploymentParameter['value'] + '\n"';
             });
-            line += ',';
+            line += this.csvSeparator;
             break;
           default:
-            line += deployment[field] !== null ? '"' + deployment[field] + '",' : ',';
+            line += deployment[field] !== null ? '"' + deployment[field] + '"' + this.csvSeparator : this.csvSeparator;
             break;
         }
       }
@@ -369,7 +371,7 @@ export class DeploymentsComponent implements OnInit {
       'Cancel user',
       'Status message'
     ];
-    return labelsArray.join(',') + '\n';
+    return labelsArray.join(this.csvSeparator) + '\n';
   }
 
   private pushDownload(docName: string) {
@@ -395,6 +397,15 @@ export class DeploymentsComponent implements OnInit {
       /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
       /* error path */ (e) => this.errorMessage = e,
       /* on complete */ () => this.populateCSVrows(deployment)
+    );
+  }
+
+  private getCsvSeparator() {
+    this.isLoading = true;
+    this.deploymentService.getCsvSeparator().subscribe(
+      /* happy path */ (r) => this.csvSeparator = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* on complete */ () => this.isLoading = false
     );
   }
 
