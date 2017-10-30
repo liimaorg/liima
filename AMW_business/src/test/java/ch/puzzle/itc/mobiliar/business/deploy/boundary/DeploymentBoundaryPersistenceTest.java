@@ -897,33 +897,6 @@ public class DeploymentBoundaryPersistenceTest
 		assertTrue(result.getA().contains(d3));
 	}
 
-	
-	@Test
-	public void test_getPerviousDeployment() throws AMWException {
-		// given
-		ResourceEntity resource = ResourceFactory.createNewResource();
-		resource.setName("fooAS");
-		entityManager.persist(resource);
-		
-		ContextEntity context = new ContextEntity();
-		context.setName("test");
-		entityManager.persist(context);
-		
-		DeploymentEntity d = new DeploymentEntity();
-		d.setResourceGroup(resource.getResourceGroup());
-		d.setContext(context);
-		d.setDeploymentDate(new Date());
-		d.setDeploymentState(DeploymentState.success);
-		persistDeploymentEntityForTest(d);
-
-		// when
-		DeploymentEntity previous = deploymentBoundary.getPreviousDeployment(d);
-
-		// then
-		assertEquals(d.getResourceGroup().getName(), previous.getResourceGroup().getName());
-		assertEquals(d.getContext().getName(), previous.getContext().getName());
-	}
-
 	@Test
 	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatest() throws AMWException {
 		// given
