@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
@@ -45,6 +46,7 @@ public class DeploymentDTO {
 	private Integer trackingId;
 	private DeploymentEntity.DeploymentState state;
 	private Date deploymentDate;
+	private DeploymentFailureReason reason;
 	private String appServerName;
 	private Integer appServerId;
 	private List<AppWithVersionDTO> appsWithVersion = new LinkedList<>();
@@ -73,6 +75,7 @@ public class DeploymentDTO {
 			deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
 		}
 		this.deploymentDate = entity.getDeploymentDate();
+		this.reason = entity.getReason();
 		this.environmentName = entity.getContext().getName();
 		this.setReleaseName(entity.getRelease().getName());
 		this.setRuntimeName(entity.getRuntime().getName());

@@ -27,6 +27,7 @@ import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -142,4 +143,69 @@ public class DeploymentEntityTest {
 		assertEquals(DeploymentEntity.DeploymentState.scheduled, dState);
 	}
 
+	@Test
+	public void testIsPredeploymentFinished() throws DeploymentStateException {
+		// setup
+		DeploymentEntity deploymentEntity = new DeploymentEntity();
+		NodeJobEntity nodJob1 = new NodeJobEntity();
+		deploymentEntity.setNodeJobs(new HashSet<NodeJobEntity>());
+		assertEquals(false, deploymentEntity.isPredeploymentFinished());
+
+		deploymentEntity.getNodeJobs().add(nodJob1);
+		nodJob1.setDeploymentState(DeploymentState.PRE_DEPLOYMENT);
+		nodJob1.setStatus(NodeJobEntity.NodeJobStatus.RUNNING);
+		assertEquals(false, deploymentEntity.isPredeploymentFinished());
+
+		nodJob1.setStatus(NodeJobEntity.NodeJobStatus.FAILED);
+		assertEquals(true, deploymentEntity.isPredeploymentFinished());
+
+		NodeJobEntity nodJob2 = new NodeJobEntity();
+		deploymentEntity.getNodeJobs().add(nodJob2);
+		nodJob2.setDeploymentState(DeploymentState.PRE_DEPLOYMENT);
+		nodJob2.setStatus(NodeJobEntity.NodeJobStatus.RUNNING);
+		assertEquals(false, deploymentEntity.isPredeploymentFinished());
+
+		nodJob2.setStatus(NodeJobEntity.NodeJobStatus.SUCCESS);
+		assertEquals(true, deploymentEntity.isPredeploymentFinished());
+
+		NodeJobEntity nodJob3 = new NodeJobEntity();
+		deploymentEntity.getNodeJobs().add(nodJob3);
+		nodJob3.setDeploymentState(DeploymentState.simulating);
+		nodJob3.setStatus(NodeJobEntity.NodeJobStatus.RUNNING);
+		assertEquals(true, deploymentEntity.isPredeploymentFinished());
+	}
+
+		public void testIsPredeploymentSuccessful() throws DeploymentStateException {
+		// setup
+		DeploymentEntity deploymentEntity = new DeploymentEntity();
+		NodeJobEntity nodJob1 = new NodeJobEntity();
+		deploymentEntity.setNodeJobs(new HashSet<NodeJobEntity>());
+		assertEquals(false, deploymentEntity.isPredeploymentSuccessful());
+
+		deploymentEntity.getNodeJobs().add(nodJob1);
+		nodJob1.setDeploymentState(DeploymentState.PRE_DEPLOYMENT);
+		nodJob1.setStatus(NodeJobEntity.NodeJobStatus.RUNNING);
+		assertEquals(false, deploymentEntity.isPredeploymentSuccessful());
+
+		nodJob1.setStatus(NodeJobEntity.NodeJobStatus.FAILED);
+		assertEquals(false, deploymentEntity.isPredeploymentSuccessful());
+
+		nodJob1.setStatus(NodeJobEntity.NodeJobStatus.SUCCESS);
+		assertEquals(true, deploymentEntity.isPredeploymentSuccessful());
+
+		NodeJobEntity nodJob2 = new NodeJobEntity();
+		deploymentEntity.getNodeJobs().add(nodJob2);
+		nodJob2.setDeploymentState(DeploymentState.PRE_DEPLOYMENT);
+		nodJob2.setStatus(NodeJobEntity.NodeJobStatus.RUNNING);
+		assertEquals(false, deploymentEntity.isPredeploymentSuccessful());
+
+		nodJob2.setStatus(NodeJobEntity.NodeJobStatus.SUCCESS);
+		assertEquals(true, deploymentEntity.isPredeploymentSuccessful());
+
+		NodeJobEntity nodJob3 = new NodeJobEntity();
+		deploymentEntity.getNodeJobs().add(nodJob3);
+		nodJob3.setDeploymentState(DeploymentState.simulating);
+		nodJob3.setStatus(NodeJobEntity.NodeJobStatus.RUNNING);
+		assertEquals(true, deploymentEntity.isPredeploymentSuccessful());
+	}
 }
