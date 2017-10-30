@@ -25,11 +25,12 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import lombok.Getter;
 import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -42,7 +43,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourcesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
@@ -67,7 +67,7 @@ public class ReleasingDataProvider implements Serializable {
 	ResourcesScreenDomainService resourcesScreenDomainService;
 
 	@Inject
-	Permissions permissionBoundry;
+    PermissionBoundary permissionBoundary;
 
     @Inject
     ForeignableBoundary foreignableBoundary;
@@ -78,10 +78,8 @@ public class ReleasingDataProvider implements Serializable {
     @Inject
     PropertyEditDataProvider propertyEditDataProvider;
 
-	private boolean canChangeRelease;
-
-
-	private boolean canRemoveRelease;
+	@Inject
+	SessionContext context;
 
 	boolean active;
 
@@ -94,6 +92,15 @@ public class ReleasingDataProvider implements Serializable {
 
 	@Getter
 	private Integer targetResourceId;
+
+	@Getter
+	private boolean canCreateNewRelease;
+
+	@Getter
+	private boolean canChangeRelease;
+
+	@Getter
+	private boolean canRemoveRelease;
 
 	public Integer getNewReleaseId() {
 		return newRelease != null ? newRelease.getId() : null;
@@ -114,25 +121,22 @@ public class ReleasingDataProvider implements Serializable {
 
 	public void onChangedResource(@Observes ResourceEntity resourceEntity) {
 		notDefinedReleases = releasing.getNotDefinedReleasesForResource(resourceEntity);
-		canRemoveRelease = permissionBoundry.hasPermissionToRemoveDefaultInstanceOfResType(resourceEntity
-				.getResourceType().isDefaultResourceType());
 		currentSelectedResource = resourceEntity;
+		canCreateNewRelease = permissionBoundary.hasPermission(Permission.RESOURCE, context.getCurrentContext(),
+				Action.CREATE, currentSelectedResource, null);
+		canChangeRelease = permissionBoundary.hasPermission(Permission.RELEASE, Action.UPDATE)
+				&& foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource);
+		canRemoveRelease = permissionBoundary.hasPermissionToRemoveInstanceOfResType(currentSelectedResource.getResourceType())
+				&& foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource);
 
 	}
 
 	public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
 		notDefinedReleases = Collections.emptyList();
-		canRemoveRelease = false;
 		currentSelectedResource = null;
-	}
-
-	@PostConstruct
-	public void init() {
-		canChangeRelease = permissionBoundry.hasPermission(Permission.CHANGE_RESOURCE_RELEASE);
-	}
-
-	public boolean isCanCreateNewRelease(){
-		return permissionBoundry.canCopyFromResource(currentSelectedResource);
+		canCreateNewRelease = false;
+		canChangeRelease = false;
+		canRemoveRelease = false;
 	}
 
 	public String createRelease() {
@@ -242,12 +246,4 @@ public class ReleasingDataProvider implements Serializable {
 	    return null;
 
 	}
-
-    public boolean isCanChangeRelease() {
-        return canChangeRelease && (currentSelectedResource != null && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource ));
-    }
-
-    public boolean isCanRemoveRelease() {
-        return canRemoveRelease && (currentSelectedResource != null && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource ));
-    }
 }

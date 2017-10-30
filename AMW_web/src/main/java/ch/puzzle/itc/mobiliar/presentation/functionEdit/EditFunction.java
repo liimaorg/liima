@@ -30,7 +30,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import lombok.Getter;
 import lombok.Setter;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -38,7 +38,7 @@ import ch.puzzle.itc.mobiliar.business.function.boundary.FunctionsBoundary;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
@@ -50,312 +50,311 @@ import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 @CompositeBackingBean
 public class EditFunction implements Serializable {
 
-		private class FunctionComparator implements Comparator<AmwFunctionEntity> {
-			@Override
-			public int compare(AmwFunctionEntity f1, AmwFunctionEntity f2) {
-				if (f1.getName() == null && f2.getName() == null) {
-					return 0;
-				}
-				if (f1.getName() == null) {
-					return 1;
-				}
-				if (f2.getName() == null) {
-					return -1;
-				}
-				return f1.getName().compareTo(f2.getName());
-			}
-		}
-
-		@Inject
-		SessionContext currentContext;
-
-		@Inject
-		FunctionsBoundary functionsBoundary;
-
-		@Inject
-		Permissions permissionsBoundary;
-
-		@Setter
-		private Integer resourceId;
-
-		@Setter
-		private Integer resourceTypeId;
-
-		@Getter
-		@Setter
-		private Integer functionId;
-
-		@Getter
-		boolean canShowInstanceFunctions;
-		@Getter
-		boolean canShowSuperTypeFunctions;
-
-		@Getter
-		@Setter
-		private Integer selectedFunctionIdToBeRemoved;
-
-		private Identifiable resourceOrResourceType;
-
-		private List<AmwFunctionEntity> instanceFunctions = new ArrayList<>();
-
-		private List<AmwFunctionEntity> superTypeFunctions = new ArrayList<>();
-
-		@Getter
-		private Integer relationId;
-
-		private Comparator<AmwFunctionEntity> comp = new FunctionComparator();
-
-		/**
-		 * Observes if currently editing resource instance
-		 */
-		public void onChangedResource(@Observes ResourceEntity resourceEntity) {
-			if (resourceEntity != null) {
-				resourceOrResourceType = resourceEntity;
-				loadInstanceFunctionsFor(resourceEntity);
-				loadSuperTypeFunctionsFor(resourceEntity);
-			}
-		}
-
-		/**
-		 * Observes if currently editing resource type
-		 */
-		public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
-			if (resourceTypeEntity != null) {
-				resourceOrResourceType = resourceTypeEntity;
-				loadInstanceFunctionsFor(resourceTypeEntity);
-				loadSuperTypeFunctionsFor(resourceTypeEntity);
-			}
-		}
-
-		public void onChangedRelation(@Observes ChangeSelectedRelationEvent relation) {
-			if (relation.getRelation() != null) {
-				this.relationId = relation.getRelation().getResRelId();
-			} else {
-                this.relationId = null;
+    private class FunctionComparator implements Comparator<AmwFunctionEntity> {
+        @Override
+        public int compare(AmwFunctionEntity f1, AmwFunctionEntity f2) {
+            if (f1.getName() == null && f2.getName() == null) {
+                return 0;
             }
-		}
+            if (f1.getName() == null) {
+                return 1;
+            }
+            if (f2.getName() == null) {
+                return -1;
+            }
+            return f1.getName().compareTo(f2.getName());
+        }
+    }
 
-		/**
-		 * Load all functions which are defined on the resource
-		 */
-		private void loadInstanceFunctionsFor(ResourceEntity resourceEntity) {
-			instanceFunctions = functionsBoundary.getInstanceFunctions(resourceEntity);
-			Collections.sort(instanceFunctions, comp);
-		}
+    @Inject
+    SessionContext currentContext;
 
-		/**
-		 * Load all functions which are defined on the resource type
-		 */
-		private void loadInstanceFunctionsFor(ResourceTypeEntity resourceTypeEntity) {
-			instanceFunctions = functionsBoundary.getInstanceFunctions(resourceTypeEntity);
-			Collections.sort(instanceFunctions, comp);
-		}
+    @Inject
+    FunctionsBoundary functionsBoundary;
 
-		/**
-		 * Load all functions which are defined on all super types of the resource
-		 */
-		private void loadSuperTypeFunctionsFor(ResourceEntity resourceEntity) {
-			superTypeFunctions = functionsBoundary.getAllOverwritableSupertypeFunctions(resourceEntity);
-			Collections.sort(superTypeFunctions, comp);
-		}
+    @Inject
+    PermissionBoundary permissionBoundary;
 
-		/**
-		 * Load all functions which are defined on all super types of the resource type
-		 */
-		private void loadSuperTypeFunctionsFor(ResourceTypeEntity resourceTypeEntity) {
-			superTypeFunctions = functionsBoundary.getAllOverwritableSupertypeFunctions(resourceTypeEntity);
-			Collections.sort(superTypeFunctions, comp);
-		}
+    @Getter
+    @Setter
+    private Integer functionId;
+    @Getter
+    boolean canShowInstanceFunctions;
+    @Getter
+    boolean canShowSuperTypeFunctions;
 
-		/**
-		 * Observes context changes and update permissions accordingly
-		 */
-		public void onChangedContext(@Observes ContextEntity contextEntity) {
-			refreshPermissions();
-		}
+    @Getter
+    @Setter
+    private Integer selectedFunctionIdToBeRemoved;
 
-		@PostConstruct
-		private void init() {
-			refreshPermissions();
-		}
+    private Identifiable resourceOrResourceType;
 
-		public Integer getResourceTypeId() {
-			if (isCurrentFocusOnResourceType()) {
-				return resourceOrResourceType.getId();
-			}
-			return null;
-		}
+    private List<AmwFunctionEntity> instanceFunctions = new ArrayList<>();
 
-		public Integer getResourceId() {
-			if (isCurrentFocusOnResource()) {
-				return resourceOrResourceType.getId();
-			}
-			return null;
-		}
+    private List<AmwFunctionEntity> superTypeFunctions = new ArrayList<>();
 
-		private ResourceTypeEntity getResourceType() {
-			if (isCurrentFocusOnResourceType()) {
-				return (ResourceTypeEntity) resourceOrResourceType;
-			}
-			return null;
-		}
+    @Getter
+    private Integer relationId;
 
-		private ResourceEntity getResource() {
-			if (isCurrentFocusOnResource()) {
-				return (ResourceEntity) resourceOrResourceType;
-			}
-			return null;
-		}
+    private Comparator<AmwFunctionEntity> comp = new FunctionComparator();
 
-		/**
-		 * @return true if current focus is of {@link ResourceTypeEntity}; If not yet set then return false as
-		 *         default
-		 */
-		private boolean isCurrentFocusOnResourceType() {
-			return resourceOrResourceType != null && resourceOrResourceType instanceof ResourceTypeEntity;
-		}
+    /**
+     * Observes if currently editing resource instance
+     */
+    public void onChangedResource(@Observes ResourceEntity resourceEntity) {
+        if (resourceEntity != null) {
+            resourceOrResourceType = resourceEntity;
+            loadInstanceFunctionsFor(resourceEntity);
+            loadSuperTypeFunctionsFor(resourceEntity);
+        }
+    }
 
-		/**
-		 * @return true if current focus is of {@link ResourceEntity}; If not yet set then return true as
-		 *         default
-		 */
-		public boolean isCurrentFocusOnResource() {
-			return resourceOrResourceType != null && resourceOrResourceType instanceof ResourceEntity;
-		}
+    /**
+     * Observes if currently editing resource type
+     */
+    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
+        if (resourceTypeEntity != null) {
+            resourceOrResourceType = resourceTypeEntity;
+            loadInstanceFunctionsFor(resourceTypeEntity);
+            loadSuperTypeFunctionsFor(resourceTypeEntity);
+        }
+    }
 
-		public boolean isCurrentFocusOnResourceFromTypeApp(){
-			if(isCurrentFocusOnResource()){
-				return ((ResourceEntity)resourceOrResourceType).getResourceType().isApplicationResourceType();
-			}
-			return false;
-		}
+    public void onChangedRelation(@Observes ChangeSelectedRelationEvent relation) {
+        if (relation.getRelation() != null) {
+            this.relationId = relation.getRelation().getResRelId();
+        } else {
+            this.relationId = null;
+        }
+    }
 
-		private void refreshPermissions() {
+    /**
+     * Load all functions which are defined on the resource
+     */
+    private void loadInstanceFunctionsFor(ResourceEntity resourceEntity) {
+        instanceFunctions = functionsBoundary.getInstanceFunctions(resourceEntity);
+        Collections.sort(instanceFunctions, comp);
+    }
 
-			canShowInstanceFunctions = permissionsBoundary.hasPermission(Permission.VIEW_AMW_FUNCTIONS);
-			canShowSuperTypeFunctions = permissionsBoundary.hasPermission(Permission.VIEW_AMW_FUNCTIONS);
-		}
+    /**
+     * Load all functions which are defined on the resource type
+     */
+    private void loadInstanceFunctionsFor(ResourceTypeEntity resourceTypeEntity) {
+        instanceFunctions = functionsBoundary.getInstanceFunctions(resourceTypeEntity);
+        Collections.sort(instanceFunctions, comp);
+    }
 
-	public boolean isCanAdd(){
-		return currentContext.getIsGlobal() && canManageFunctions();
-	}
-	public boolean isCanEdit(){
-		return currentContext.getIsGlobal() && canManageFunctions();
-	}
-	public boolean isCanOverwrite(){
-		return currentContext.getIsGlobal() && canManageFunctions();
-	}
-	public boolean isCanDelete(){
-		return currentContext.getIsGlobal() && canManageFunctions();
-	}
+    /**
+     * Load all functions which are defined on all super types of the resource
+     */
+    private void loadSuperTypeFunctionsFor(ResourceEntity resourceEntity) {
+        superTypeFunctions = functionsBoundary.getAllOverwritableSupertypeFunctions(resourceEntity);
+        Collections.sort(superTypeFunctions, comp);
+    }
 
-	private boolean canManageFunctions(){
-		if(permissionsBoundary.hasPermission(Permission.MANAGE_AMW_FUNCTIONS)) {
-			return true;
-		} else if(permissionsBoundary.hasPermission(Permission.MANAGE_AMW_APP_INSTANCE_FUNCTIONS) && isCurrentFocusOnResourceFromTypeApp()){
-			return true;
-		}
-		return false;
-	}
+    /**
+     * Load all functions which are defined on all super types of the resource type
+     */
+    private void loadSuperTypeFunctionsFor(ResourceTypeEntity resourceTypeEntity) {
+        superTypeFunctions = functionsBoundary.getAllOverwritableSupertypeFunctions(resourceTypeEntity);
+        Collections.sort(superTypeFunctions, comp);
+    }
 
-		public void deleteFunction() {
-			if (selectedFunctionIdToBeRemoved != null) {
-				try {
-					functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
+    /**
+     * Observes context changes and update permissions accordingly
+     */
+    public void onChangedContext(@Observes ContextEntity contextEntity) {
+        refreshPermissions();
+    }
 
-					selectedFunctionIdToBeRemoved = null;
+    @PostConstruct
+    private void init() {
+        refreshPermissions();
+    }
 
-					if (isCurrentFocusOnResource()) {
-							loadInstanceFunctionsFor(getResource());
-							loadSuperTypeFunctionsFor(getResource());
-					}
+    public Integer getResourceTypeId() {
+        if (isCurrentFocusOnResourceType()) {
+            return resourceOrResourceType.getId();
+        }
+        return null;
+    }
 
-					if (isCurrentFocusOnResourceType()) {
-							loadInstanceFunctionsFor(getResourceType());
-							loadSuperTypeFunctionsFor(getResourceType());
-					}
+    public Integer getResourceId() {
+        if (isCurrentFocusOnResource()) {
+            return resourceOrResourceType.getId();
+        }
+        return null;
+    }
 
-					GlobalMessageAppender.addSuccessMessage("Successfully deleted function");
+    private ResourceTypeEntity getResourceType() {
+        if (isCurrentFocusOnResourceType()) {
+            return (ResourceTypeEntity) resourceOrResourceType;
+        }
+        return null;
+    }
 
-				}
-				catch (ValidationException e) {
-					GlobalMessageAppender.addErrorMessage(buildExceptionMessage(e));
-				}
-			}
-			else {
-				GlobalMessageAppender.addErrorMessage("No function selected to be deleted");
-			}
-		}
+    private ResourceEntity getResource() {
+        if (isCurrentFocusOnResource()) {
+            return (ResourceEntity) resourceOrResourceType;
+        }
+        return null;
+    }
 
-		private String buildExceptionMessage(ValidationException e) {
-			StringBuilder sb = new StringBuilder("Could not delete function because it is overwritten");// by
-																										// at
-																										// least
-																										// one
-																										// sub
-																										// resource
-																										// type
-																										// or
-																										// resource
-																										// function");
-			if (e.hasCausingObject() && e.getCausingObject() instanceof AmwFunctionEntity) {
-				AmwFunctionEntity functionWithName = (AmwFunctionEntity) e.getCausingObject();
+    /**
+     * @return true if current focus is of {@link ResourceTypeEntity}; If not yet set then return false as
+     * default
+     */
+    private boolean isCurrentFocusOnResourceType() {
+        return resourceOrResourceType != null && resourceOrResourceType instanceof ResourceTypeEntity;
+    }
 
-				if (functionWithName.isDefinedOnResource()) {
-					sb.append(" on resource \"").append(functionWithName.getResource().getName())
-								.append("\"");
-				}
-				if (functionWithName.isDefinedOnResourceType()) {
-					sb.append(" on resource type \"").append(functionWithName.getResourceType().getName())
-								.append("\"");
-				}
-			}
-			return sb.toString();
-		}
+    /**
+     * @return true if current focus is of {@link ResourceEntity}; If not yet set then return true as
+     * default
+     */
+    public boolean isCurrentFocusOnResource() {
+        return resourceOrResourceType != null && resourceOrResourceType instanceof ResourceEntity;
+    }
 
-		/**
-		 * Get all Functions which are defined on current selected resource instance or Type
-		 */
-		public List<AmwFunctionEntity> getResourceOrTypeInstanceFunctions() {
-			return instanceFunctions;
-		}
+    private void refreshPermissions() {
 
-		/**
-		 * Get all Functions, which are defined on (super) resource type - overwritable
-		 */
-		public List<AmwFunctionEntity> getSuperTypeFunctions() {
-			return superTypeFunctions;
-		}
+        canShowInstanceFunctions = permissionBoundary.hasPermission(Permission.RESOURCE_AMWFUNCTION, Action.READ);
+        canShowSuperTypeFunctions = permissionBoundary.hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, Action.READ);
+    }
 
-		public boolean isRootResourceType() {
-			return getResourceType() != null && getResourceType().isRootResourceType();
-		}
+    public boolean isCanAdd() {
+        return currentContext.getIsGlobal() && canAddFunctions();
+    }
 
-		public String getInstanceTitle() {
-			if (isCurrentFocusOnResourceType()) {
-				return "Type functions";
-			}
-			return "Resource instance functions";
-		}
+    public boolean isCanEdit() {
+        return currentContext.getIsGlobal() && canUpdateFunctions();
+    }
 
-		public String getResourceTypeTitle() {
-			if (isCurrentFocusOnResourceType()) {
-				return "Supertype functions";
-			}
-			return "Type functions";
-		}
+    public boolean isCanOverwrite() {
+        return currentContext.getIsGlobal() && canUpdateFunctions();
+    }
 
-		public String getOverwritingInfo(AmwFunctionEntity function) {
-			if (function.isOverwritingResourceTypeFunction()) {
-				return "(Overwrite function from " + function.getOverwrittenFunctionResourceTypeName() + ")";
-			}
-			return "";
-		}
+    public boolean isCanDelete() {
+        return currentContext.getIsGlobal() && canDeleteFunctions();
+    }
 
-		public String getFunctionOriginTypeInfo(AmwFunctionEntity function) {
-			if (function.isDefinedOnResourceType()) {
-				return "(Defined on " + function.getResourceType().getName() + ")";
-			}
-			return "";
-		}
+    private boolean canUpdateFunctions() {
+        if (isCurrentFocusOnResource()) {
+            return permissionBoundary.canUpdateFunctionOfResourceOrResourceType(resourceOrResourceType.getId(), null);
+        }
+        if (isCurrentFocusOnResourceType()) {
+            return permissionBoundary.canUpdateFunctionOfResourceOrResourceType(null, resourceOrResourceType.getId());
+        }
+        return false;
+    }
+
+    private boolean canAddFunctions() {
+        if (isCurrentFocusOnResource()) {
+            return permissionBoundary.canCreateFunctionOfResourceOrResourceType(resourceOrResourceType.getId(), null);
+        }
+        if (isCurrentFocusOnResourceType()) {
+            return permissionBoundary.canCreateFunctionOfResourceOrResourceType(null, resourceOrResourceType.getId());
+        }
+        return false;
+    }
+
+    private boolean canDeleteFunctions() {
+        if (isCurrentFocusOnResource()) {
+            return permissionBoundary.canDeleteFunctionOfResourceOrResourceType(resourceOrResourceType.getId(), null);
+        }
+        if (isCurrentFocusOnResourceType()) {
+            return permissionBoundary.canDeleteFunctionOfResourceOrResourceType(null, resourceOrResourceType.getId());
+        }
+        return false;
+    }
+
+    public void deleteFunction() {
+        if (selectedFunctionIdToBeRemoved != null) {
+            try {
+                functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
+
+                selectedFunctionIdToBeRemoved = null;
+
+                if (isCurrentFocusOnResource()) {
+                    loadInstanceFunctionsFor(getResource());
+                    loadSuperTypeFunctionsFor(getResource());
+                }
+
+                if (isCurrentFocusOnResourceType()) {
+                    loadInstanceFunctionsFor(getResourceType());
+                    loadSuperTypeFunctionsFor(getResourceType());
+                }
+
+                GlobalMessageAppender.addSuccessMessage("Successfully deleted function");
+
+            } catch (ValidationException e) {
+                GlobalMessageAppender.addErrorMessage(buildExceptionMessage(e));
+            }
+        } else {
+            GlobalMessageAppender.addErrorMessage("No function selected to be deleted");
+        }
+    }
+
+    private String buildExceptionMessage(ValidationException e) {
+        StringBuilder sb = new StringBuilder("Could not delete function because it is overwritten"); // by at least one sub resource type or resource function");
+        if (e.hasCausingObject() && e.getCausingObject() instanceof AmwFunctionEntity) {
+            AmwFunctionEntity functionWithName = (AmwFunctionEntity) e.getCausingObject();
+
+            if (functionWithName.isDefinedOnResource()) {
+                sb.append(" on resource \"").append(functionWithName.getResource().getName())
+                        .append("\"");
+            }
+            if (functionWithName.isDefinedOnResourceType()) {
+                sb.append(" on resource type \"").append(functionWithName.getResourceType().getName())
+                        .append("\"");
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Get all Functions which are defined on current selected resource instance or Type
+     */
+    public List<AmwFunctionEntity> getResourceOrTypeInstanceFunctions() {
+        return instanceFunctions;
+    }
+
+    /**
+     * Get all Functions, which are defined on (super) resource type - overwritable
+     */
+    public List<AmwFunctionEntity> getSuperTypeFunctions() {
+        return superTypeFunctions;
+    }
+
+    public boolean isRootResourceType() {
+        return getResourceType() != null && getResourceType().isRootResourceType();
+    }
+
+    public String getInstanceTitle() {
+        if (isCurrentFocusOnResourceType()) {
+            return "Type functions";
+        }
+        return "Resource instance functions";
+    }
+
+    public String getResourceTypeTitle() {
+        if (isCurrentFocusOnResourceType()) {
+            return "Supertype functions";
+        }
+        return "Type functions";
+    }
+
+    public String getOverwritingInfo(AmwFunctionEntity function) {
+        if (function.isOverwritingResourceTypeFunction()) {
+            return "(Overwrite function from " + function.getOverwrittenFunctionResourceTypeName() + ")";
+        }
+        return "";
+    }
+
+    public String getFunctionOriginTypeInfo(AmwFunctionEntity function) {
+        if (function.isDefinedOnResourceType()) {
+            return "(Defined on " + function.getResourceType().getName() + ")";
+        }
+        return "";
+    }
 }

@@ -31,22 +31,24 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @XmlRootElement(name = "deployment")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@Getter @Setter
+@Data
 public class DeploymentDTO {
 
 	private Integer id;
 	private Integer trackingId;
 	private DeploymentEntity.DeploymentState state;
 	private Date deploymentDate;
+	private DeploymentFailureReason reason;
 	private String appServerName;
+	private Integer appServerId;
 	private List<AppWithVersionDTO> appsWithVersion = new LinkedList<>();
 	private List<DeploymentParameterDTO> deploymentParameters = new LinkedList<>();
 	private String environmentName;
@@ -65,6 +67,7 @@ public class DeploymentDTO {
 		this.trackingId = entity.getTrackingId();
 		this.state = entity.getDeploymentState();
 		this.appServerName = entity.getResourceGroup().getName();
+		this.appServerId = entity.getResourceGroup().getId();
 		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
 			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
 		}
@@ -72,6 +75,7 @@ public class DeploymentDTO {
 			deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
 		}
 		this.deploymentDate = entity.getDeploymentDate();
+		this.reason = entity.getReason();
 		this.environmentName = entity.getContext().getName();
 		this.setReleaseName(entity.getRelease().getName());
 		this.setRuntimeName(entity.getRuntime().getName());
@@ -81,20 +85,6 @@ public class DeploymentDTO {
 		for (NodeJobEntity job : entity.getNodeJobs()) {
 			nodeJobs.add(new NodeJobDTO(job));
 		}
-	}
-
-	/**
-	 * @deprecated Only here for backwards compatibility of the rest API
-	 */
-	@Deprecated
-	public List<AppWithMvnVersionDTO> getAppsWithMvnVersion() {
-		List<AppWithMvnVersionDTO> appsWithMvnVersion = new LinkedList<>();
-
-		for(AppWithVersionDTO app : this.appsWithVersion) {
-			appsWithMvnVersion.add(new AppWithMvnVersionDTO(app.getApplicationName(), app.getVersion()));
-		}
-		
-		return appsWithMvnVersion;
 	}
 	
 	/**

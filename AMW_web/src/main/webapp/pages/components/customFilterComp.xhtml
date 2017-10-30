@@ -62,15 +62,14 @@
 					<div>
 						<h:panelGroup rendered="${!filter.specialFilterType}">
 							<h:selectOneMenu class="width80px"
-								value="#{customFilterImpl.selectedComperator(filter)}"
-								disabled="${customFilterImpl.getTypedComperatorSelectionList(filter).size() == 1 }">
+								value="#{filter.comparatorSelection}"
+								disabled="${filter.typedComparatorSelectionList.size() == 1}">
 								<f:selectItems
-									value="${customFilterImpl.getTypedComperatorSelectionList(filter)}"
-									var="comperator" itemLabel="${comperator.displayName}"
-									itemValue="${comperator}" />
-								<a4j:ajax
-									listener="#{customFilterImpl.getSelectionComperatorChangeListener(filter)}"
-									render="selectedFilter" />
+									value="${filter.typedComparatorSelectionList}"
+									var="comparator" itemLabel="${comparator.displayName}"
+									itemValue="${comparator}" />
+								<a4j:ajax listener="#{filter.setSelectedComparatorFilterOption(comparator)}"
+										  render="selectedFilter" />
 							</h:selectOneMenu>
 						</h:panelGroup>
 					</div>

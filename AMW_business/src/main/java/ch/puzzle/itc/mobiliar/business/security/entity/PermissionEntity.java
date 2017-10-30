@@ -20,16 +20,16 @@
 
 package ch.puzzle.itc.mobiliar.business.security.entity;
 
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
+import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @Table(name = "TAMW_permission")
@@ -57,16 +57,8 @@ public class PermissionEntity implements Serializable
 
 	@Getter
 	@Setter
-	@ManyToOne
-	@NotAudited
-	private ContextEntity context;
-
-	@Getter
-	@Setter
-	@ManyToMany(mappedBy = "permissions")
-	@NotAudited
-	private Set<RoleEntity> roles = new HashSet<RoleEntity>();
-
+	@OneToMany(mappedBy = "permission", cascade = ALL, orphanRemoval = true)
+	private Set<RestrictionEntity> restrictions = new HashSet<>();
 
 	public String getInfo() {
 		try {

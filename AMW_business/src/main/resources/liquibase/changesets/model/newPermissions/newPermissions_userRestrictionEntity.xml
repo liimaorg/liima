@@ -1,0 +1,37 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/newPermissions/newPermissions_userRestrictionEntity.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="rgalante" id="newPermissionsUserRestrictionEntity">
+
+        <createTable tableName="TAMW_userrestriction">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PX_userrestriction" />
+            </column>
+            <column name="v" type="BIGINT" valueNumeric="0"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+
+        <insert tableName="SAMW_SEQUENCES">
+            <column name="seq_name" value="userrestrictionId" />
+            <column name="next_val" valueNumeric="1" />
+        </insert>
+
+        <!-- extend RestricitionEntity-table -->
+
+        <addColumn tableName="TAMW_restriction">
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="TAMW_restriction" constraintName="FK_restriction_06"
+                                 referencedColumnNames="id" referencedTableName="TAMW_userRestriction" />
+
+        <rollback></rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

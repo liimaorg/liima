@@ -21,9 +21,7 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -36,14 +34,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-
 import ch.mobi.itc.mobiliar.rest.dtos.BatchPropertyDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyDTO;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
@@ -52,8 +44,10 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter.ComperatorFilterOption;
+
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 @RequestScoped
 @Path("/resources/{resourceGroupName}/{releaseName}/relations/{relatedResourceGroupName}/{relatedReleaseName}/properties")

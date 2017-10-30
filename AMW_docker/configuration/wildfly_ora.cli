@@ -1,0 +1,18 @@
+embed-server --std-out=echo
+
+#Oracle
+data-source add --name=amwDS --driver-name="ojdbc6.jar" --driver-class="oracle.jdbc.OracleDriver" --jndi-name=java:jboss/datasources/amwDS --user-name="${env.DB_USER:MOBI_TRUNK}" --password="${env.DB_PASSWORD:MOBI_TRUNK_PW}" --use-java-context=true --connection-url="jdbc:oracle:thin:@//${env.DB_HOST:localhost}:${env.DB_PORT:1521}/xe"
+
+data-source add --name=amwLiquibaseDS --driver-name="ojdbc6.jar" --driver-class="oracle.jdbc.OracleDriver" --jndi-name=java:jboss/datasources/amwLiquibaseDS --user-name="${env.DB_USER:MOBI_TRUNK}" --password="${env.DB_PASSWORD:MOBI_TRUNK_PW}" --use-java-context=true --connection-url="jdbc:oracle:thin:@//${env.DB_HOST:localhost}:${env.DB_PORT:1521}/xe"
+
+# Mail
+/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=mail-smtp-amw:add(host="${env.MAIL_HOST:localhost}",port="${env.MAIL_PORT:25}")
+/subsystem=mail/mail-session=amw:add(from=amw@amw.ch,jndi-name="java:/AutomationMiddlewareMail")
+/subsystem=mail/mail-session=amw/server=smtp:add(outbound-socket-binding-ref="mail-smtp-amw",ssl=true)
+
+# Login Module
+/subsystem=security/security-domain=jboss-secure:add()
+/subsystem=security/security-domain=jboss-secure/authentication=classic:add(login-modules=[{"code"=>"UsersRoles","flag"=>"required","module-options"=>["usersProperties"=>"${jboss.server.config.dir}/props/users.properties","rolesProperties"=>"${jboss.server.config.dir}/props/roles.properties"]}])
+
+stop-embedded-server
+quit

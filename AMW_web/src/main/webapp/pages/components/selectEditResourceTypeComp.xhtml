@@ -67,7 +67,7 @@
 			<nav class="fixed center">
 				<ul><li>
 				<ui:fragment rendered="${showCreateResourceType}" >
-					<a4j:commandLink rendered="#{securityDataProvider.hasPermission('NEW_RESTYPE')}"
+					<a4j:commandLink rendered="#{securityDataProvider.hasPermission('RESOURCETYPE', 'CREATE')}"
 							styleClass="btn light"
 							onclick="${rich:component('addNewResourceTypePopupPanel')}.show();"
 							render="addNewResourceTypePopupPanelGroup" id="newResTypeButton"

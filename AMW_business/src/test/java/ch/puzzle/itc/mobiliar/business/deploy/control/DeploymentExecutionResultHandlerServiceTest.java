@@ -20,24 +20,22 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
-
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
+import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class DeploymentExecutionResultHandlerServiceTest {
 
@@ -48,7 +46,7 @@ public class DeploymentExecutionResultHandlerServiceTest {
 	Logger log;
 
 	@Mock
-	DeploymentService deploymentService;
+    DeploymentBoundary deploymentBoundary;
 
 	@Mock
 	ShakedownTestService shakedownTestService;
@@ -76,8 +74,8 @@ public class DeploymentExecutionResultHandlerServiceTest {
 		deploymentExecutionResultHandlerService.handleSuccessfulDeployment(GenerationModus.DEPLOY, result);
 
 		// then
-		verify(deploymentService, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.DEPLOY, deployment.getId(), null,
-				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
+		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.DEPLOY, deployment.getId(), null,
+				deployment.getResource() != null ? deployment.getResource().getId() : null, result, null);
 	}
 
 	@Test
@@ -88,8 +86,8 @@ public class DeploymentExecutionResultHandlerServiceTest {
 		deploymentExecutionResultHandlerService.handleSuccessfulDeployment(GenerationModus.SIMULATE, result);
 
 		// then
-		verify(deploymentService, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.SIMULATE, deployment.getId(), null,
-				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
+		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.SIMULATE, deployment.getId(), null,
+				deployment.getResource() != null ? deployment.getResource().getId() : null, result, null);
 	}
 
 	@Test
@@ -101,9 +99,9 @@ public class DeploymentExecutionResultHandlerServiceTest {
 		deploymentExecutionResultHandlerService.handleSuccessfulDeployment(GenerationModus.DEPLOY, result);
 
 		// then
-		verify(deploymentService, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.DEPLOY, deployment.getId(), null,
-				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
-		verify(deploymentService, times(1)).createShakedownTestForTrackinIdOfDeployment(deployment.getTrackingId());
+		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.DEPLOY, deployment.getId(), null,
+				deployment.getResource() != null ? deployment.getResource().getId() : null, result, null);
+		verify(deploymentBoundary, times(1)).createShakedownTestForTrackinIdOfDeployment(deployment.getTrackingId());
 	}
 
 	@Test
@@ -111,12 +109,12 @@ public class DeploymentExecutionResultHandlerServiceTest {
 		// given
 		Exception e = new Exception();
 		// when
-		deploymentExecutionResultHandlerService.handleUnSuccessfulDeployment(GenerationModus.DEPLOY, deployment, result, e);
+		deploymentExecutionResultHandlerService.handleUnSuccessfulDeployment(GenerationModus.DEPLOY, deployment, result, e, null);
 
 		// then
-		verify(deploymentService, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.DEPLOY, deployment.getId(),
+		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.DEPLOY, deployment.getId(),
 				"Deployment(100) failed \nnull",
-				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
+				deployment.getResource() != null ? deployment.getResource().getId() : null, result, null);
 		verify(log, times(1)).log(Level.SEVERE, "Deployment(100) failed \nnull", e);
 	}
 
@@ -125,12 +123,12 @@ public class DeploymentExecutionResultHandlerServiceTest {
 		// given
 		Exception e = new Exception();
 		// when
-		deploymentExecutionResultHandlerService.handleUnSuccessfulDeployment(GenerationModus.SIMULATE, deployment, result, e);
+		deploymentExecutionResultHandlerService.handleUnSuccessfulDeployment(GenerationModus.SIMULATE, deployment, result, e, null);
 
 		// then
-		verify(deploymentService, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.SIMULATE, deployment.getId(),
+		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.SIMULATE, deployment.getId(),
 				"Build(100) failed \nnull",
-				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
+				deployment.getResource() != null ? deployment.getResource().getId() : null, result, null);
 		verify(log, times(1)).log(Level.SEVERE, "Build(100) failed \nnull", e);
 	}
 

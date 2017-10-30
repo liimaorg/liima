@@ -20,7 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
@@ -44,7 +45,7 @@ public class DeploymentExecutionResultHandlerService {
 	private Logger log;
 
 	@Inject
-	private DeploymentService deploymentService;
+	private DeploymentBoundary deploymentBoundary;
 
 
 	/**
@@ -58,11 +59,11 @@ public class DeploymentExecutionResultHandlerService {
 
 		DeploymentEntity deployment = generationResult.getDeployment();
 
-		deploymentService.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(), null, deployment.getResource() != null ? deployment.getResource()
-				.getId() : null, generationResult);
+		deploymentBoundary.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(), null, deployment.getResource() != null ? deployment.getResource()
+				.getId() : null, generationResult, null);
 
 		if (deployment.isCreateTestAfterDeployment()) {
-			deploymentService.createShakedownTestForTrackinIdOfDeployment(deployment.getTrackingId());
+			deploymentBoundary.createShakedownTestForTrackinIdOfDeployment(deployment.getTrackingId());
 		}
 	}
 
@@ -76,11 +77,11 @@ public class DeploymentExecutionResultHandlerService {
 	 */
 	@Asynchronous
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void handleUnSuccessfulDeployment(GenerationModus generationModus, DeploymentEntity deployment, GenerationResult generationResult, Exception e) {	
+	public void handleUnSuccessfulDeployment(GenerationModus generationModus, DeploymentEntity deployment, GenerationResult generationResult, Exception e, DeploymentFailureReason reason) {
 		String msg = generationModus.getAction() + "("+deployment.getId()+") failed \n" + e.getMessage();
 		log.log(Level.SEVERE, msg, e);
-		deploymentService.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(), msg, deployment.getResource() != null ? deployment.getResource()
-				.getId() : null, generationResult);
+		deploymentBoundary.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(), msg, deployment.getResource() != null ? deployment.getResource()
+				.getId() : null, generationResult, reason);
 	}
 
 }

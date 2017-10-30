@@ -22,11 +22,13 @@ package ch.puzzle.itc.mobiliar.business.function.control;
 
 import javax.persistence.EntityManager;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+
 import org.mockito.runners.MockitoJUnitRunner;
 
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
@@ -41,6 +43,11 @@ public class FunctionRepositoryTest {
 	@InjectMocks
 	private FunctionRepository functionRepository;
 
+	@Before
+	public void setup() {
+		functionRepository.entityManager = entityManagerMock;
+	}
+
 	@Test
 	public void persistOrMergeFunctionWhenFunctionHasIdShouldDelegateMerge() {
 		// given
@@ -51,7 +58,7 @@ public class FunctionRepositoryTest {
 		functionRepository.persistOrMergeFunction(function);
 
 		// then
-        Mockito.verify(entityManagerMock).merge(function);
+        Mockito.verify(functionRepository.entityManager).merge(function);
 	}
 
     @Test
@@ -64,7 +71,7 @@ public class FunctionRepositoryTest {
         functionRepository.persistOrMergeFunction(function);
 
         // then
-        Mockito.verify(entityManagerMock).persist(function);
+        Mockito.verify(functionRepository.entityManager).persist(function);
     }
 
 }

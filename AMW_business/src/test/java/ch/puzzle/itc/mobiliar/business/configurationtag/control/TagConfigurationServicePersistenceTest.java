@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.configurationtag.control;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
@@ -54,6 +55,9 @@ public class TagConfigurationServicePersistenceTest {
 
 	@Mock
 	Logger log;
+
+	@Mock
+	PermissionService permissionService;
 
 	@InjectMocks
 	TagConfigurationService service;

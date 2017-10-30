@@ -20,10 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -60,17 +60,16 @@ public class CommonFilterServicePersistenceTest {
 		MockitoAnnotations.initMocks(this);
 	}
 
-
     @Test
     public void test_addFilterAndCreateQuery(){
         // given
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ") ;
         List<CustomFilter> filters = new ArrayList<>();
-        CustomFilter filter = new CustomFilter("State", "d.deploymentState", CustomFilter.FilterType.ENUM_TYPE);
+        CustomFilter filter = CustomFilter.builder(DEPLOYMENT_STATE)
+                .enumType(DeploymentEntity.DeploymentState.class)
+                .isSelected(true)
+                .build();
         filter.setValue("success");
-        filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(CustomFilter.ComperatorFilterOption.equals);
-        filter.setSelected(true);
         filters.add(filter);
         String colToSort = "d.deploymentDate";
         String uniqueCol ="d.id";
@@ -88,17 +87,18 @@ public class CommonFilterServicePersistenceTest {
         // given
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ") ;
         List<CustomFilter> filters = new ArrayList<>();
-        CustomFilter filter = new CustomFilter("State", "d.deploymentState", CustomFilter.FilterType.ENUM_TYPE);
+        CustomFilter filter = CustomFilter.builder(DEPLOYMENT_STATE)
+                .enumType(DeploymentEntity.DeploymentState.class)
+                .isSelected(true)
+                .build();
         filter.setValue("success");
-        filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(CustomFilter.ComperatorFilterOption.equals);
-        filter.setSelected(true);
         filters.add(filter);
-        filter = new CustomFilter("Deployment parameter", "p.key", "join d.deploymentParameters p", CustomFilter.FilterType.StringType);
+
+        filter = CustomFilter.builder(CONFIRMATION_USER)
+                .enumType(DeploymentEntity.DeploymentState.class)
+                .isSelected(true)
+                .build();
         filter.setValue("test");
-        filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(CustomFilter.ComperatorFilterOption.equals);
-        filter.setSelected(true);
         filters.add(filter);
 
         String colToSort = "d.deploymentDate";
@@ -114,19 +114,19 @@ public class CommonFilterServicePersistenceTest {
     @Test
     public void test_addSpecialAndJoiningFilterAndCreateQuery(){
         // given
-
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d where d.deploymentDate = "+
                 "(select max(t.deploymentDate) from DeploymentEntity t where d.context = t.context and d.resourceGroup = t.resourceGroup) ");
         List<CustomFilter> filters = new ArrayList<>();
-        CustomFilter filter = new CustomFilter("Latest deployment job for App Server and Env", "", CustomFilter.FilterType.SpecialFilterType);
-        filter.setSelected(true);
+        CustomFilter filter = CustomFilter.builder(LASTDEPLOYJOBFORASENV)
+                .isSelected(true)
+                .build();
         filters.add(filter);
 
-        filter = new CustomFilter("Deployment parameter", "p.key", "join d.deploymentParameters p", CustomFilter.FilterType.StringType);
+        filter = CustomFilter.builder(DEPLOYMENT_PARAMETER)
+                .isSelected(true)
+                .enumType(DeploymentEntity.DeploymentState.class)
+                .build();
         filter.setValue("test");
-        filter.setEnumType(DeploymentEntity.DeploymentState.class);
-        filter.setComperatorSelection(CustomFilter.ComperatorFilterOption.equals);
-        filter.setSelected(true);
         filters.add(filter);
 
         String colToSort = "d.deploymentDate";

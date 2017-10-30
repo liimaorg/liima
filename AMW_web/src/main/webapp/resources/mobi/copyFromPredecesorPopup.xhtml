@@ -56,7 +56,7 @@
                                 <table class="addRes">
                                     <tr>
                                         <td><h:commandLink value="Copy from this predecessor resource"
-                                                           rendered="#{copyResourceDataProvider.canCopyFromPredecessorResource and editResourceView.resourceType.applicationResourceType}"
+                                                           rendered="#{copyResourceDataProvider.allowedToCopyFromThatResource(resourceGroup) and editResourceView.resourceType.applicationResourceType}"
                                                            action="#{copyResourceDataProvider.copyFromPredecessorResource(resourceGroup.id)}"
                                                            onclick="if(confirmLeave(event)){showLoader(); return true;} else{return false;};">
                                         </h:commandLink></td>

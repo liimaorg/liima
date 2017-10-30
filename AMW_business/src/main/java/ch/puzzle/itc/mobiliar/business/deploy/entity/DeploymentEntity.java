@@ -123,6 +123,11 @@ public class DeploymentEntity implements Serializable {
             return null;
         }
 
+		@Override
+		public String toString() {
+			return displayName;
+		}
+
     }
 
     // TODO: Redundant to deploymentState?
@@ -245,6 +250,11 @@ public class DeploymentEntity implements Serializable {
     private List<DeploymentParameter> deploymentParameters;
 
     @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private DeploymentFailureReason reason;
+
+    @Getter
     @Version
     private long v;
 
@@ -295,7 +305,7 @@ public class DeploymentEntity implements Serializable {
     }
 
     /*
-     * This methods don't check if user has the right to call it, Use the DeploymentService for that.
+     * This methods don't check if user has the right to call it, Use the DeploymentBoundary for that.
      */
     public void confirm(String username) {
         setDeploymentState(DeploymentState.scheduled);
@@ -318,11 +328,11 @@ public class DeploymentEntity implements Serializable {
         setDeploymentCancelDate(new Date());
     }
 
-    public void setDeploymentState(DeploymentState newDeploymentState) {
-        if (deploymentState != null && !deploymentState.isTransitionAllowed(newDeploymentState)) {
-            throw new DeploymentStateException("Can't set status: " + newDeploymentState + ". Allowed states: "
-                    + deploymentState.allowedTransitions);
-        }
+	public void setDeploymentState(DeploymentState newDeploymentState) {
+		if (deploymentState != null && !deploymentState.isTransitionAllowed(newDeploymentState)) {
+			throw new DeploymentStateException("Can't set status from " + deploymentState + " to " + newDeploymentState
+					+ " of deployment " + getId() + ". Allowed transitions: " + deploymentState.allowedTransitions);
+		}
 
         deploymentState = newDeploymentState;
     }
@@ -428,4 +438,44 @@ public class DeploymentEntity implements Serializable {
         deploymentParameters.add(deploymentParameter);
     }
 
+	public boolean isPredeploymentFinished() {
+        boolean hasPredeploymnets = false;
+        boolean allFinished = true;
+
+		for (NodeJobEntity job : this.getNodeJobs()) {
+            if (DeploymentState.PRE_DEPLOYMENT.equals(job.getDeploymentState())) {
+                hasPredeploymnets = true;
+                if (NodeJobEntity.NodeJobStatus.RUNNING.equals(job.getStatus())) {
+                    allFinished=false;
+                    break;
+                }
+			}
+		}
+		return hasPredeploymnets && allFinished;
+	}
+
+	public boolean isPredeploymentSuccessful() {
+        boolean hasPredeploymnets = false;
+        boolean allSuccess = true;
+
+		for (NodeJobEntity job : this.getNodeJobs()) {
+            if (DeploymentState.PRE_DEPLOYMENT.equals(job.getDeploymentState())) {
+                hasPredeploymnets = true;
+                if (!NodeJobEntity.NodeJobStatus.SUCCESS.equals(job.getStatus())) {
+                    allSuccess=false;
+                    break;
+                }
+			}
+		}
+		return hasPredeploymnets && allSuccess;
+	}
+
+	public NodeJobEntity findNodeJobEntity(Integer nodeJobId) {
+		for (NodeJobEntity nodeJob : this.getNodeJobs()) {
+			if (nodeJobId.equals(nodeJob.getId())) {
+				return nodeJob;
+			}
+		}
+		return null;
+	}
 }

@@ -20,19 +20,20 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class ResourceGroupRepository {
 
@@ -43,23 +44,32 @@ public class ResourceGroupRepository {
         return entityManager.createQuery("select r from ResourceGroupEntity r left join fetch r.resources res", ResourceGroupEntity.class).getResultList();
     }
 
+    public List<ResourceGroupEntity> getAllResourceGroupsByName(){
+        return entityManager.createQuery("select r from ResourceGroupEntity r order by r.name", ResourceGroupEntity.class).getResultList();
+    }
+
     public ResourceGroupEntity getResourceGroupByName(String name){
         name = name.toLowerCase();
         return entityManager.createQuery("select r from ResourceGroupEntity r where LOWER(r.name)=:name", ResourceGroupEntity.class).setParameter(
                 "name", name).getSingleResult();
     }
+
+    public ResourceGroupEntity getResourceGroupById(Integer groupId){
+        return entityManager.createQuery("select r from ResourceGroupEntity r where r.id=:groupId", ResourceGroupEntity.class).setParameter(
+                "groupId", groupId).getSingleResult();
+    }
     
     /**
      * Fetches the resourceGroup as required for the create deployment popup of the deploy screen
      */
-	public ResourceGroupEntity getResourceGroupForCreateDeploy(Integer groupeId) {
+	public ResourceGroupEntity getResourceGroupForCreateDeploy(Integer groupId) {
 		TypedQuery<ResourceGroupEntity> q = entityManager.createQuery("select r from ResourceGroupEntity r"
         		+ " left join fetch r.resources res"
         		+ " left join fetch res.consumedMasterRelations"
         		+ " left join fetch res.resourceTags"
         		+ " where r.id=:id",
         		ResourceGroupEntity.class);
-		q.setParameter("id", groupeId);
+		q.setParameter("id", groupId);
 		return q.getSingleResult();
 	}
 	
@@ -85,6 +95,36 @@ public class ResourceGroupRepository {
 	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, List<Integer> myAmw, boolean fetchResources) {
 		return getGroupsForType("id", resourceTypeId, myAmw, fetchResources, false);
 	}
+
+    /**
+     *
+     * @param name
+     * @param resourceTypeId
+     * @return
+     */
+    public ResourceGroupEntity loadUniqueGroupByNameAndType(String name, Integer resourceTypeId) {
+        ResourceGroupEntity result = null;
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<ResourceGroupEntity> q = cb.createQuery(ResourceGroupEntity.class);
+            Root<ResourceGroupEntity> r = q.from(ResourceGroupEntity.class);
+            r.fetch("resources");
+            Join<ResourceGroupEntity, ResourceEntity> resources = r.join("resources");
+            Predicate typePred = cb.equal(resources.get("resourceType").get("id"), resourceTypeId);
+            Predicate resNamePred = cb.equal(resources.get("name"), name);
+
+            q.where(cb.and(typePred, resNamePred));
+
+            q.distinct(true);
+
+            result = entityManager.createQuery(q).getSingleResult();
+        }
+        catch (NoResultException e) {
+            // do nothing
+        }
+        return result;
+    }
+
 
 	
 	private List<ResourceGroupEntity> getGroupsForType(String typeParam, Object typeParamValue, List<Integer> myAmw, boolean fetchResources, boolean sorted) {
@@ -125,5 +165,9 @@ public class ResourceGroupRepository {
         return result;
 
 	}
+
+    public ResourceGroupEntity find(Integer resourceGroupId) {
+        return entityManager.find(ResourceGroupEntity.class, resourceGroupId);
+    }
 
 }

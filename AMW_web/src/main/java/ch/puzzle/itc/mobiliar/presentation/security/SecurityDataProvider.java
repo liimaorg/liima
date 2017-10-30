@@ -22,23 +22,20 @@ package ch.puzzle.itc.mobiliar.presentation.security;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
-import ch.puzzle.itc.mobiliar.business.security.control.SecurityScreenDomainService.PermissionToRole;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
-import ch.puzzle.itc.mobiliar.common.util.RolePermissionContainer;
 
 /**
  * First: Permissions should not be checked directly from jsf (xhtml) but rather through their corresponding view backing beans
@@ -46,142 +43,23 @@ import ch.puzzle.itc.mobiliar.common.util.RolePermissionContainer;
  */
 @Named
 @SessionScoped // TODO do we need session scope or can we use view scope?
-@Deprecated
 public class SecurityDataProvider implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
-	private String roleName;
-	private Integer roleSelectedId;
-	private String roleSelectedName;
-	private List<RoleEntity> roles;
-	private List<RoleEntity> rolesWithoutRoleSelected;
-	private boolean isDeployable;
-
-	private Integer permissionSelected;
-	private Integer assignedPermissionSelected;
-	private boolean isDeletable;
-	private String displaySelectedPermission;
-	private Integer selectedRoleIdToAssignPermission;
-	private Integer selectedDeployPermission;
-	private String infoPermission;
-	private Integer selectedOldRole;
-	private List<PermissionToRole> allPermissionAndRole;
-	private Integer selectedAgainRoleId;
-
 	@Inject
-	SecurityController controller;
+	PermissionBoundary permissionBoundary;
 
-	@Inject
-	Permissions permissionBoundary;
-	
-	@PostConstruct
-	protected void initView(){
-		roles = getAllRoleWithoutDefaultContainer();
-		setDefaultRoleSelected();
-		setDefaultSelectedPermission();
-		selectedAgainRoleId = roleSelectedId;
-		allPermissionAndRole = controller.getAllPermissionsAndRoles(roleSelectedId);
-	}
-	
-	public List<RoleEntity> getAllRoleWithoutDefaultContainer(){
-		List<RoleEntity> result = new ArrayList<RoleEntity>();
-		for(RoleEntity role : controller.loadRoleList()){
-			if(!RolePermissionContainer.ROLEPERMISSIONCONTAINER.getDisplayName().equals(role.getName())){
-				result.add(role);
-			}
-		}
-		return result;
-	}
-	
-	private void setDefaultRoleSelected(){
-		if(roleSelectedId==null){
-			for(RoleEntity r : roles){
-				if(r!=null){
-					setRoleSelectedId(r.getId());
-					roleSelectedName=r.getName();
-					break;
-				}
-			}
-		}
-	}
-	
-	private void setDefaultSelectedPermission(){
-		for(PermissionEntity p : controller.getPermissiosByRoleId(roleSelectedId)){
-			if(p!=null){
-				displaySelectedPermission = p.getValue();
-				assignedPermissionSelected = p.getId();
-				selectedDeployPermission = p.getId();
-				break;
-			}else{
-				displaySelectedPermission = null;
-				assignedPermissionSelected = null;
-				selectedDeployPermission = null;
-			}
-		}
-	}
-		
-	public String getRoleName() {
-		return roleName;
-	}
+	private Map<String, Boolean> canEditResourceType = new HashMap<>();
 
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
-	
-	public void createRole() {
-		controller.createRole(roleName, isDeployable);
-		roleName=null;
-		isDeployable=false;
-		roles = getAllRoleWithoutDefaultContainer();
-	}
-	
-	public void deleteRole(){
-		controller.deleteRole(roleSelectedId);
-		roleSelectedId=null;
-		roles = getAllRoleWithoutDefaultContainer();
-		setDefaultRoleSelected();
-	}
+	private Map<String, Boolean> canDeleteResourceType = new HashMap<>();
 
-	public Integer getRoleSelectedId() {
-		return roleSelectedId;
-	}
+	private Map<String, Boolean> canEditResource = new HashMap<>();
 
-	private List<PermissionEntity> currentPermissions;
-	
-	public void setRoleSelectedId(Integer roleSelectedId) {
-		this.roleSelectedId = roleSelectedId;
-		setDefaultSelectedPermission();
-		currentPermissions = controller.getPermissiosByRoleId(roleSelectedId);
-		permissionSelected = null;
-	}
-
-	public List<RoleEntity> getAllRoleList() {
-		return roles;
-	}
-
-	public void setAllRoleList(List<RoleEntity> roleList) {
-		this.roles = roleList;
-	}
-	
-	public List<PermissionEntity> getPermissionsByRoleId() {
-		return currentPermissions;
-	}
-
-	public boolean isDeployable() {
-		return isDeployable;
-	}
-
-	public void setDeployable(boolean isDeployable) {
-		this.isDeployable = isDeployable;
-	}
-	
-	public List<RoleEntity> getDeplopyableRoles() {
-		return controller.getAllDeployableRoles();
-	}
+	private Map<String, Boolean> canDeleteResource = new HashMap<>();
 
 	/**
-	 * Use {@link ch.puzzle.itc.mobiliar.business.security.boundary.Permissions#hasPermission(Permission)} instead
+	 * Use {@link PermissionBoundary#hasPermission(Permission)} instead
 	 * @param permissionValue
 	 * @return
 	 */
@@ -190,99 +68,68 @@ public class SecurityDataProvider implements Serializable{
 		return permissionBoundary.hasPermission(permissionValue);
 	}
 
-	public Integer getPermissionSelected() {
-		return permissionSelected;
+	/**
+	 * @param permissionValue Name of the Permission (must be mappable to the Permission ENUM)
+	 * @param actionValue Name of the Action (must be mappable to the Action ENUM)
+	 * @return
+	 */
+	public boolean hasPermission(String permissionValue, String actionValue){
+		return permissionBoundary.hasPermission(permissionValue, actionValue);
 	}
 
-	public void setPermissionSelected(Integer permissionSelected) {
-		assignedPermissionSelected=null;
-		this.permissionSelected = permissionSelected;
+	/**
+	 * Checks if user or role has a certain permission with specific action an ALL environments
+	 *
+	 * @param permissionValue Name of the Permission (must be mappable to the Permission ENUM)
+	 * @param actionValue Name of the Action (must be mappable to the Action ENUM)
+	 * @return
+	 */
+	public boolean hasPermissionOnAllContext(String permissionValue, String actionValue){
+		return permissionBoundary.hasPermissionOnAllContext(permissionValue, actionValue);
+	}
+
+	/**
+	 * @param permissionValue Name of the Permission (must be mappable to the Permission ENUM)
+	 * @param actionValue Name of the Action (must be mappable to the Action ENUM)
+	 * @param resourceTypeValue Name of a valid ResourceTypeEntity
+	 * @return
+	 */
+	public boolean hasPermissionForResourceType(String permissionValue, String actionValue, String resourceTypeValue){
+		Boolean can = hasPermission(permissionValue, actionValue, resourceTypeValue);
+		if (can != null) return can;
+		return permissionBoundary.hasPermissionForResourceType(permissionValue, actionValue, resourceTypeValue);
+	}
+
+	/**
+	 * @param permissionValue Name of the Permission (must be mappable to the Permission ENUM)
+	 * @param actionValue Name of the Action (must be mappable to the Action ENUM)
+	 * @param resourceTypeValue Name of a valid ResourceTypeEntity
+	 * @param contextId Id of the actual Context
+	 * @return
+	 */
+	public boolean hasPermissionForResourceType(String permissionValue, String actionValue, String resourceTypeValue, Integer contextId){
+		return permissionBoundary.hasPermissionForResourceType(permissionValue, actionValue, resourceTypeValue, contextId);
 	}
 	
-	public boolean hasPermissionToDeploy(){
-		return controller.hasPermissionToDeploy();
+	public boolean hasPermissionToCreateDeployment(){
+		return permissionBoundary.hasPermissionToCreateDeployment();
 	}
-	
-	public boolean hasPermissionToCreateShakedownTest(){
-		// TODO: bsc: 13.11.2012: Permission muss erstellt werden hier
+
+	public boolean hasPermissionToExportDeployments() {
+		return permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.READ);
+	}
+
+	public boolean hasPermissionToCreateShakedownTests(List<Integer> resourceGroupIds) {
+		for (Integer resourceGroupId : resourceGroupIds) {
+			if (!permissionBoundary.hasPermissionToCreateShakedownTests(resourceGroupId)) {
+				return false;
+			}
+		}
 		return true;
 	}
 
 	public String getUserName() {
-		return controller.getUserName();
-	}
-
-	public boolean isDeletable() {
-		if(roleSelectedId==null) {
-			setDefaultRoleSelected();
-		}
-		for(RoleEntity r : roles){
-			if(r.getId().equals(roleSelectedId)){
-				isDeletable = r.isDeletable();
-					break;
-			}
-		}
-		return isDeletable;
-	}
-
-	public void setDeletable(boolean isDeletable) {
-		this.isDeletable = isDeletable;
-	}
-	
-	public void addPermissionToRole(){
-		if(controller.addPermissionToRole(roleSelectedId,permissionSelected)){
-			assignedPermissionSelected = permissionSelected;
-			permissionSelected = null;
-			currentPermissions = controller.getPermissiosByRoleId(roleSelectedId);
-		}
-	}
-	
-	public void assignPermissionToRole(){
-		if(controller.assignPermissionToRole(selectedOldRole,permissionSelected,roleSelectedId)){
-			assignedPermissionSelected = permissionSelected;
-			permissionSelected = null;
-			currentPermissions = controller.getPermissiosByRoleId(roleSelectedId);
-			allPermissionAndRole = controller.getAllPermissionsAndRoles(roleSelectedId);
-			
-		}
-	}
-	
-	public void removeAndAssignPermissionToRole(){
-		if(controller.removeAndAssignPermissionToRole(roleSelectedId, assignedPermissionSelected,selectedRoleIdToAssignPermission)){
-			permissionSelected = assignedPermissionSelected;
-			assignedPermissionSelected = null;
-			currentPermissions = controller.getPermissiosByRoleId(roleSelectedId);
-			allPermissionAndRole = controller.getAllPermissionsAndRoles(roleSelectedId);
-			setSelectedOldRole(selectedRoleIdToAssignPermission);
-		}
-	}
-	
-	public void movePermissionToDefaultContainer(){
-		if(controller.movePermissionToDefaultContainer(roleSelectedId,assignedPermissionSelected)){
-			
-			permissionSelected = assignedPermissionSelected;
-			assignedPermissionSelected = null;
-			currentPermissions = controller.getPermissiosByRoleId(roleSelectedId);
-			allPermissionAndRole = controller.getAllPermissionsAndRoles(roleSelectedId);
-			setSelectedOldRole(controller.getDefaultPermissionsContainer());
-		}
-	}
-
-	public Integer getAssignedPermissionSelected() {
-		return assignedPermissionSelected;
-	}
-
-	public void setAssignedPermissionSelected(Integer assignedPermissionSelected) {
-		permissionSelected = null;
-		this.assignedPermissionSelected = assignedPermissionSelected;
-	}
-	
-	public String getRoleSelectedName() {
-		return roleSelectedName;
-	}
-
-	public void setRoleSelectedName(String roleSelectedName) {
-		this.roleSelectedName = roleSelectedName;
+		return permissionBoundary.getUserName();
 	}
 
 	public void logout() throws IOException {
@@ -294,86 +141,32 @@ public class SecurityDataProvider implements Serializable{
 		FacesContext.getCurrentInstance().getExternalContext().redirect(logoutUrl);
 	}
 
-	public List<RoleEntity> getRolesWithoutRoleSelected() {
-		rolesWithoutRoleSelected = new ArrayList<RoleEntity>();
-		for(RoleEntity r : controller.loadRoleList()){
-			if(!r.getId().equals(getRoleSelectedId()) && !r.getName().equals(RolePermissionContainer.ROLEPERMISSIONCONTAINER.getDisplayName())){
-				rolesWithoutRoleSelected.add(r);
+	private void buffer(String permissionValue, String actionValue, String resourceTypeValue, Map<String, Boolean> cache) {
+		if (!cache.containsKey(resourceTypeValue)) {
+			cache.put(resourceTypeValue, permissionBoundary.hasPermissionForResourceType(permissionValue,
+					actionValue, resourceTypeValue));
+		}
+	}
+
+	private Boolean hasPermission(String permissionValue, String actionValue, String resourceTypeValue) {
+		if (permissionValue.equals("RESOURCETYPE")) {
+			if (actionValue.equals("READ")) {
+				buffer(permissionValue, actionValue, resourceTypeValue, canEditResourceType);
+				return canEditResourceType.get(resourceTypeValue);
+			} else if (actionValue.equals("DELETE")) {
+				buffer(permissionValue, actionValue, resourceTypeValue, canDeleteResourceType);
+				return canDeleteResourceType.get(resourceTypeValue);
+			}
+		} else if (permissionValue.equals("RESOURCE")) {
+			if (actionValue.equals("READ")) {
+				buffer(permissionValue, actionValue, resourceTypeValue, canEditResource);
+				return canEditResource.get(resourceTypeValue);
+			} else if (actionValue.equals("DELETE")) {
+				buffer(permissionValue, actionValue, resourceTypeValue, canDeleteResource);
+				return canDeleteResource.get(resourceTypeValue);
 			}
 		}
-		return rolesWithoutRoleSelected;
+		return null;
 	}
 
-	public void setRolesWithoutRoleSelected(List<RoleEntity> rolesWithoutRoleSelected) {
-		this.rolesWithoutRoleSelected = rolesWithoutRoleSelected;
-	}
-
-	public String getDisplaySelectedPermission() {
-		return displaySelectedPermission;
-	}
-
-	public void setDisplaySelectedPermission(String displaySelectedPermission) {
-		this.displaySelectedPermission = displaySelectedPermission;
-	}
-
-	public Integer getSelectedRoleIdToAssignPermission() {
-		return selectedRoleIdToAssignPermission;
-	}
-
-	public void setSelectedRoleIdToAssignPermission(
-			Integer selectedRoleIdToAssignPermission) {
-		this.selectedRoleIdToAssignPermission = selectedRoleIdToAssignPermission;
-	}
-	
-	public boolean isPermissionDeployable(){
-		return controller.isPermissionDeployable(selectedDeployPermission);
-	}
-
-	public Integer getSelectedDeployPermission() {
-		return selectedDeployPermission;
-	}
-
-	public void setSelectedDeployPermission(Integer selectedDeployPermission) {
-		this.selectedDeployPermission = selectedDeployPermission;
-	}
-
-	public String getInfoPermission() {
-		return infoPermission;
-	}
-
-	public void setInfoPermission(String infoPermission) {
-		this.infoPermission = infoPermission;
-	}
-
-	public Integer getSelectedOldRole() {
-		return selectedOldRole;
-	}
-
-	public void setSelectedOldRole(Integer selectedOldRole) {
-		this.selectedOldRole = selectedOldRole;
-	}
-	
-	public List<PermissionToRole> getPermissionsAndRoles(){
-		if(selectedAgainRoleId != roleSelectedId){
-			allPermissionAndRole = controller.getAllPermissionsAndRoles(roleSelectedId);
-			selectedAgainRoleId=roleSelectedId;
-		}
-		return allPermissionAndRole;
-	}
-
-	public List<PermissionToRole> getAllPermissionAndRole() {
-		return allPermissionAndRole;
-	}
-
-	public void setAllPermissionAndRole(List<PermissionToRole> allPermissionAndRole) {
-		this.allPermissionAndRole = allPermissionAndRole;
-	}
-
-	public Integer getSelectedAgainRoleId() {
-		return selectedAgainRoleId;
-	}
-
-	public void setSelectedAgainRoleId(Integer selectedAgainRoleId) {
-		this.selectedAgainRoleId = selectedAgainRoleId;
-	}
 }

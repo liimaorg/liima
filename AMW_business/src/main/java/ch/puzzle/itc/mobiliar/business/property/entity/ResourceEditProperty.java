@@ -112,6 +112,7 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
     private String resourceName;
 
     @Getter
+    /** returns true if propertyValue isEncrypted == true AND has already been decrypted **/
     private boolean decrypted;
 
     @Getter

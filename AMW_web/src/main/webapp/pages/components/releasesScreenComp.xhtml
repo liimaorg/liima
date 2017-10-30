@@ -7,7 +7,7 @@
 	xmlns:rich="http://richfaces.org/rich">
 
 	<h:form id="releasesForm">
-		<h:panelGroup id="releases_panel" layout="block" rendered="#{securityDataProvider.hasPermission('VIEW_RELEASE')}">
+		<h:panelGroup id="releases_panel" layout="block" rendered="#{securityDataProvider.hasPermission('RELEASE','READ')}">
 		
 			<!-- Releases Table-->
 			<h:dataTable id="releasesTable" styleClass="well" var="release"
@@ -17,7 +17,7 @@
 					<nav class="actionbar">
 					<ul>
 						<li><a4j:commandLink styleClass="btn light"
-								rendered="#{securityDataProvider.hasPermission('CREATE_RELEASE')}"
+								rendered="#{securityDataProvider.hasPermission('RELEASE','CREATE')}"
 								action="#{releaseMgmtScreenService.createRelease()}"
 								oncomplete="#{rich:component('editReleasePopupPanel')}.show(); return false;"
 								render="editReleasePopupPanel">
@@ -68,7 +68,7 @@
 						<f:convertDateTime pattern="dd.MM.yyyy" timeZone="CET"/>
 					</h:outputText>
 				</h:column>
-				<h:column rendered="#{securityDataProvider.hasPermission('EDIT_RELEASE')}">
+				<h:column rendered="#{securityDataProvider.hasPermission('RELEASE','UPDATE')}">
 					<f:facet name="header">
 						<h:outputText value="Edit" />
 					</f:facet>
@@ -81,7 +81,7 @@
 					</a4j:commandLink>
 				</h:column>
 	
-				<h:column rendered="#{securityDataProvider.hasPermission('DELETE_RELEASE')}">
+				<h:column rendered="#{securityDataProvider.hasPermission('RELEASE','DELETE')}">
 					<f:facet name="header">
 						<h:outputText value="Delete" />
 					</f:facet>
@@ -109,7 +109,8 @@
 			movable="true" domElementAttachment="form">
 			<f:facet name="header">
 				<h2>
-					<h:outputText value="Edit release" />
+					<h:outputText value="Add release" rendered="#{releaseMgmtScreenService.currentRelease.id == null}" />
+					<h:outputText value="Edit release" rendered="#{releaseMgmtScreenService.currentRelease.id != null}" />
 				</h2>
 			</f:facet>
 			<f:facet name="controls">
@@ -133,8 +134,8 @@
 					<rich:calendar 
 					    buttonIcon="/AMW_web/images/calendarIcon.png"
 					    buttonDisabledIcon="/AMW_web/images/calendarIcon.png"
-					    enableManualInput="true" showApplyButton="true"
-						datePattern="dd.MM.yyyy"
+					    enableManualInput="true" showApplyButton="true" datePattern="dd.MM.yyyy"
+						required="true" requiredMessage="The installation date is mandatory"
 						value="#{releaseMgmtScreenService.currentRelease.installationInProductionAt}">
 					</rich:calendar>
 					<h:outputLabel value="Release description" />

@@ -20,15 +20,33 @@
 
 package ch.puzzle.itc.mobiliar.business.shakedown.control;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import ch.puzzle.itc.mobiliar.business.database.control.SequencesService;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
+import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.ApplicationsFromApplicationServer;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestOrder;
+import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent;
+import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent.ShakedownTestEventType;
+import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -43,47 +61,17 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
-import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Application;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ApplicationServer;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestOrder;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
-import ch.puzzle.itc.mobiliar.business.database.control.SequencesService;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.ApplicationsFromApplicationServer;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
-import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent;
-import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent.ShakedownTestEventType;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter.FilterType;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
+import static ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes.QLConstants.GROUP_QL;
+import static ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes.QLConstants.SHAKEDOWN_ENTITY_QL;
+import static ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes.QLConstants.SHAKEDOWN_TEST_QL_ALIAS;
 
 @Interceptors(HasPermissionInterceptor.class)
 @Stateless
 public class ShakedownTestService{
-
-	private static final String SHAKEDOWN_TEST_QL_ALIAS = "s";
-	private static final String SHAKEDOWN_ENTITY_QL = "ShakedownTestEntity";
-	private static final String GROUP_QL = SHAKEDOWN_TEST_QL_ALIAS + ".resourceGroup";
-	private static final String RELEASE_QL = SHAKEDOWN_TEST_QL_ALIAS + ".release";
-	private static final String ENV_QL = SHAKEDOWN_TEST_QL_ALIAS + ".context";
 
 	@Inject
 	ContextDomainService context;
@@ -117,41 +105,6 @@ public class ShakedownTestService{
 		return em.createNamedQuery(ResourceGroupEntity.ALLRESOURCESBYTYPE_QUERY, ResourceGroupEntity.class).setParameter("restype", DefaultResourceTypeDefinition.APPLICATION.name()).getResultList();
 	}
 
-
-	public enum ShakedownTestFilterTypes {
-		ID("Test Id", SHAKEDOWN_TEST_QL_ALIAS + ".id", FilterType.IntegerType),
-		TRACKING_ID("Test tracking Id", SHAKEDOWN_TEST_QL_ALIAS + ".trackingId", FilterType.IntegerType),
-		TEST_STATE("Test state", SHAKEDOWN_TEST_QL_ALIAS + ".shakedownTestState", FilterType.StringType),
-		APPSERVER_NAME("Application server", GROUP_QL + ".name", FilterType.StringType),
-		APPSERVER_RELEASE("Application server release", RELEASE_QL + ".installationInProductionAt", FilterType.LabeledDateType),
-		ENVIRONMENT_NAME("Environment", ENV_QL + ".name", FilterType.StringType),
-		APPLICATION_NAME("Application", SHAKEDOWN_TEST_QL_ALIAS + ".appsFromAppServer", FilterType.StringType),
-		TEST_DATE("Test date", SHAKEDOWN_TEST_QL_ALIAS + ".testDate", FilterType.DateType);
-
-		private String filterDisplayName;
-		private String filterTabColName;
-		private FilterType filterType;
-
-		ShakedownTestFilterTypes(String filterDisplayName, String filterTabColName, FilterType filterType) {
-			this.filterDisplayName = filterDisplayName;
-			this.filterTabColName = filterTabColName;
-			this.filterType = filterType;
-		}
-
-		public String getFilterDisplayName() {
-			return filterDisplayName;
-		}
-
-		public String getFilterTabColumnName() {
-			return filterTabColName;
-		}
-
-		public FilterType getFilterType() {
-			return filterType;
-		}
-	}
-
-	
 
 	public Tuple<Set<ShakedownTestEntity>, Integer> getFilteredShakedownTests(boolean doPageingCalculation, Integer startIndex, Integer maxResults,
 			List<CustomFilter> filter, String colToSort, CommonFilterService.SortingDirectionType sortingDirection, List<Integer> myAMWFilter) {
@@ -193,7 +146,7 @@ public class ShakedownTestService{
 		return "(" + GROUP_QL + ".id in (:" + CommonFilterService.MY_AMW + ")) ";
 	}
 
-	@HasPermission(permission = Permission.EXECUTE_SHAKE_TEST_ORDER)
+	@HasPermission(permission = Permission.SHAKEDOWNTEST, action = Action.CREATE)
 	public Integer createShakedownTestOrderReturnsTrackingId(List<ShakedownTestOrder> shakedownTestOrder) {
 		Integer orderTrackingId = null;
 		if (shakedownTestOrder != null) {
@@ -246,7 +199,7 @@ public class ShakedownTestService{
 		return orderTrackingId;
 	}
 
-	//TODO: move to DeploymentService
+	//TODO: move to DeploymentBoundary
 	private DeploymentEntity getLastSuccessDeploymentEntityForGroupReleaseAndContext(ResourceGroupEntity resourceGroup, ReleaseEntity releaseEntity, ContextEntity contextEntity) {	
 		Query query = em
 				.createQuery("from DeploymentEntity d where d.resourceGroup=:resourceGroup and d.context=:contextEntity and d.release=:releaseEntity and d.deploymentState is :successState order by d.deploymentDate desc");
@@ -263,7 +216,7 @@ public class ShakedownTestService{
 		return result.get(0);
 	}
 	
-	//TODO: move to DeploymentService
+	//TODO: move to DeploymentBoundary
 	private DeploymentEntity getLastSuccessDeploymentEntityForGroupAndContext(ResourceGroupEntity resourceGroup, ContextEntity contextEntity) {
 
 		TypedQuery<DeploymentEntity> query = em
@@ -415,9 +368,6 @@ public class ShakedownTestService{
 
 	/**
 	 * Updates the test execution time to "now"
-	 * 
-	 * @param deployment
-	 *             - the deployment entity to be updated
 	 */
 	private void setTestExecutedTime(final ShakedownTestEntity test) {
 		test.setTestDate(new Date());

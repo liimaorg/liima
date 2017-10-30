@@ -34,8 +34,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ch.puzzle.itc.mobiliar.business.function.boundary.FunctionsBoundary;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
@@ -72,7 +71,7 @@ public class EditFunctionView implements Serializable {
     FunctionsBoundary functionsBoundary;
 
     @Inject
-    Permissions permissionsBoundary;
+    PermissionBoundary permissionBoundary;
 
     @Getter
     private Integer resourceIdViewParam;
@@ -111,6 +110,9 @@ public class EditFunctionView implements Serializable {
         return resourceIdViewParam != null;
     }
 
+    public boolean isNewFunction() {
+        return amwFunction == null || amwFunction.getId() == null;
+    }
 
     public void setResourceIdViewParam(Integer resourceIdViewParam) {
         if (this.resourceIdViewParam == null && resourceIdViewParam != null) {
@@ -192,21 +194,16 @@ public class EditFunctionView implements Serializable {
     }
 
     public boolean isFunctionDefinitionEditable(){
-        return canModifyFunction() && FunctionAction.CREATE_NEW.equals(action);
+        return FunctionAction.CREATE_NEW.equals(action) && canModifyFunction();
     }
 
     /**
      * Defines if the current user has the rights to modify the function
      */
     public boolean canModifyFunction() {
-        if(permissionsBoundary.hasPermission(Permission.MANAGE_AMW_FUNCTIONS)) {
-            return true;
-        } else if(permissionsBoundary.hasPermission(Permission.MANAGE_AMW_APP_INSTANCE_FUNCTIONS) && isEditResource()){
-            return true;
-        }
-        return false;
+        return isNewFunction() ? permissionBoundary.canCreateFunctionOfResourceOrResourceType(resourceIdViewParam, resourceTypeIdViewParam)
+                :permissionBoundary.canUpdateFunctionOfResourceOrResourceType(resourceIdViewParam, resourceTypeIdViewParam);
     }
-
 
     private void refreshRevisionInformation(Integer funId){
         revisionInformations = Lists.reverse(functionsBoundary.getFunctionRevisions(funId));
@@ -255,18 +252,22 @@ public class EditFunctionView implements Serializable {
      * Save function
      */
     public void saveFunction() {
-        switch (action){
-            case CREATE_NEW:
-                createNewFunction();
-                break;
-            case EDIT:
-                editFunction();
-                break;
-            case OVERWRITE:
-                overwriteFunction();
-                break;
+        if (amwFunction.getName() != null && !amwFunction.getName().isEmpty() && !amwFunction.getName().trim().isEmpty()) {
+            switch (action) {
+                case CREATE_NEW:
+                    createNewFunction();
+                    break;
+                case EDIT:
+                    editFunction();
+                    break;
+                case OVERWRITE:
+                    overwriteFunction();
+                    break;
+            }
+            refreshRevisionInformation(amwFunction.getId());
+        } else {
+            GlobalMessageAppender.addErrorMessage("Function name must not be empty");
         }
-        refreshRevisionInformation(amwFunction.getId());
     }
 
 

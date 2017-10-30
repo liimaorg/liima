@@ -183,15 +183,15 @@ public abstract class AbstractResourceRelationEntity extends HasContexts<Resourc
 	}
 
 	public String buildIdentifer() {
-		String typeIdentifier = getResourceRelationType().getIdentifier();
+		String typeIdentifier = getResourceRelationType().getIdentifierOrTypeBName();
 
-		if (masterResource.getResourceType().isDefaultResourceType()) {
+		if (StringUtils.isNotBlank(getIdentifier()) && !StringUtils.isNumeric(getIdentifier())){
+			return getIdentifier();
+		} else if (masterResource.getResourceType().isDefaultResourceType()) {
 			// use localPortId if available
 			typeIdentifier = (slaveResource.getLocalPortId() != null) ? slaveResource.getLocalPortId() : slaveResource.getName();
 		}
-		else if(StringUtils.isNotBlank(getIdentifier()) && !StringUtils.isNumeric(getIdentifier())){
-			return getIdentifier();
-		}
+
 		if (StringUtils.isNotBlank(getIdentifier()) && StringUtils.isNumeric(getIdentifier())) {
 			typeIdentifier += "_" + getIdentifier();
 		}

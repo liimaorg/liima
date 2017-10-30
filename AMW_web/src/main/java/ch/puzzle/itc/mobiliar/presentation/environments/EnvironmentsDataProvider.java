@@ -24,8 +24,10 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.ContextDataProvider;
-import ch.puzzle.itc.mobiliar.presentation.security.SecurityDataProvider;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.Map;
@@ -35,8 +37,13 @@ import java.util.TreeMap;
 public class EnvironmentsDataProvider implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	@Getter
+	@Setter
 	private String newName;
+
+	@Getter
+	@Setter
 	private ContextEntity currentContext;
 	
 	@Inject
@@ -44,17 +51,21 @@ public class EnvironmentsDataProvider implements Serializable {
 
 	@Inject
 	private ContextDataProvider context;
-	
-	@Inject
-	private SecurityDataProvider roleDataProvider;
-
 
 	private Map<Integer, String> currentContextTypeNames;
 
+	public void loadContext() {
+		String ctxString = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ctx");
+		Integer contextId = ctxString == null ? null : Integer.valueOf(ctxString);
+		context.setContextId(contextId);
+		currentContext = controller.loadContextWithType(context.getContextId());
+	}
+
+
 	private String getCurrentContextTypeName() {
-		String contextTypeName = null;
+		String contextTypeName;
 		if (currentContextTypeNames == null) {
-			currentContextTypeNames = new TreeMap<Integer, String>();
+			currentContextTypeNames = new TreeMap<>();
 		}
 		if (!currentContextTypeNames.containsKey(context.getContextId())) {
 			currentContext = controller.loadContextWithType(context.getContextId());
@@ -63,24 +74,18 @@ public class EnvironmentsDataProvider implements Serializable {
 		} else {
 			contextTypeName = currentContextTypeNames.get(context.getContextId());
 		}
-
 		return contextTypeName;
-
-	}
-	
-	public ContextEntity getCurrentContext(){
-		return currentContext;
 	}
 
 	public boolean getIsEnv() {
 		ContextNames contextNames = ContextNames.valueOf(getCurrentContextTypeName());
-		return contextNames != null && contextNames.name().equals(ContextNames.ENV.name());
+		return contextNames.name().equals(ContextNames.ENV.name());
 	}
 
 	public String getNameOfChildContext() {
 		if (context.getContextDisplayName() != null) {
 			ContextNames c = ContextNames.valueOf(getCurrentContextTypeName());
-			if (c != null && c.getChildContext() != null) {
+			if (c.getChildContext() != null) {
 				return c.getChildContext().getDisplayName();
 			}
 		}
@@ -89,10 +94,7 @@ public class EnvironmentsDataProvider implements Serializable {
 
 	public String getContextTypeName() {
 		ContextNames contextNames = ContextNames.valueOf(getCurrentContextTypeName());
-		if (contextNames != null) {
-			return contextNames.name();
-		}
-		return "Context";
+		return contextNames.name();
 	}
 
 	public void save() {
@@ -102,15 +104,7 @@ public class EnvironmentsDataProvider implements Serializable {
 	}
 
 	public void createContext() {
-		Integer selectedRole = null;
-		//Wenn ein 
-		if(roleDataProvider.getRoleSelectedId() != null){
-			selectedRole = roleDataProvider.getRoleSelectedId();
-		} else {
-			selectedRole = 0;
-		}
-		
-		if (controller.doCreateContext(newName, context.getContextId(),selectedRole)) {
+		if (controller.doCreateContext(newName, context.getContextId())) {
 			context.loadContexts();
 		}
 		resetPopupFields();
@@ -133,17 +127,8 @@ public class EnvironmentsDataProvider implements Serializable {
 		context.setContextId(context.getGlobalContextId());
 	}
 
-	public String getNewName() {
-		return newName;
-	}
-
-	public void setNewName(String newName) {
-		this.newName = newName;
-	}
-
 	private void resetPopupFields(){
 		newName = null;
 	}
-
 
 }

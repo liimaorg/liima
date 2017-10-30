@@ -32,7 +32,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
@@ -43,7 +44,6 @@ import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -61,7 +61,7 @@ public class EditResourceView implements Serializable {
     ResourceLocator resourceLocator;
 
     @Inject
-    Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
     @Inject
     Event<ResourceTypeEntity> resourceTypeEvent;
@@ -110,9 +110,6 @@ public class EditResourceView implements Serializable {
     private Integer contextIdViewParam;
 
     @Getter
-    private boolean canRenameResource = false;
-
-    @Getter
     private boolean canEditSoftlinkId = false;
 
     @Getter
@@ -120,12 +117,6 @@ public class EditResourceView implements Serializable {
 
     @Getter
     private boolean canShowDeploymentLink;
-
-    @PostConstruct
-    public void init() {
-        this.canEditResourceType = permissionBoundary.hasPermission(Permission.EDIT_RES_TYPE);
-        this.canGenerateTestConfiguration = permissionBoundary.hasPermission(Permission.TEST_GENERATION);
-    }
 
     public void setContextIdViewParam(Integer contextIdViewParam) {
         this.contextIdViewParam = contextIdViewParam;
@@ -158,7 +149,7 @@ public class EditResourceView implements Serializable {
      * To be called by JSF (by viewParameter)
      */
     public void setResourceIdFromParam(Integer resourceIdFromParam) {
-        permissionBoundary.checkPermissionAndFireException(Permission.EDIT_RES, "edit resources");
+        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "edit resources");
         this.resourceIdFromParam = resourceIdFromParam;
         if (resource == null || !resource.getId().equals(resourceIdFromParam)) {
             resource = resourceLocator.getResourceWithGroupAndRelatedResources(resourceIdFromParam);
@@ -169,8 +160,10 @@ public class EditResourceView implements Serializable {
             }
             resourceType = null;
 
-            canRenameResource = isResourceNameEditable(resource);
-            canEditSoftlinkId = isSoftlinkEditable(resource);
+            this.canEditResourceType = permissionBoundary.hasPermission(Permission.RESOURCETYPE, Action.READ);
+            this.canGenerateTestConfiguration = permissionBoundary.hasPermission(Permission.RESOURCE_TEST_GENERATION, sessionContext.getCurrentContext(), Action.READ, resource, null);
+
+            canEditSoftlinkId = isSoftlinkEditable(resource, sessionContext.getCurrentContext());
             canShowSoftlinkField = sessionContext.getIsGlobal() && hasProvidableSoftlinkSuperType(resource);
             canShowDeploymentLink = isResourceOrTypeDeployable(resource.getResourceType());
 
@@ -184,15 +177,17 @@ public class EditResourceView implements Serializable {
      * @param resourceTypeIdFromParam
      */
     public void setResourceTypeIdFromParam(Integer resourceTypeIdFromParam) {
-        permissionBoundary.checkPermissionAndFireException(Permission.EDIT_RES_TYPE,
-                "edit resource types");
+        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, Action.READ, "edit resource types");
         this.resourceTypeIdFromParam = resourceTypeIdFromParam;
         // Only execute if resource has not been set...
         if (resourceType == null || !resourceType.getId().equals(resourceTypeIdFromParam)) {
             resource = null;
             resourceType = resourceTypeLocator.getResourceType(resourceTypeIdFromParam);
 
-            canRenameResource = permissionBoundary.hasPermissionToRenameResourceType(resourceType);
+            // this just disables "Go to > Resource type" in dropdown
+            this.canEditResourceType = false;
+            this.canGenerateTestConfiguration = false;
+
             canEditSoftlinkId = false;
             canShowSoftlinkField = false;
             canShowDeploymentLink = isResourceOrTypeDeployable(resourceType);
@@ -276,14 +271,14 @@ public class EditResourceView implements Serializable {
     }
 
     public boolean canSaveChanges() {
-        boolean canSaveChanges = permissionBoundary.hasPermission(Permission.SAVE_ALL_CHANGES)
-                || permissionBoundary.hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME);
+        // Resource (instance)
         if (isEditResource()) {
-            return canSaveChanges || permissionBoundary
-                    .hasPermissionToEditPropertiesOfResource(getResourceType().getId())
-                    || permissionBoundary.hasPermissionToRenameResource(this.resource);
+           return permissionBoundary.hasPermission(Permission.RESOURCE, sessionContext.getCurrentContext(),
+                    Action.UPDATE, resource, getResourceType());
         }
-        return canSaveChanges;
+        // ResourceType
+        return permissionBoundary.hasPermission(Permission.RESOURCETYPE, sessionContext.getCurrentContext(),
+                    Action.UPDATE, null, getResourceType());
     }
 
     /**
@@ -302,11 +297,15 @@ public class EditResourceView implements Serializable {
 
     public boolean hasAddPropertyPermission() {
         if (isEditResource()) {
-            return permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam,
-                    isTesting());
+            if (contextIdViewParam == null) {
+                return permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceIdFromParam, isTesting(), sessionContext.getCurrentContext().getId());
+            }
+            return permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceIdFromParam, isTesting(), contextIdViewParam);
         } else {
-            return permissionBoundary.hasPermissionToEditPropertiesByResource(resourceTypeIdFromParam,
-                    isTesting());
+            if (contextIdViewParam == null) {
+                return permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeIdFromParam, sessionContext.getCurrentContext().getId(), isTesting());
+            }
+            return permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeIdFromParam, contextIdViewParam, isTesting());
         }
     }
 
@@ -326,15 +325,10 @@ public class EditResourceView implements Serializable {
         return sessionContext.getIsGlobal();
     }
 
-    private boolean isResourceNameEditable(ResourceEntity resourceEntity) {
-        return foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), resourceEntity)
-                && permissionBoundary.hasPermissionToRenameResource(resourceEntity);
-    }
-
-    private boolean isSoftlinkEditable(ResourceEntity resourceEntity) {
+    private boolean isSoftlinkEditable(ResourceEntity resourceEntity, ContextEntity context) {
         return isEditResource() && (foreignableBoundary
                 .isModifiableByOwner(ForeignableOwner.getSystemOwner(), resourceEntity)
-                && permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF));
+                && permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity, null));
     }
 
     private boolean isResourceOrTypeDeployable(ResourceTypeEntity resourceTypeEntity) {
@@ -376,11 +370,7 @@ public class EditResourceView implements Serializable {
         if (isEditResource() && resource.getResourceType().isApplicationServerResourceType()) {
             return true;
         }
-        if (getRelativeApplicationServerId() != null) {
-            return true;
-        }
-
-        return false;
+        return getRelativeApplicationServerId() != null;
     }
 
     public String getApplicationName() {

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -40,6 +41,7 @@ import javax.persistence.EntityManager;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
@@ -48,9 +50,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupReposi
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
@@ -76,10 +76,13 @@ public class CopyResource {
 	private CopyResourceDomainService copyResourceDomainService;
 
 	@Inject
+	private ReleaseLocator releaseLocator;
+
+	@Inject
 	private EntityManager entityManager;
 
 	@Inject
-	private Permissions permissionBoundry;
+	private PermissionBoundary permissionBoundary;
 
 	@Inject
 	CommonDomainService commonDomainService;
@@ -109,30 +112,70 @@ public class CopyResource {
 	 * @throws ResourceNotFoundException
 	 */
 	public CopyResourceResult doCopyResource(Integer targetResourceId, Integer originResourceId, ForeignableOwner actingOwner)
-            throws ResourceNotFoundException, ForeignableOwnerViolationException, AMWException {
+            throws ForeignableOwnerViolationException, AMWException {
 		// Load resources
 		ResourceEntity targetResource = commonDomainService.getResourceEntityById(targetResourceId);
 		ResourceEntity originResource = commonDomainService.getResourceEntityById(originResourceId);
 
-		if(!permissionBoundry.canCopyFromResource(originResource)){
+		if (!originResource.getResourceType().equals(targetResource.getResourceType())) {
+			throw new AMWException("Target and origin Resource are not of the same ResourceType");
+		}
+
+		if(!permissionBoundary.canCopyFromSpecificResource(originResource, originResource.getResourceGroup())){
 			throw new NotAuthorizedException("Permission Denied");
 		}
 
 		return copyResourceDomainService.copyFromOriginToTargetResource(originResource, targetResource, actingOwner);
 	}
 
-	public CopyResourceResult doCreateResourceRelease(ResourceGroupEntity resourceGroup,
-			ReleaseEntity targetRelease, ReleaseEntity originRelease, ForeignableOwner actingOwner) throws ResourceNotFoundException,
-            AMWException, ForeignableOwnerViolationException {
-		resourceGroup = entityManager.find(ResourceGroupEntity.class, resourceGroup.getId());
+	/**
+	 * Creates a new Release of an existing Resource
+	 *
+	 * @param resourceGroupName name of the existing ResourceGroup
+	 * @param targetReleaseName name of the new Release
+	 * @param originReleaseName name of the current Release
+	 * @param actingOwner the acting ForeignableOwner
+	 * @return
+	 * @throws ForeignableOwnerViolationException
+	 * @throws AMWException
+	 */
+	public CopyResourceResult doCreateResourceRelease(String resourceGroupName, String targetReleaseName,
+		  String originReleaseName, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
+		ReleaseEntity targetRelease;
+		ReleaseEntity originRelease;
+		ResourceGroupEntity resourceGroup = resourceGroupRepository.getResourceGroupByName(resourceGroupName);
+		if (resourceGroup == null) {
+			throw new ResourceNotFoundException("No ResourceGroup with name " +resourceGroupName + " found");
+		}
+		try {
+			targetRelease = releaseLocator.getReleaseByName(targetReleaseName);
+		} catch (EJBException e) {
+			throw new ResourceNotFoundException("Target release '" + targetReleaseName + "' found");
+		}
+		try {
+			originRelease = releaseLocator.getReleaseByName(originReleaseName);
+		} catch (EJBException e) {
+			throw new ResourceNotFoundException("Origin release '" + originReleaseName + "' found");
+		}
+		return doCreateResourceRelease(resourceGroup, targetRelease, originRelease, actingOwner);
+	}
+
+	public CopyResourceResult doCreateResourceRelease(ResourceGroupEntity targetResourceGroup,
+			ReleaseEntity targetRelease, ReleaseEntity originRelease, ForeignableOwner actingOwner) throws AMWException,
+			ForeignableOwnerViolationException {
+		targetResourceGroup = entityManager.find(ResourceGroupEntity.class, targetResourceGroup.getId());
 		// Do not overwrite existing release
-		if (resourceGroup.getReleases() != null && resourceGroup.getReleases().contains(targetRelease)) {
+		if (targetResourceGroup.getReleases() != null && targetResourceGroup.getReleases().contains(targetRelease)) {
 			throw new AMWException("Release " + targetRelease.getName() + " already exists");
 		}
+		// Can not copy from inexisting release
+		if (targetResourceGroup.getReleases() != null && !targetResourceGroup.getReleases().contains(originRelease)) {
+			throw new AMWException("Release " + originRelease.getName() + " must exist");
+		}
 
-		ResourceEntity originResource = commonDomainService.getResourceEntityByGroupAndRelease(resourceGroup.getId(),
+		ResourceEntity originResource = commonDomainService.getResourceEntityByGroupAndRelease(targetResourceGroup.getId(),
 					originRelease.getId());
-		if(!permissionBoundry.canCopyFromResource(originResource)){
+		if(!permissionBoundary.canCopyFromSpecificResource(originResource, targetResourceGroup)){
 			throw new NotAuthorizedException("Permission Denied");
 		}
 		return copyResourceDomainService.createReleaseFromOriginResource(originResource, targetRelease, actingOwner);

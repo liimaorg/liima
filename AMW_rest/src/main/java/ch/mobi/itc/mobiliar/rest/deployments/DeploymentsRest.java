@@ -25,15 +25,18 @@ import ch.mobi.itc.mobiliar.rest.dtos.DeploymentDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentParameterDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentRequestDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService.DeploymentFilterTypes;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
+import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.EnvironmentsScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorDomainServiceWithAppServerRelations;
@@ -44,10 +47,11 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersis
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter.ComperatorFilterOption;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import com.wordnik.swagger.annotations.Api;
@@ -63,6 +67,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.ValidationException;
 import java.util.*;
 
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
+
 //for transactions
 @Stateless
 @Path("/deployments")
@@ -70,7 +76,7 @@ import java.util.*;
 public class DeploymentsRest {
 
     @Inject
-    private DeploymentService deploymentService;
+    private DeploymentBoundary deploymentBoundary;
     @Inject
     private EnvironmentsScreenDomainService environmentsService;
     @Inject
@@ -82,9 +88,13 @@ public class DeploymentsRest {
     @Inject
     private ResourceTypeProvider resourceTypeProvider;
     @Inject
-    GeneratorDomainServiceWithAppServerRelations generatorDomainServiceWithAppServerRelations;
+    private GeneratorDomainServiceWithAppServerRelations generatorDomainServiceWithAppServerRelations;
     @Inject
     private KeyRepository keyRepository;
+    @Inject
+    private PermissionBoundary permissionBoundary;
+    @Inject
+    private ContextLocator contextLocator;
 
     /**
      * Query for deployments. All parameters are optional.
@@ -112,60 +122,48 @@ public class DeploymentsRest {
         LinkedList<CustomFilter> filters = new LinkedList<>();
 
         if (trackingId != null) {
-            filters.add(createFilter(DeploymentFilterTypes.TRACKING_ID, trackingId.toString(), ComperatorFilterOption.equals));
+            CustomFilter trackingIdFilter = CustomFilter.builder(TRACKING_ID).build();
+            trackingIdFilter.setValue(trackingId.toString());
+            filters.add(trackingIdFilter);
         }
         if (deploymentState != null) {
-            filters.add(createFilter(DeploymentFilterTypes.DEPLOYMENT_STATE, deploymentState, ComperatorFilterOption.equals));
-        }
-        if (appServerNames != null) {
-            for (String asName : appServerNames) {
-                filters.add(createFilter(DeploymentFilterTypes.APPSERVER_NAME, asName, ComperatorFilterOption.equals));
-            }
-        }
-        if (appNames != null) {
-            for (String appName : appNames) {
-                filters.add(createFilter(DeploymentFilterTypes.APPLICATION_NAME, appName, ComperatorFilterOption.equals));
-            }
-        }
-        if (runtimeNames != null) {
-            for (String runtimeName : runtimeNames) {
-                filters.add(createFilter(DeploymentFilterTypes.TARGETPLATFORM, runtimeName, ComperatorFilterOption.equals));
-            }
+            CustomFilter deploymentStateFilter = CustomFilter.builder(DEPLOYMENT_STATE).enumType(DeploymentState.class).build();
+            deploymentStateFilter.setValue(deploymentState.name());
+            filters.add(deploymentStateFilter);
         }
         if (fromDate != null) {
-            CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_DATE, ComperatorFilterOption.greaterequals);
-            filter.setDateValue(new Date(fromDate));
-            filters.add(filter);
+            CustomFilter deploymentDateFromFilter = CustomFilter.builder(DEPLOYMENT_DATE).comparatorSelection(ComparatorFilterOption.greaterequals).build();
+            deploymentDateFromFilter.setDateValue(new Date(fromDate));
+            filters.add(deploymentDateFromFilter);
         }
         if (toDate != null) {
-            CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_DATE, ComperatorFilterOption.smallerequals);
-            filter.setDateValue(new Date(toDate));
-            filters.add(filter);
-        }
-        if (environmentNames != null) {
-            for (String envName : environmentNames) {
-                filters.add(createFilter(DeploymentFilterTypes.ENVIRONMENT_NAME, envName, ComperatorFilterOption.equals));
-            }
-        }
-        if (deploymentParameters != null) {
-            for (String deploymentParameter : deploymentParameters) {
-                CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_PARAMETER, deploymentParameter, ComperatorFilterOption.equals);
-                filter.setJoiningTableQuery("join d.deploymentParameters p");
-                filters.add(filter);
-            }
-        }
-        if (deploymentParameterValues != null) {
-            for (String deploymentParameterValue : deploymentParameterValues) {
-                CustomFilter filter = createFilter(DeploymentFilterTypes.DEPLOYMENT_PARAMETER_VALUE, deploymentParameterValue, ComperatorFilterOption.equals);
-                filter.setJoiningTableQuery("join d.deploymentParameters p");
-                filters.add(filter);
-            }
+            CustomFilter deploymentDateFilter = CustomFilter.builder(DEPLOYMENT_DATE).comparatorSelection(ComparatorFilterOption.smallerequals).build();
+            deploymentDateFilter.setDateValue(new Date(toDate));
+            filters.add(deploymentDateFilter);
         }
         if (onlyLatest) {
-            filters.add(createFilter(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV, null));
+            filters.add(CustomFilter.builder(LASTDEPLOYJOBFORASENV).comparatorSelection(null).build());
+        }
+        if (appServerNames != null) {
+            createFiltersAndAddToList(APPSERVER_NAME, appServerNames, filters);
+        }
+        if (appNames != null) {
+            createFiltersAndAddToList(APPLICATION_NAME, appNames, filters);
+        }
+        if (runtimeNames != null) {
+            createFiltersAndAddToList(TARGETPLATFORM, runtimeNames, filters);
+        }
+        if (environmentNames != null) {
+            createFiltersAndAddToList(ENVIRONMENT_NAME, environmentNames, filters);
+        }
+        if (deploymentParameters != null) {
+            createFiltersAndAddToList(DEPLOYMENT_PARAMETER, deploymentParameters, filters);
+        }
+        if (deploymentParameterValues != null) {
+            createFiltersAndAddToList(DEPLOYMENT_PARAMETER, deploymentParameterValues, filters);
         }
 
-        Tuple<Set<DeploymentEntity>, Integer> result = deploymentService.getFilteredDeployments(true, offset, maxResults, filters, null, null, null);
+        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, offset, maxResults, filters, null, null, null);
 
         List<DeploymentDTO> deploymentDtos = new ArrayList<>();
 
@@ -174,6 +172,14 @@ public class DeploymentsRest {
         }
 
         return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDtos).build();
+    }
+
+    private void createFiltersAndAddToList(DeploymentFilterTypes deploymentFilterType, List<String> values, LinkedList<CustomFilter> filters) {
+        for (String value : values) {
+            CustomFilter deploymentParameterValueFilter = CustomFilter.builder(deploymentFilterType).build();
+            deploymentParameterValueFilter.setValue(value);
+            filters.add(deploymentParameterValueFilter);
+        }
     }
 
     /**
@@ -192,12 +198,23 @@ public class DeploymentsRest {
         DeploymentEntity result;
 
         try {
-            result = deploymentService.getDeploymentById(id);
+            result = deploymentBoundary.getDeploymentById(id);
         } catch (RuntimeException e) {
             return catchNoResultException(e, "Deployment with id " + id + " not found.");
         }
 
         return Response.status(Status.OK).entity(new DeploymentDTO(result)).build();
+    }
+
+    @GET
+    @Path("/deploymentParameterKeys/")
+    @ApiOperation(value = "returns the keys of all available DeploymentParameter")
+    public Response getAllDeploymentParameterKeys() {
+        List<DeploymentParameterDTO> deploymentParameters = new ArrayList<>();
+        for (Key key : keyRepository.findAll()) {
+            deploymentParameters.add(new DeploymentParameterDTO(key.getName(), null));
+        }
+        return Response.status(Status.OK).entity(deploymentParameters).build();
     }
 
     /**
@@ -207,7 +224,7 @@ public class DeploymentsRest {
      * @return the new DeploymentDTO
      **/
     @POST
-    @ApiOperation(value = "adds a DeplyomentRequest")
+    @ApiOperation(value = "adds a DeploymentRequest")
     public Response addDeployment(@ApiParam("Deployment Request") DeploymentRequestDTO request) {
         Integer trackingId;
         ResourceEntity appServer;
@@ -235,10 +252,9 @@ public class DeploymentsRest {
         }
 
         // get the id of the ApplicationServer
-
         group = resourceGroupService.loadUniqueGroupByNameAndType(request.getAppServerName(), resourceTypeProvider
-                .getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER)
-                .getId());
+                .getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER).getId());
+
         if (group == null) {
             return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto("ApplicationServer with name " + request.getAppServerName() + " not found."))
                     .build();
@@ -251,10 +267,12 @@ public class DeploymentsRest {
         }
 
         // get the id of the Environment
-        try {
-            environement = environmentsService.getContextByName(request.getEnvironmentName());
-        } catch (RuntimeException e) {
-            return catchNoResultException(e, "Environement " + request.getEnvironmentName() + " not found.");
+        if (request.getEnvironmentName() != null) {
+            try {
+                environement = environmentsService.getContextByName(request.getEnvironmentName());
+            } catch (RuntimeException e) {
+                return catchNoResultException(e, "Environement " + request.getEnvironmentName() + " not found.");
+            }
         }
 
         // get the apps of the appServer
@@ -281,23 +299,34 @@ public class DeploymentsRest {
         }
 
         // check whether the AS has at least one node with hostname to deploy to
-        boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environement, request.getStateToDeploy());
-        if (!hasNode) {
+        if (environement != null) {
+            boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environement, request.getStateToDeploy());
+            if (!hasNode) {
+                return Response.status(Status.BAD_REQUEST)
+                        .entity(new ExceptionDto("No active Node found on Environement " + request.getEnvironmentName()))
+                        .build();
+            }
+            contexts.add(environement.getId());
+        } else if (request.getContextIds() != null && !request.getContextIds().isEmpty()) {
+            contexts.addAll(request.getContextIds());
+        }
+
+        if (contexts.isEmpty()) {
             return Response.status(Status.BAD_REQUEST)
-                    .entity(new ExceptionDto("No active Node found on Environement " + request.getEnvironmentName()))
+                    .entity(new ExceptionDto("No ContextIds"))
                     .build();
         }
 
-
-        contexts.add(environement.getId());
-        trackingId = deploymentService.createDeploymentReturnTrackingId(group.getId(), release.getId(), request.getDeploymentDate(),
+        trackingId = deploymentBoundary.createDeploymentReturnTrackingId(group.getId(), release.getId(), request.getDeploymentDate(),
                 request.getStateToDeploy(), contexts,
                 applicationsWithVersion, deployParams, request.getSendEmail(), request.getRequestOnly(), request.getSimulate(), request.getExecuteShakedownTest(),
                 request.getNeighbourhoodTest());
 
         // get the deployment from the tracking id
-        filters.add(createFilter(DeploymentFilterTypes.TRACKING_ID, trackingId.toString(), ComperatorFilterOption.equals));
-        Tuple<Set<DeploymentEntity>, Integer> result = deploymentService.getFilteredDeployments(true, 0, 1, filters, null, null, null);
+        CustomFilter trackingIdFilter = CustomFilter.builder(TRACKING_ID).build();
+        trackingIdFilter.setValue(trackingId.toString());
+        filters.add(trackingIdFilter);
+        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 1, filters, null, null, null);
 
         DeploymentDTO deploymentDto = new DeploymentDTO(result.getA().iterator().next());
 
@@ -306,12 +335,12 @@ public class DeploymentsRest {
 
     private ArrayList<DeploymentParameter> convertToDeploymentParameter(List<DeploymentParameterDTO> deploymentParameters) {
         ArrayList<DeploymentParameter> parameters = new ArrayList<>();
-        if (deploymentParameters == null) {
-            return parameters;
-        }
-        for (DeploymentParameterDTO deploymentParameterDto : deploymentParameters) {
-            String key = deploymentParameterDto.getKey().trim();
-            parameters.add(new DeploymentParameter(key, deploymentParameterDto.getValue()));
+
+        if (deploymentParameters != null) {
+            for (DeploymentParameterDTO deploymentParameterDto : deploymentParameters) {
+                String key = deploymentParameterDto.getKey().trim();
+            	parameters.add(new DeploymentParameter(key, deploymentParameterDto.getValue()));
+            }
         }
 
         return parameters;
@@ -330,7 +359,7 @@ public class DeploymentsRest {
         }
 
         try {
-            deploymentService.updateDeploymentState(deploymentId, newState);
+            deploymentBoundary.updateDeploymentState(deploymentId, newState);
         } catch (RuntimeException e) {
             return catchDeploymentStateException(e);
         }
@@ -354,7 +383,7 @@ public class DeploymentsRest {
         }
 
         try {
-            deploymentService.updateNodeJobStatus(deploymentId, nodeJobId, status);
+            deploymentBoundary.updateNodeJobStatus(deploymentId, nodeJobId, status);
         } catch (NotFoundExcption e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ExceptionDto(e)).build();
         } catch (RuntimeException e) {
@@ -362,6 +391,47 @@ public class DeploymentsRest {
         }
         return Response.status(Response.Status.OK).build();
 
+    }
+
+    @GET
+    @Path("/canDeploy/{resourceGroupId}")
+    @ApiOperation(value = "Checks if caller is allowed to deploy a given ResourceGroup on the specified Environment(s)  - used by Angular")
+    public Response canDeploy(@PathParam("resourceGroupId") Integer resourceGroupId,
+                              @QueryParam("contextId") Set<Integer> contextIds) {
+        ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
+        if (resourceGroup == null) {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        boolean hasPermission = false;
+        for (Integer contextId : contextIds) {
+            ContextEntity context = contextLocator.getContextById(contextId);
+            hasPermission = permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.CREATE, context, resourceGroup)
+                    && permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.UPDATE, context, resourceGroup);
+            if (!hasPermission) {
+                return Response.ok(hasPermission).build();
+            }
+        }
+        return Response.ok(hasPermission).build();
+    }
+
+    @GET
+    @Path("/canRequestDeployment/{resourceGroupId}")
+    @ApiOperation(value = "Checks if caller is allowed to request a deployment a given ResourceGroup on the specified Environment(s)  - used by Angular")
+    public Response canRequestDeployment(@PathParam("resourceGroupId") Integer resourceGroupId,
+                              @QueryParam("contextId") Set<Integer> contextIds) {
+        ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
+        if (resourceGroup == null) {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        boolean hasPermission = false;
+        for (Integer contextId : contextIds) {
+            ContextEntity context = contextLocator.getContextById(contextId);
+            hasPermission = permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.CREATE, context, resourceGroup);
+            if (!hasPermission) {
+                return Response.ok(hasPermission).build();
+            }
+        }
+        return Response.ok(hasPermission).build();
     }
 
     /**
@@ -382,10 +452,13 @@ public class DeploymentsRest {
             for (ResourceEntity app : apps) {
                 // if the name matches, convert the app
                 if (requestedApp.getApplicationName().equals(app.getName())) {
+                    //for backwards compatibility: use MavenVersion as Version
+                    String appVersion = (requestedApp.getVersion() != null && !requestedApp.getVersion().isEmpty())
+                            ? requestedApp.getVersion() : requestedApp.getVersion();
                     //convert
                     result.add(
                             new ApplicationWithVersion(
-                                    requestedApp.getApplicationName(), app.getId(), requestedApp.getVersion()));
+                                    requestedApp.getApplicationName(), app.getId(), appVersion));
                     //scratch off
                     requestedAppsCopy.remove(requestedApp);
                     appsCopy.remove(app);
@@ -418,28 +491,6 @@ public class DeploymentsRest {
         }
 
         return result;
-    }
-
-    private CustomFilter createFilter(DeploymentFilterTypes filterType, ComperatorFilterOption comperator) {
-        CustomFilter filter = new CustomFilter(filterType.getFilterDisplayName(), filterType.getFilterTabColumnName(), filterType.getFilterType());
-        filter.setComperatorSelection(comperator);
-
-        return filter;
-    }
-
-    CustomFilter createFilter(DeploymentFilterTypes filterType, String value, ComperatorFilterOption comperator) {
-        CustomFilter filter = createFilter(filterType, comperator);
-        filter.setValue(value);
-
-        return filter;
-    }
-
-    private CustomFilter createFilter(DeploymentFilterTypes filterType, DeploymentState value, ComperatorFilterOption comperator) {
-        CustomFilter filter = createFilter(filterType, comperator);
-        filter.setEnumType(DeploymentState.class);
-        filter.setValue(value.name());
-
-        return filter;
     }
 
     private Response catchNoResultException(RuntimeException e, String message) {

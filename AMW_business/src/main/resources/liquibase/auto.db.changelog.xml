@@ -70,4 +70,72 @@
 
     <include file="changesets/model/remove_appserverrelations/remove_appserver_relations.xml" relativeToChangelogFile="true"/>
 
+    <!--1.13.0-->
+    <include file="changesets/model/newPermissions/newPermissions_restrictionEntity.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/newPermissions/newPermissions_addDeploymentPermission.xml" relativeToChangelogFile="true"/>
+
+    <include file="changesets/data/newPermissions_migration.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/newPermissions/newPermissions_dropColumns.xml" relativeToChangelogFile="true"/>
+
+    <include file="changesets/model/newPermissions/newPermissions_extendRestrictionEntity.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationCopyFromResource.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfPermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfResourcePermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfDefaultResourcePermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfResourceTypePermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfTemplatePermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_migrationOfAMWFunctionPermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/newPermissions/newPermissions_userRestrictionEntity.xml" relativeToChangelogFile="true"/>
+
+    <include file="changesets/data/permissionMerge/add_app_to_app_server.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/delete_app_to_app_server.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/add_as_provided_resource.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/add_related_resource.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/add_related_resourcetype.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/add_shakedown_test.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/execute_shake_test.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/app_list_added_appserver.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/delete_cons_or_provided_relation.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/delete_every_related_resource.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/delete_node_relation.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/add_every_related_resource.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/change_resource_release.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/consumed_or_provided_res_list.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/edit_properties_comment_popup.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/edit_prop_list_of_inst_app.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/save_property.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/prop_list.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/rel_restype_panel_list.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/remove_related_resourcetype.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/reset_prop.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/test_neighbourhood_checkbox.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/tag_current_state.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/add_node_relation.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/exclude_app_from_node.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/rename_instance_default_resource.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/edit_res_or_restype_name.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/set_softlink_id_or_ref.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/select_runtime.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/export_csv_deployments.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/test_generation.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/decrypt_properties.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/add_as_consumed_resource.xml" relativeToChangelogFile="true"/>
+
+    <include file="changesets/data/newPermissions_migrationOfRemainingPermissions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/remove_duplicate_restrictions.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/correct_role_server_admin.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/correct_role_shakedown_admin.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/correct_role_viewer.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/correct_remaining_roles.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/correct_role_config_admin.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/correct_test_generation_result.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/permissionMerge/correct_resource_release_copy_from_resource.xml" relativeToChangelogFile="true"/>
+
+    <!--1.13.1-->
+    <include file="changesets/data/permissionMerge/correct_resource_release_copy_from_resource_update.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/newPermissions_cleanup.xml" relativeToChangelogFile="true"/>
+
+    <!--1.15.0-->
+    <include file="changesets/model/deploymentFailureReason/extendDeploymentEntity.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

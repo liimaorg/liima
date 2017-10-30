@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
+import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -46,8 +47,12 @@ public class ContextDataProvider implements Serializable {
 
     @Inject
     private ContextDomainService domainService;
+
     @Inject
     private CommonDomainService commonService;
+
+    @Inject
+    ContextLocator contextLocator;
 
     /**
      * Initial so soll der Globale Context selektiert werden!
@@ -56,15 +61,10 @@ public class ContextDataProvider implements Serializable {
     private Integer contextId;
     private List<ContextEntity> contexts = null;
     private Integer globalContextId;
-    private ContextChangeHandler handler;
     private List<ResourceGroupEntity> targetPlatforms;
 
     public String getUUID(){
         return UUID.randomUUID().toString();
-    }
-
-    public static interface ContextChangeHandler{
-        void onContextChanged();
     }
 
     public Integer getGlobalContextId() {
@@ -85,13 +85,6 @@ public class ContextDataProvider implements Serializable {
         globalContextId = c.getId();
         loadContexts();
         loadTargetPlatforms();
-    }
-
-    public void init(ContextChangeHandler handler){
-        this.handler = handler;
-        Integer paramContextId = RequestParameter.getContextRequestParameter();
-
-        setContextId(paramContextId);
     }
 
     public List<ContextEntity> getEnvironments(){
@@ -153,9 +146,6 @@ public class ContextDataProvider implements Serializable {
             this.contextId = contextId;
             ContextEntity current = getCurrentContext();
             this.contextDisplayName = current.getName();
-            if (handler != null) {
-                handler.onContextChanged();
-            }
         }
 
     }
@@ -169,7 +159,7 @@ public class ContextDataProvider implements Serializable {
     }
 
     public void loadContexts() {
-        contexts = Collections.unmodifiableList(domainService.getEnvironments());
+        contexts = Collections.unmodifiableList(contextLocator.getAllEnvironments());
     }
 
     public void loadTargetPlatforms() {

@@ -32,7 +32,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -56,7 +56,7 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 	ReleaseMgmtService releaseMgmtService;
 
 	@Inject
-	DeploymentService deploymentService;
+    DeploymentBoundary deploymentBoundary;
 
 	private List<ReleaseEntity> releases = new ArrayList<ReleaseEntity>();
 
@@ -116,11 +116,6 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 	private SortedMap<ResourceTypeEntity, SortedSet<ResourceEntity>> resourcesForCurrentRelease;
 	private List<DeploymentEntity> deploymentsForCurrentRelease;
 
-	/**
-	 * Remove the release
-	 * 
-	 * @param id
-	 */
 	public void remove(){
 		if (releaseMgmtService.delete(currentRelease.getId().intValue())) {
 			GlobalMessageAppender.addSuccessMessage("Release " + currentRelease.getName()
@@ -155,14 +150,14 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 
 	public void loadResourcesAndDeploymentsForRelease(Integer releaseId) {
 		List<ResourceEntity> result = releaseMgmtService.getResourcesForRelease(releaseId);
-		resourcesForCurrentRelease = new TreeMap<ResourceTypeEntity, SortedSet<ResourceEntity>>();
+		resourcesForCurrentRelease = new TreeMap();
 		for (ResourceEntity r : result) {
 			if (!resourcesForCurrentRelease.containsKey(r.getResourceType())) {
 				resourcesForCurrentRelease.put(r.getResourceType(), new TreeSet<ResourceEntity>());
 			}
 			resourcesForCurrentRelease.get(r.getResourceType()).add(r);
 		}
-		deploymentsForCurrentRelease = deploymentService
+		deploymentsForCurrentRelease = deploymentBoundary
 				.getDeploymentsForRelease(releaseId);
 	}
 
@@ -179,7 +174,7 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 
 	public List<ResourceTypeEntity> getResTypesForCurrentRelease() {
 		if (hasResourcesForCurrentRelease()) {
-			return new ArrayList<ResourceTypeEntity>(resourcesForCurrentRelease.keySet());
+			return new ArrayList<>(resourcesForCurrentRelease.keySet());
 		}
 		return null;
 	}
@@ -188,7 +183,7 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 		if (hasResourcesForCurrentRelease()) {
 			for (ResourceTypeEntity t : resourcesForCurrentRelease.keySet()) {
 				if (t.getId().equals(typeId)) {
-					return new ArrayList<ResourceEntity>(resourcesForCurrentRelease.get(t));
+					return new ArrayList<>(resourcesForCurrentRelease.get(t));
 				}
 			}
 		}
@@ -200,7 +195,11 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 	 */
 	public boolean save() {
 		try {
-			releaseMgmtService.save(currentRelease);
+			if (currentRelease.getId() == null) {
+				releaseMgmtService.create(currentRelease);
+			} else {
+				releaseMgmtService.update(currentRelease);
+			}
 			GlobalMessageAppender.addSuccessMessage("Release " + currentRelease.getName()
 					+ " successfully saved.");
 			reload();

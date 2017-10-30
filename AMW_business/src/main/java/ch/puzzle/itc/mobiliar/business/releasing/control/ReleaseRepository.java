@@ -22,12 +22,13 @@ package ch.puzzle.itc.mobiliar.business.releasing.control;
 
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-public class ReleaseRepository {
+public class ReleaseRepository extends BaseRepository<ReleaseEntity> {
 
     @Inject
     EntityManager entityManager;

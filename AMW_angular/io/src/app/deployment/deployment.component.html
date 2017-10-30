@@ -1,0 +1,172 @@
+<div class="row page-header">
+  <div class="col-md-4">
+    <h1>{{appState.get('pageTitle')}}</h1>
+  </div>
+</div>
+
+<!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
+<div class="col-sm-10 main-full">
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <h3 class="panel-title pull-left">{{appState.get('pageTitle')}}</h3>
+    </div>
+
+    <div class="panel-body">
+      <span class="form-horizontal">
+
+        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="successMessage"></span></div>
+        <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="errorMessage"></span></div>
+
+        <div class="form-group" *ngIf="appservers.length > 0">
+          <label for="selectApplicationserver" class="col-sm-2 control-label">Applicationserver</label>
+          <div class="col-sm-10 col-md-5">
+            <select id="selectApplicationserver" class="form-control input-sm" [(ngModel)]="selectedAppserver" (ngModelChange)="onChangeAppserver($event)">
+              <option [ngValue]="server" *ngFor="let server of appservers">{{server.name}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="isRedeployment">
+          <label for="selectApplicationserver" class="col-sm-2 control-label">Applicationserver</label>
+          <div class="col-sm-10 col-md-5">
+            <span class="environments-title" [innerHTML]="redeploymentAppserverDisplayName"></span>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="!isRedeployment">
+          <label for="selectRelease" class="col-sm-2 control-label">Release</label>
+          <div class="col-sm-10 col-md-5">
+            <select *ngIf="selectedAppserver" id="selectRelease" class="form-control input-sm" [(ngModel)]="selectedRelease" (ngModelChange)="onChangeRelease($event)">
+              <option [ngValue]="release" *ngFor="let release of releases">{{release.release}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Environments</label>
+          <div class="col-sm-10">
+            <ng-container *ngFor="let group of getEnvironmentGroups()">
+              <h5 class="environments-title">{{group}}: </h5>
+              <ng-container *ngFor="let env of groupedEnvironments[group]">
+                <label class="checkbox-inline"><input type="checkbox" (change)="onChangeEnvironment($event)" [(ngModel)]="env.selected">{{env.name}}</label>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="!isRedeployment">
+          <label class="col-sm-2 control-label">Applications</label>
+          <div class="col-sm-10 col-md-5">
+              <table class="table table-striped" *ngIf="(appsWithVersion.length > 0)">
+                  <tr *ngFor="let app of appsWithVersion">
+                    <td class="col-md-2">{{app.applicationName}}</td>
+                    <td><input class="form-control" type="text" [(ngModel)]="app.version"></td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="!isRedeployment">
+          <label class="col-sm-2 control-label">Runtime</label>
+          <div class="col-sm-10 col-md-5">
+            <h5 class="environments-title" *ngIf="runtime">{{runtime.identifier}}</h5>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="!isRedeployment">
+          <label for="selectState" class="col-sm-2 control-label">State</label>
+          <div class="col-sm-10 col-md-5" *ngIf="bestForSelectedRelease">
+            <select id="selectState" class="form-control input-sm" [(ngModel)]="selectedResourceTag">
+              <option *ngFor="let resourceTag of resourceTags" [ngValue]="resourceTag">{{resourceTag.label}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+            <label for="dateDeployment" class="col-sm-2 control-label">Deploy at</label>
+            <div class="col-sm-10 col-md-5">
+              <div class="input-group date datepicker">
+                <input id="dateDeployment" type="text" class="form-control" #datePicker [ngModel]="deploymentDate"
+                       (blur)="deploymentDate = datePicker.value">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+              </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Deployment parameter</label>
+          <div class="col-sm-2">
+            <input class="form-control" list="depParamList" type="text" [(ngModel)]="transDeploymentParameter.key">
+            <datalist id="depParamList">
+              <option *ngFor="let depParam of deploymentParameters">{{depParam.key}}</option>
+            </datalist>
+          </div>
+          <div class="col-sm-3">
+            <input class="form-control" type="text" [(ngModel)]="transDeploymentParameter.value">
+          </div>
+          <div class="col-sm-2">
+            <button type="button" class="btn btn-default" *ngIf="(transDeploymentParameter.key && transDeploymentParameter.value)" (click)="onAddParam($event)">
+              <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+
+        <ng-container *ngIf="(transDeploymentParameters.length > 0)">
+        <div class="form-group" *ngFor="let transDepParam of transDeploymentParameters">
+          <label for="selectApplicationserver" class="col-sm-2 control-label"></label>
+          <div class="col-sm-2">
+            <input class="form-control" disabled type="text" value="{{transDepParam.key}}">
+          </div>
+          <div class="col-sm-3">
+            <input class="form-control" disabled type="text" value="{{transDepParam.value}}">
+          </div>
+          <div class="col-sm-2">
+            <button type="button" class="btn btn-default"  (click)="onRemoveParam(transDepParam)">
+              <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+        </ng-container>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Details</label>
+          <div class="col-sm-10">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" [(ngModel)]="simulate">
+                simulate before deployment
+              </label>
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" [(ngModel)]="doSendEmail">
+                send an email when deployed
+              </label>
+            </div>
+            <div class="checkbox" *ngIf="hasPermissionShakedownTest">
+              <label>
+                <input type="checkbox" [(ngModel)]="doExecuteShakedownTest">
+                execute shakedown tests when deployed
+              </label>
+            </div>
+            <div class="checkbox" *ngIf="doExecuteShakedownTest">
+              <label>
+                <input type="checkbox" [(ngModel)]="doNeighbourhoodTest">
+                test neighbourhood
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="isReadyForDeployment()">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default" *ngIf="hasPermissionToRequestDeployment" (click)="requestDeployment()">Request deployment</button>
+            <button type="submit" class="btn btn-primary" *ngIf="hasPermissionToDeploy" (click)="createDeployment()">Deploy</button>
+          </div>
+        </div>
+
+      </span>
+    </div>
+
+  </div>
+</div>

@@ -5,7 +5,7 @@
     xmlns:a4j="http://richfaces.org/a4j" >
 
 <h:head>
-    <title><ui:insert name="title" /> - AMW</title>
+    <title><ui:insert name="title" /> - Liima</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <meta name="viewport"
@@ -129,7 +129,7 @@
     <h:form id="navigationForm">
         <header>
         <div class="container">
-            <h1>AMW</h1>
+            <object class="liimaLogo" data="../resources/images/misc/Liima.svg">Liima</object>
             <nav>
             <ul>
                 <li>
@@ -138,7 +138,7 @@
                             <a4j:ajax render="fullBody"
                                       oncomplete="window.location.reload();"
                                       onbegin="showLoaderImmediate();" onerror="hideLoader();" />
-                        </h:selectBooleanCheckbox> Show my favorites only
+                        </h:selectBooleanCheckbox> Favorites only
                     </label>
                 </li>
                 <li class="#{screen eq 'newApplist' ? 'current' : ''}"><h:link
@@ -149,7 +149,8 @@
                     class="#{screen eq 'newResourceList' or screen eq 'newEditRes' or screen eq 'newEditApp' or screen eq 'newEditNode' or screen eq 'newEditResType' ? 'current' : ''}"><h:link
                         outcome="resourceList" value="Resources" onclick="showLoader();" /></li>
                 <li class="#{screen eq 'newDeploy' ? 'current' : ''}"><h:link
-                        outcome="deploy" value="Deploy" onclick="showLoader();" /></li>
+                        outcome="deploy" value="Deploy" onclick="showLoader();"
+                        rendered="#{securityDataProvider.hasPermissionOnAllContext('DEPLOYMENT', 'READ')}"/></li>
 
                 <li class="#{screen eq 'shakedownTest' ? 'current' : ''}"><h:link
                         outcome="shakedownTest" value="Shakedown Test"

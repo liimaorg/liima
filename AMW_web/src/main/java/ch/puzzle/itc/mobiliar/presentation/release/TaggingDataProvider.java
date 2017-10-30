@@ -21,21 +21,17 @@
 package ch.puzzle.itc.mobiliar.presentation.release;
 
 import ch.puzzle.itc.mobiliar.business.configurationtag.control.TagConfigurationService;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
+import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
@@ -47,98 +43,74 @@ import java.util.*;
 @ViewScoped
 public class TaggingDataProvider implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	TagConfigurationService tagConfigurationService;
+    @Inject
+    TagConfigurationService tagConfigurationService;
 
-	@Inject
-	PermissionService permissions;
+    @Inject
+    PermissionService permissions;
 
-	@Inject
-	PropertyEditor editor;
+    @Inject
+    PropertyEditor editor;
 
-	boolean active;
+    @Getter
+    @Setter
+    private String tagLabel;
 
-	@Getter
-	@Setter
-	private String tagLabel;
+    @Getter
+    @Setter
+    private Date tagDate;
 
-	@Getter
-	@Setter
-	private Date tagDate;
+    @Getter
+    private boolean canTagCurrentState;
 
-	@Getter
-	private boolean canTagCurrentState;
+    private Set<String> tagLabels;
 
-	private Set<String> tagLabels;
+    private ResourceEntity resource;
 
-	private ResourceEntity resource;
+    public void onResourceChange(@Observes ResourceEntity resourceEntity) {
+        this.resource = resourceEntity;
+        canTagCurrentState = permissions.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
+        extractTagLabels(tagConfigurationService.loadTagLabelsForResource(resourceEntity));
+    }
 
-	public void onResourceChange(@Observes ResourceEntity resourceEntity) {
-		this.resource = resourceEntity;
-		extractTagLabels(tagConfigurationService.loadTagLabelsForResource(resourceEntity));
-	}
+    public void onResourceTypeChange(@Observes ResourceTypeEntity resourceTypeEntity) {
+        this.resource = null;
+        tagLabels = Collections.emptySet();
+    }
 
-	public void onResourceTypeChange(@Observes ResourceTypeEntity resourceTypeEntity) {
-		this.resource = null;
-		tagLabels = Collections.emptySet();
-	}
+    public void tagConfiguration() {
+        if (resource == null) {
+            String message = "No resource selected.";
+            GlobalMessageAppender.addErrorMessage(message);
+        }
+        else if (tagLabel == null) {
+            String message = "No tag label defined.";
+            GlobalMessageAppender.addErrorMessage(message);
+        }
+        else if (tagDate == null) {
+            String message = "No tag date defined.";
+            GlobalMessageAppender.addErrorMessage(message);
+        }
+        else {
+            if (tagLabels.contains(tagLabel.trim())) {
+                String message = "A label with the value '" + tagLabel
+                        + "' already exists for this application.";
+                GlobalMessageAppender.addErrorMessage(message);
+            }
+            else {
+                tagConfigurationService.tagConfiguration(resource.getId(), tagLabel, tagDate);
+                String message = "New tag '" + tagLabel + "' created.";
+                GlobalMessageAppender.addSuccessMessage(message);
+            }
+        }
+    }
 
-	@PostConstruct
-	public void init() {
-		canTagCurrentState = permissions.hasPermission(Permission.TAG_CURRENT_STATE);
-	}
-
-	public String tagConfiguration() {
-		if (resource == null) {
-			String message = "No resource selected.";
-			GlobalMessageAppender.addErrorMessage(message);
-		}
-		else if (tagLabel == null) {
-			String message = "No tag label defined.";
-			GlobalMessageAppender.addErrorMessage(message);
-		}
-		else if (tagDate == null) {
-			String message = "No tag date defined.";
-			GlobalMessageAppender.addErrorMessage(message);
-		}
-		else {
-			if (tagLabels.contains(tagLabel.trim())) {
-				String message = "A label with the value '" + tagLabel
-						+ "' already exists for this application.";
-				GlobalMessageAppender.addErrorMessage(message);
-			}
-			else {
-				try {
-					tagConfigurationService.tagConfiguration(resource.getId(), tagLabel, tagDate);
-					String message = "New tag '" + tagLabel + "' created.";
-					GlobalMessageAppender.addSuccessMessage(message);
-					return NavigationUtils.getRefreshOutcome();
-				}
-				catch (ResourceNotFoundException e) {
-					String message = "The selected resource can not be found.";
-					GlobalMessageAppender.addErrorMessage(message);
-				}
-				catch (ElementAlreadyExistsException e) {
-					String message = "A resource with the name \""
-							+ ((ElementAlreadyExistsException) e).getExistingObjectName()
-							+ "\" already exists";
-					GlobalMessageAppender.addErrorMessage(message);
-				}
-				catch (GeneralDBException e) {
-					String message = "Could not tag current state.";
-					GlobalMessageAppender.addErrorMessage(e.getErrorMessage() + " " + message);
-				}
-			}
-		}
-		return NavigationUtils.getRefreshOutcome();
-	}
-
-	private void extractTagLabels(List<ResourceTagEntity> tags) {
-		tagLabels = new LinkedHashSet<String>();
-		for (ResourceTagEntity r : tags) {
-			tagLabels.add(r.getLabel());
-		}
-	}
+    private void extractTagLabels(List<ResourceTagEntity> tags) {
+        tagLabels = new LinkedHashSet<>();
+        for (ResourceTagEntity r : tags) {
+            tagLabels.add(r.getLabel());
+        }
+    }
 }

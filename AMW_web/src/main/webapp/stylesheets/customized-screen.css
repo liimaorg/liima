@@ -203,6 +203,10 @@ div.templateDiff, div.templateDiff .descriptionGap {
     margin-top: 6px;
 }
 
+.marginTop4 {
+    margin-top: 4px;
+}
+
 .marginRight10 {
     margin-right: 10px;
 }
@@ -822,7 +826,7 @@ table.radioButtonList tbody tr td {
     border-width: 2px;
     border-style: solid;
     font-weight: bold;
-    width: 90px;
+    width: 125px;
 }
 
 .state.requested {
@@ -1931,4 +1935,17 @@ div a:hover {
 
 .hidden {
     visibility: hidden;
+}
+
+.liimaLogo {
+    width: 72px;
+    margin: 2px 0 0 -4px;
+}
+
+.deploy-checkbox {
+    margin-right: 7px;
+}
+
+span.reason {
+    font-size: 80%;
 }

@@ -13,7 +13,7 @@
         <f:viewParam name="application_name" value="#{deployScreenDataProvider.filterApplicationNameViewParam}"/>
         <f:viewParam name="appserver_name" value="#{deployScreenDataProvider.filterAppServerNameViewParam}"/>
         <f:viewParam name="environment_name" value="#{deployScreenDataProvider.filterEnvironmentNameParam}"/>
-        <f:viewParam name="tracking_id" value="#{deployScreenDataProvider.filterEnvironmentNameParam}"/>
+        <f:viewParam name="tracking_id" value="#{deployScreenDataProvider.filterTrackingIdParam}"/>
     </f:metadata>
     <ui:param name="screen" value="newDeploy"/>
     <ui:define name="title">Deploy</ui:define>
@@ -36,7 +36,8 @@
         <section id="content">
             <div class="container">
 
-                <h:panelGroup id="contentPanelGroup">
+                <h:panelGroup id="contentPanelGroup"
+                              rendered="#{securityDataProvider.hasPermissionOnAllContext('DEPLOYMENT', 'READ')}">
 
                     <article>
                         <div class="well withHeight autoOverflow">
@@ -72,7 +73,7 @@
                                                     </h:commandLink>
                                                 </li>
                                                 <li><h:outputLink styleClass="btn light" target="_blank"
-                                                                  rendered="#{securityDataProvider.hasPermission('EXPORT_CSV_DEPLOYMENTS')}"
+                                                                  rendered="#{securityDataProvider.hasPermissionToExportDeployments()}"
                                                                   value="../deploymentCsvExport">
                                                     <i class="icon icon-csv"/>
                                                     <h:outputText value="Export"/>
@@ -92,10 +93,6 @@
                                                     </a4j:commandLink>
                                                 </li>
                                                 <li>
-                                                    <h:link rendered="#{!deployScreenDataProvider.canRedeploy()}"
-                                                            disabled="true" styleClass="btn disable">
-                                                        <i class="icon icon-redeploy">Redeploy</i>
-                                                    </h:link>
                                                     <h:link outcome="redeploy" rendered="#{deployScreenDataProvider.canRedeploy()}"
                                                             styleClass="btn light">
                                                         <i class="icon icon-redeploy">Redeploy</i>
@@ -105,11 +102,18 @@
                                                 </li>
                                                 <li>
                                                     <h:link outcome="createDeploymentView" value="Add deployment"
-                                                            rendered="#{securityDataProvider.hasPermissionToDeploy()}"
+                                                            rendered="#{securityDataProvider.hasPermissionToCreateDeployment() and !deployScreenDataProvider.isAngularEnabled()}"
                                                             styleClass="btn light"
                                                             onclick="showLoader();confirmLeave(event);">
                                                         <i class="icon icon-add"/>
                                                     </h:link>
+                                                    <h:outputLink value="/AMW_angular/#/deployment"
+                                                            rendered="#{securityDataProvider.hasPermissionToCreateDeployment() and deployScreenDataProvider.isAngularEnabled()}"
+                                                            styleClass="btn light"
+                                                            onclick="showLoader();confirmLeave(event);">
+                                                        <i class="icon icon-add"/>
+                                                        <h:outputText value="Add deployment" />
+                                                    </h:outputLink>
                                                 </li>
                                             </ul>
                                         </nav>
@@ -190,37 +194,39 @@
                                         </f:facet>
                                         <h:panelGroup class="nowrap">
                                             <h:selectBooleanCheckbox class="deploy-checkbox"
-                                                                     value="#{deployScreenDataProvider.checkedDeployments[deployment.id]}">
+                                                                     value="#{deployScreenDataProvider.checkedDeployments[deployment.id]}"
+                                                                     disabled="#{!deployScreenDataProvider.isRedeployPossible(deployment)}">
                                                 <a4j:ajax render="deployments"/>
                                             </h:selectBooleanCheckbox>
                                             <h:outputText value="#{deployment.trackingId}"/>
                                         </h:panelGroup>
                                     </h:column>
 
-                                    <h:column index="index" headerClass="width_180 nowrap">
+                                    <h:column index="index" headerClass="width_200 nowrap">
                                         <f:facet name="header">
                                             <h:outputText value="State"/>
                                             <a4j:commandLink render="deployments" onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('STATE')}">
-                                                <i
-                                                        class="${deployScreenDataProvider.getSortingIconForCol('STATE')} inlineBlockMiddle"></i>
+                                                <i class="${deployScreenDataProvider.getSortingIconForCol('STATE')} inlineBlockMiddle"></i>
                                             </a4j:commandLink>
                                         </f:facet>
                                         <div class="deploymentInfo nowrap">
-                                            <h:outputText
+                                            <h:outputText rendered="${deployment.reason == null}"
                                                     value="#{deployScreenDataProvider.getDeploymentStateText(deployment)}"
                                                     styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock"
+                                            />
+                                            <h:outputText rendered="${deployment.reason != null}"
+                                                          value="#{deployment.reason.displayName}"
+                                                          styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock reason"
                                             />
                                             <a4j:commandLink
                                                     oncomplete="#{rich:component('deploymentDetailPopup')}.show(); return false;"
                                                     render="deploymentDetailPopupFacet, deploymentDetailPopupPanelGroup"
                                                     title="Show details about this deployment"
                                                     styleClass="simpleInfo">
-                                                <i
-                                                        class="icon icon-info inlineBlockMiddle marginLeft10 height16"></i>
-                                                <a4j:param
-                                                        assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
+                                                <i class="icon icon-info inlineBlockMiddle marginLeft10 height16"></i>
+                                                <a4j:param assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
                                                         value="${deployment.id}"></a4j:param>
                                             </a4j:commandLink>
                                             <a4j:commandLink
@@ -229,12 +235,10 @@
                                                     styleClass="icon icon-build-failed inlineBlockMiddleheight16 width16"
                                                     title="Simulation failed"
                                                     render="deploymentDetailPopupFacet, deploymentDetailPopupPanelGroup">
-                                                <a4j:param
-                                                        assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
+                                                <a4j:param assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
                                                         value="${deployment.id}"></a4j:param>
                                             </a4j:commandLink>
                                         </div>
-
                                     </h:column>
 
                                     <h:column index="index" headerClass="nowrap">
@@ -249,13 +253,13 @@
 
                                         <mobi:editResourceLink resId="#{deployment.resource.id}"
                                                                linkLabel="#{deployment.resourceGroup.name}"
-                                                               editPermission="EDIT_APP_SERVER"/>
+                                                               editPermission="RESOURCE" resourceType="APPLICATIONSERVER"/>
                                         <ui:repeat var="appToShow"
                                                    value="${deployment.applicationsWithVersion}">
                                             <h:panelGroup styleClass="paddingLeft20" layout="block">
                                                 <mobi:editResourceLink resId="#{appToShow.applicationId}"
                                                                        linkLabel="#{appToShow.applicationName}"
-                                                                       editPermission="EDIT_APP"/>
+                                                                       editPermission="RESOURCE" resourceType="APPLICATION"/>
                                                 <h:outputText rendered="${appToShow.version != ''}"
                                                               value=" (${appToShow.version})"
                                                               styleClass="grey marginLeft10"/>
@@ -271,8 +275,7 @@
                                             <a4j:commandLink render="deployments" onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('RELEASE')}">
-                                                <i
-                                                        class="${deployScreenDataProvider.getSortingIconForCol('RELEASE')} inlineBlockMiddle"></i>
+                                                <i class="${deployScreenDataProvider.getSortingIconForCol('RELEASE')} inlineBlockMiddle"></i>
                                             </a4j:commandLink>
                                         </f:facet>
 
@@ -286,8 +289,7 @@
                                             <a4j:commandLink render="deployments" onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('ENV')}">
-                                                <i
-                                                        class="${deployScreenDataProvider.getSortingIconForCol('ENV')} inlineBlockMiddle"></i>
+                                                <i class="${deployScreenDataProvider.getSortingIconForCol('ENV')} inlineBlockMiddle"></i>
                                             </a4j:commandLink>
                                         </f:facet>
 
@@ -301,8 +303,7 @@
                                             <a4j:commandLink render="deployments" onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('DEPLOY_TIME')}">
-                                                <i
-                                                        class="${deployScreenDataProvider.getSortingIconForCol('DEPLOY_TIME')} inlineBlockMiddle"></i>
+                                                <i class="${deployScreenDataProvider.getSortingIconForCol('DEPLOY_TIME')} inlineBlockMiddle"></i>
 
                                             </a4j:commandLink>
                                         </f:facet>
@@ -320,10 +321,8 @@
                                                     title="change the deployment date">
                                                 <h:outputText
                                                         value="#{deployScreenDataProvider.formatDate(deployment.deploymentDate)}"
-                                                        styleClass="#{deployScreenDataProvider.getDeploymentDelayedClass(deployment)} inlineBlock"
-                                                />
-                                                <a4j:param
-                                                        assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
+                                                        styleClass="#{deployScreenDataProvider.getDeploymentDelayedClass(deployment)} inlineBlock"/>
+                                                <a4j:param assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
                                                         value="${deployment.id}"></a4j:param>
                                             </a4j:commandLink>
                                         </div>
@@ -340,8 +339,7 @@
                                                 render="confirmDeploymentPopupPanelFacet, confirmDeploymentPopupPanelGroup"
                                                 styleClass="green deployment-action">
                                             <i class="icon icon-success inlineBlockMiddle height20">confirm</i>
-                                            <a4j:param
-                                                    assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
+                                            <a4j:param assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
                                                     value="${deployment.id}"></a4j:param>
                                         </a4j:commandLink>
 
@@ -351,8 +349,7 @@
                                                 render="rejectDeploymentPopupPanelFacet, rejectDeploymentPopupPanelGroup"
                                                 styleClass="red deployment-action">
                                             <i class="icon icon-failed height20 inlineBlockMiddle">reject</i>
-                                            <a4j:param
-                                                    assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
+                                            <a4j:param assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
                                                     value="${deployment.id}"></a4j:param>
                                         </a4j:commandLink>
 
@@ -362,17 +359,23 @@
                                                 render="cancelDeploymentPopupPanelFacet, cancelDeploymentPopupPanelGroup"
                                                 styleClass="black deployment-action">
                                             <i class="icon icon-canceled height20 inlineBlockMiddle">cancel</i>
-                                            <a4j:param
-                                                    assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
+                                            <a4j:param assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
                                                     value="${deployment.id}"></a4j:param>
                                         </a4j:commandLink>
 
                                         <h:link outcome="redeploy"
-                                                rendered="#{deployScreenDataProvider.isRedeployPossible(deployment)}"
+                                                rendered="#{deployScreenDataProvider.isRedeployPossible(deployment)
+                                                and !deployScreenDataProvider.isAngularEnabled()}"
                                                 styleClass="black deployment-action">
                                             <i class="icon icon-redeploy height20 inlineBlockMiddle">Redeploy</i>
                                             <f:param name="deploymentIdArray" value="#{deployment.id}"/>
                                         </h:link>
+                                        <h:outputLink value="/AMW_angular/#/deployment/#{deployment.id}"
+                                                      rendered="#{deployScreenDataProvider.isRedeployPossible(deployment)
+                                                      and deployScreenDataProvider.isAngularEnabled()}"
+                                                      styleClass="black deployment-action">
+                                            <i class="icon icon-redeploy height20 inlineBlockMiddle">Redeploy</i>
+                                        </h:outputLink>
 
                                         <h:link rendered="${deployScreenDataProvider.hasLogFiles(deployment.id)}"
                                                 styleClass="deployment-action"
@@ -428,7 +431,7 @@
                     </div>
                     <div>
                         <h:panelGroup
-                                rendered="#{securityDataProvider.hasPermission('EXECUTE_SHAKE_TEST_CHECKBOX')}">
+                                rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
                             <label class="inlineBlock"> <h:selectBooleanCheckbox
                                     value="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment}">
                                 <a4j:ajax render="testNeighbourhoodButtonId"/>
@@ -438,7 +441,7 @@
 
                     <div class="paddingLeft20">
                         <h:panelGroup
-                                rendered="#{securityDataProvider.hasPermission('TEST_NEIGHBOURHOOD_CHECKBOX')}">
+                                rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
                             <label class="inlineBlock"> <h:selectBooleanCheckbox
                                     id="testNeighbourhoodButtonId"
                                     disabled="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment==false}"
@@ -621,7 +624,7 @@
                                         value="#{deployScreenDataProvider.sendEmailConfirmation}"/>send an email when deployed</label>
                         </div>
                         <h:panelGroup layout="block"
-                                      rendered="#{securityDataProvider.hasPermission('EXECUTE_SHAKE_TEST_CHECKBOX')}">
+                                      rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
                             <label class="inlineBlock">
                                 <h:selectBooleanCheckbox value="#{deployScreenDataProvider.executeShakedownTest}">
                                     <a4j:ajax render="bulkTestNeighbourhoodButtonId"/>
@@ -629,7 +632,7 @@
                         </h:panelGroup>
 
                         <h:panelGroup layout="block" class="paddingLeft20"
-                                      rendered="#{securityDataProvider.hasPermission('TEST_NEIGHBOURHOOD_CHECKBOX')}">
+                                      rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
                             <label class="inlineBlock"> <h:selectBooleanCheckbox
                                     id="bulkTestNeighbourhoodButtonId"
                                     disabled="#{deployScreenDataProvider.executeShakedownTest==false}"
@@ -782,6 +785,17 @@
                             </h:column>
 
                         </h:dataTable>
+                    </h:panelGroup>
+
+                    <h:panelGroup styleClass="well" layout="block"
+                                  rendered="${deployScreenDataProvider.selectedDeployment.reason != null}">
+                        <h2>
+                            <h:outputText value="Failure reason"/>
+                        </h2>
+                        <hr/>
+                        <div class="maxHeight500px width700px">
+                            <h:outputText value="${deployScreenDataProvider.selectedDeployment.reason.displayName}"/>
+                        </div>
                     </h:panelGroup>
 
                     <br/>

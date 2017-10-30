@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ch.puzzle.itc.mobiliar</groupId>
 		<artifactId>AMW_parent</artifactId>
-		<version>1.12.2-SNAPSHOT</version>
+		<version>1.13.2-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -49,6 +49,11 @@
 								</webModule>
 								<webModule>
 									<groupId>ch.puzzle.itc.mobiliar</groupId>
+									<artifactId>AMW_angular</artifactId>
+									<bundleFileName>AMW_angular.war</bundleFileName>
+								</webModule>
+								<webModule>
+									<groupId>ch.puzzle.itc.mobiliar</groupId>
 									<artifactId>AMW_rest</artifactId>
 									<bundleFileName>AMW_rest.war</bundleFileName>
 								</webModule>
@@ -77,6 +82,11 @@
 				<dependency>
 					<groupId>ch.puzzle.itc.mobiliar</groupId>
 					<artifactId>AMW_web</artifactId>
+					<type>war</type>
+				</dependency>
+				<dependency>
+					<groupId>ch.puzzle.itc.mobiliar</groupId>
+					<artifactId>AMW_angular</artifactId>
 					<type>war</type>
 				</dependency>
 				<dependency>

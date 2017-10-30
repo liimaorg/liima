@@ -20,8 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -29,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "deploymentParameter")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter @Setter
+@Data
 public class DeploymentParameterDTO {
 
 	private String key;

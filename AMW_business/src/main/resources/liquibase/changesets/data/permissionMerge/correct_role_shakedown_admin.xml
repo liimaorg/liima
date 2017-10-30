@@ -1,0 +1,17 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/permissionMerge/correct_role_shakedown_admin.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="permissionMerge_correct_role_shakedown_admin" >
+        <comment>
+            corrects shakedown_admin permissions
+        </comment>
+
+        <sql>DELETE FROM TAMW_restriction WHERE role_id = (SELECT id FROM TAMW_ROLE WHERE name = 'shakedown_admin') AND permission_id = (SELECT id FROM TAMW_PERMISSION WHERE value = 'SHAKEDOWNTEST') AND action NOT IN ('ALL');</sql>
+
+        <rollback></rollback>
+    </changeSet>
+
+</databaseChangeLog>

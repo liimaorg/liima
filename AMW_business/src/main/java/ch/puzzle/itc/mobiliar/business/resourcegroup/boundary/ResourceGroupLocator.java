@@ -47,8 +47,16 @@ public class ResourceGroupLocator {
 		return resourceGroupControl.getResourceGroups();
 	}
 
+	public List<ResourceGroupEntity> getAllResourceGroupsByName() {
+		return resourceGroupControl.getAllResourceGroupsByName();
+	}
+
 	public ResourceGroupEntity getResourceGroupByName(String name)  {
 		return resourceGroupControl.getResourceGroupByName(name);
+	}
+
+	public ResourceGroupEntity getResourceGroupById(Integer groupId)  {
+		return resourceGroupControl.getResourceGroupById(groupId);
 	}
 	
 	public ResourceGroupEntity getResourceGroupForCreateDeploy(Integer groupeId) {

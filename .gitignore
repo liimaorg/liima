@@ -17,3 +17,5 @@ response*.GET.html
 .DS_Store
 .m2
 AMW_openshift_deploy/deployments
+AMW_angular/io/node/node
+AMW_docker/tmp

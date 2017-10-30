@@ -1,0 +1,93 @@
+<div class="panel panel-default">
+  <div class="panel-heading">{{getTitle()}}</div>
+  <div class="panel-body">
+
+    <div class="form-group" *ngIf="permissions.length > 0">
+      <label for="selectPermission" class="col-sm-3 control-label">Permission</label>
+      <div class="col-sm-9">
+        <select id="selectPermission" class="form-control input-sm" [(ngModel)]="restriction.permission.name"
+                (change)="setOld()">
+          <option [ngValue]="permission.name" *ngFor="let permission of permissions">{{permission.name}}
+            <ng-container *ngIf="permission.old"> (GLOBAL)</ng-container>
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <ng-container *ngIf="restriction.permission.name && ! restriction.permission.old">
+
+      <div class="form-group">
+        <label for="selectAction" class="col-sm-3 control-label">Action</label>
+        <div class="col-sm-9">
+          <select id="selectAction" class="form-control input-sm" [(ngModel)]="restriction.action">
+            <option [ngValue]="action" *ngFor="let action of actions">{{action}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Environment</label>
+        <div class="col-sm-9">
+          <ng-container *ngFor="let group of getEnvironmentGroups()">
+            <h5 class="environments-title">{{group}}: </h5>
+            <ng-container *ngFor="let env of groupedEnvironments[group]">
+              <label class="checkbox-inline"><input type="checkbox" [(ngModel)]="env.selected"
+                                                    (change)="checkUnique(env)">&nbsp;{{env.name}}</label>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="selectRTP" class="col-sm-3 control-label">Resource Type Categories</label>
+        <div class="col-sm-9">
+          <select id="selectRTP" class="form-control input-sm" [(ngModel)]="restriction.resourceTypePermission"
+                  (change)="clearTypeAndGroup()">
+            <option [ngValue]="rtp" *ngFor="let rtp of resourceTypePermissions">{{rtp}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="resourceTypes.length > 0 && isResourceTypeAssignable()">
+        <label for="selectResourceType" class="col-sm-3 control-label">Resource Type</label>
+        <div class="col-sm-9">
+          <input id="selectResourceType" class="form-control input-sm" list="resTypeList" type="text"
+                 [ngClass]="{'ng-invalid':!checkType()}" [(ngModel)]="restriction.resourceTypeName">
+          <datalist id="resTypeList">
+            <option [ngValue]="resType.name" *ngFor="let resType of resourceTypes">{{resType.name}}</option>
+          </datalist>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="resourceGroups.length > 0 && isResourceGroupAssignable()">
+        <label for="selectResourceGroup" class="col-sm-3 control-label">Resource Group</label>
+        <div class="col-sm-9">
+          <input id="selectResourceGroup" class="form-control input-sm" list="resGroupList" type="text"
+                 [ngClass]="{'ng-invalid':!checkGroup()}" [(ngModel)]="resourceGroup.name">
+          <datalist id="resGroupList">
+            <option [ngValue]="resGroup.name" *ngFor="let resGroup of resourceGroups">{{resGroup.name}}</option>
+          </datalist>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <ng-container *ngIf="restriction.permission.name">
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label"></label>
+        <div class="col-sm-9">
+          <button *ngIf="restriction.permission" type="button" class="btn btn-primary" [disabled]="!isValidForm()"
+                  (click)="persistRestriction()">
+            <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save
+          </button>
+          <button type="button" class="btn btn" (click)="cancel()">
+            <span class="glyphicon glyphicon" aria-hidden="true"></span>Cancel
+          </button>
+        </div>
+      </div>
+
+    </ng-container>
+
+  </div>
+</div>

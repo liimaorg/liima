@@ -9,8 +9,7 @@
 
 <ui:composition template="templates/template.xhtml">
     <f:metadata>
-        <f:event type="preRenderView"
-                 listener="#{shakedownTestScreenDataProvider.initView}"></f:event>
+        <f:event type="preRenderView" listener="#{shakedownTestScreenDataProvider.initView}"></f:event>
     </f:metadata>
     <ui:param name="screen" value="shakedownTest"/>
     <ui:define name="title">Shakedown Test</ui:define>
@@ -69,7 +68,7 @@
                                                 </h:commandLink></li>
 
                                                 <li><a4j:commandLink styleClass="btn light"
-                                                                     rendered="#{securityDataProvider.hasPermission('ADD_SHAKEDOWN_TEST') and shakedownTestScreenDataProvider.shakedownTestViewSelected}"
+                                                                     rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE') and shakedownTestScreenDataProvider.shakedownTestViewSelected}"
                                                                      render="createTestPopupPanelGroup"
                                                                      onclick="showLoader();"
                                                                      action="${shakedownTestScreenDataProvider.initCreateTestPopupPanel()}"
@@ -147,8 +146,7 @@
                                                 <a4j:commandLink render="shakedowntest"
                                                                  onclick="showLoader();" oncomplete="hideLoader();"
                                                                  action="#{shakedownTestScreenDataProvider.changeSortOrderForSelectedColumn('STATE')}">
-                                                    <i
-                                                            class="${shakedownTestScreenDataProvider.getSortingIconForCol('STATE')} inlineBlockMiddle"></i>
+                                                    <i class="${shakedownTestScreenDataProvider.getSortingIconForCol('STATE')} inlineBlockMiddle"></i>
                                                 </a4j:commandLink>
                                             </h:panelGroup>
                                         </f:facet>
@@ -161,10 +159,8 @@
                                                     render="shakedownTestDetailPopupFacet, shakedownTestDetailPopupPanelGroup"
                                                     title="Show details about this shakedown test"
                                                     styleClass="simpleInfo">
-                                                <i
-                                                        class="icon icon-info inlineBlock heght16 marginLeft10 valignMiddle"></i>
-                                                <a4j:param
-                                                        assignTo="#{shakedownTestScreenDataProvider.selectedShakedownTestId}"
+                                                <i class="icon icon-info inlineBlock heght16 marginLeft10 valignMiddle"></i>
+                                                <a4j:param assignTo="#{shakedownTestScreenDataProvider.selectedShakedownTestId}"
                                                         value="${sdtest.id}"></a4j:param>
                                             </a4j:commandLink>
                                         </div>
@@ -177,22 +173,21 @@
                                                 <a4j:commandLink render="shakedowntest"
                                                                  onclick="showLoader();" oncomplete="hideLoader();"
                                                                  action="#{shakedownTestScreenDataProvider.changeSortOrderForSelectedColumn('APPSERVER_NAME')}">
-                                                    <i
-                                                            class="${shakedownTestScreenDataProvider.getSortingIconForCol('APPSERVER_NAME')} inlineBlockMiddle"></i>
+                                                    <i class="${shakedownTestScreenDataProvider.getSortingIconForCol('APPSERVER_NAME')} inlineBlockMiddle"></i>
                                                 </a4j:commandLink>
                                             </h:panelGroup>
                                         </f:facet>
 
                                         <h:link value="#{sdtest.resourceGroup.name}"
                                                 outcome="editResourceView"
-                                                rendered="${securityDataProvider.hasPermission('EDIT_APP_SERVER')}"
+                                                rendered="${securityDataProvider.hasPermissionForResourceType('RESOURCE','UPDATE','APPLICATIONSERVER',contextDataProvider.globalContextId)}"
                                                 styleClass="boldFont">
                                             <f:param name="id" value="#{sdtest.applicationServer.id}"/>
                                             <f:param name="ctx"
                                                      value="#{contextDataProvider.globalContextId}"/>
                                         </h:link>
                                         <h:outputText style="font-weight: bold;"
-                                                      rendered="${!securityDataProvider.hasPermission('EDIT_APP_SERVER')}"
+                                                      rendered="${!securityDataProvider.hasPermissionForResourceType('RESOURCE','UPDATE','APPLICATIONSERVER',contextDataProvider.globalContextId)}"
                                                       value="#{sdtest.resourceGroup.name}"/>
 
                                         <ui:repeat var="appToShow"
@@ -200,13 +195,13 @@
                                             <h:panelGroup styleClass="paddingLeft20" layout="block">
                                                 <h:link value="${appToShow.applicationName}"
                                                         outcome="editResourceView"
-                                                        rendered="${securityDataProvider.hasPermission('EDIT_APP')}">
+                                                        rendered="${securityDataProvider.hasPermissionForResourceType('RESOURCE','UPDATE','APPLICATION',contextDataProvider.globalContextId)}">
                                                     <f:param name="id" value="${appToShow.applicationId}"/>
                                                     <f:param name="ctx"
                                                              value="#{contextDataProvider.globalContextId}"/>
                                                 </h:link>
                                                 <h:outputText
-                                                        rendered="${!securityDataProvider.hasPermission('EDIT_APP')}"
+                                                        rendered="${!securityDataProvider.hasPermissionForResourceType('RESOURCE','UPDATE','APPLICATION',contextDataProvider.globalContextId)}"
                                                         value="${appToShow.applicationName}"/>
                                             </h:panelGroup>
                                         </ui:repeat>
@@ -219,8 +214,7 @@
                                                 <a4j:commandLink render="shakedowntest"
                                                                  onclick="showLoader();" oncomplete="hideLoader();"
                                                                  action="#{shakedownTestScreenDataProvider.changeSortOrderForSelectedColumn('RELEASE')}">
-                                                    <i
-                                                            class="${shakedownTestScreenDataProvider.getSortingIconForCol('RELEASE')} inlineBlockMiddle"></i>
+                                                    <i class="${shakedownTestScreenDataProvider.getSortingIconForCol('RELEASE')} inlineBlockMiddle"></i>
                                                 </a4j:commandLink>
                                             </h:panelGroup>
                                         </f:facet>
@@ -235,8 +229,7 @@
                                                 <a4j:commandLink render="shakedowntest"
                                                                  onclick="showLoader();" oncomplete="hideLoader();"
                                                                  action="#{shakedownTestScreenDataProvider.changeSortOrderForSelectedColumn('ENV')}">
-                                                    <i
-                                                            class="${shakedownTestScreenDataProvider.getSortingIconForCol('ENV')} inlineBlockMiddle"></i>
+                                                    <i class="${shakedownTestScreenDataProvider.getSortingIconForCol('ENV')} inlineBlockMiddle"></i>
                                                 </a4j:commandLink>
                                             </h:panelGroup>
                                         </f:facet>
@@ -252,8 +245,7 @@
                                                 <a4j:commandLink render="shakedowntest"
                                                                  onclick="showLoader();" oncomplete="hideLoader();"
                                                                  action="#{shakedownTestScreenDataProvider.changeSortOrderForSelectedColumn('TESTDATE')}">
-                                                    <i
-                                                            class="${shakedownTestScreenDataProvider.getSortingIconForCol('TESTDATE')} inlineBlockMiddle"></i>
+                                                    <i class="${shakedownTestScreenDataProvider.getSortingIconForCol('TESTDATE')} inlineBlockMiddle"></i>
                                                 </a4j:commandLink>
                                             </h:panelGroup>
                                         </f:facet>
@@ -445,7 +437,7 @@
                     </h:dataTable>
 
                     <a4j:commandLink styleClass="btn primary right marginLeft20"
-                                     rendered="#{securityDataProvider.hasPermission('EXECUTE_SHAKE_TEST_ORDER')}"
+                                     rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}"
                                      value="Execute shakedown test order" type="button"
                                      action="${shakedownTestScreenDataProvider.createShakedownTest()}"
                                      onclick="showLoader();"

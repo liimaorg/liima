@@ -31,10 +31,10 @@ import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,6 +75,9 @@ public class SoftlinkRelationServicePersistenceTest {
 
     @InjectMocks
     ResourceTypeProvider resourceTypeProvider;
+
+    @Mock
+    ResourceTypeRepository resourceTypeRepository;
 
 
     ResourceTypeEntity type1;

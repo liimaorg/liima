@@ -1,0 +1,17 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/permissionMerge/remove_duplicate_restrictions.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="permissionMerge_remove_duplicate_restrictions" >
+        <comment>
+            remove duplicate restrictions
+        </comment>
+
+        <sql>DELETE FROM TAMW_restriction WHERE id NOT IN (SELECT MIN(id) as id FROM TAMW_restriction GROUP BY permission_id, role_id, context_id, action, resourcegroup_id, resourcetype_id, resourcetypepermission);</sql>
+
+        <rollback></rollback>
+    </changeSet>
+
+</databaseChangeLog>

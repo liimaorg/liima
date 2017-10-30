@@ -26,6 +26,7 @@ import javax.persistence.EntityManager;
 
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,6 +60,9 @@ public class SoftlinkRelationBoundaryTest {
 
     @Mock
     private ForeignableService foreignableServiceMock;
+
+    @Mock
+    private PermissionService permissionServiceMock;
 
     @InjectMocks
     private SoftlinkRelationBoundary softlinkRelationBoundary;
@@ -252,7 +256,8 @@ public class SoftlinkRelationBoundaryTest {
         ForeignableOwner editingOwner = ForeignableOwner.AMW;
         Integer softlinkRelationId = 1;
 
-        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withId(softlinkRelationId).withOwner(editingOwner).build();
+        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withId(softlinkRelationId)
+                .withOwner(editingOwner).withCpiResource(new ResourceEntityBuilder().mockResourceEntity("test", null, null, pastRelease, null)).build();
         when((entityManagerMock).find(SoftlinkRelationEntity.class, softlinkRelationId)).thenReturn(softlinkRelationEntity);
 
         SoftlinkRelationEntity mergedSoftlinkRelationEntity = new SoftlinkRelationEntityBuilder().withId(softlinkRelationId).withOwner(editingOwner).build();

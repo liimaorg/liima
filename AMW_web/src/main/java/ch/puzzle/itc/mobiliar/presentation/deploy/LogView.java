@@ -20,26 +20,22 @@
 
 package ch.puzzle.itc.mobiliar.presentation.deploy;
 
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
+import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
+
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.faces.bean.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
-import lombok.Getter;
-
-import org.apache.commons.lang.StringUtils;
-
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
 
 @ViewBackingBean
 public class LogView implements Serializable {
@@ -58,8 +54,12 @@ public class LogView implements Serializable {
 	@Getter
 	List<String> availableLogFiles;
 
+	@Getter
+	@Setter
+	String filters;
+
 	@Inject
-	DeploymentService deploymentService;
+    DeploymentBoundary deploymentBoundary;
 
 	@Inject
 	PermissionService permissionService;
@@ -79,19 +79,21 @@ public class LogView implements Serializable {
 	}
 
 	public void setFile(String file) {
-		if (NavigationUtils.isParameterSet("file", file)) {
+		if (isParameterSet("file", file) || StringUtils.isNotEmpty(file)) {
 			this.file = file;
 			loadFileContent();
 		}
-		else {
-			NavigationUtils.serverSideRedirect("file=" + file, "deploymentId=" + deploymentId);
-		}
+	}
+
+	private boolean isParameterSet(String key, Object value) {
+		Object existing = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(key);
+		return existing != null && existing.equals(value);
 	}
 
 	public void setDeploymentId(Integer deploymentId) {
 		this.deploymentId = deploymentId;
 		if (deploymentId != null) {
-			deployment = deploymentService.getDeploymentById(deploymentId);
+			deployment = deploymentBoundary.getDeploymentById(deploymentId);
 			if (canShowDeployment()) {
 				findAvailableLogFiles();
 				loadFileContent();
@@ -111,7 +113,7 @@ public class LogView implements Serializable {
 	}
 
 	void findAvailableLogFiles() {
-		availableLogFiles = Arrays.asList(deploymentService.getLogFileNames(deploymentId));
+		availableLogFiles = Arrays.asList(deploymentBoundary.getLogFileNames(deploymentId));
 		if (file == null && availableLogFiles.size() > 0) {
 			setFile(availableLogFiles.get(0));
 		}
@@ -129,7 +131,7 @@ public class LogView implements Serializable {
 			}
 			else {
 				try {
-					fileContent = deploymentService.getDeploymentLog(file);
+					fileContent = deploymentBoundary.getDeploymentLog(file);
 				}
 				catch (IllegalAccessException e) {
 					GlobalMessageAppender.addErrorMessage(e);

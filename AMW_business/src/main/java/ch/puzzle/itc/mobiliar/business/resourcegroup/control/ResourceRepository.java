@@ -44,6 +44,13 @@ public class ResourceRepository {
                 .setParameter("name", name.toLowerCase()).setParameter("release", release).getSingleResult();
     }
 
+    public ResourceEntity getResourceByGroupIdAndRelease(Integer id, ReleaseEntity release) {
+        return entityManager
+                .createQuery("select r from ResourceEntity r where r.resourceGroup.id=:id and r.release=:release",
+                        ResourceEntity.class)
+                .setParameter("id", id).setParameter("release", release).getSingleResult();
+    }
+
     public ResourceEntity getApplicationByNameAndRelease(String name, ReleaseEntity release) {
         return entityManager
                 .createQuery(
@@ -107,11 +114,11 @@ public class ResourceRepository {
         return entity.isEmpty() ? null : entity.get(0);
     }
 
-    public ResourceEntity findById(Integer resourceId) {
+    public ResourceEntity find(Integer resourceId) {
         return entityManager.find(ResourceEntity.class, resourceId);
     }
 
-    public void removeResource(ResourceEntity resource) {
+    public void remove(ResourceEntity resource) {
         entityManager.remove(resource);
     }
 

@@ -21,10 +21,7 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+import lombok.Data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -32,20 +29,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "property")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
+@Data
 public class PropertyDTO {
 
-    @Getter @Setter
     private String name;
-    @Getter @Setter
+
     private String value;
-    @Getter @Setter
+
     private String replacedValue;
-    @Getter @Setter
+
     private String generalComment;
-    @Getter @Setter
+
     private String valueComment;
-    @Getter @Setter
+
     private String context;
 
     PropertyDTO(){}

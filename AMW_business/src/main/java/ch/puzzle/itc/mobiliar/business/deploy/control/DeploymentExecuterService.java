@@ -20,7 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorDomainServiceWithAppServerRelations;
 import ch.puzzle.itc.mobiliar.business.generator.control.LockingService;
@@ -41,7 +42,7 @@ import java.util.logging.Logger;
 public class DeploymentExecuterService {
 
 	@Inject
-	private DeploymentService deploymentService;
+	private DeploymentBoundary deploymentBoundary;
 
 	@Inject
 	private GeneratorDomainServiceWithAppServerRelations generatorDomainServiceWithAppServerRelations;
@@ -74,36 +75,27 @@ public class DeploymentExecuterService {
 	 */
 	@Asynchronous
 	public void generateConfigurationAndExecuteDeployment(Integer deploymentId, GenerationModus generationModus) {
-		DeploymentEntity deployment = deploymentService.getDeploymentById(deploymentId);
-
-		if (deployment != null) {
-			// lock Deployment
-			boolean lockSuccessful = lockingService.lockDeploymentForExecution(deployment.getId(), generationModus);
-			if (lockSuccessful) {
-				// Reload the entity because it has been changed by another
-				// transaction within the locking mechanism.
-				entityManager.clear();
-				deployment = entityManager.find(DeploymentEntity.class, deployment.getId());
-
-				// generate Config
-				GenerationResult result = null;
-				
-				try{
-					log.info("Generating deployment " + deployment.getId());
-					result = generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(deployment, generationModus);
-				// catch all Exceptions during Generation
-				}catch (Exception e) {
-					log.log(Level.SEVERE, "Deployment not successful: " + deploymentId, e);
-					deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, null, e);
-				}
-
-				if (result != null && !result.hasErrors()) {
-					deploymentAsynchronousExecuter.executeDeployment(result, deployment, generationModus);
-				}
-			}
+		GenerationResult result = null;
+		// lock Deployment
+		boolean isLocked = lockingService.markDeploymentAsRunning(deploymentId, generationModus);
+		//failed lock
+		if (!isLocked) {
+			return;
 		}
-		else {
-			log.log(Level.SEVERE, "No deployment found for deploymentId " + deploymentId);
+		DeploymentEntity deployment = deploymentBoundary.getDeploymentById(deploymentId);
+		try {
+			log.info("Generating deployment " + deployment.getId());
+			result = generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(deployment, generationModus);
+			// catch all Exceptions during Generation
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Deployment not successful: " + deploymentId, e);
+			DeploymentFailureReason reason = generationModus.equals(GenerationModus.DEPLOY) ?
+					DeploymentFailureReason.DEPLOYMENT_GENERATION : generationModus.equals(GenerationModus.PREDEPLOY) ? DeploymentFailureReason.PRE_DEPLOYMENT_GENERATION : null;
+			deploymentExecutionResultHandler.handleUnSuccessfulDeployment(generationModus, deployment, null, e, reason);
+		}
+
+		if (result != null && !result.hasErrors()) {
+			deploymentAsynchronousExecuter.executeDeployment(result, deployment, generationModus);
 		}
 	}
 }

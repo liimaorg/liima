@@ -20,34 +20,34 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @XmlRootElement(name = "release")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
+@Data
 public class ReleaseDTO {
 
-    @Getter @Setter
+    private Integer id;
     private String release;
-    @Getter @Setter      
     private List<ResourceRelationDTO> relations;
-    @Getter @Setter
     private List<PropertyDTO> properties;
-    @Getter @Setter
+    private List<ResourceTagDTO> resourceTags;
     private List<TemplateDTO> templates;
 
     ReleaseDTO(){}
 
     public ReleaseDTO(ResourceEntity resource, List<ResourceRelationDTO> relations, List<PropertyDTO> properties, List<TemplateDTO> templates){
+        this.id = resource.getRelease().getId();
         this.release = resource.getRelease().getName();
         this.relations = relations;
         this.properties = properties;
@@ -55,9 +55,27 @@ public class ReleaseDTO {
     }
 
     public ReleaseDTO(ReleaseEntity release, List<ResourceRelationDTO> relations, List<PropertyDTO> properties, List<TemplateDTO> templates){
+        this.id = release.getId();
         this.release = release.getName();
         this.relations = relations;
         this.properties = properties;
         this.templates = templates;
+    }
+
+    public ReleaseDTO(ReleaseEntity release) {
+        this.id = release.getId();
+        this.release = release.getName();
+    }
+
+    public ReleaseDTO(ResourceEntity resource, List<ResourceRelationDTO> relations) {
+        this.id = resource.getRelease().getId();
+        this.release = resource.getRelease().getName();
+        this.relations = relations;
+        this.resourceTags = new ArrayList<>();
+        if (resource.getResourceTags() != null) {
+            for (ResourceTagEntity resourceTagEntity : resource.getResourceTags()) {
+                this.resourceTags.add(new ResourceTagDTO(resourceTagEntity));
+            }
+        }
     }
 }

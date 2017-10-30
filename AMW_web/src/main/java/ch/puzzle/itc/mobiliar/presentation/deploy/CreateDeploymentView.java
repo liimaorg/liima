@@ -159,6 +159,14 @@ public class CreateDeploymentView implements Serializable {
         return isApplicationserverSelected() ? selectedApplicationServerGroup.getId() : null;
     }
 
+    public List<Integer> getSelectedApplicationServerGroupForRedeployment() {
+        List<Integer> appServerGroupIds = new ArrayList<>();
+        for (DeploymentEntity deploymentEntity : selectedDeploymentsForRedeployment) {
+            appServerGroupIds.add(deploymentEntity.getResourceGroup().getId());
+        }
+        return appServerGroupIds;
+    }
+
     public boolean isApplicationserverSelected() {
         return selectedApplicationServerGroup != null;
     }

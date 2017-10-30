@@ -27,6 +27,7 @@ import javax.persistence.EntityManager;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 
 public class ResourceRelationRepository {
 
@@ -39,6 +40,16 @@ public class ResourceRelationRepository {
                 .createQuery(
                         "select rel from ConsumedResourceRelationEntity rel left join rel.slaveResource r left join r.resourceGroup rg where rel.masterResource=:master and LOWER(rg.name)=:name",
                         ConsumedResourceRelationEntity.class)
+                .setParameter("master", masterResource).setParameter("name", slaveResourceGroupName.toLowerCase())
+                .getResultList();
+    }
+
+    public List<ProvidedResourceRelationEntity> getResourceRelationOfOtherMasterResourceGroupsBySlaveResourceGroupName(
+            ResourceEntity masterResource, String slaveResourceGroupName) {
+        return entityManager
+                .createQuery(
+                        "select rel from ProvidedResourceRelationEntity rel left join rel.slaveResource r left join r.resourceGroup rg where LOWER(rg.name)=:name and rel.masterResource<>:master",
+                        ProvidedResourceRelationEntity.class)
                 .setParameter("master", masterResource).setParameter("name", slaveResourceGroupName.toLowerCase())
                 .getResultList();
     }

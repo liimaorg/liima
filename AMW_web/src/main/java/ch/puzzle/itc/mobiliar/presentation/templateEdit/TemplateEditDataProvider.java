@@ -22,9 +22,9 @@ package ch.puzzle.itc.mobiliar.presentation.templateEdit;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -38,7 +38,6 @@ import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
-import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
@@ -46,9 +45,7 @@ import lombok.Setter;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
-import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,7 +60,7 @@ public class TemplateEditDataProvider implements Serializable {
 	TemplatesScreenDomainService templatesService;
 
 	@Inject
-	Permissions permission;
+    PermissionBoundary permission;
 
 	@Inject
 	SessionContext context;
@@ -105,7 +102,7 @@ public class TemplateEditDataProvider implements Serializable {
 	boolean canAdd;
 
 	@Getter
-	boolean canEdit;
+	boolean canRead;
 
 	@Getter
 	boolean canListInstanceTemplates;
@@ -135,15 +132,15 @@ public class TemplateEditDataProvider implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		canListInstanceTemplates = permission.hasPermission(Permission.INSTANCE_TEMP_LIST);
-		canListResTypeTemplates = permission.hasPermission(Permission.RES_RESTYPE_TEMPLATE_LIST);
-		canEdit = false;
+		canListInstanceTemplates = permission.hasPermission(Permission.RESOURCE_TEMPLATE, Action.READ);
+		canListResTypeTemplates = permission.hasPermission(Permission.RESOURCETYPE_TEMPLATE, Action.READ);
+		canRead = false;
 		canAdd = false;
 		canDelete = false;
 	}
 
 	private void refreshPermissions() {
-		canEdit = canEdit();
+		canRead = canRead();
 		canAdd = canAdd();
 		canDelete = canDelete(getResourceType());
 	}
@@ -226,22 +223,24 @@ public class TemplateEditDataProvider implements Serializable {
 
 	private boolean canAdd() {
 		return context.getIsGlobal()
-				&& permission.hasPermissionToTemplateModify(resourceOrType,
-				userSettings.isTestingMode());
+				&& permission.hasPermissionToAddTemplate(resourceOrType, userSettings.isTestingMode());
 	}
 
 	private boolean canDelete(ResourceTypeEntity resourceType) {
+		// context has to be global
 		return context.getIsGlobal()
 				&& (canAddEditOrDeleteShakedownTest() || (isEditResource() ? permission
-						.hasPermission(Permission.DELETE_RES_TEMPLATE) : permission
-						.hasPermission(Permission.DELETE_RESTYPE_TEMPLATE)));
+						.hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.DELETE,
+								(ResourceEntity) resourceOrType, null) : permission
+						.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.DELETE,
+								null, resourceType)));
 	}
 
-	private boolean canEdit() {
-		return context.getIsGlobal()
-				&& (canAddEditOrDeleteShakedownTest() || (isEditResource() ? permission
-						.hasPermission(Permission.EDIT_RES_TEMP) : permission
-						.hasPermission(Permission.EDIT_RESTYPE_TEMPLATE)));
+	private boolean canRead() {
+		// context has to be global
+		return context.getIsGlobal() && (canAddEditOrDeleteShakedownTest() || (isEditResource() ?
+				permission.hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.READ, (ResourceEntity) resourceOrType, null) :
+				permission.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.READ, null, (ResourceTypeEntity) resourceOrType)));
 	}
 
 	private boolean canAddEditOrDeleteShakedownTest() {

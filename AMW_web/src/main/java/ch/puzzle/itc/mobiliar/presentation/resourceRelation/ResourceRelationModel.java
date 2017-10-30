@@ -32,7 +32,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
@@ -78,7 +79,7 @@ public class ResourceRelationModel implements Serializable {
     ResourceRelationService resourceRelationService;
 
     @Inject
-    Permissions permissionBoundary;
+    PermissionBoundary permissionBoundary;
 
     @Inject
     ForeignableBoundary foreignableBoundary;
@@ -140,10 +141,7 @@ public class ResourceRelationModel implements Serializable {
     private boolean allowedToSelectRuntime = false;
 
     @Getter
-    private boolean allowedToListConsumedRelations = false;
-
-    @Getter
-    private boolean allowedToListProvidedRelations = false;
+    private boolean allowedToListRelations = false;
 
     @Getter
     private boolean allowedToListResourceTypeRelations = false;
@@ -160,13 +158,6 @@ public class ResourceRelationModel implements Serializable {
     @Getter
     private boolean allowedToJumpToRelatedResourceEditScreen = false;
 
-
-    @Getter
-    private boolean canAddConsumedRelations;
-
-    @Getter
-    private boolean canAddProvidedRelations;
-
     private Integer currentRelationId;
 
     private Identifiable currentSelectedResourceOrType;
@@ -182,36 +173,25 @@ public class ResourceRelationModel implements Serializable {
 
     @PostConstruct
     public void init() {
-        allowedToListConsumedRelations = permissionBoundary.hasPermission(Permission.CONSUMED_RES_LIST);
-        allowedToListProvidedRelations = permissionBoundary.hasPermission(Permission.PROVIDED_RES_LIST);
-        allowedToListResourceTypeRelations = permissionBoundary
-                .hasPermission(Permission.REL_RESTYPE_PANEL_LIST);
-        allowedToJumpToRelatedResourceEditScreen = permissionBoundary.hasPermission(Permission.EDIT_RES);
+        allowedToJumpToRelatedResourceEditScreen = permissionBoundary.hasPermission(Permission.RESOURCE, Action.UPDATE);
     }
 
     public void onChangedResource(@Observes ResourceEntity resourceEntity) throws GeneralDBException {
-        allowedToSelectRuntime = permissionBoundary.hasPermission(Permission.SELECT_RUNTIME);
-        allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelation(resourceEntity);
-        canAddConsumedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, false);
-        canAddProvidedRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, true);
-        allowedToAddRelations = canAddConsumedRelations || canAddProvidedRelations;
+        allowedToSelectRuntime = permissionBoundary.hasPermission(Permission.RESOURCE, sessionContext.getCurrentContext(), Action.UPDATE, resourceEntity, null);
+        allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelation(resourceEntity, sessionContext.getCurrentContext());
+        allowedToAddRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, sessionContext.getCurrentContext());
+        allowedToListRelations = permissionBoundary.hasPermission(Permission.RESOURCE, sessionContext.getCurrentContext(), Action.READ, resourceEntity, null);
         currentSelectedResourceOrType = resourceEntity;
 
         canShowSoftlinkRelations = sessionContext.getIsGlobal()
                 && hasConsumableSoftlinkSuperType(resourceEntity)
                 && getResourceSoftlinkRelation() != null;
 
+        canShowAddSoftlinkRelationButton = canShowSoftlinkRelations
+                && permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity, null);
 
-        canShowAddSoftlinkRelationButton = sessionContext.getIsGlobal()
-                && getResourceSoftlinkRelation() == null
-                && hasConsumableSoftlinkSuperType(resourceEntity)
-                && permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF);
-
-        canEditSoftlinkRelation = sessionContext.getIsGlobal()
-                && getResourceSoftlinkRelation() != null
-                && hasConsumableSoftlinkSuperType(resourceEntity)
-                && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), createForeignableDto(getResourceSoftlinkRelation()))
-                && permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF);
+        canEditSoftlinkRelation = canShowAddSoftlinkRelationButton
+                && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), createForeignableDto(getResourceSoftlinkRelation()));
 
         reloadValues();
     }
@@ -223,14 +203,12 @@ public class ResourceRelationModel implements Serializable {
         return null;
     }
 
-    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity)
-            throws GeneralDBException {
-        allowedToSelectRuntime = false;
-        canAddConsumedRelations = false;
-        canAddProvidedRelations = false;
+    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) throws GeneralDBException {
+        allowedToListResourceTypeRelations = permissionBoundary.hasPermission(Permission.RESOURCETYPE, null, Action.READ, null, resourceTypeEntity);
+        allowedToAddRelations = permissionBoundary.hasPermissionToAddRelatedResourceType(resourceTypeEntity);
         allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelationType(resourceTypeEntity);
-        // FIXME: find the correct permission
-        allowedToAddRelations = true;
+        allowedToSelectRuntime = false;
+        allowedToAddRelations = false;
         currentSelectedResourceOrType = resourceTypeEntity;
         canShowSoftlinkRelations = false;
         canShowAddSoftlinkRelationButton = false;
@@ -774,17 +752,11 @@ public class ResourceRelationModel implements Serializable {
                     && hasConsumableSoftlinkSuperType(getCurrentSelectedResource())
                     && getResourceSoftlinkRelation() != null;
 
+            canShowAddSoftlinkRelationButton = canShowSoftlinkRelations
+                    && permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.UPDATE, getCurrentSelectedResource(), null);
 
-            canShowAddSoftlinkRelationButton = sessionContext.getIsGlobal()
-                    && getResourceSoftlinkRelation() == null
-                    && hasConsumableSoftlinkSuperType(getCurrentSelectedResource())
-                    && permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF);
-
-            canEditSoftlinkRelation = sessionContext.getIsGlobal()
-                    && getResourceSoftlinkRelation() != null
-                    && hasConsumableSoftlinkSuperType(getCurrentSelectedResource())
-                    && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), createForeignableDto(getResourceSoftlinkRelation()))
-                    && permissionBoundary.hasPermission(Permission.SET_SOFTLINK_ID_OR_REF);
+            canEditSoftlinkRelation = canShowAddSoftlinkRelationButton
+                    && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), createForeignableDto(getResourceSoftlinkRelation()));
 
             reloadValues();
 

@@ -20,9 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.presentation.deploy;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentService.DeploymentFilterTypes;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService.SortingDirectionType;
@@ -34,8 +33,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter;
-import ch.puzzle.itc.mobiliar.common.util.CustomFilter.ComperatorFilterOption;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import ch.puzzle.itc.mobiliar.presentation.common.ContextDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.common.ReleaseSelectionDataProvider;
@@ -60,7 +58,7 @@ import java.util.logging.Logger;
 public class DeployScreenDataProvider implements Serializable {
 
     private static final int DEFAULT_ITEMS_PER_PAGE = 10;
-    public static final String COMMA = ",";
+    private static final String COMMA = ",";
     private static final long serialVersionUID = -6418412617050387765L;
     @Getter
     private String filterApplicationNameViewParam;
@@ -87,6 +85,7 @@ public class DeployScreenDataProvider implements Serializable {
         public String getLabel() {
             return label;
         }
+        // TODO check Action.U
     }
 
     /*
@@ -143,11 +142,13 @@ public class DeployScreenDataProvider implements Serializable {
 
     // Filters and sorting
     private DeploymentFilterTypes selectedFilter;
-    private String appServerNameFilter;
+
     // defaultmässig soll nach deployment datum absteigend sortiert werden
     // solange nichts anderes gewählt wird vom user
     private SortingDirectionType sortingDirection = SortingDirectionType.DESC;
     private deployscreenColDescriptor sortingColumn = deployscreenColDescriptor.DEPLOY_TIME;
+
+    private static final boolean useAngular = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_GUI));
 
     @Getter
     @Setter
@@ -171,7 +172,7 @@ public class DeployScreenDataProvider implements Serializable {
     ContextDataProvider contextDataProvider;
 
     @Inject
-    DeploymentService deploymentService;
+    DeploymentBoundary deploymentBoundary;
 
     @Inject
     PermissionService permissionService;
@@ -251,14 +252,15 @@ public class DeployScreenDataProvider implements Serializable {
         return hasFilterViewParam(filterApplicationNameViewParam) || hasFilterViewParam(filterAppServerNameViewParam) || hasFilterViewParam(filterEnvironmentNameParam) || hasFilterViewParam(filterTrackingIdParam);
     }
 
-    private void creatAndAddNewFilter(DeploymentFilterTypes filterType, String value) {
-        CustomFilter filter = new CustomFilter(filterType.getFilterDisplayName(), filterType.getFilterTabColumnName(), filterType.getFilterTableJoining(),filterType.getFilterType());
-        filter.setComperatorSelection(ComperatorFilterOption.equals);
+    private void creatAndAddNewFilter(DeploymentFilterTypes deploymentFilterType, String value) {
+        CustomFilter filter = CustomFilter.builder(deploymentFilterType).build();
         filter.setValue(value);
-
         getCustomFilterComp().getSelectedFilterList().add(filter);
     }
 
+    public boolean isAngularEnabled() {
+        return useAngular;
+    }
 
     class MyComparator implements Comparator<DeploymentFilterTypes> {
         @Override
@@ -282,9 +284,15 @@ public class DeployScreenDataProvider implements Serializable {
 
             if (selectedFilter != null) {
                 CustomFilter filter;
-
-                filter = new CustomFilter(selectedFilter.getFilterDisplayName(), selectedFilter.getFilterTabColumnName(), selectedFilter.getFilterTableJoining(), selectedFilter.getFilterType());
-                filter.setComperatorSelection(getTypedComperatorSelectionList(filter).isEmpty() ? null : getTypedComperatorSelectionList(filter).get(0));
+                filter = CustomFilter.builder(selectedFilter).build();
+                if (selectedFilter.getFilterType().equals(FilterType.IntegerType)) {
+                    filter.setComparatorSelection(ComparatorFilterOption.equals);
+                } else {
+                    ComparatorFilterOption comperatorSelection = filter.getTypedComparatorSelectionList().isEmpty() ?
+                            null :
+                            filter.getTypedComparatorSelectionList().get(0);
+                    filter.setComparatorSelection(comperatorSelection);
+                }
                 if (selectedFilter.equals(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV) && hasAlreadySpecialTypeFilter(getSelectedFilterList())) {
                     GlobalMessageAppender.addErrorMessage("This filter is already set.");
                 } else if (selectedFilter.equals(DeploymentFilterTypes.RELEASE)) {
@@ -357,14 +365,21 @@ public class DeployScreenDataProvider implements Serializable {
                 for (DeploymentState state : DeploymentState.values()) {
                     states.put(state.getDisplayName(), state.name());
                 }
-                filter.setDropDownItems(states);
+                filter.setDropDownItemsMap(states);
                 filter.setEnumType(DeploymentState.class);
+            } else if (filter.getFilterDisplayName().equals(DeploymentFilterTypes.DEPLOYMENT_REASON.getFilterDisplayName())) {
+                TreeMap<String, String> reasons = new TreeMap<>();
+                for (DeploymentFailureReason reason: DeploymentFailureReason.values()) {
+                    reasons.put(reason.getDisplayName(), reason.name());
+                }
+                filter.setDropDownItemsMap(reasons);
+                filter.setEnumType(DeploymentFailureReason.class);
             } else if (filter.getFilterDisplayName().equals(DeploymentFilterTypes.RELEASE.getFilterDisplayName())) {
                 Map<String, String> releaseMap = new LinkedHashMap<>();
                 for (ReleaseEntity r : getReleases()) {
                     releaseMap.put(r.getName(), CustomFilter.convertDateToString(r.getInstallationInProductionAt()));
                 }
-                filter.setDropDownItems(releaseMap);
+                filter.setDropDownItemsMap(releaseMap);
             } else if (filter.getFilterDisplayName().equals(DeploymentFilterTypes.DEPLOYMENT_PARAMETER.getFilterDisplayName())) {
                 filter.setDropDownItems(converToStringList(getAllDeployParamKeys()));
             }
@@ -460,7 +475,7 @@ public class DeployScreenDataProvider implements Serializable {
 
     public DeploymentEntity doConfirmAction(DeploymentEntity deployment, boolean reload) {
         try {
-            deployment = deploymentService.confirmDeployment(deployment.getId(), deployment.isSendEmailConfirmation(), deployment.isCreateTestAfterDeployment(),
+            deployment = deploymentBoundary.confirmDeployment(deployment.getId(), deployment.isSendEmailConfirmation(), deployment.isCreateTestAfterDeployment(),
                     deployment.isCreateTestForNeighborhoodAfterDeployment(), deployment.isSimulating());
             GlobalMessageAppender.addSuccessMessage("Deployment " + deployment.getId() + " confirmed");
 
@@ -478,7 +493,7 @@ public class DeployScreenDataProvider implements Serializable {
         return doConfirmAction(deployment, true);
     }
 
-    public List<DeploymentEntity> getSelectedDeployments() {
+    private List<DeploymentEntity> getSelectedDeployments() {
         LinkedList<DeploymentEntity> result = new LinkedList<>();
         for (DeploymentEntity deployment : pendingDeployments) {
             if (checkedDeployments.get(deployment.getId()) != null && checkedDeployments.get(deployment.getId())) {
@@ -535,7 +550,9 @@ public class DeployScreenDataProvider implements Serializable {
     public void setToggleDeploymentsSelection(Boolean checked) {
         toggleDeploymentsSelection = checked;
         for (DeploymentEntity deployment : pendingDeployments) {
-            checkedDeployments.put(deployment.getId(), checked);
+            if (isRedeployPossible(deployment)) {
+                checkedDeployments.put(deployment.getId(), checked);
+            }
         }
     }
 
@@ -545,7 +562,7 @@ public class DeployScreenDataProvider implements Serializable {
 
     public void doRejectAction(DeploymentEntity deployment, boolean reload) {
         try {
-            deploymentService.rejectDeployment(deployment.getId());
+            deploymentBoundary.rejectDeployment(deployment.getId());
             GlobalMessageAppender.addSuccessMessage("Deployment " + deployment.getId() + " rejeced");
             if (reload) {
                 reloadDeployments(true);
@@ -562,7 +579,7 @@ public class DeployScreenDataProvider implements Serializable {
 
     public void cancelDeployment(DeploymentEntity deployment, boolean reload) {
         try {
-            deploymentService.cancelDeployment(deployment.getId());
+            deploymentBoundary.cancelDeployment(deployment.getId());
             GlobalMessageAppender.addSuccessMessage("Deployment " + deployment.getId() + " canceled");
             if (reload) {
                 reloadDeployments(true);
@@ -579,7 +596,7 @@ public class DeployScreenDataProvider implements Serializable {
 
     public void changeDeploymentTime(DeploymentEntity deployment, boolean reload) {
         try {
-            deploymentService.changeDeploymentDate(deployment.getId(), deployment.getDeploymentDate());
+            deploymentBoundary.changeDeploymentDate(deployment.getId(), deployment.getDeploymentDate());
             GlobalMessageAppender.addSuccessMessage("Date of deployment " + deployment.getId() + " changed");
             if (reload) {
                 reloadDeployments(true);
@@ -595,23 +612,23 @@ public class DeployScreenDataProvider implements Serializable {
 
 
     public boolean isCancelPossible(DeploymentEntity deployment) {
-        return deploymentService.isCancelPossible(deployment).isPossible();
+        return deploymentBoundary.isCancelPossible(deployment).isPossible();
     }
 
     public boolean isConfirmPossible(DeploymentEntity deployment) {
-        return deploymentService.isConfirmPossible(deployment).isPossible();
+        return deploymentBoundary.isConfirmPossible(deployment).isPossible()&& permissionService.hasPermissionForDeploymentUpdate(deployment);
     }
 
     public boolean isRejectPossible(DeploymentEntity deployment) {
-        return deploymentService.isConfirmPossible(deployment).isPossible();
+        return deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment);
     }
 
     public boolean isChangeDeploymentDatePossible(DeploymentEntity deployment) {
-        return deploymentService.isChangeDeploymentDatePossible(deployment).isPossible();
+        return deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment);
     }
 
     public boolean isRedeployPossible(DeploymentEntity deployment) {
-        return permissionService.hasPermissionToDeploy();
+        return permissionService.hasPermissionForDeploymentCreation(deployment);
     }
 
     public void reloadDeployments(boolean countAgain) {
@@ -750,10 +767,6 @@ public class DeployScreenDataProvider implements Serializable {
 
     public boolean hasLogFiles(int deploymentId) {
         return controller.getLogFileNames(deploymentId).length > 0;
-    }
-
-    public String getAppServerNameFilter() {
-        return appServerNameFilter;
     }
 
     public boolean hasFilterSelected() {
@@ -901,11 +914,11 @@ public class DeployScreenDataProvider implements Serializable {
             }
         }
 
-        return permissionService.hasPermissionToDeploy() && isEditAllowed;
+        return isEditAllowed && (permissionService.hasPermissionToCreateDeployment() || permissionService.hasPermissionToEditDeployment());
     }
 
     public boolean canRedeploy() {
-        return permissionService.hasPermissionToDeploy() && !getSelectedDeployments().isEmpty();
+        return permissionService.hasPermissionToCreateDeployment() && !getSelectedDeployments().isEmpty();
     }
 
     public boolean hasDeploymentParameter() {

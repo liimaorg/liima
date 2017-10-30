@@ -20,23 +20,29 @@
 
 package ch.puzzle.itc.mobiliar.presentation.resourcesedit;
 
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
+import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Date;
+
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EditResourceViewTest {
@@ -45,17 +51,29 @@ public class EditResourceViewTest {
 	
 	@Mock
 	ResourceTypeEntity resourceType;
+
+	@Mock
+	PermissionBoundary permissionBoundary;
+
+	@Mock
+	SessionContext sessionContext;
+
+	@Mock
+	ResourceLocator resourceLocator;
 	
 	@Before
 	public void setup(){
 		context.resourceType = resourceType;
+		context.permissionBoundary = permissionBoundary;
+		context.sessionContext = sessionContext;
+		context.resourceLocator = resourceLocator;
 	}
 	
 	
 	@Test
 	public void testGetDefaultResourceTypeCapitalizedName() {
-		Mockito.when(resourceType.getName()).thenReturn(DefaultResourceTypeDefinition.APPLICATION.name());
-		Mockito.when(resourceType.isDefaultResourceType()).thenReturn(true);
+		when(resourceType.getName()).thenReturn(DefaultResourceTypeDefinition.APPLICATION.name());
+		when(resourceType.isDefaultResourceType()).thenReturn(true);
 		String displayName = context.getCapitalizedResourceTypeName();
 		Assert.assertEquals("Application", displayName);
 	}
@@ -123,4 +141,58 @@ public class EditResourceViewTest {
 		Assert.assertTrue(context.existsForThisRelease(group));
 		
 	}
+
+	@Test
+	public void canSaveChangesShouldInvokeTheRightMethodsOfTheBoundaryWhenEditingResourceType(){
+		//given
+		ResourceTypeEntity type = new ResourceTypeEntity();
+		context.resourceType = type;
+		ContextEntity ce = new ContextEntity();
+		when(sessionContext.getCurrentContext()).thenReturn(ce);
+		// when
+		context.canSaveChanges();
+		//then
+		verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCETYPE, ce, Action.UPDATE, null, type);
+	}
+
+	@Test
+	public void canSaveChangesShouldInvokeTheRightMethodsOfTheBoundaryWhenEditingResource(){
+		//given
+		ResourceGroupEntity group = new ResourceGroupEntity();
+		ResourceEntity r = ResourceFactory.createNewResource(group);
+		ResourceTypeEntity type = new ResourceTypeEntity();
+		type.setId(9);
+		r.setResourceType(type);
+		context.resource = r;
+		ContextEntity ce = new ContextEntity();
+		when(sessionContext.getCurrentContext()).thenReturn(ce);
+		// when
+		context.canSaveChanges();
+		//then
+		verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCE, ce, Action.UPDATE, r, type);
+	}
+
+	@Test
+	public void shouldInvokePermissionBoundaryOnSetResourceIdFromParam() {
+		//given
+		ResourceGroupEntity group = new ResourceGroupEntity();
+		ResourceEntity r = ResourceFactory.createNewResource(group);
+		ResourceTypeEntity type = new ResourceTypeEntity();
+		type.setName("Test");
+		r.setId(7);
+		r.setResourceType(type);
+		context.resource = r;
+		when(context.resourceLocator.getResourceWithGroupAndRelatedResources(8)).thenReturn(r);
+		//when
+		try {
+			context.setResourceIdFromParam(8);
+		} catch (NullPointerException npe) {}
+		finally {
+			//then
+			verify(permissionBoundary, times(1)).checkPermissionAndFireException(Permission.RESOURCE, READ, "edit resources");
+			verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCETYPE, Action.READ);
+			verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCE_TEST_GENERATION, sessionContext.getCurrentContext(), Action.READ, r, null);
+		}
+	}
+
 }

@@ -20,8 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -32,7 +31,7 @@ import java.util.List;
 
 @XmlRootElement(name = "deploymentRequest")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@Getter @Setter
+@Data
 public class DeploymentRequestDTO {
 	
 	private String appServerName;
@@ -47,25 +46,9 @@ public class DeploymentRequestDTO {
 	private Boolean sendEmail = false; // optional
 	private String releaseName; // optional
 	private List<DeploymentParameterDTO> deploymentParameters; // optional
-	
+	private List<Integer> contextIds; // optional
+
 	public DeploymentRequestDTO() {	
-	}
-	
-	/**
-	 * @deprecated Only here for backwards compatibility of the rest API
-	 */
-	@Deprecated
-	public void setAppsWithMvnVersion(List<AppWithMvnVersionDTO> appsWithMvnVersion) {
-		if (appsWithMvnVersion == null) {
-			this.appsWithVersion = null;
-			return;
-		}
-		
-		this.appsWithVersion = new LinkedList<>();
-		
-		for(AppWithMvnVersionDTO app : appsWithMvnVersion) {
-			this.appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getMavenVersion()));
-		}
 	}
 	
 	//copy constructor
@@ -96,6 +79,7 @@ public class DeploymentRequestDTO {
 				deploymentParameters.add(new DeploymentParameterDTO(parameter.getKey(), parameter.getValue()));
 			}
 		}
+		contextIds = deploymentRequestDto.getContextIds();
 	}
 
 	public void addDeploymentParameter(String keyName, String value){

@@ -34,6 +34,8 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import org.apache.commons.lang.StringUtils;
 
 import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
@@ -66,13 +68,24 @@ public class ResourceTypeDomainService {
 	private CommonDomainService commonService;
 
 	@Inject
+	private PermissionService permissionService;
+
+	@Inject
 	private ContextDomainService context;
 
 	@Inject
 	private ResourcesScreenQueries queries;
 
+	public List<ResourceTypeEntity> getAllResourceTypesWithoutChildren() {
+		return entityManager.createQuery("select n from ResourceTypeEntity n order by n.name asc").getResultList();
+	}
+
 	public List<ResourceTypeEntity> getResourceTypes() {
 		return QueryUtils.fetch(ResourceTypeEntity.class, fetchAllResourceTypes(), 0, -1);
+	}
+
+	public ResourceTypeEntity getResourceType(Integer resourceTypeId) {
+		return entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 	}
 
 	public List<ResourceRelationTypeEntity> loadRelatedResourceTypeRelations(Integer resourceTypeId) {
@@ -99,7 +112,7 @@ public class ResourceTypeDomainService {
 	 * @throws ElementAlreadyExistsException
 	 * @throws ResourceTypeNotFoundException
 	 */
-	@HasPermission(permission = Permission.NEW_RESTYPE)
+	@HasPermission(permission = Permission.RESOURCETYPE, action = Action.CREATE)
 	public ResourceType addResourceType(String newResourceTypeName, Integer parentId) throws ElementAlreadyExistsException, ResourceTypeNotFoundException {
 
 		ResourceType result = null;
@@ -156,7 +169,7 @@ public class ResourceTypeDomainService {
 	 * @throws ResourceNotFoundException
 	 * @throws ResourceTypeNotFoundException
 	 */
-	@HasPermission(permission = Permission.DELETE_RESTYPE)
+	@HasPermission(permission = Permission.RESOURCETYPE, action = Action.DELETE)
 	public void removeResourceType(Integer resourceTypeId) throws ResourceNotFoundException, ResourceTypeNotFoundException {
 		ResourceTypeEntity resourceTypeEntity = commonService.getResourceTypeEntityById(resourceTypeId);
 		removeResourceTypeEntity(resourceTypeEntity);
@@ -207,9 +220,9 @@ public class ResourceTypeDomainService {
 		return entityManager.createQuery(q);
 	}
 
-	@HasPermission(permission = Permission.ADD_RELATED_RESOURCETYPE)
 	public void createResourceTypeRelation(Integer resTypeId, Integer relResTypeId, String identifier) throws ResourceTypeNotFoundException {
 		ResourceTypeEntity resType = commonService.getResourceTypeEntityById(resTypeId);
+		permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, resType, null);
 		ResourceTypeEntity relResType = commonService.getResourceTypeEntityById(relResTypeId);
 		ResourceRelationTypeEntity relation = new ResourceRelationTypeEntity();
 		relation.setResourceTypes(resType, relResType);
@@ -218,13 +231,12 @@ public class ResourceTypeDomainService {
 		entityManager.persist(relation);
 	}
 
-	@HasPermission(permission = Permission.DELETE_CONS_OR_PROVIDED_RELATION)
 	public void removeResourceTypeRelation(Integer relResTypeId) throws ResourceTypeNotFoundException {
 		ResourceRelationTypeEntity resRelType = getResourceRelationTypeById(relResTypeId);
-
+		permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, resRelType.getResourceTypeA(), null);
+		permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, resRelType.getResourceTypeB(), null);
 		resRelType.getResourceTypeA().getResourceRelationTypesA().remove(resRelType);
 		resRelType.getResourceTypeB().getResourceRelationTypesB().remove(resRelType);
-		
 		entityManager.remove(resRelType);
 	}
 

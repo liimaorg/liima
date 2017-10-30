@@ -28,8 +28,10 @@ import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourcesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
@@ -37,7 +39,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.Permissions;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -88,7 +89,13 @@ public abstract class BaseUseCaseIntegrationTest extends BaseIntegrationTest {
     private ResourcesScreenDomainService resourcesScreenDomainService;
 
     @Inject
+    private ResourceBoundary resourceBoundary;
+
+    @Inject
     private ResourceTypeProvider resourceTypeProvider;
+
+    @Inject
+    private ResourceTypeRepository resourceTypeRepository;
 
 
     protected void createMinorReleasesForResource(String resourceName, String... minorReleases) throws ForeignableOwnerViolationException, AMWException {
@@ -418,12 +425,12 @@ public abstract class BaseUseCaseIntegrationTest extends BaseIntegrationTest {
     protected void createAppserver(String name, String... releaseNames) throws AMWException, ForeignableOwnerViolationException {
         List<ReleaseEntity> releases = createReleasesFromNames(releaseNames);
 
-        ResourceTypeEntity appserverType = resourceTypeProvider.getFromDB(DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
+        ResourceTypeEntity appserverType = resourceTypeRepository.getByName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
         Resource appserver = null;
         if (!releases.isEmpty()){
             // create as for first release
             ReleaseEntity firstRelease = releases.remove(0);
-            appserver = resourcesScreenDomainService.createNewResourceByName(ForeignableOwner.AMW, name, appserverType.getId(), firstRelease.getId());
+            appserver = resourceBoundary.createNewResourceByName(ForeignableOwner.AMW, name, appserverType.getId(), firstRelease.getId());
 
             for(ReleaseEntity followingRelease : releases){
                 // create release for following releases of appserver
@@ -449,11 +456,11 @@ public abstract class BaseUseCaseIntegrationTest extends BaseIntegrationTest {
         ResourceEntity asResource = getResourceByNameAndRelease(applicationServerName, asReleaseName);
         ResourceEntity appResource = getResourceByNameAndRelease(applicationName, appReleaseName);
 
-        ResourceTypeEntity appserverType = resourceTypeProvider.getFromDB(DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
-        ResourceTypeEntity appType = resourceTypeProvider.getFromDB(DefaultResourceTypeDefinition.APPLICATION.name());
+        ResourceTypeEntity appserverType = resourceTypeRepository.getByName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
+        ResourceTypeEntity appType = resourceTypeRepository.getByName(DefaultResourceTypeDefinition.APPLICATION.name());
         ResourceRelationTypeEntity resRelType = resourceTypeProvider.getResourceRelationTypeIfAvailableIncludingParents(appserverType, appType, null);
 
-        ConsumedResourceRelationEntity consumedResourceRelationEntity = asResource.addConsumedResourceRelation(appResource, resRelType, 1, ForeignableOwner.AMW);
+        ConsumedResourceRelationEntity consumedResourceRelationEntity = asResource.addConsumedResourceRelation(appResource, resRelType, null, ForeignableOwner.AMW);
         entityManager.persist(consumedResourceRelationEntity);
         Set<ConsumedResourceRelationEntity> relations = new HashSet<>();
         relations.add(consumedResourceRelationEntity);

@@ -1,0 +1,83 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/newPermissions_migrationOfResourcePermissions.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="newPermissions_migrationResourcePermissions" >
+        <comment>
+            migrating existing CRUD_RESOURCE permissions to restrictions (ADD_APP => RESOURCE)
+        </comment>
+
+        <!--NEW_RES("New resource button. You can find this button in APPLICATIONSERVER/NODE/NOT DEFAULT RESOURCETYPE."), > CREATE for RESOURCES OF ALL RESOURCETYPES -->
+        <!--ADD_APPSERVER("Add application server. Path: Apps"),-->
+        <!--ADD_APP("Add new application and/or application server. Path: Apps"),-->
+        <!--ADD_NODE("Add a new node to an application server. Path_1: Apps -> Edit(application server) -> Add Node; Path_2: Resources -> APPLICATIONSERVER -> Edit -> Add Node"),-->
+        <!--DELETE_RES("Delete Resource. In all resource type screen. Path -> Resources -> select one Resource Type."), > DELETE for RESOURCES OF ALL RESOURCETYPES -->
+        <!--DELETE_APPSERVER("Delete application server. Path: Apps"),-->
+        <!--DELETE_APP("Delete application. Path: Apps"),-->
+        <!--EDIT_RES("With this permission you can see the edit link"), > READ RESOURCES OF ALL RESOURCETYPES-->
+        <!--EDIT_APP("Edit application. Path: Apps"), > READ-->
+        <!--EDIT_APP_SERVER("Edit application server. Path: Apps"), > READ-->
+
+        <!-- APPSERVER -->
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'CREATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'ADD_APPSERVER' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'EDIT_APP_SERVER' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'DELETE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'DELETE_APPSERVER' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <!-- APP -->
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'CREATE', 1 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'ADD_APP' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 1 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'EDIT_APP' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'DELETE', 1 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'DELETE_APP' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <!-- NODE -->
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'CREATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'ADD_NODE' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <!-- RES -->
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'CREATE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'NEW_RES' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'READ', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'EDIT_RES' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+        <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'DELETE', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'DELETE_RES' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
+            <where>SEQ_NAME='restrictionId'</where>
+        </update>
+
+        <update tableName="TAMW_restriction">
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'ADD_APP')" />
+            <column name="resourcetype_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_resourcetype WHERE name = 'APPLICATIONSERVER')" />
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'ADD_APPSERVER' or value = 'EDIT_APP_SERVER' or value = 'DELETE_APPSERVER')</where>
+        </update>
+
+        <update tableName="TAMW_restriction">
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'ADD_APP')" />
+            <column name="resourcetype_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_resourcetype WHERE name = 'APPLICATION')" />
+            <column name="v" type="INTEGER" valueNumeric="0" />
+            <where>v = 1 and permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'ADD_APP' or value = 'EDIT_APP' or value = 'DELETE_APP')</where>
+        </update>
+
+        <update tableName="TAMW_restriction">
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'ADD_APP')" />
+            <column name="resourcetype_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_resourcetype WHERE name = 'NODE')" />
+            <where>permission_id = (SELECT id FROM TAMW_permission WHERE value = 'ADD_NODE')</where>
+        </update>
+
+        <update tableName="TAMW_restriction">
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'ADD_APP')" />
+            <where>permission_id IN (SELECT id FROM TAMW_permission WHERE value = 'NEW_RES' or value = 'EDIT_RES' or value = 'DELETE_RES')</where>
+        </update>
+
+        <update tableName="TAMW_permission">
+            <column name="value" value="RESOURCE" />
+            <where>value = 'ADD_APP'</where>
+        </update>
+
+        <delete tableName="TAMW_role_permission">
+            <where>permissions_id IN (SELECT id FROM TAMW_permission WHERE value = 'NEW_RES' OR value = 'RESOURCE' OR value = 'DELETE_APP' OR value = 'EDIT_APP' OR value = 'ADD_APPSERVER' OR value = 'DELETE_APPSERVER' OR value = 'EDIT_APP_SERVER' OR value = 'ADD_NODE' OR value = 'DELETE_RES' OR value = 'EDIT_RES')</where>
+        </delete>
+
+        <delete tableName="TAMW_permission">
+            <where>value = 'NEW_RES' OR value = 'DELETE_APP' OR value = 'EDIT_APP' OR value = 'ADD_APPSERVER' OR value = 'DELETE_APPSERVER' OR value = 'EDIT_APP_SERVER' OR value = 'ADD_NODE' OR value = 'DELETE_RES' OR value = 'EDIT_RES'</where>
+        </delete>
+
+        <rollback></rollback>
+    </changeSet>
+
+</databaseChangeLog>

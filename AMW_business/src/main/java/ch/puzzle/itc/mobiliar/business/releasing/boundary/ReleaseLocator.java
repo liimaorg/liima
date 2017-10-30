@@ -59,6 +59,20 @@ public class ReleaseLocator {
         }
     }
 
+    public ReleaseEntity getReleaseById(Integer id) throws NoResultException{
+        try {
+            return releaseRepository.find(id);
+        }
+        catch (NoResultException e) {
+            log.warning("Error occurred in query: " + e.getMessage());
+            throw e;
+        }
+        catch (Exception e) {
+            log.warning("Error occurred on database access: " + e.getMessage());
+            throw new RuntimeException("Boundary exception", e);
+        }
+    }
+
     public List<ReleaseEntity> getReleasesForResourceGroup(ResourceGroupEntity resourceGroup) throws NoResultException{
         try {
             return releaseRepository.getReleasesForResourceGroup(resourceGroup);

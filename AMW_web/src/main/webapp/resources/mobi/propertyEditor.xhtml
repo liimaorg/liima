@@ -20,7 +20,7 @@
 
         <!-- NOT ENCRYPTED -->
         <h:panelGroup rendered="${!cc.attrs.property.encrypted}">
-            <h:inputTextarea value="#{cc.attrs.property.propertyValue}" disabled="#{!propertyEditDataProvider.editableProperties and !propertyEditDataProvider.testing}"
+            <h:inputTextarea value="#{cc.attrs.property.propertyValue}" disabled="#{!propertyEditDataProvider.editableProperties}"
                              onfocus="this.className = 'propertyInputField currentContext ${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'}'"
                              onblur="setUpperContext(this, '${cc.attrs.property.propertyValue}', '${cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)}'); validateInput(this, '${cc.attrs.property.nullable}', '${cc.attrs.property.optional}', '${cc.attrs.property.validationLogic}', '${cc.attrs.property.propertyDefaultValue}', '${cc.attrs.property.mik}'); decorateInput(this, '${cc.attrs.property.mik}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue)}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue)}');"
                              styleClass="propertyInputField ${cc.attrs.property.getClassNameForPropertyInputField(propertyEditDataProvider.contextId)} ${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} ${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue) || propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue) ? '' : ' oneLine'}"
@@ -43,8 +43,10 @@
 
             <!-- RESET -->
             <h:panelGroup
-                    rendered="${(cc.attrs.property.propertyValue!=null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and propertyEditDataProvider.editableProperties and (propertyEditDataProvider.hasResetPropertyPermission() or propertyEditDataProvider.testing) }">
-                <h:selectBooleanCheckbox id="resetBox" value="#{cc.attrs.property.reset}" styleClass="${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} resetBox"
+                    rendered="${(cc.attrs.property.propertyValue != null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and (propertyEditDataProvider.editableProperties) }">
+                <h:selectBooleanCheckbox id="resetBox"
+                                         value="#{cc.attrs.property.reset}"
+                                         styleClass="${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} resetBox"
                                          onclick="checkReset(this, '${cc.attrs.property.replacedValue}', '${cc.attrs.property.propertyValue}');"/>
                 <h:outputLabel styleClass="inlineBlock" for="resetBox" value="Reset"/>
             </h:panelGroup>
@@ -53,7 +55,7 @@
 
         <!-- ENCRYPTED -->
         <h:panelGroup rendered="${cc.attrs.property.encrypted}">
-            <h:inputSecret value="#{cc.attrs.property.propertyValue}" autocomplete="off" disabled="#{!propertyEditDataProvider.editableProperties and !propertyEditDataProvider.testing}"
+            <h:inputSecret value="#{cc.attrs.property.propertyValue}" autocomplete="off" disabled="#{!propertyEditDataProvider.canDecryptProperties or !propertyEditDataProvider.editableProperties}"
                            redisplay="true" immediate="true"
                            onfocus="if(${cc.attrs.property.decrypted}){$(this.parentNode.getElementsByTagName('input')[0]).hide();$(this.parentNode.getElementsByTagName('input')[1]).show();$(this.parentNode.getElementsByTagName('input')[1]).focus();} else if(this.value=='${cc.attrs.property.propertyValue}'){this.value='';}"
                            onblur="if(${cc.attrs.property.decrypted}){setUpperContext(this, '${cc.attrs.property.propertyValue}', '${cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)}'); validateInput(this, '${cc.attrs.property.nullable}', '${cc.attrs.property.optional}', '${cc.attrs.property.validationLogic}', '${cc.attrs.property.propertyDefaultValue}', '${cc.attrs.property.mik}'); decorateInput(this, '${cc.attrs.property.mik}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue)}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue)}');} else if(this.value==''){this.value='${cc.attrs.property.propertyValue}'}"
@@ -64,7 +66,7 @@
                              value="This value must not be empty or does not match the regex #{cc.attrs.property.validationLogic}"/>
             </h:inputSecret>
             <h:inputText rendered="${cc.attrs.property.decrypted}" value="${cc.attrs.property.decryptedPropertyValue}" autocomplete="off"
-                         disabled="#{!propertyEditDataProvider.editableProperties and !propertyEditDataProvider.testing}"
+                         disabled="#{!propertyEditDataProvider.canDecryptProperties or !propertyEditDataProvider.editableProperties}"
                          redisplay="true"
                          onchange="this.parentNode.getElementsByTagName('input')[0].value=this.value;"
                          onfocus="this.className = 'propertyInputField currentContext';"
@@ -83,7 +85,7 @@
 
             <!-- RESET -->
             <h:panelGroup
-                    rendered="${(cc.attrs.property.propertyValue!=null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and propertyEditDataProvider.editableProperties and (propertyEditDataProvider.hasResetPropertyPermission() or propertyEditDataProvider.testing)}">
+                    rendered="${(cc.attrs.property.propertyValue!=null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and (propertyEditDataProvider.canDecryptProperties and propertyEditDataProvider.editableProperties)}">
                 <h:selectBooleanCheckbox value="#{cc.attrs.property.reset}" styleClass="${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} resetBox"
                                          onclick="checkReset(this, '${cc.attrs.property.replacedValue}', '${cc.attrs.property.propertyValue}');"/>
                 <h:outputText value="Reset"/>

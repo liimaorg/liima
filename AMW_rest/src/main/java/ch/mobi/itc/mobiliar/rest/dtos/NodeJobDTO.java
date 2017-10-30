@@ -21,11 +21,9 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class NodeJobDTO {
 	
 	private Integer id;

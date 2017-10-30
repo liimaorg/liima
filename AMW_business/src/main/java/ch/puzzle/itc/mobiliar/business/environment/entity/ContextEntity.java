@@ -25,7 +25,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntit
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeContextEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 import lombok.Getter;
@@ -49,9 +48,9 @@ import static javax.persistence.CascadeType.PERSIST;
 @Table(name = "TAMW_context")
 @NamedQuery(name = ContextEntity.LOAD_CONTEXT_BY_NAME_QUERY_NAME, query = "select c from ContextEntity c where c.name=:name", cacheable = true)
 @AssociationOverrides({
-        @AssociationOverride(name = "properties", joinTable = @JoinTable(name = "TAMW_context_prop")),
-        @AssociationOverride(name = "propertyDescriptors", joinTable = @JoinTable(name = "TAMW_context_propDesc")),
-        @AssociationOverride(name = "templates", joinTable = @JoinTable(name = "TAMW_context_tmplDesc"))
+        @AssociationOverride(name = "properties", joinTable = @JoinTable(name = "TAMW_context_prop", joinColumns = @JoinColumn(name="TAMW_CONTEXT_ID", referencedColumnName="ID"))),
+        @AssociationOverride(name = "propertyDescriptors", joinTable = @JoinTable(name = "TAMW_context_propDesc", joinColumns = @JoinColumn(name="TAMW_CONTEXT_ID", referencedColumnName="ID"))),
+        @AssociationOverride(name = "templates", joinTable = @JoinTable(name = "TAMW_context_tmplDesc", joinColumns = @JoinColumn(name="TAMW_CONTEXT_ID", referencedColumnName="ID")))
 })
 public class ContextEntity extends AbstractContext implements Serializable {
     public static final String LOAD_CONTEXT_BY_NAME_QUERY_NAME = "loadContextByName";
@@ -97,11 +96,6 @@ public class ContextEntity extends AbstractContext implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "context")
     @AuditMappedBy(mappedBy = "context")
     private Set<ResourceTypeContextEntity> resourceTypeContextEntities;
-
-    @Getter
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "context")
-    @NotAudited
-    private Set<PermissionEntity> permissions;
 
     @Getter
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "context")

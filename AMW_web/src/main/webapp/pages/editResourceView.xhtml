@@ -44,24 +44,28 @@
     <ui:define name="headerButtons">
         <h:panelGroup id="saveButtons">
             <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown"><h:commandButton onclick="disableChangeCheck();showLoader();"
-                                                    styleClass="btn primary right"
-                                                    action="#{propertyEditController.save()}" execute="@form"
-                                                    rendered="#{editResourceView.canSaveChanges()}" value="Save changes" />
+                <li class="dropdown">
+                    <h:commandButton onclick="disableChangeCheck();showLoader();"
+                                     styleClass="btn primary right"
+                                     action="#{propertyEditController.save()}"
+                                     execute="@form"
+                                     rendered="#{editResourceView.canSaveChanges()}" value="Save changes" />
                 </li>
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
                         More
-                        <b class="caret"></b>
+                        <b class="caret" />
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <h:commandLink id="tagCurrentState" render="tagConfigurationPopup"
-                                           rendered="#{taggingDataProvider.canTagCurrentState and propertyEditDataProvider.applicationServer}"
-                                           onclick="showLoader();" type="button" styleClass="btn light">
+                            <h:commandLink id="tagCurrentState"
+                                render="tagConfigurationPopup"
+                                rendered="#{taggingDataProvider.canTagCurrentState and propertyEditDataProvider.applicationServer}"
+                                onclick="showLoader();"
+                                type="button"
+                                styleClass="btn light">
                                 Tag Current State
-                                <a4j:ajax
-                                        oncomplete="hideLoader();#{rich:component('tagConfigurationPopup')}.show();"/>
+                                <a4j:ajax oncomplete="hideLoader();#{rich:component('tagConfigurationPopup')}.show();"/>
                             </h:commandLink>
                         </li>
                         <li>
@@ -107,7 +111,7 @@
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
                         Analyze
-                        <b class="caret"></b>
+                        <b class="caret" />
                     </a>
                     <ul class="dropdown-menu">
 
@@ -136,10 +140,11 @@
                         </li>
                     </ul>
                 </li>
+                <h:panelGroup rendered="${releasingDataProvider.canCreateNewRelease or releasingDataProvider.canChangeRelease or releasingDataProvider.canRemoveRelease}">
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
                         Release
-                        <b class="caret"></b>
+                        <b class="caret" />
                     </a>
                     <ul class="dropdown-menu">
                         <li>
@@ -172,15 +177,19 @@
                         </a4j:commandLink></li>
                     </ul>
                 </li>
+                </h:panelGroup>
+                <h:panelGroup rendered="${editResourceView.canEditResourceType or (editResourceView.relativeApplicationServerId ne null) or editResourceView.canShowDeploymentLink}">
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
                         Go to
-                        <b class="caret"></b>
+                        <b class="caret" />
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <h:link outcome="editResourceView" includeViewParams="true"
-                                    value="Resource type" styleClass="btn light"
+                            <h:link outcome="editResourceView"
+                                    includeViewParams="false"
+                                    value="Resource type"
+                                    styleClass="btn light"
                                     rendered="${editResourceView.canEditResourceType}">
                                 <f:param name="id" value="${null}"/>
                                 <f:param name="rel" value="${null}"/>
@@ -189,8 +198,10 @@
                             </h:link>
                         </li>
                         <li>
-                            <h:link outcome="editResourceView" includeViewParams="true"
-                                    value="Application server" styleClass="btn light"
+                            <h:link outcome="editResourceView"
+                                    includeViewParams="false"
+                                    value="Application server"
+                                    styleClass="btn light"
                                     rendered="${editResourceView.relativeApplicationServerId ne null}">
                                 <f:param name="id" value="${editResourceView.relativeApplicationServerId}"/>
                                 <f:param name="rel" value="${null}"/>
@@ -209,6 +220,7 @@
                         </li>
                     </ul>
                 </li>
+                </h:panelGroup>
             </ul>
         </h:panelGroup>
     </ui:define>
@@ -227,7 +239,7 @@
                                 <li>
                                     <h:panelGroup id="managePropertiesComp" rendered="#{editResourceView.isGlobalContext()}">
                                         <h:link outcome="editPropertyView"
-                                                includeViewParams="true"
+                                                includeViewParams="false"
                                                 rendered="#{editResourceView.hasAddPropertyPermission()}"
                                                 styleClass="btn light ${editResourceView.testing ? 'testing' : ''}">
                                             <i class="icon ${editResourceView.testing ? 'icon-addWhite' :  'icon-add'}"/>
@@ -246,7 +258,7 @@
                         <hr/>
                         <h:panelGroup id="resProps" styleClass="max_70vh ajaxScroll">
                             <h:panelGroup>
-                                <table class="propertyTable" style="margin: 0px;">
+                                <table class="propertyTable" style="margin: 0;">
                                     <h:panelGroup rendered="#{editResourceView.isGlobalContext()}">
                                         <tr>
                                             <td>
@@ -256,7 +268,7 @@
 
                                                     <div class="controls">
                                                         <h:inputText styleClass="propertyInputField changeAware"
-                                                                     disabled="#{!editResourceView.canRenameResource}"
+                                                                     disabled="#{!propertyEditDataProvider.editableProperties and !propertyEditDataProvider.testing}"
                                                                      value="#{editResourceView.asNamedIdentifiable.name}"/>
                                                     </div>
                                                 </div>

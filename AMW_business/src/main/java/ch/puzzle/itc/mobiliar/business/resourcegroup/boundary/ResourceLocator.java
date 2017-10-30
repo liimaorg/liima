@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -38,6 +39,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +55,9 @@ public class ResourceLocator {
 
 	@Inject
 	ResourceRepository resourceRepository;
+
+    @Inject
+    ResourceGroupRepository resourceGroupRepository;
 
 	@Inject
 	ReleaseLocator releaseLocator;
@@ -84,6 +89,64 @@ public class ResourceLocator {
             return null;
         }
 	}
+
+    /**
+     * Obtains the requested release or the closest past release before the requested one
+     * @param name name of resource group
+     * @param releaseName release name
+     * @return ReleaseEntity
+     * @throws ValidationException thrown if one of the arguments is either empty or null
+     */
+    public ReleaseEntity getExactOrClosestPastReleaseByGroupNameAndRelease(String name, String releaseName)
+            throws ValidationException {
+        ValidationHelper.validateNotNullOrEmptyChecked(name, releaseName);
+
+        ReleaseEntity release = releaseLocator.getReleaseByName(releaseName);
+        ResourceGroupEntity resGroup = resourceGroupRepository.getResourceGroupByName(name);
+        try {
+            return resourceDependencyResolverService.findExactOrClosestPastRelease(resGroup.getReleases(),
+                    release.getInstallationInProductionAt());
+        }
+        catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Obtains a resource in the requested release or the closest past release before the requested one
+     * @param groupId id of resource group
+     * @param releaseId release id
+     * @return ResourceEntity
+     */
+    public ResourceEntity getExactOrClosestPastReleaseByGroupIdAndReleaseId(@NotNull Integer groupId, @NotNull Integer releaseId) {
+
+        ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
+        ResourceGroupEntity resGroup = resourceGroupRepository.getResourceGroupById(groupId);
+        try {
+            release = resourceDependencyResolverService.findExactOrClosestPastRelease(resGroup.getReleases(),
+                    release.getInstallationInProductionAt());
+        }
+        catch (NoResultException e) {
+            return null;
+        }
+        return resourceRepository.getResourceByGroupIdAndRelease(groupId, release);
+    }
+
+    /**
+     * @param groupId id of resource group
+     * @param releaseId release id
+     * @return
+     */
+    public ResourceEntity getResourceByGroupIdAndRelease(@NotNull Integer groupId, @NotNull Integer releaseId) {
+
+        ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
+        try {
+            return resourceRepository.getResourceByGroupIdAndRelease(groupId, release);
+        }
+        catch (NoResultException e) {
+            return null;
+        }
+    }
 
 	/**
 	 * @param name
@@ -259,9 +322,8 @@ public class ResourceLocator {
      *  Für JavaBatch Monitor
      * @param apps
      * @return
-     * @throws ValidationException
      */
-    public List<ResourceEntity> getBatchJobConsumedResources(List<String> apps) throws ValidationException {
+    public List<ResourceEntity> getBatchJobConsumedResources(List<String> apps) {
         if (apps == null || apps.isEmpty()) {
             return null;
         }
@@ -277,9 +339,8 @@ public class ResourceLocator {
      *  Für JavaBatch Monitor
      * @param apps
      * @return
-     * @throws ValidationException
      */
-    public List<ResourceEntity> getBatchJobProvidedResources(List<String> apps) throws ValidationException {
+    public List<ResourceEntity> getBatchJobProvidedResources(List<String> apps) {
         if (apps == null || apps.isEmpty()) {
             return null;
         }

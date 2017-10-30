@@ -24,10 +24,9 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
-import ch.puzzle.itc.mobiliar.common.exception.CheckedNotAuthorizedException;
+import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import org.apache.commons.lang.StringUtils;
@@ -37,7 +36,12 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.ALL;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
 
 @Stateless
 public class PermissionService implements Serializable {
@@ -51,84 +55,206 @@ public class PermissionService implements Serializable {
     @Inject
     SessionContext sessionContext;
 
-    protected static Map<String, List<String>> rolesAndPermissions;
-    protected static List<RoleEntity> deployableRoles;
+    // map containing only Roles with Restrictions which have the DEPLOYMENT-Permission (non legacy)
+    static Map<String, List<RestrictionDTO>> deployableRolesWithRestrictions;
+    // map containing Roles with Restrictions (legacy & non legacy)
+    static Map<String, List<RestrictionDTO>> rolesWithRestrictions;
+    // map containing UserRestrictions with Restrictions (non legacy)
+    static Map<String, List<RestrictionEntity>> userRestrictions;
 
-    private List<RoleEntity> getDeployableRoles() {
-        boolean isReload = permissionRepository.isReloadDeploybleRoleList();
-        if (deployableRoles == null || isReload) {
-            List<RoleEntity> tmpDeployableRoles = permissionRepository.getDoployableRole();
-            deployableRoles = Collections.unmodifiableList(tmpDeployableRoles);
+    Map<String, List<RestrictionDTO>> getDeployableRoles() {
+        boolean isReload = permissionRepository.isReloadDeployableRoleList();
+        if (deployableRolesWithRestrictions == null || isReload) {
+            Map<String, List<RestrictionDTO>> tmpDeployableRolesWithRestrictions = new HashMap<>();
+            for (RoleEntity role : permissionRepository.getDeployableRoles()) {
+                addPermission(tmpDeployableRolesWithRestrictions, role);
+            }
+            deployableRolesWithRestrictions = Collections.unmodifiableMap(tmpDeployableRolesWithRestrictions);
             if (isReload) {
-                permissionRepository.setReloadDeploybleRoleList(false);
+                permissionRepository.setReloadDeployableRoleList(false);
             }
         }
-        return deployableRoles;
+        return deployableRolesWithRestrictions;
     }
 
     /**
-     * @return the List of RoleEntity read from DB
-     */
-    public List<RoleEntity> getDeployableRolesNonCached() {
-        return permissionRepository.getDoployableRole();
-    }
-
-    /**
-     * Diese Methode controlliert ob einen User Deployoperation darf machen oder nicht. Es wird im
-     * deploy.xhtml aufgerufen und zeigt der Button "Add Deploy" wenn der user darf deploy machen.
-     *
+     * Checks if the caller is allowed to see Deployments
      * @return
      */
-    public boolean hasPermissionToDeploy() {
-        for (RoleEntity role : getDeployableRoles()) {
-            if (sessionContext.isCallerInRole(role.getName())) {
+    public boolean hasPermissionToSeeDeployment() {
+        for (Map.Entry<String, List<RestrictionDTO>> entry : getDeployableRoles().entrySet()) {
+            if (sessionContext.isCallerInRole(entry.getKey())) {
                 return true;
             }
         }
-        return false;
+        return hasUserRestriction(Permission.DEPLOYMENT.name(), null, null, null, null);
     }
 
     /**
-     * @return Map key=permission, value=role
+     * Checks if the caller is allowed to create (re-)Deployments
+     * @return
      */
-    private Map<String, List<String>> getPermissions() {
-        boolean isReload = permissionRepository.isReloadRolesAndPermissionsList();
-        if (rolesAndPermissions == null || isReload) {
-            Map<String, List<String>> tmpRolesAndPermissions = new HashMap<>();
-            if (permissionRepository.rolesPermissionsList() != null
-                    && !permissionRepository.rolesPermissionsList().isEmpty()) {
-                for (Object[] o : permissionRepository.rolesPermissionsList()) {
-                    if (o != null && o.length == 2) {
-                        String permission = (String) o[0];
-                        String role = (String) o[1];
-
-                        if (tmpRolesAndPermissions.containsKey(permission)) {
-                            tmpRolesAndPermissions.get(permission).add(role);
-                        } else {
-                            ArrayList<String> roles = new ArrayList<>();
-                            roles.add(role);
-                            tmpRolesAndPermissions.put(permission, roles);
-                        }
-
+    public boolean hasPermissionToCreateDeployment() {
+        for (Map.Entry<String, List<RestrictionDTO>> entry : getDeployableRoles().entrySet()) {
+            if (sessionContext.isCallerInRole(entry.getKey())) {
+                for (RestrictionDTO restrictionDTO : entry.getValue()) {
+                    if (restrictionDTO.getRestriction().getAction().equals(Action.CREATE)
+                            || restrictionDTO.getRestriction().getAction().equals(Action.ALL)) {
+                        return true;
                     }
                 }
             }
-            //make immutable
-            for (String permission : tmpRolesAndPermissions.keySet()) {
-                List<String> roles = tmpRolesAndPermissions.get(permission);
-                tmpRolesAndPermissions.put(permission, Collections.unmodifiableList(roles));
+        }
+        return hasUserRestriction(Permission.DEPLOYMENT.name(), null, Action.CREATE, null, null);
+    }
+
+    /**
+     * Checks if the caller is allowed to edit Deployments
+     * @return
+     */
+    public boolean hasPermissionToEditDeployment() {
+        for (Map.Entry<String, List<RestrictionDTO>> entry : getDeployableRoles().entrySet()) {
+            if (sessionContext.isCallerInRole(entry.getKey())) {
+                for (RestrictionDTO restrictionDTO : entry.getValue()) {
+                    if (restrictionDTO.getRestriction().getAction().equals(Action.UPDATE)
+                            || restrictionDTO.getRestriction().getAction().equals(Action.ALL)) {
+                        return true;
+                    }
+                }
             }
-            rolesAndPermissions = Collections.unmodifiableMap(tmpRolesAndPermissions);
+        }
+        return hasUserRestriction(Permission.DEPLOYMENT.name(), null, Action.UPDATE, null, null);
+    }
+
+    /**
+     * Returns all available Roles with their Restrictions
+     * Legacy Permissions are mapped to the new Permission/Restriction model
+     *
+     * @return Map key=Role.name, value=RestrictionDTOs
+     */
+    public Map<String, List<RestrictionDTO>> getPermissions() {
+        boolean isReload = permissionRepository.isReloadRolesAndPermissionsList();
+        if (rolesWithRestrictions == null || isReload) {
+            Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions = new HashMap<>();
+            // add new permissions with restriction
+            if (permissionRepository.getRolesWithRestrictions() != null) {
+                for (RoleEntity role : permissionRepository.getRolesWithRestrictions()) {
+                    addPermission(tmpRolesWithRestrictions, role);
+                }
+            }
+            //make immutable
+            for (String roleName : tmpRolesWithRestrictions.keySet()) {
+                List<RestrictionDTO> restrictions = tmpRolesWithRestrictions.get(roleName);
+                tmpRolesWithRestrictions.put(roleName, Collections.unmodifiableList(restrictions));
+            }
+            rolesWithRestrictions = Collections.unmodifiableMap(tmpRolesWithRestrictions);
 
             if (isReload) {
                 permissionRepository.setReloadRolesAndPermissionsList(false);
             }
         }
-        return rolesAndPermissions;
+        return rolesWithRestrictions;
     }
 
+    /**
+     * Returns a (cached) list of all Restrictions assigned to a specific UserRestriction
+     *
+     * @param userName
+     * @return
+     */
+    public List<RestrictionEntity> getUserRestrictions(String userName) {
+        if (permissionRepository.isReloadUserRestrictionsList() || userRestrictions == null) {
+            userRestrictions = new ConcurrentHashMap<>();
+        }
+        if (!userRestrictions.containsKey(userName)) {
+            userRestrictions.put(userName, Collections.unmodifiableList(permissionRepository.getUserWithRestrictions(userName)));
+            if (permissionRepository.isReloadUserRestrictionsList()) {
+                permissionRepository.setReloadUserRestrictionsList(false);
+            }
+        }
+        return userRestrictions.get(userName);
+    }
+
+    /**
+     * Returns a list of all available Restrictions assigned to UserRestriction
+     *
+     * @return List<RestrictionEntity>
+     */
+    public List<RestrictionEntity> getAllUserRestrictions() {
+        return permissionRepository.getUsersWithRestrictions();
+    }
+
+    private void addPermission(Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions, RoleEntity role) {
+        String roleName = role.getName();
+        if (!tmpRolesWithRestrictions.containsKey(roleName)) {
+            tmpRolesWithRestrictions.put(roleName, new ArrayList<RestrictionDTO>());
+        }
+        for (RestrictionEntity res : role.getRestrictions()) {
+            // add restriction
+            tmpRolesWithRestrictions.get(roleName).add(new RestrictionDTO(res));
+        }
+    }
+
+    /**
+     * Checks if a user has a role or a restriction with a certain Permission no matter for which Actions
+     * Useful for displaying/hiding navigation elements in views
+     * The specific Action required has to be checked when the action is involved (button)
+     *
+     * @param permission
+     * @return
+     */
     public boolean hasPermission(Permission permission) {
-        return hasPermission(permission.name());
+        return hasRole(permission.name(), null, null, null, null) ||
+                hasUserRestriction(permission.name(), null, null, null, null);
+    }
+
+    /**
+     * Checks if a user has a role or a restriction with a certain Permission and Action
+     * Useful for displaying/hiding navigation elements in views
+     *
+     * @param permission
+     * @return
+     */
+    public boolean hasPermission(Permission permission, Action action) {
+        return hasRole(permission.name(), null, action, null, null) ||
+                hasUserRestriction(permission.name(), null, action, null, null);
+    }
+
+    public boolean hasPermission(Permission permission, Action action, ResourceTypeEntity resourceType) {
+        return hasRole(permission.name(), null, action, null, resourceType) ||
+                hasUserRestriction(permission.name(), null, action, null, resourceType);
+    }
+
+    /**
+     * Checks if a user has a role or a restriction with a certain Permission
+     *
+     * @param permission the required Permission
+     * @param context the requested Context (null = irrelevant)
+     * @param action the required Action
+     * @param resourceGroup the requested resourceGroup (null = irrelevant)
+     * @param resourceType the requested resourceType (null = irrelevant)
+     * @return
+     */
+    public boolean hasPermission(Permission permission, ContextEntity context, Action action,
+                                 ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
+        return hasRole(permission.name(), context, action, resourceGroup, resourceType) ||
+                hasUserRestriction(permission.name(), context, action, resourceGroup, resourceType);
+    }
+
+    /**
+     * Checks if a user has a role or a restriction with a certain Permission on ALL Contexts
+     * => context MUST NOT be restricted to a specific environment
+     *
+     * @param permission the required Permission
+     * @param action the required Action
+     * @param resourceGroup the requested resourceGroup (null = irrelevant)
+     * @param resourceType the requested resourceType (null = irrelevant)
+     * @return
+     */
+    public boolean hasPermissionOnAllContext(Permission permission, Action action,
+                                             ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
+        return hasRoleOnAllContext(permission.name(), action, resourceGroup, resourceType) ||
+                hasUserRestrictionOnAllContext(permission.name(), action, resourceGroup, resourceType);
     }
 
     /**
@@ -149,9 +275,27 @@ public class PermissionService implements Serializable {
      * @param permission
      * @param extraInfo
      */
-    public void checkPermissionAndFireCheckedException(Permission permission, String extraInfo) throws CheckedNotAuthorizedException {
-        if (!hasPermission(permission)) {
-            throwCheckedNotAuthorizedException(extraInfo);
+    public void checkPermissionAndFireException(Permission permission, Action action, String extraInfo) {
+        if (!hasPermission(permission, action)) {
+            throwNotAuthorizedException(extraInfo);
+        }
+    }
+
+    /**
+     * Checks if given permission is available. If not a exception is created with error message containing extraInfo part.
+     *
+     * @param permission
+     * @param context
+     * @param action
+     * @param resourceGroup
+     * @param resourceType
+     * @param extraInfo
+     */
+    public void checkPermissionAndFireException(Permission permission, ContextEntity context, Action action,
+                                                ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType,
+                                                String extraInfo) {
+        if (!hasPermission(permission, context, action, resourceGroup, resourceType)) {
+            throwNotAuthorizedException(extraInfo);
         }
     }
 
@@ -163,284 +307,489 @@ public class PermissionService implements Serializable {
         throw new NotAuthorizedException(errorMessage);
     }
 
-    public void throwCheckedNotAuthorizedException(String extraInfo) throws CheckedNotAuthorizedException {
-        String errorMessage = "Not Authorized!";
-        if (StringUtils.isNotEmpty(extraInfo)) {
-            errorMessage += " You're not allowed to " + extraInfo + "!";
-        }
-        throw new CheckedNotAuthorizedException(errorMessage);
+    public boolean hasPermissionForDeployment(DeploymentEntity deployment) {
+        return deployment != null && hasPermissionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup());
     }
 
-    public boolean hasPermissionForDeployment(DeploymentEntity deployment) {
-        return deployment != null && hasPermissionForDeploymentOnContext(deployment.getContext());
+    public boolean hasPermissionForDeploymentUpdate(DeploymentEntity deployment) {
+        return deployment != null && hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.UPDATE);
+    }
+
+    public boolean hasPermissionForDeploymentCreation(DeploymentEntity deployment) {
+        return deployment != null && (hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.CREATE)
+                || hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.UPDATE));
+    }
+
+    public boolean hasPermissionForDeploymentReject(DeploymentEntity deployment) {
+        return deployment != null && (hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.DELETE)
+                || hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.DELETE));
     }
 
     public boolean hasPermissionForCancelDeployment(DeploymentEntity deployment) {
         if (getCurrentUserName().equals(deployment.getDeploymentRequestUser()) && deployment.getDeploymentState() == DeploymentState.requested) {
             return true;
-        } else if (hasPermissionForDeployment(deployment) && deployment.getDeploymentState() != DeploymentState.requested) {
-            return true;
         }
+        return hasPermissionForDeployment(deployment) && deployment.getDeploymentState() != DeploymentState.requested;
+    }
 
+    /**
+     * Checks if the caller is allowed to deploy a specific ResourceGroup on the specific Environment
+     * Note: Both, Permission/Restriction by Group and by User are checked
+     *
+     * @param context
+     * @return
+     */
+    public boolean hasPermissionForDeploymentOnContext(ContextEntity context, ResourceGroupEntity resourceGroup) {
+        if (context != null && sessionContext != null) {
+            List<String> allowedRoles = new ArrayList<>();
+            String permissionName = Permission.DEPLOYMENT.name();
+            if (deployableRolesWithRestrictions == null) {
+                getDeployableRoles();
+            }
+            for (Map.Entry<String, List<RestrictionDTO>> entry : deployableRolesWithRestrictions.entrySet()) {
+                matchPermissionsAndContext(permissionName, null, context, resourceGroup, resourceGroup.getResourceType(), allowedRoles, entry);
+            }
+            for (String roleName : allowedRoles) {
+                if (sessionContext.isCallerInRole(roleName)) {
+                    return true;
+                }
+            }
+            return hasUserRestriction(permissionName, context, null, resourceGroup, null);
+        }
         return false;
     }
 
-    private boolean hasPermissionForDeploymentOnContext(ContextEntity context) {
-        return context != null && hasPermission(context.getName());
+    /**
+     * Checks if the caller is allowed to perform the requested action for specific ResourceGroup on the specific Environment
+     * Note: Both, Permission/Restriction by Group and by User are checked
+     *
+     * @param context
+     * @param resourceGroup
+     * @param action
+     * @return
+     */
+    public boolean hasPermissionAndActionForDeploymentOnContext(ContextEntity context, ResourceGroupEntity resourceGroup, Action action) {
+        if (context != null && sessionContext != null) {
+            List<String> allowedRoles = new ArrayList<>();
+            String permissionName = Permission.DEPLOYMENT.name();
+            if (deployableRolesWithRestrictions == null) {
+                getDeployableRoles();
+            }
+            for (Map.Entry<String, List<RestrictionDTO>> entry : deployableRolesWithRestrictions.entrySet()) {
+                matchPermissionsAndContext(permissionName, action, context, resourceGroup, resourceGroup.getResourceType(), allowedRoles, entry);
+            }
+            for (String roleName : allowedRoles) {
+                if (sessionContext.isCallerInRole(roleName)) {
+                    return true;
+                }
+            }
+            return hasUserRestriction(permissionName, context, action, resourceGroup, null);
+        }
+        return false;
     }
 
-    public boolean hasPermissionForDeploymentOnContextOrSubContext(ContextEntity context) {
-        Set<ContextEntity> children = context.getChildren();
-        if (children != null && !children.isEmpty()) {
-            for (ContextEntity c : children) {
-                if (hasPermissionForDeploymentOnContextOrSubContext(c)) {
+    private boolean hasRole(String permissionName, ContextEntity context, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
+        if (sessionContext != null) {
+            List<String> allowedRoles = new ArrayList<>();
+            Set<Map.Entry<String, List<RestrictionDTO>>> entries = getPermissions().entrySet();
+
+            if (resourceType == null && resourceGroup != null) {
+                resourceType = resourceGroup.getResourceType();
+            }
+
+            for (Map.Entry<String, List<RestrictionDTO>> entry : entries) {
+                // context null means no check on context required - so any context is ok
+                if (context == null) {
+                    matchPermissions(permissionName, action, resourceGroup, resourceType, allowedRoles, entry);
+                } else {
+                    matchPermissionsAndContext(permissionName, action, context, resourceGroup, resourceType, allowedRoles, entry);
+                }
+            }
+            for (String roleName : allowedRoles) {
+                if (sessionContext.isCallerInRole(roleName)) {
                     return true;
                 }
             }
         }
-        return hasPermissionForDeploymentOnContext(context);
+        return false;
     }
 
-    public boolean hasPermission(String value) {
-        boolean hasRole = false;
-        List<String> roles = getPermissions().get(value);
-        if (roles == null || sessionContext == null) {
-            return false;
-        }
+    private boolean hasRoleOnAllContext(String permissionName, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
+        if (sessionContext != null) {
+            List<String> allowedRoles = new ArrayList<>();
+            Set<Map.Entry<String, List<RestrictionDTO>>> entries = getPermissions().entrySet();
 
-        for (String roleName : roles) {
-            hasRole = hasRole || sessionContext.isCallerInRole(roleName);
-        }
-        return hasRole;
-    }
+            if (resourceType == null && resourceGroup != null) {
+                resourceType = resourceGroup.getResourceType();
+            }
 
-    /**
-     * The Properties of ResourceType are modifiable only by the config_admin
-     */
-    public boolean hasPermissionToEditResourceTypeProperties() {
-        return hasPermission(Permission.EDIT_NOT_DEFAULT_RES_OF_RESTYPE.name());
-    }
-
-    /**
-     * The ResourceTypeName is modifiable by the config_admin. DefaultResourceType (APPLICATION,
-     * APPLICATIONSERVER or NODE) is not modifiable.
-     */
-    public boolean hasPermissionToRenameResourceType(ResourceTypeEntity resType) {
-        return resType != null && hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME.name())
-                && !resType.isDefaultResourceType();
-    }
-
-    /**
-     * Check that the user is app_developer or config_admin: app_developer: can edit properties of instances
-     * of APPLICATION config_admin: can edit all properties.
-     *
-     * @param
-     * @return
-     */
-    public boolean hasPermissionToEditPropertiesOfResource(ResourceTypeEntity parentResourceTypeOfResource) {
-        // config_admin
-        if (hasPermission(Permission.EDIT_ALL_PROPERTIES.name())) {
-            return true;
-        } else if (parentResourceTypeOfResource != null
-                && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP.name())
-                && DefaultResourceTypeDefinition.APPLICATION.name().equals(
-                parentResourceTypeOfResource.getName())) {
-            return true;
+            for (Map.Entry<String, List<RestrictionDTO>> entry : entries) {
+                matchPermissionsAndContext(permissionName, action, null, resourceGroup, resourceType, allowedRoles, entry);
+            }
+            for (String roleName : allowedRoles) {
+                if (sessionContext.isCallerInRole(roleName)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
     /**
-     * The ResourceName is modifiable by the config_admin or by the server_admin when the resource is
-     * instance's resource of deaultResourceType: APPLICATION/APPLICATIONSERVER/NODE's instance
+     * Checks if the logged-in user has a Restriction with the required Permission for a specific Context, Action,
+     * ResourceGroup and/or ResourceType
+     * => will skip context check if context is null
      *
-     * @param res
+     * @param permissionName
+     * @param context
+     * @param action
+     * @param resourceGroup
+     * @param resourceType
      * @return
      */
-    public boolean hasPermissionToRenameResource(ResourceEntity res) {
-        if (hasPermission(Permission.SAVE_ALL_CHANGES) || hasPermission(Permission.EDIT_RES_OR_RESTYPE_NAME)) {
-            return true;
-        }
-        if (res.getResourceType() == null) {
+    private boolean hasUserRestriction(String permissionName, ContextEntity context, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
+        if (sessionContext == null) {
             return false;
         }
 
-        // Abwärtskompatibilität: RENAME_INSTANCE_DEFAULT_RESOURCE
-        if (res.getResourceType().isApplicationResourceType()) {
-            return hasPermission(Permission.RENAME_APP) || hasPermission(Permission.RENAME_INSTANCE_DEFAULT_RESOURCE);
-        }
-        if (res.getResourceType().isApplicationServerResourceType()) {
-            return hasPermission(Permission.RENAME_APPSERVER) || hasPermission(Permission.RENAME_INSTANCE_DEFAULT_RESOURCE);
-        }
-        if (res.getResourceType().isNodeResourceType()) {
-            return hasPermission(Permission.RENAME_NODE) || hasPermission(Permission.RENAME_INSTANCE_DEFAULT_RESOURCE);
+        for (RestrictionEntity restrictionEntity : getUserRestrictions(getCurrentUserName())) {
+            if (restrictionEntity.getPermission().getValue().equals(permissionName)) {
+                // context null means no check on context required - so any context is ok
+                if (context == null) {
+                		if(hasRequiredUserRestriction(action, resourceGroup, resourceType, restrictionEntity)) {
+                			return true;
+                		}
+                }
+                if(hasRequiredUserRestrictionOnAllContext(context, action, resourceGroup, resourceType, restrictionEntity)) {
+                		return true;
+                }
+            }
         }
 
-        return hasPermission(Permission.RENAME_RES);
+        return false;
     }
 
     /**
-     * Check that the user is server_admin or config_admin: server_admin: can delete instances of Default
-     * ResourceType(APPLICATION,APPLICATIONSERVER,NODE) config_admin: can delete all instances.
+     * Checks if the logged-in user has a Restriction with the required Permission for a specific Action, ResourceGroup
+     * and/or ResourceType ON ALL context
+     * => will return false if the user restriction is restricted to a specific context
      *
-     * @param
+     * @param permissionName
+     * @param action
+     * @param resourceGroup
+     * @param resourceType
      * @return
      */
-    public boolean hasPermissionToRemoveDefaultInstanceOfResType(boolean isDefaultResourceType) {
-        // Check that the resource is an instance of DefaultResourceType.
-        // Permitted to server_admin
-        if (isDefaultResourceType
-                && hasPermission(Permission.DELETE_RES_INSTANCE_OF_DEFAULT_RESTYPE.name())) {
-            return true;
-        } else if (hasPermission(Permission.DELETE_RES.name())) {
-            return true;
+    private boolean hasUserRestrictionOnAllContext(String permissionName, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType) {
+        if (sessionContext == null) {
+            return false;
+        }
+        getUserRestrictions(getCurrentUserName());
+        if (!userRestrictions.get(getCurrentUserName()).isEmpty()) {
+            for (RestrictionEntity restrictionEntity : userRestrictions.get(getCurrentUserName())) {
+                if (restrictionEntity.getPermission().getValue().equals(permissionName)) {
+                    return hasRequiredUserRestrictionOnAllContext(null, action, resourceGroup, resourceType, restrictionEntity);
+                }
+            }
         }
         return false;
     }
 
     /**
-     * Check that the user is config_admin, app_developer or shakedown_admin: shakedown_admin: can edit all
-     * properties when TestingMode is true config_admin: can edit all properties. app_developer: can edit
-     * properties of instances of APPLICATION
+     * Checks whether a Role has the Permission perform a certain Action
+     * If so, it adds the role to the list of the allowed roles
+     *
+     * @param permissionName
+     * @param action
+     * @param resourceGroup
+     * @param resourceType
+     * @param allowedRoles
+     * @param entry
+     */
+    private void matchPermissions(String permissionName, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
+        String roleName = entry.getKey();
+        for (RestrictionDTO restrictionDTO : entry.getValue()) {
+            if (restrictionDTO.getPermissionName().equals(permissionName) && hasPermissionForAction(restrictionDTO.getRestriction(), action)
+                    && hasPermissionForResource(restrictionDTO.getRestriction(), resourceGroup) && hasPermissionForResourceType(restrictionDTO.getRestriction(), resourceType)
+                    && hasPermissionForDefaultResourceType(restrictionDTO.getRestriction(), resourceType)) {
+                allowedRoles.add(roleName);
+            }
+        }
+    }
+
+    /**
+     * Checks whether a Role has the Permission perform a certain Action with a specific ResourceGroup on a specific Context (or on its parent)
+     * If so, it adds the role to the list of the allowed roles
+     *
+     * @param permissionName
+     * @param action
+     * @param context
+     * @param resourceGroup
+     * @param allowedRoles
+     * @param entry
+     */
+    private void matchPermissionsAndContext(String permissionName, Action action, ContextEntity context,
+                                            ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
+        for (RestrictionDTO restrictionDTO : entry.getValue()) {
+            if (restrictionDTO.getPermissionName().equals(permissionName)) {
+                checkContextAndActionAndResource(context, action, resourceGroup, resourceType, allowedRoles, entry, restrictionDTO.getRestriction());
+            }
+        }
+    }
+
+    /**
+     * Checks if a Role is allowed to perform a certain Action with a specific ResourceGroup on a specific Context (or on its parent)
+     * If so, it adds the role to the list of the allowed roles
+     *
+     * @param context
+     * @param action
+     * @param resource
+     * @param resourceType
+     * @param allowedRoles
+     * @param entry
+     * @param restriction
+     */
+    private void checkContextAndActionAndResource(ContextEntity context, Action action, ResourceGroupEntity resource, ResourceTypeEntity resourceType,
+                                                  List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry,
+                                                  RestrictionEntity restriction) {
+        if (hasPermissionForContext(restriction, context) && hasPermissionForAction(restriction, action) &&
+                hasPermissionForResource(restriction, resource) && hasPermissionForResourceType(restriction, resourceType)
+                && hasPermissionForDefaultResourceType(restriction, resourceType)) {
+            allowedRoles.add(entry.getKey());
+        } else if (context != null && context.getParent() != null) {
+            checkContextAndActionAndResource(context.getParent(), action, resource, resourceType, allowedRoles, entry, restriction);
+        }
+    }
+
+    /**
+     * Checks if a User is allowed to perform a certain Action with a specific ResourceGroup on a specific Context (or on its parent)
+     *
+     * @param context
+     * @param action
+     * @param resource
+     * @param resourceType
+     * @param restriction
+     * @return
+     */
+    private boolean hasRequiredUserRestrictionOnAllContext(ContextEntity context, Action action, ResourceGroupEntity resource,
+                                                           ResourceTypeEntity resourceType, RestrictionEntity restriction) {
+        if (hasPermissionForContext(restriction, context) && hasPermissionForAction(restriction, action) &&
+                hasPermissionForResource(restriction, resource) && hasPermissionForResourceType(restriction, resourceType)
+                && hasPermissionForDefaultResourceType(restriction, resourceType)) {
+            return true;
+        } else if (context != null && context.getParent() != null) {
+            hasRequiredUserRestrictionOnAllContext(context.getParent(), action, resource, resourceType, restriction);
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a User is allowed to perform a certain Action with a specific ResourceGroup/ResourceType
+     *
+     * @param action
+     * @param resource
+     * @param resourceType
+     * @param restriction
+     * @return
+     */
+    private boolean hasRequiredUserRestriction(Action action, ResourceGroupEntity resource,
+                                               ResourceTypeEntity resourceType, RestrictionEntity restriction) {
+        return (hasPermissionForAction(restriction, action) && hasPermissionForResource(restriction, resource)
+                && hasPermissionForResourceType(restriction, resourceType)
+                && hasPermissionForDefaultResourceType(restriction, resourceType));
+    }
+
+    /**
+     * Checks if a Restriction gives permission for a specific Context
+     * No Context on Restriction means all Contexts are allowed
+     *
+     * @param restriction
+     * @param context
+     * @return
+     */
+    private boolean hasPermissionForContext(RestrictionEntity restriction, ContextEntity context) {
+        return restriction.getContext() == null ||
+                (context != null && restriction.getContext().getId().equals(context.getId()));
+    }
+
+    /**
+     * Checks if a Restriction gives permission for a specific Action
+     *
+     * @param restriction
+     * @param action
+     * @return
+     */
+    private boolean hasPermissionForAction(RestrictionEntity restriction, Action action) {
+        return action == null || restriction.getAction().equals(action) ||
+                restriction.getAction().equals(ALL);
+    }
+
+    /**
+     * Checks if a Restriction gives permission for a specific ResourceGroup
+     * No Resource on Restriction means all ResourceGroups are allowed
+     *
+     * @param restriction
+     * @param resourceGroup
+     * @return
+     */
+    private boolean hasPermissionForResource(RestrictionEntity restriction, ResourceGroupEntity resourceGroup) {
+        return resourceGroup == null || restriction.getResourceGroup() == null ||
+                restriction.getResourceGroup().getId().equals(resourceGroup.getId());
+    }
+
+    /**
+     * Checks if a Restriction gives permission for a specific ResourceType
+     * No ResourceType on Restriction means all ResourceTypes are allowed
+     *
+     * @param restriction
+     * @param resourceType
+     * @return
+     */
+    private boolean hasPermissionForResourceType(RestrictionEntity restriction, ResourceTypeEntity resourceType) {
+        if (resourceType == null || restriction.getResourceType() == null) {
+            return true;
+        }
+        if (restriction.getResourceType().getId().equals(resourceType.getId())) {
+            return true;
+        }
+        return resourceType.getParentResourceType() != null &&
+                restriction.getResourceType().getId().equals(resourceType.getParentResourceType().getId());
+    }
+
+    /**
+     * Checks if a Restriction gives permission for a specific (Default)ResourceType
+     * No DefaultResourceType on Restriction means all ResourceTypes (including DefaultResourceTypes) are allowed
+     *
+     * @param restriction
+     * @param resourceType
+     * @return
+     */
+    private boolean hasPermissionForDefaultResourceType(RestrictionEntity restriction, ResourceTypeEntity resourceType) {
+        // Default and non DefaultTypes are allowed
+        if (resourceType == null || restriction.getResourceTypePermission().equals(ResourceTypePermission.ANY)) {
+            return true;
+        }
+        // Only DefaultTypes are allowed
+        if (restriction.getResourceTypePermission().equals(ResourceTypePermission.DEFAULT_ONLY)
+                && DefaultResourceTypeDefinition.contains(resourceType.getName())) {
+            return true;
+        }
+        // Only non DefaultTypes are allowed
+        return restriction.getResourceTypePermission().equals(ResourceTypePermission.NON_DEFAULT_ONLY)
+                && !DefaultResourceTypeDefinition.contains(resourceType.getName());
+    }
+
+    /**
+     * Check if the user can delete instances of ResourceTypes
+     *
+     * @param resourceType
+     * @return
+     */
+    public boolean hasPermissionToRemoveInstanceOfResType(ResourceTypeEntity resourceType) {
+        return hasPermission(Permission.RESOURCE, Action.DELETE, resourceType);
+    }
+
+    /**
+     * Checks if a user is allowed to add a Relation to a Resource
+     *
+     * @param resourceEntity
+     * @param context
+     * @return
+     */
+    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, ContextEntity context) {
+        if (resourceEntity != null && resourceEntity.getResourceType() != null) {
+            return hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity.getResourceGroup(), null);
+        }
+        if (resourceEntity != null && resourceEntity.getResourceType() == null) {
+            return false;
+        }
+        return hasPermission(Permission.RESOURCE, UPDATE);
+    }
+
+    /**
+     * Checks if user is allowed to add a Relation to a ResourceType
+     *
+     * @param resourceTypeEntity
+     * @return
+     */
+    public boolean hasPermissionToAddRelatedResourceType(ResourceTypeEntity resourceTypeEntity) {
+        if (resourceTypeEntity != null) {
+            if (hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceTypeEntity)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the user may delete a Resource relationship
+     *
+     * @param
+     * @return
+     */
+    public boolean hasPermissionToDeleteRelation(ResourceEntity resourceEntity, ContextEntity context) {
+        if (resourceEntity != null && resourceEntity.getResourceType() != null) {
+            if (hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity.getResourceGroup(), null)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the user may delete a ResourceType relationship
+     *
+     * @param resourceTypeEntity
+     * @return
+     */
+    public boolean hasPermissionToDeleteRelationType(ResourceTypeEntity resourceTypeEntity) {
+        return hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceTypeEntity);
+    }
+
+    /**
+     * Checks if user may create or edit Templates of Resources
      *
      * @param resource
      * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToEditPropertiesByResource(ResourceEntity resource, boolean isTestingMode) {
-        // the config_admin can edit/add/delete all properites
-        if (hasPermission(Permission.EDIT_ALL_PROPERTIES.name())) {
-            return true;
-        } else if (resource != null && resource.getResourceType().isApplicationResourceType()
-                && hasPermission(Permission.EDIT_PROP_LIST_OF_INST_APP.name())) {
-            return true;
-        } else if (hasPermission(Permission.SHAKEDOWN_TEST_MODE.name()) && isTestingMode) {
+    public boolean hasPermissionToAddResourceTemplate(ResourceEntity resource, boolean isTestingMode) {
+        // ok if user has update permission on the Resource, context is always global, so we set it to null to omit the check
+        if (hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.CREATE, resource.getResourceGroup(), null)) {
             return true;
         }
+        return resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+    }
 
-        return false;
+    public boolean hasPermissionToUpdateResourceTemplate(ResourceEntity resource, boolean isTestingMode) {
+        // ok if user has update permission on the Resource, context is always global, so we set it to null to omit the check
+        if (hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.UPDATE, resource.getResourceGroup(), null)) {
+            return true;
+        }
+        return resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     /**
-     * Check that the user is config_admin, server_admin or app_developer : server_admin: can add node
-     * relationship config_admin: can add all relationship. app_developer: can add reletionship of instances
-     * of APPLICATION
+     * Checks if user may create or edit Templates of ResourceTypes
      *
-     * @param
+     * @param resourceType
+     * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToAddRelation(ResourceEntity resourceEntity, boolean provided) {
-        if (resourceEntity != null && resourceEntity.getResourceType() != null) {
-            // Check that the user is config_admin
-            if (hasPermission(Permission.ADD_EVERY_RELATED_RESOURCE.name())) {
-                return true;
-            } else if (resourceEntity.getResourceType().isApplicationServerResourceType()
-                    && hasPermission(Permission.ADD_NODE_RELATION.name())) {
-                return true;
-            } else if (resourceEntity.getResourceType().isApplicationResourceType()
-                    && hasPermission(Permission.ADD_RELATED_RESOURCE.name())) {
-                return (!provided && hasPermission(Permission.ADD_AS_CONSUMED_RESOURCE))
-                        || (provided && hasPermission(Permission.ADD_AS_PROVIDED_RESOURCE));
-            }
-        } else {
-            return hasPermission(Permission.ADD_RELATED_RESOURCETYPE);
-        }
-        return false;
-    }
-
-    /**
-     * Check that the user is config_admin, server_admin or app_developer : server_admin: can delete node
-     * relationship config_admin: can delete all relationship. app_developer: can delete reletionship of
-     * instances of APPLICATION
-     *
-     * @param
-     * @return
-     */
-    public boolean hasPermissionToDeleteRelation(ResourceEntity resourceEntity) {
-        if (resourceEntity != null && resourceEntity.getResourceType() != null) {
-            ResourceTypeEntity resourceTypeEntity = resourceEntity.getResourceType();
-            // Check that the user is config_admin
-            if (hasPermission(Permission.DELETE_EVERY_RELATED_RESOURCE)) {
-                return true;
-            }
-            // Check that the user is server_admin
-            if (hasPermission(Permission.DELETE_NODE_RELATION)
-                    && resourceTypeEntity.isApplicationServerResourceType()) {
-                return true;
-            }
-            // Check that the user is app_developer
-            if (hasPermission(Permission.DELETE_CONS_OR_PROVIDED_RELATION)
-                    && resourceTypeEntity.isApplicationResourceType()) {
-                return true;
-            }
-            if (hasPermission(Permission.SELECT_RUNTIME)
-                    && resourceTypeEntity.isRuntimeType()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Check that the user is config_admin: can delete all resourcetype relationship.
-     */
-    public boolean hasPermissionToDeleteRelationType(ResourceTypeEntity resourceTypeEntity) {
-        return resourceTypeEntity != null && hasPermission(Permission.REMOVE_RELATED_RESOURCETYPE);
-    }
-
-    /**
-     * Check that the user is config_admin, app_developer or shakedown_admin : shakedown_admin: can
-     * modify(add/edit/delete) all testing templates config_admin: can modify(add/edit/delete) all templates
-     * app_developer: can modify(add/edit/delete) only templates in instances of APPLICATION
-     *
-     * @param resourceType  - null for resourceType templates
-     * @param isTestingMode - true if testing mode is activated
-     * @return
-     */
-    public boolean hasPermissionToTemplateModify(ResourceTypeEntity resourceType, boolean isTestingMode) {
-        // check that the user is config_admin
-        if (hasPermission(Permission.SAVE_RESTYPE_TEMPLATE.name())) {
-            return true;
-        }// check that the user is app_developer
-        else if (isApplicationResourceType(resourceType)) {
-            return hasPermission(Permission.SAVE_RES_TEMPLATE.name());
-        }// check that the user is shakedown_admin
-        else if (resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE.name())) {
+    public boolean hasPermissionToAddResourceTypeTemplate(ResourceTypeEntity resourceType, boolean isTestingMode) {
+        // ok if user has update permission on the ResourceType, context is always global, so we set it to null to omit the check
+        if (hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.CREATE, null, resourceType)) {
             return true;
         }
-        return false;
+        return resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
-    /**
-     * Check that the user is config_admin, app_developer or shakedown_admin : shakedown_admin: can
-     * modify(add/edit/delete) all testing templates config_admin: can modify(add/edit/delete) all templates
-     * app_developer: can modify(add/edit/delete) only templates in instances of APPLICATION
-     *
-     * @param resource      - null for resourceType templates
-     * @param isTestingMode - true if testing mode is activated
-     * @return
-     */
-    public boolean hasPermissionToTemplateModify(ResourceEntity resource, boolean isTestingMode) {
-        // check that the user is config_admin
-        if (hasPermission(Permission.SAVE_RESTYPE_TEMPLATE.name())) {
-            return true;
-        }// check that the user is app_developer
-        else if (isResourceEntityWithApplicationResourceType(resource)) {
-            return hasPermission(Permission.SAVE_RES_TEMPLATE.name());
-        }// check that the user is shakedown_admin
-        else if (resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE.name())) {
+    public boolean hasPermissionToUpdateResourceTypeTemplate(ResourceTypeEntity resourceType, boolean isTestingMode) {
+        // ok if user has update permission on the ResourceType, context is always global, so we set it to null to omit the check
+        if (hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.UPDATE, null, resourceType)) {
             return true;
         }
-        return false;
-    }
-
-    private boolean isApplicationResourceType(ResourceTypeEntity resourceType) {
-        return resourceType != null && resourceType.isApplicationResourceType();
-
-    }
-
-    private boolean isResourceEntityWithApplicationResourceType(ResourceEntity resource) {
-        return resource != null && resource.getResourceType().isApplicationResourceType();
+        return resourceType != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     /**
@@ -449,9 +798,7 @@ public class PermissionService implements Serializable {
      * @return
      */
     public String getCurrentUserName() {
-        String currentUserName;
-        currentUserName = sessionContext.getCallerPrincipal().toString();
-        return currentUserName;
+        return sessionContext.getCallerPrincipal().getName();
     }
 
 }

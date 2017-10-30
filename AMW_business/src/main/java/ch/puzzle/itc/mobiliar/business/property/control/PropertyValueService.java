@@ -122,9 +122,14 @@ public class PropertyValueService {
         return value != null && !value.trim().isEmpty();
     }
 
-
+    /**
+     * IMPORTANT: This method does not check, if the caller has the permission to decrypt the provided properties!
+     *
+     * @param properties
+     * @return
+     */
     public List<ResourceEditProperty> decryptProperties(List<ResourceEditProperty> properties) {
-        if (properties != null && permissions.hasPermission(Permission.DECRYPT_PROPERTIES)) {
+        if (properties != null) {
             for (ResourceEditProperty p : properties) {
                 p.decrypt();
             }
