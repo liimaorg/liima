@@ -145,8 +145,29 @@ public class DeploymentBoundary {
 
         StringBuilder stringQuery = new StringBuilder();
 
-        if (isLastDeploymentForAsEnvFilterSet(filter)) {
-            stringQuery.append(getListOfLastDeploymentsForAppServerAndContextQuery(false));
+        DeploymentState lastDeploymentState = null;
+        boolean hasLastDeploymentForAsEnvFilterSet = isLastDeploymentForAsEnvFilterSet(filter);
+        Integer from = 0;
+        Integer to = 0;
+
+        if (hasLastDeploymentForAsEnvFilterSet) {
+            for (CustomFilter customFilter : filter) {
+                if (customFilter.getFilterDisplayName().equals("State")) {
+                    lastDeploymentState = DeploymentState.getByString(customFilter.getValue());
+                    from = startIndex != null ? startIndex : 0;
+                    to = maxResults != null ? from+maxResults : from+200;
+                    // sever side pagination is done after fetching from db for this combination
+                    startIndex = null;
+                    maxResults = null;
+                    break;
+                }
+            }
+
+            if (lastDeploymentState == null) {
+                stringQuery.append(getListOfLastDeploymentsForAppServerAndContextQuery(false));
+            } else {
+                stringQuery.append("select " + DEPLOYMENT_QL_ALIAS + " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " ");
+            }
             commonFilterService.appendWhereAndMyAmwParameter(myAmw, stringQuery, "and " + getEntityDependantMyAmwParameterQl());
         } else {
             stringQuery.append("select " + DEPLOYMENT_QL_ALIAS + " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " ");
@@ -157,25 +178,117 @@ public class DeploymentBoundary {
 
         boolean lowerSortCol = DeploymentFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, isLastDeploymentForAsEnvFilterSet(filter));
+        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, hasLastDeploymentForAsEnvFilterSet, false);
 
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
 
+        Set<DeploymentEntity> deployments = new LinkedHashSet<>();
         // some stuff may be lazy loaded
         List<DeploymentEntity> resultList = query.getResultList();
+        final int allResults = resultList.size();
 
-        Set<DeploymentEntity> deployments = new LinkedHashSet<>();
-        deployments.addAll(resultList);
+        if (!hasLastDeploymentForAsEnvFilterSet) {
+            deployments.addAll(resultList);
+        } else {
+            resultList = specialSort(latestPerContext(resultList), colToSort, sortingDirection);
+            if (to > 0) {
+                resultList = new ArrayList<>(resultList.subList(from, to < resultList.size() ? to : resultList.size()));
+            }
+            deployments.addAll(resultList);
+        }
 
         if (doPageingCalculation) {
             String countQueryString = baseQuery.replace("select " + DEPLOYMENT_QL_ALIAS, "select count(" + DEPLOYMENT_QL_ALIAS + ".id)");
-            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, isLastDeploymentForAsEnvFilterSet(filter));
+            // last param needs to be true if we are dealing with a combination of "State" and "Latest deployment job for App Server and Env"
+            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, hasLastDeploymentForAsEnvFilterSet, lastDeploymentState != null);
 
             commonFilterService.setParameterToQuery(null, null, myAmw, countQuery);
-            totalItemsForCurrentFilter = ((Long) countQuery.getSingleResult()).intValue();
+            totalItemsForCurrentFilter = (lastDeploymentState == null) ? ((Long) countQuery.getSingleResult()).intValue() : countQuery.getResultList().size();
+            // fix for the special case of multiple deployments on the same environment with exactly the same deployment date
+            if (hasLastDeploymentForAsEnvFilterSet && lastDeploymentState == null && deployments.size() != allResults) {
+                totalItemsForCurrentFilter -= allResults - deployments.size();
+            }
         }
 
         return new Tuple<>(deployments, totalItemsForCurrentFilter);
+    }
+
+    private List latestPerContext(List<DeploymentEntity> resultList) {
+        HashMap<ContextEntity, DeploymentEntity> latestByContext = new HashMap<>();
+        for (DeploymentEntity deployment : resultList) {
+            if (!latestByContext.containsKey(deployment.getContext())) {
+                latestByContext.put(deployment.getContext(), deployment);
+            } else {
+                if (deployment.getDeploymentDate().after(latestByContext.get(deployment.getContext()).getDeploymentDate())) {
+                    latestByContext.put(deployment.getContext(), deployment);
+                } else if (deployment.getDeploymentDate().equals(latestByContext.get(deployment.getContext()).getDeploymentDate())
+                        && deployment.getId() > latestByContext.get(deployment.getContext()).getId()) {
+                        latestByContext.put(deployment.getContext(), deployment);
+                }
+            }
+        }
+        return new ArrayList<>(latestByContext.values());
+    }
+
+    private List<DeploymentEntity> specialSort(List<DeploymentEntity> deploymentsList, String colToSort, CommonFilterService.SortingDirectionType sortingDirection) {
+        if (colToSort != null) {
+            switch (colToSort) {
+                case "d.trackingId":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getTrackingId().compareTo(o2.getTrackingId());
+                        }
+                    });
+                    break;
+                case "d.deploymentState":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getDeploymentState().getDisplayName().compareTo(o2.getDeploymentState().getDisplayName());
+                        }
+                    });
+                    break;
+                case "d.resourceGroup.name":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getResourceGroup().getName().compareTo(o2.getResourceGroup().getName());
+                        }
+                    });
+                    break;
+                case "d.release.installationInProductionAt":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getRelease().getInstallationInProductionAt().compareTo(o2.getRelease().getInstallationInProductionAt());
+                        }
+                    });
+                    break;
+                case "d.context.name":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getContext().getName().compareTo(o2.getContext().getName());
+                        }
+                    });
+                    break;
+                case "d.deploymentDate":
+                    Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
+                        @Override
+                        public int compare(DeploymentEntity o1, DeploymentEntity o2) {
+                            return o1.getDeploymentDate().compareTo(o2.getDeploymentDate());
+                        }
+                    });
+                    break;
+                default:
+            }
+
+            if (sortingDirection.equals(CommonFilterService.SortingDirectionType.DESC)) {
+                Collections.reverse(deploymentsList);
+            }
+        }
+        return deploymentsList;
     }
 
     private String getEntityDependantMyAmwParameterQl() {
@@ -425,10 +538,9 @@ public class DeploymentBoundary {
      * Create the NodeJobEntity for the given Development and node
      *
      * @param deployment
-     * @param node
      * @return the created NodeJobEntity
      */
-    public NodeJobEntity createAndPersistNodeJobEntity(DeploymentEntity deployment, ResourceEntity node) {
+    public NodeJobEntity createAndPersistNodeJobEntity(DeploymentEntity deployment) {
         NodeJobEntity nodeJobEntity = new NodeJobEntity();
         nodeJobEntity.setDeployment(deployment);
         nodeJobEntity.setDeploymentState(deployment.getDeploymentState());
@@ -464,24 +576,24 @@ public class DeploymentBoundary {
     }
 
     public void handleNodeJobUpdate(Integer deploymentId) {
-		DeploymentEntity deployment = getDeploymentById(deploymentId);
-		log.fine("handleNodeJobUpdate called state: " + deployment.getDeploymentState());
+        DeploymentEntity deployment = getDeploymentById(deploymentId);
+        log.fine("handleNodeJobUpdate called state: " + deployment.getDeploymentState());
 
-		if (!deployment.isPredeploymentFinished()) {
-			return;
-		}
-		if (!DeploymentState.PRE_DEPLOYMENT.equals(deployment.getDeploymentState())) {
-			return;
-		}
+        if (!deployment.isPredeploymentFinished()) {
+            return;
+        }
+        if (!DeploymentState.PRE_DEPLOYMENT.equals(deployment.getDeploymentState())) {
+            return;
+        }
 
-		if (deployment.isPredeploymentSuccessful()) {
-			try {
-				handlePreDeploymentSuccessful(deployment);
-			} catch (OptimisticLockException e) {
-				// If it fails the deployment will be retried by the scheduler
-				return;
-			}
-		}
+        if (deployment.isPredeploymentSuccessful()) {
+            try {
+                handlePreDeploymentSuccessful(deployment);
+            } catch (OptimisticLockException e) {
+                // If it fails the deployment will be retried by the scheduler
+                return;
+            }
+        }
         else {
             updateDeploymentInfoAndSendNotification(GenerationModus.PREDEPLOY, deploymentId, "Deployment (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing at " + new Date(), deployment.getResource().getId(), null, DeploymentFailureReason.PRE_DEPLOYMENT_SCRIPT);
             log.info("Deployment " + deployment.getId() + " (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing");
@@ -490,7 +602,7 @@ public class DeploymentBoundary {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void handlePreDeploymentSuccessful(DeploymentEntity deployment) {
-		DeploymentState previousState = deployment.getDeploymentState();
+        DeploymentState previousState = deployment.getDeploymentState();
 
         deployment.setDeploymentState(DeploymentState.READY_FOR_DEPLOYMENT);
         deployment.appendStateMessage("All NodeJobs successful, updated deployment state from " + previousState + " to " + deployment.getDeploymentState() + " at " + new Date());
@@ -729,10 +841,10 @@ public class DeploymentBoundary {
     public List<DeploymentEntity> getFinishedPreDeployments() {
         TypedQuery<DeploymentEntity> query = em.createQuery(
                 "select "+ DEPLOYMENT_QL_ALIAS +" from "+ DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS
-                + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentState = :deploymentState"
-                + " and exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where deploymentState = :deploymentState)"
-                + " and not exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where status = :running and deploymentState = :deploymentState)",
-                		DeploymentEntity.class)
+                        + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentState = :deploymentState"
+                        + " and exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where deploymentState = :deploymentState)"
+                        + " and not exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where status = :running and deploymentState = :deploymentState)",
+                DeploymentEntity.class)
                 .setParameter("deploymentState", DeploymentState.PRE_DEPLOYMENT)
                 .setParameter("running", NodeJobStatus.RUNNING);
         return query.getResultList();
@@ -1054,7 +1166,7 @@ public class DeploymentBoundary {
         Date now = new Date();
         checkValidation(isChangeDeploymentDatePossible(deployment), deployment);
 
-		if(newDate == null || newDate.before(now)) {
+        if(newDate == null || newDate.before(now)) {
             newDate = now;
         }
 
