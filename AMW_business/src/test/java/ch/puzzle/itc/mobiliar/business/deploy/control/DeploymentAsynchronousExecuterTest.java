@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.logging.Logger;
 
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.generator.control.EnvironmentGenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.NodeGenerationResult;
 import org.junit.Before;
@@ -124,7 +125,7 @@ public class DeploymentAsynchronousExecuterTest {
 		
 		// then
 		verify(deploymentExecutionResultHandlerService, times(0)).handleSuccessfulDeployment(any(GenerationModus.class), any(GenerationResult.class));
-		verify(deploymentExecutionResultHandlerService, times(1)).handleUnSuccessfulDeployment(GenerationModus.DEPLOY,deployment, result, se);
+		verify(deploymentExecutionResultHandlerService, times(1)).handleUnSuccessfulDeployment(GenerationModus.DEPLOY,deployment, result, se, DeploymentFailureReason.DEPLOYMENT_SCRIPT);
 	}
 
 }

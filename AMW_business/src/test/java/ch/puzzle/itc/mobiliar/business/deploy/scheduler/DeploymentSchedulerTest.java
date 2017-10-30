@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.deploy.scheduler;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentExecuterService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
@@ -349,7 +350,7 @@ public class DeploymentSchedulerTest {
 		deploymentScheduler.checkForEndlessDeployments();
 
 		// then
-		verify(deploymentBoundary, times(0)).updateDeploymentInfoAndSendNotification(any(GenerationModus.class), any(Integer.class), anyString(), any(Integer.class), any(GenerationResult.class));
+		verify(deploymentBoundary, times(0)).updateDeploymentInfoAndSendNotification(any(GenerationModus.class), any(Integer.class), anyString(), any(Integer.class), any(GenerationResult.class), any(DeploymentFailureReason.class));
 		verify(log, times(2)).log(argThat(matchesLevel(Level.FINE)), anyString());
 	}
 
@@ -373,7 +374,7 @@ public class DeploymentSchedulerTest {
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
-				Matchers.<Integer>eq(null), Matchers.<GenerationResult>eq(null));
+				Matchers.<Integer>eq(null), Matchers.<GenerationResult>eq(null), Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(log, times(2)).log(argThat(matchesLevel(Level.INFO)), anyString());
 	}
 
@@ -481,12 +482,14 @@ public class DeploymentSchedulerTest {
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
-				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), Matchers.<GenerationResult>eq(null));
+				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), Matchers.<GenerationResult>eq(null),
+				Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(2)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
-				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), Matchers.<GenerationResult>eq(null));
+				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), Matchers.<GenerationResult>eq(null),
+				Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(deploymentBoundary, times(0)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.PREDEPLOY), anyInt(),
-				anyString(), anyInt(), Matchers.<GenerationResult>any());
+				anyString(), anyInt(), Matchers.<GenerationResult>any(), Matchers.<DeploymentFailureReason>any());
 		
 		verify(log, times(3)).log(argThat(matchesLevel(Level.INFO)), anyString());
 	}

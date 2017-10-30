@@ -25,7 +25,8 @@ public enum DeploymentFilterTypes {
     LASTDEPLOYJOBFORASENV("Latest deployment job for App Server and Env", "", FilterType.SpecialFilterType),
     TRACKING_ID("Tracking Id", DEPLOYMENT_QL_ALIAS + ".trackingId", FilterType.IntegerType),
     DEPLOYMENT_PARAMETER("Deployment parameter", "p.key", "join d.deploymentParameters p", FilterType.StringType),
-    DEPLOYMENT_PARAMETER_VALUE("Deployment parameter value", "p.value", "join d.deploymentParameters p", FilterType.StringType);
+    DEPLOYMENT_PARAMETER_VALUE("Deployment parameter value", "p.value", "join d.deploymentParameters p", FilterType.StringType),
+    DEPLOYMENT_REASON("Reason", DEPLOYMENT_QL_ALIAS + ".reason", FilterType.ENUM_TYPE);
 
     public static class QLConstants {
         public static final String DEPLOYMENT_QL_ALIAS = "d";
