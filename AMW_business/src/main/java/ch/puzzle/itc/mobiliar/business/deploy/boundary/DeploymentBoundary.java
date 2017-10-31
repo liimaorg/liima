@@ -221,43 +221,6 @@ public class DeploymentBoundary {
         return false;
     }
 
-    public DeploymentEntity getPreviousDeployment(DeploymentEntity sourceDeployment) throws AMWException {
-        LinkedList<CustomFilter> filters = new LinkedList<>();
-
-        DeploymentFilterTypes filterType = DeploymentFilterTypes.LASTDEPLOYJOBFORASENV;
-        CustomFilter filter = CustomFilter.builder(filterType).build();
-        filters.add(filter);
-
-        filterType = DeploymentFilterTypes.APPSERVER_NAME;
-        filter = CustomFilter.builder(filterType).build();
-        filter.setValue(sourceDeployment.getResourceGroup().getName());
-        filters.add(filter);
-
-        filterType = DeploymentFilterTypes.ENVIRONMENT_NAME;
-        filter = CustomFilter.builder(filterType).build();
-        filter.setValue(sourceDeployment.getContext().getName());
-        filters.add(filter);
-
-        filterType = DeploymentFilterTypes.DEPLOYMENT_STATE;
-        filter = CustomFilter.builder(filterType).enumType(DeploymentState.class).build();
-        filter.setValue(DeploymentState.success.name());
-        filters.add(filter);
-
-        filterType = DeploymentFilterTypes.DEPLOYMENT_STATE;
-        filter = CustomFilter.builder(filterType).enumType(DeploymentState.class).build();
-        filter.setValue(DeploymentState.failed.name());
-        filters.add(filter);
-
-        Set<DeploymentEntity> prevDeployments = getFilteredDeployments(false, 0, null, filters, null, null, null).getA();
-        if (prevDeployments.size() != 1) {
-            throw new AMWException(
-                    "Previous deployment for " + sourceDeployment.getResourceGroup().getName()
-                            + " context " + sourceDeployment.getContext().getName() + " not found");
-        }
-
-        return prevDeployments.iterator().next();
-    }
-
     public List<DeploymentEntity> getListOfLastDeploymentsForAppServerAndContext(boolean onlySuccessful) {
 
         TypedQuery<DeploymentEntity> query = em.createQuery(getListOfLastDeploymentsForAppServerAndContextQuery(onlySuccessful), DeploymentEntity.class);
