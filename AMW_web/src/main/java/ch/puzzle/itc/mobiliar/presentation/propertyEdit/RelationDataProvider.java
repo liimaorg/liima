@@ -230,8 +230,8 @@ public class RelationDataProvider implements Serializable {
 			resourceTypes = new ArrayList<>(resourceTypeDataProvider.getRootResourceTypes());
             Collections.sort(resourceTypes);
 
-			if (getResourceType().isApplicationServerResourceType() && t != null
-					&& permissionService.hasPermission(Permission.RESOURCE, Action.UPDATE, t.getEntity())) {
+			if (getResourceType().isApplicationServerResourceType()
+					&& permissionService.hasPermission(Permission.RESOURCE, Action.UPDATE, getResourceType())) {
 				// The application server can additionally add nodes
 				resourceTypes = new ArrayList<>(resourceTypes);
 				resourceTypes.add(0, resourceTypeDataProvider.getByName(DefaultResourceTypeDefinition.NODE.name()));

@@ -250,6 +250,11 @@ public class DeploymentEntity implements Serializable {
     private List<DeploymentParameter> deploymentParameters;
 
     @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private DeploymentFailureReason reason;
+
+    @Getter
     @Version
     private long v;
 
@@ -434,27 +439,35 @@ public class DeploymentEntity implements Serializable {
     }
 
 	public boolean isPredeploymentFinished() {
-		if (this.getNodeJobs().size() == 0) {
-			return false;
-		}
+        boolean hasPredeploymnets = false;
+        boolean allFinished = true;
+
 		for (NodeJobEntity job : this.getNodeJobs()) {
-			if (NodeJobEntity.NodeJobStatus.RUNNING.equals(job.getStatus())) {
-				return false;
+            if (DeploymentState.PRE_DEPLOYMENT.equals(job.getDeploymentState())) {
+                hasPredeploymnets = true;
+                if (NodeJobEntity.NodeJobStatus.RUNNING.equals(job.getStatus())) {
+                    allFinished=false;
+                    break;
+                }
 			}
 		}
-		return true;
+		return hasPredeploymnets && allFinished;
 	}
 
 	public boolean isPredeploymentSuccessful() {
-		if (this.getNodeJobs().size() == 0) {
-			return false;
-		}
+        boolean hasPredeploymnets = false;
+        boolean allSuccess = true;
+
 		for (NodeJobEntity job : this.getNodeJobs()) {
-			if (!NodeJobEntity.NodeJobStatus.SUCCESS.equals(job.getStatus())) {
-				return false;
+            if (DeploymentState.PRE_DEPLOYMENT.equals(job.getDeploymentState())) {
+                hasPredeploymnets = true;
+                if (!NodeJobEntity.NodeJobStatus.SUCCESS.equals(job.getStatus())) {
+                    allSuccess=false;
+                    break;
+                }
 			}
 		}
-		return true;
+		return hasPredeploymnets && allSuccess;
 	}
 
 	public NodeJobEntity findNodeJobEntity(Integer nodeJobId) {

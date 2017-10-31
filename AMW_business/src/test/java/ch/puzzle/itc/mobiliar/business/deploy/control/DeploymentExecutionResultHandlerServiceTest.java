@@ -75,7 +75,7 @@ public class DeploymentExecutionResultHandlerServiceTest {
 
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.DEPLOY, deployment.getId(), null,
-				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
+				deployment.getResource() != null ? deployment.getResource().getId() : null, result, null);
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class DeploymentExecutionResultHandlerServiceTest {
 
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.SIMULATE, deployment.getId(), null,
-				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
+				deployment.getResource() != null ? deployment.getResource().getId() : null, result, null);
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class DeploymentExecutionResultHandlerServiceTest {
 
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.DEPLOY, deployment.getId(), null,
-				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
+				deployment.getResource() != null ? deployment.getResource().getId() : null, result, null);
 		verify(deploymentBoundary, times(1)).createShakedownTestForTrackinIdOfDeployment(deployment.getTrackingId());
 	}
 
@@ -109,12 +109,12 @@ public class DeploymentExecutionResultHandlerServiceTest {
 		// given
 		Exception e = new Exception();
 		// when
-		deploymentExecutionResultHandlerService.handleUnSuccessfulDeployment(GenerationModus.DEPLOY, deployment, result, e);
+		deploymentExecutionResultHandlerService.handleUnSuccessfulDeployment(GenerationModus.DEPLOY, deployment, result, e, null);
 
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.DEPLOY, deployment.getId(),
 				"Deployment(100) failed \nnull",
-				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
+				deployment.getResource() != null ? deployment.getResource().getId() : null, result, null);
 		verify(log, times(1)).log(Level.SEVERE, "Deployment(100) failed \nnull", e);
 	}
 
@@ -123,12 +123,12 @@ public class DeploymentExecutionResultHandlerServiceTest {
 		// given
 		Exception e = new Exception();
 		// when
-		deploymentExecutionResultHandlerService.handleUnSuccessfulDeployment(GenerationModus.SIMULATE, deployment, result, e);
+		deploymentExecutionResultHandlerService.handleUnSuccessfulDeployment(GenerationModus.SIMULATE, deployment, result, e, null);
 
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.SIMULATE, deployment.getId(),
 				"Build(100) failed \nnull",
-				deployment.getResource() != null ? deployment.getResource().getId() : null, result);
+				deployment.getResource() != null ? deployment.getResource().getId() : null, result, null);
 		verify(log, times(1)).log(Level.SEVERE, "Build(100) failed \nnull", e);
 	}
 
