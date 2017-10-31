@@ -67,16 +67,6 @@ public class ResourceGroupPersistenceService {
 	}
 
 	/**
-	 * Deletes the entity with the given id
-	 * 
-	 * @param id
-	 */
-	public void deleteResourceGroupEntity(int id) {
-		entityManager.remove(getById(id));
-		log.info("ResourceGroup mit der Id: " + id + " wurde aus der DB gelöscht");
-	}
-
-	/**
 	 * @param resourceTypeName
 	 * @param myAmw
 	 * @return

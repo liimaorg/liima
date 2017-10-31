@@ -255,6 +255,31 @@ public class DeploymentEntity implements Serializable {
     private DeploymentFailureReason reason;
 
     @Getter
+    @Setter
+    @Column(name = "ex_context_id")
+    private Integer exContextId;
+
+    @Getter
+    @Setter
+    @Column(name = "ex_release_id")
+    private Integer exReleaseId;
+
+    @Getter
+    @Setter
+    @Column(name = "ex_resource_id")
+    private Integer exResourceId;
+
+    @Getter
+    @Setter
+    @Column(name = "ex_resourcegroup_id")
+    private Integer exResourcegroupId;
+
+    @Getter
+    @Setter
+    @Column(name = "ex_runtime_resource_id")
+    private Integer exRuntimeResourceId;
+
+    @Getter
     @Version
     private long v;
 
@@ -262,6 +287,15 @@ public class DeploymentEntity implements Serializable {
 
     public DeploymentEntity() {
         super();
+    }
+
+    /**
+     * Returns true if the Resource, ResourceGroup, Runtime, Context or Release originally associated with this Deployment has been deleted
+     *
+     * @return
+     */
+    public boolean isPreserved() {
+        return exResourcegroupId != null || exResourceId != null || exContextId != null || exRuntimeResourceId != null || exReleaseId != null;
     }
 
     public boolean isRunning() {

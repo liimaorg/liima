@@ -32,7 +32,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 
@@ -49,12 +48,6 @@ public class SecurityScreenDomainService {
 
     @Inject
     private EntityManager entityManager;
-    
-    @Inject
-    private PermissionRepository permissionRepository;
-
-    @Inject
-    private RestrictionRepository restrictionRepository;
 
     /**
      * Diese Methode sucht eine Berechtigung durch einen Name
@@ -93,12 +86,6 @@ public class SecurityScreenDomainService {
         } else {
             permissionEntity.setValue(newPermissionValue);
         }
-    }
-
-    public void deleteRestrictionsWithContext(ContextEntity context) {
-        restrictionRepository.deleteAllWithContext(context);
-        permissionRepository.setReloadRolesAndPermissionsList(true);
-        permissionRepository.setReloadDeployableRoleList(true);
     }
 
 }
