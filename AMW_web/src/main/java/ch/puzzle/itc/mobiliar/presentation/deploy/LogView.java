@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.presentation.deploy;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
@@ -36,6 +37,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI;
 
 @ViewBackingBean
 public class LogView implements Serializable {
@@ -68,6 +71,10 @@ public class LogView implements Serializable {
 	Logger log;
 
 	DeploymentEntity deployment;
+
+	public boolean isShowAngularBacklink() {
+		return ! ConfigurationService.getPropertyAsBoolean(FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI);
+	}
 
 	public String getApplicationServerName() {
 		if (deployment != null && deployment.getResource() != null) {

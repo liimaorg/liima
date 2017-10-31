@@ -20,13 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
-import java.io.Serializable;
-import java.util.*;
-
-import javax.persistence.*;
-
-import org.hibernate.annotations.BatchSize;
-
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -41,6 +34,11 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
+import org.hibernate.annotations.BatchSize;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Entity implementation class for Entity: Deployment
@@ -73,62 +71,7 @@ public class DeploymentEntity implements Serializable {
     @ManyToOne
     private ReleaseEntity release;
 
-    public enum DeploymentState {
-        // the names of the enums are used in the database
-        success("success"),
-        failed("failed"),
-        canceled("canceled"),
-        rejected("rejected"),
-        READY_FOR_DEPLOYMENT("ready_for_deploy"),
-        PRE_DEPLOYMENT("pre_deploy"),
-        progress("progress"),
-        simulating("simulating"),
-        delayed("delayed"),
-        scheduled("scheduled"),
-        requested("requested");
 
-        static {
-            PRE_DEPLOYMENT.setAllowedTransitions(success, failed, READY_FOR_DEPLOYMENT, progress);
-            READY_FOR_DEPLOYMENT.setAllowedTransitions(canceled, rejected, progress);
-            progress.setAllowedTransitions(failed, success);
-            simulating.setAllowedTransitions(canceled, rejected, progress, delayed, scheduled, requested);
-            delayed.setAllowedTransitions(canceled, rejected, progress, simulating, scheduled, PRE_DEPLOYMENT);
-            scheduled.setAllowedTransitions(canceled, rejected, progress, simulating, delayed, PRE_DEPLOYMENT);
-            requested.setAllowedTransitions(canceled, rejected, simulating, delayed, scheduled);
-        }
-
-        @Getter
-        private String displayName;
-        @Getter
-        private List<DeploymentState> allowedTransitions = new ArrayList<>();
-
-        private void setAllowedTransitions(DeploymentState... allowedTransitions) {
-            this.allowedTransitions = Arrays.asList(allowedTransitions);
-        }
-
-        private DeploymentState(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public boolean isTransitionAllowed(DeploymentState newState) {
-            return allowedTransitions.contains(newState);
-        }
-
-        public static DeploymentState getByString(String statusStr) {
-            for (DeploymentState state : DeploymentState.values()) {
-                if (state.name().equalsIgnoreCase(statusStr)) {
-                    return state;
-                }
-            }
-            return null;
-        }
-
-		@Override
-		public String toString() {
-			return displayName;
-		}
-
-    }
 
     // TODO: Redundant to deploymentState?
     // results in getDeploymentConfirmed not isDeploymentConfirmed
@@ -299,19 +242,13 @@ public class DeploymentEntity implements Serializable {
     }
 
     public boolean isRunning() {
-        if (deploymentState == DeploymentState.PRE_DEPLOYMENT || deploymentState == DeploymentState.simulating
-                || deploymentState == DeploymentState.progress) {
-            return true;
-        }
-        return false;
+        return deploymentState == DeploymentState.PRE_DEPLOYMENT || deploymentState == DeploymentState.simulating
+                || deploymentState == DeploymentState.progress;
     }
 
     public boolean isExecuted() {
-        if (deploymentState == DeploymentState.failed || deploymentState == DeploymentState.success
-                || deploymentState == DeploymentState.canceled || deploymentState == DeploymentState.rejected) {
-            return true;
-        }
-        return false;
+        return deploymentState == DeploymentState.failed || deploymentState == DeploymentState.success
+                || deploymentState == DeploymentState.canceled || deploymentState == DeploymentState.rejected;
     }
 
     public boolean isMutable() {
@@ -365,7 +302,7 @@ public class DeploymentEntity implements Serializable {
 	public void setDeploymentState(DeploymentState newDeploymentState) {
 		if (deploymentState != null && !deploymentState.isTransitionAllowed(newDeploymentState)) {
 			throw new DeploymentStateException("Can't set status from " + deploymentState + " to " + newDeploymentState
-					+ " of deployment " + getId() + ". Allowed transitions: " + deploymentState.allowedTransitions);
+					+ " of deployment " + getId() + ". Allowed transitions: " + deploymentState.getAllowedTransitions());
 		}
 
         deploymentState = newDeploymentState;
@@ -383,7 +320,7 @@ public class DeploymentEntity implements Serializable {
         if (applicationsWithVersionList != null) {
             return applicationsWithVersionList;
         }
-        List<ApplicationWithVersion> result = new ArrayList<DeploymentEntity.ApplicationWithVersion>();
+        List<ApplicationWithVersion> result = new ArrayList<>();
         if(applicationsWithVersion !=  null) {
             JSONArray o1 = JSONArray.fromObject(applicationsWithVersion);
             for (Object object : o1) {
@@ -439,8 +376,6 @@ public class DeploymentEntity implements Serializable {
         }
 
     }
-
-    ;
 
     public boolean isDeploymentDelayed() {
         return !isExecuted()

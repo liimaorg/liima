@@ -402,16 +402,12 @@
     </ui:define>
 
     <ui:define name="component_popups">
-
-
         <h:form>
-            <rich:popupPanel id="confirmDeployment" moveable="true"
-                             autosized="true" domElementAttachment="form">
+            <rich:popupPanel id="confirmDeployment" moveable="true" autosized="true" domElementAttachment="form">
                 <f:facet name="header">
                     <h2>
-                        <h:outputText
-                                value="Confirm deployment ${deployScreenDataProvider.selectedDeployment.id} for appserver ${deployScreenDataProvider.selectedDeployment.resourceGroup.name}"
-                                id="confirmDeploymentPopupPanelFacet"/>
+                        <h:outputText id="confirmDeploymentPopupPanelFacet"
+                                      value="Confirm deployment ${deployScreenDataProvider.selectedDeployment.id} for appserver ${deployScreenDataProvider.selectedDeployment.resourceGroup.name}"/>
                     </h2>
                 </f:facet>
                 <f:facet name="controls">
@@ -423,24 +419,23 @@
                 </f:facet>
                 <h:panelGroup id="confirmDeploymentPopupPanelGroup">
                     <div>
-
-
-                        <label class="inlineBlock"> <h:selectBooleanCheckbox
-                                value="#{deployScreenDataProvider.selectedDeployment.sendEmailConfirmation}"/>send an email
-                            when deployed
+                        <label class="inlineBlock">
+                            <h:selectBooleanCheckbox value="#{deployScreenDataProvider.selectedDeployment.sendEmailConfirmation}"/>
+                            send an email when deployed
                         </label>
                     </div>
 
                     <div>
                         <label class="inlineBlock">
-                            <h:selectBooleanCheckbox
-                                    value="#{deployScreenDataProvider.selectedDeployment.simulating}"/>simulate before deployment</label>
+                            <h:selectBooleanCheckbox value="#{deployScreenDataProvider.selectedDeployment.simulating}"/>
+                            simulate before deployment
+                        </label>
                     </div>
+
                     <div>
-                        <h:panelGroup
-                                rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
-                            <label class="inlineBlock"> <h:selectBooleanCheckbox
-                                    value="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment}">
+                        <h:panelGroup rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
+                            <label class="inlineBlock">
+                                <h:selectBooleanCheckbox value="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment}">
                                 <a4j:ajax render="testNeighbourhoodButtonId"/>
                             </h:selectBooleanCheckbox>execute shakedown tests when deployed</label>
                         </h:panelGroup>
@@ -449,10 +444,12 @@
                     <div class="paddingLeft20">
                         <h:panelGroup
                                 rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
-                            <label class="inlineBlock"> <h:selectBooleanCheckbox
-                                    id="testNeighbourhoodButtonId"
+                            <label class="inlineBlock">
+                                <h:selectBooleanCheckbox id="testNeighbourhoodButtonId"
                                     disabled="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment==false}"
-                                    value="#{deployScreenDataProvider.selectedDeployment.createTestForNeighborhoodAfterDeployment}"/>test neighbourhood</label>
+                                    value="#{deployScreenDataProvider.selectedDeployment.createTestForNeighborhoodAfterDeployment}"/>
+                                test neighbourhood
+                            </label>
                         </h:panelGroup>
                     </div>
 
@@ -461,8 +458,7 @@
                                      styleClass="btn primary right marginLeft20"
                                      type="button"
                                      onclick="showLoader();#{rich:component('confirmDeployment')}.hide();"
-                                     oncomplete="hideLoader();return false;"
-                    />
+                                     oncomplete="hideLoader();return false;"/>
 
                 </h:panelGroup>
             </rich:popupPanel>

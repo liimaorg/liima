@@ -24,7 +24,6 @@ import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceGroupEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -860,7 +859,7 @@ public class DeploymentBoundaryPersistenceTest
 		Tuple<Set<DeploymentEntity>, Integer> result;
 
 		CustomFilter filter = CustomFilter.builder(DeploymentFilterTypes.RELEASE)
-				.comparatorSelection(ComparatorFilterOption.greaterequals).build();
+				.comparatorSelection(ComparatorFilterOption.gte).build();
 		filter.setValue(CustomFilter.convertDateToString(releaseA.getInstallationInProductionAt()));
 		result = deploymentBoundary.getFilteredDeployments(true, 0, 10, Collections.singletonList(filter),
 				null, CommonFilterService.SortingDirectionType.ASC, null);
@@ -874,7 +873,7 @@ public class DeploymentBoundaryPersistenceTest
 		
 		// when filtering <= releaseC
 		filter.setValue(CustomFilter.convertDateToString(releaseC.getInstallationInProductionAt()));
-		filter.setComparatorSelection(ComparatorFilterOption.smallerequals);
+		filter.setComparatorSelection(ComparatorFilterOption.lte);
 		result = deploymentBoundary.getFilteredDeployments(true, 0,
 				10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);
@@ -888,7 +887,7 @@ public class DeploymentBoundaryPersistenceTest
 
 		// when filtering == releaseB
 		filter.setValue(CustomFilter.convertDateToString(releaseB.getInstallationInProductionAt()));
-		filter.setComparatorSelection(ComparatorFilterOption.equals);
+		filter.setComparatorSelection(ComparatorFilterOption.eq);
 		result = deploymentBoundary.getFilteredDeployments(true, 0,
 				10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);

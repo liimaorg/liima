@@ -22,7 +22,6 @@ package ch.puzzle.itc.mobiliar.presentation.deploy;
 
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService.SortingDirectionType;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -149,6 +148,7 @@ public class DeployScreenDataProvider implements Serializable {
     private deployscreenColDescriptor sortingColumn = deployscreenColDescriptor.DEPLOY_TIME;
 
     private static final boolean useAngular = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_GUI));
+    private static final boolean useAngularDeployment = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI));
 
     @Getter
     @Setter
@@ -262,6 +262,10 @@ public class DeployScreenDataProvider implements Serializable {
         return useAngular;
     }
 
+    public boolean isAngularDeploymentEnabled() {
+        return useAngularDeployment;
+    }
+
     class MyComparator implements Comparator<DeploymentFilterTypes> {
         @Override
         public int compare(DeploymentFilterTypes a, DeploymentFilterTypes b) {
@@ -286,7 +290,7 @@ public class DeployScreenDataProvider implements Serializable {
                 CustomFilter filter;
                 filter = CustomFilter.builder(selectedFilter).build();
                 if (selectedFilter.getFilterType().equals(FilterType.IntegerType)) {
-                    filter.setComparatorSelection(ComparatorFilterOption.equals);
+                    filter.setComparatorSelection(ComparatorFilterOption.eq);
                 } else {
                     ComparatorFilterOption comperatorSelection = filter.getTypedComparatorSelectionList().isEmpty() ?
                             null : filter.getTypedComparatorSelectionList().get(0);

@@ -87,7 +87,7 @@ public class EnvironmentGenerationResult {
 		return allNodesDisabled();
 	}
 
-    private boolean allNodesDisabled(){
+    public boolean allNodesDisabled(){
 	   for (NodeGenerationResult result : nodeGenerationResults) {
 		  if(result.isNodeEnabled()){
 			 return false;

@@ -265,8 +265,8 @@ public class CommonFilterService {
 	}
 
 	protected void createQueryForBooleanTypeWithoutAddingParameterToParameterMap(StringBuilder query, CustomFilter deploymentFilter) {
-		if ((deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.notequal) && !deploymentFilter.getBooleanValue())
-				|| (deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.equals) && deploymentFilter.getBooleanValue())) {
+		if ((deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.neq) && !deploymentFilter.getBooleanValue())
+				|| (deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.eq) && deploymentFilter.getBooleanValue())) {
 			query.append(deploymentFilter.getDeploymentTableColumnName()).append(" is true ");
 		} else {
 			query.append("(").append(deploymentFilter.getDeploymentTableColumnName()).append(" is null OR ");

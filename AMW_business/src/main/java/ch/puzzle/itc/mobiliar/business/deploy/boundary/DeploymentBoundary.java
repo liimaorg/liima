@@ -24,12 +24,14 @@ import ch.puzzle.itc.mobiliar.business.database.control.SequencesService;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent.DeploymentEventType;
+import ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary.DeploymentParameterBoundary;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
+import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
+import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
@@ -40,10 +42,14 @@ import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationMod
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
+import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
@@ -51,6 +57,7 @@ import ch.puzzle.itc.mobiliar.business.utils.AuditService;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import org.apache.commons.lang.StringUtils;
@@ -136,7 +143,27 @@ public class DeploymentBoundary {
     @Inject
     private LockingService lockingService;
 
+    @Inject
+    private ResourceGroupLocator resourceGroupLocator;
+
+    @Inject
+    private DeploymentParameterBoundary deploymentParameterBoundary;
+
+    @Inject
+    private ContextLocator contextLocator;
+
+    @Inject
+    ReleaseMgmtService releaseMgmtService;
+
     private PropertyDescriptorEntity mavenVersionProperty = null;
+
+    public DeploymentFilterTypes[]  getDeploymentFilterTypes() {
+        return DeploymentFilterTypes.values();
+    }
+
+    public ComparatorFilterOption[]  getComparatorFilterOptions() {
+        return ComparatorFilterOption.values();
+    }
 
     /**
      * @return a Tuple containing the filter deployments and the total deployments for that filter if doPageingCalculation is true
@@ -400,7 +427,7 @@ public class DeploymentBoundary {
      * @param deployment
      * @return
      */
-    private DeploymentEntity saveDeployment(DeploymentEntity deployment) {
+    protected DeploymentEntity saveDeployment(DeploymentEntity deployment) {
         //TODO hack (YP): calling merge on deployment will also call merge on deployment.resource. Because ResrouceEntity has a lot
         //           of "cascade = ALL" annotations all those properties will be loaded too before merge. This will cause about 800 queries.
         //           With this hack the deployment.resouce is attached and the cascades will be ignored.
@@ -1302,6 +1329,87 @@ public class DeploymentBoundary {
         }
     }
 
+    /**
+     * Returns all possible option values for a given Filter
+     */
+    public List<String> getFilterOptionValues(String filterName) {
+        if (filterName.equals(DeploymentFilterTypes.APPSERVER_NAME.getFilterDisplayName())) {
+            return converToStringList(getApplicationServerGroups());
+        } else if (filterName.equals(DeploymentFilterTypes.ENVIRONMENT_NAME.getFilterDisplayName())) {
+            ArrayList<String> envs = new ArrayList<>();
+            for (ContextEntity ctx : getEnvironments()) {
+                envs.add(ctx.getName());
+            }
+            Collections.sort(envs);
+            return envs;
+        } else if (filterName.equals(DeploymentFilterTypes.APPLICATION_NAME.getFilterDisplayName())) {
+            return converToStringList(getApplicationGroups());
+        } else if (filterName.equals(DeploymentFilterTypes.TARGETPLATFORM.getFilterDisplayName())) {
+            return converToStringList(getRuntimesGroups());
+        } else if (filterName.equals(DeploymentFilterTypes.DEPLOYMENT_STATE.getFilterDisplayName())) {
+            ArrayList<String> states = new ArrayList<>();
+            for (DeploymentState state : DeploymentState.values()) {
+                states.add(state.getDisplayName());
+            }
+            Collections.sort(states);
+            return states;
+        } else if (filterName.equals(DeploymentFilterTypes.RELEASE.getFilterDisplayName())) {
+            ArrayList<String> releases = new ArrayList<>();
+            for (ReleaseEntity r : getReleases()) {
+                releases.add(r.getName());
+            }
+            return releases;
+        } else if (filterName.equals(DeploymentFilterTypes.DEPLOYMENT_PARAMETER.getFilterDisplayName())) {
+            return converToStringList(getAllDeployParamKeys());
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    public List<ContextEntity> getEnvironments() {
+        List<ContextEntity> env = new ArrayList<>();
+        for(ContextEntity c : contextLocator.getAllEnvironments()){
+            if(c.getContextType().getName().equals(ContextNames.ENV.name())){
+                env.add(c);
+            }
+        }
+        return env;
+    }
+
+    public ReleaseEntity getReleaseByName(String releaseName) {
+        return releaseMgmtService.findByName(releaseName);
+    }
+
+    private List<ReleaseEntity> getReleases() {
+        return releaseMgmtService.loadAllReleases(false);
+    }
+
+    private List<Key> getAllDeployParamKeys() {
+        return deploymentParameterBoundary.findAllKeys();
+    }
+
+    private List<ResourceGroupEntity> getApplicationServerGroups() {
+        return resourceGroupLocator.getGroupsForType(
+                DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), Collections.EMPTY_LIST, false, true);
+    }
+
+    private List<ResourceGroupEntity> getApplicationGroups() {
+        return resourceGroupLocator.getGroupsForType(
+                DefaultResourceTypeDefinition.APPLICATION.name(), Collections.EMPTY_LIST, false, true);
+    }
+
+    private List<ResourceGroupEntity> getRuntimesGroups() {
+        return resourceGroupLocator.getGroupsForType(
+                ResourceTypeEntity.RUNTIME, Collections.EMPTY_LIST, false, true);
+    }
+
+    private <K extends NamedIdentifiable> List<String> converToStringList(List<K> namedIdentifiables) {
+        ArrayList<String> stringList = new ArrayList<>();
+
+        for (K namedIdentifiable : namedIdentifiables) {
+            stringList.add(namedIdentifiable.getName());
+        }
+        return stringList;
+    }
 
     /**
      * this method is used for testing only

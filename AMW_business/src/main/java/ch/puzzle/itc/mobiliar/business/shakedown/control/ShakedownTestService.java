@@ -24,7 +24,7 @@ import ch.puzzle.itc.mobiliar.business.database.control.SequencesService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -65,9 +65,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes.QLConstants.GROUP_QL;
-import static ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes.QLConstants.SHAKEDOWN_ENTITY_QL;
-import static ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes.QLConstants.SHAKEDOWN_TEST_QL_ALIAS;
+import static ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes.QLConstants.*;
 
 @Interceptors(HasPermissionInterceptor.class)
 @Stateless
@@ -206,7 +204,7 @@ public class ShakedownTestService{
 		query.setParameter("resourceGroup", resourceGroup);
 		query.setParameter("contextEntity", contextEntity);
 		query.setParameter("releaseEntity", releaseEntity);
-		query.setParameter("successState", DeploymentEntity.DeploymentState.success);
+		query.setParameter("successState", DeploymentState.success);
 
 		List<DeploymentEntity> result = query.getResultList();
 
@@ -223,7 +221,7 @@ public class ShakedownTestService{
 				.createQuery("from DeploymentEntity d where d.resourceGroup=:resourceGroup and d.context=:contextEntity and d.deploymentState is :successState order by d.deploymentDate desc", DeploymentEntity.class);
 		query.setParameter("resourceGroup", resourceGroup);
 		query.setParameter("contextEntity", contextEntity);
-		query.setParameter("successState", DeploymentEntity.DeploymentState.success);
+		query.setParameter("successState", DeploymentState.success);
 
 		List<DeploymentEntity> result = query.getResultList();
 
