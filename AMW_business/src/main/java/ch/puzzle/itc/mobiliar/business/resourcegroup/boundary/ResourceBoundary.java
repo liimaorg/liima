@@ -296,30 +296,30 @@ public class ResourceBoundary {
 
     public void deleteApplicationServerById(int id) throws ResourceNotFoundException,
             ResourceNotDeletableException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-        doRemoveResourceEntity(ForeignableOwner.getSystemOwner(), id, false);
+        doRemoveResourceEntity(ForeignableOwner.getSystemOwner(), id);
     }
 
     public void removeResource(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-        doRemoveResourceEntity(deletingOwner, resourceId, false);
+        doRemoveResourceEntity(deletingOwner, resourceId);
     }
 
     public void removeResourceEntityOfDefaultResType(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-        doRemoveResourceEntity(deletingOwner, resourceId, true);
+        doRemoveResourceEntity(deletingOwner, resourceId);
     }
 
     public void deleteApplicationById(ForeignableOwner deletingOwner, int applicationResId) throws ResourceNotFoundException,
             ResourceNotDeletableException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-        doRemoveResourceEntity(deletingOwner, applicationResId, false);
+        doRemoveResourceEntity(deletingOwner, applicationResId);
     }
 
-    private void doRemoveResourceEntity(ForeignableOwner deletingOwner, Integer resourceId, boolean isDefaultResType) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+    private void doRemoveResourceEntity(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
 
         ResourceEntity resourceEntity = commonService.getResourceEntityById(resourceId);
 
         foreignableService.verifyDeletableByOwner(deletingOwner, resourceEntity);
 
         if (resourceEntity == null) {
-            String message = "Die zu löschende Ressource ist nicht vorhanden";
+            String message = "The resource to be removed was not found";
             log.info(message);
             throw new ResourceNotFoundException(message);
         }
