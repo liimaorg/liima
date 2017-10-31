@@ -85,12 +85,12 @@ export class DeploymentsComponent implements OnInit {
         if (param['filters']) {
           try {
             this.paramFilters = JSON.parse(param['filters']);
+            this.autoload = true;
           } catch (e) {
             console.error(e);
             this.errorMessage = 'Error parsing filter';
           }
         }
-        this.autoload = (param['autoload'] && param['autoload'] === 'true') ? true : false;
         this.initTypeAndOptions();
         this.canRequestDeployments();
         this.getCsvSeparator();
