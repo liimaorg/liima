@@ -592,7 +592,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
     			|| GenerationModus.PREDEPLOY.equals(context.getGenerationModus())
     			|| GenerationModus.SIMULATE.equals(context.getGenerationModus())){
 	    	// create NodeJob for this Node and Add to Deployment in Deploy and Predeploy mode
-	        nodeJobEntity = deploymentBoundary.createAndPersistNodeJobEntity(context.getDeployment(), context.getNode());
+	        nodeJobEntity = deploymentBoundary.createAndPersistNodeJobEntity(context.getDeployment());
 	        
     	}else{
     		// create Test NodeJob Entity

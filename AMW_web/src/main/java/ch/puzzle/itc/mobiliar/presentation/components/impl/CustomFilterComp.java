@@ -143,6 +143,15 @@ public abstract class CustomFilterComp {
 		return false;
 	}
 
+	protected boolean containsSameFilter(List<CustomFilter> selectedFilterList, String newFilterName) {
+		for (CustomFilter deploymentFilter : selectedFilterList) {
+			if (deploymentFilter.getFilterDisplayName().equals(newFilterName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	protected void setFilterSelectionList(List<FilterSelectionItem> filterSelectionList) {
 		this.filterSelectionList = filterSelectionList;
 	}

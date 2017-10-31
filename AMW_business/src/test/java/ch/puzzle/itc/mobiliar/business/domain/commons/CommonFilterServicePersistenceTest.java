@@ -75,7 +75,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         // when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, false, false);
 
         // then
         assertThat(query.getParameters().size(), is(1));
@@ -105,7 +105,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         // when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, false, false);
 
         // then
         assertThat(query.getParameters().size(), is(2));
@@ -133,7 +133,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         // when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, true);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, true, false);
 
         // then
         assertThat(query.getParameters().iterator().next().getName(), is("Deploymentparameter0"));
