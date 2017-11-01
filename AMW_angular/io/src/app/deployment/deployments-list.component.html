@@ -1,17 +1,47 @@
 <div class="panel panel-default">
   <div class="panel-heading">Deployments</div>
   <div class="table-responsive">
-    <table class="table table-sm" [mfData]="deployments" #mf="mfDataTable" *ngIf="(deployments.length > 0)">
+    <table class="table table-sm" *ngIf="(deployments.length > 0)">
       <tr>
-        <th class="has-checkbox"><input type="checkbox" (click)="switchAllDeployments()"> <mfDefaultSorter by="trackingId">Tracking id</mfDefaultSorter></th>
-        <th><mfDefaultSorter by="state">State</mfDefaultSorter></th>
-        <th><mfDefaultSorter by="appServerName">App server</mfDefaultSorter></th>
-        <th><mfDefaultSorter by="releaseName">Release</mfDefaultSorter></th>
-        <th><mfDefaultSorter by="environmentName">Env</mfDefaultSorter></th>
-        <th><mfDefaultSorter by="deploymentDate">Deployment date</mfDefaultSorter></th>
+        <th class="has-checkbox"><input type="checkbox" (click)="switchAllDeployments()"> <span class="link" (click)="reSort('d.trackingId')">Tracking id
+          <ng-container *ngIf="sortCol === 'd.trackingId'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
+        <th><span class="link" (click)="reSort('d.deploymentState')">State
+          <ng-container *ngIf="sortCol === 'd.deploymentState'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
+        <th><span class="link" (click)="reSort('d.resourceGroup.name')">App server
+          <ng-container *ngIf="sortCol === 'd.resourceGroup.name'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
+        <th><span class="link" (click)="reSort('d.release.installationInProductionAt')">Release
+          <ng-container *ngIf="sortCol === 'd.release.installationInProductionAt'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
+        <th><span class="link" (click)="reSort('d.context.name')">Env
+          <ng-container *ngIf="sortCol === 'd.context.name'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
+        <th><span class="link" (click)="reSort('d.deploymentDate')">Deployment date
+          <ng-container *ngIf="sortCol === 'd.deploymentDate'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
         <th>Actions</th>
       </tr>
-      <tr *ngFor="let deployment of mf.data" class="{{deployment.state}}">
+      <tr *ngFor="let deployment of deployments" class="{{deployment.state}}">
         <td class="has-checkbox"><input type="checkbox" [(ngModel)]="deployment.selected"> {{deployment.trackingId}}</td>
         <td><span class="glyphicon glyphicon-info-sign pointer" aria-hidden="true" title="Show details about this deployment" (click)="showDetails(deployment.id)"></span> {{deployment.reason ? failureReason[deployment.reason] : deployment.state}}</td>
         <td><a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>

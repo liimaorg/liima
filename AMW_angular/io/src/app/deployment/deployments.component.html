@@ -104,11 +104,14 @@
           <div class="col-sm-offset-2 col-sm-10">
             <amw-deployments-list [deployments]="deployments"
                                   [filtersInUrl]="filtersInUrl"
+                                  [sortCol]="sortCol"
+                                  [sortDirection]="sortDirection"
                                   (editDeploymentDate)='changeDeploymentDate($event)'
                                   (selectAllDeployments)='switchDeployments($event)'
                                   (doCancelDeployment)='cancelDeployment($event)'
                                   (doRejectDeployment)='rejectDeployment($event)'
-                                  (doConfirmDeployment) = 'confirmDeployment($event)'>
+                                  (doConfirmDeployment) = 'confirmDeployment($event)'
+                                  (doSort) = 'sortDeploymentsBy($event)'>
             </amw-deployments-list>
           </div>
         </div>

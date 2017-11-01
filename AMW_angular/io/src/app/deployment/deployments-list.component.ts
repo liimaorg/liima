@@ -19,11 +19,14 @@ export class DeploymentsListComponent {
 
   @Input() deployments: Deployment[] = [];
   @Input() filtersInUrl: DeploymentFilter[];
+  @Input() sortCol: string;
+  @Input() sortDirection: string;
   @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doConfirmDeployment: EventEmitter<DeploymentDetail> = new EventEmitter<DeploymentDetail>();
+  @Output() doSort: EventEmitter<string> = new EventEmitter<string>();
 
   deployment: Deployment;
 
@@ -75,7 +78,7 @@ export class DeploymentsListComponent {
     this.deploymentService.getDeploymentDetail(deploymentId).subscribe(
       /* happy path */ (r) => this.deploymentDetail = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */  () => $('#deploymentConfirmation').modal('show'))
+      /* onComplete */  () => $('#deploymentConfirmation').modal('show'));
   }
 
   showReject(deploymentId: number) {
@@ -127,6 +130,10 @@ export class DeploymentsListComponent {
       delete this.deployment;
       delete this.deploymentDetail;
     }
+  }
+
+  reSort(col: string) {
+    this.doSort.emit(col);
   }
 
   switchAllDeployments() {

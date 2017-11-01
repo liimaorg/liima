@@ -63,6 +63,10 @@ export class DeploymentsComponent implements OnInit {
   csvReadyObjects: any[] = [];
   csvDocument: string;
 
+  // sorting
+  sortCol: string;
+  sortDirection: string;
+
   errorMessage: string = '';
   successMessage: string = '';
   isLoading: boolean = false;
@@ -91,6 +95,8 @@ export class DeploymentsComponent implements OnInit {
             this.errorMessage = 'Error parsing filter';
           }
         }
+        this.sortCol = 'd.deploymentDate';
+        this.sortDirection = 'DESC';
         this.initTypeAndOptions();
         this.canRequestDeployments();
         this.getCsvSeparator();
@@ -269,6 +275,16 @@ export class DeploymentsComponent implements OnInit {
     $(".textToCopyInput").remove();
   }
 
+  sortDeploymentsBy(row: string) {
+    if (this.sortCol === row) {
+      this.sortDirection = this.sortDirection === 'DESC' ? 'ASC' : 'DESC';
+    } else {
+      this.sortCol = row;
+      this.sortDirection = 'DESC';
+    }
+    this.applyFilter();
+  }
+
   private canFilterBeAdded(): boolean {
     return this.selectedFilterType.name !== 'Latest deployment job for App Server and Env' ||
       _.findIndex(this.filters, {name: this.selectedFilterType.name}) === -1;
@@ -401,12 +417,9 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private getCsvSeparator() {
-    this.isLoading = true;
     this.deploymentService.getCsvSeparator().subscribe(
       /* happy path */ (r) => this.csvSeparator = r,
-      /* error path */ (e) => this.errorMessage = e,
-      /* on complete */ () => this.isLoading = false
-    );
+      /* error path */ (e) => this.errorMessage = e);
   }
 
   private confirmSelectedDeployments() {
@@ -542,7 +555,7 @@ export class DeploymentsComponent implements OnInit {
 
   private getFilteredDeployments(filterString: string) {
     this.isLoading = true;
-    this.deploymentService.getFilteredDeployments(filterString).subscribe(
+    this.deploymentService.getFilteredDeployments(filterString, this.sortCol, this.sortDirection).subscribe(
       /* happy path */ (r) => this.deployments = r,
       /* error path */ (e) => { this.errorMessage = e;
                                 this.isLoading = false; },
@@ -576,7 +589,6 @@ export class DeploymentsComponent implements OnInit {
         this.applyFilter();
       }
     }
-    this.isLoading = false;
   }
 
   private populateMap() {

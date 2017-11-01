@@ -282,12 +282,13 @@ describe('DeploymentsComponent (without query params)', () => {
       spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
       spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of(comparatorOptions));
       spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(Observable.of([]));
+      deploymentsComponent.ngOnInit();
 
       // when
       deploymentsComponent.applyFilter();
 
       // then
-      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters));
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.deploymentDate', 'DESC');
   }));
 
   it('should sort out filters without a value on apply filters',
@@ -308,13 +309,41 @@ describe('DeploymentsComponent (without query params)', () => {
       spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
       spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of(comparatorOptions));
       spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(Observable.of([]));
+      deploymentsComponent.ngOnInit();
 
       // when
       deploymentsComponent.applyFilter();
 
       // then
       expect(deploymentsComponent.filters.length).toEqual(3);
-      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters));
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.deploymentDate', 'DESC');
+  }));
+
+  it('should invoke service with right params on sort',
+    inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+      // given
+      let expectedFilters: DeploymentFilter[]  = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true' },
+        <DeploymentFilter> { name: 'Application', comp: 'eq', val: 'TestApp' } ];
+      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true', type: 'booleanType' },
+        <DeploymentFilter> { name: 'Application', comp: 'eq', val: 'TestApp', type: 'StringType' } ];
+      let deploymentFilters: DeploymentFilterType[] = [ { name: 'Application', type: 'StringType' }, { name: 'Confirmed on', type: 'DateType' } ];
+      let comparatorOptions: ComparatorFilterOption[] = [ { name: 'lt', displayName: '<'}, { name: 'eq', displayName: 'is' }, { name: 'neq', displayName: 'is not' }];
+      spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
+      spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of(comparatorOptions));
+      spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(Observable.of([]));
+      deploymentsComponent.ngOnInit();
+
+      // when
+      deploymentsComponent.sortDeploymentsBy('d.trackingId');
+
+      // then
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.trackingId', 'DESC');
+
+      // when
+      deploymentsComponent.sortDeploymentsBy('d.trackingId');
+
+      // then
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.trackingId', 'ASC');
   }));
 
   it('should check permission on showEdit',

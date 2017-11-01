@@ -30,6 +30,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
+import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.EnvironmentsScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -103,7 +104,9 @@ public class DeploymentsRest {
     @GET
     @Path("/filter")
     @ApiOperation(value = "returns all Deployments matching the list of json filters")
-    public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters) {
+    public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters,
+                                   @QueryParam("colToSort") String colToSort,
+                                   @QueryParam("sortDirection") String sortDirection) {
         DeploymentFilterDTO[] filterDTOs;
         try {
             filterDTOs = new Gson().fromJson(jsonListOfFilters, DeploymentFilterDTO[].class);
@@ -112,8 +115,12 @@ public class DeploymentsRest {
             String detail = "example: [{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"Latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
             return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto(msg, detail)).build();
         }
+        CommonFilterService.SortingDirectionType sortingDirectionType = null;
+        if (sortDirection != null) {
+            sortingDirectionType = CommonFilterService.SortingDirectionType.valueOf(sortDirection);
+        }
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
-        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(true, 0, null, filters, null, null, null);
+        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(true, 0, null, filters, colToSort, sortingDirectionType, null);
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
         return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
     }

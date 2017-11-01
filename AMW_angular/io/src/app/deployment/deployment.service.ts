@@ -23,11 +23,13 @@ export class DeploymentService {
     return resource$;
   }
 
-  getFilteredDeployments(filterString: string): Observable<Deployment[]> {
-    let param = new URLSearchParams();
-    param.append('filters', filterString);
+  getFilteredDeployments(filterString: string, sortCol: string, sortDir: string): Observable<Deployment[]> {
+    let params = new URLSearchParams();
+    params.append('filters', filterString);
+    params.append('colToSort', sortCol);
+    params.append('sortDirection', sortDir);
     let options = new RequestOptions({
-      search: param,
+      search: params,
       headers: this.getHeaders()
     });
     let resource$ = this.http
