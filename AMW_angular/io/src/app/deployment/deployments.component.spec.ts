@@ -110,59 +110,7 @@ describe('DeploymentsComponent (with query params)', () => {
       expect(deploymentsComponent.paramFilters[1].valOptions.length).toEqual(0);
   }));
 
-});
-
-describe('DeploymentsComponent (with query params including autoplay)', () => {
-  let filter: string = JSON.stringify([{name: 'Application', val: 'test'}, {name: 'Confirmed on', val: '12.12.2012 12:12'}]);
-  // provide our implementations or mocks to the dependency injector
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [
-      CommonModule,
-      RouterTestingModule.withRoutes([
-        {path: 'deployments', component: DummyComponent}
-      ])
-    ],
-    providers: [
-      BaseRequestOptions, {
-        provide: ActivatedRoute,
-        useValue: {
-          queryParams: Observable.of({filters: filter, autoload: 'true'})
-        },
-      },
-      MockBackend,
-      {
-        provide: Http,
-        useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
-          return new Http(backend, defaultOptions);
-        },
-        deps: [MockBackend, BaseRequestOptions]
-      },
-      DeploymentService,
-      ResourceService,
-      DeploymentsComponent,
-      AppState
-    ],
-    declarations: [DummyComponent],
-  }));
-
-  it('should extract filters and autoload from param on ngOnInit',
-    inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
-      // given
-      let deploymentFilters: DeploymentFilterType[] = [ { name: 'Application', type: 'StringType' }, { name: 'Confirmed on', type: 'DateType' } ];
-      spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
-      spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of([]));
-      spyOn(deploymentService, 'canRequestDeployments').and.returnValue(Observable.of(true));
-
-      // when
-      deploymentsComponent.ngOnInit();
-
-      // then
-      expect(deploymentsComponent.autoload).toBeTruthy();
-      expect(deploymentsComponent.paramFilters.length).toEqual(2);
-      expect(deploymentService.canRequestDeployments).toHaveBeenCalled();
-  }));
-
-  it('should apply filters ngOnInit if autoload is true',
+  it('should apply filters ngOnInit ',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
       let deploymentFilters: DeploymentFilterType[] = [ { name: 'Application', type: 'StringType' }, { name: 'Confirmed on', type: 'DateType' } ];
