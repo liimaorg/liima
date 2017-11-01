@@ -70,7 +70,7 @@ public class DeploymentDTO {
 		this.appServerName = entity.getResourceGroup().getName();
 		this.appServerId = entity.getResourceGroup().getId();
 		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
-			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
+			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
 		}
 		for (DeploymentParameter param : entity.getDeploymentParameters()) {
 			deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
