@@ -13,7 +13,7 @@
       </tr>
       <tr *ngFor="let deployment of mf.data" class="{{deployment.state}}">
         <td class="has-checkbox"><input type="checkbox" [(ngModel)]="deployment.selected"> {{deployment.trackingId}}</td>
-        <td><span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Show details about this deployment" (click)="showDetails(deployment.id)"></span> {{deployment.reason ? failureReason[deployment.reason] : deployment.state}}</td>
+        <td><span class="glyphicon glyphicon-info-sign pointer" aria-hidden="true" title="Show details about this deployment" (click)="showDetails(deployment.id)"></span> {{deployment.reason ? failureReason[deployment.reason] : deployment.state}}</td>
         <td><a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>
             <ul class="nob">
               <li *ngFor="let appWithVersion of deployment.appsWithVersion"><a href="/AMW_web/pages/editResourceView.xhtml?id={{appWithVersion.applicationId}}&ctx=1">{{appWithVersion.applicationName}}</a> ({{appWithVersion.version}})</li>
@@ -31,19 +31,19 @@
         </td>
         <td>
           <ng-container *ngIf="deployment.actions.confirmPossible">
-            <span class="link" (click)="showConfirm(deployment.id)">confirm</span><br>
+            <span class="glyphicon glyphicon-ok text-success pointer" (click)="showConfirm(deployment.id)"><span class="confirm"> confirm</span></span><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.rejectPossible">
-            <span class="link" (click)="showReject(deployment.id)">reject</span><br>
+            <span class="glyphicon glyphicon-remove text-danger pointer" (click)="showReject(deployment.id)"><span class="reject"> reject</span></span><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.cancelPossible">
-            <span class="link" (click)="showCancel(deployment.id)">cancel</span><br>
+            <span class="glyphicon glyphicon-ban-circle pointer" (click)="showCancel(deployment.id)"><span class="action"> cancel</span></span><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.redeployPossible">
-            <a href="#/deployment/{{deployment.id}}">redeploy</a><br>
+            <a class="action" href="#/deployment/{{deployment.id}}"><span class="glyphicon glyphicon-flash pointer"></span><span class="action"> redeploy</span></a><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.hasLogFiles">
-            <a href="/AMW_web/pages/logView.xhtml?deploymentId={{deployment.id}}&filters={{ filtersInUrl | json:0}}">logs</a><br>
+            <a class="action" href="/AMW_web/pages/logView.xhtml?deploymentId={{deployment.id}}&filters={{ filtersInUrl | json:0}}"><span class="glyphicon glyphicon-folder-open pointer"></span><span class="action"> logs</span></a><br>
           </ng-container>
         </td>
       </tr>
