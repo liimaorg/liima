@@ -8,11 +8,11 @@
 <composite:interface />
 
 <composite:implementation>
-    <h:form>
+    <h:form id="modal-form">
         <!-- list overriden properties in child contexted -->
         <rich:popupPanel id="configOverviewPopup"
-            autosized="true"
-            domElementAttachment="form">
+            domElementAttachment="form"
+            rendered="${propertyEditDataProvider.valuesForConfigOverview != null}">
             <f:facet name="header">
                 <h2><h:outputText value="Config Overview" /></h2>
             </f:facet>
@@ -27,10 +27,10 @@
             <h:panelGroup layout="block" styleClass="popupContent">
                 <div class=""></div>
                 <div style="display: inline-block; float: left;">
-                    <ul>
-                        <li><b>DEV: 501</b></li>
-                        <li><b>B: 600</b></li>
-                    </ul>
+                    <h:dataTable value="#{propertyEditDataProvider.valuesForConfigOverview.entrySet().toArray()}" var="entry">
+                        <h:column>#{entry.key}</h:column>
+                        <h:column>#{entry.value}</h:column>
+                    </h:dataTable>
                 </div>
             </h:panelGroup>
         </rich:popupPanel>

@@ -44,6 +44,8 @@
             <!-- Property is overriden by one of the child contexts-->
             <a4j:commandLink id="removeReleaseButton"
                              onclick="showLoader();"
+                             execute="${propertyEditDataProvider.loadConfigOverviewForProperty(prop)}"
+                             render=":modal-form"
                              styleClass="help-inline info"
                              oncomplete="hideLoader();#{rich:component('configOverviewPopup')}.show();">
                 <i class="icon icon-info"/>

@@ -87,6 +87,10 @@ public class PropertyEditDataProvider implements Serializable {
 
     List<ResourceEditProperty> filteredRelationProperties;
 
+    // Env, value
+    @Getter
+    Map<String, String> valuesForConfigOverview;
+
     @Getter
     private boolean editableProperties = false;
 
@@ -176,6 +180,13 @@ public class PropertyEditDataProvider implements Serializable {
     public boolean hasEditableIdentifier() {
         return currentRelation != null && currentRelation.getMode().equals(ResourceEditRelation.Mode.CONSUMED)
                 && !currentRelation.getSlaveTypeName().equals("RUNTIME");
+    }
+
+    public void loadConfigOverviewForProperty(ResourceEditProperty property) {
+        System.out.println("TODO Load Config Overview for " + property.getTechnicalKey());
+        valuesForConfigOverview = new HashMap<>();
+        valuesForConfigOverview.put("DEV", "501");
+        valuesForConfigOverview.put("B", "600");
     }
 
     private void loadResourceRelationEditProperties() {
@@ -374,10 +385,11 @@ public class PropertyEditDataProvider implements Serializable {
         }
     }
 
+
     private List<ResourceEditProperty> reloadResourceEditProperties(ResourceEntity resourceEntity) {
         filteredResourceProperties = new ArrayList<>();
-        resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResource(
-                resourceEntity.getId(), getContextId()));
+        List<ResourceEditProperty> propertiesForResource = editor.getPropertiesForResource(resourceEntity.getId(), getContextId());
+        resourceEditProperties = userSettings.filterTestingProperties(propertiesForResource);
         filterHostNameAndActiveFromNode();
         editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
                 currentContext, userSettings.isTestingMode());
