@@ -91,15 +91,24 @@
   </div>
   <div class="panel-footer">
     <div class="btn-toolbar" role="toolbar" aria-label="...">
-      <div class="btn-group" role="group">
-        <ul class="pagination pagination-amw">
-          <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-          <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-          <li class="disabled"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
-        </ul>
-      </div>
+      <ng-container *ngIf="pages()">
+        <div class="btn-group" role="group">
+          <ul class="pagination pagination-amw pointer">
+            <li class="{{currentPage < 2 ? 'disabled' : ''}}" aria-label="first" (click)="toPage(1)"><span aria-hidden="true">&laquo;</span></li>
+            <li class="{{currentPage < 2 ? 'disabled' : ''}}" aria-label="previous" (click)="toPage(currentPage-1)"><span aria-hidden="true">&lt;</span></li>
+            <li *ngFor="let page of pages()" class="{{currentPage === page ? 'active' : ''}}" (click)="toPage(page)"><a (click)="toPage(page)">{{page}} <span class="sr-only">(current)</span></a></li>
+            <li class="{{currentPage === lastPage ? 'disabled' : ''}}" aria-label="next" (click)="toPage(currentPage+1)"><span aria-hidden="true">&gt;</span></li>
+            <li class="{{currentPage === lastPage ? 'disabled' : ''}}" aria-label="last" (click)="toPage(lastPage)"><span aria-hidden="true">&raquo;</span></li>
+          </ul>
+        </div>
+      </ng-container>
       <div class="btn-group pull-right" role="group">
-        <select class="pagination pagination-amw form-control"><option>10</option></select>
+        <select class="pagination pagination-amw form-control" [(ngModel)]="maxResults" (change)="setMax()">
+          <option>10</option>
+          <option>20</option>
+          <option>50</option>
+          <option>100</option>
+        </select>
       </div>
     </div>
   </div>
@@ -183,8 +192,6 @@
     </div>
   </ng-container>
 </div>
-
-
 
 <div id="deploymentConfirmation" class="modal fade">
   <ng-container *ngIf="deploymentDetail">

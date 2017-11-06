@@ -243,6 +243,41 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentsComponent.filters.length).toEqual(2);
   }));
 
+  it('should reset offset on add filter',
+    inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+      // given
+      deploymentsComponent.offset = 10;
+      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true', type: 'booleanType' } ];
+      deploymentsComponent.selectedFilterType = { name: 'Application', type: 'StringType' };
+      let deploymentFilters: DeploymentFilterType[] = [ { name: 'Application', type: 'StringType' }, { name: 'Confirmed on', type: 'DateType' } ];
+      let comparatorOptions: ComparatorFilterOption[] = [ { name: 'lt', displayName: '<'}, { name: 'eq', displayName: 'is' }, { name: 'neq', displayName: 'is not' }];
+      spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
+      spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of(comparatorOptions));
+
+      // when
+      deploymentsComponent.addFilter();
+
+      // then
+      expect(deploymentsComponent.offset).toEqual(0);
+  }));
+
+  it('should reset offset on remove filter',
+    inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+      // given
+      deploymentsComponent.offset = 10;
+      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true', type: 'booleanType' } ];
+      let deploymentFilters: DeploymentFilterType[] = [ { name: 'Application', type: 'StringType' }, { name: 'Confirmed on', type: 'DateType' } ];
+      let comparatorOptions: ComparatorFilterOption[] = [ { name: 'lt', displayName: '<'}, { name: 'eq', displayName: 'is' }, { name: 'neq', displayName: 'is not' }];
+      spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
+      spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of(comparatorOptions));
+
+      // when
+      deploymentsComponent.removeFilter(deploymentsComponent.filters[0]);
+
+      // then
+      expect(deploymentsComponent.offset).toEqual(0);
+  }));
+
   it('should not add latest deployment job filter more than once',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
@@ -288,7 +323,7 @@ describe('DeploymentsComponent (without query params)', () => {
       deploymentsComponent.applyFilter();
 
       // then
-      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.deploymentDate', 'DESC');
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.deploymentDate', 'DESC', 0, 10);
   }));
 
   it('should sort out filters without a value on apply filters',
@@ -316,7 +351,7 @@ describe('DeploymentsComponent (without query params)', () => {
 
       // then
       expect(deploymentsComponent.filters.length).toEqual(3);
-      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.deploymentDate', 'DESC');
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.deploymentDate', 'DESC', 0, 10);
   }));
 
   it('should invoke service with right params on sort',
@@ -337,13 +372,13 @@ describe('DeploymentsComponent (without query params)', () => {
       deploymentsComponent.sortDeploymentsBy('d.trackingId');
 
       // then
-      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.trackingId', 'DESC');
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.trackingId', 'DESC', 0, 10);
 
       // when
       deploymentsComponent.sortDeploymentsBy('d.trackingId');
 
       // then
-      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.trackingId', 'ASC');
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.trackingId', 'ASC', 0, 10);
   }));
 
   it('should check permission on showEdit',

@@ -106,12 +106,16 @@
                                   [filtersInUrl]="filtersInUrl"
                                   [sortCol]="sortCol"
                                   [sortDirection]="sortDirection"
+                                  [currentPage]="currentPage"
+                                  [lastPage]="lastPage"
                                   (editDeploymentDate)='changeDeploymentDate($event)'
                                   (selectAllDeployments)='switchDeployments($event)'
                                   (doCancelDeployment)='cancelDeployment($event)'
                                   (doRejectDeployment)='rejectDeployment($event)'
-                                  (doConfirmDeployment) = 'confirmDeployment($event)'
-                                  (doSort) = 'sortDeploymentsBy($event)'>
+                                  (doConfirmDeployment)='confirmDeployment($event)'
+                                  (doSort)='sortDeploymentsBy($event)'
+                                  (doSetMax)='setMaxResultsPerPage($event)'
+                                  (doSetOffset)='setNewOffset($event)'>
             </amw-deployments-list>
           </div>
         </div>

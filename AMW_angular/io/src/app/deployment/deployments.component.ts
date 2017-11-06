@@ -67,6 +67,13 @@ export class DeploymentsComponent implements OnInit {
   sortCol: string;
   sortDirection: string;
 
+  // pagination
+  maxResults: number;
+  offset: number;
+  allResults: number;
+  currentPage: number;
+  lastPage: number;
+
   errorMessage: string = '';
   successMessage: string = '';
   isLoading: boolean = false;
@@ -97,6 +104,8 @@ export class DeploymentsComponent implements OnInit {
         }
         this.sortCol = 'd.deploymentDate';
         this.sortDirection = 'DESC';
+        this.maxResults = 10;
+        this.offset = 0;
         this.initTypeAndOptions();
         this.canRequestDeployments();
         this.getCsvSeparator();
@@ -114,6 +123,7 @@ export class DeploymentsComponent implements OnInit {
       this.setValueOptionsForFilter(newFilter);
       this.filters.unshift(newFilter);
       this.enableDatepicker(newFilter.type);
+      this.offset = 0;
     }
   }
 
@@ -122,6 +132,7 @@ export class DeploymentsComponent implements OnInit {
     if (i !== -1) {
       this.filters.splice(i, 1);
     }
+    this.offset = 0;
   }
 
   clearFilters() {
@@ -275,13 +286,23 @@ export class DeploymentsComponent implements OnInit {
     $(".textToCopyInput").remove();
   }
 
-  sortDeploymentsBy(row: string) {
-    if (this.sortCol === row) {
+  sortDeploymentsBy(col: string) {
+    if (this.sortCol === col) {
       this.sortDirection = this.sortDirection === 'DESC' ? 'ASC' : 'DESC';
     } else {
-      this.sortCol = row;
+      this.sortCol = col;
       this.sortDirection = 'DESC';
     }
+    this.applyFilter();
+  }
+
+  setMaxResultsPerPage(max: number) {
+    this.maxResults = max;
+    this.applyFilter();
+  }
+
+  setNewOffset(offset: number) {
+    this.offset = offset;
     this.applyFilter();
   }
 
@@ -515,18 +536,20 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private mapStates() {
-    this.deployments.forEach((deployment) => {
-      switch (deployment.state) {
-        case 'PRE_DEPLOYMENT':
-          deployment.state = 'pre_deploy';
-          break;
-        case 'READY_FOR_DEPLOYMENT':
-          deployment.state = 'ready_for_deploy';
-          break;
-        default:
-          break;
-      }
-    });
+    if (this.deployments) {
+      this.deployments.forEach((deployment) => {
+        switch (deployment.state) {
+          case 'PRE_DEPLOYMENT':
+            deployment.state = 'pre_deploy';
+            break;
+          case 'READY_FOR_DEPLOYMENT':
+            deployment.state = 'ready_for_deploy';
+            break;
+          default:
+            break;
+        }
+      });
+    }
   }
 
   private initTypeAndOptions() {
@@ -542,8 +565,8 @@ export class DeploymentsComponent implements OnInit {
       /* happy path */ (r) => this.comparatorOptions = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => { this.populateMap();
-                               this.enhanceParamFilter();
-      });
+                               this.enhanceParamFilter(); }
+    );
   }
 
   private getAndSetFilterOptionValues(filter: DeploymentFilter) {
@@ -555,13 +578,16 @@ export class DeploymentsComponent implements OnInit {
 
   private getFilteredDeployments(filterString: string) {
     this.isLoading = true;
-    this.deploymentService.getFilteredDeployments(filterString, this.sortCol, this.sortDirection).subscribe(
-      /* happy path */ (r) => this.deployments = r,
+    this.deploymentService.getFilteredDeployments(filterString, this.sortCol, this.sortDirection, this.offset, this.maxResults).subscribe(
+      /* happy path */ (r) => { this.deployments = r.deployments;
+                                this.allResults = r.total;
+                                this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
+                                this.lastPage = Math.ceil(this.allResults / this.maxResults); },
       /* error path */ (e) => { this.errorMessage = e;
                                 this.isLoading = false; },
       /* onComplete */ () => { this.isLoading = false;
-                               this.mapStates();
-      });
+                               this.mapStates(); }
+    );
   }
 
   private canRequestDeployments() {

@@ -106,7 +106,9 @@ public class DeploymentsRest {
     @ApiOperation(value = "returns all Deployments matching the list of json filters")
     public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters,
                                    @QueryParam("colToSort") String colToSort,
-                                   @QueryParam("sortDirection") String sortDirection) {
+                                   @QueryParam("sortDirection") String sortDirection,
+                                   @QueryParam("maxResults") Integer maxResults,
+                                   @QueryParam("offset") Integer offset) {
         DeploymentFilterDTO[] filterDTOs;
         try {
             filterDTOs = new Gson().fromJson(jsonListOfFilters, DeploymentFilterDTO[].class);
@@ -120,7 +122,7 @@ public class DeploymentsRest {
             sortingDirectionType = CommonFilterService.SortingDirectionType.valueOf(sortDirection);
         }
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
-        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(true, 0, null, filters, colToSort, sortingDirectionType, null);
+        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(true, offset, maxResults, filters, colToSort, sortingDirectionType, null);
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
         return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
     }
