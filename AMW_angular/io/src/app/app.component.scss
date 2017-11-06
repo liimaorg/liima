@@ -230,6 +230,7 @@ body {
 .loading {
   z-index: 1;
   position: fixed;
+  background-color: #000000;
   top: 0;
   left: 0;
   opacity: 0.6;
@@ -243,9 +244,9 @@ body {
   display: inline-block;
   top: 50%;
   transform: translateY(-50%);
-  background-image: url("assets/images/Spinner.svg");
-  height: 90px;
-  width: 90px;
+  background-image: url("assets/images/ajax-loader.gif");
+  height: 32px;
+  width: 32px;
   text-align: center;
 }
 
