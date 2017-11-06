@@ -92,6 +92,9 @@ public class PropertyEditDataProvider implements Serializable {
     Map<String, String> valuesForConfigOverview;
 
     @Getter
+    ResourceEditProperty propertyForConfigOverview;
+
+    @Getter
     private boolean editableProperties = false;
 
     @Getter
@@ -183,6 +186,7 @@ public class PropertyEditDataProvider implements Serializable {
     }
 
     public void loadConfigOverviewForProperty(ResourceEditProperty property) {
+        this.propertyForConfigOverview = property;
         System.out.println("TODO Load Config Overview for " + property.getTechnicalKey());
         valuesForConfigOverview = new HashMap<>();
         valuesForConfigOverview.put("DEV", "501");

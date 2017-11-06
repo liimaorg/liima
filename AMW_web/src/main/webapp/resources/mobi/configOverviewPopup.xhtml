@@ -3,18 +3,19 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:composite="http://java.sun.com/jsf/composite"
+    xmlns:a4j="http://richfaces.org/a4j"
     xmlns:rich="http://richfaces.org/rich">
 
 <composite:interface />
 
 <composite:implementation>
-    <h:form id="modal-form">
+    <h:panelGroup layout="block" id="configOverviewPopupWrapper">
         <!-- list overriden properties in child contexted -->
         <rich:popupPanel id="configOverviewPopup"
             domElementAttachment="form"
             rendered="${propertyEditDataProvider.valuesForConfigOverview != null}">
             <f:facet name="header">
-                <h2><h:outputText value="Config Overview" /></h2>
+                <h2><h:outputText value="Config Overview for ${propertyEditDataProvider.propertyForConfigOverview.technicalKey}" /></h2>
             </f:facet>
 
             <f:facet name="controls">
@@ -34,7 +35,7 @@
                 </div>
             </h:panelGroup>
         </rich:popupPanel>
-    </h:form>
+    </h:panelGroup>
 </composite:implementation>
 
 </html>
