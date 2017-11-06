@@ -53,36 +53,44 @@
         <td><strong>{{deployment.environmentName}}</strong></td>
         <td>
           <ng-container *ngIf="deployment.actions.editPossible">
-            <span class="link" (click)="showDateChange(deployment.id)" title="change the deployment date">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
+            <span [attr.class]="deployment.deploymentDelayed ? 'glyphicon glyphicon-hourglass pointer' : pointer" (click)="showDateChange(deployment.id)" title="change the deployment date">
+              <span [attr.class]="deployment.deploymentDelayed ? 'delayed' : 'action'">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
+            </span>
           </ng-container>
           <ng-container *ngIf="!deployment.actions.editPossible">
-            <span [attr.class]="deployment.deploymentDelayed ? 'delayed' : null">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
+            <span [attr.class]="deployment.deploymentDelayed ? 'glyphicon glyphicon-hourglass' : null">
+              <span [attr.class]="deployment.deploymentDelayed ? 'delayed' : 'action'">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
+            </span>
           </ng-container>
         </td>
         <td>
           <ng-container *ngIf="deployment.actions.confirmPossible">
             <span class="glyphicon glyphicon-ok text-success pointer" (click)="showConfirm(deployment.id)">
-              <span class="confirm"> confirm</span>
+              <span class="confirm">confirm</span>
             </span><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.rejectPossible">
             <span class="glyphicon glyphicon-remove text-danger pointer" (click)="showReject(deployment.id)">
-              <span class="reject"> reject</span>
+              <span class="reject">reject</span>
             </span><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.cancelPossible">
-            <span class="glyphicon glyphicon-ban-circle pointer" (click)="showCancel(deployment.id)">
-              <span class="action"> cancel</span>
+            <span class="glyphicon glyphicon-ban-circle text-danger pointer" (click)="showCancel(deployment.id)">
+              <span class="action">cancel</span>
             </span><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.redeployPossible">
             <a class="action" href="#/deployment/{{deployment.id}}">
-              <span class="glyphicon glyphicon-flash pointer"></span><span class="action"> redeploy</span>
+              <span class="glyphicon glyphicon-flash pointer">
+                <span class="action">redeploy</span>
+              </span>
             </a><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.hasLogFiles">
             <a class="action" href="/AMW_web/pages/logView.xhtml?deploymentId={{deployment.id}}&filters={{ filtersInUrl | json:0}}">
-              <span class="glyphicon glyphicon-file pointer"></span><span class="action"> logs</span>
+              <span class="glyphicon glyphicon-file pointer">
+                <span class="action">logs</span>
+              </span>
             </a><br>
           </ng-container>
         </td>

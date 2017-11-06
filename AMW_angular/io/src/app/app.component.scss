@@ -288,16 +288,14 @@ span.link:hover {
 /*
  * Deployment screen
  */
-span.delayed {
-  color: #db4a4a;
-}
-
 a.action,
 a.action:hover,
 span.action,
 span.action:hover,
 span.confirm,
 span.confirm:hover,
+span.delayed,
+span.delayed:hover,
 span.reject,
 span.reject:hover {
   color: #333333;
@@ -310,9 +308,14 @@ span.confirm:hover {
   color: #008400;
 }
 
+span.delayed,
+span.delayed:hover {
+  color: #db4a4a;
+}
+
 span.reject,
 span.reject:hover {
-  color: #840000;
+  color: #db4a4a;
 }
 
 tr.failed {
