@@ -76,7 +76,7 @@ export class DeploymentsComponent implements OnInit {
 
   errorMessage: string = '';
   successMessage: string = '';
-  isLoading: boolean = false;
+  isLoading: boolean = true;
 
   constructor(private activatedRoute: ActivatedRoute,
               private ngZone: NgZone,
