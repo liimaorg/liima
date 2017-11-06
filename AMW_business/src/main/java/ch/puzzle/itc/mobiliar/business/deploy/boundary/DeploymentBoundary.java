@@ -224,7 +224,7 @@ public class DeploymentBoundary {
         if (!hasLastDeploymentForAsEnvFilterSet) {
             deployments.addAll(resultList);
         } else {
-            resultList = specialSort(latestPerContext(resultList), colToSort, sortingDirection);
+            resultList = specialSort(latestPerContextAndGroup(resultList), colToSort, sortingDirection);
             if (to > 0) {
                 resultList = new ArrayList<>(resultList.subList(from, to < resultList.size() ? to : resultList.size()));
             }
@@ -278,22 +278,34 @@ public class DeploymentBoundary {
         }
         return deployment.getRelease().getName();
     }
-  
-    private List latestPerContext(List<DeploymentEntity> resultList) {
-        HashMap<ContextEntity, DeploymentEntity> latestByContext = new HashMap<>();
+
+    private List<DeploymentEntity> latestPerContextAndGroup(List<DeploymentEntity> resultList) {
+        HashMap<ContextEntity, HashMap<ResourceGroupEntity,  DeploymentEntity>> latestByContext = new HashMap<>();
         for (DeploymentEntity deployment : resultList) {
             if (!latestByContext.containsKey(deployment.getContext())) {
-                latestByContext.put(deployment.getContext(), deployment);
+                HashMap<ResourceGroupEntity,  DeploymentEntity> latestByResourceGrp = new HashMap<>();
+                latestByResourceGrp.put(deployment.getResourceGroup(), deployment);
+                latestByContext.put(deployment.getContext(), latestByResourceGrp);
             } else {
-                if (deployment.getDeploymentDate().after(latestByContext.get(deployment.getContext()).getDeploymentDate())) {
-                    latestByContext.put(deployment.getContext(), deployment);
-                } else if (deployment.getDeploymentDate().equals(latestByContext.get(deployment.getContext()).getDeploymentDate())
-                        && deployment.getId() > latestByContext.get(deployment.getContext()).getId()) {
-                        latestByContext.put(deployment.getContext(), deployment);
+                HashMap<ResourceGroupEntity, DeploymentEntity> innerMap = latestByContext.get(deployment.getContext());
+                if (!innerMap.containsKey(deployment.getResourceGroup()) ) {
+                    innerMap.put(deployment.getResourceGroup(), deployment);
+                } else {
+                    DeploymentEntity latestSoFar = innerMap.get(deployment.getResourceGroup());
+                    if (deployment.getDeploymentDate().after(latestSoFar.getDeploymentDate()))  {
+                        innerMap.put(deployment.getResourceGroup(), deployment);
+                    } else if (deployment.getDeploymentDate().equals(latestSoFar.getDeploymentDate())
+                            &&  deployment.getId() > latestSoFar.getId()) {
+                        innerMap.put(deployment.getResourceGroup(), deployment);
+                    }
                 }
             }
         }
-        return new ArrayList<>(latestByContext.values());
+        List<DeploymentEntity> latestList = new ArrayList<>();
+        for (HashMap<ResourceGroupEntity, DeploymentEntity> groupedDeployments : latestByContext.values()) {
+            latestList.addAll(groupedDeployments.values());
+        }
+        return latestList;
     }
 
     private List<DeploymentEntity> specialSort(List<DeploymentEntity> deploymentsList, String colToSort, CommonFilterService.SortingDirectionType sortingDirection) {
