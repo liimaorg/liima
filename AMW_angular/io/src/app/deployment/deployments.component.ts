@@ -631,7 +631,9 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private goTo(destination: string) {
-    this.location.go('/deployments?filters=' + destination);
+    if (destination) {
+      this.location.go('/deployments?filters=' + destination);
+    }
   }
 
 }
