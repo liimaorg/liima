@@ -41,6 +41,14 @@
             <mobi:propertyTooltip property="#{prop}"/>
             <mobi:foreignableOwnerTooltip foreignableAttributes="#{propertyEditDataProvider.getForeignableToEdit(cc.attrs.property)}"/>
 
+            <!-- Property is overriden by one of the child contexts-->
+            <a4j:commandLink id="removeReleaseButton"
+                             onclick="showLoader();"
+                             styleClass="help-inline info"
+                             oncomplete="hideLoader();#{rich:component('configOverviewPopup')}.show();">
+                <i class="icon icon-info"/>
+            </a4j:commandLink>
+
             <!-- RESET -->
             <h:panelGroup
                     rendered="${(cc.attrs.property.propertyValue != null and cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)) and (propertyEditDataProvider.editableProperties) }">

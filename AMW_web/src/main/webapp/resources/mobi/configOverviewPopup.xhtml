@@ -1,0 +1,40 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:composite="http://java.sun.com/jsf/composite"
+    xmlns:rich="http://richfaces.org/rich">
+
+<composite:interface />
+
+<composite:implementation>
+    <h:form>
+        <!-- list overriden properties in child contexted -->
+        <rich:popupPanel id="configOverviewPopup"
+            autosized="true"
+            domElementAttachment="form">
+            <f:facet name="header">
+                <h2><h:outputText value="Config Overview" /></h2>
+            </f:facet>
+
+            <f:facet name="controls">
+                <h:outputLink value="#"
+                              styleClass="close icon icon-close icon-replace"
+                              onclick="#{rich:component('configOverviewPopup')}.hide(); return false;">
+                    x
+                </h:outputLink>
+            </f:facet>
+            <h:panelGroup layout="block" styleClass="popupContent">
+                <div class=""></div>
+                <div style="display: inline-block; float: left;">
+                    <ul>
+                        <li><b>DEV: 501</b></li>
+                        <li><b>B: 600</b></li>
+                    </ul>
+                </div>
+            </h:panelGroup>
+        </rich:popupPanel>
+    </h:form>
+</composite:implementation>
+
+</html>
