@@ -228,7 +228,7 @@ body {
  * Loader
  */
 .loading {
-  z-index: 1;
+  z-index: 1000;
   position: fixed;
   background-color: #000000;
   top: 0;
