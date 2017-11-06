@@ -101,6 +101,10 @@ export class DeploymentsComponent implements OnInit {
             this.errorMessage = 'Error parsing filter';
             this.autoload = false;
           }
+        } else {
+          if (sessionStorage.getItem('deploymentFilters')) {
+            this.paramFilters = JSON.parse(sessionStorage.getItem('deploymentFilters'));
+          }
         }
         this.initTypeAndOptions();
         this.canRequestDeployments();
@@ -165,7 +169,12 @@ export class DeploymentsComponent implements OnInit {
     if (!this.errorMessage) {
       this.getFilteredDeployments(JSON.stringify(filtersForBackend));
       this.filtersInUrl = filtersForParam;
-      this.goTo(JSON.stringify(this.filtersInUrl));
+      let filterString: string;
+      if (this.filtersInUrl.length > 0) {
+        filterString = JSON.stringify(this.filtersInUrl);
+        sessionStorage.setItem('deploymentFilters', filterString);
+      }
+      this.goTo(filterString);
     }
   }
 
@@ -594,6 +603,7 @@ export class DeploymentsComponent implements OnInit {
 
   private enhanceParamFilter() {
     if (this.paramFilters) {
+      this.clearFilters();
       this.paramFilters.forEach((filter) => {
         let i: number = _.findIndex(this.filterTypes, ['name', filter.name]);
         if (i >= 0) {

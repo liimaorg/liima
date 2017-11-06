@@ -220,7 +220,6 @@ describe('DeploymentsComponent (without query params)', () => {
       deploymentsComponent.ngOnInit();
 
       // then
-      expect(deploymentsComponent.paramFilters.length).toEqual(0);
       expect(deploymentService.canRequestDeployments).toHaveBeenCalled();
   }));
 
@@ -304,37 +303,43 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentsComponent.filters.length).toEqual(2);
   }));
 
-  it('should apply filters',
+  it('should apply filters and add them to the sessionStorage on applyFilter',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
+      sessionStorage.setItem('deploymentFilters', null);
       let expectedFilters: DeploymentFilter[]  = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true' },
         <DeploymentFilter> { name: 'Application', comp: 'eq', val: 'TestApp' } ];
-      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true', type: 'booleanType' },
-        <DeploymentFilter> { name: 'Application', comp: 'eq', val: 'TestApp', type: 'StringType' } ];
       let deploymentFilters: DeploymentFilterType[] = [ { name: 'Application', type: 'StringType' }, { name: 'Confirmed on', type: 'DateType' } ];
       let comparatorOptions: ComparatorFilterOption[] = [ { name: 'lt', displayName: '<'}, { name: 'eq', displayName: 'is' }, { name: 'neq', displayName: 'is not' }];
       spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
       spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of(comparatorOptions));
       spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(Observable.of([]));
+
+      // when
       deploymentsComponent.ngOnInit();
+
+      // then
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith('[]', 'd.deploymentDate', 'DESC', 0, 10);
+
+      // given
+      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true', type: 'booleanType' },
+        <DeploymentFilter> { name: 'Application', comp: 'eq', val: 'TestApp', type: 'StringType' } ];
 
       // when
       deploymentsComponent.applyFilter();
 
       // then
+      expect(sessionStorage.getItem('deploymentFilters')).toEqual(JSON.stringify(expectedFilters));
       expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.deploymentDate', 'DESC', 0, 10);
   }));
 
-  it('should sort out filters without a value on apply filters',
+  it('should sort out filters without a value on apply filters and add the remaining to the sessionStorage on applyFilter',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
+      sessionStorage.setItem('deploymentFilters', null);
       let expectedFilters: DeploymentFilter[]  = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'false' },
         <DeploymentFilter> { name: 'Application', comp: 'eq', val: 'TestApp' },
         <DeploymentFilter> { name: 'Latest deployment', comp: 'eq', val: '' } ];
-      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'false', type: 'booleanType' },
-        <DeploymentFilter> { name: 'Application', comp: 'eq', val: 'TestApp', type: 'StringType' },
-        <DeploymentFilter> { name: 'Application Server', comp: 'eq', val: '', type: 'StringType' },
-        <DeploymentFilter> { name: 'Latest deployment', comp: 'eq', val: '', type: 'SpecialFilterType' } ];
       let deploymentFilters: DeploymentFilterType[] = [ { name: 'Application', type: 'StringType' },
         { name: 'Application Server', type: 'StringType' }, { name: 'Confirmed on', type: 'DateType' },
         { name: 'Latest deployment', type: 'SpecialFilterType' } ];
@@ -343,13 +348,25 @@ describe('DeploymentsComponent (without query params)', () => {
       spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
       spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of(comparatorOptions));
       spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(Observable.of([]));
+
+      // when
       deploymentsComponent.ngOnInit();
+
+      // then
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith('[]', 'd.deploymentDate', 'DESC', 0, 10);
+
+      // given
+      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'false', type: 'booleanType' },
+        <DeploymentFilter> { name: 'Application', comp: 'eq', val: 'TestApp', type: 'StringType' },
+        <DeploymentFilter> { name: 'Application Server', comp: 'eq', val: '', type: 'StringType' },
+        <DeploymentFilter> { name: 'Latest deployment', comp: 'eq', val: '', type: 'SpecialFilterType' } ];
 
       // when
       deploymentsComponent.applyFilter();
 
       // then
       expect(deploymentsComponent.filters.length).toEqual(3);
+      expect(sessionStorage.getItem('deploymentFilters')).toEqual(JSON.stringify(expectedFilters));
       expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.deploymentDate', 'DESC', 0, 10);
   }));
 
@@ -365,7 +382,6 @@ describe('DeploymentsComponent (without query params)', () => {
       spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(Observable.of(deploymentFilters));
       spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(Observable.of(comparatorOptions));
       spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(Observable.of([]));
-      deploymentsComponent.ngOnInit();
 
       // when
       deploymentsComponent.sortDeploymentsBy('d.trackingId');
