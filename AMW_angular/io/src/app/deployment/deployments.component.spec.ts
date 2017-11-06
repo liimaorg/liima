@@ -220,7 +220,6 @@ describe('DeploymentsComponent (without query params)', () => {
       deploymentsComponent.ngOnInit();
 
       // then
-      expect(deploymentsComponent.autoload).toBeFalsy();
       expect(deploymentsComponent.paramFilters.length).toEqual(0);
       expect(deploymentService.canRequestDeployments).toHaveBeenCalled();
   }));

@@ -26,7 +26,7 @@ export class DeploymentsComponent implements OnInit {
 
   // initially by queryParam
   paramFilters: DeploymentFilter[] = [];
-  autoload: boolean;
+  autoload: boolean = true;
 
   // value of filters parameter. Used to pass as json object to the logView.xhtml
   filtersInUrl: DeploymentFilter[];
@@ -63,13 +63,13 @@ export class DeploymentsComponent implements OnInit {
   csvReadyObjects: any[] = [];
   csvDocument: string;
 
-  // sorting
-  sortCol: string;
-  sortDirection: string;
+  // sorting with default values
+  sortCol: string = 'd.deploymentDate';
+  sortDirection: string = 'DESC';
 
-  // pagination
-  maxResults: number;
-  offset: number;
+  // pagination with default values
+  maxResults: number = 10;
+  offset: number = 0;
   allResults: number;
   currentPage: number;
   lastPage: number;
@@ -96,16 +96,12 @@ export class DeploymentsComponent implements OnInit {
         if (param['filters']) {
           try {
             this.paramFilters = JSON.parse(param['filters']);
-            this.autoload = true;
           } catch (e) {
             console.error(e);
             this.errorMessage = 'Error parsing filter';
+            this.autoload = false;
           }
         }
-        this.sortCol = 'd.deploymentDate';
-        this.sortDirection = 'DESC';
-        this.maxResults = 10;
-        this.offset = 0;
         this.initTypeAndOptions();
         this.canRequestDeployments();
         this.getCsvSeparator();
@@ -611,9 +607,9 @@ export class DeploymentsComponent implements OnInit {
           this.errorMessage = 'Error parsing filter';
         }
       });
-      if (this.autoload) {
-        this.applyFilter();
-      }
+    }
+    if (this.autoload) {
+      this.applyFilter();
     }
   }
 
