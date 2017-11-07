@@ -195,7 +195,8 @@ public class PropertyEditDataProvider implements Serializable {
 
     public void loadConfigOverviewForProperty(ResourceEditProperty property) {
         this.propertyForConfigOverview = property;
-        valuesForConfigOverview = editor.getOverridenPropertyValues(resourceView.getResource(), property, currentContext.getId());
+        List<ContextEntity> relevantContexts = contextDataProvider.getChildrenForContext(currentContext.getId());
+        valuesForConfigOverview = editor.getOverridenPropertyValues(resourceView.getResource(), property, relevantContexts);
     }
 
     private void loadResourceRelationEditProperties() {
@@ -430,10 +431,7 @@ public class PropertyEditDataProvider implements Serializable {
         return resourceEditProperties;
     }
 
-
-
-
-        public List<ResourceEditProperty> getCurrentRelationProperties() {
+    public List<ResourceEditProperty> getCurrentRelationProperties() {
         List<ResourceEditProperty> sortedList = new ArrayList<>(currentRelationProperties);
         Collections.sort(sortedList);
         return sortedList;

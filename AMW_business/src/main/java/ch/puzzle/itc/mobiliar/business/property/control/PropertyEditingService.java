@@ -265,15 +265,29 @@ public class PropertyEditingService {
 		return result;
 	}
 
-    public Map<String, String> getOverridenProperties(ResourceEntity resourceEntity, PropertyEntity propertyEntity, Integer contextId) {
+    public Map<String, String> getOverridenProperties(ResourceEntity resourceEntity, PropertyEntity propertyEntity, List<ContextEntity> relevantContexts) {
         HashMap<String, String> differingProps = new HashMap<>();
-        Query query = queries.getOverridenPropertyValuesQuery(propertyEntity.getDescriptor().getPropertyName(), resourceEntity.getId(), contextId);
+        List<Integer> relevantContextIds = buldRelevantContextIdsList(relevantContexts);
+        Query query = queries.getOverridenPropertyValuesQuery(propertyEntity.getDescriptor().getPropertyName(), resourceEntity.getId(), relevantContextIds);
         List resultList = query.getResultList();
         for (Object o : resultList) {
             Map.Entry<String, String> entry = createEntryForOverridenProperty(o, propertyEntity.getId());
             differingProps.put(entry.getKey(), entry.getValue());
         }
         return differingProps;
+    }
+
+    private List<Integer> buldRelevantContextIdsList(List<ContextEntity> contextList) {
+        List<Integer> relevantContexts = new ArrayList<>();
+        for (ContextEntity contextEntity : contextList) {
+            relevantContexts.add(contextEntity.getId());
+            if (!contextEntity.getChildren().isEmpty()) {
+                for (ContextEntity child: contextEntity.getChildren()) {
+                    relevantContexts.add(child.getId());
+                }
+            }
+        }
+        return relevantContexts;
     }
 
     private Map.Entry createEntryForOverridenProperty(Object resultSetEntry, Integer propertyId) {

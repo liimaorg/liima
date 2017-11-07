@@ -785,8 +785,8 @@ public class PropertyEditor {
 		throw new NoResultException("Could not find property " + propertyName);
 	}
 
-    public Map<String, String> getOverridenPropertyValues(ResourceEntity resourceEntity, ResourceEditProperty property, Integer contextId) {
+    public Map<String, String> getOverridenPropertyValues(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         PropertyEntity propertyEntity = propertyValueService.findById(property.getPropertyId());
-        return propertyEditingService.getOverridenProperties(resourceEntity, propertyEntity, contextId);
+        return propertyEditingService.getOverridenProperties(resourceEntity, propertyEntity, relevantContexts);
     }
 }

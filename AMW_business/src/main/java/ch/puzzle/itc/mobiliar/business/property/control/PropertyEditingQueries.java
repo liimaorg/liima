@@ -101,10 +101,10 @@ public class PropertyEditingQueries {
      *
      * @param propertyName propertyName which is set on corresponding the propertyDescriptor
      * @param resourceId
-     * @param contextId reference context for which the property is overriden
+     * @param relevantContext
      * @return
      */
-    public Query getOverridenPropertyValuesQuery(String propertyName, int resourceId, int contextId) {
+    public Query getOverridenPropertyValuesQuery(String propertyName, int resourceId, List<Integer> relevantContext) {
         StringBuffer template = new StringBuffer();
         template.append(" SELECT context.name, property.VALUE FROM TAMW_PROPERTY property");
         template.append(" JOIN TAMW_PROPERTYDESCRIPTOR propertydescriptor on property.DESCRIPTOR_ID = propertydescriptor.ID");
@@ -113,14 +113,16 @@ public class PropertyEditingQueries {
         template.append(" JOIN TAMW_CONTEXT context on resourcecontext.CONTEXT_ID = context.ID");
         template.append(" WHERE propertydescriptor.PROPERTYNAME = :propertyName ");
         template.append(" AND resourcecontext.RESOURCE_ID = :resourceId ");
-        template.append(" AND resourcecontext.CONTEXT_ID <> :contextId");
-        Query query = entityManager.createNativeQuery(template.toString())
+        template.append(" AND resourcecontext.CONTEXT_ID in (%s)");
+        String relevantContextIds = relevantContext.toString().replaceAll("[\\[]", "").replaceAll("[\\]]", "");
+        String templateString = String.format(template.toString(), relevantContextIds);
+        Query query = entityManager.createNativeQuery(templateString)
             .setParameter("propertyName", propertyName)
-            .setParameter("resourceId", resourceId)
-            .setParameter("contextId", contextId);
+            .setParameter("resourceId", resourceId);
         return query;
 
     }
+
 
     private String loadPropertyValuesForRelation(String resourceRelationTableName, String resourceRelationFKName) {
         String propertyValues = loadPropertyValueQuery();
