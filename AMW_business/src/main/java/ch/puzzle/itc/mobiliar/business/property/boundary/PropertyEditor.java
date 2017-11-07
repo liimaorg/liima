@@ -786,7 +786,6 @@ public class PropertyEditor {
 	}
 
     public Map<String, String> getOverridenPropertyValues(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
-        PropertyEntity propertyEntity = propertyValueService.findById(property.getPropertyId());
-        return propertyEditingService.getOverridenProperties(resourceEntity, propertyEntity, relevantContexts);
+        return propertyEditingService.getOverridenProperties(resourceEntity, property, relevantContexts);
     }
 }

@@ -46,6 +46,7 @@
                              onclick="showLoader();"
                              execute="${propertyEditDataProvider.loadConfigOverviewForProperty(prop)}"
                              render=":configOverviewPopupWrapper"
+                             immediate="true"
                              styleClass="help-inline info"
                              oncomplete="hideLoader();#{rich:component('configOverviewPopup')}.show();">
                 <i class="icon icon-info"/>

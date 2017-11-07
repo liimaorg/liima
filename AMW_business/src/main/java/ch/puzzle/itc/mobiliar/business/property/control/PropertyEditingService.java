@@ -28,7 +28,6 @@ import ch.puzzle.itc.mobiliar.business.database.control.JpaSqlResultMapper;
 import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextHierarchy;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty.Origin;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation.Mode;
@@ -265,13 +264,14 @@ public class PropertyEditingService {
 		return result;
 	}
 
-    public Map<String, String> getOverridenProperties(ResourceEntity resourceEntity, PropertyEntity propertyEntity, List<ContextEntity> relevantContexts) {
+    public Map<String, String> getOverridenProperties(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         HashMap<String, String> differingProps = new HashMap<>();
+        String propertyName = property.getTechnicalKey();
         List<Integer> relevantContextIds = buldRelevantContextIdsList(relevantContexts);
-        Query query = queries.getOverridenPropertyValuesQuery(propertyEntity.getDescriptor().getPropertyName(), resourceEntity.getId(), relevantContextIds);
+        Query query = queries.getOverridenPropertyValuesQuery(propertyName, resourceEntity.getId(), relevantContextIds);
         List resultList = query.getResultList();
         for (Object o : resultList) {
-            Map.Entry<String, String> entry = createEntryForOverridenProperty(o, propertyEntity.getId());
+            Map.Entry<String, String> entry = createEntryForOverridenProperty(o, property.getPropertyId());
             differingProps.put(entry.getKey(), entry.getValue());
         }
         return differingProps;

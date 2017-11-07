@@ -135,24 +135,4 @@ public class PropertyValueService {
         }
         return properties;
     }
-
-    /**
-     * Reverts the transfer object {@link ResourceEditProperty} to a {@link PropertyEntity} to make it
-     * possible to store it in the database
-     *
-     * @param property
-     * @return
-     */
-    private PropertyEntity toNewProperty(ResourceEditProperty property) {
-        PropertyDescriptorEntity propertyDescriptor = entityManager.find(PropertyDescriptorEntity.class,
-                property.getDescriptorId());
-        PropertyEntity prop = new PropertyEntity();
-        prop.setValue(property.getUnobfuscatedValue());
-        prop.setDescriptor(propertyDescriptor);
-        return prop;
-    }
-
-    public PropertyEntity findById(Integer propertyId) {
-        return this.entityManager.find(PropertyEntity.class, propertyId);
-    }
 }
