@@ -60,8 +60,8 @@ export class DeploymentsListComponent {
 
   pages(): number[] {
     if (this.lastPage > 1) {
-      let itemsBefore: number = Math.floor(this.paginatorItems/2);
-      let start: number = this.currentPage > itemsBefore ? this.currentPage-itemsBefore : 1;
+      let itemsBefore: number = Math.floor(this.paginatorItems / 2);
+      let start: number = this.currentPage > itemsBefore ? this.currentPage - itemsBefore : 1;
       let end: number = start + this.paginatorItems - 1;
       return this.range(start, end < this.lastPage ? end : this.lastPage);
     }
@@ -152,9 +152,9 @@ export class DeploymentsListComponent {
   }
 
   toPage(page: number) {
-    if (page <= this.lastPage && page != this.currentPage) {
-      page = page > 0 ? page -1 : 0;
-      this.doSetOffset.emit(page*this.maxResults);
+    if (page <= this.lastPage && page !== this.currentPage) {
+      page = page > 0 ? page - 1 : 0;
+      this.doSetOffset.emit(page * this.maxResults);
     }
   }
 
@@ -178,9 +178,9 @@ export class DeploymentsListComponent {
 
   private range(a: number, b: number) {
     let d: number [] = [];
-    let c: number = b-a+1;
-    while(c--) {
-      d[c]=b--;
+    let c: number = b - a + 1;
+    while (c--) {
+      d[c] = b--;
     }
     return d;
   }
