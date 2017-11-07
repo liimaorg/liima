@@ -25,6 +25,7 @@
 package ch.puzzle.itc.mobiliar.business.property.control;
 
 import ch.puzzle.itc.mobiliar.business.database.control.JpaSqlResultMapper;
+import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextHierarchy;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
@@ -37,6 +38,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 
 import javax.inject.Inject;
 import javax.persistence.Query;
+import java.io.IOException;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.*;
@@ -258,21 +260,26 @@ public class PropertyEditingService {
 		return result;
 	}
 
-	public Map<String, String> getOverridenProperties(ResourceEntity resourceEntity, PropertyEntity propertyEntity, Integer contextId) {
-		HashMap<String, String> differingProps = new HashMap<>();
-		Query query = queries.getOverridenPropertyValuesQuery(propertyEntity.getDescriptor().getPropertyName(), resourceEntity.getId(), contextId);
-		List resultList = query.getResultList();
-		try {
-			for (Object o : resultList) {
-				Object[] keyValue = (Object[]) o;
-				String context = String.valueOf(keyValue[0]);
-				Clob clobValue = (Clob) keyValue[1];
-				String value = clobValue.getSubString(1, (int) clobValue.length());
-				differingProps.put(context, value);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+    public Map<String, String> getOverridenProperties(ResourceEntity resourceEntity, PropertyEntity propertyEntity, Integer contextId) {
+        HashMap<String, String> differingProps = new HashMap<>();
+        Query query = queries.getOverridenPropertyValuesQuery(propertyEntity.getDescriptor().getPropertyName(), resourceEntity.getId(), contextId);
+        List resultList = query.getResultList();
+        for (Object o : resultList) {
+            Map.Entry<String, String> entry = createEntryForOverridenProperty(o);
+            differingProps.put(entry.getKey(), entry.getValue());
+        }
         return differingProps;
+    }
+
+    private Map.Entry createEntryForOverridenProperty(Object resultSetEntry) {
+        Object[] tuple = (Object[]) resultSetEntry;
+        String contextName = String.valueOf(tuple[0]);
+        String valueForContext;
+        try {
+            valueForContext = QueryUtils.clobToString((Clob)tuple[1]);
+        } catch (SQLException|IOException e) {
+            valueForContext = "ERROR: failed to parse the CLOB field TAMW_PROPERTY.valueForContext";
+        }
+        return new AbstractMap.SimpleEntry(contextName, valueForContext);
     }
 }
