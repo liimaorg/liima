@@ -217,7 +217,7 @@
                                                     styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock"
                                             />
                                             <h:outputText rendered="${deployment.reason != null}"
-                                                          value="#{deployment.reason.displayName} #{deployScreenDataProvider.getDeploymentStateText(deployment)}"
+                                                          value="#{deployment.reason.displayName}"
                                                           styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock reason"
                                             />
                                             <a4j:commandLink
@@ -797,7 +797,7 @@
                         </h2>
                         <hr/>
                         <div class="maxHeight500px width700px">
-                            <h:outputText value="${deployScreenDataProvider.selectedDeployment.reason.displayName} ${deployScreenDataProvider.getDeploymentStateText(deployScreenDataProvider.selectedDeployment)}"/>
+                            <h:outputText value="${deployScreenDataProvider.selectedDeployment.reason.displayName}"/>
                         </div>
                     </h:panelGroup>
 

@@ -50,7 +50,7 @@ export class DeploymentsListComponent {
 
   failureReason: { [key: string]: string } = { 'PRE_DEPLOYMENT_GENERATION': 'pre deployment generation',
     'DEPLOYMENT_GENERATION': 'deployment generation', 'PRE_DEPLOYMENT_SCRIPT': 'pre deployment script',
-    'DEPLOYMENT_SCRIPT': 're deployment script', 'NODE_MISSING': 'node missing', 'TIMEOUT': 'timeout',
+    'DEPLOYMENT_SCRIPT': 'pre deployment script', 'NODE_MISSING': 'node missing', 'TIMEOUT': 'timeout',
     'UNEXPECTED_ERROR': 'unexpected error', 'RUNTIME_ERROR': 'runtime error' };
 
   constructor(private ngZone: NgZone,
