@@ -27,9 +27,12 @@ package ch.puzzle.itc.mobiliar.business.property.control;
 import ch.puzzle.itc.mobiliar.business.database.control.JpaSqlResultMapper;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextHierarchy;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty.Origin;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation.Mode;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 
 import javax.inject.Inject;
@@ -44,8 +47,11 @@ public class PropertyEditingService {
 	@Inject
 	PropertyEditingQueries queries;
 
-     @Inject
-    	ContextHierarchy contextHierarchy;
+	@Inject
+	ResourceEditService resourceEditService;
+
+    @Inject
+    ContextHierarchy contextHierarchy;
 
 	/**
 	 * loads the properties from the database in a single query and returns them as a transfer object
@@ -249,4 +255,21 @@ public class PropertyEditingService {
 		Collections.reverse(result);
 		return result;
 	}
+
+    public Map<String, String> getOverridenProperties(Integer resourceId, PropertyEntity propertyEntity, List<ContextEntity> childrenForContext) {
+        HashMap<String, String> differingProps = new HashMap<>();
+        ResourceEntity resourceEntity = resourceEditService.loadResourceEntityForEdit(resourceId, false);
+        for (ContextEntity context : childrenForContext) {
+            // TODO only load the required property
+            List<ResourceEditProperty> resourceEditProperties = loadPropertiesForEditResource(resourceId, resourceEntity.getResourceType(), context);
+            for (ResourceEditProperty propToCompare : resourceEditProperties) {
+                if (propToCompare.getTechnicalKey().equals(propertyEntity.getDescriptor().getPropertyName())) {
+                    if (!propertyEntity.getValue().equals(propToCompare.getPropertyValue())) {
+                        differingProps.put(context.getName(), propToCompare.getPropertyValue());
+                    }
+                }
+            }
+        }
+        return differingProps;
+    }
 }

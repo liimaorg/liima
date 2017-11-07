@@ -43,6 +43,8 @@ import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.Selected;
+import ch.puzzle.itc.mobiliar.presentation.common.ContextDataProvider;
+import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationModel;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.DataProviderHelper;
@@ -78,6 +80,12 @@ public class PropertyEditDataProvider implements Serializable {
 
     @Inject
     EditResourceView resourceView;
+
+    @Inject
+    SessionContext sessionContext;
+
+    @Inject
+    ContextDataProvider contextDataProvider;
 
     List<ResourceEditProperty> resourceEditProperties;
 
@@ -187,10 +195,8 @@ public class PropertyEditDataProvider implements Serializable {
 
     public void loadConfigOverviewForProperty(ResourceEditProperty property) {
         this.propertyForConfigOverview = property;
-        System.out.println("TODO Load Config Overview for " + property.getTechnicalKey());
-        valuesForConfigOverview = new HashMap<>();
-        valuesForConfigOverview.put("DEV", "501");
-        valuesForConfigOverview.put("B", "600");
+        List<ContextEntity> childrenForContext = contextDataProvider.getChildrenForContext(currentContext.getId());
+        valuesForConfigOverview = editor.getOverridenPropertyValues(resourceView.getResourceId(), property, childrenForContext);
     }
 
     private void loadResourceRelationEditProperties() {

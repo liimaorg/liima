@@ -25,21 +25,6 @@
 
 package ch.puzzle.itc.mobiliar.business.property.boundary;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.logging.Logger;
-
-import javax.ejb.EJBException;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.interceptor.Interceptors;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
@@ -49,10 +34,7 @@ import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.property.control.*;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
+import ch.puzzle.itc.mobiliar.business.property.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
@@ -76,6 +58,17 @@ import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
+
+import javax.ejb.EJBException;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
+import javax.interceptor.Interceptors;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * ALL boundary for property editing
@@ -194,11 +187,12 @@ public class PropertyEditor {
 	public List<ResourceEditProperty> getPropertiesForResource(Integer resourceId, Integer contextId) {
 		ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
 		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
+		List<ResourceEditProperty> properties = propertyEditingService.loadPropertiesForEditResource(
+				resource.getId(), resource.getResourceType(), context);
 		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
-			return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditResource(
-					resource.getId(), resource.getResourceType(), context));
+			return propertyValueService.decryptProperties(properties);
 		}
-		return propertyEditingService.loadPropertiesForEditResource(resource.getId(), resource.getResourceType(), context);
+		return properties;
 	}
 
 	/**
@@ -791,4 +785,23 @@ public class PropertyEditor {
 		throw new NoResultException("Could not find property " + propertyName);
 	}
 
+    public Map<String, String> getOverridenPropertyValues(Integer resourceId, ResourceEditProperty property, List<ContextEntity> contextsToCheck) {
+        PropertyEntity propertyEntity = propertyValueService.findById(property.getPropertyId());
+        List<ContextEntity> flattedList = flattenContextList(contextsToCheck);
+        return propertyEditingService.getOverridenProperties(resourceId, propertyEntity, flattedList);
+    }
+
+    private List<ContextEntity> flattenContextList(List<ContextEntity> contextList) {
+        // TODO add childs recursive
+        List<ContextEntity> flattedList = new ArrayList<>();
+        for (ContextEntity contextEntity : contextList) {
+            flattedList.add(contextEntity);
+            if (!contextEntity.getChildren().isEmpty()) {
+                for (ContextEntity child: contextEntity.getChildren()) {
+                    flattedList.add(child);
+                }
+            }
+        }
+        return flattedList;
+    }
 }

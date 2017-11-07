@@ -27,7 +27,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 
 import javax.inject.Inject;
@@ -153,4 +152,7 @@ public class PropertyValueService {
         return prop;
     }
 
+    public PropertyEntity findById(Integer propertyId) {
+        return this.entityManager.find(PropertyEntity.class, propertyId);
+    }
 }
