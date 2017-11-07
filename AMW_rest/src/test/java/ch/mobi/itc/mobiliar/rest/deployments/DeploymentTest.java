@@ -133,6 +133,7 @@ public class DeploymentTest {
 
 		ResourceEntity resource =  ResourceFactory.createNewResource("test");
 		resource.setId(1);
+		deploymentEntity.setResource(resource);
 		deploymentEntity.setResourceGroup(resource.getResourceGroup());
 
 		ContextEntity context = new ContextEntity();
