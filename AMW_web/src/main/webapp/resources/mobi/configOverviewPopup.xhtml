@@ -1,19 +1,19 @@
 <!DOCTYPE html >
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:composite="http://java.sun.com/jsf/composite"
-    xmlns:a4j="http://richfaces.org/a4j"
-    xmlns:rich="http://richfaces.org/rich">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <composite:interface />
 
 <composite:implementation>
-    <h:panelGroup layout="block" id="configOverviewPopupWrapper">
+    <h:panelGroup id="configOverviewPopupWrapper" layout="block" >
         <!-- list overriden properties in child contexted -->
         <rich:popupPanel id="configOverviewPopup"
             domElementAttachment="form"
-            rendered="${propertyEditDataProvider.valuesForConfigOverview != null}">
+            rendered="${propertyEditDataProvider.valuesForConfigOverview != null}" autosized="true">
             <f:facet name="header">
                 <h2><h:outputText value="Config Overview for ${propertyEditDataProvider.propertyForConfigOverview.technicalKey}" /></h2>
             </f:facet>
@@ -25,13 +25,32 @@
                     x
                 </h:outputLink>
             </f:facet>
+
+            <!-- CONTENT -->
             <h:panelGroup layout="block" styleClass="popupContent">
-                <div class=""></div>
                 <div style="display: inline-block; float: left;">
-                    <h:dataTable value="#{propertyEditDataProvider.valuesForConfigOverview.entrySet().toArray()}" var="entry">
-                        <h:column>#{entry.key}</h:column>
-                        <h:column>#{entry.value}</h:column>
+                    <h:dataTable value="#{propertyEditDataProvider.valuesForConfigOverview.entrySet().toArray()}"
+                                 rendered="#{!propertyEditDataProvider.valuesForConfigOverview.isEmpty()}"
+                                 styleClass="propertyTable"
+                                 var="entry">
+                        <h:column>
+                            <f:facet name="header">
+                                <h3><h:outputText value="Environment" /></h3>
+                            </f:facet>
+                            <label>#{entry.key}</label>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <h3><h:outputText value="Value" styleClass="paddingLeft20" /></h3>
+                            </f:facet>
+                            <div class="paddingLeft20">#{entry.value}</div>
+                        </h:column>
                     </h:dataTable>
+
+                    <ui:fragment rendered="#{propertyEditDataProvider.valuesForConfigOverview.isEmpty()}">
+                        This property is not overriden by any other child context
+                    </ui:fragment>
                 </div>
             </h:panelGroup>
         </rich:popupPanel>
