@@ -70,7 +70,7 @@ export class DeploymentService {
 
   confirmDeployment(deploymentDetail: DeploymentDetail) {
     let resource$ = this.http
-      .patch(`${this.baseUrl}/deployments/${deploymentDetail.deploymentId}/confirm`, deploymentDetail, {headers: this.getHeaders()})
+      .put(`${this.baseUrl}/deployments/${deploymentDetail.deploymentId}/confirm`, deploymentDetail, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
     return resource$;
@@ -168,7 +168,7 @@ export class DeploymentService {
 
   setDeploymentDate(deploymentId: number, deploymentDate: number) {
     let resource$ = this.http
-      .patch(`${this.baseUrl}/deployments/${deploymentId}/date`, deploymentDate, {headers: this.postHeaders()})
+      .put(`${this.baseUrl}/deployments/${deploymentId}/date`, deploymentDate, {headers: this.postHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
     return resource$;
