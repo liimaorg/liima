@@ -42,11 +42,16 @@ import java.io.IOException;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author oschmid
  */
 public class PropertyEditingService {
+
+	@Inject
+	private Logger log;
 
 	@Inject
 	PropertyEditingQueries queries;
@@ -265,13 +270,13 @@ public class PropertyEditingService {
         Query query = queries.getOverridenPropertyValuesQuery(propertyEntity.getDescriptor().getPropertyName(), resourceEntity.getId(), contextId);
         List resultList = query.getResultList();
         for (Object o : resultList) {
-            Map.Entry<String, String> entry = createEntryForOverridenProperty(o);
+            Map.Entry<String, String> entry = createEntryForOverridenProperty(o, propertyEntity.getId());
             differingProps.put(entry.getKey(), entry.getValue());
         }
         return differingProps;
     }
 
-    private Map.Entry createEntryForOverridenProperty(Object resultSetEntry) {
+    private Map.Entry createEntryForOverridenProperty(Object resultSetEntry, Integer propertyId) {
         Object[] tuple = (Object[]) resultSetEntry;
         String contextName = String.valueOf(tuple[0]);
         String valueForContext;
@@ -279,6 +284,7 @@ public class PropertyEditingService {
             valueForContext = QueryUtils.clobToString((Clob)tuple[1]);
         } catch (SQLException|IOException e) {
             valueForContext = "ERROR: failed to parse the CLOB field TAMW_PROPERTY.valueForContext";
+            log.log(Level.WARNING, "ERROR: failed to parse the CLOB field TAMW_PROPERTY.valueForContext of property with id " + propertyId);
         }
         return new AbstractMap.SimpleEntry(contextName, valueForContext);
     }
