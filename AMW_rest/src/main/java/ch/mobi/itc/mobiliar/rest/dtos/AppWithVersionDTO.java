@@ -32,12 +32,19 @@ import lombok.Data;
 public class AppWithVersionDTO {
 	
 	private String applicationName;
+	private Integer applicationId;
 	private String version;
 	
 	public AppWithVersionDTO() {}
 	
 	public AppWithVersionDTO(String applicationName, String version) {
 		this.applicationName = applicationName;
+		this.version = version;
+	}
+
+	public AppWithVersionDTO(String applicationName, Integer applicationId, String version) {
+		this.applicationName = applicationName;
+		this.applicationId = applicationId;
 		this.version = version;
 	}
 	

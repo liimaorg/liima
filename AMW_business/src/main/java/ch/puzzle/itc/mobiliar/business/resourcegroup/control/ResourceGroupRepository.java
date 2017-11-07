@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
@@ -35,11 +36,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ResourceGroupRepository {
 
     @Inject
     EntityManager entityManager;
+
+    @Inject
+    private Logger log;
 
     public List<ResourceGroupEntity> getResourceGroups(){
         return entityManager.createQuery("select r from ResourceGroupEntity r left join fetch r.resources res", ResourceGroupEntity.class).getResultList();
@@ -173,6 +178,26 @@ public class ResourceGroupRepository {
 
     public ResourceGroupEntity find(Integer resourceGroupId) {
         return entityManager.find(ResourceGroupEntity.class, resourceGroupId);
+    }
+
+    /**
+     * Removes a ResourceGroupEntity preserving its deployments
+     *
+     * @param resourceGroup
+     */
+    public void remove(ResourceGroupEntity resourceGroup) {
+        final Integer resourceGroupId = resourceGroup.getId();
+        for (ResourceEntity resource : resourceGroup.getResources()) {
+            if (resource.getDeployments() != null) {
+                for (DeploymentEntity deploymentEntity : resource.getDeployments()) {
+                    deploymentEntity.setExResourcegroupId(resourceGroupId);
+                    deploymentEntity.setResourceGroup(null);
+                    entityManager.merge(deploymentEntity);
+                }
+            }
+        }
+        entityManager.remove(resourceGroup);
+        log.info("ResourceGroup with Id: " + resourceGroupId + " was removed from the db");
     }
 
 }

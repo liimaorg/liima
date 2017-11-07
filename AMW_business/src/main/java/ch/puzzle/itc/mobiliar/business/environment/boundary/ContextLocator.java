@@ -22,6 +22,12 @@ package ch.puzzle.itc.mobiliar.business.environment.boundary;
 
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextRepository;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
+import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -36,10 +42,12 @@ public class ContextLocator {
 	@Inject
 	ContextRepository contextRepository;
 
-    /**
-     *
-     * @param name context name
-     */
+	@Inject
+	PermissionRepository permissionRepository;
+
+	@Inject
+	RestrictionRepository restrictionRepository;
+
 	public ContextEntity getContextByName(String name) {
 		return contextRepository.getContextByName(name);
 	}
@@ -48,13 +56,33 @@ public class ContextLocator {
 		return contextRepository.find(id);
 	}
 
-	/**
-	 * Returns all Environments
-	 *
-	 * @return
-	 */
 	public List<ContextEntity> getAllEnvironments() {
 		return contextRepository.getEnvironments();
+	}
+
+	@HasPermission(permission = Permission.REMOVE_ENV_OR_DOM)
+	public String deleteContext(Integer contextId) throws AMWException {
+		String contextName;
+		ContextEntity context = contextRepository.find(contextId);
+		contextName = context.getName();
+		if (!context.getContextType().getName().equals(ContextNames.GLOBAL.name())){
+			context.getContextType().getContexts().remove(context);
+			if (context.getParent() != null) {
+				context.getParent().getChildren().remove(context);
+			}
+			if (context.getChildren() != null) {
+				for (ContextEntity c : context.getChildren()) {
+					restrictionRepository.deleteAllWithContext(c);
+				}
+			}
+			restrictionRepository.deleteAllWithContext(context);
+			permissionRepository.setReloadRolesAndPermissionsList(true);
+			permissionRepository.setReloadDeployableRoleList(true);
+			contextRepository.remove(context);
+		} else {
+			throw new AMWException("Es wurde versucht den Kontext \"Global\" (id: "+contextId+" zu löschen.");
+		}
+		return contextName;
 	}
 
 }

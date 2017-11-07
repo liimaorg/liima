@@ -22,11 +22,13 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -36,6 +38,9 @@ public class ResourceRepository {
 
     @Inject
     EntityManager entityManager;
+
+    @Inject
+    private Logger log;
 
     public ResourceEntity getResourceByNameAndRelease(String name, ReleaseEntity release) {
         return entityManager
@@ -118,8 +123,43 @@ public class ResourceRepository {
         return entityManager.find(ResourceEntity.class, resourceId);
     }
 
+    /**
+     * Removes a ResourceEntity preserving its deployments
+     *
+     * @param resource
+     */
     public void remove(ResourceEntity resource) {
+        if (resource.getResourceType().isRuntimeType()) {
+            removeRuntime(resource);
+        } else {
+            removeResource(resource);
+        }
+    }
+
+    private void removeResource(ResourceEntity resource) {
+        Integer resourceId = resource.getId();
+        if (resource.getDeployments() != null) {
+            for (DeploymentEntity deploymentEntity : resource.getDeployments()) {
+                deploymentEntity.setExResourceId(resourceId);
+                deploymentEntity.setResource(null);
+                entityManager.merge(deploymentEntity);
+            }
+        }
         entityManager.remove(resource);
+        log.info("Resource with Id: " + resourceId + " was removed from the db");
+    }
+
+    private void removeRuntime(ResourceEntity resource) {
+        Integer resourceId = resource.getId();
+        if (resource.getDeploymentsOfRuntime() != null) {
+            for (DeploymentEntity deploymentEntity : resource.getDeploymentsOfRuntime()) {
+                deploymentEntity.setExRuntimeResourceId(resourceId);
+                deploymentEntity.setRuntime(null);
+                entityManager.merge(deploymentEntity);
+            }
+        }
+        entityManager.remove(resource);
+        log.info("Runtime with Id: " + resourceId + " was removed from the db");
     }
 
     public void removeResourceGroup(ResourceGroupEntity resourceGroup) {

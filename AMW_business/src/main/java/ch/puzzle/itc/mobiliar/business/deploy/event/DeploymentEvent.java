@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.event;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import lombok.Getter;
 
 @Getter

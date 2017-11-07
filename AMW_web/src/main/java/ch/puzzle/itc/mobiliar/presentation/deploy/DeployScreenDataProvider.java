@@ -22,7 +22,6 @@ package ch.puzzle.itc.mobiliar.presentation.deploy;
 
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService.SortingDirectionType;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -149,6 +148,7 @@ public class DeployScreenDataProvider implements Serializable {
     private deployscreenColDescriptor sortingColumn = deployscreenColDescriptor.DEPLOY_TIME;
 
     private static final boolean useAngular = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_GUI));
+    private static final boolean useAngularDeployment = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI));
 
     @Getter
     @Setter
@@ -262,6 +262,10 @@ public class DeployScreenDataProvider implements Serializable {
         return useAngular;
     }
 
+    public boolean isAngularDeploymentEnabled() {
+        return useAngularDeployment;
+    }
+
     class MyComparator implements Comparator<DeploymentFilterTypes> {
         @Override
         public int compare(DeploymentFilterTypes a, DeploymentFilterTypes b) {
@@ -286,14 +290,15 @@ public class DeployScreenDataProvider implements Serializable {
                 CustomFilter filter;
                 filter = CustomFilter.builder(selectedFilter).build();
                 if (selectedFilter.getFilterType().equals(FilterType.IntegerType)) {
-                    filter.setComparatorSelection(ComparatorFilterOption.equals);
+                    filter.setComparatorSelection(ComparatorFilterOption.eq);
                 } else {
                     ComparatorFilterOption comperatorSelection = filter.getTypedComparatorSelectionList().isEmpty() ?
-                            null :
-                            filter.getTypedComparatorSelectionList().get(0);
+                            null : filter.getTypedComparatorSelectionList().get(0);
                     filter.setComparatorSelection(comperatorSelection);
                 }
-                if (selectedFilter.equals(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV) && hasAlreadySpecialTypeFilter(getSelectedFilterList())) {
+                if (selectedFilter.equals(DeploymentFilterTypes.APPSERVER_NAME) && hasAlreadySpecialTypeFilter(getSelectedFilterList())) {
+                    GlobalMessageAppender.addErrorMessage("This filter is already set.");
+                } else if (selectedFilter.equals(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV) && hasAlreadySpecialTypeFilter(getSelectedFilterList())) {
                     GlobalMessageAppender.addErrorMessage("This filter is already set.");
                 } else if (selectedFilter.equals(DeploymentFilterTypes.RELEASE)) {
                     filter = setFilterDropDownOptions(filter);
@@ -612,23 +617,23 @@ public class DeployScreenDataProvider implements Serializable {
 
 
     public boolean isCancelPossible(DeploymentEntity deployment) {
-        return deploymentBoundary.isCancelPossible(deployment).isPossible();
+        return !deployment.isPreserved()  && deploymentBoundary.isCancelPossible(deployment).isPossible();
     }
 
     public boolean isConfirmPossible(DeploymentEntity deployment) {
-        return deploymentBoundary.isConfirmPossible(deployment).isPossible()&& permissionService.hasPermissionForDeploymentUpdate(deployment);
+        return !deployment.isPreserved()  && deploymentBoundary.isConfirmPossible(deployment).isPossible()&& permissionService.hasPermissionForDeploymentUpdate(deployment);
     }
 
     public boolean isRejectPossible(DeploymentEntity deployment) {
-        return deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment);
+        return !deployment.isPreserved()  && deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment);
     }
 
     public boolean isChangeDeploymentDatePossible(DeploymentEntity deployment) {
-        return deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment);
+        return !deployment.isPreserved()  && deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment);
     }
 
     public boolean isRedeployPossible(DeploymentEntity deployment) {
-        return permissionService.hasPermissionForDeploymentCreation(deployment);
+        return !deployment.isPreserved() && permissionService.hasPermissionForDeploymentCreation(deployment);
     }
 
     public void reloadDeployments(boolean countAgain) {
@@ -865,14 +870,6 @@ public class DeployScreenDataProvider implements Serializable {
         return deployment != null && deployment.isDeploymentDelayed();
     }
 
-    public String getRelease(DeploymentEntity deployment) {
-        String result = "";
-        if (deployment != null && deployment.getRelease() != null) {
-            result = deployment.getRelease().getName();
-        }
-        return result;
-    }
-
     public SortingDirectionType getSortingDirection() {
         return sortingDirection;
     }
@@ -923,6 +920,22 @@ public class DeployScreenDataProvider implements Serializable {
 
     public boolean hasDeploymentParameter() {
         return selectedDeployment != null && selectedDeployment.getDeploymentParameters() != null && !selectedDeployment.getDeploymentParameters().isEmpty();
+    }
+
+    public String getContextName(DeploymentEntity deployment) {
+        return deploymentBoundary.getDeletedContextName(deployment);
+    }
+
+    public String getResourceName(DeploymentEntity deployment) {
+        return deploymentBoundary.getDeletedResourceName(deployment);
+    }
+
+    public String getResourceGroupName(DeploymentEntity deployment) {
+        return deploymentBoundary.getDeletedResourceGroupName(deployment);
+    }
+
+    public String getReleaseName(DeploymentEntity deployment) {
+        return deploymentBoundary.getDeletedReleaseName(deployment);
     }
 
 }

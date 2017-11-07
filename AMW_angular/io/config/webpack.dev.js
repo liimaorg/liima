@@ -157,7 +157,7 @@ module.exports = function (options) {
         aggregateTimeout: 300,
         poll: 1000
       },
-      //outputPath: helpers.root('dist')
+      //outputPath: helpers.root('dist'),
       proxy: {
         '/AMW_rest/*': {
           target: 'http://localhost:8080'

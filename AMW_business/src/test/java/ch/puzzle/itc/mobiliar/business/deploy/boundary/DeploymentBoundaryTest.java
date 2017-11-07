@@ -21,18 +21,28 @@
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
 
+import ch.puzzle.itc.mobiliar.builders.DeploymentEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
@@ -50,11 +60,16 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DeploymentBoundaryTest
 {
 	
 	@InjectMocks
+	@Spy
 	private DeploymentBoundary deploymentBoundary;
+
+	@Mock
+	private PermissionService permissionService;
 
 	@Mock
 	private Logger log;
@@ -64,13 +79,7 @@ public class DeploymentBoundaryTest
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
-	
-	@Before
-	public void setUp(){
-		MockitoAnnotations.initMocks(this);
-	}
-	
-	
+
 	@Test
 	public void deploymentCleanupEmptyFolder() throws Exception {
 		Properties properties = System.getProperties();
@@ -132,6 +141,51 @@ public class DeploymentBoundaryTest
 		assertTrue(deployment2.exists());
 		assertTrue(testFile2.exists());
 	}
+
+    @Test
+    public void testConfirmDeployment() {
+        // given
+        Integer deploymentId = 1;
+        boolean sendEmailWhenDeployed = true;
+        boolean simulateBeforeDeployment = true;
+        boolean shakedownTestsWhenDeployed = true;
+        boolean neighbourhoodTest = true;
+
+        Integer trackingId = 2;
+        Date releaseDate = new Date();
+        ReleaseEntity release = new ReleaseEntityBuilder().buildReleaseEntity("Main Release", releaseDate, false);
+        ResourceGroupEntity group = new ResourceGroupEntity();
+        ResourceEntity appServer = new ResourceEntity();
+        boolean buildSuccess = true;
+        ContextEntity context = new ContextEntity();
+
+        DeploymentEntity deployment = new DeploymentEntityBuilder().buildDeploymentEntity(trackingId, release, group, appServer, buildSuccess, context, false);
+        deployment.setDeploymentDate(new Date());
+        deployment.setDeploymentState(DeploymentState.requested);
+        deployment.setSendEmailConfirmation(false);
+        deployment.setCreateTestAfterDeployment(false);
+        deployment.setCreateTestForNeighborhoodAfterDeployment(false);
+        deployment.setSimulating(false);
+
+        Mockito.doReturn(DeploymentBoundary.DeploymentOperationValidation.SUCCESS).when(deploymentBoundary).isConfirmPossible(deployment);
+        Mockito.doReturn(deployment).when(deploymentBoundary).getDeploymentById(deploymentId);
+        Mockito.doReturn(deployment).when(deploymentBoundary).saveDeployment(deployment);
+        Mockito.doReturn("Tom").when(permissionService).getCurrentUserName();
+
+        // when
+        DeploymentEntity deploymentEntity = deploymentBoundary.confirmDeployment(deploymentId, sendEmailWhenDeployed, shakedownTestsWhenDeployed, neighbourhoodTest, simulateBeforeDeployment);
+
+        // then
+        assertThat(deploymentEntity.getDeploymentState(), is(DeploymentState.scheduled));
+        assertThat(deploymentEntity.getDeploymentConfirmationUser(), is("Tom"));
+        assertThat(deploymentEntity.getDeploymentConfirmed(), is(true));
+
+        assertThat(deploymentEntity.isSendEmailConfirmation(), is(sendEmailWhenDeployed));
+        assertThat(deploymentEntity.isSimulating(), is(simulateBeforeDeployment));
+        assertThat(deploymentEntity.isCreateTestAfterDeployment(), is(shakedownTestsWhenDeployed));
+        assertThat(deploymentEntity.isCreateTestForNeighborhoodAfterDeployment(), is(neighbourhoodTest));
+    }
+
 
 	@Test
 	public void shouldUpdateDeploymentInfoWithRightReasonIfModeIsDeployAndReasonIsNull() {

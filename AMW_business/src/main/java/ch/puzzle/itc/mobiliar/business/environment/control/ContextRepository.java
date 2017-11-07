@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.environment.control;
 
 import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
@@ -29,6 +30,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.List;
+import java.util.Set;
 
 public class ContextRepository extends BaseRepository<ContextEntity> {
 
@@ -53,4 +55,16 @@ public class ContextRepository extends BaseRepository<ContextEntity> {
         return entityManager.createQuery("select n from ContextEntity n left join fetch n.children as c left join fetch n.contextType left join fetch c.contextType order by n.name asc");
     }
 
+    @Override
+    protected void preRemove(ContextEntity context) {
+        final Set<DeploymentEntity> deploys = context.getDeploys();
+        if (deploys != null) {
+            final Integer contextId = context.getId();
+            for (DeploymentEntity deployment : deploys) {
+                deployment.setExContextId(contextId);
+                deployment.setContext(null);
+                entityManager.merge(deployment);
+            }
+        }
+    }
 }

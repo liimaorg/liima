@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.builders;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import org.mockito.Mockito;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.mockito.Mockito.mock;
@@ -67,7 +68,13 @@ public class ContextEntityBuilder extends BaseEntityBuilder {
 		entity.setName(name);
 		entity.setParent(parent);
 		if (parent != null) {
-			parent.getChildren().add(entity);
+			if (parent.getChildren().isEmpty()) {
+				Set<ContextEntity> pc = new HashSet<>();
+				pc.add(entity);
+				parent.setChildren(pc);
+			} else {
+				parent.getChildren().add(entity);
+			}
 		}
 
 		entity.setChildren(children);

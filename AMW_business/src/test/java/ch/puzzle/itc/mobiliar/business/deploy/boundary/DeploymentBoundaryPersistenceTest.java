@@ -20,9 +20,10 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
+import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.ResourceGroupEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -31,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
@@ -51,6 +53,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
@@ -856,7 +859,7 @@ public class DeploymentBoundaryPersistenceTest
 		Tuple<Set<DeploymentEntity>, Integer> result;
 
 		CustomFilter filter = CustomFilter.builder(DeploymentFilterTypes.RELEASE)
-				.comparatorSelection(ComparatorFilterOption.greaterequals).build();
+				.comparatorSelection(ComparatorFilterOption.gte).build();
 		filter.setValue(CustomFilter.convertDateToString(releaseA.getInstallationInProductionAt()));
 		result = deploymentBoundary.getFilteredDeployments(true, 0, 10, Collections.singletonList(filter),
 				null, CommonFilterService.SortingDirectionType.ASC, null);
@@ -870,7 +873,7 @@ public class DeploymentBoundaryPersistenceTest
 		
 		// when filtering <= releaseC
 		filter.setValue(CustomFilter.convertDateToString(releaseC.getInstallationInProductionAt()));
-		filter.setComparatorSelection(ComparatorFilterOption.smallerequals);
+		filter.setComparatorSelection(ComparatorFilterOption.lte);
 		result = deploymentBoundary.getFilteredDeployments(true, 0,
 				10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);
@@ -884,7 +887,7 @@ public class DeploymentBoundaryPersistenceTest
 
 		// when filtering == releaseB
 		filter.setValue(CustomFilter.convertDateToString(releaseB.getInstallationInProductionAt()));
-		filter.setComparatorSelection(ComparatorFilterOption.equals);
+		filter.setComparatorSelection(ComparatorFilterOption.eq);
 		result = deploymentBoundary.getFilteredDeployments(true, 0,
 				10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);
@@ -1014,6 +1017,350 @@ public class DeploymentBoundaryPersistenceTest
 
 		// then
 		assertThat(latest.size(), is(3));
+	}
+
+	@Test
+	public void shouldReturnTheRightFilteredDeploymentsInTheRightOrderIfLatestDeploymentJobFilterAndStateSuccessAreSet() {
+		// given
+		Calendar cal = new GregorianCalendar();
+		ReleaseEntity release1 = new ReleaseEntity();
+		release1.setName("release1");
+		cal.set(2014, Calendar.JANUARY, 1);
+		release1.setInstallationInProductionAt(cal.getTime());
+		entityManager.persist(release1);
+
+		ReleaseEntity release2 = new ReleaseEntity();
+		release2.setName("release2");
+		cal.set(2014, Calendar.JANUARY, 2);
+		release2.setInstallationInProductionAt(cal.getTime());
+		entityManager.persist(release2);
+
+		ResourceEntity resource = ResourceEntityBuilder.createResourceEntity("Test", null);
+		entityManager.persist(resource);
+		Set<ResourceEntity> resources = new HashSet<>();
+		resources.add(resource);
+		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources, false);
+		entityManager.persist(group);
+
+		ContextEntity contextA = new ContextEntity();
+		contextA.setName("A");
+		entityManager.persist(contextA);
+
+		ContextEntity contextB = new ContextEntity();
+		contextB.setName("B");
+		entityManager.persist(contextB);
+
+		cal.set(2014, Calendar.AUGUST, 1);
+		DeploymentEntity d1 = new DeploymentEntity();
+		d1.setDeploymentDate(cal.getTime());
+		d1.setRelease(release1);
+		d1.setDeploymentState(DeploymentState.success);
+		d1.setResourceGroup(group);
+		d1.setContext(contextA);
+		persistDeploymentEntityForTest(d1);
+
+		cal.set(2014, Calendar.AUGUST, 11);
+		DeploymentEntity d2 = new DeploymentEntity();
+		d2.setDeploymentDate(cal.getTime());
+		d2.setRelease(release2);
+		d2.setDeploymentState(DeploymentState.success);
+		d2.setResourceGroup(group);
+		d2.setContext(contextB);
+		persistDeploymentEntityForTest(d2);
+
+		cal.set(2014, Calendar.AUGUST, 21);
+		DeploymentEntity d3 = new DeploymentEntity();
+		d3.setDeploymentDate(cal.getTime());
+		d3.setRelease(release2);
+		d3.setDeploymentState(DeploymentState.failed);
+		d3.setResourceGroup(group);
+		d3.setContext(contextA);
+		persistDeploymentEntityForTest(d3);
+
+		List<CustomFilter> filters = new LinkedList<>();
+		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV).build();
+		filters.add(lastDeploymentJobFilter);
+		CustomFilter stateFilter = CustomFilter.builder(DeploymentFilterTypes.DEPLOYMENT_STATE).build();
+		stateFilter.setValue(DeploymentState.success.getDisplayName());
+		stateFilter.setEnumType(DeploymentState.class);
+		filters.add(stateFilter);
+		CustomFilter appServerFilter = CustomFilter.builder(DeploymentFilterTypes.APPSERVER_NAME).build();
+		appServerFilter.setValue(group.getName());
+		filters.add(appServerFilter);
+
+		// when sorting by release ascending
+		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
+		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+
+		// then
+		assertNotNull(result1);
+		assertThat(result1.getA().size(), is(2));
+		assertThat(result1.getB(), is(2));
+		Iterator<DeploymentEntity> it = result1.getA().iterator();
+		assertThat(it.next().getRelease(), is(release1));
+		assertThat(it.next().getRelease(), is(release2));
+
+		// when sorting by release descending
+		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
+
+		// then
+		assertNotNull(result2);
+		assertThat(result2.getA().size(), is(2));
+		assertThat(result2.getB(), is(2));
+		it = result2.getA().iterator();
+		assertThat(it.next().getRelease(), is(release2));
+		assertThat(it.next().getRelease(), is(release1));
+	}
+
+	@Test
+	public void shouldReturnTheRightFilteredDeploymentsIfLatestDeploymentJobFilterAndStateFailedAreSet() {
+		// given
+		Calendar cal = new GregorianCalendar();
+		ReleaseEntity release = new ReleaseEntity();
+		release.setName("release");
+		cal.set(2014, Calendar.JANUARY, 1);
+		release.setInstallationInProductionAt(cal.getTime());
+		entityManager.persist(release);
+
+		ResourceEntity resource = ResourceEntityBuilder.createResourceEntity("Test", null);
+		entityManager.persist(resource);
+		Set<ResourceEntity> resources = new HashSet<>();
+		resources.add(resource);
+		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources, false);
+		entityManager.persist(group);
+
+		ContextEntity contextA = new ContextEntity();
+		contextA.setName("A");
+		entityManager.persist(contextA);
+
+		ContextEntity contextB = new ContextEntity();
+		contextB.setName("B");
+		entityManager.persist(contextB);
+
+		cal.set(2014, Calendar.AUGUST, 1);
+		DeploymentEntity d1 = new DeploymentEntity();
+		d1.setDeploymentDate(cal.getTime());
+		d1.setRelease(release);
+		d1.setDeploymentState(DeploymentState.failed);
+		d1.setResourceGroup(group);
+		d1.setContext(contextA);
+		persistDeploymentEntityForTest(d1);
+
+		cal.set(2014, Calendar.AUGUST, 11);
+		DeploymentEntity d2 = new DeploymentEntity();
+		d2.setDeploymentDate(cal.getTime());
+		d2.setRelease(release);
+		d2.setDeploymentState(DeploymentState.success);
+		d2.setResourceGroup(group);
+		d2.setContext(contextB);
+		persistDeploymentEntityForTest(d2);
+
+		cal.set(2014, Calendar.AUGUST, 21);
+		DeploymentEntity d3 = new DeploymentEntity();
+		d3.setDeploymentDate(cal.getTime());
+		d3.setRelease(release);
+		d3.setDeploymentState(DeploymentState.failed);
+		d3.setResourceGroup(group);
+		d3.setContext(contextA);
+		persistDeploymentEntityForTest(d3);
+
+		List<CustomFilter> filters = new LinkedList<>();
+		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV).build();
+		filters.add(lastDeploymentJobFilter);
+		CustomFilter stateFilter = CustomFilter.builder(DeploymentFilterTypes.DEPLOYMENT_STATE).build();
+		stateFilter.setValue(DeploymentState.failed.getDisplayName());
+		stateFilter.setEnumType(DeploymentState.class);
+		filters.add(stateFilter);
+		CustomFilter appServerFilter = CustomFilter.builder(DeploymentFilterTypes.APPSERVER_NAME).build();
+		appServerFilter.setValue(group.getName());
+		filters.add(appServerFilter);
+		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
+
+		// when
+		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+
+		// then
+		assertNotNull(result);
+		assertThat(result.getA().size(), is(1));
+		assertThat(result.getB(), is(1));
+		Iterator<DeploymentEntity> it = result.getA().iterator();
+		assertEquals(d3.getId(), it.next().getId());
+	}
+
+	@Test
+	public void shouldReturnDeploymentWithHighestIdPerEnvironmentIfLatestDeploymentJobFilterAndStateAreSetAndMultipleDeploymentsWithSameDeploymentDateExist() {
+		// given
+		Calendar cal = new GregorianCalendar();
+		ReleaseEntity release = new ReleaseEntity();
+		release.setName("release");
+		cal.set(2014, Calendar.JANUARY, 1);
+		release.setInstallationInProductionAt(cal.getTime());
+		entityManager.persist(release);
+
+		ResourceEntity resource = ResourceEntityBuilder.createResourceEntity("Test", null);
+		entityManager.persist(resource);
+		Set<ResourceEntity> resources = new HashSet<>();
+		resources.add(resource);
+		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources, false);
+		entityManager.persist(group);
+
+		ContextEntity contextA = new ContextEntity();
+		contextA.setName("A");
+		entityManager.persist(contextA);
+
+		ContextEntity contextB = new ContextEntity();
+		contextB.setName("B");
+		entityManager.persist(contextB);
+
+		cal.set(2014, Calendar.AUGUST, 1);
+		Date augustFirst = cal.getTime();
+		DeploymentEntity d1 = new DeploymentEntity();
+		d1.setDeploymentDate(augustFirst);
+		d1.setRelease(release);
+		d1.setDeploymentState(DeploymentState.failed);
+		d1.setResourceGroup(group);
+		d1.setContext(contextA);
+		persistDeploymentEntityForTest(d1);
+
+		cal.set(2014, Calendar.AUGUST, 11);
+		DeploymentEntity d2 = new DeploymentEntity();
+		d2.setDeploymentDate(cal.getTime());
+		d2.setRelease(release);
+		d2.setDeploymentState(DeploymentState.success);
+		d2.setResourceGroup(group);
+		d2.setContext(contextB);
+		persistDeploymentEntityForTest(d2);
+
+		cal.set(2014, Calendar.AUGUST, 1);
+		DeploymentEntity d3 = new DeploymentEntity();
+		d3.setDeploymentDate(augustFirst);
+		d3.setRelease(release);
+		d3.setDeploymentState(DeploymentState.failed);
+		d3.setResourceGroup(group);
+		d3.setContext(contextA);
+		persistDeploymentEntityForTest(d3);
+
+		List<CustomFilter> filters = new LinkedList<>();
+		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV).build();
+		filters.add(lastDeploymentJobFilter);
+		CustomFilter stateFilter = CustomFilter.builder(DeploymentFilterTypes.DEPLOYMENT_STATE).build();
+		stateFilter.setValue(DeploymentState.failed.getDisplayName());
+		stateFilter.setEnumType(DeploymentState.class);
+		filters.add(stateFilter);
+		CustomFilter appServerFilter = CustomFilter.builder(DeploymentFilterTypes.APPSERVER_NAME).build();
+		appServerFilter.setValue(group.getName());
+		filters.add(appServerFilter);
+		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
+
+		// when
+		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+
+		// then
+		assertNotNull(result);
+		assertThat(result.getA().size(), is(1));
+		assertThat(result.getB(), is(1));
+		Iterator<DeploymentEntity> it = result.getA().iterator();
+		assertEquals(d3.getId(), it.next().getId());
+	}
+
+	@Test
+	public void shouldReturnDeploymentWithHighestIdPerEnvironmentIfLatestDeploymentJobFilterAndMultipleDeploymentsWithSameDeploymentDateExist() {
+		// given
+		Calendar cal = new GregorianCalendar();
+		ReleaseEntity release = new ReleaseEntity();
+		release.setName("release");
+		cal.set(2014, Calendar.JANUARY, 1);
+		release.setInstallationInProductionAt(cal.getTime());
+		entityManager.persist(release);
+
+		ResourceEntity resource = ResourceEntityBuilder.createResourceEntity("Test", null);
+		entityManager.persist(resource);
+		Set<ResourceEntity> resources = new HashSet<>();
+		resources.add(resource);
+		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources, false);
+		entityManager.persist(group);
+
+		ContextEntity contextA = new ContextEntity();
+		contextA.setName("A");
+		entityManager.persist(contextA);
+
+		ContextEntity contextB = new ContextEntity();
+		contextB.setName("B");
+		entityManager.persist(contextB);
+
+		cal.set(2014, Calendar.AUGUST, 1);
+		Date augustFirst = cal.getTime();
+		DeploymentEntity d1 = new DeploymentEntity();
+		d1.setDeploymentDate(augustFirst);
+		d1.setRelease(release);
+		d1.setDeploymentState(DeploymentState.failed);
+		d1.setResourceGroup(group);
+		d1.setContext(contextA);
+		d1.setTrackingId(1);
+		persistDeploymentEntityForTest(d1);
+
+		cal.set(2014, Calendar.AUGUST, 11);
+		DeploymentEntity d2 = new DeploymentEntity();
+		d2.setDeploymentDate(cal.getTime());
+		d2.setRelease(release);
+		d2.setDeploymentState(DeploymentState.success);
+		d2.setResourceGroup(group);
+		d2.setContext(contextB);
+		d2.setTrackingId(12);
+		persistDeploymentEntityForTest(d2);
+
+		cal.set(2014, Calendar.AUGUST, 1);
+		DeploymentEntity d3 = new DeploymentEntity();
+		d3.setDeploymentDate(augustFirst);
+		d3.setRelease(release);
+		d3.setDeploymentState(DeploymentState.failed);
+		d3.setResourceGroup(group);
+		d3.setContext(contextA);
+		d3.setTrackingId(3);
+		persistDeploymentEntityForTest(d3);
+
+		List<CustomFilter> filters = new LinkedList<>();
+		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV).build();
+		filters.add(lastDeploymentJobFilter);
+		CustomFilter appServerFilter = CustomFilter.builder(DeploymentFilterTypes.APPSERVER_NAME).build();
+		appServerFilter.setValue(group.getName());
+		filters.add(appServerFilter);
+
+		// when sorted by tracking id asc
+		String colToSort = DeploymentFilterTypes.TRACKING_ID.getFilterTabColumnName();
+		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+
+		// then
+		assertNotNull(result1);
+		assertThat(result1.getA().size(), is(2));
+		Object[] deployments = result1.getA().toArray();
+		DeploymentEntity deployment0 = (DeploymentEntity) deployments[0];
+		assertThat(deployment0.getDeploymentState(), is(DeploymentState.failed));
+		assertThat(deployment0.getContext(), is(contextA));
+		assertThat(deployment0.getTrackingId(), is(3));
+		assertThat(deployment0.getId(), is(d3.getId()));
+		DeploymentEntity deployment1 = (DeploymentEntity) deployments[1];
+		assertThat(deployment1.getDeploymentState(), is(DeploymentState.success));
+		assertThat(deployment1.getTrackingId(), is(12));
+		assertThat(result1.getB(), is(2));
+
+		// when sorted by tracking id desc
+		colToSort = DeploymentFilterTypes.TRACKING_ID.getFilterTabColumnName();
+		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
+
+		// then
+		assertNotNull(result2);
+		assertThat(result2.getA().size(), is(2));
+		deployments = result2.getA().toArray();
+		deployment0 = (DeploymentEntity) deployments[0];
+		assertThat(deployment0.getDeploymentState(), is(DeploymentState.success));
+		assertThat(deployment0.getTrackingId(), is(12));
+		deployment1 = (DeploymentEntity) deployments[1];
+		assertThat(deployment1.getDeploymentState(), is(DeploymentState.failed));
+		assertThat(deployment1.getTrackingId(), is(3));
+		assertThat(deployment1.getId(), is(d3.getId()));
+		assertThat(result2.getB(), is(2));
+
 	}
 
 }

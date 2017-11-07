@@ -28,6 +28,7 @@ import javax.ejb.EJBException;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesDTO;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import lombok.Getter;
@@ -42,7 +43,6 @@ import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDepen
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceRelations;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourcesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
@@ -72,11 +72,11 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 	@Inject
 	ResourceDependencyResolverService resourceDependencyResolver;
 	@Inject
-	ResourcesScreenDomainService resourcesScreenDomainService;
-	@Inject
 	ResourceRelations resourceRelations;
 	@Inject
 	ApplistFilter applistFilter;
+	@Inject
+	ResourceBoundary resourceBoundary;
 
 	@Getter @Setter
 	private String filter;
@@ -234,7 +234,7 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 				GlobalMessageAppender.addErrorMessage(errorMessage);
 			} else {
 				try{
-					resourcesScreenDomainService.deleteApplicationById(ForeignableOwner.getSystemOwner(), applicationId);
+					resourceBoundary.deleteApplicationById(ForeignableOwner.getSystemOwner(), applicationId);
 					String message = "Application successfully deleted";
 					GlobalMessageAppender.addSuccessMessage(message);
 					isSuccessful = true;
@@ -273,7 +273,7 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 				GlobalMessageAppender.addErrorMessage(errorMessage);
 			} else {
 				try{
-					resourcesScreenDomainService.deleteApplicationServerById(selectedAppServerId);
+					resourceBoundary.deleteApplicationServerById(selectedAppServerId);
 					String message = "Applicationserver successfully deleted";
 					GlobalMessageAppender.addSuccessMessage(message);
 					isSuccessful = true;

@@ -177,11 +177,15 @@ function toRelease(r: any): Release {
 
 // this could also be a private method of the component class
 function handleError(error: any) {
-  // log error
-  // could be something more sophisticated
-  let errorMsg = error.message || `Error retrieving your data`;
+  let errorMsg = 'Error retrieving your data';
+  if (error._body) {
+    try {
+      errorMsg = JSON.parse(error._body).message;
+    } catch (e) {
+      console.log(e);
+    }
+  }
   console.error(errorMsg);
-
   // throw an application level error
   return Observable.throw(errorMsg);
 }

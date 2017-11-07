@@ -27,12 +27,15 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseRepository;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.DELETE;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -85,5 +88,10 @@ public class ReleaseLocator {
             log.warning("Error occurred on database access: " + e.getMessage());
             throw new RuntimeException("Boundary exception", e);
         }
+    }
+
+    @HasPermission(permission = Permission.RELEASE, action = DELETE)
+    public void delete(ReleaseEntity release) {
+        releaseRepository.removeRelease(release);
     }
 }

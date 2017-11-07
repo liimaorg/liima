@@ -251,9 +251,14 @@
                                             </a4j:commandLink>
                                         </f:facet>
 
-                                        <mobi:editResourceLink resId="#{deployment.resource.id}"
+                                        <mobi:editResourceLink rendered="#{deployment.resourceGroup != null and deployment.resource != null}" resId="#{deployment.resource.id}"
                                                                linkLabel="#{deployment.resourceGroup.name}"
                                                                editPermission="RESOURCE" resourceType="APPLICATIONSERVER"/>
+                                        <h:outputText rendered="#{deployment.resourceGroup == null}"
+                                                      value="#{deployScreenDataProvider.getResourceGroupName(deployment)}" />
+                                        <h:outputText rendered="#{deployment.resource == null}"
+                                                      value="#{deployScreenDataProvider.getResourceName(deployment)}" />
+
                                         <ui:repeat var="appToShow"
                                                    value="${deployment.applicationsWithVersion}">
                                             <h:panelGroup styleClass="paddingLeft20" layout="block">
@@ -279,8 +284,8 @@
                                             </a4j:commandLink>
                                         </f:facet>
 
-                                        <h:outputText
-                                                value="#{deployScreenDataProvider.getRelease(deployment)}"/>
+                                        <h:outputText rendered="#{deployment.release != null}" value="#{deployment.release.name}"/>
+                                        <h:outputText rendered="#{deployment.release == null}" value="#{deployScreenDataProvider.getReleaseName(deployment)}"/>
                                     </h:column>
 
                                     <h:column index="index" headerClass="width_20 nowrap">
@@ -293,7 +298,9 @@
                                             </a4j:commandLink>
                                         </f:facet>
 
-                                        <h:outputText value="#{deployment.context.name}"
+                                        <h:outputText rendered="#{deployment.context != null}" value="#{deployment.context.name}"
+                                                      styleClass="boldFont"/>
+                                        <h:outputText rendered="#{deployment.context == null}" value="#{deployScreenDataProvider.getContextName(deployment)}"
                                                       styleClass="boldFont"/>
                                     </h:column>
 
@@ -395,16 +402,12 @@
     </ui:define>
 
     <ui:define name="component_popups">
-
-
         <h:form>
-            <rich:popupPanel id="confirmDeployment" moveable="true"
-                             autosized="true" domElementAttachment="form">
+            <rich:popupPanel id="confirmDeployment" moveable="true" autosized="true" domElementAttachment="form">
                 <f:facet name="header">
                     <h2>
-                        <h:outputText
-                                value="Confirm deployment ${deployScreenDataProvider.selectedDeployment.id} for appserver ${deployScreenDataProvider.selectedDeployment.resourceGroup.name}"
-                                id="confirmDeploymentPopupPanelFacet"/>
+                        <h:outputText id="confirmDeploymentPopupPanelFacet"
+                                      value="Confirm deployment ${deployScreenDataProvider.selectedDeployment.id} for appserver ${deployScreenDataProvider.selectedDeployment.resourceGroup.name}"/>
                     </h2>
                 </f:facet>
                 <f:facet name="controls">
@@ -416,24 +419,23 @@
                 </f:facet>
                 <h:panelGroup id="confirmDeploymentPopupPanelGroup">
                     <div>
-
-
-                        <label class="inlineBlock"> <h:selectBooleanCheckbox
-                                value="#{deployScreenDataProvider.selectedDeployment.sendEmailConfirmation}"/>send an email
-                            when deployed
+                        <label class="inlineBlock">
+                            <h:selectBooleanCheckbox value="#{deployScreenDataProvider.selectedDeployment.sendEmailConfirmation}"/>
+                            send an email when deployed
                         </label>
                     </div>
 
                     <div>
                         <label class="inlineBlock">
-                            <h:selectBooleanCheckbox
-                                    value="#{deployScreenDataProvider.selectedDeployment.simulating}"/>simulate before deployment</label>
+                            <h:selectBooleanCheckbox value="#{deployScreenDataProvider.selectedDeployment.simulating}"/>
+                            simulate before deployment
+                        </label>
                     </div>
+
                     <div>
-                        <h:panelGroup
-                                rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
-                            <label class="inlineBlock"> <h:selectBooleanCheckbox
-                                    value="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment}">
+                        <h:panelGroup rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
+                            <label class="inlineBlock">
+                                <h:selectBooleanCheckbox value="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment}">
                                 <a4j:ajax render="testNeighbourhoodButtonId"/>
                             </h:selectBooleanCheckbox>execute shakedown tests when deployed</label>
                         </h:panelGroup>
@@ -442,10 +444,12 @@
                     <div class="paddingLeft20">
                         <h:panelGroup
                                 rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
-                            <label class="inlineBlock"> <h:selectBooleanCheckbox
-                                    id="testNeighbourhoodButtonId"
+                            <label class="inlineBlock">
+                                <h:selectBooleanCheckbox id="testNeighbourhoodButtonId"
                                     disabled="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment==false}"
-                                    value="#{deployScreenDataProvider.selectedDeployment.createTestForNeighborhoodAfterDeployment}"/>test neighbourhood</label>
+                                    value="#{deployScreenDataProvider.selectedDeployment.createTestForNeighborhoodAfterDeployment}"/>
+                                test neighbourhood
+                            </label>
                         </h:panelGroup>
                     </div>
 
@@ -454,8 +458,7 @@
                                      styleClass="btn primary right marginLeft20"
                                      type="button"
                                      onclick="showLoader();#{rich:component('confirmDeployment')}.hide();"
-                                     oncomplete="hideLoader();return false;"
-                    />
+                                     oncomplete="hideLoader();return false;"/>
 
                 </h:panelGroup>
             </rich:popupPanel>
