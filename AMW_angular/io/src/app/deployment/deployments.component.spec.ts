@@ -241,7 +241,7 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentsComponent.filters.length).toEqual(2);
   }));
 
-  it('should reset offset on add filter',
+  it('should reset offset on addFilter',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
       deploymentsComponent.offset = 10;
@@ -259,7 +259,7 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentsComponent.offset).toEqual(0);
   }));
 
-  it('should reset offset on remove filter',
+  it('should remove filter and reset offset on removeFilter',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
       deploymentsComponent.offset = 10;
@@ -271,6 +271,20 @@ describe('DeploymentsComponent (without query params)', () => {
 
       // when
       deploymentsComponent.removeFilter(deploymentsComponent.filters[0]);
+
+      // then
+      expect(deploymentsComponent.filters.length).toEqual(0);
+      expect(deploymentsComponent.offset).toEqual(0);
+  }));
+
+  it('should reset offset on setMaxResultsPerPage',
+    inject([DeploymentsComponent], (deploymentsComponent: DeploymentsComponent) => {
+      // given
+      deploymentsComponent.offset = 10;
+      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true', type: 'booleanType' } ];
+
+      // when
+      deploymentsComponent.setMaxResultsPerPage(20)
 
       // then
       expect(deploymentsComponent.offset).toEqual(0);

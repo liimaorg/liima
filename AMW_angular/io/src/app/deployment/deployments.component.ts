@@ -304,6 +304,7 @@ export class DeploymentsComponent implements OnInit {
 
   setMaxResultsPerPage(max: number) {
     this.maxResults = max;
+    this.offset = 0;
     this.applyFilter();
   }
 
