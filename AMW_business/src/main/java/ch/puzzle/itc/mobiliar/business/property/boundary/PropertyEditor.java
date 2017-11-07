@@ -785,10 +785,10 @@ public class PropertyEditor {
 		throw new NoResultException("Could not find property " + propertyName);
 	}
 
-    public Map<String, String> getOverridenPropertyValues(Integer resourceId, ResourceEditProperty property, List<ContextEntity> contextsToCheck) {
+    public Map<String, String> getOverridenPropertyValues(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> contextsToCheck) {
         PropertyEntity propertyEntity = propertyValueService.findById(property.getPropertyId());
         List<ContextEntity> flattedList = flattenContextList(contextsToCheck);
-        return propertyEditingService.getOverridenProperties(resourceId, propertyEntity, flattedList);
+        return propertyEditingService.getOverridenProperties(resourceEntity, propertyEntity, flattedList);
     }
 
     private List<ContextEntity> flattenContextList(List<ContextEntity> contextList) {

@@ -256,12 +256,11 @@ public class PropertyEditingService {
 		return result;
 	}
 
-    public Map<String, String> getOverridenProperties(Integer resourceId, PropertyEntity propertyEntity, List<ContextEntity> childrenForContext) {
+    public Map<String, String> getOverridenProperties(ResourceEntity resourceEntity, PropertyEntity propertyEntity, List<ContextEntity> childrenForContext) {
         HashMap<String, String> differingProps = new HashMap<>();
-        ResourceEntity resourceEntity = resourceEditService.loadResourceEntityForEdit(resourceId, false);
         for (ContextEntity context : childrenForContext) {
             // TODO only load the required property
-            List<ResourceEditProperty> resourceEditProperties = loadPropertiesForEditResource(resourceId, resourceEntity.getResourceType(), context);
+            List<ResourceEditProperty> resourceEditProperties = loadPropertiesForEditResource(resourceEntity.getId(), resourceEntity.getResourceType(), context);
             for (ResourceEditProperty propToCompare : resourceEditProperties) {
                 if (propToCompare.getTechnicalKey().equals(propertyEntity.getDescriptor().getPropertyName())) {
                     if (!propertyEntity.getValue().equals(propToCompare.getPropertyValue())) {

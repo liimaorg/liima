@@ -196,7 +196,7 @@ public class PropertyEditDataProvider implements Serializable {
     public void loadConfigOverviewForProperty(ResourceEditProperty property) {
         this.propertyForConfigOverview = property;
         List<ContextEntity> childrenForContext = contextDataProvider.getChildrenForContext(currentContext.getId());
-        valuesForConfigOverview = editor.getOverridenPropertyValues(resourceView.getResourceId(), property, childrenForContext);
+        valuesForConfigOverview = editor.getOverridenPropertyValues(resourceView.getResource(), property, childrenForContext);
     }
 
     private void loadResourceRelationEditProperties() {
