@@ -32,15 +32,15 @@
 
         <ng-container *ngIf="filters.length > 0">
           <div class="form-group" *ngFor="let filter of filters">
-            <label class="col-sm-2 control-label"></label>
+            <label class="col-sm-1 control-label"></label>
             <div class="col-sm-4">
               <input class="form-control" disabled type="text" value="{{filter.name}}">
             </div>
             <ng-container *ngIf="filter.type === 'SpecialFilterType'">
-              <div class="col-sm-5"></div>
+              <div class="col-sm-6"></div>
             </ng-container>
             <ng-container *ngIf="filter.type !== 'SpecialFilterType'">
-              <div class="col-sm-1">
+              <div class="col-sm-2">
                 <select id="selectFilterComp" class="form-control" [attr.disabled]="filter.compOptions.length == 1 ? '' : null" [(ngModel)]="filter.comp">
                   <option *ngFor="let compOption of filter.compOptions" [ngValue]="compOption.name">{{compOption.displayName}}</option>
                 </select>
@@ -76,7 +76,7 @@
 
         <div class="form-group">
           <div class="col-sm-offset-1 col-sm-11">
-            <button type="submit" class="btn btn-primary btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="applyFilter()">Apply filter</button>
+            <button type="submit" class="btn btn-primary btn-main" (click)="applyFilter()">Apply filter</button>
             <button type="submit" class="btn btn-danger btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="clearFilters()">Clear filters</button>
             <button class="btn btn-default btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="copyURL()">
               <span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span> Clipboard

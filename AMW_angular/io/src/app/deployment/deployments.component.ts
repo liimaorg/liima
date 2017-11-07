@@ -137,6 +137,7 @@ export class DeploymentsComponent implements OnInit {
 
   clearFilters() {
     this.filters = [];
+    this.goTo(null);
   }
 
   applyFilter() {
@@ -633,6 +634,8 @@ export class DeploymentsComponent implements OnInit {
   private goTo(destination: string) {
     if (destination) {
       this.location.go('/deployments?filters=' + destination);
+    } else {
+      this.location.go('/deployments');
     }
   }
 
