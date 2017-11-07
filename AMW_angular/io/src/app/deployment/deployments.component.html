@@ -8,7 +8,7 @@
   <div class="loading-bg"></div>
 </div>
 
-<div class="col-sm-10 main-full">
+<div class="col-sm-11 main-full">
 
     <div class="panel-body">
       <span class="form-horizontal">
@@ -17,8 +17,8 @@
         <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="errorMessage"></span></div>
 
         <div class="form-group">
-          <label for="selectFilterType" class="col-sm-2 control-label">Add filter</label>
-          <div class="col-sm-9">
+          <label for="selectFilterType" class="col-sm-1 control-label">Add filter</label>
+          <div class="col-sm-10">
             <select id="selectFilterType" class="form-control" [(ngModel)]="selectedFilterType" (change)="addFilter()">
               <option *ngFor="let filterType of filterTypes" [ngValue]="filterType">{{filterType.name}}</option>
             </select>
@@ -75,7 +75,7 @@
         </ng-container>
 
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
+          <div class="col-sm-offset-1 col-sm-11">
             <button type="submit" class="btn btn-primary btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="applyFilter()">Apply filter</button>
             <button type="submit" class="btn btn-danger btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="clearFilters()">Clear filters</button>
             <button class="btn btn-default btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="copyURL()">
@@ -97,7 +97,7 @@
         </div>
 
         <div class="form-group" *ngIf="deployments.length > 0">
-          <div class="col-sm-offset-2 col-sm-10">
+          <div class="col-sm-offset-1 col-sm-11">
             <amw-deployments-list [deployments]="deployments"
                                   [filtersInUrl]="filtersInUrl"
                                   [sortCol]="sortCol"
