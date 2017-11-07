@@ -42,14 +42,15 @@
             <mobi:foreignableOwnerTooltip foreignableAttributes="#{propertyEditDataProvider.getForeignableToEdit(cc.attrs.property)}"/>
 
             <!-- Property is overriden by one of the child contexts-->
-            <a4j:commandLink id="removeReleaseButton"
+            <a4j:commandLink id="showConfigOverviewButton"
                              onclick="showLoader();"
                              execute="${propertyEditDataProvider.loadConfigOverviewForProperty(prop)}"
+                             rendered="${propertyEditDataProvider.hasOverwrittenProperty(prop)}"
                              render=":configOverviewPopupWrapper"
                              immediate="true"
-                             styleClass="help-inline info"
+                             styleClass="help-inline"
                              oncomplete="hideLoader();#{rich:component('configOverviewPopup')}.show();">
-                <i class="icon icon-info"/>
+                <i class="icon icon-warning"/>
             </a4j:commandLink>
 
             <!-- RESET -->

@@ -199,6 +199,11 @@ public class PropertyEditDataProvider implements Serializable {
         valuesForConfigOverview = editor.getOverridenPropertyValues(resourceView.getResource(), property, relevantContexts);
     }
 
+    public boolean hasOverwrittenProperty(ResourceEditProperty property) {
+        List<ContextEntity> relevantContexts = contextDataProvider.getChildrenForContext(currentContext.getId());
+        return !editor.getOverridenPropertyValues(resourceView.getResource(), property, relevantContexts).isEmpty();
+    }
+
     private void loadResourceRelationEditProperties() {
         filteredRelationProperties = new ArrayList<>();
 
