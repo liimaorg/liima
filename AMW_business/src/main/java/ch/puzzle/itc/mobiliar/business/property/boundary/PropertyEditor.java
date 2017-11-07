@@ -785,23 +785,8 @@ public class PropertyEditor {
 		throw new NoResultException("Could not find property " + propertyName);
 	}
 
-    public Map<String, String> getOverridenPropertyValues(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> contextsToCheck) {
+    public Map<String, String> getOverridenPropertyValues(ResourceEntity resourceEntity, ResourceEditProperty property, Integer contextId) {
         PropertyEntity propertyEntity = propertyValueService.findById(property.getPropertyId());
-        List<ContextEntity> flattedList = flattenContextList(contextsToCheck);
-        return propertyEditingService.getOverridenProperties(resourceEntity, propertyEntity, flattedList);
-    }
-
-    private List<ContextEntity> flattenContextList(List<ContextEntity> contextList) {
-        // TODO add childs recursive
-        List<ContextEntity> flattedList = new ArrayList<>();
-        for (ContextEntity contextEntity : contextList) {
-            flattedList.add(contextEntity);
-            if (!contextEntity.getChildren().isEmpty()) {
-                for (ContextEntity child: contextEntity.getChildren()) {
-                    flattedList.add(child);
-                }
-            }
-        }
-        return flattedList;
+        return propertyEditingService.getOverridenProperties(resourceEntity, propertyEntity, contextId);
     }
 }

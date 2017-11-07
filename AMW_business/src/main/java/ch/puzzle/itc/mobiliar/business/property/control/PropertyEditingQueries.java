@@ -53,7 +53,12 @@ public class PropertyEditingQueries {
     public Query getPropertyValueForResource(int resourceId, List<Integer> resourceTypeIds, List<Integer> contextIds) {
         String template = loadPropertyDescriptorQuery();
         Query query = entityManager.createNativeQuery(template);
-        query.setParameter("loadedFor", Origin.INSTANCE.name()).setParameter("resourceId", resourceId).setParameter("resourceTypeIds", resourceTypeIds).setParameter("contextIds", contextIds).setParameter("resourceRelationId", -1).setParameter("masterResourceTypeIds", Arrays.asList(-1));
+        query.setParameter("loadedFor", Origin.INSTANCE.name())
+                .setParameter("resourceId", resourceId)
+                .setParameter("resourceTypeIds", resourceTypeIds)
+                .setParameter("contextIds", contextIds)
+                .setParameter("resourceRelationId", -1)
+                .setParameter("masterResourceTypeIds", Arrays.asList(-1));
         return query;
     }
 
@@ -90,6 +95,31 @@ public class PropertyEditingQueries {
         query.setParameter("loadedFor", Origin.TYPE_REL.name()).setParameter("resourceTypeIds",
                   relatedResourceTypeIds).setParameter("contextIds", contextIds).setParameter("masterResourceTypeIds", masterResourceTypeIds);
         return query;
+    }
+
+    /**
+     *
+     * @param propertyName propertyName which is set on corresponding the propertyDescriptor
+     * @param resourceId
+     * @param contextId reference context for which the property is overriden
+     * @return
+     */
+    public Query getOverridenPropertyValuesQuery(String propertyName, int resourceId, int contextId) {
+        StringBuffer template = new StringBuffer();
+        template.append(" SELECT context.name, property.VALUE FROM TAMW_PROPERTY property");
+        template.append(" JOIN TAMW_PROPERTYDESCRIPTOR propertydescriptor on property.DESCRIPTOR_ID = propertydescriptor.ID");
+        template.append(" JOIN TAMW_RESOURCECTX_PROP resourcecontextprop on property.ID = resourcecontextprop.PROPERTIES_ID");
+        template.append(" JOIN TAMW_RESOURCECONTEXT resourcecontext on resourcecontextprop.TAMW_RESOURCECONTEXT_ID = resourcecontext.id");
+        template.append(" JOIN TAMW_CONTEXT context on resourcecontext.CONTEXT_ID = context.ID");
+        template.append(" WHERE propertydescriptor.PROPERTYNAME = :propertyName ");
+        template.append(" AND resourcecontext.RESOURCE_ID = :resourceId ");
+        template.append(" AND resourcecontext.CONTEXT_ID <> :contextId");
+        Query query = entityManager.createNativeQuery(template.toString())
+            .setParameter("propertyName", propertyName)
+            .setParameter("resourceId", resourceId)
+            .setParameter("contextId", contextId);
+        return query;
+
     }
 
     private String loadPropertyValuesForRelation(String resourceRelationTableName, String resourceRelationFKName) {

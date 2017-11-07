@@ -37,6 +37,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 
 import javax.inject.Inject;
 import javax.persistence.Query;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -256,19 +258,21 @@ public class PropertyEditingService {
 		return result;
 	}
 
-    public Map<String, String> getOverridenProperties(ResourceEntity resourceEntity, PropertyEntity propertyEntity, List<ContextEntity> childrenForContext) {
-        HashMap<String, String> differingProps = new HashMap<>();
-        for (ContextEntity context : childrenForContext) {
-            // TODO only load the required property
-            List<ResourceEditProperty> resourceEditProperties = loadPropertiesForEditResource(resourceEntity.getId(), resourceEntity.getResourceType(), context);
-            for (ResourceEditProperty propToCompare : resourceEditProperties) {
-                if (propToCompare.getTechnicalKey().equals(propertyEntity.getDescriptor().getPropertyName())) {
-                    if (!propertyEntity.getValue().equals(propToCompare.getPropertyValue())) {
-                        differingProps.put(context.getName(), propToCompare.getPropertyValue());
-                    }
-                }
-            }
-        }
+	public Map<String, String> getOverridenProperties(ResourceEntity resourceEntity, PropertyEntity propertyEntity, Integer contextId) {
+		HashMap<String, String> differingProps = new HashMap<>();
+		Query query = queries.getOverridenPropertyValuesQuery(propertyEntity.getDescriptor().getPropertyName(), resourceEntity.getId(), contextId);
+		List resultList = query.getResultList();
+		try {
+			for (Object o : resultList) {
+				Object[] keyValue = (Object[]) o;
+				String context = String.valueOf(keyValue[0]);
+				Clob clobValue = (Clob) keyValue[1];
+				String value = clobValue.getSubString(1, (int) clobValue.length());
+				differingProps.put(context, value);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
         return differingProps;
     }
 }
