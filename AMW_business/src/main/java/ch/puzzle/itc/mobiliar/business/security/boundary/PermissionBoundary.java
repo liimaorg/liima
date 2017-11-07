@@ -424,7 +424,13 @@ public class PermissionBoundary implements Serializable {
     public void createSelfAssignedRestrictions(ResourceEntity resource) throws AMWException {
         Integer resourceGroupId = resource.getResourceGroup().getId();
         createRestriction(null, getUserName(), Permission.ASSIGN_REMOVE_PERMISSION.name(), resourceGroupId, null, null, null, null, new RestrictionEntity());
-        createRestriction(null, getUserName(), Permission.RESOURCE.name(), resourceGroupId, null, null, null, Action.UPDATE, new RestrictionEntity());
+        createRestriction(null, getUserName(), Permission.RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+        createRestriction(null, getUserName(), Permission.RESOURCE_AMWFUNCTION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+        createRestriction(null, getUserName(), Permission.RESOURCE_PROPERTY_DECRYPT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+        createRestriction(null, getUserName(), Permission.RESOURCE_TEMPLATE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+        createRestriction(null, getUserName(), Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+        createRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+        createRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
     }
 
     /**
@@ -570,16 +576,17 @@ public class PermissionBoundary implements Serializable {
      *
      * @return List<PermissionEntity>
      */
+    @HasPermission(permission = Permission.PERMISSION_DELEGATION)
     public List<PermissionEntity> getAllUserAssignablePermissions() {
-        List<PermissionEntity> allPermissions = permissionRepository.getAllPermissions();
         List<PermissionEntity> assignablePermissions = new ArrayList<>();
-        // TODO filter (by what?)
-        for (PermissionEntity permission : allPermissions) {
-            if (!Permission.valueOf(permission.getValue()).isOld()) {
-                assignablePermissions.add(permission);
-            }
+        for (RestrictionEntity restriction : permissionService.getAllCallerRestrictions()) {
+            assignablePermissions.add(restriction.getPermission());
         }
         return assignablePermissions;
+    }
+
+    public List<RestrictionEntity> getAllCallerRestrictions() {
+        return permissionService.getAllCallerRestrictions();
     }
 
     private void validateRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,

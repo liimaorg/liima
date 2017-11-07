@@ -65,6 +65,20 @@ export class PermissionService {
     return resource$;
   }
 
+  getUserAndRoleRestrictions(userName: string): Observable<Restriction[]> {
+    let params: URLSearchParams = new URLSearchParams();
+    params.set('includingByRole', 'true');
+    let options = new RequestOptions({
+      search: params,
+      headers: this.getHeaders()
+    });
+    let resource$ = this.http
+      .get(`${this.baseUrl}/permissions/restrictions/users/${userName}`, options)
+      .map(this.extractPayload)
+      .catch(handleError);
+    return resource$;
+  }
+
   removeRestriction(id: number) {
     let resource$ = this.http
       .delete(`${this.baseUrl}/permissions/restrictions/${id}`, {headers: this.getHeaders()})

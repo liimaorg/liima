@@ -802,5 +802,20 @@ public class PermissionService implements Serializable {
     public String getCurrentUserName() {
         return sessionContext.getCallerPrincipal().getName();
     }
+    
+    public List<RestrictionEntity> getAllCallerRestrictions() {
+        List<RestrictionEntity> restrictions = new ArrayList<>();
+        Map<String, List<RestrictionDTO>> roleWithRestrictions = getPermissions();
+        for (String roleName : roleWithRestrictions.keySet()) {
+            if (sessionContext.isCallerInRole(roleName)) {
+                for (RestrictionDTO restrictionDTO : roleWithRestrictions.get(roleName)) {
+                    restrictions.add(restrictionDTO.getRestriction());
+                }
+            }
+        }
+        List<RestrictionEntity> userRestrictions = getUserRestrictions(getCurrentUserName());
+        restrictions.addAll(userRestrictions);
+        return restrictions;
+    }
 
 }

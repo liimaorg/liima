@@ -111,7 +111,7 @@ describe('RestrictionComponent', () => {
       restrictionComponent.permissions = [ <Permission> { name: 'neo', old: false },
         <Permission> { name: 'oldie', old: true }];
       // when
-      restrictionComponent.setOld();
+      restrictionComponent.defineAvailableOptions();
       // then
       expect(restrictionComponent.restriction.action).toBe('CREATE');
       expect(restrictionComponent.restriction.contextName).toBe('T');
@@ -128,7 +128,7 @@ describe('RestrictionComponent', () => {
       restrictionComponent.permissions = [ <Permission> { name: 'neo', old: false },
         <Permission> { name: 'oldie', old: true }];
       // when
-      restrictionComponent.setOld();
+      restrictionComponent.defineAvailableOptions();
       // then
       expect(restrictionComponent.restriction.action).toBe('ALL');
       expect(restrictionComponent.restriction.contextName).toBeNull();

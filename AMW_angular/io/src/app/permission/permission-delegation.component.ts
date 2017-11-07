@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 
 @Component({
   selector: 'amw-permission-delegation',
-  templateUrl: './permission.component.html'
+  templateUrl: './permission-delegation.component.html'
 })
 
 export class PermissionDelegationComponent implements OnInit, OnDestroy {
@@ -31,6 +31,9 @@ export class PermissionDelegationComponent implements OnInit, OnDestroy {
   selectedRoleName: string = null;
   selectedUserName: string = null;
   actingUserName: string = null;
+  assignableRestrictions: Restriction[] = [];
+  assignablePermissions: Permission[] = [];
+
   // edit or add restriction
   restriction: Restriction = null;
   // backup for cancel
@@ -58,8 +61,9 @@ export class PermissionDelegationComponent implements OnInit, OnDestroy {
         this.onChangeActingUser(param['actingUser']);
     });
 
-    this.getAllAssignablePermissions();
     this.getAllEnvironments();
+    this.getAllResourceGroups();
+    this.getAllResourceTypes();
   }
 
   ngOnDestroy() {
@@ -150,7 +154,7 @@ export class PermissionDelegationComponent implements OnInit, OnDestroy {
     this.selectedUserName = null;
     this.selectedRoleName = null;
     this.getAllAssignableUserNames();
-    this.getAllAssignableResourceGroups();
+    this.getAllAssignableRestrictions();
   }
 
   private getAllAssignableUserNames() {
@@ -162,13 +166,25 @@ export class PermissionDelegationComponent implements OnInit, OnDestroy {
       /* onComplete */ () => this.isLoading = false);
   }
 
-  private getAllAssignablePermissions() {
+  private getAllAssignableRestrictions() {
     this.isLoading = true;
     this.permissionService
-      .getAllAssignablePermissionEnumValues().subscribe(
-      /* happy path */ (r) => this.permissions = _.sortBy(r, function(s: Permission) { return s.name.replace(/[_]/, ''); }),
+      .getUserAndRoleRestrictions(this.actingUserName).subscribe(
+      /* happy path */ (r) => this.assignableRestrictions = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.isLoading = false);
+      /* onComplete */ () => { this.extractAllAssignablePermissions(),
+                               this.isLoading = false; }
+    );
+  }
+
+  private extractAllAssignablePermissions() {
+    this.assignablePermissions = [];
+    this.assignableRestrictions.forEach((restriction) => {
+      if (!_.some(this.assignablePermissions, restriction.permission)) {
+        this.assignablePermissions.push(restriction.permission);
+      }}
+    );
+    this.assignablePermissions = _.sortBy(this.assignablePermissions, function(s: Permission) { return s.name.replace(/[_]/, ''); });
   }
 
   private getAllEnvironments() {
@@ -180,11 +196,29 @@ export class PermissionDelegationComponent implements OnInit, OnDestroy {
       /* onComplete */ () => this.extractEnvironmentGroups());
   }
 
-  private getAllAssignableResourceGroups() {
+  // private getAllAssignableResourceGroups() {
+  //   this.isLoading = true;
+  //   this.resourceService
+  //     .getAllAssignableResourceGroups().subscribe(
+  //     /* happy path */ (r) => this.resourceGroups = r,
+  //     /* error path */ (e) => this.errorMessage = e,
+  //     /* onComplete */ () => this.isLoading = false);
+  // }
+
+  private getAllResourceGroups() {
     this.isLoading = true;
     this.resourceService
-      .getAllAssignableResourceGroups().subscribe(
+      .getAllResourceGroups().subscribe(
       /* happy path */ (r) => this.resourceGroups = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => this.isLoading = false);
+  }
+
+  private getAllResourceTypes() {
+    this.isLoading = true;
+    this.resourceService
+      .getAllResourceTypes().subscribe(
+      /* happy path */ (r) => this.resourceTypes = this.resourceTypes.concat(r),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isLoading = false);
   }
@@ -216,7 +250,7 @@ export class PermissionDelegationComponent implements OnInit, OnDestroy {
 
   private reorderRestrictions(restrictions: Restriction[]) {
     this.restrictions = _.sortBy(restrictions, [function(s: Restriction) {
-      return s.permission.name.replace(/[_]/, ''); }, 'action'])
+      return s.permission.name.replace(/[_]/, ''); }, 'action']);
   }
 
   private extractEnvironmentGroups() {

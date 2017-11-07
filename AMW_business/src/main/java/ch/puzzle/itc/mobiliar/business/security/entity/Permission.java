@@ -86,7 +86,8 @@ public enum Permission {
     RESOURCE_TEST_GENERATION("The right to start test generation", false),
     RESOURCE_TEST_GENERATION_RESULT("The right to see Templates generated from test generation", false),
     RESOURCE_PROPERTY_DECRYPT("The right to decrypt and edit crypted Resource Properties", false),
-    RESOURCETYPE_PROPERTY_DECRYPT("The right to decrypt and edit crypted ResourceType Properties", false);
+    RESOURCETYPE_PROPERTY_DECRYPT("The right to decrypt and edit crypted ResourceType Properties", false),
+    PERMISSION_DELEGATION("The right to delegate own Permissions to other users", true);
 
     private String info;
     private boolean old;

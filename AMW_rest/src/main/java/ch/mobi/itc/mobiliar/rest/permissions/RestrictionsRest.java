@@ -268,9 +268,14 @@ public class RestrictionsRest {
     @GET
     @Path("/users/{userName}")
     @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
-    public Response getUserRestriction(@ApiParam("UserName") @PathParam("userName") String userName) {
+    public Response getUserRestriction(@ApiParam("UserName") @PathParam("userName") String userName, @QueryParam("includingByRole") boolean includingByRole) {
         List<RestrictionDTO> restrictionList = new ArrayList<>();
-        final List<RestrictionEntity> restrictions = permissionBoundary.getRestrictionsByUserName(userName);
+        List<RestrictionEntity> restrictions;
+        if (!includingByRole) {
+            restrictions = permissionBoundary.getRestrictionsByUserName(userName);
+        } else {
+            restrictions = permissionBoundary.getAllCallerRestrictions();
+        }
         for (RestrictionEntity restriction : restrictions) {
             restrictionList.add(new RestrictionDTO(restriction));
         }
