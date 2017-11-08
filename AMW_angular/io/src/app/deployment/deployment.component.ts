@@ -197,7 +197,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.setPreSelectedEnvironment();
     this.transDeploymentParameters = this.selectedDeployment.deploymentParameters;
     this.appsWithVersion = this.selectedDeployment.appsWithVersion;
-    this.selectedAppserver = <Resource> { id: this.selectedDeployment.appServerId, name: this.selectedDeployment.appServerName };
+    this.selectedAppserver = <Resource> { id: this.selectedDeployment.appServerId, resourceGroupId: this.selectedDeployment.appServerResourceGroupId, name: this.selectedDeployment.appServerName };
     this.loadReleases();
     this.canDeploy();
   }
@@ -215,7 +215,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private setSelectedRelease(): Subscription {
-    return this.resourceService.getMostRelevantRelease(this.selectedAppserver.id).subscribe(
+    return this.resourceService.getMostRelevantRelease(this.selectedAppserver.resourceGroupId).subscribe(
       /* happy path */ (r) => this.selectedRelease = this.releases.find((release) => release.release === r.release),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.onChangeRelease());
@@ -229,7 +229,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private loadReleases(): Subscription {
     this.isLoading = true;
-    return this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe(
+    return this.resourceService.getDeployableReleases(this.selectedAppserver.resourceGroupId).subscribe(
       /* happy path */ (r) => this.releases = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isRedeployment ? this.setSelectedReleaseForRedeployment() : this.setSelectedRelease());
@@ -237,7 +237,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private getRelatedForRelease() {
     this.isLoading = true;
-    this.resourceService.getLatestForRelease(this.selectedAppserver.id, this.selectedRelease.id).subscribe(
+    this.resourceService.getLatestForRelease(this.selectedAppserver.resourceGroupId, this.selectedRelease.id).subscribe(
       /* happy path */ (r) => this.bestForSelectedRelease = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.extractFromRelations());
@@ -252,7 +252,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private getAppVersions() {
     this.isLoading = true;
-    this.resourceService.getAppsWithVersions(this.selectedAppserver.id, this.selectedRelease.id, _.filter(this.environments, 'selected').map((val) => val.id)).subscribe(
+    this.resourceService.getAppsWithVersions(this.selectedAppserver.resourceGroupId, this.selectedRelease.id, _.filter(this.environments, 'selected').map((val) => val.id)).subscribe(
       /* happy path */ (r) => this.isRedeployment ? this.appsWithVersionForRedeployment = r : this.appsWithVersion = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.isRedeployment ? this.verifyRedeployment() : this.isLoading = false);
@@ -278,7 +278,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private canCreateShakedownTest() {
-    this.resourceService.canCreateShakedownTest(this.selectedAppserver.id).subscribe(
+    this.resourceService.canCreateShakedownTest(this.selectedAppserver.resourceGroupId).subscribe(
       /* happy path */ (r) => this.hasPermissionShakedownTest = r,
       /* error path */ (e) => this.errorMessage = e);
   }
@@ -288,7 +288,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       this.hasPermissionToDeploy = false;
       let contextIds: number[] = _.filter(this.environments, 'selected').map((val) => val.id);
       if (contextIds.length > 0) {
-        this.deploymentService.canDeploy(this.selectedAppserver.id, contextIds).subscribe(
+        this.deploymentService.canDeploy(this.selectedAppserver.resourceGroupId, contextIds).subscribe(
           /* happy path */ (r) => this.hasPermissionToDeploy = r,
           /* error path */ (e) => this.errorMessage = e,
           /* onComplete */ () => this.canRequestDeployment(contextIds));
@@ -300,7 +300,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     if (this.selectedAppserver != null) {
       this.hasPermissionToRequestDeployment = false;
       if (contextIds.length > 0) {
-        this.deploymentService.canRequestDeployment(this.selectedAppserver.id, contextIds).subscribe(
+        this.deploymentService.canRequestDeployment(this.selectedAppserver.resourceGroupId, contextIds).subscribe(
           /* happy path */ (r) => this.hasPermissionToRequestDeployment = r,
           /* error path */ (e) => this.errorMessage = e);
       }
@@ -402,7 +402,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       console.log('pre-selected server is ' + this.appserverName);
       this.selectedAppserver = _.find(this.appservers, {name: this.appserverName});
       if (this.selectedAppserver) {
-        this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe(
+        this.resourceService.getDeployableReleases(this.selectedAppserver.resourceGroupId).subscribe(
           /* happy path */ (r) => this.releases = r,
           /* error path */ (e) => this.errorMessage = e,
           /* onComplete */ () => this.setRelease());
