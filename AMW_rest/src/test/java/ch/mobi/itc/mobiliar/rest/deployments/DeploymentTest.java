@@ -133,6 +133,7 @@ public class DeploymentTest {
 
 		ResourceEntity resource =  ResourceFactory.createNewResource("test");
 		resource.setId(1);
+		deploymentEntity.setResource(resource);
 		deploymentEntity.setResourceGroup(resource.getResourceGroup());
 
 		ContextEntity context = new ContextEntity();
@@ -144,7 +145,7 @@ public class DeploymentTest {
 		deploymentRequestDto = new DeploymentRequestDTO();
 		deploymentRequestDto.setAppServerName(deploymentEntity.getResourceGroup().getName());
 		LinkedList<AppWithVersionDTO> apps = new LinkedList<AppWithVersionDTO>();
-		apps.add(new AppWithVersionDTO(appsWithVersion.getFirst().getApplicationName(), appsWithVersion.getFirst().getVersion()));
+		apps.add(new AppWithVersionDTO(appsWithVersion.getFirst().getApplicationName(), appsWithVersion.getFirst().getApplicationId(), appsWithVersion.getFirst().getVersion()));
 		deploymentRequestDto.setAppsWithVersion(apps);
 		deploymentRequestDto.setDeploymentDate(deploymentEntity.getDeploymentDate());
 		deploymentRequestDto.setEnvironmentName(deploymentEntity.getContext().getName());

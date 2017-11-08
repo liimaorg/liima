@@ -228,8 +228,9 @@ body {
  * Loader
  */
 .loading {
-  z-index: 1;
+  z-index: 1000;
   position: fixed;
+  background-color: #000000;
   top: 0;
   left: 0;
   opacity: 0.6;
@@ -243,9 +244,9 @@ body {
   display: inline-block;
   top: 50%;
   transform: translateY(-50%);
-  background-image: url("assets/images/Spinner.svg");
-  height: 90px;
-  width: 90px;
+  background-image: url("assets/images/ajax-loader.gif");
+  height: 32px;
+  width: 32px;
   text-align: center;
 }
 
@@ -280,11 +281,40 @@ span.link:hover {
   color: #23527c;
   text-decoration: underline;
 }
+.pointer {
+  cursor: pointer;
+}
 
 /*
  * Deployment screen
  */
-span.delayed {
+a.action,
+a.action:hover,
+span.action,
+span.action:hover,
+span.confirm,
+span.confirm:hover,
+span.delayed,
+span.delayed:hover,
+span.reject,
+span.reject:hover {
+  color: #333333;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-decoration: none;
+}
+
+span.confirm,
+span.confirm:hover {
+  color: #008400;
+}
+
+span.delayed,
+span.delayed:hover {
+  color: #db4a4a;
+}
+
+span.reject,
+span.reject:hover {
   color: #db4a4a;
 }
 
@@ -294,6 +324,11 @@ tr.failed {
 
 tr.success {
   background-color: #dff0d8;
+}
+
+.pagination-amw {
+  display: block;
+  margin: 0;
 }
 
 /*

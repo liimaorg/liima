@@ -26,7 +26,7 @@ export class DeploymentsComponent implements OnInit {
 
   // initially by queryParam
   paramFilters: DeploymentFilter[] = [];
-  autoload: boolean;
+  autoload: boolean = true;
 
   // value of filters parameter. Used to pass as json object to the logView.xhtml
   filtersInUrl: DeploymentFilter[];
@@ -63,9 +63,20 @@ export class DeploymentsComponent implements OnInit {
   csvReadyObjects: any[] = [];
   csvDocument: string;
 
+  // sorting with default values
+  sortCol: string = 'd.deploymentDate';
+  sortDirection: string = 'DESC';
+
+  // pagination with default values
+  maxResults: number = 10;
+  offset: number = 0;
+  allResults: number;
+  currentPage: number;
+  lastPage: number;
+
   errorMessage: string = '';
   successMessage: string = '';
-  isLoading: boolean = false;
+  isLoading: boolean = true;
 
   constructor(private activatedRoute: ActivatedRoute,
               private ngZone: NgZone,
@@ -88,9 +99,13 @@ export class DeploymentsComponent implements OnInit {
           } catch (e) {
             console.error(e);
             this.errorMessage = 'Error parsing filter';
+            this.autoload = false;
+          }
+        } else {
+          if (sessionStorage.getItem('deploymentFilters')) {
+            this.paramFilters = JSON.parse(sessionStorage.getItem('deploymentFilters'));
           }
         }
-        this.autoload = (param['autoload'] && param['autoload'] === 'true') ? true : false;
         this.initTypeAndOptions();
         this.canRequestDeployments();
         this.getCsvSeparator();
@@ -108,6 +123,7 @@ export class DeploymentsComponent implements OnInit {
       this.setValueOptionsForFilter(newFilter);
       this.filters.unshift(newFilter);
       this.enableDatepicker(newFilter.type);
+      this.offset = 0;
     }
   }
 
@@ -116,10 +132,12 @@ export class DeploymentsComponent implements OnInit {
     if (i !== -1) {
       this.filters.splice(i, 1);
     }
+    this.offset = 0;
   }
 
   clearFilters() {
     this.filters = [];
+    this.goTo(null);
   }
 
   applyFilter() {
@@ -152,7 +170,12 @@ export class DeploymentsComponent implements OnInit {
     if (!this.errorMessage) {
       this.getFilteredDeployments(JSON.stringify(filtersForBackend));
       this.filtersInUrl = filtersForParam;
-      this.goTo(JSON.stringify(this.filtersInUrl));
+      let filterString: string;
+      if (this.filtersInUrl.length > 0) {
+        filterString = JSON.stringify(this.filtersInUrl);
+        sessionStorage.setItem('deploymentFilters', filterString);
+      }
+      this.goTo(filterString);
     }
   }
 
@@ -267,6 +290,27 @@ export class DeploymentsComponent implements OnInit {
       window.prompt("Press Ctrl + C, then Enter to copy to clipboard", url);
     }
     $(".textToCopyInput").remove();
+  }
+
+  sortDeploymentsBy(col: string) {
+    if (this.sortCol === col) {
+      this.sortDirection = this.sortDirection === 'DESC' ? 'ASC' : 'DESC';
+    } else {
+      this.sortCol = col;
+      this.sortDirection = 'DESC';
+    }
+    this.applyFilter();
+  }
+
+  setMaxResultsPerPage(max: number) {
+    this.maxResults = max;
+    this.offset = 0;
+    this.applyFilter();
+  }
+
+  setNewOffset(offset: number) {
+    this.offset = offset;
+    this.applyFilter();
   }
 
   private canFilterBeAdded(): boolean {
@@ -401,12 +445,9 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private getCsvSeparator() {
-    this.isLoading = true;
     this.deploymentService.getCsvSeparator().subscribe(
       /* happy path */ (r) => this.csvSeparator = r,
-      /* error path */ (e) => this.errorMessage = e,
-      /* on complete */ () => this.isLoading = false
-    );
+      /* error path */ (e) => this.errorMessage = e);
   }
 
   private confirmSelectedDeployments() {
@@ -502,18 +543,20 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private mapStates() {
-    this.deployments.forEach((deployment) => {
-      switch (deployment.state) {
-        case 'PRE_DEPLOYMENT':
-          deployment.state = 'pre_deploy';
-          break;
-        case 'READY_FOR_DEPLOYMENT':
-          deployment.state = 'ready_for_deploy';
-          break;
-        default:
-          break;
-      }
-    });
+    if (this.deployments) {
+      this.deployments.forEach((deployment) => {
+        switch (deployment.state) {
+          case 'PRE_DEPLOYMENT':
+            deployment.state = 'pre_deploy';
+            break;
+          case 'READY_FOR_DEPLOYMENT':
+            deployment.state = 'ready_for_deploy';
+            break;
+          default:
+            break;
+        }
+      });
+    }
   }
 
   private initTypeAndOptions() {
@@ -529,8 +572,8 @@ export class DeploymentsComponent implements OnInit {
       /* happy path */ (r) => this.comparatorOptions = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => { this.populateMap();
-                               this.enhanceParamFilter();
-      });
+                               this.enhanceParamFilter(); }
+    );
   }
 
   private getAndSetFilterOptionValues(filter: DeploymentFilter) {
@@ -542,13 +585,16 @@ export class DeploymentsComponent implements OnInit {
 
   private getFilteredDeployments(filterString: string) {
     this.isLoading = true;
-    this.deploymentService.getFilteredDeployments(filterString).subscribe(
-      /* happy path */ (r) => this.deployments = r,
+    this.deploymentService.getFilteredDeployments(filterString, this.sortCol, this.sortDirection, this.offset, this.maxResults).subscribe(
+      /* happy path */ (r) => { this.deployments = r.deployments;
+                                this.allResults = r.total;
+                                this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
+                                this.lastPage = Math.ceil(this.allResults / this.maxResults); },
       /* error path */ (e) => { this.errorMessage = e;
                                 this.isLoading = false; },
       /* onComplete */ () => { this.isLoading = false;
-                               this.mapStates();
-      });
+                               this.mapStates(); }
+    );
   }
 
   private canRequestDeployments() {
@@ -559,6 +605,7 @@ export class DeploymentsComponent implements OnInit {
 
   private enhanceParamFilter() {
     if (this.paramFilters) {
+      this.clearFilters();
       this.paramFilters.forEach((filter) => {
         let i: number = _.findIndex(this.filterTypes, ['name', filter.name]);
         if (i >= 0) {
@@ -572,11 +619,10 @@ export class DeploymentsComponent implements OnInit {
           this.errorMessage = 'Error parsing filter';
         }
       });
-      if (this.autoload) {
-        this.applyFilter();
-      }
     }
-    this.isLoading = false;
+    if (this.autoload) {
+      this.applyFilter();
+    }
   }
 
   private populateMap() {
@@ -587,7 +633,11 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private goTo(destination: string) {
-    this.location.go('/deployments?filters=' + destination);
+    if (destination) {
+      this.location.go('/deployments?filters=' + destination);
+    } else {
+      this.location.go('/deployments');
+    }
   }
 
 }
