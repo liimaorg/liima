@@ -61,10 +61,6 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
     this.saveRestriction.emit(this.restriction);
   }
 
-  getEnvironmentGroups() {
-    return Object.keys(this.groupedEnvironments);
-  }
-
   isValidForm(): boolean {
     return this.checkType() && this.checkGroup();
   }
@@ -104,6 +100,10 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
 
   getAvailableActions(): string[] {
     return this.delegationMode ? this.extractAvailableActions() : this.actions;
+  }
+
+  getAvailableEnvironmentGroups(): string[] {
+    return this.delegationMode ? this.extractAvailableEnvironmentGroups() : this.getEnvironmentGroups();
   }
 
   getAvailableResourceGroups(): Resource[] {
@@ -154,6 +154,10 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
     }
   }
 
+  private getEnvironmentGroups(): string[] {
+    return Object.keys(this.groupedEnvironments);
+  }
+
   private populateSimilarRestrictions() {
     this.similarRestrictions = _.filter(this.availableRestrictions, [ 'permission.name', this.restriction.permission.name ]);
   }
@@ -168,6 +172,23 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
       });
     }
     return actions;
+  }
+
+  private extractAvailableEnvironmentGroups(): string[] {
+    // TODO
+    let environmentGroups: string[] = [];
+    if (this.similarRestrictions.length > 0) {
+      if (_.some(this.similarRestrictions, [ 'contextName', null ])) {
+        return this.getEnvironmentGroups();
+      } else {
+        this.similarRestrictions.forEach((restriction) => {
+          if (environmentGroups.indexOf(restriction.contextName) < 0)) {
+            environmentGroups.push(restriction.contextName);
+          }
+        });
+      }
+    }
+    return environmentGroups;
   }
 
   private extractAvailableResourceGroups(): Resource[] {
