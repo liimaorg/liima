@@ -72,10 +72,10 @@ public class DeploymentDTO {
 		this.appServerId = entity.getResourceGroup().getId();
 		this.resourceId = entity.getResource().getId();
 		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
-			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
+			this.appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
 		}
 		for (DeploymentParameter param : entity.getDeploymentParameters()) {
-			deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
+			this.deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
 		}
 		this.deploymentDate = entity.getDeploymentDate();
 		this.deploymentJobCreationDate = entity.getDeploymentJobCreationDate();
@@ -83,14 +83,14 @@ public class DeploymentDTO {
 		this.deploymentCancelDate = entity.getDeploymentCancelDate();
 		this.reason = entity.getReason();
 		this.environmentName = entity.getContext().getName();
-		this.setReleaseName(entity.getRelease().getName());
-		this.setRuntimeName(entity.getRuntime().getName());
-		this.setRequestUser(entity.getDeploymentRequestUser());
-		this.setConfirmUser(entity.getDeploymentConfirmationUser());
-		this.setCancelUser(entity.getDeploymentCancelUser());
-		this.setDeploymentDelayed(entity.isDeploymentDelayed());
+		this.releaseName = entity.getRelease().getName();
+		this.runtimeName = entity.getRuntime().getName();
+		this.requestUser = entity.getDeploymentRequestUser();
+		this.confirmUser = entity.getDeploymentConfirmationUser();
+		this.cancelUser = entity.getDeploymentCancelUser();
+		this.deploymentDelayed = entity.isDeploymentDelayed();
 		for (NodeJobEntity job : entity.getNodeJobs()) {
-			nodeJobs.add(new NodeJobDTO(job));
+			this.nodeJobs.add(new NodeJobDTO(job));
 		}
 	}
 
@@ -103,10 +103,10 @@ public class DeploymentDTO {
 		// this is not a typo
 		this.resourceId = properties.getResourceId() != null ? null : entity.getResource().getId();
 		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
-			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
+			this.appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
 		}
 		for (DeploymentParameter param : entity.getDeploymentParameters()) {
-			deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
+			this.deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
 		}
 		this.deploymentDate = entity.getDeploymentDate();
 		this.deploymentJobCreationDate = entity.getDeploymentJobCreationDate();
@@ -116,12 +116,12 @@ public class DeploymentDTO {
 		this.environmentName = properties.getEnvironmentName() != null ? properties.getEnvironmentName() : entity.getContext().getName();
 		this.releaseName = properties.getReleaseName() != null ? properties.getReleaseName() : entity.getRelease().getName();
 		this.runtimeName = properties.getRuntimeName() != null ? properties.getRuntimeName() : entity.getRuntime().getName();
-		this.setRequestUser(entity.getDeploymentRequestUser());
-		this.setConfirmUser(entity.getDeploymentConfirmationUser());
-		this.setCancelUser(entity.getDeploymentCancelUser());
-		this.setDeploymentDelayed(entity.isDeploymentDelayed());
+		this.requestUser = entity.getDeploymentRequestUser();
+		this.confirmUser = entity.getDeploymentConfirmationUser();
+		this.cancelUser = entity.getDeploymentCancelUser();
+		this.deploymentDelayed = entity.isDeploymentDelayed();
 		for (NodeJobEntity job : entity.getNodeJobs()) {
-			nodeJobs.add(new NodeJobDTO(job));
+			this.nodeJobs.add(new NodeJobDTO(job));
 		}
 	}
 
