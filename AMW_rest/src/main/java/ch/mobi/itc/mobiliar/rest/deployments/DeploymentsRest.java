@@ -143,8 +143,33 @@ public class DeploymentsRest {
     }
 
     private DeploymentDTO createDeploymentDTO(DeploymentEntity deployment) {
-        DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
-        deploymentDTO.setActions(createDeploymentActionsDTO(deployment));
+        if (deployment.isPreserved()) {
+            return createPreservedDeploymentDTO(deployment);
+        } else {
+            DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
+            deploymentDTO.setActions(createDeploymentActionsDTO(deployment));
+            return deploymentDTO;
+        }
+    }
+
+    private DeploymentDTO createPreservedDeploymentDTO(DeploymentEntity deployment) {
+        DeploymentDTO deploymentDTO = new DeploymentDTO();
+        DeploymentDTO.PreservedProperties properties = deploymentDTO.new PreservedProperties();
+        if (deployment.getExResourcegroupId() != null) {
+            properties.setAppServerName(deploymentBoundary.getDeletedResourceGroupName(deployment));
+            properties.setAppServerId(deployment.getExResourcegroupId());
+        }
+        if (deployment.getExResourceId() != null) {
+            properties.setResourceId(deployment.getExResourceId());
+        }
+        if (deployment.getExContextId() != null) {
+            properties.setEnvironmentName(deploymentBoundary.getDeletedContextName(deployment));
+        }
+        if (deployment.getExReleaseId() != null) {
+            properties.setReleaseName(deploymentBoundary.getDeletedReleaseName(deployment));
+        }
+        deploymentDTO.setPreservedValues(deployment, properties);
+        deploymentDTO.setActions(new DeploymentActionsDTO());
         return deploymentDTO;
     }
 
@@ -336,8 +361,8 @@ public class DeploymentsRest {
         Integer trackingId;
         ResourceEntity appServer;
         Set<ResourceEntity> apps;
-        ContextEntity environments = null;
-        List<ApplicationWithVersion> applicationsWithVersion;
+        ContextEntity environment = null;
+        List<ApplicationWithVersion> applicationsWithVersion = new ArrayList<>();
         LinkedList<CustomFilter> filters = new LinkedList<>();
         ReleaseEntity release;
         ResourceGroupEntity group;
@@ -376,7 +401,7 @@ public class DeploymentsRest {
         // get the id of the Environment
         if (request.getEnvironmentName() != null) {
             try {
-                environments = environmentsService.getContextByName(request.getEnvironmentName());
+                environment = environmentsService.getContextByName(request.getEnvironmentName());
             } catch (RuntimeException e) {
                 return catchNoResultException(e, "Environment " + request.getEnvironmentName() + " not found.");
             }
@@ -390,7 +415,11 @@ public class DeploymentsRest {
             if (apps == null) {
                 apps = new HashSet<>();
             }
-            applicationsWithVersion = convertToApplicationWithVersion(request.getAppsWithVersion(), apps);
+            if (request.getAppsWithVersion() != null) {
+                applicationsWithVersion = convertToApplicationWithVersion(request.getAppsWithVersion(), apps);
+            } else {
+                applicationsWithVersion = deploymentBoundary.getVersions(appServer, new ArrayList<Integer>(environment.getId()), release);
+            }
 
         } catch (ValidationException e) {
             return Response.status(Status.BAD_REQUEST).entity(
@@ -404,14 +433,14 @@ public class DeploymentsRest {
         }
 
         // check whether the AS has at least one node with hostname to deploy to
-        if (environments != null) {
-            boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environments, request.getStateToDeploy());
+        if (environment != null) {
+            boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environment, request.getStateToDeploy());
             if (!hasNode) {
                 return Response.status(Status.BAD_REQUEST)
-                        .entity(new ExceptionDto("No active Node found on Environment " + request.getEnvironmentName()))
+                        .entity(new ExceptionDto("No active Node found on Environement " + request.getEnvironmentName()))
                         .build();
             }
-            contexts.add(environments.getId());
+            contexts.add(environment.getId());
         } else if (request.getContextIds() != null && !request.getContextIds().isEmpty()) {
             contexts.addAll(request.getContextIds());
         }

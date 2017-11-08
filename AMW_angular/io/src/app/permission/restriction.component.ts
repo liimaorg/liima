@@ -182,7 +182,7 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
         return this.getEnvironmentGroups();
       } else {
         this.similarRestrictions.forEach((restriction) => {
-          if (environmentGroups.indexOf(restriction.contextName) < 0)) {
+          if (environmentGroups.indexOf(restriction.contextName) < 0) {
             environmentGroups.push(restriction.contextName);
           }
         });

@@ -64,12 +64,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 public class DeploymentTest {
@@ -111,6 +106,7 @@ public class DeploymentTest {
 		deploymentEntity = new DeploymentEntity();
 		LinkedList<DeploymentEntity.ApplicationWithVersion> appsWithVersion = new LinkedList<DeploymentEntity.ApplicationWithVersion>();
 		appsWithVersion.add(new ApplicationWithVersion("test", 123, "1.2.3"));
+		appsWithVersion.add(new ApplicationWithVersion("west", 124, "1.2.4"));
 		deploymentEntity.setApplicationsWithVersion(appsWithVersion);
 		deploymentEntity.setDeploymentParameters(new LinkedList<DeploymentParameter>());
 		deploymentEntity.setId(123);
@@ -138,6 +134,7 @@ public class DeploymentTest {
 
 		ContextEntity context = new ContextEntity();
 		context.setName("test");
+		context.setId(2323);
 		deploymentEntity.setContext(context);
 
 		deploymentDto = new DeploymentDTO(deploymentEntity);
@@ -150,8 +147,7 @@ public class DeploymentTest {
 		deploymentRequestDto.setDeploymentDate(deploymentEntity.getDeploymentDate());
 		deploymentRequestDto.setEnvironmentName(deploymentEntity.getContext().getName());
 		deploymentRequestDto.setExecuteShakedownTest(deploymentEntity.isCreateTestAfterDeployment());
-		deploymentRequestDto.setNeighbourhoodTest(
-				deploymentEntity.isCreateTestForNeighborhoodAfterDeployment());
+		deploymentRequestDto.setNeighbourhoodTest(deploymentEntity.isCreateTestForNeighborhoodAfterDeployment());
 		deploymentRequestDto.setRequestOnly(false);
 		deploymentRequestDto.setSendEmail(deploymentEntity.isSendEmail());
 		deploymentRequestDto.setSimulate(deploymentEntity.isSimulating());
@@ -299,7 +295,37 @@ public class DeploymentTest {
 		metaList.add("/deployments/" + deploymentEntity.getId());
 		assertEquals(metaList, response.getMetadata().get("Location"));
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void addDeploymentWithoutAppsWithVersionShouldObtainAppsWithVersionFromBoundary() throws GeneralDBException {
+		// given
+		ReleaseEntity release = mockRelease();
+		when(deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
+				any(LinkedList.class), any(ArrayList.class), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean()))
+				.thenReturn(deploymentEntity.getTrackingId());
+
+		when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
+		when(deploymentBoundary.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), any(LinkedList.class), anyString(),
+						any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
+				new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
+		when(releaseService.findByName(anyString())).thenReturn(release);
+		when(generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(any(ResourceEntity.class), any(ContextEntity.class), any(Date.class))).thenReturn(Boolean.TRUE);
+		when(deploymentBoundary.getVersions(deploymentEntity.getResource(), new ArrayList<Integer>(deploymentEntity.getContext().getId()), release)).thenReturn(deploymentEntity.getApplicationsWithVersion());
+		deploymentRequestDto.setAppsWithVersion(null);
+
+		// when
+		Response response = deploymentRestService.addDeployment(deploymentRequestDto);
+
+		// then
+		assertEquals(201, response.getStatus());
+		DeploymentDTO responseDto = (DeploymentDTO) response.getEntity();
+		assertThat(responseDto.getId(), is(deploymentDto.getId()));
+		assertThat(responseDto.getAppsWithVersion().size(), is(deploymentEntity.getApplicationsWithVersion().size()));
+		assertThat(responseDto.getAppsWithVersion().get(0).getVersion(), is(deploymentEntity.getApplicationsWithVersion().get(0).getVersion()));
+		assertThat(responseDto.getAppsWithVersion().get(1).getVersion(), is(deploymentEntity.getApplicationsWithVersion().get(1).getVersion()));
+	}
+
 	@Test
 	public void addDeployment_no_active_node() throws GeneralDBException {
 		ReleaseEntity release = mockRelease();
