@@ -264,19 +264,43 @@ public class PropertyEditingService {
 		return result;
 	}
 
-    public Map<String, String> getOverridenProperties(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    /**
+     *
+     * @param resource
+     * @param property
+     * @param relevantContexts
+     * @return a Map containing all properties which override the value of its parent context.
+     * <ul>
+     *     <li>Map.key = context Name</li>
+     *     <li>Map.value = context of the value</li>
+     *  </ul>
+     */
+    public Map<String, String> getPropertyOverviewForResource(ResourceEntity resource, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         if (relevantContexts.isEmpty()) {
             return Collections.EMPTY_MAP;
         }
-        Query query = getPropertyOverviewQuery(resourceEntity, property, relevantContexts);
+        List<Integer> contextIds = buldRelevantContextIdsList(relevantContexts);
+        Query query = queries.getPropertyOverviewForResourceQuery(property.getTechnicalKey(), resource.getId(), contextIds);
         return getDifferingProperties(property, query);
     }
 
-    public Map<String, String> getOverridenPropertiesForRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    /**
+     *
+     * @param relationId
+     * @param property
+     * @param relevantContexts
+     * @return a Map containing all properties which override the value of its parent context.
+     * <ul>
+     *     <li>Map.key = context Name</li>
+     *     <li>Map.value = context of the value</li>
+     *  </ul>
+     */
+    public Map<String, String> getPropertyOverviewForRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         if (relevantContexts.isEmpty()) {
             return Collections.EMPTY_MAP;
         }
-        Query query = getPropertyOverviewQueryForRelation(relationId, property, relevantContexts);
+        List<Integer> relevantContextIds = buldRelevantContextIdsList(relevantContexts);
+        Query query = queries.getPropertyOverviewForRelatedResourceQuery(property.getTechnicalKey(), relationId, relevantContextIds);
         return getDifferingProperties(property, query);
     }
 
@@ -288,18 +312,6 @@ public class PropertyEditingService {
             differingProps.put(entry.getKey(), entry.getValue());
         }
         return differingProps;
-    }
-
-    private Query getPropertyOverviewQueryForRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
-        String propertyName = property.getTechnicalKey();
-        List<Integer> relevantContextIds = buldRelevantContextIdsList(relevantContexts);
-        return queries.getOverridenPropertyValuesQueryForRelatedResource(propertyName, relationId, relevantContextIds);
-    }
-
-    private Query getPropertyOverviewQuery(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
-        String propertyName = property.getTechnicalKey();
-        List<Integer> relevantContextIds = buldRelevantContextIdsList(relevantContexts);
-        return queries.getOverridenPropertyValuesQuery(propertyName, resourceEntity.getId(), relevantContextIds);
     }
 
     private List<Integer> buldRelevantContextIdsList(List<ContextEntity> contextList) {

@@ -197,18 +197,18 @@ public class PropertyEditDataProvider implements Serializable {
         this.propertyForConfigOverview = property;
         List<ContextEntity> relevantContexts = contextDataProvider.getChildrenForContext(currentContext.getId());
         if (property.getLoadedFor() == ResourceEditProperty.Origin.INSTANCE) {
-            valuesForConfigOverview = editor.getOverridenPropertyValues(resourceView.getResource(), property, relevantContexts);
+            valuesForConfigOverview = editor.getPropertyOverviewForResource(resourceView.getResource(), property, relevantContexts);
         } else {
-            valuesForConfigOverview = editor.getOverridenPropertyValues(currentRelation, property, relevantContexts);
+            valuesForConfigOverview = editor.getPropertyOverviewForRelation(currentRelation, property, relevantContexts);
         }
     }
 
     public boolean hasOverwrittenProperty(ResourceEditProperty property) {
         List<ContextEntity> relevantContexts = contextDataProvider.getChildrenForContext(currentContext.getId());
         if (property.getLoadedFor() == ResourceEditProperty.Origin.INSTANCE) {
-            return !editor.getOverridenPropertyValues(resourceView.getResource(), property, relevantContexts).isEmpty();
+            return !editor.getPropertyOverviewForResource(resourceView.getResource(), property, relevantContexts).isEmpty();
         } else {
-            return !editor.getOverridenPropertyValues(currentRelation, property, relevantContexts).isEmpty();
+            return !editor.getPropertyOverviewForRelation(currentRelation, property, relevantContexts).isEmpty();
         }
     }
 

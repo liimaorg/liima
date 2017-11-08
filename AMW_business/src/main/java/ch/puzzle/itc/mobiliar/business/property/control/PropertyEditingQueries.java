@@ -116,7 +116,7 @@ public class PropertyEditingQueries {
      * @param relevantContext
      * @return
      */
-    public Query getOverridenPropertyValuesQuery(String propertyName, int resourceId, List<Integer> relevantContext) {
+    public Query getPropertyOverviewForResourceQuery(String propertyName, int resourceId, List<Integer> relevantContext) {
         StringBuffer template = new StringBuffer();
         template.append(" SELECT context.name, property.VALUE FROM TAMW_PROPERTY property");
         template.append(" JOIN TAMW_PROPERTYDESCRIPTOR propertydescriptor on property.DESCRIPTOR_ID = propertydescriptor.ID");
@@ -142,7 +142,7 @@ public class PropertyEditingQueries {
      * @param relevantContextIds
      * @return
      */
-    public Query getOverridenPropertyValuesQueryForRelatedResource(String propertyName, int relationId, List<Integer> relevantContextIds) {
+    public Query getPropertyOverviewForRelatedResourceQuery(String propertyName, int relationId, List<Integer> relevantContextIds) {
         StringBuffer template = new StringBuffer();
         template.append(" SELECT");
         template.append(" context.name, property.value, propertydescriptor.PROPERTYNAME");
