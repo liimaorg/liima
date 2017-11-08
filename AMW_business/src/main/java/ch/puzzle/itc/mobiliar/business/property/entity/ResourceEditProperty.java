@@ -175,6 +175,7 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
     /**
      * Defines if the property is loaded for a resource or a relation
      */
+    @Getter
     private Origin loadedFor;
 
 
