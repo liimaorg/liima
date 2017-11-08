@@ -139,10 +139,10 @@ public class PropertyEditingQueries {
      *
      * @param propertyName propertyName which is set on corresponding the propertyDescriptor
      * @param relationId
-     * @param relevantContext
+     * @param relevantContextIds
      * @return
      */
-    public Query getOverridenPropertyValuesQueryForRelatedResource(String propertyName, int relationId, List<Integer> relevantContext) {
+    public Query getOverridenPropertyValuesQueryForRelatedResource(String propertyName, int relationId, List<Integer> relevantContextIds) {
         StringBuffer template = new StringBuffer();
         template.append(" SELECT");
         template.append(" context.name, property.value, propertydescriptor.PROPERTYNAME");
@@ -154,16 +154,14 @@ public class PropertyEditingQueries {
         template.append(" JOIN TAMW_CONTEXT context ON context.ID=resRelContext.CONTEXT_ID");
         template.append(" WHERE propertydescriptor.PROPERTYNAME = :propertyName");
         template.append(" AND resRelation.ID = :relationId");
-//        template.append(" AND resContext.CONTEXT_ID in (%s)");
-//        String relevantContextIds = relevantContext.toString().replaceAll("[\\[]", "").replaceAll("[\\]]", "");
-//        String templateString = String.format(template.toString(), relevantContextIds);
-        Query query = entityManager.createNativeQuery(template.toString())
+        template.append(" AND context.ID in (%s)");
+        String relevantContextIdsAsString = relevantContextIds.toString().replaceAll("[\\[]", "").replaceAll("[\\]]", "");
+        String templateString = String.format(template.toString(), relevantContextIdsAsString);
+        Query query = entityManager.createNativeQuery(templateString)
             .setParameter("propertyName", propertyName)
             .setParameter("relationId", relationId);
         return query;
-
     }
-
 
     private String loadPropertyValuesForRelation(String resourceRelationTableName, String resourceRelationFKName) {
         String propertyValues = loadPropertyValueQuery();
