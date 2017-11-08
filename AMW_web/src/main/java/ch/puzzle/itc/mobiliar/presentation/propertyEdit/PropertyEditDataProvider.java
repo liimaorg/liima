@@ -103,6 +103,9 @@ public class PropertyEditDataProvider implements Serializable {
     ResourceEditProperty propertyForConfigOverview;
 
     @Getter
+    private boolean showWarningForPotentialPropertyOverwriting;
+
+    @Getter
     private boolean editableProperties = false;
 
     @Getter
@@ -198,8 +201,10 @@ public class PropertyEditDataProvider implements Serializable {
         List<ContextEntity> relevantContexts = contextDataProvider.getChildrenForContext(currentContext.getId());
         if (property.getLoadedFor() == ResourceEditProperty.Origin.INSTANCE) {
             valuesForConfigOverview = editor.getPropertyOverviewForResource(resourceView.getResource(), property, relevantContexts);
-        } else {
+            showWarningForPotentialPropertyOverwriting = false;
+        } else if (property.getLoadedFor() == ResourceEditProperty.Origin.RELATION) {
             valuesForConfigOverview = editor.getPropertyOverviewForRelation(currentRelation, property, relevantContexts);
+            showWarningForPotentialPropertyOverwriting = true;
         }
     }
 

@@ -28,23 +28,34 @@
 
             <!-- CONTENT -->
             <h:panelGroup layout="block" styleClass="popupContent">
+                <ui:fragment rendered="#{propertyEditDataProvider.showWarningForPotentialPropertyOverwriting}">
+                    <div class="alert alert-warning" style="margin-left: 0">
+                        <span class="symbol"></span>
+                        <h3 class="alert-heading">WARNING!</h3>
+                        <br></br>
+                        By changing the value of this property you will change the value of the following contexts.
+                    </div>
+                </ui:fragment>
+
+
                 <div style="display: inline-block; float: left;">
                     <h:dataTable value="#{propertyEditDataProvider.valuesForConfigOverview.entrySet().toArray()}"
                                  rendered="#{!propertyEditDataProvider.valuesForConfigOverview.isEmpty()}"
-                                 styleClass="propertyTable"
+                                 rowClasses="odd-row,even-row"
+                                 styleClass="well"
                                  var="entry">
                         <h:column>
                             <f:facet name="header">
-                                <h3><h:outputText value="Environment" /></h3>
+                                <strong>Environment</strong>
                             </f:facet>
-                            <label>#{entry.key}</label>
+                            <span>#{entry.key}</span>
                         </h:column>
 
                         <h:column>
                             <f:facet name="header">
-                                <h3><h:outputText value="Value" styleClass="paddingLeft20" /></h3>
+                                <strong>Value</strong>
                             </f:facet>
-                            <div class="paddingLeft20">#{entry.value}</div>
+                            <span>#{entry.value}</span>
                         </h:column>
                     </h:dataTable>
 
