@@ -196,12 +196,20 @@ public class PropertyEditDataProvider implements Serializable {
     public void loadConfigOverviewForProperty(ResourceEditProperty property) {
         this.propertyForConfigOverview = property;
         List<ContextEntity> relevantContexts = contextDataProvider.getChildrenForContext(currentContext.getId());
-        valuesForConfigOverview = editor.getOverridenPropertyValues(resourceView.getResource(), property, relevantContexts);
+        if (property.getLoadedFor() == ResourceEditProperty.Origin.INSTANCE) {
+            valuesForConfigOverview = editor.getOverridenPropertyValues(resourceView.getResource(), property, relevantContexts);
+        } else {
+            valuesForConfigOverview = editor.getOverridenPropertyValues(currentRelation, property, relevantContexts);
+        }
     }
 
     public boolean hasOverwrittenProperty(ResourceEditProperty property) {
         List<ContextEntity> relevantContexts = contextDataProvider.getChildrenForContext(currentContext.getId());
-        return !editor.getOverridenPropertyValues(resourceView.getResource(), property, relevantContexts).isEmpty();
+        if (property.getLoadedFor() == ResourceEditProperty.Origin.INSTANCE) {
+            return !editor.getOverridenPropertyValues(resourceView.getResource(), property, relevantContexts).isEmpty();
+        } else {
+            return !editor.getOverridenPropertyValues(currentRelation, property, relevantContexts).isEmpty();
+        }
     }
 
     private void loadResourceRelationEditProperties() {
@@ -209,9 +217,9 @@ public class PropertyEditDataProvider implements Serializable {
 
         if (currentRelation != null) {
             if (currentRelation.isResourceTypeRelation()) {
-                currentRelationProperties = userSettings.filterTestingProperties(editor
-                        .getPropertiesForRelatedResourceType(currentRelation, getContextId()));
-                typeRelationIdentifier = currentRelation.getDisplayName(); // TODO displayname!?
+                List<ResourceEditProperty> properties = editor.getPropertiesForRelatedResourceType(currentRelation, getContextId());
+                currentRelationProperties = userSettings.filterTestingProperties(properties);
+                typeRelationIdentifier = currentRelation.getDisplayName();
             } else {
                 currentRelationProperties = userSettings.filterTestingProperties(editor
                         .getPropertiesForRelatedResource(getResourceId(), currentRelation, getContextId()));

@@ -271,8 +271,7 @@ public class PropertyEditor {
 	 * @param contextId
 	 * @return
 	 */
-	public List<ResourceEditProperty> getPropertiesForRelatedResourceType(
-			ResourceEditRelation resourceRelation, Integer contextId) {
+	public List<ResourceEditProperty> getPropertiesForRelatedResourceType(ResourceEditRelation resourceRelation, Integer contextId) {
 		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
 		ResourceRelationTypeEntity relationTypeEntity = entityManager.find(
 				ResourceRelationTypeEntity.class, resourceRelation.getResRelTypeId());
@@ -791,4 +790,11 @@ public class PropertyEditor {
         }
         return propertyEditingService.getOverridenProperties(resourceEntity, property, relevantContexts);
     }
+
+	public Map<String, String> getOverridenPropertyValues(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+		if (relevantContexts.isEmpty()) {
+			return Collections.EMPTY_MAP;
+		}
+		return propertyEditingService.getOverridenProperties(relation.getResRelId(), property, relevantContexts);
+	}
 }
