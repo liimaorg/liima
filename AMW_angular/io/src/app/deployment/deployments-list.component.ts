@@ -48,9 +48,9 @@ export class DeploymentsListComponent {
 
   paginatorItems: number = 5;
 
-  failureReason: { [key: string]: string } = { 'PRE_DEPLOYMENT_GENERATION': 'pre deployment generation',
-    'DEPLOYMENT_GENERATION': 'deployment generation', 'PRE_DEPLOYMENT_SCRIPT': 'pre deployment script',
-    'DEPLOYMENT_SCRIPT': 'pre deployment script', 'NODE_MISSING': 'node missing', 'TIMEOUT': 'timeout',
+  failureReason: { [key: string]: string } = { 'PRE_DEPLOYMENT_GENERATION': 'pre deployment generation failed',
+    'DEPLOYMENT_GENERATION': 'deployment generation failed', 'PRE_DEPLOYMENT_SCRIPT': 'pre deployment script failed',
+    'DEPLOYMENT_SCRIPT': 'deployment script failed', 'NODE_MISSING': 'no nodes enabled', 'TIMEOUT': 'timeout',
     'UNEXPECTED_ERROR': 'unexpected error', 'RUNTIME_ERROR': 'runtime error' };
 
   constructor(private ngZone: NgZone,
