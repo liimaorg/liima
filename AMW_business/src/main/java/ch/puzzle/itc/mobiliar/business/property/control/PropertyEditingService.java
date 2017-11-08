@@ -275,14 +275,26 @@ public class PropertyEditingService {
         return differingProps;
     }
 
+    public Map<String, String> getOverridenProperties(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+        HashMap<String, String> differingProps = new HashMap<>();
+        Query query = getPropertyOverviewQueryForRelation(relationId, property, relevantContexts);
+        List resultList = query.getResultList();
+        for (Object o : resultList) {
+            Map.Entry<String, String> entry = createEntryForOverridenProperty(o, property.getPropertyId());
+            differingProps.put(entry.getKey(), entry.getValue());
+        }
+        return differingProps;
+    }
+
+    private Query getPropertyOverviewQueryForRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+        String propertyName = property.getTechnicalKey();
+        List<Integer> relevantContextIds = buldRelevantContextIdsList(relevantContexts);
+        return queries.getOverridenPropertyValuesQueryForRelatedResource(propertyName, relationId, relevantContextIds);
+    }
+
     private Query getPropertyOverviewQuery(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         String propertyName = property.getTechnicalKey();
         List<Integer> relevantContextIds = buldRelevantContextIdsList(relevantContexts);
-        if (property.getLoadedFor() == Origin.RELATION) {
-            // TODO
-            System.out.println("TODO: implement load overriden properties for relation resource");
-            // return queries.getOverridenPropertyValuesForRelationQuery(propertyName, resourceEntity.getId(), relevantContextIds);
-        }
         return queries.getOverridenPropertyValuesQuery(propertyName, resourceEntity.getId(), relevantContextIds);
     }
 
