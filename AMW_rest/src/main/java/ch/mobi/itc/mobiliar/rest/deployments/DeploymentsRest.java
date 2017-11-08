@@ -336,8 +336,8 @@ public class DeploymentsRest {
         Integer trackingId;
         ResourceEntity appServer;
         Set<ResourceEntity> apps;
-        ContextEntity environments = null;
-        List<ApplicationWithVersion> applicationsWithVersion;
+        ContextEntity environment = null;
+        List<ApplicationWithVersion> applicationsWithVersion = new ArrayList<>();
         LinkedList<CustomFilter> filters = new LinkedList<>();
         ReleaseEntity release;
         ResourceGroupEntity group;
@@ -376,7 +376,7 @@ public class DeploymentsRest {
         // get the id of the Environment
         if (request.getEnvironmentName() != null) {
             try {
-                environments = environmentsService.getContextByName(request.getEnvironmentName());
+                environment = environmentsService.getContextByName(request.getEnvironmentName());
             } catch (RuntimeException e) {
                 return catchNoResultException(e, "Environment " + request.getEnvironmentName() + " not found.");
             }
@@ -390,7 +390,11 @@ public class DeploymentsRest {
             if (apps == null) {
                 apps = new HashSet<>();
             }
-            applicationsWithVersion = convertToApplicationWithVersion(request.getAppsWithVersion(), apps);
+            if (request.getAppsWithVersion() != null) {
+                applicationsWithVersion = convertToApplicationWithVersion(request.getAppsWithVersion(), apps);
+            } else {
+                applicationsWithVersion = deploymentBoundary.getVersions(appServer, new ArrayList<Integer>(environment.getId()), release);
+            }
 
         } catch (ValidationException e) {
             return Response.status(Status.BAD_REQUEST).entity(
@@ -404,14 +408,14 @@ public class DeploymentsRest {
         }
 
         // check whether the AS has at least one node with hostname to deploy to
-        if (environments != null) {
-            boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environments, request.getStateToDeploy());
+        if (environment != null) {
+            boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environment, request.getStateToDeploy());
             if (!hasNode) {
                 return Response.status(Status.BAD_REQUEST)
-                        .entity(new ExceptionDto("No active Node found on Environment " + request.getEnvironmentName()))
+                        .entity(new ExceptionDto("No active Node found on Environement " + request.getEnvironmentName()))
                         .build();
             }
-            contexts.add(environments.getId());
+            contexts.add(environment.getId());
         } else if (request.getContextIds() != null && !request.getContextIds().isEmpty()) {
             contexts.addAll(request.getContextIds());
         }
