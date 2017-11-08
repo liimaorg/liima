@@ -50,6 +50,7 @@ public class DeploymentDTO {
 	private DeploymentFailureReason reason;
 	private String appServerName;
 	private Integer appServerId;
+	private Integer appServerResourceGroupId;
 	private List<AppWithVersionDTO> appsWithVersion = new LinkedList<>();
 	private List<DeploymentParameterDTO> deploymentParameters = new LinkedList<>();
 	private String environmentName;
@@ -69,6 +70,7 @@ public class DeploymentDTO {
 		this.state = entity.getDeploymentState();
 		this.appServerName = entity.getResourceGroup().getName();
 		this.appServerId = entity.getResource().getId();
+		this.appServerResourceGroupId = entity.getResourceGroup().getId();
 		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
 			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
 		}
