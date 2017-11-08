@@ -138,7 +138,11 @@ public class CommonFilterService {
 			} else if (f.isStringType()) {
 				if(DeploymentFilterTypes.APPLICATION_NAME.getFilterDisplayName().equals(f.getFilterDisplayName())) {
 					//all app names are in a json structure so we have to search with %
-					q.setParameter(parameter, "%"+f.getStringValue()+"%");
+					if (f.getStringValue().equals("*")) {
+						q.setParameter(parameter, "%%");
+					}else {
+						q.setParameter(parameter, "%" + f.getStringValue() + "%");
+					}
 				}
 				else {
 					q.setParameter(parameter, JpaWildcardConverter.convertWildCards(f.getStringValue()));

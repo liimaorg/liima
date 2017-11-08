@@ -23,16 +23,20 @@ export class DeploymentService {
     return resource$;
   }
 
-  getFilteredDeployments(filterString: string): Observable<Deployment[]> {
-    let param = new URLSearchParams();
-    param.append('filters', filterString);
+  getFilteredDeployments(filterString: string, sortCol: string, sortDir: string, offset: number, maxResults: number): Observable<{ deployments: Deployment[], total: number }> {
+    let params = new URLSearchParams();
+    params.append('filters', filterString);
+    params.append('colToSort', sortCol);
+    params.append('sortDirection', sortDir);
+    params.append('offset', String(offset));
+    params.append('maxResults', String(maxResults));
     let options = new RequestOptions({
-      search: param,
+      search: params,
       headers: this.getHeaders()
     });
     let resource$ = this.http
       .get(`${this.baseUrl}/deployments/filter`, options)
-      .map((response: Response) => response.json())
+      .map((response: Response) => this.extractDeploymentsAndTotalCount(response))
       .catch(handleError);
     return resource$;
   }
@@ -70,7 +74,7 @@ export class DeploymentService {
 
   confirmDeployment(deploymentDetail: DeploymentDetail) {
     let resource$ = this.http
-      .patch(`${this.baseUrl}/deployments/${deploymentDetail.deploymentId}/confirm`, deploymentDetail, {headers: this.getHeaders()})
+      .put(`${this.baseUrl}/deployments/${deploymentDetail.deploymentId}/confirm`, deploymentDetail, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
     return resource$;
@@ -168,7 +172,7 @@ export class DeploymentService {
 
   setDeploymentDate(deploymentId: number, deploymentDate: number) {
     let resource$ = this.http
-      .patch(`${this.baseUrl}/deployments/${deploymentId}/date`, deploymentDate, {headers: this.postHeaders()})
+      .put(`${this.baseUrl}/deployments/${deploymentId}/date`, deploymentDate, {headers: this.postHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
     return resource$;
@@ -206,6 +210,14 @@ export class DeploymentService {
   // to json without throwing an error if response is empty
   private extractPayload(res: Response) {
     return res.text() ? res.json() : {};
+  }
+
+  private extractDeploymentsAndTotalCount(res: Response) {
+    let headerField: string = 'X-Total-Count';
+    let ob: { deployments: Deployment[], total: number } = { deployments: [], total: 0 };
+    ob.deployments = this.extractPayload(res);
+    ob.total = res.headers.get(headerField) ? parseInt(res.headers.get(headerField)) : 0;
+    return ob;
   }
 }
 
