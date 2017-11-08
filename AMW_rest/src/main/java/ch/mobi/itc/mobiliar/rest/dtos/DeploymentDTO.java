@@ -68,7 +68,7 @@ public class DeploymentDTO {
 		this.trackingId = entity.getTrackingId();
 		this.state = entity.getDeploymentState();
 		this.appServerName = entity.getResourceGroup().getName();
-		this.appServerId = entity.getResourceGroup().getId();
+		this.appServerId = entity.getResource().getId();
 		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
 			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
 		}
@@ -90,6 +90,46 @@ public class DeploymentDTO {
 		for (NodeJobEntity job : entity.getNodeJobs()) {
 			nodeJobs.add(new NodeJobDTO(job));
 		}
+	}
+
+	public void setPreservedValues(DeploymentEntity entity, PreservedProperties properties) {
+		this.id = entity.getId();
+		this.trackingId = entity.getTrackingId();
+		this.state = entity.getDeploymentState();
+		this.appServerName = properties.getAppServerName() != null ? properties.getAppServerName() : entity.getResourceGroup().getName();
+		this.appServerId = properties.getAppServerId() != null ? properties.getAppServerId() : entity.getResource().getId();
+		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
+			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
+		}
+		for (DeploymentParameter param : entity.getDeploymentParameters()) {
+			deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
+		}
+		this.deploymentDate = entity.getDeploymentDate();
+		this.deploymentJobCreationDate = entity.getDeploymentJobCreationDate();
+		this.deploymentConfirmationDate = entity.getDeploymentConfirmationDate();
+		this.deploymentCancelDate = entity.getDeploymentCancelDate();
+		this.reason = entity.getReason();
+		this.environmentName = properties.getEnvironmentName() != null ? properties.getEnvironmentName() : entity.getContext().getName();
+		this.releaseName = properties.getReleaseName() != null ? properties.getReleaseName() : entity.getRelease().getName();
+		this.runtimeName = properties.getRuntimeName() != null ? properties.getRuntimeName() : entity.getRuntime().getName();
+		this.setRequestUser(entity.getDeploymentRequestUser());
+		this.setConfirmUser(entity.getDeploymentConfirmationUser());
+		this.setCancelUser(entity.getDeploymentCancelUser());
+		this.setDeploymentDelayed(entity.isDeploymentDelayed());
+		for (NodeJobEntity job : entity.getNodeJobs()) {
+			nodeJobs.add(new NodeJobDTO(job));
+		}
+	}
+
+	@Data
+	@NoArgsConstructor
+	public class PreservedProperties {
+
+		private Integer appServerId;
+		private String appServerName;
+		private String environmentName;
+		private String releaseName;
+		private String runtimeName;
 	}
 
 }

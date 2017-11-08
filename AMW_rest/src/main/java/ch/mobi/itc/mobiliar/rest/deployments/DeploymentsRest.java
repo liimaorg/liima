@@ -135,8 +135,32 @@ public class DeploymentsRest {
     }
 
     private DeploymentDTO createDeploymentDTO(DeploymentEntity deployment) {
-        DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
-        deploymentDTO.setActions(createDeploymentActionsDTO(deployment));
+        if (deployment.isPreserved()) {
+            return createPreservedDeploymentDTO(deployment);
+        } else {
+            DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
+            deploymentDTO.setActions(createDeploymentActionsDTO(deployment));
+            return deploymentDTO;
+        }
+    }
+
+    private DeploymentDTO createPreservedDeploymentDTO(DeploymentEntity deployment) {
+        DeploymentDTO deploymentDTO = new DeploymentDTO();
+        DeploymentDTO.PreservedProperties properties = deploymentDTO.new PreservedProperties();
+        if (deployment.getExResourcegroupId() != null) {
+            properties.setAppServerName(deploymentBoundary.getDeletedResourceGroupName(deployment));
+        }
+        if (deployment.getExResourceId() != null) {
+            properties.setAppServerId(deployment.getExResourceId());
+        }
+        if (deployment.getExContextId() != null) {
+            properties.setEnvironmentName(deploymentBoundary.getDeletedContextName(deployment));
+        }
+        if (deployment.getExReleaseId() != null) {
+            properties.setReleaseName(deploymentBoundary.getDeletedReleaseName(deployment));
+        }
+        deploymentDTO.setPreservedValues(deployment, properties);
+        deploymentDTO.setActions(new DeploymentActionsDTO());
         return deploymentDTO;
     }
 
