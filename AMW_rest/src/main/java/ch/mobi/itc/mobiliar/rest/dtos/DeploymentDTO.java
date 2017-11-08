@@ -97,7 +97,8 @@ public class DeploymentDTO {
 		this.trackingId = entity.getTrackingId();
 		this.state = entity.getDeploymentState();
 		this.appServerName = properties.getAppServerName() != null ? properties.getAppServerName() : entity.getResourceGroup().getName();
-		this.appServerId = properties.getAppServerId() != null ? properties.getAppServerId() : entity.getResource().getId();
+		// this is not a typo
+		this.appServerId = properties.getAppServerId() != null ? null : entity.getResource().getId();
 		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
 			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
 		}

@@ -46,7 +46,13 @@
         <td><span class="glyphicon glyphicon-info-sign pointer" aria-hidden="true" title="Show details about this deployment" (click)="showDetails(deployment.id)">
           <span class="action">{{deployment.reason ? failureReason[deployment.reason] : deployment.state }}</span>
         </span></td>
-        <td><a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>
+        <td>
+          <ng-container *ngIf="deployment.appServerId">
+            <a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>
+          </ng-container>
+          <ng-container *ngIf="!deployment.appServerId">
+            {{deployment.appServerName}}
+          </ng-container>
             <ul class="nob">
               <li *ngFor="let appWithVersion of deployment.appsWithVersion"><a href="/AMW_web/pages/editResourceView.xhtml?id={{appWithVersion.applicationId}}&ctx=1">{{appWithVersion.applicationName}}</a> ({{appWithVersion.version}})</li>
             </ul>
