@@ -265,19 +265,23 @@ public class PropertyEditingService {
 	}
 
     public Map<String, String> getOverridenProperties(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
-        HashMap<String, String> differingProps = new HashMap<>();
-        Query query = getPropertyOverviewQuery(resourceEntity, property, relevantContexts);
-        List resultList = query.getResultList();
-        for (Object o : resultList) {
-            Map.Entry<String, String> entry = createEntryForOverridenProperty(o, property.getPropertyId());
-            differingProps.put(entry.getKey(), entry.getValue());
+        if (relevantContexts.isEmpty()) {
+            return Collections.EMPTY_MAP;
         }
-        return differingProps;
+        Query query = getPropertyOverviewQuery(resourceEntity, property, relevantContexts);
+        return getDifferingProperties(property, query);
     }
 
-    public Map<String, String> getOverridenProperties(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
-        HashMap<String, String> differingProps = new HashMap<>();
+    public Map<String, String> getOverridenPropertiesForRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+        if (relevantContexts.isEmpty()) {
+            return Collections.EMPTY_MAP;
+        }
         Query query = getPropertyOverviewQueryForRelation(relationId, property, relevantContexts);
+        return getDifferingProperties(property, query);
+    }
+
+    private Map<String, String> getDifferingProperties(ResourceEditProperty property, Query query) {
+        HashMap<String, String> differingProps = new HashMap<>();
         List resultList = query.getResultList();
         for (Object o : resultList) {
             Map.Entry<String, String> entry = createEntryForOverridenProperty(o, property.getPropertyId());

@@ -785,16 +785,10 @@ public class PropertyEditor {
 	}
 
     public Map<String, String> getOverridenPropertyValues(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
-        if (relevantContexts.isEmpty()) {
-            return Collections.EMPTY_MAP;
-        }
         return propertyEditingService.getOverridenProperties(resourceEntity, property, relevantContexts);
     }
 
-	public Map<String, String> getOverridenPropertyValues(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
-		if (relevantContexts.isEmpty()) {
-			return Collections.EMPTY_MAP;
-		}
-		return propertyEditingService.getOverridenProperties(relation.getResRelId(), property, relevantContexts);
-	}
+    public Map<String, String> getOverridenPropertyValues(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+        return propertyEditingService.getOverridenPropertiesForRelation(relation.getResRelId(), property, relevantContexts);
+    }
 }
