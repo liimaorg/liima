@@ -47,10 +47,10 @@
           <span class="action">{{deployment.reason ? failureReason[deployment.reason] : deployment.state }}</span>
         </span></td>
         <td>
-          <ng-container *ngIf="deployment.appServerId">
-            <a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>
+          <ng-container *ngIf="deployment.resourceId">
+            <a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.resourceId}}&ctx=1">{{deployment.appServerName}}</a>
           </ng-container>
-          <ng-container *ngIf="!deployment.appServerId">
+          <ng-container *ngIf="!deployment.resourceId">
             {{deployment.appServerName}}
           </ng-container>
             <ul class="nob">

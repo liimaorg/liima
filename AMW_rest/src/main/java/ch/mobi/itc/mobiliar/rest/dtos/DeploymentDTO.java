@@ -50,6 +50,7 @@ public class DeploymentDTO {
 	private DeploymentFailureReason reason;
 	private String appServerName;
 	private Integer appServerId;
+	private Integer resourceId;
 	private List<AppWithVersionDTO> appsWithVersion = new LinkedList<>();
 	private List<DeploymentParameterDTO> deploymentParameters = new LinkedList<>();
 	private String environmentName;
@@ -68,7 +69,8 @@ public class DeploymentDTO {
 		this.trackingId = entity.getTrackingId();
 		this.state = entity.getDeploymentState();
 		this.appServerName = entity.getResourceGroup().getName();
-		this.appServerId = entity.getResource().getId();
+		this.appServerId = entity.getResourceGroup().getId();
+		this.resourceId = entity.getResource().getId();
 		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
 			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
 		}
@@ -97,8 +99,9 @@ public class DeploymentDTO {
 		this.trackingId = entity.getTrackingId();
 		this.state = entity.getDeploymentState();
 		this.appServerName = properties.getAppServerName() != null ? properties.getAppServerName() : entity.getResourceGroup().getName();
+		this.appServerId = properties.getAppServerId() != null ? properties.getAppServerId() : entity.getResourceGroup().getId();
 		// this is not a typo
-		this.appServerId = properties.getAppServerId() != null ? null : entity.getResource().getId();
+		this.resourceId = properties.getResourceId() != null ? null : entity.getResource().getId();
 		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
 			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
 		}
@@ -126,8 +129,9 @@ public class DeploymentDTO {
 	@NoArgsConstructor
 	public class PreservedProperties {
 
-		private Integer appServerId;
 		private String appServerName;
+		private Integer appServerId;
+		private Integer resourceId;
 		private String environmentName;
 		private String releaseName;
 		private String runtimeName;

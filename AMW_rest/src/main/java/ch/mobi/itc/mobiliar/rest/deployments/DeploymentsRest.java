@@ -157,9 +157,10 @@ public class DeploymentsRest {
         DeploymentDTO.PreservedProperties properties = deploymentDTO.new PreservedProperties();
         if (deployment.getExResourcegroupId() != null) {
             properties.setAppServerName(deploymentBoundary.getDeletedResourceGroupName(deployment));
+            properties.setAppServerId(deployment.getExResourcegroupId());
         }
         if (deployment.getExResourceId() != null) {
-            properties.setAppServerId(deployment.getExResourceId());
+            properties.setResourceId(deployment.getExResourceId());
         }
         if (deployment.getExContextId() != null) {
             properties.setEnvironmentName(deploymentBoundary.getDeletedContextName(deployment));

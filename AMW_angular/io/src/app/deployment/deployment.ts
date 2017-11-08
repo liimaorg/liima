@@ -14,6 +14,7 @@ export interface Deployment {
   reason: string;
   appServerName: string;
   appServerId: number;
+  resourceId: number;
   appsWithVersion: AppWithVersion[];
   deploymentParameters: DeploymentParameter[];
   environmentName: string;
