@@ -64,7 +64,7 @@ public class DeploymentRequestDTO {
 		environmentName = deploymentRequestDto.getEnvironmentName();
 		appsWithVersion = new LinkedList<>();
 		for(AppWithVersionDTO app : deploymentRequestDto.getAppsWithVersion()) {
-			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
+			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
 		}
 		requestOnly = deploymentRequestDto.getRequestOnly();
 		simulate = deploymentRequestDto.getSimulate();

@@ -20,7 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control;
 
-import java.util.logging.Logger;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -29,12 +33,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.LockTimeoutException;
-
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
+import java.util.logging.Logger;
 
 @Stateless
 public class LockingService
@@ -74,7 +73,7 @@ public class LockingService
 
 		log.info("Update state of deployment " + d.getId());
 		if (GenerationModus.DEPLOY.equals(generationModus)) {
-			d.setDeploymentState(DeploymentState.progress);						
+			d.setDeploymentState(DeploymentState.progress);
 		}else if(GenerationModus.SIMULATE.equals(generationModus)){
 			d.setDeploymentState(DeploymentState.simulating);
 		}else if(GenerationModus.PREDEPLOY.equals(generationModus)){

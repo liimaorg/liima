@@ -36,18 +36,25 @@ import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.events.SelectedRelationId;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.io.Serializable;
+
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.APPLICATION_NAME;
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.APPSERVER_NAME;
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.ENVIRONMENT_NAME;
 
 @ViewBackingBean
 public class EditResourceView implements Serializable {
@@ -117,6 +124,8 @@ public class EditResourceView implements Serializable {
 
     @Getter
     private boolean canShowDeploymentLink;
+
+    private final boolean useAngularDeploymentLink = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI));
 
     public void setContextIdViewParam(Integer contextIdViewParam) {
         this.contextIdViewParam = contextIdViewParam;
@@ -194,6 +203,10 @@ public class EditResourceView implements Serializable {
 
             resourceTypeEvent.fire(resourceType);
         }
+    }
+
+    public boolean isAngularDeploymentLink() {
+        return this.useAngularDeploymentLink;
     }
 
     /**
@@ -400,4 +413,25 @@ public class EditResourceView implements Serializable {
     }
 
 
+    public String getDeploymentLinkAngular() {
+        JSONArray jsonArray = new JSONArray();
+        JSONObject appFilter = new JSONObject();
+        appFilter.put("name", APPLICATION_NAME.getFilterDisplayName());
+        appFilter.put("val", getApplicationName());
+        jsonArray.add(appFilter);
+
+        JSONObject appServerNameFilter = new JSONObject();
+        appServerNameFilter.put("name", APPSERVER_NAME.getFilterDisplayName());
+        appServerNameFilter.put("val", getApplicationServerName());
+        jsonArray.add(appServerNameFilter);
+
+        String envName = getEnvironmentName();
+        if (StringUtils.isNotEmpty(envName)) {
+            JSONObject envNameFilter = new JSONObject();
+            envNameFilter.put("name", ENVIRONMENT_NAME.getFilterDisplayName());
+            envNameFilter.put("val", envName);
+            jsonArray.add(envNameFilter);
+        }
+        return jsonArray.toString();
+    }
 }

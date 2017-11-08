@@ -25,8 +25,10 @@ import ch.mobi.itc.mobiliar.rest.dtos.DeploymentDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentRequestDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
@@ -42,10 +44,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvide
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -60,9 +60,9 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.*;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -129,6 +129,7 @@ public class DeploymentTest {
 
 		ResourceEntity resource =  ResourceFactory.createNewResource("test");
 		resource.setId(1);
+		deploymentEntity.setResource(resource);
 		deploymentEntity.setResourceGroup(resource.getResourceGroup());
 
 		ContextEntity context = new ContextEntity();
@@ -141,7 +142,7 @@ public class DeploymentTest {
 		deploymentRequestDto = new DeploymentRequestDTO();
 		deploymentRequestDto.setAppServerName(deploymentEntity.getResourceGroup().getName());
 		LinkedList<AppWithVersionDTO> apps = new LinkedList<AppWithVersionDTO>();
-		apps.add(new AppWithVersionDTO(appsWithVersion.getFirst().getApplicationName(), appsWithVersion.getFirst().getVersion()));
+		apps.add(new AppWithVersionDTO(appsWithVersion.getFirst().getApplicationName(), appsWithVersion.getFirst().getApplicationId(), appsWithVersion.getFirst().getVersion()));
 		deploymentRequestDto.setAppsWithVersion(apps);
 		deploymentRequestDto.setDeploymentDate(deploymentEntity.getDeploymentDate());
 		deploymentRequestDto.setEnvironmentName(deploymentEntity.getContext().getName());
@@ -324,7 +325,7 @@ public class DeploymentTest {
 		assertThat(responseDto.getAppsWithVersion().get(0).getVersion(), is(deploymentEntity.getApplicationsWithVersion().get(0).getVersion()));
 		assertThat(responseDto.getAppsWithVersion().get(1).getVersion(), is(deploymentEntity.getApplicationsWithVersion().get(1).getVersion()));
 	}
-	
+
 	@Test
 	public void addDeployment_no_active_node() throws GeneralDBException {
 		ReleaseEntity release = mockRelease();
@@ -452,7 +453,48 @@ public class DeploymentTest {
 	    ExceptionDto exception = (ExceptionDto) response.getEntity();
 	    assertTrue(exception.getDetail().length() > 0);
 	}
-	
+
+	@Test
+	public void shouldHandleIllegalStateInUpdateState() {
+        // given
+        String illegalState = "dudu";
+
+        // when
+        Response response = deploymentRestService.updateState(1, illegalState);
+
+        // then
+        assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+    }
+
+
+    @Test
+    public void shouldHandleCancelInUpdateState() {
+        // given
+        String cancelState = DeploymentState.canceled.name();
+        Integer deploymentId = 1;
+
+        // when
+        Response response = deploymentRestService.updateState(deploymentId, cancelState);
+
+        // then
+        verify(deploymentBoundary).cancelDeployment(deploymentId);
+        assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+    }
+
+    @Test
+    public void shouldHandleRejectInUpdateState() {
+        // given
+        String cancelState = DeploymentState.rejected.name();
+        Integer deploymentId = 1;
+
+        // when
+        Response response = deploymentRestService.updateState(deploymentId, cancelState);
+
+        // then
+        verify(deploymentBoundary).rejectDeployment(deploymentId);
+        assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+    }
+
 	private ReleaseEntity mockRelease(){
 		ReleaseEntity mock = mock(ReleaseEntity.class);
 		Calendar cal = new GregorianCalendar();

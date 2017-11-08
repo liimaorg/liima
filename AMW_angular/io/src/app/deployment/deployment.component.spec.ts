@@ -296,7 +296,7 @@ describe('DeploymentComponent (create deployment)', () => {
     deploymentComponent.requestDeployment();
     // then
     expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
-    expect(deploymentComponent.successMessage).toContain('tracking_id=910');
+    expect(deploymentComponent.successMessage).toContain('Tracking Id 910');
   }));
 
   it('should call the deploymentService with the right values on createDeployment',
@@ -321,7 +321,7 @@ describe('DeploymentComponent (create deployment)', () => {
     deploymentComponent.createDeployment();
     // then
     expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
-    expect(deploymentComponent.successMessage).toContain('tracking_id=911');
+    expect(deploymentComponent.successMessage).toContain('Tracking Id 911');
   }));
 
 });
@@ -529,7 +529,7 @@ describe('DeploymentComponent (redeployment)', () => {
       deploymentComponent.createDeployment();
       // then
       expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
-      expect(deploymentComponent.successMessage).toContain('tracking_id=911');
+      expect(deploymentComponent.successMessage).toContain('Tracking Id 911');
     }));
 
 });

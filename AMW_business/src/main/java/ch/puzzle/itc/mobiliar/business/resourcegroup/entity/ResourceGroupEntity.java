@@ -45,8 +45,7 @@ import java.util.TreeSet;
 @Entity
 @Audited
 @Table(name = "TAMW_resourceGroup")
-@EqualsAndHashCode(exclude = { "resources", "favorites", "runtimeTemplateDescriptors",
-		"resourceActivationEntities" })
+@EqualsAndHashCode(exclude = { "resources", "favorites", "runtimeTemplateDescriptors", "resourceActivationEntities" })
 @NamedQuery(name = ResourceGroupEntity.ALLRESOURCESBYTYPE_QUERY, query = "select rg from ResourceGroupEntity rg left join rg.resourceType rt where rt is not null and rt.name=:restype")
 public class ResourceGroupEntity implements Serializable, Comparable<ResourceGroupEntity>, NamedIdentifiable {
 

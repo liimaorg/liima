@@ -169,7 +169,7 @@
 						</h:outputLink>
 			</f:facet>
 			<h:panelGroup id="removeReleasePopupPanelGroup">
-				<h:outputLabel rendered="#{releaseMgmtScreenService.countDeploymentsForCurrentRelease() == null and !releaseMgmtScreenService.hasResourcesForCurrentRelease()}"
+				<h:outputLabel rendered="#{!releaseMgmtScreenService.hasResourcesForCurrentRelease()}"
 					value="Do you really want to delete the release ${releaseMgmtScreenService.currentRelease.name}?" />
 				<br/>
 				<h:panelGroup rendered="#{releaseMgmtScreenService.hasResourcesForCurrentRelease()}">
@@ -185,12 +185,9 @@
 						</ui:repeat>
 					</ul>	
 				</h:panelGroup>
-				
-				<h3><h:outputText rendered="#{releaseMgmtScreenService.countDeploymentsForCurrentRelease() != null}"
-					value="The release ${releaseMgmtScreenService.currentRelease.name} is used by deployments and can not be deleted." /></h3>
 
 				<a4j:commandLink styleClass="btn primary right" value="Ok"
-					rendered="#{releaseMgmtScreenService.countDeploymentsForCurrentRelease() == null and !releaseMgmtScreenService.hasResourcesForCurrentRelease()}"
+					rendered="#{!releaseMgmtScreenService.hasResourcesForCurrentRelease()}"
 					action="#{releaseMgmtScreenService.remove()}"
 					onclick="showLoader();"
 					oncomplete="#{rich:component('removeReleasePopupPanel')}.hide(); hideLoader(); return false;"

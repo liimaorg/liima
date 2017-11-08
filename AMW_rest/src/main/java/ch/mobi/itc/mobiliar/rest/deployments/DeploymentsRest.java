@@ -20,22 +20,17 @@
 
 package ch.mobi.itc.mobiliar.rest.deployments;
 
-import ch.mobi.itc.mobiliar.rest.dtos.AppWithVersionDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.DeploymentDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.DeploymentParameterDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.DeploymentRequestDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.*;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
+import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.EnvironmentsScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -48,12 +43,16 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvide
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -62,14 +61,15 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.ValidationException;
 import java.util.*;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
+import static ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI;
 
-//for transactions
 @Stateless
 @Path("/deployments")
 @Api(value = "/deployments", description = "Managing deployment resources")
@@ -84,6 +84,8 @@ public class DeploymentsRest {
     @Inject
     private ResourceDependencyResolverService dependencyResolverService;
     @Inject
+    private PermissionService permissionService;
+    @Inject
     private ResourceGroupPersistenceService resourceGroupService;
     @Inject
     private ResourceTypeProvider resourceTypeProvider;
@@ -96,6 +98,82 @@ public class DeploymentsRest {
     @Inject
     private ContextLocator contextLocator;
 
+
+
+    @GET
+    @Path("/filter")
+    @ApiOperation(value = "returns all Deployments matching the list of json filters")
+    public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters,
+                                   @QueryParam("colToSort") String colToSort,
+                                   @QueryParam("sortDirection") String sortDirection,
+                                   @QueryParam("maxResults") Integer maxResults,
+                                   @QueryParam("offset") Integer offset) {
+        DeploymentFilterDTO[] filterDTOs;
+        try {
+            filterDTOs = new Gson().fromJson(jsonListOfFilters, DeploymentFilterDTO[].class);
+        } catch (JsonSyntaxException e) {
+            String msg = String.format("json is not a valid representation for an object of type %s", DeploymentFilterDTO.class.getSimpleName());
+            String detail = "example: [{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"Latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
+            return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto(msg, detail)).build();
+        }
+        CommonFilterService.SortingDirectionType sortingDirectionType = null;
+        if (sortDirection != null) {
+            sortingDirectionType = CommonFilterService.SortingDirectionType.valueOf(sortDirection);
+        }
+        LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
+        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(true, offset, maxResults, filters, colToSort, sortingDirectionType, null);
+        List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
+        return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
+    }
+
+    private LinkedList<CustomFilter> createCustomFilters(DeploymentFilterDTO[] filterDTOs) {
+        LinkedList<CustomFilter> filters = new LinkedList<>();
+        for (DeploymentFilterDTO filterDTO : filterDTOs) {
+            filters.add(createCustomFilterByDeploymentFilterDTO(filterDTO));
+        }
+        return filters;
+    }
+
+    private List<DeploymentDTO> createDeploymentDTOs(Tuple<Set<DeploymentEntity>, Integer> result) {
+        List<DeploymentDTO> deploymentDTOs = new ArrayList<>();
+        for (DeploymentEntity deployment : result.getA()) {
+            deploymentDTOs.add(createDeploymentDTO(deployment));
+        }
+        return deploymentDTOs;
+    }
+
+    private DeploymentDTO createDeploymentDTO(DeploymentEntity deployment) {
+        DeploymentDTO deploymentDTO = new DeploymentDTO(deployment);
+        deploymentDTO.setActions(createDeploymentActionsDTO(deployment));
+        return deploymentDTO;
+    }
+
+    private DeploymentActionsDTO createDeploymentActionsDTO(DeploymentEntity deployment) {
+        DeploymentActionsDTO actionsDTO = new DeploymentActionsDTO();
+        actionsDTO.setConfirmPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment));
+        actionsDTO.setRejectPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment));
+        actionsDTO.setCancelPossible(deploymentBoundary.isCancelPossible(deployment).isPossible());
+        actionsDTO.setRedeployPossible(permissionService.hasPermissionForDeploymentCreation(deployment));
+        actionsDTO.setHasLogFiles(deploymentBoundary.getLogFileNames(deployment.getId()).length > 0);
+        actionsDTO.setEditPossible((deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment))
+                && (permissionService.hasPermissionToCreateDeployment() || permissionService.hasPermissionToEditDeployment()));
+        return actionsDTO;
+    }
+
+    private CustomFilter createCustomFilterByDeploymentFilterDTO(DeploymentFilterDTO filterDTO) {
+        DeploymentFilterTypes filterType = DeploymentFilterTypes.getByDisplayName(filterDTO.getName());
+        if (filterDTO.getName().equals("Release")) {
+            filterDTO.setVal(Long.toString(deploymentBoundary.getReleaseByName(filterDTO.getVal()).getInstallationInProductionAt().getTime()));
+        }
+        ComparatorFilterOption filterOption = ComparatorFilterOption.valueOf(filterDTO.getComp());
+        CustomFilter filter = CustomFilter
+                .builder(filterType)
+                .comparatorSelection(filterOption)
+                .build();
+        filter.setValueFromRest(filterDTO.getVal());
+        return filter;
+    }
+
     /**
      * Query for deployments. All parameters are optional.
      * Date format: epoch timestamp (number of milliseconds since January 1st, 1970, UTC)
@@ -103,10 +181,10 @@ public class DeploymentsRest {
      * @return the deployments. The header X-Total-Count contains the total result count.
      **/
     @GET
-    @ApiOperation(value = "returns all Deplyoments matching the optional filter Query Params")
+    @ApiOperation(value = "returns all Deployments matching the optional filter Query Params")
     public Response getDeployments(
             @ApiParam("Tracking ID") @QueryParam("trackingId") Integer trackingId,
-            @ApiParam("Deplyoment State") @QueryParam("deploymentState") DeploymentState deploymentState,
+            @ApiParam("Deployments State") @QueryParam("deploymentState") DeploymentState deploymentState,
             @ApiParam("Application Server Name") @QueryParam("appServerName") List<String> appServerNames,
             @ApiParam("Application Name") @QueryParam("appName") List<String> appNames,
             @ApiParam("Runtime Name") @QueryParam("runtimeName") List<String> runtimeNames,
@@ -132,12 +210,12 @@ public class DeploymentsRest {
             filters.add(deploymentStateFilter);
         }
         if (fromDate != null) {
-            CustomFilter deploymentDateFromFilter = CustomFilter.builder(DEPLOYMENT_DATE).comparatorSelection(ComparatorFilterOption.greaterequals).build();
+            CustomFilter deploymentDateFromFilter = CustomFilter.builder(DEPLOYMENT_DATE).comparatorSelection(ComparatorFilterOption.gte).build();
             deploymentDateFromFilter.setDateValue(new Date(fromDate));
             filters.add(deploymentDateFromFilter);
         }
         if (toDate != null) {
-            CustomFilter deploymentDateFilter = CustomFilter.builder(DEPLOYMENT_DATE).comparatorSelection(ComparatorFilterOption.smallerequals).build();
+            CustomFilter deploymentDateFilter = CustomFilter.builder(DEPLOYMENT_DATE).comparatorSelection(ComparatorFilterOption.lte).build();
             deploymentDateFilter.setDateValue(new Date(toDate));
             filters.add(deploymentDateFilter);
         }
@@ -165,13 +243,13 @@ public class DeploymentsRest {
 
         Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, offset, maxResults, filters, null, null, null);
 
-        List<DeploymentDTO> deploymentDtos = new ArrayList<>();
+        List<DeploymentDTO> deploymentDTOs = new ArrayList<>();
 
         for (DeploymentEntity entity : result.getA()) {
-            deploymentDtos.add(new DeploymentDTO(entity));
+            deploymentDTOs.add(new DeploymentDTO(entity));
         }
 
-        return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDtos).build();
+        return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDTOs).build();
     }
 
     private void createFiltersAndAddToList(DeploymentFilterTypes deploymentFilterType, List<String> values, LinkedList<CustomFilter> filters) {
@@ -215,6 +293,35 @@ public class DeploymentsRest {
             deploymentParameters.add(new DeploymentParameterDTO(key.getName(), null));
         }
         return Response.status(Status.OK).entity(deploymentParameters).build();
+    }
+
+    @GET
+    @Path("/deploymentFilterTypes")
+    @ApiOperation(value = "Returns all available DeploymentFilterTypes - used by Angular")
+    public Response getAllDeploymentFilterTypes() {
+        List<DeploymentFilterTypeDTO> deploymentFilterTypes = new ArrayList<>();
+        for (DeploymentFilterTypes filterType : deploymentBoundary.getDeploymentFilterTypes()) {
+            deploymentFilterTypes.add(new DeploymentFilterTypeDTO(filterType.getFilterDisplayName(), filterType.getFilterType().name()));
+        }
+        return Response.status(Status.OK).entity(deploymentFilterTypes).build();
+    }
+
+    @GET
+    @Path("/comparatorFilterOptions")
+    @ApiOperation(value = "Returns all available ComparatorFilterOptions - used by Angular")
+    public Response getAllComparatorFilterOptions() {
+        List<ComparatorFilterOptionDTO> comparatorFilterOptions = new ArrayList<>();
+        for (ComparatorFilterOption filterOption : deploymentBoundary.getComparatorFilterOptions()) {
+            comparatorFilterOptions.add(new ComparatorFilterOptionDTO(filterOption.name(), filterOption.getDisplayName()));
+        }
+        return Response.status(Status.OK).entity(comparatorFilterOptions).build();
+    }
+
+    @GET
+    @Path("/filterOptionValues")
+    @ApiOperation(value = "Returns all available option values for a specific Filter - used by Angular")
+    public Response getFilterOptionValues(@ApiParam("Filter name") @QueryParam("filterName") String filterName) {
+        return Response.status(Status.OK).entity(deploymentBoundary.getFilterOptionValues(filterName)).build();
     }
 
     /**
@@ -271,7 +378,7 @@ public class DeploymentsRest {
             try {
                 environment = environmentsService.getContextByName(request.getEnvironmentName());
             } catch (RuntimeException e) {
-                return catchNoResultException(e, "Environement " + request.getEnvironmentName() + " not found.");
+                return catchNoResultException(e, "Environment " + request.getEnvironmentName() + " not found.");
             }
         }
 
@@ -370,6 +477,25 @@ public class DeploymentsRest {
     }
 
     @PUT
+    @Path("/{id : \\d+}/confirm")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Confirm a deployment")
+    public Response confirmDeployment(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId,
+                                      @ApiParam("New status") DeploymentDetailDTO deploymentDetailDTO) {
+        try{
+            deploymentBoundary.confirmDeployment(deploymentId,
+                    deploymentDetailDTO.isSendEmailWhenDeployed(),
+                    deploymentDetailDTO.isShakedownTestsWhenDeployed(),
+                    deploymentDetailDTO.isNeighbourhoodTest(),
+                    deploymentDetailDTO.isSimulateBeforeDeployment());
+            return Response.status(Response.Status.OK).build();
+        } catch (RuntimeException e) {
+            return catchDeploymentStateException(e);
+        }
+
+    }
+
+    @PUT
     @Path("/{id: \\d+}/jobs/{nodeJobId: \\d+}")
     @Consumes("text/plain")
     @ApiOperation(value = "Set the nodeJobResult for the given Deployment (id) and the nodeJob.")
@@ -395,9 +521,87 @@ public class DeploymentsRest {
 
     }
 
+    @PUT
+    @Path("/{id : \\d+}/date")
+    @ApiOperation(value = "Update the DeploymentDate of a Deployment - used by Angular")
+    public Response changeDeploymentDate(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId, @ApiParam("New date") long date) {
+        Date newDate = new Date(date);
+        if (newDate == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto("Invalid deployment date")).build();
+        }
+        try {
+            deploymentBoundary.changeDeploymentDate(deploymentId, newDate);
+        } catch (RuntimeException e) {
+            return catchDeploymentStateException(e);
+        }
+        return Response.status(Response.Status.OK).build();
+    }
+
+
+    @PUT
+    @Path("/{id : \\d+}/updateState")
+    @Consumes("text/plain")
+    @ApiOperation(value = "Update state of a deployment - used by Angular")
+    public Response updateState(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId,
+                                @ApiParam("state as string") String statusStr) {
+        DeploymentState state;
+        try {
+            state = DeploymentState.valueOf(statusStr);
+        } catch (IllegalArgumentException e) {
+            String possibleValues = Arrays.toString(DeploymentState.values());
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto(String.format("invalid state. must be one of %s", possibleValues) )).build();
+        }
+
+        try {
+            switch (state) {
+                case canceled:
+                    deploymentBoundary.cancelDeployment(deploymentId);
+                    break;
+                case rejected:
+                    deploymentBoundary.rejectDeployment(deploymentId);
+                    break;
+                default:
+                    return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(new ExceptionDto(String.format("Change state to '%s' not implemented yet", state.toString()) )).build();
+            }
+            return Response.status(Status.OK).build();
+        } catch (RuntimeException e) {
+            return catchDeploymentStateException(e);
+        }
+    }
+
+    @GET
+    @Path("/{id : \\d+}/detail")
+    @ApiOperation(value = "Get detail information of a Deployment - used by Angular")
+    public Response getDeploymentDetail(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId) {
+        DeploymentEntity deployment;
+        try {
+            deployment = deploymentBoundary.getDeploymentById(deploymentId);
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto("Deployment with id "
+                    + deploymentId + "not found" )).build();
+        }
+        return Response.status(Response.Status.OK).entity(new DeploymentDetailDTO(deployment)).build();
+    }
+
+    @GET
+    @Path("/{id : \\d+}/withActions")
+    // support digit only
+    @ApiOperation(value = "Get a Deployment including actions by id - used by Angular")
+    public Response getDeploymentWithActions(@ApiParam("Deployment ID") @PathParam("id") Integer id) {
+        DeploymentEntity result;
+
+        try {
+            result = deploymentBoundary.getDeploymentById(id);
+        } catch (RuntimeException e) {
+            return catchNoResultException(e, "Deployment with id " + id + " not found.");
+        }
+
+        return Response.status(Status.OK).entity(createDeploymentDTO(result)).build();
+    }
+
     @GET
     @Path("/canDeploy/{resourceGroupId}")
-    @ApiOperation(value = "Checks if caller is allowed to deploy a given ResourceGroup on the specified Environment(s)  - used by Angular")
+    @ApiOperation(value = "Checks if caller is allowed to deploy a given ResourceGroup on the specified Environment(s) - used by Angular")
     public Response canDeploy(@PathParam("resourceGroupId") Integer resourceGroupId,
                               @QueryParam("contextId") Set<Integer> contextIds) {
         ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
@@ -418,7 +622,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/canRequestDeployment/{resourceGroupId}")
-    @ApiOperation(value = "Checks if caller is allowed to request a deployment a given ResourceGroup on the specified Environment(s)  - used by Angular")
+    @ApiOperation(value = "Checks if caller is allowed to request a deployment a given ResourceGroup on the specified Environment(s) - used by Angular")
     public Response canRequestDeployment(@PathParam("resourceGroupId") Integer resourceGroupId,
                               @QueryParam("contextId") Set<Integer> contextIds) {
         ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
@@ -434,6 +638,29 @@ public class DeploymentsRest {
             }
         }
         return Response.ok(hasPermission).build();
+    }
+
+    @GET
+    @Path("/canRequestDeployment/")
+    @ApiOperation(value = "Checks if the caller is allowed to request a deployment at all - used by Angular")
+    public Response canRequestDeployment() {
+
+        return Response.ok(permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.CREATE)).build();
+    }
+
+    @GET
+    @Path("/isAngularDeploymentsGuiActive/")
+    @ApiOperation(value = "Check if angular deployments gui is active - used by Angular")
+    public Response isAngularDeploymentsGuiActive() {
+        boolean isActive = ! ConfigurationService.getPropertyAsBoolean(FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI);
+        return Response.ok(isActive).build();
+    }
+
+    @GET
+    @Path("/csvSeparator/")
+    @ApiOperation(value = "Returns the configured csv separator - used by Angular")
+    public Response getCsvSeparator() {
+        return Response.ok(ConfigurationService.getProperty(ConfigurationService.ConfigKey.CSV_SEPARATOR)).build();
     }
 
     /**

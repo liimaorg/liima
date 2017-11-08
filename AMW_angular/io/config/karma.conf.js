@@ -32,6 +32,7 @@ module.exports = function(config) {
     files: [ { pattern: './config/spec-bundle.js', watched: false },
       { pattern: './node_modules/jquery/dist/jquery.min.js', watched: false },
       { pattern: './node_modules/moment/min/moment.min.js', watched: false },
+      { pattern: './node_modules/bootstrap/js/modal.js', watched: false },
       { pattern: './node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js', watched: false }],
 
     /*

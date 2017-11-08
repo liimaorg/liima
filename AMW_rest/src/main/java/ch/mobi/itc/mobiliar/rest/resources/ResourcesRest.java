@@ -266,7 +266,7 @@ public class ResourcesRest {
         List<AppWithVersionDTO> apps = new ArrayList<>();
         List<DeploymentEntity.ApplicationWithVersion> appVersions = deploymentBoundary.getVersions(appServer, contextIds, release);
         for (DeploymentEntity.ApplicationWithVersion appVersion : appVersions) {
-            apps.add(new AppWithVersionDTO(appVersion.getApplicationName(), appVersion.getVersion()));
+            apps.add(new AppWithVersionDTO(appVersion.getApplicationName(), appVersion.getApplicationId(), appVersion.getVersion()));
         }
         return Response.ok(apps).build();
 

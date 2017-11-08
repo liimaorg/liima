@@ -359,7 +359,14 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private composeSuccessMessage() {
-    let link: string = '<a href="/AMW_web/pages/deploy.xhtml?tracking_id=' + this.deploymentResponse.trackingId + '">Tracking Id ' + this.deploymentResponse.trackingId + '</a>';
+    let link: string;
+    if (this.deploymentService.isAngularDeploymentsGuiActive()) {
+      link = '<a href="#/deployments?filters=[{%22name%22:%22Tracking%20Id%22,%22val%22:%22'
+        + this.deploymentResponse.trackingId + '%22}]">';
+    } else {
+      link = '<a href="/AMW_web/pages/deploy.xhtml?tracking_id=' + this.deploymentResponse.trackingId + '">';
+    }
+    link += 'Tracking Id ' + this.deploymentResponse.trackingId + '</a>';
     this.successMessage = 'Deployment created: <strong>' + link + '</strong>';
   }
 

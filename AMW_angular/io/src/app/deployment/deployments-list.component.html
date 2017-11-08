@@ -1,0 +1,290 @@
+<div class="panel panel-default">
+  <div class="panel-heading">Deployments</div>
+  <div class="table-responsive">
+    <table class="table table-sm" *ngIf="(deployments.length > 0)">
+      <tr>
+        <th class="has-checkbox"><input type="checkbox" (click)="switchAllDeployments()"> <span class="link" (click)="reSort('d.trackingId')">Tracking id
+          <ng-container *ngIf="sortCol === 'd.trackingId'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
+        <th><span class="link" (click)="reSort('d.deploymentState')">State
+          <ng-container *ngIf="sortCol === 'd.deploymentState'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
+        <th><span class="link" (click)="reSort('d.resourceGroup.name')">App server
+          <ng-container *ngIf="sortCol === 'd.resourceGroup.name'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
+        <th><span class="link" (click)="reSort('d.release.installationInProductionAt')">Release
+          <ng-container *ngIf="sortCol === 'd.release.installationInProductionAt'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
+        <th><span class="link" (click)="reSort('d.context.name')">Env
+          <ng-container *ngIf="sortCol === 'd.context.name'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
+        <th><span class="link" (click)="reSort('d.deploymentDate')">Deployment date
+          <ng-container *ngIf="sortCol === 'd.deploymentDate'">
+            <span *ngIf="sortDirection === 'DESC'" aria-hidden="true" class="glyphicon glyphicon-triangle-bottom"></span>
+            <span *ngIf="sortDirection === 'ASC'" aria-hidden="true" class="glyphicon glyphicon-triangle-top"></span>
+          </ng-container>
+        </span></th>
+        <th>Actions</th>
+      </tr>
+      <tr *ngFor="let deployment of deployments" class="{{deployment.state}}">
+        <td class="has-checkbox"><input type="checkbox" [(ngModel)]="deployment.selected"> {{deployment.trackingId}}</td>
+        <td><span class="glyphicon glyphicon-info-sign pointer" aria-hidden="true" title="Show details about this deployment" (click)="showDetails(deployment.id)">
+          <span class="action">{{deployment.reason ? failureReason[deployment.reason] : deployment.state }}</span>
+        </span></td>
+        <td><a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.appServerId}}&ctx=1">{{deployment.appServerName}}</a>
+            <ul class="nob">
+              <li *ngFor="let appWithVersion of deployment.appsWithVersion"><a href="/AMW_web/pages/editResourceView.xhtml?id={{appWithVersion.applicationId}}&ctx=1">{{appWithVersion.applicationName}}</a> ({{appWithVersion.version}})</li>
+            </ul>
+        </td>
+        <td>{{deployment.releaseName}}</td>
+        <td><strong>{{deployment.environmentName}}</strong></td>
+        <td>
+          <ng-container *ngIf="deployment.actions.editPossible">
+            <span [attr.class]="deployment.deploymentDelayed ? 'glyphicon glyphicon-hourglass pointer' : pointer" (click)="showDateChange(deployment.id)" title="change the deployment date">
+              <span [attr.class]="deployment.deploymentDelayed ? 'delayed' : 'action'">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
+            </span>
+          </ng-container>
+          <ng-container *ngIf="!deployment.actions.editPossible">
+            <span [attr.class]="deployment.deploymentDelayed ? 'glyphicon glyphicon-hourglass' : null">
+              <span [attr.class]="deployment.deploymentDelayed ? 'delayed' : 'action'">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
+            </span>
+          </ng-container>
+        </td>
+        <td>
+          <ng-container *ngIf="deployment.actions.confirmPossible">
+            <span class="glyphicon glyphicon-ok text-success pointer" (click)="showConfirm(deployment.id)">
+              <span class="confirm">confirm</span>
+            </span><br>
+          </ng-container>
+          <ng-container *ngIf="deployment.actions.rejectPossible">
+            <span class="glyphicon glyphicon-remove text-danger pointer" (click)="showReject(deployment.id)">
+              <span class="reject">reject</span>
+            </span><br>
+          </ng-container>
+          <ng-container *ngIf="deployment.actions.cancelPossible">
+            <span class="glyphicon glyphicon-ban-circle text-danger pointer" (click)="showCancel(deployment.id)">
+              <span class="action">cancel</span>
+            </span><br>
+          </ng-container>
+          <ng-container *ngIf="deployment.actions.redeployPossible">
+            <a class="action" href="#/deployment/{{deployment.id}}">
+              <span class="glyphicon glyphicon-repeat pointer">
+                <span class="action">redeploy</span>
+              </span>
+            </a><br>
+          </ng-container>
+          <ng-container *ngIf="deployment.actions.hasLogFiles">
+            <a class="action" href="/AMW_web/pages/logView.xhtml?deploymentId={{deployment.id}}&filters={{ filtersInUrl | json:0}}">
+              <span class="glyphicon glyphicon-file pointer">
+                <span class="action">logs</span>
+              </span>
+            </a><br>
+          </ng-container>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="panel-footer">
+    <div class="btn-toolbar" role="toolbar" aria-label="...">
+      <ng-container *ngIf="pages()">
+        <div class="btn-group" role="group">
+          <ul class="pagination pagination-amw pointer">
+            <li class="{{currentPage < 2 ? 'disabled' : ''}}" aria-label="first" (click)="toPage(1)"><span aria-hidden="true">&laquo;</span></li>
+            <li class="{{currentPage < 2 ? 'disabled' : ''}}" aria-label="previous" (click)="toPage(currentPage-1)"><span aria-hidden="true">&lt;</span></li>
+            <li *ngFor="let page of pages()" class="{{currentPage === page ? 'active' : ''}}"><a (click)="toPage(page)">{{page}}<span class="sr-only">(current)</span></a></li>
+            <li class="{{currentPage === lastPage ? 'disabled' : ''}}" aria-label="next" (click)="toPage(currentPage+1)"><span aria-hidden="true">&gt;</span></li>
+            <li class="{{currentPage === lastPage ? 'disabled' : ''}}" aria-label="last" (click)="toPage(lastPage)"><span aria-hidden="true">&raquo;</span></li>
+          </ul>
+        </div>
+      </ng-container>
+      <div class="btn-group pull-right" role="group">
+        <select class="pagination pagination-amw form-control" [(ngModel)]="maxResults" (change)="setMax()">
+          <option>10</option>
+          <option>20</option>
+          <option>50</option>
+          <option>100</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="deploymentDetails" class="modal">
+  <ng-container *ngIf="deployment">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Details for deployment #{{deployment.id}} [tracking id: {{deployment.trackingId}}] for
+          app server: {{deployment.appServerName}}</h4>
+      </div>
+      <div class="modal-body">
+        <h4>{{deployment.state}}</h4>
+        <p>requested by: {{deployment.requestUser}}<br>
+        created at: {{deployment.deploymentJobCreationDate | date:'dd.MM.y HH:mm'}}</p>
+        <ng-container *ngIf="deployment.confirmUser && deployment.state !== 'rejected'">
+          <p>confirmed by: {{deployment.confirmUser}}<br>
+          confirmed at: {{deployment.deploymentConfirmationDate | date:'dd.MM.y HH:mm'}}</p>
+        </ng-container>
+        <ng-container *ngIf="deployment.confirmUser && deployment.state === 'rejected'">
+          <p>rejected by: {{deployment.confirmUser}}<br>
+          rejected at: {{deployment.deploymentConfirmationDate | date:'dd.MM.y HH:mm'}}</p>
+        </ng-container>
+        <ng-container *ngIf="deployment.deploymentDelayed">
+          <h4>deployment job delayed</h4>
+          <p>planed deployment date: {{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</p>
+        </ng-container>
+        <ng-container *ngIf="deployment.cancelUser">
+          <h4>deployment job canceled</h4>
+          <p>canceled by: {{deployment.cancelUser}}<br>
+          canceled at: {{deployment.deploymentCancelDate | date:'dd.MM.y HH:mm'}}</p>
+        </ng-container>
+        <ng-container *ngIf="deployment.deploymentParameters.length > 0">
+          <h4>deployment parameter</h4>
+          <p>
+            <ng-container *ngFor="let param of deployment.deploymentParameters">
+              {{param.key}}: {{param.value}}<br>
+            </ng-container>
+          </p>
+        </ng-container>
+        <ng-container *ngIf="deployment.reason">
+          <h4>failure reason</h4>
+          <p>{{failureReason[deployment.reason]}}</p>
+        </ng-container>
+        <ng-container *ngIf="deploymentDetail && deploymentDetail.stateMessage">
+          <h4>state message</h4>
+          <pre>{{deploymentDetail.stateMessage}}</pre>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  </ng-container>
+</div>
+
+<div id="deploymentDateChange" class="modal">
+  <ng-container *ngIf="deployment">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Change deployment date of deployment #{{deployment.id}} for app server {{deployment.appServerName}}</h4>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <span [innerHTML]="errorMessage"></span>
+          </div>
+          <div class="input-group date datepicker">
+            <input type="text" class="form-control" #datePicker [ngModel]="deployment.deploymentDate | date:'dd.MM.y HH:mm'"
+                   (blur)="deploymentDate = datePicker.value">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="doDateChange()">Save</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<div id="deploymentConfirmation" class="modal">
+  <ng-container *ngIf="deploymentDetail">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Confirm deployment #{{deployment.id}} for app server {{deployment.appServerName}}</h4>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" [ngModel]="deploymentDetail.sendEmailWhenDeployed">
+              send an email when deployed
+            </label>
+          </div>
+
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" [ngModel]="deploymentDetail.simulateBeforeDeployment">
+              simulate before deployment
+            </label>
+          </div>
+
+          <div class="checkbox" *ngIf="hasPermissionShakedownTest">
+            <label>
+              <input type="checkbox" [(ngModel)]="deploymentDetail.shakedownTestsWhenDeployed">
+              execute shakedown tests when deployed
+            </label>
+          </div>
+          <div class="checkbox" *ngIf="deploymentDetail.shakedownTestsWhenDeployed">
+            <label>
+              <input type="checkbox" [(ngModel)]="deploymentDetail.neighbourhoodTest">
+              test neighbourhood
+            </label>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="doConfirm()">Confirm</button>
+      </div>
+    </div>
+  </div>
+  </ng-container>
+</div>
+
+<div id="deploymentRejection" class="modal">
+  <ng-container *ngIf="deployment">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Reject deployment #{{deployment.id}} for app server {{deployment.appServerName}}</h4>
+        </div>
+        <div class="modal-body">
+          <p class="text-warning"><small>Are you sure that you want to reject this deployment?</small></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="doReject()">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<div id="deploymentCancelation" class="modal">
+  <ng-container *ngIf="deployment">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Cancel deployment #{{deployment.id}} for app server {{deployment.appServerName}}</h4>
+        </div>
+        <div class="modal-body">
+          <p class="text-warning"><small>Are you sure that you want to cancel this deployment?</small></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="doCancel()">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

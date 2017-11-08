@@ -259,7 +259,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   private updatePermissions(restriction: Restriction) {
-    let i = _.findIndex(this.restrictions, _.pick(restriction, 'id'));
+    let i: number = _.findIndex(this.restrictions, _.pick(restriction, 'id'));
     if (i !== -1) {
       this.restrictions.splice(i, 1, restriction);
     } else {
@@ -270,7 +270,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   private reorderRestrictions(restrictions: Restriction[]) {
     this.restrictions = _.sortBy(restrictions, [function(s: Restriction) {
-      return s.permission.name.replace(/[_]/, ''); }, 'action'])
+      return s.permission.name.replace(/[_]/, ''); }, 'action']);
   }
 
   private extractEnvironmentGroups() {

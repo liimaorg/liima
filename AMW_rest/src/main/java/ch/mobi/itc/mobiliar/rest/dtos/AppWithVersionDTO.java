@@ -25,19 +25,21 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @XmlRootElement(name = "appWithVersion")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@NoArgsConstructor
 public class AppWithVersionDTO {
 	
 	private String applicationName;
+	private Integer applicationId;
 	private String version;
-	
-	public AppWithVersionDTO() {}
-	
-	public AppWithVersionDTO(String applicationName, String version) {
+
+	public AppWithVersionDTO(String applicationName, Integer applicationId, String version) {
 		this.applicationName = applicationName;
+		this.applicationId = applicationId;
 		this.version = version;
 	}
 	

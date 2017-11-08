@@ -28,6 +28,7 @@ import java.util.List;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
@@ -40,7 +41,6 @@ import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CopyResource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourcesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
@@ -64,7 +64,7 @@ public class ReleasingDataProvider implements Serializable {
 	ReleaseMgmtService releaseMgmtService;
 
 	@Inject
-	ResourcesScreenDomainService resourcesScreenDomainService;
+	ResourceBoundary resourceBoundary;
 
 	@Inject
     PermissionBoundary permissionBoundary;
@@ -228,10 +228,10 @@ public class ReleasingDataProvider implements Serializable {
 			    }
 			}
 			if (currentSelectedResource.getResourceType().isDefaultResourceType()) {
-				resourcesScreenDomainService.removeResourceEntityOfDefaultResType(ForeignableOwner.getSystemOwner(), currentSelectedResource.getId());
+				resourceBoundary.removeResourceEntityOfDefaultResType(ForeignableOwner.getSystemOwner(), currentSelectedResource.getId());
 			}
 			else {
-			    resourcesScreenDomainService.removeResource(ForeignableOwner.getSystemOwner(), currentSelectedResource.getId());
+				resourceBoundary.removeResource(ForeignableOwner.getSystemOwner(), currentSelectedResource.getId());
 			}
 		    GlobalMessageAppender.addSuccessMessage("Release successfully removed!");
 		    	return fallbackRelease==null ? "resourceList?faces-redirect=true" : NavigationUtils.getRefreshOutcomeWithResource(fallbackRelease);

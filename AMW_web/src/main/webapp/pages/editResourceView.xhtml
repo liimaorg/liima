@@ -211,12 +211,20 @@
                         </li>
                         <li>
                             <h:link outcome="deploy"
-                                    value="Deployments" styleClass="btn light"
-                                    rendered="${editResourceView.canShowDeploymentLink}">
+                                    value="Deployments"
+                                    styleClass="btn light"
+                                    rendered="${editResourceView.canShowDeploymentLink and not editResourceView.angularDeploymentLink}">
                                 <f:param name="application_name" value="${editResourceView.applicationName}"/>
                                 <f:param name="appserver_name" value="${editResourceView.applicationServerName}"/>
                                 <f:param name="environment_name" value="${editResourceView.environmentName}"/>
                             </h:link>
+
+                            <ui:fragment rendered="${editResourceView.canShowDeploymentLink and editResourceView.angularDeploymentLink}">
+                                <a href="/AMW_angular/#/deployments?filters=${editResourceView.deploymentLinkAngular}">
+                                    Deployments
+                                </a>
+                            </ui:fragment>
+
                         </li>
                     </ul>
                 </li>

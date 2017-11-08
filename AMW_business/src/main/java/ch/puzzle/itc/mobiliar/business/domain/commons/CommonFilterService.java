@@ -77,9 +77,10 @@ public class CommonFilterService {
 	 * @param uniqueCol Oracle needs to sort by a unique column for pagination to work correctly
 	 * @param lowerSortColumn
 	 * @param hasSpecialFilter must be set to true if the filters list contains a FilterType.SpecialFilterType
+	 * @param groupByContext must be set to true when used for pagination count if filters list contains a FilterType.SpecialFilterType AND State filter
 	 * @return
 	 */
-	public Query addFilterAndCreateQuery(StringBuilder stringQuery, List<CustomFilter> filter, String colToSort, SortingDirectionType sortingDirection, String uniqueCol, boolean lowerSortColumn, boolean hasSpecialFilter) {
+	public Query addFilterAndCreateQuery(StringBuilder stringQuery, List<CustomFilter> filter, String colToSort, SortingDirectionType sortingDirection, String uniqueCol, boolean lowerSortColumn, boolean hasSpecialFilter, boolean groupByContext) {
 		Map<String, CustomFilter> parameterMap = new HashMap<>();
 		String uniqueColSortString = SPACE_STRING + uniqueCol + SPACE_STRING + "desc" + SPACE_STRING;
 		if (filter != null && !filter.isEmpty()) {
@@ -112,6 +113,10 @@ public class CommonFilterService {
 		else if (uniqueCol != null){
 			stringQuery.append(" order by ").append(uniqueColSortString);
 		}
+
+		if (groupByContext) {
+			stringQuery.append(" group by d.context");
+		}
 		
 		log.fine("Query: " + stringQuery);
 		Query q = em.createQuery(stringQuery.toString());
@@ -133,7 +138,11 @@ public class CommonFilterService {
 			} else if (f.isStringType()) {
 				if(DeploymentFilterTypes.APPLICATION_NAME.getFilterDisplayName().equals(f.getFilterDisplayName())) {
 					//all app names are in a json structure so we have to search with %
-					q.setParameter(parameter, "%"+f.getStringValue()+"%");
+					if (f.getStringValue().equals("*")) {
+						q.setParameter(parameter, "%%");
+					}else {
+						q.setParameter(parameter, "%" + f.getStringValue() + "%");
+					}
 				}
 				else {
 					q.setParameter(parameter, JpaWildcardConverter.convertWildCards(f.getStringValue()));
@@ -260,8 +269,8 @@ public class CommonFilterService {
 	}
 
 	protected void createQueryForBooleanTypeWithoutAddingParameterToParameterMap(StringBuilder query, CustomFilter deploymentFilter) {
-		if ((deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.notequal) && !deploymentFilter.getBooleanValue())
-				|| (deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.equals) && deploymentFilter.getBooleanValue())) {
+		if ((deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.neq) && !deploymentFilter.getBooleanValue())
+				|| (deploymentFilter.getComparatorSelection().equals(ComparatorFilterOption.eq) && deploymentFilter.getBooleanValue())) {
 			query.append(deploymentFilter.getDeploymentTableColumnName()).append(" is true ");
 		} else {
 			query.append("(").append(deploymentFilter.getDeploymentTableColumnName()).append(" is null OR ");

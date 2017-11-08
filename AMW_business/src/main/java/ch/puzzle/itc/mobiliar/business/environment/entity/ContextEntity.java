@@ -29,6 +29,7 @@ import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.NamedQuery;
 import org.hibernate.envers.AuditMappedBy;
 import org.hibernate.envers.Audited;
@@ -38,6 +39,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
 
 /**
@@ -98,7 +100,8 @@ public class ContextEntity extends AbstractContext implements Serializable {
     private Set<ResourceTypeContextEntity> resourceTypeContextEntities;
 
     @Getter
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "context")
+    @OneToMany(cascade = {PERSIST, MERGE}, mappedBy = "context")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @NotAudited
     private Set<DeploymentEntity> deploys;
 

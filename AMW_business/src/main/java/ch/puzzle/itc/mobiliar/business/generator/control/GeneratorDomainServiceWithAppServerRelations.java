@@ -491,10 +491,18 @@ public class GeneratorDomainServiceWithAppServerRelations {
             message.append(generationResult.getErrorMessage());
         }
 
+        DeploymentFailureReason reason = null;
+        for (EnvironmentGenerationResult environmentGenerationResult : generationResult.getEnvironmentGenerationResults()) {
+            if (environmentGenerationResult.allNodesDisabled()) {
+                reason = DeploymentFailureReason.NODE_MISSING;
+                break;
+            }
+        }
+
         log.log(Level.WARNING, "Deployment fehlgeschlagen \n" + message.toString());
         deploymentBoundary.updateDeploymentInfo(generationModus, deployment.getId(), message.toString(),
                   deployment.getResource() != null ? deployment
-                            .getResource().getId() : null, generationResult, null);
+                            .getResource().getId() : null, generationResult, reason);
         if (generationModus.isSendNotificationOnErrorGenerationModus()) {
             deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
         }
@@ -592,7 +600,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
     			|| GenerationModus.PREDEPLOY.equals(context.getGenerationModus())
     			|| GenerationModus.SIMULATE.equals(context.getGenerationModus())){
 	    	// create NodeJob for this Node and Add to Deployment in Deploy and Predeploy mode
-	        nodeJobEntity = deploymentBoundary.createAndPersistNodeJobEntity(context.getDeployment(), context.getNode());
+	        nodeJobEntity = deploymentBoundary.createAndPersistNodeJobEntity(context.getDeployment());
 	        
     	}else{
     		// create Test NodeJob Entity

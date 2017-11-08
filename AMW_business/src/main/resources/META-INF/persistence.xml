@@ -6,6 +6,9 @@
 	<persistence-unit name="amw">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<jta-data-source>java:jboss/datasources/amwDS</jta-data-source>
+		<properties>
+			<property name="org.hibernate.envers.store_data_at_delete" value="true"/>
+		</properties>
 	</persistence-unit>
 
 </persistence>
