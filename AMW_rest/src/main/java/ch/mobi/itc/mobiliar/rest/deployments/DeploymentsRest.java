@@ -283,8 +283,10 @@ public class DeploymentsRest {
             if (apps == null) {
                 apps = new HashSet<>();
             }
-            if(request.getAppsWithVersion() != null) {
+            if (request.getAppsWithVersion() != null) {
                 applicationsWithVersion = convertToApplicationWithVersion(request.getAppsWithVersion(), apps);
+            } else {
+                applicationsWithVersion = deploymentBoundary.getVersions(appServer, new ArrayList<Integer>(environment.getId()), release);
             }
 
         } catch (ValidationException e) {
