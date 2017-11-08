@@ -68,9 +68,9 @@ public class DeploymentDTO {
 		this.trackingId = entity.getTrackingId();
 		this.state = entity.getDeploymentState();
 		this.appServerName = entity.getResourceGroup().getName();
-		this.appServerId = entity.getResourceGroup().getId();
+		this.appServerId = entity.getResource().getId();
 		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
-			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
+			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
 		}
 		for (DeploymentParameter param : entity.getDeploymentParameters()) {
 			deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
