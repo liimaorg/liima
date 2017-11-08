@@ -56,7 +56,6 @@ import com.google.gson.JsonSyntaxException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.jaxrs.PATCH;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -473,7 +472,7 @@ public class DeploymentsRest {
         return Response.status(Response.Status.OK).build();
     }
 
-    @PATCH
+    @PUT
     @Path("/{id : \\d+}/confirm")
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Confirm a deployment")
@@ -518,7 +517,7 @@ public class DeploymentsRest {
 
     }
 
-    @PATCH
+    @PUT
     @Path("/{id : \\d+}/date")
     @ApiOperation(value = "Update the DeploymentDate of a Deployment - used by Angular")
     public Response changeDeploymentDate(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId, @ApiParam("New date") long date) {
