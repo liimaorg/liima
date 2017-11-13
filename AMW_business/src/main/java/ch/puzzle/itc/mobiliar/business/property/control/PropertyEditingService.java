@@ -279,7 +279,7 @@ public class PropertyEditingService {
         if (relevantContexts.isEmpty()) {
             return Collections.EMPTY_MAP;
         }
-        List<Integer> contextIds = buldRelevantContextIdsList(relevantContexts);
+        List<Integer> contextIds = buildRelevantContextIdsList(relevantContexts);
         Query query = queries.getPropertyOverviewForResourceQuery(property.getTechnicalKey(), resource.getId(), contextIds);
         return getDifferingProperties(property, query);
     }
@@ -299,7 +299,8 @@ public class PropertyEditingService {
         if (relevantContexts.isEmpty()) {
             return Collections.EMPTY_MAP;
         }
-        List<Integer> relevantContextIds = buldRelevantContextIdsList(relevantContexts);
+        List<Integer> relevantContextIds = buildRelevantContextIdsList(relevantContexts);
+        // TODO query for provided resource
         Query query = queries.getPropertyOverviewForRelatedResourceQuery(property.getTechnicalKey(), relationId, relevantContextIds);
         return getDifferingProperties(property, query);
     }
@@ -314,7 +315,7 @@ public class PropertyEditingService {
         return differingProps;
     }
 
-    private List<Integer> buldRelevantContextIdsList(List<ContextEntity> contextList) {
+    private List<Integer> buildRelevantContextIdsList(List<ContextEntity> contextList) {
         List<Integer> relevantContexts = new ArrayList<>();
         for (ContextEntity contextEntity : contextList) {
             relevantContexts.add(contextEntity.getId());
@@ -332,7 +333,7 @@ public class PropertyEditingService {
 	 * @param propertyId
 	 * @return {@link Map.Entry where the key is the context/environment as string and the value it's value}
 	 */
-    private Map.Entry createEntryForOverridenProperty(Object resultSetEntry, Integer propertyId) {
+    private Map.Entry<String, String> createEntryForOverridenProperty(Object resultSetEntry, Integer propertyId) {
         Object[] tuple = (Object[]) resultSetEntry;
         String contextName = String.valueOf(tuple[0]);
         String valueForContext;
