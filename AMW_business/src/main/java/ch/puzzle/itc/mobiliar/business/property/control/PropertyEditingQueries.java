@@ -113,10 +113,10 @@ public class PropertyEditingQueries {
      *
      * @param propertyName propertyName which is set on corresponding the propertyDescriptor
      * @param resourceId
-     * @param relevantContext
+     * @param relevantContexts
      * @return
      */
-    public Query getPropertyOverviewForResourceQuery(String propertyName, int resourceId, List<Integer> relevantContext) {
+    public Query getPropertyOverviewForResourceQuery(String propertyName, int resourceId, List<Integer> relevantContexts) {
         StringBuffer template = new StringBuffer();
         template.append(" SELECT context.name, property.VALUE FROM TAMW_PROPERTY property");
         template.append(" JOIN TAMW_PROPERTYDESCRIPTOR propertydescriptor on property.DESCRIPTOR_ID = propertydescriptor.ID");
@@ -125,12 +125,11 @@ public class PropertyEditingQueries {
         template.append(" JOIN TAMW_CONTEXT context on resourcecontext.CONTEXT_ID = context.ID");
         template.append(" WHERE propertydescriptor.PROPERTYNAME = :propertyName ");
         template.append(" AND resourcecontext.RESOURCE_ID = :resourceId ");
-        template.append(" AND resourcecontext.CONTEXT_ID in (%s)");
-        String relevantContextIds = relevantContext.toString().replaceAll("[\\[]", "").replaceAll("[\\]]", "");
-        String templateString = String.format(template.toString(), relevantContextIds);
-        Query query = entityManager.createNativeQuery(templateString)
+        template.append(" AND resourcecontext.CONTEXT_ID in (:relevantContexts)");
+        Query query = entityManager.createNativeQuery(template.toString())
             .setParameter("propertyName", propertyName)
-            .setParameter("resourceId", resourceId);
+            .setParameter("resourceId", resourceId)
+            .setParameter("relevantContexts", relevantContexts);
         return query;
 
     }
@@ -154,12 +153,11 @@ public class PropertyEditingQueries {
         template.append(" JOIN TAMW_CONTEXT context ON context.ID=resRelContext.CONTEXT_ID");
         template.append(" WHERE propertydescriptor.PROPERTYNAME = :propertyName");
         template.append(" AND resRelation.ID = :relationId");
-        template.append(" AND context.ID in (%s)");
-        String relevantContextIdsAsString = relevantContextIds.toString().replaceAll("[\\[]", "").replaceAll("[\\]]", "");
-        String templateString = String.format(template.toString(), relevantContextIdsAsString);
-        Query query = entityManager.createNativeQuery(templateString)
+        template.append(" AND context.ID in (:relevantContextIds)");
+        Query query = entityManager.createNativeQuery(template.toString())
             .setParameter("propertyName", propertyName)
-            .setParameter("relationId", relationId);
+            .setParameter("relationId", relationId)
+            .setParameter("relevantContextIds", relevantContextIds);
         return query;
     }
 
