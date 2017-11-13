@@ -2,18 +2,22 @@
 
 ## New features
 * Deployment screen was rewriten in angular: [#89](https://github.com/liimaorg/liima/issues/89)
-* Deployment Filters are now writen to the url automatically and can be bookmarked this way:  [#35](https://github.com/liimaorg/liima/issues/35)
-* The most common deployment failure reasons are now shown directly on the deployment: [#75](https://github.com/liimaorg/liima/issues/75)
+  * Deployment Filters are now writen to the url automatically and can be bookmarked or copied to the clipboard:  [#35](https://github.com/liimaorg/liima/issues/35)
+  * The most common deployment failure reasons are now shown directly on the deployment: [#75](https://github.com/liimaorg/liima/issues/75)
+  * To whole deployment row is now colored if deployment failed (red) or is successful (green).
+  * More space for the deployment table.
 * To preserve the deployment histroy deployment entries are no longer deleted if an AppServer, Environment, Release or Runtime is deleted: [#79](https://github.com/liimaorg/liima/issues/79)
 
 # Bug fixes
-* Deployment filter: Latest deployment job for ... shows two deployments for one env: [#23](https://github.com/liimaorg/liima/issues/23)
+* Deployment filter: "Latest deployment job for ..." shows two deployments for one env: [#23](https://github.com/liimaorg/liima/issues/23)
+  * Unfortunately this make the filter slower as paging happens now in code instead of SQL.
 * The deployment filters "Latest deployment job for App & State" and "State filter" didn't work correctly together: [#42](https://github.com/liimaorg/liima/issues/42)
 * Edit Resource View of AppServer: NODE not selectable: [#207](https://github.com/liimaorg/liima/issues/207)
 * AMW_angular/#/deployment/: redeploy sometimes doesn't set an environment: [#122](https://github.com/liimaorg/liima/issues/122)
 
 ## API Changes
-* `GET /deployments` was replaced with `GET /deployments/filter` and is now depricated
+* Added multiple new REST endpoints for the new deployment screen, see Swagger for details.
+* `GET /deployments` was replaced with `GET /deployments/filter` and is now depricated.
 
 # v1.14.0
 
