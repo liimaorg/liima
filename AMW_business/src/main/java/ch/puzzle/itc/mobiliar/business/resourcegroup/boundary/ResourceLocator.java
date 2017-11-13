@@ -372,4 +372,12 @@ public class ResourceLocator {
         return map;
     }
 
+    public ResourceEntity getResourceById(Integer resourceId) {
+        try {
+            return resourceRepository.find(resourceId);
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
 }
