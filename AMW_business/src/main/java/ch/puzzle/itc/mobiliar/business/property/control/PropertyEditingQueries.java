@@ -251,7 +251,7 @@ public class PropertyEditingQueries {
                     reader.close();
                 }
             }
-			return sw.toString().trim();
+            return sw.toString().trim();
         } catch (IOException e) {
             //if we have issues of reading the sql files of the current classpath, there is something completely wrong - we better throw a runtime exception
             throw new RuntimeException(e);

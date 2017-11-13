@@ -78,271 +78,271 @@ import java.util.logging.Logger;
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class PropertyEditor {
 
-	// TODO Move methods to the proper boundary
+    // TODO Move methods to the proper boundary
 
-	@Inject
-	PropertyDescriptorService propertyDescriptorService;
+    @Inject
+    PropertyDescriptorService propertyDescriptorService;
 
-	@Inject
-	PropertyValueService propertyValueService;
+    @Inject
+    PropertyValueService propertyValueService;
 
-	@Inject
-	PropertyValidationService propertyValidationService;
+    @Inject
+    PropertyValidationService propertyValidationService;
 
-	@Inject
-	PropertyTypeService propertyTypeService;
+    @Inject
+    PropertyTypeService propertyTypeService;
 
-	@Inject
-	ResourceValidationService resourceValidationService;
+    @Inject
+    ResourceValidationService resourceValidationService;
 
-	@Inject
-	EntityManager entityManager;
+    @Inject
+    EntityManager entityManager;
 
-	@Inject
-	PropertyEditingService propertyEditingService;
+    @Inject
+    PropertyEditingService propertyEditingService;
 
-	@Inject
-	ResourceEditService resourceEditService;
+    @Inject
+    ResourceEditService resourceEditService;
 
-	@Inject
-	ContextDomainService contextService;
+    @Inject
+    ContextDomainService contextService;
 
-	@Inject
+    @Inject
     PermissionBoundary permissionBoundary;
 
-	@Inject
-	ResourceLocator resourceLocator;
+    @Inject
+    ResourceLocator resourceLocator;
 
     @Inject
     ResourceRepository resourceRepository;
 
-	@Inject
-	ResourceRelationLocator resourceRelationLocator;
+    @Inject
+    ResourceRelationLocator resourceRelationLocator;
 
-	@Inject
-	ContextLocator contextLocator;
+    @Inject
+    ContextLocator contextLocator;
 
-	@Inject
-	ResourceGroupRepository resourceGroupRepository;
+    @Inject
+    ResourceGroupRepository resourceGroupRepository;
 
-	@Inject
-	PropertyTagEditingService propertyTagEditingService;
+    @Inject
+    PropertyTagEditingService propertyTagEditingService;
 
-	@Inject
-	protected Logger log;
+    @Inject
+    protected Logger log;
 
     @Inject
     ForeignableService foreignableService;
 
-	public List<PropertyDescriptorEntity> getAllPropertyDescriptorsForResourceWithNullCardinality(
-			ResourceEntity resource) {
-		return propertyDescriptorService
-				.getPropertyDescriptorsForHasContextWithNullCardinality(entityManager.find(
-						ResourceEntity.class, resource.getId()));
-	}
+    public List<PropertyDescriptorEntity> getAllPropertyDescriptorsForResourceWithNullCardinality(
+            ResourceEntity resource) {
+        return propertyDescriptorService
+                .getPropertyDescriptorsForHasContextWithNullCardinality(entityManager.find(
+                        ResourceEntity.class, resource.getId()));
+    }
 
-	/**
-	 * Loads all property descriptors for the given resource (but not of its resource type) except those
-	 * which are marked to have a special cardinality (usually system properties)
-	 *
-	 * @param resource
-	 * @return
-	 */
-	public List<PropertyDescriptorEntity> getPropertyDescriptorsForResourceWithNullCardinality(
-			ResourceEntity resource) {
-		return propertyDescriptorService
-				.getPropertyDescriptorsForHasContextWithNullCardinality(entityManager.find(
-						ResourceEntity.class, resource.getId()));
-	}
+    /**
+     * Loads all property descriptors for the given resource (but not of its resource type) except those
+     * which are marked to have a special cardinality (usually system properties)
+     *
+     * @param resource
+     * @return
+     */
+    public List<PropertyDescriptorEntity> getPropertyDescriptorsForResourceWithNullCardinality(
+            ResourceEntity resource) {
+        return propertyDescriptorService
+                .getPropertyDescriptorsForHasContextWithNullCardinality(entityManager.find(
+                        ResourceEntity.class, resource.getId()));
+    }
 
-	/**
-	 * Loads all property descriptors for the given resource type except those which are marked to have a
-	 * special cardinality (usually system properties)
-	 *
-	 * @param resourceType
-	 * @return
-	 */
-	public List<PropertyDescriptorEntity> getPropertyDescriptorsForResourceTypeWithNullCardinality(
-			ResourceTypeEntity resourceType) {
-		return propertyDescriptorService
-				.getPropertyDescriptorsForHasContextWithNullCardinality(entityManager.find(
+    /**
+     * Loads all property descriptors for the given resource type except those which are marked to have a
+     * special cardinality (usually system properties)
+     *
+     * @param resourceType
+     * @return
+     */
+    public List<PropertyDescriptorEntity> getPropertyDescriptorsForResourceTypeWithNullCardinality(
+            ResourceTypeEntity resourceType) {
+        return propertyDescriptorService
+                .getPropertyDescriptorsForHasContextWithNullCardinality(entityManager.find(
                         ResourceTypeEntity.class, resourceType.getId()));
-	}
+    }
 
-	/**
-	 * @return all available property types with validation logic
-	 */
-	public List<PropertyTypeEntity> getPropertyTypes() {
-		return propertyTypeService.getPropertyTypes();
-	}
+    /**
+     * @return all available property types with validation logic
+     */
+    public List<PropertyTypeEntity> getPropertyTypes() {
+        return propertyTypeService.getPropertyTypes();
+    }
 
-	/**
-	 * Returns the property values (including information about their descriptors and overwritten values) for
-	 * the given resource in the specified context.
-	 *
-	 * @param resourceId
-	 * @param contextId
-	 * @return
-	 */
-	public List<ResourceEditProperty> getPropertiesForResource(Integer resourceId, Integer contextId) {
-		ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
-		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-		List<ResourceEditProperty> properties = propertyEditingService.loadPropertiesForEditResource(
-				resource.getId(), resource.getResourceType(), context);
-		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
-			return propertyValueService.decryptProperties(properties);
-		}
-		return properties;
-	}
+    /**
+     * Returns the property values (including information about their descriptors and overwritten values) for
+     * the given resource in the specified context.
+     *
+     * @param resourceId
+     * @param contextId
+     * @return
+     */
+    public List<ResourceEditProperty> getPropertiesForResource(Integer resourceId, Integer contextId) {
+        ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
+        ContextEntity context = entityManager.find(ContextEntity.class, contextId);
+        List<ResourceEditProperty> properties = propertyEditingService.loadPropertiesForEditResource(
+                resource.getId(), resource.getResourceType(), context);
+        if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
+            return propertyValueService.decryptProperties(properties);
+        }
+        return properties;
+    }
 
-	/**
-	 * Returns the property values (including information about their descriptors and overwritten values) for
-	 * the given resource type in the specified context.
-	 *
-	 * @param resourceTypeId
-	 * @param contextId
-	 * @return
-	 */
-	public List<ResourceEditProperty> getPropertiesForResourceType(Integer resourceTypeId, Integer contextId) {
-		ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
-		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-		if (permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, context, Action.ALL, null, resourceType)) {
-			return propertyValueService.decryptProperties(propertyEditingService
-					.loadPropertiesForEditResourceType(resourceType, context));
-		}
-		return propertyEditingService.loadPropertiesForEditResourceType(resourceType, context);
-	}
+    /**
+     * Returns the property values (including information about their descriptors and overwritten values) for
+     * the given resource type in the specified context.
+     *
+     * @param resourceTypeId
+     * @param contextId
+     * @return
+     */
+    public List<ResourceEditProperty> getPropertiesForResourceType(Integer resourceTypeId, Integer contextId) {
+        ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+        ContextEntity context = entityManager.find(ContextEntity.class, contextId);
+        if (permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, context, Action.ALL, null, resourceType)) {
+            return propertyValueService.decryptProperties(propertyEditingService
+                    .loadPropertiesForEditResourceType(resourceType, context));
+        }
+        return propertyEditingService.loadPropertiesForEditResourceType(resourceType, context);
+    }
 
-	/**
-	 * Returns the property values (including information about their descriptors and overwritten values)
-	 *
-	 * @param masterResourceId
-	 * @param contextId
-	 * @return
-	 */
-	public List<ResourceEditProperty> getPropertiesForRelatedResource(Integer masterResourceId,
-			ResourceEditRelation resourceRelation, Integer contextId) {
+    /**
+     * Returns the property values (including information about their descriptors and overwritten values)
+     *
+     * @param masterResourceId
+     * @param contextId
+     * @return
+     */
+    public List<ResourceEditProperty> getPropertiesForRelatedResource(Integer masterResourceId,
+            ResourceEditRelation resourceRelation, Integer contextId) {
         if (masterResourceId != null && resourceRelation != null && contextId != null) {
             ResourceEntity resource = entityManager.find(ResourceEntity.class, masterResourceId);
             ContextEntity context = entityManager.find(ContextEntity.class, contextId);
             ResourceEntity slaveResource = entityManager.find(ResourceEntity.class,
                     resourceRelation.getSlaveId());
-			// a decrypt permission on the master resource allows to decrypt on the related slave properties
-			if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
-				return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditRelation(
-						resourceRelation.getMode(), resourceRelation.getResRelId(), slaveResource.getId(),
-						resource.getResourceType(), slaveResource.getResourceType(), context));
-			}
+            // a decrypt permission on the master resource allows to decrypt on the related slave properties
+            if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
+                return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditRelation(
+                        resourceRelation.getMode(), resourceRelation.getResRelId(), slaveResource.getId(),
+                        resource.getResourceType(), slaveResource.getResourceType(), context));
+            }
             return propertyEditingService.loadPropertiesForEditRelation(resourceRelation.getMode(),
-					resourceRelation.getResRelId(), slaveResource.getId(), resource.getResourceType(),
-					slaveResource.getResourceType(), context);
+                    resourceRelation.getResRelId(), slaveResource.getId(), resource.getResourceType(),
+                    slaveResource.getResourceType(), context);
         }
         return new ArrayList<>();
-	}
+    }
 
-	/**
-	 * Returns the property values (including information about their descriptors and overwritten values)
-	 * Encrypted property values are returned decrypted if the caller has the permission to do so
-	 */
-	public List<ResourceEditProperty> getPropertiesForRelatedResource(
-			ConsumedResourceRelationEntity relationEntity, Integer contextId) {
-		ResourceEntity resource = entityManager.find(ResourceEntity.class,
-				relationEntity.getMasterResourceId());
-		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-		ResourceEntity slaveResource = entityManager.find(ResourceEntity.class, relationEntity
-				.getSlaveResource().getId());
-		// a decrypt permission on the master resource allows to decrypt on the related slave properties
-		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
-			return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditRelation(
-					ResourceEditRelation.Mode.CONSUMED, relationEntity.getId(), slaveResource.getId(),
-					resource.getResourceType(), slaveResource.getResourceType(), context));
-		}
-		return propertyEditingService.loadPropertiesForEditRelation(ResourceEditRelation.Mode.CONSUMED,
-				relationEntity.getId(), slaveResource.getId(), resource.getResourceType(),
-				slaveResource.getResourceType(), context);
-	}
+    /**
+     * Returns the property values (including information about their descriptors and overwritten values)
+     * Encrypted property values are returned decrypted if the caller has the permission to do so
+     */
+    public List<ResourceEditProperty> getPropertiesForRelatedResource(
+            ConsumedResourceRelationEntity relationEntity, Integer contextId) {
+        ResourceEntity resource = entityManager.find(ResourceEntity.class,
+                relationEntity.getMasterResourceId());
+        ContextEntity context = entityManager.find(ContextEntity.class, contextId);
+        ResourceEntity slaveResource = entityManager.find(ResourceEntity.class, relationEntity
+                .getSlaveResource().getId());
+        // a decrypt permission on the master resource allows to decrypt on the related slave properties
+        if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
+            return propertyValueService.decryptProperties(propertyEditingService.loadPropertiesForEditRelation(
+                    ResourceEditRelation.Mode.CONSUMED, relationEntity.getId(), slaveResource.getId(),
+                    resource.getResourceType(), slaveResource.getResourceType(), context));
+        }
+        return propertyEditingService.loadPropertiesForEditRelation(ResourceEditRelation.Mode.CONSUMED,
+                relationEntity.getId(), slaveResource.getId(), resource.getResourceType(),
+                slaveResource.getResourceType(), context);
+    }
 
-	/**
-	 * Returns the property values (including information about their descriptors and overwritten values) of
-	 * the given ResourceRelationTypeEntity
-	 * Encrypted property values are returned decrypted if the caller has the permission to do so
-	 *
-	 * @param resourceRelation
-	 * @param contextId
-	 * @return
-	 */
-	public List<ResourceEditProperty> getPropertiesForRelatedResourceType(ResourceEditRelation resourceRelation, Integer contextId) {
-		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-		ResourceRelationTypeEntity relationTypeEntity = entityManager.find(
-				ResourceRelationTypeEntity.class, resourceRelation.getResRelTypeId());
-		// a decrypt permission on the resource type A allows to decrypt on the related resource type B properties
-		if (permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, context, Action.ALL, null,
-				relationTypeEntity.getResourceTypeA())) {
-			return propertyValueService.decryptProperties(propertyEditingService
-					.loadPropertiesForEditResourceTypeRelation(relationTypeEntity.getResourceTypeA(),
-							relationTypeEntity.getResourceTypeB(), context));
-		}
-		return propertyEditingService.loadPropertiesForEditResourceTypeRelation(relationTypeEntity.getResourceTypeA(),
-				relationTypeEntity.getResourceTypeB(), context);
-	}
+    /**
+     * Returns the property values (including information about their descriptors and overwritten values) of
+     * the given ResourceRelationTypeEntity
+     * Encrypted property values are returned decrypted if the caller has the permission to do so
+     *
+     * @param resourceRelation
+     * @param contextId
+     * @return
+     */
+    public List<ResourceEditProperty> getPropertiesForRelatedResourceType(ResourceEditRelation resourceRelation, Integer contextId) {
+        ContextEntity context = entityManager.find(ContextEntity.class, contextId);
+        ResourceRelationTypeEntity relationTypeEntity = entityManager.find(
+                ResourceRelationTypeEntity.class, resourceRelation.getResRelTypeId());
+        // a decrypt permission on the resource type A allows to decrypt on the related resource type B properties
+        if (permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, context, Action.ALL, null,
+                relationTypeEntity.getResourceTypeA())) {
+            return propertyValueService.decryptProperties(propertyEditingService
+                    .loadPropertiesForEditResourceTypeRelation(relationTypeEntity.getResourceTypeA(),
+                            relationTypeEntity.getResourceTypeB(), context));
+        }
+        return propertyEditingService.loadPropertiesForEditResourceTypeRelation(relationTypeEntity.getResourceTypeA(),
+                relationTypeEntity.getResourceTypeB(), context);
+    }
 
-	public Map<ResourceEditRelation.Mode, List<ResourceEditRelation>> getRelationsForResource(
-			Integer resourceId) {
-		return resourceEditService.loadResourceRelationsForEdit(resourceId);
-	}
+    public Map<ResourceEditRelation.Mode, List<ResourceEditRelation>> getRelationsForResource(
+            Integer resourceId) {
+        return resourceEditService.loadResourceRelationsForEdit(resourceId);
+    }
 
-	public Map<ResourceEditRelation.Mode, List<ResourceEditRelation>> getRelationsForResourceType(
-			Integer resourceTypeId) {
-		ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
-		return resourceEditService.loadResourceRelationTypesForEdit(resourceType);
-	}
+    public Map<ResourceEditRelation.Mode, List<ResourceEditRelation>> getRelationsForResourceType(
+            Integer resourceTypeId) {
+        ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+        return resourceEditService.loadResourceRelationTypesForEdit(resourceType);
+    }
 
-	/**
-	 * Persists changes made on a Resource if the use has the permission to do so
-	 *
-	 * @param changingOwner
-	 * @param contextId
-	 * @param resourceId
-	 * @param resourceProperties
-	 * @param relation
-	 * @param relationProperties
-	 * @param resourceName
-	 * @param softlinkId
-	 * @throws AMWException
-	 * @throws ValidationException
-	 * @throws ForeignableOwnerViolationException
-	 */
-	public void save(ForeignableOwner changingOwner, Integer contextId, Integer resourceId, List<ResourceEditProperty> resourceProperties,
-			ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String softlinkId, String relationIdentifier) throws AMWException, ValidationException, ForeignableOwnerViolationException {
+    /**
+     * Persists changes made on a Resource if the use has the permission to do so
+     *
+     * @param changingOwner
+     * @param contextId
+     * @param resourceId
+     * @param resourceProperties
+     * @param relation
+     * @param relationProperties
+     * @param resourceName
+     * @param softlinkId
+     * @throws AMWException
+     * @throws ValidationException
+     * @throws ForeignableOwnerViolationException
+     */
+    public void save(ForeignableOwner changingOwner, Integer contextId, Integer resourceId, List<ResourceEditProperty> resourceProperties,
+            ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String softlinkId, String relationIdentifier) throws AMWException, ValidationException, ForeignableOwnerViolationException {
 
-		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
+        ContextEntity context = entityManager.find(ContextEntity.class, contextId);
         ResourceEntity editedResource = verifyAndSaveResource(resourceId, changingOwner, resourceName, softlinkId, context);
 
         if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, editedResource, editedResource.getResourceType())) {
-			propertyValueService.saveProperties(context, editedResource, resourceProperties);
-			if (relation != null) {
-				handleRelations(relation, relationProperties, relationIdentifier, context, editedResource);
-			}
-		}
-	}
+            propertyValueService.saveProperties(context, editedResource, resourceProperties);
+            if (relation != null) {
+                handleRelations(relation, relationProperties, relationIdentifier, context, editedResource);
+            }
+        }
+    }
 
-	private void handleRelations(ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String relationIdentifier,
-								 ContextEntity context, ResourceEntity editedResource) throws ValidationException {
-		String previousIdentifier = null;
-		String slaveName = null;
-		AbstractResourceRelationEntity resourceRelation = editedResource.getResourceRelation(relation);
-		if (relation.hasIdentifierChanged(relationIdentifier)) {
+    private void handleRelations(ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String relationIdentifier,
+                                 ContextEntity context, ResourceEntity editedResource) throws ValidationException {
+        String previousIdentifier = null;
+        String slaveName = null;
+        AbstractResourceRelationEntity resourceRelation = editedResource.getResourceRelation(relation);
+        if (relation.hasIdentifierChanged(relationIdentifier)) {
             previousIdentifier = relation.getQualifiedIdentifier();
             slaveName = relation.getSlaveName();
             resourceRelation.setIdentifier(relationIdentifier);
         }
-		propertyValueService.saveProperties(context, resourceRelation, relationProperties);
-		if (previousIdentifier != null) {
+        propertyValueService.saveProperties(context, resourceRelation, relationProperties);
+        if (previousIdentifier != null) {
             // if the previousIdentifier equals to the slaveName, then the identifier of the relation has been empty before
             if (previousIdentifier.equals(slaveName)) {
                 for (ConsumedResourceRelationEntity consumedResourceRelation : editedResource.getConsumedMasterRelations()) {
                     if (consumedResourceRelation.getIdentifier() == null
-							&& consumedResourceRelation.getSlaveResource().getName().equals(previousIdentifier)) {
+                            && consumedResourceRelation.getSlaveResource().getName().equals(previousIdentifier)) {
                         consumedResourceRelation.setIdentifier(relationIdentifier);
                         entityManager.merge(consumedResourceRelation);
                     }
@@ -350,24 +350,24 @@ public class PropertyEditor {
             } else {
                 for (ConsumedResourceRelationEntity consumedResourceRelation : editedResource.getConsumedMasterRelations()) {
                     if (consumedResourceRelation.getIdentifier() != null
-							&& consumedResourceRelation.getIdentifier().equals(previousIdentifier)) {
+                            && consumedResourceRelation.getIdentifier().equals(previousIdentifier)) {
                         consumedResourceRelation.setIdentifier(relationIdentifier);
                         entityManager.merge(consumedResourceRelation);
                     }
                 }
             }
         }
-	}
+    }
 
-	private ResourceEntity verifyAndSaveResource(Integer resourceId, ForeignableOwner changingOwner, String resourceName, String softlinkId, ContextEntity context) throws ForeignableOwnerViolationException, AMWException {
+    private ResourceEntity verifyAndSaveResource(Integer resourceId, ForeignableOwner changingOwner, String resourceName, String softlinkId, ContextEntity context) throws ForeignableOwnerViolationException, AMWException {
         ResourceEntity resource = resourceRepository.find(resourceId);
         int beforeChangeForeignableHashCode = resource.foreignableFieldHashCode();
 
-		// do permission check
-		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
-			verifyAndSetResourceName(resourceName, resource);
-			verifyAndSetSoftlinkId(softlinkId, resource);
-		}
+        // do permission check
+        if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
+            verifyAndSetResourceName(resourceName, resource);
+            verifyAndSetSoftlinkId(softlinkId, resource);
+        }
 
         // check if owner can modify resource
         foreignableService.verifyEditableByOwner(changingOwner, beforeChangeForeignableHashCode, resource);
@@ -375,309 +375,309 @@ public class PropertyEditor {
     }
 
     private void verifyAndSetResourceName(String resourceName, ResourceEntity resource) throws AMWException {
-		if (resourceName == null || !resourceName.equals(resource.getName())) {
-			resourceValidationService.validateResourceName(resourceName);
-			resource.setName(resourceName);
-		}
+        if (resourceName == null || !resourceName.equals(resource.getName())) {
+            resourceValidationService.validateResourceName(resourceName);
+            resource.setName(resourceName);
+        }
     }
 
     private void verifyAndSetSoftlinkId(String softlinkId, ResourceEntity resource) throws AMWException {
-		resourceValidationService.validateSoftlinkId(softlinkId, resource.getResourceGroup().getId());
-		resource.setSoftlinkId(softlinkId);
+        resourceValidationService.validateSoftlinkId(softlinkId, resource.getResourceGroup().getId());
+        resource.setSoftlinkId(softlinkId);
     }
 
-	/**
-	 * Persists changes made on a ResourceType
-	 *
-	 * @param contextId
-	 * @param resourceTypeId
-	 * @param resourceProperties
-	 * @param relation
-	 * @param relationProperties
-	 * @param resourceTypeName
-	 * @param typeRelationIdentifier
-	 * @throws AMWException
-	 * @throws ValidationException
-	 */
+    /**
+     * Persists changes made on a ResourceType
+     *
+     * @param contextId
+     * @param resourceTypeId
+     * @param resourceProperties
+     * @param relation
+     * @param relationProperties
+     * @param resourceTypeName
+     * @param typeRelationIdentifier
+     * @throws AMWException
+     * @throws ValidationException
+     */
     public void savePropertiesForResourceType(Integer contextId, Integer resourceTypeId,
-			List<ResourceEditProperty> resourceProperties, ResourceEditRelation relation,
-			List<ResourceEditProperty> relationProperties, String resourceTypeName,
-			String typeRelationIdentifier) throws AMWException, ValidationException {
-		ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+            List<ResourceEditProperty> resourceProperties, ResourceEditRelation relation,
+            List<ResourceEditProperty> relationProperties, String resourceTypeName,
+            String typeRelationIdentifier) throws AMWException, ValidationException {
+        ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 
-		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-		if (permissionBoundary.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType)) {
-			if (resourceTypeName == null || !resourceTypeName.equals(resourceType.getName())) {
-				resourceValidationService.validateResourceTypeName(resourceTypeName, resourceType.getName());
-				resourceType.setName(resourceTypeName);
-			}
-			propertyValueService.saveProperties(context, resourceType, resourceProperties);
-			if (relation != null && relation.getResRelTypeId() != null) {
-				ResourceRelationTypeEntity resourceRelationTypeEntity = entityManager.find(
-						ResourceRelationTypeEntity.class, relation.getResRelTypeId());
-				if (relation.hasIdentifierChanged(typeRelationIdentifier)) {
-					resourceRelationTypeEntity.setIdentifier(typeRelationIdentifier);
-				}
-				propertyValueService.saveProperties(context, resourceRelationTypeEntity,
-						relationProperties);
-			}
-		}
-	}
+        ContextEntity context = entityManager.find(ContextEntity.class, contextId);
+        if (permissionBoundary.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType)) {
+            if (resourceTypeName == null || !resourceTypeName.equals(resourceType.getName())) {
+                resourceValidationService.validateResourceTypeName(resourceTypeName, resourceType.getName());
+                resourceType.setName(resourceTypeName);
+            }
+            propertyValueService.saveProperties(context, resourceType, resourceProperties);
+            if (relation != null && relation.getResRelTypeId() != null) {
+                ResourceRelationTypeEntity resourceRelationTypeEntity = entityManager.find(
+                        ResourceRelationTypeEntity.class, relation.getResRelTypeId());
+                if (relation.hasIdentifierChanged(typeRelationIdentifier)) {
+                    resourceRelationTypeEntity.setIdentifier(typeRelationIdentifier);
+                }
+                propertyValueService.saveProperties(context, resourceRelationTypeEntity,
+                        relationProperties);
+            }
+        }
+    }
 
-	private ResourceEntity getRelevantResource(HasContexts<?> hasContexts) {
-		if (hasContexts instanceof ResourceEntity) {
-			return (ResourceEntity) hasContexts;
-		}
-		if (hasContexts instanceof ConsumedResourceRelationEntity) {
-			ConsumedResourceRelationEntity relation = (ConsumedResourceRelationEntity) hasContexts;
-			return relation.getMasterResource();
-		}
-		log.warning("Unexpected Object "+hasContexts.getClass().getSimpleName());
-		return null;
-	}
+    private ResourceEntity getRelevantResource(HasContexts<?> hasContexts) {
+        if (hasContexts instanceof ResourceEntity) {
+            return (ResourceEntity) hasContexts;
+        }
+        if (hasContexts instanceof ConsumedResourceRelationEntity) {
+            ConsumedResourceRelationEntity relation = (ConsumedResourceRelationEntity) hasContexts;
+            return relation.getMasterResource();
+        }
+        log.warning("Unexpected Object "+hasContexts.getClass().getSimpleName());
+        return null;
+    }
 
-	private void resetSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
-			Integer propertyDescriptorId) {
-		ResourceEntity resource = getRelevantResource(hasContexts);
-		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
-			HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
-			ContextEntity contextMerged = entityManager.merge(context);
-			ContextDependency<?> contextDependency = hasContextMerged.getOrCreateContext(contextMerged);
-			propertyValueService.resetPropertyValue(contextDependency, propertyDescriptorId);
-		}
-		else {
-			log.warning("Not allowed to reset property value");
-			throw new NotAuthorizedException("Not allowed to reset property value");
-		}
-	}
+    private void resetSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
+            Integer propertyDescriptorId) {
+        ResourceEntity resource = getRelevantResource(hasContexts);
+        if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
+            HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
+            ContextEntity contextMerged = entityManager.merge(context);
+            ContextDependency<?> contextDependency = hasContextMerged.getOrCreateContext(contextMerged);
+            propertyValueService.resetPropertyValue(contextDependency, propertyDescriptorId);
+        }
+        else {
+            log.warning("Not allowed to reset property value");
+            throw new NotAuthorizedException("Not allowed to reset property value");
+        }
+    }
 
-	private void setSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
-			Integer propertyDescriptorId, String unobfuscatedValue) throws ValidationException {
-		ResourceEntity resource = getRelevantResource(hasContexts);
-		if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
-			HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
-			ContextEntity contextMerged = entityManager.merge(context);
-			ContextDependency<?> contextDependency = hasContextMerged.getOrCreateContext(contextMerged);
-			propertyValueService.setPropertyValue(contextDependency, propertyDescriptorId,
-					unobfuscatedValue);
-		}
-		else {
-			log.warning("Not allowed to set property value");
-			throw new NotAuthorizedException("Not allowed to set property value");
-		}
-	}
+    private void setSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
+            Integer propertyDescriptorId, String unobfuscatedValue) throws ValidationException {
+        ResourceEntity resource = getRelevantResource(hasContexts);
+        if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
+            HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
+            ContextEntity contextMerged = entityManager.merge(context);
+            ContextDependency<?> contextDependency = hasContextMerged.getOrCreateContext(contextMerged);
+            propertyValueService.setPropertyValue(contextDependency, propertyDescriptorId,
+                    unobfuscatedValue);
+        }
+        else {
+            log.warning("Not allowed to set property value");
+            throw new NotAuthorizedException("Not allowed to set property value");
+        }
+    }
 
-	/**
-	 * Set property value for resource in release and context.
-	 *
-	 * @param resourceGroupName
-	 *             resource group name
-	 * @param releaseName
-	 *             release name
-	 * @param contextName
-	 *             context name
-	 * @param propertyName
-	 *             property name for which tha value should be set
-	 * @param propertyValue
-	 *             value to set
-	 * @throws ValidationException
-	 *              thrown if one of the arguments is either empty or null
-	 */
-	public void setPropertyValueOnResourceForContext(String resourceGroupName, String releaseName,
-			String contextName, String propertyName, String propertyValue) throws ValidationException {
-		ValidationHelper
-				.validateNotNullOrEmptyChecked(resourceGroupName, releaseName, propertyValue, propertyName);
+    /**
+     * Set property value for resource in release and context.
+     *
+     * @param resourceGroupName
+     *             resource group name
+     * @param releaseName
+     *             release name
+     * @param contextName
+     *             context name
+     * @param propertyName
+     *             property name for which tha value should be set
+     * @param propertyValue
+     *             value to set
+     * @throws ValidationException
+     *              thrown if one of the arguments is either empty or null
+     */
+    public void setPropertyValueOnResourceForContext(String resourceGroupName, String releaseName,
+            String contextName, String propertyName, String propertyValue) throws ValidationException {
+        ValidationHelper
+                .validateNotNullOrEmptyChecked(resourceGroupName, releaseName, propertyValue, propertyName);
 
-		ResourceEntity resourceByNameAndRelease = resourceLocator.getResourceByGroupNameAndRelease(
-				resourceGroupName, releaseName);
+        ResourceEntity resourceByNameAndRelease = resourceLocator.getResourceByGroupNameAndRelease(
+                resourceGroupName, releaseName);
 
-		if (resourceByNameAndRelease == null) {
-			log.info("Resource group " + resourceGroupName + " not found in release " + releaseName);
-			throw new NoResultException("Could not find resource group in this release");
-		}
+        if (resourceByNameAndRelease == null) {
+            log.info("Resource group " + resourceGroupName + " not found in release " + releaseName);
+            throw new NoResultException("Could not find resource group in this release");
+        }
 
-		ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL
-				.getDisplayName() : contextName);
+        ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL
+                .getDisplayName() : contextName);
 
-		List<ResourceEditProperty> resourceEditProperties = propertyEditingService
-				.loadPropertiesForEditResource(resourceByNameAndRelease.getId(),
-						resourceByNameAndRelease.getResourceType(), context);
+        List<ResourceEditProperty> resourceEditProperties = propertyEditingService
+                .loadPropertiesForEditResource(resourceByNameAndRelease.getId(),
+                        resourceByNameAndRelease.getResourceType(), context);
 
-		ResourceEditProperty property = findByName(propertyName, resourceEditProperties);
-		property.setPropertyValue(propertyValue);
-		setSingleProperty(resourceByNameAndRelease, context, property.getDescriptorId(), property.getUnobfuscatedValue());
-	}
+        ResourceEditProperty property = findByName(propertyName, resourceEditProperties);
+        property.setPropertyValue(propertyValue);
+        setSingleProperty(resourceByNameAndRelease, context, property.getDescriptorId(), property.getUnobfuscatedValue());
+    }
 
-	/**
-	 * Reset property value for resource in release and context.
-	 *
-	 * @param resourceGroupName
-	 *             resource group name
-	 * @param releaseName
-	 *             release name
-	 * @param contextName
-	 *             context name
-	 * @param propertyName
-	 *             property name for which tha value should be set
-	 * @throws ValidationException
-	 *              thrown if one of the arguments is either empty or null
-	 */
-	public void resetPropertyValueOnResourceForContext(String resourceGroupName, String releaseName,
-			String contextName, String propertyName) throws ValidationException {
-		ValidationHelper.validateNotNullOrEmptyChecked(resourceGroupName, releaseName, propertyName);
+    /**
+     * Reset property value for resource in release and context.
+     *
+     * @param resourceGroupName
+     *             resource group name
+     * @param releaseName
+     *             release name
+     * @param contextName
+     *             context name
+     * @param propertyName
+     *             property name for which tha value should be set
+     * @throws ValidationException
+     *              thrown if one of the arguments is either empty or null
+     */
+    public void resetPropertyValueOnResourceForContext(String resourceGroupName, String releaseName,
+            String contextName, String propertyName) throws ValidationException {
+        ValidationHelper.validateNotNullOrEmptyChecked(resourceGroupName, releaseName, propertyName);
 
-		ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName,
-				releaseName);
-		ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL
-				.getDisplayName() : contextName);
+        ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName,
+                releaseName);
+        ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL
+                .getDisplayName() : contextName);
 
-		List<ResourceEditProperty> resourceEditProperties = propertyEditingService
-				.loadPropertiesForEditResource(resource.getId(), resource.getResourceType(), context);
+        List<ResourceEditProperty> resourceEditProperties = propertyEditingService
+                .loadPropertiesForEditResource(resource.getId(), resource.getResourceType(), context);
 
-		List<ResourceEditProperty> potentiallyDecryptedProperties;
-		if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
-			potentiallyDecryptedProperties = propertyValueService.decryptProperties(resourceEditProperties);
-		} else {
-			potentiallyDecryptedProperties = resourceEditProperties;
-		}
-		ResourceEditProperty property = findByName(propertyName, potentiallyDecryptedProperties);
-		resetSingleProperty(resource, context, property.getDescriptorId());
-	}
+        List<ResourceEditProperty> potentiallyDecryptedProperties;
+        if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
+            potentiallyDecryptedProperties = propertyValueService.decryptProperties(resourceEditProperties);
+        } else {
+            potentiallyDecryptedProperties = resourceEditProperties;
+        }
+        ResourceEditProperty property = findByName(propertyName, potentiallyDecryptedProperties);
+        resetSingleProperty(resource, context, property.getDescriptorId());
+    }
 
-	/**
-	 * Set hostname value on all relations between a node release and all releases of an application server
-	 * where no hostname is defined yet
-	 *
-	 * @param masterResourceGroupName
-	 *             name master resource (group)
-	 * @param slaveResourceGroupName
-	 *             slave resource group name
-	 * @param slaveResourceReleaseName
-	 *             release name of slave resource
-	 * @param contextName
-	 *             context name
-	 * @param propertyName
-	 *             property name for which tha value should be set
-	 * @param propertyValue
-	 *             value to set
-	 * @throws ValidationException
-	 *              thrown if one of the arguments is either empty or null
-	 */
-	public void setPropertyValueOnAllResourceRelationsForContextWhereNotYetSet(
-			String masterResourceGroupName, String slaveResourceGroupName,
-			String slaveResourceReleaseName, String contextName, String propertyName, String propertyValue)
-			throws ValidationException {
-		ValidationHelper.validateNotNullOrEmptyChecked(masterResourceGroupName, slaveResourceGroupName,
-				slaveResourceReleaseName, contextName, propertyName, propertyValue);
+    /**
+     * Set hostname value on all relations between a node release and all releases of an application server
+     * where no hostname is defined yet
+     *
+     * @param masterResourceGroupName
+     *             name master resource (group)
+     * @param slaveResourceGroupName
+     *             slave resource group name
+     * @param slaveResourceReleaseName
+     *             release name of slave resource
+     * @param contextName
+     *             context name
+     * @param propertyName
+     *             property name for which tha value should be set
+     * @param propertyValue
+     *             value to set
+     * @throws ValidationException
+     *              thrown if one of the arguments is either empty or null
+     */
+    public void setPropertyValueOnAllResourceRelationsForContextWhereNotYetSet(
+            String masterResourceGroupName, String slaveResourceGroupName,
+            String slaveResourceReleaseName, String contextName, String propertyName, String propertyValue)
+            throws ValidationException {
+        ValidationHelper.validateNotNullOrEmptyChecked(masterResourceGroupName, slaveResourceGroupName,
+                slaveResourceReleaseName, contextName, propertyName, propertyValue);
 
-		List<ResourceEntity> resourcesByGroupNameWithRelations = resourceLocator
-				.getResourcesByGroupNameWithRelations(masterResourceGroupName);
-		ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL
-				.getDisplayName() : contextName);
+        List<ResourceEntity> resourcesByGroupNameWithRelations = resourceLocator
+                .getResourcesByGroupNameWithRelations(masterResourceGroupName);
+        ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL
+                .getDisplayName() : contextName);
 
-		ResourceEntity node = resourceLocator.getResourceByGroupNameAndRelease(slaveResourceGroupName,
-				slaveResourceReleaseName);
+        ResourceEntity node = resourceLocator.getResourceByGroupNameAndRelease(slaveResourceGroupName,
+                slaveResourceReleaseName);
 
-		if (node == null || resourcesByGroupNameWithRelations.isEmpty()) {
-			log.info("No relations found between any resource in group" + masterResourceGroupName
-					+ " to resource " + slaveResourceGroupName + " in release "
-					+ slaveResourceReleaseName);
-			throw new NoResultException("Could not find relation");
-		}
+        if (node == null || resourcesByGroupNameWithRelations.isEmpty()) {
+            log.info("No relations found between any resource in group" + masterResourceGroupName
+                    + " to resource " + slaveResourceGroupName + " in release "
+                    + slaveResourceReleaseName);
+            throw new NoResultException("Could not find relation");
+        }
 
-		for (ResourceEntity r : resourcesByGroupNameWithRelations) {
-			ConsumedResourceRelationEntity resourceRelation = r.getConsumedRelation(node);
+        for (ResourceEntity r : resourcesByGroupNameWithRelations) {
+            ConsumedResourceRelationEntity resourceRelation = r.getConsumedRelation(node);
 
-			if (resourceRelation != null) {
-				ResourceEditProperty property = getPropertyForRelationAndContext(propertyName, context,
-						resourceRelation);
-				if (!property.isPropertyValueSet()) {
-					log.info("Set host name on relation between node " + slaveResourceGroupName
-							+ " and application server " + masterResourceGroupName + " for release "
-							+ slaveResourceReleaseName + " and context " + contextName);
-					setSingleProperty(resourceRelation, context, property.getDescriptorId(),
-							propertyValue);
-				}
-			}
-		}
-	}
+            if (resourceRelation != null) {
+                ResourceEditProperty property = getPropertyForRelationAndContext(propertyName, context,
+                        resourceRelation);
+                if (!property.isPropertyValueSet()) {
+                    log.info("Set host name on relation between node " + slaveResourceGroupName
+                            + " and application server " + masterResourceGroupName + " for release "
+                            + slaveResourceReleaseName + " and context " + contextName);
+                    setSingleProperty(resourceRelation, context, property.getDescriptorId(),
+                            propertyValue);
+                }
+            }
+        }
+    }
 
-	private ResourceEditProperty getPropertyForRelationAndContext(String hostName, ContextEntity context,
-			ConsumedResourceRelationEntity resourceRelation) {
-		List<ResourceEditProperty> propertiesForRelatedResource = getPropertiesForRelatedResource(
-				resourceRelation, context.getId());
-		return findByName(hostName, propertiesForRelatedResource);
-	}
+    private ResourceEditProperty getPropertyForRelationAndContext(String hostName, ContextEntity context,
+            ConsumedResourceRelationEntity resourceRelation) {
+        List<ResourceEditProperty> propertiesForRelatedResource = getPropertiesForRelatedResource(
+                resourceRelation, context.getId());
+        return findByName(hostName, propertiesForRelatedResource);
+    }
 
-	/**
-	 * Set property value on relation between two resource releases and context.
-	 *
-	 * @param resourceGroupName
-	 *             resource group name
-	 * @param resourceReleaseName
-	 *             release name
-	 * @param relatedResourceGroupName
-	 *             related resource group name
-	 * @param relatedResourceReleaseName
-	 *             related resource release name
-	 * @param contextName
-	 *             context name
-	 * @param propertyName
-	 *             property name for which tha value should be set
-	 * @param propertyValue
-	 *             value to set
-	 * @throws ValidationException
-	 *              thrown if one of the arguments is either empty or null
-	 */
-	public void setPropertyValueOnResourceRelationForContext(String resourceGroupName,
-			String resourceReleaseName, String relatedResourceGroupName,
-			String relatedResourceReleaseName, String contextName, String propertyName,
-			String propertyValue) throws ValidationException {
-		ValidationHelper.validateNotNullOrEmptyChecked(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName, propertyValue, propertyName);
+    /**
+     * Set property value on relation between two resource releases and context.
+     *
+     * @param resourceGroupName
+     *             resource group name
+     * @param resourceReleaseName
+     *             release name
+     * @param relatedResourceGroupName
+     *             related resource group name
+     * @param relatedResourceReleaseName
+     *             related resource release name
+     * @param contextName
+     *             context name
+     * @param propertyName
+     *             property name for which tha value should be set
+     * @param propertyValue
+     *             value to set
+     * @throws ValidationException
+     *              thrown if one of the arguments is either empty or null
+     */
+    public void setPropertyValueOnResourceRelationForContext(String resourceGroupName,
+            String resourceReleaseName, String relatedResourceGroupName,
+            String relatedResourceReleaseName, String contextName, String propertyName,
+            String propertyValue) throws ValidationException {
+        ValidationHelper.validateNotNullOrEmptyChecked(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName, propertyValue, propertyName);
 
-		ConsumedResourceRelationEntity resourceRelation = resourceRelationLocator.getResourceRelation(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName);
-		ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL.getDisplayName() : contextName);
+        ConsumedResourceRelationEntity resourceRelation = resourceRelationLocator.getResourceRelation(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName);
+        ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL.getDisplayName() : contextName);
 
-		ResourceEditProperty property = getPropertyForRelationAndContext(propertyName, context, resourceRelation);
-		setSingleProperty(resourceRelation, context, property.getDescriptorId(), propertyValue);
-	}
+        ResourceEditProperty property = getPropertyForRelationAndContext(propertyName, context, resourceRelation);
+        setSingleProperty(resourceRelation, context, property.getDescriptorId(), propertyValue);
+    }
 
-	public PropertyDescriptorEntity getPropertyDescriptor(Integer propertyDescriptorId) {
-		return propertyDescriptorService.getPropertyDescriptor(propertyDescriptorId);
-	}
+    public PropertyDescriptorEntity getPropertyDescriptor(Integer propertyDescriptorId) {
+        return propertyDescriptorService.getPropertyDescriptor(propertyDescriptorId);
+    }
 
-	/**
-	 * Reset property value on relation between two resource releases and context.
-	 *
-	 * @param resourceGroupName
-	 *             resource group name
-	 * @param resourceReleaseName
-	 *             release name
-	 * @param relatedResourceGroupName
-	 *             related resource group name
-	 * @param relatedResourceReleaseName
-	 *             related resource release name
-	 * @param contextName
-	 *             context name
-	 * @param propertyName
-	 *             property name for which tha value should be set
-	 * @throws ValidationException
-	 *              thrown if one of the arguments is either empty or null
-	 */
-	public void resetPropertyValueOnResourceRelationForContext(String resourceGroupName,
-			String resourceReleaseName, String relatedResourceGroupName,
-			String relatedResourceReleaseName, String contextName, String propertyName)
-			throws IllegalArgumentException, EJBException, IllegalStateException, NotAuthorizedException,
-			ValidationException {
-		ValidationHelper.validateNotNullOrEmptyChecked(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName, propertyName);
+    /**
+     * Reset property value on relation between two resource releases and context.
+     *
+     * @param resourceGroupName
+     *             resource group name
+     * @param resourceReleaseName
+     *             release name
+     * @param relatedResourceGroupName
+     *             related resource group name
+     * @param relatedResourceReleaseName
+     *             related resource release name
+     * @param contextName
+     *             context name
+     * @param propertyName
+     *             property name for which tha value should be set
+     * @throws ValidationException
+     *              thrown if one of the arguments is either empty or null
+     */
+    public void resetPropertyValueOnResourceRelationForContext(String resourceGroupName,
+            String resourceReleaseName, String relatedResourceGroupName,
+            String relatedResourceReleaseName, String contextName, String propertyName)
+            throws IllegalArgumentException, EJBException, IllegalStateException, NotAuthorizedException,
+            ValidationException {
+        ValidationHelper.validateNotNullOrEmptyChecked(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName, propertyName);
 
-		ConsumedResourceRelationEntity resourceRelation = resourceRelationLocator.getResourceRelation(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName);
-		ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL.getDisplayName() : contextName);
+        ConsumedResourceRelationEntity resourceRelation = resourceRelationLocator.getResourceRelation(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName);
+        ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL.getDisplayName() : contextName);
 
-		ResourceEditProperty property = getPropertyForRelationAndContext(propertyName, context, resourceRelation);
-		resetSingleProperty(resourceRelation, context, property.getDescriptorId());
+        ResourceEditProperty property = getPropertyForRelationAndContext(propertyName, context, resourceRelation);
+        resetSingleProperty(resourceRelation, context, property.getDescriptorId());
 
-	}
+    }
 
     /**
      * Checks Permissions and Persists the given shakedown test property descriptor to the database for resource instance
@@ -689,16 +689,16 @@ public class PropertyEditor {
         return savePropertyDescriptorResource(ForeignableOwner.getSystemOwner(), resourceId, descriptor, propertyTagsString);
     }
 
-	/**
-	 * Checks Permissions and Persists the given property descriptor to the database for resource instance
-	 */
-	public PropertyDescriptorEntity savePropertyDescriptorForResource(ForeignableOwner editingOwner, Integer resourceId, PropertyDescriptorEntity descriptor, int foreignableHashBeforeModification, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
-		ResourceEntity attachedResource = entityManager.find(ResourceEntity.class, resourceId);
-		// verify if modifications are allowed
-		permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, attachedResource.getResourceGroup(), null, null);
+    /**
+     * Checks Permissions and Persists the given property descriptor to the database for resource instance
+     */
+    public PropertyDescriptorEntity savePropertyDescriptorForResource(ForeignableOwner editingOwner, Integer resourceId, PropertyDescriptorEntity descriptor, int foreignableHashBeforeModification, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
+        ResourceEntity attachedResource = entityManager.find(ResourceEntity.class, resourceId);
+        // verify if modifications are allowed
+        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, attachedResource.getResourceGroup(), null, null);
         foreignableService.verifyEditableByOwner(editingOwner, foreignableHashBeforeModification, descriptor);
         return savePropertyDescriptorResource(editingOwner, resourceId, descriptor, propertyTagsString);
-	}
+    }
 
     private PropertyDescriptorEntity savePropertyDescriptorResource(ForeignableOwner editingOwner, Integer resourceId, PropertyDescriptorEntity descriptor, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
         ResourceEntity attachedResource = entityManager.find(ResourceEntity.class, Objects.requireNonNull(resourceId));
@@ -724,16 +724,16 @@ public class PropertyEditor {
         return savePropertyDescriptorResourceType(ForeignableOwner.getSystemOwner(), resourceTypeId, descriptor, propertyTagsString);
     }
 
-	/**
-	 * Checks Permissions and Persists the given property descriptor to the database for resource type
-	 */
-	public PropertyDescriptorEntity savePropertyDescriptorForResourceType(ForeignableOwner editingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor,int foreignableHashBeforeModification, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
-		ResourceTypeEntity attachedResourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
-		// verify if modifications are allowed
-		permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, attachedResourceType, null);
+    /**
+     * Checks Permissions and Persists the given property descriptor to the database for resource type
+     */
+    public PropertyDescriptorEntity savePropertyDescriptorForResourceType(ForeignableOwner editingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor,int foreignableHashBeforeModification, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
+        ResourceTypeEntity attachedResourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+        // verify if modifications are allowed
+        permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, attachedResourceType, null);
         foreignableService.verifyEditableByOwner(editingOwner, foreignableHashBeforeModification, descriptor);
         return savePropertyDescriptorResourceType(editingOwner, resourceTypeId, descriptor, propertyTagsString);
-	}
+    }
 
     private PropertyDescriptorEntity savePropertyDescriptorResourceType(ForeignableOwner editingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
         ResourceTypeEntity attachedResourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
@@ -744,45 +744,45 @@ public class PropertyEditor {
     /**
      * Checks Permissions and deletes the given property descriptor from database for resource
      */
-	public void deletePropertyDescriptorForResource(ForeignableOwner deletingOwner, Integer resourceId, PropertyDescriptorEntity descriptor) throws AMWException, ForeignableOwnerViolationException {
+    public void deletePropertyDescriptorForResource(ForeignableOwner deletingOwner, Integer resourceId, PropertyDescriptorEntity descriptor) throws AMWException, ForeignableOwnerViolationException {
 
-		if (descriptor != null && descriptor.getId() != null) {
-			ResourceEntity attachedResource = entityManager.find(ResourceEntity.class, resourceId);
-			ResourceContextEntity resourceContext = attachedResource.getOrCreateContext(contextService.getGlobalResourceContextEntity());
+        if (descriptor != null && descriptor.getId() != null) {
+            ResourceEntity attachedResource = entityManager.find(ResourceEntity.class, resourceId);
+            ResourceContextEntity resourceContext = attachedResource.getOrCreateContext(contextService.getGlobalResourceContextEntity());
 
-			permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, attachedResource.getResourceGroup(), null, null);
+            permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, attachedResource.getResourceGroup(), null, null);
             foreignableService.verifyDeletableByOwner(deletingOwner, descriptor);
             propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceContext);
-		}
-	}
+        }
+    }
 
 
     /**
      * Checks Permissions and deletes the given property descriptor from database for resource type
      */
-	public void deletePropertyDescriptorForResourceType(ForeignableOwner deletingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor) throws AMWException, ForeignableOwnerViolationException {
+    public void deletePropertyDescriptorForResourceType(ForeignableOwner deletingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor) throws AMWException, ForeignableOwnerViolationException {
 
-		if (descriptor != null && descriptor.getId() != null) {
+        if (descriptor != null && descriptor.getId() != null) {
 
-			ResourceTypeEntity attachedResourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
-			ResourceTypeContextEntity resourceTypeContextEntity = attachedResourceType.getOrCreateContext(contextService.getGlobalResourceContextEntity());
+            ResourceTypeEntity attachedResourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
+            ResourceTypeContextEntity resourceTypeContextEntity = attachedResourceType.getOrCreateContext(contextService.getGlobalResourceContextEntity());
 
-			permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, attachedResourceType, null);
+            permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, attachedResourceType, null);
             foreignableService.verifyDeletableByOwner(deletingOwner, descriptor);
             propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceTypeContextEntity);
-		}
-	}
+        }
+    }
 
-	private ResourceEditProperty findByName(String propertyName,
-			List<ResourceEditProperty> resourceEditProperties) {
-		for (ResourceEditProperty property : resourceEditProperties) {
-			if (property.getTechnicalKey().equals(propertyName)) {
-				return property;
-			}
-		}
-		log.info("Property " + propertyName + " is not in propertylist");
-		throw new NoResultException("Could not find property " + propertyName);
-	}
+    private ResourceEditProperty findByName(String propertyName,
+            List<ResourceEditProperty> resourceEditProperties) {
+        for (ResourceEditProperty property : resourceEditProperties) {
+            if (property.getTechnicalKey().equals(propertyName)) {
+                return property;
+            }
+        }
+        log.info("Property " + propertyName + " is not in propertylist");
+        throw new NoResultException("Could not find property " + propertyName);
+    }
 
     public Map<String, String> getPropertyOverviewForResource(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         return propertyEditingService.getPropertyOverviewForResource(resourceEntity, property, relevantContexts);
