@@ -327,6 +327,11 @@ public class PropertyEditingService {
         return relevantContexts;
     }
 
+	/**
+	 * @param resultSetEntry
+	 * @param propertyId
+	 * @return {@link Map.Entry where the key is the context/environment as string and the value it's value}
+	 */
     private Map.Entry createEntryForOverridenProperty(Object resultSetEntry, Integer propertyId) {
         Object[] tuple = (Object[]) resultSetEntry;
         String contextName = String.valueOf(tuple[0]);
