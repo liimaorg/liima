@@ -127,6 +127,21 @@ describe('DeploymentsComponent (with query params)', () => {
       expect(deploymentService.getFilteredDeployments).toHaveBeenCalled();
   }));
 
+  it('should ignore maxResults on exportCSV ',
+    inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+      // given
+      let deploymentFilters: DeploymentFilterType[] = [ { name: 'Application', type: 'StringType' }, { name: 'Confirmed on', type: 'DateType' } ];
+      spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(Observable.of([]));
+      deploymentsComponent.setMaxResultsPerPage(10);
+
+      // when
+      deploymentsComponent.exportCSV();
+
+      // then
+      expect(deploymentsComponent.maxResults).toEqual(10);
+      expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(deploymentsComponent.filtersForBackend), 'd.deploymentDate', 'DESC', 0, 0);
+  }));
+
 });
 
 describe('DeploymentsComponent (with illegal query params)', () => {
