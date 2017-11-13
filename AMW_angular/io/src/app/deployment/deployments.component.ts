@@ -277,6 +277,7 @@ export class DeploymentsComponent implements OnInit {
 
   exportCSV() {
     this.isLoading = true;
+    this.csvReadyObjects = [];
     this.errorMessage = 'Generating your CSV.<br>Please hold on, depending on the requested data this may take a while';
     this.getFilteredDeploymentsForExport(JSON.stringify(this.filtersForBackend));
   }
