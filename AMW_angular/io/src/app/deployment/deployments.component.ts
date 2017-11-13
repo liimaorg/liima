@@ -390,6 +390,9 @@ export class DeploymentsComponent implements OnInit {
             });
             line += this.csvSeparator;
             break;
+          case 'stateMessage':
+            line += deployment[field] !== null ? '"' + deployment[field].replace(/"/g, "") + '"' + this.csvSeparator : this.csvSeparator;
+            break;
           default:
             line += deployment[field] !== null ? '"' + deployment[field] + '"' + this.csvSeparator : this.csvSeparator;
             break;
