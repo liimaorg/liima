@@ -789,6 +789,6 @@ public class PropertyEditor {
     }
 
     public Map<String, String> getPropertyOverviewForRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
-        return propertyEditingService.getPropertyOverviewForRelation(relation.getResRelId(), property, relevantContexts);
+        return propertyEditingService.getPropertyOverviewForRelation(relation, property, relevantContexts);
     }
 }

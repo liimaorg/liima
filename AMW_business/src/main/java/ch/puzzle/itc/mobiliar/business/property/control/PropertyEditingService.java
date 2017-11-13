@@ -30,10 +30,12 @@ import ch.puzzle.itc.mobiliar.business.environment.control.ContextHierarchy;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty.Origin;
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation.Mode;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import org.apache.commons.collections.MapUtils;
 
 import javax.inject.Inject;
 import javax.persistence.Query;
@@ -284,6 +286,20 @@ public class PropertyEditingService {
         return getDifferingProperties(property, query);
     }
 
+    public Map<String,String> getPropertyOverviewForRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+        switch (relation.getMode()) {
+            case CONSUMED:
+                return getPropertyOverviewForConsumedRelation(relation.getResRelId(), property, relevantContexts);
+            case PROVIDED:
+                return getPropertyOverviewForProvidedRelation(relation.getResRelId(), property, relevantContexts);
+            default:
+                String msg = String.format("Relation mode '%s' is not supported for property overview (property id: %d)",
+                        relation.getMode().name(),
+                        property.getPropertyId());
+                log.warning(msg);
+                return MapUtils.EMPTY_MAP;
+        }
+    }
     /**
      *
      * @param relationId
@@ -295,13 +311,32 @@ public class PropertyEditingService {
      *     <li>Map.value = context of the value</li>
      *  </ul>
      */
-    public Map<String, String> getPropertyOverviewForRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    private Map<String, String> getPropertyOverviewForConsumedRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         if (relevantContexts.isEmpty()) {
             return Collections.EMPTY_MAP;
         }
         List<Integer> relevantContextIds = buildRelevantContextIdsList(relevantContexts);
-        // TODO query for provided resource
-        Query query = queries.getPropertyOverviewForRelatedResourceQuery(property.getTechnicalKey(), relationId, relevantContextIds);
+        Query query = queries.getPropertyOverviewForConsumedRelatedResourceQuery(property.getTechnicalKey(), relationId, relevantContextIds);
+        return getDifferingProperties(property, query);
+    }
+
+    /**
+     *
+     * @param relationId
+     * @param property
+     * @param relevantContexts
+     * @return a Map containing all properties which override the value of its parent context.
+     * <ul>
+     *     <li>Map.key = context Name</li>
+     *     <li>Map.value = context of the value</li>
+     *  </ul>
+     */
+    private Map<String, String> getPropertyOverviewForProvidedRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+        if (relevantContexts.isEmpty()) {
+            return Collections.EMPTY_MAP;
+        }
+        List<Integer> relevantContextIds = buildRelevantContextIdsList(relevantContexts);
+        Query query = queries.getPropertyOverviewForProvidedRelatedResourceQuery(property.getTechnicalKey(), relationId, relevantContextIds);
         return getDifferingProperties(property, query);
     }
 
@@ -328,11 +363,11 @@ public class PropertyEditingService {
         return relevantContexts;
     }
 
-	/**
-	 * @param resultSetEntry
-	 * @param propertyId
-	 * @return {@link Map.Entry where the key is the context/environment as string and the value it's value}
-	 */
+    /**
+     * @param resultSetEntry
+     * @param propertyId
+     * @return {@link Map.Entry where the key is the context/environment as string and the value it's value}
+     */
     private Map.Entry<String, String> createEntryForOverridenProperty(Object resultSetEntry, Integer propertyId) {
         Object[] tuple = (Object[]) resultSetEntry;
         String contextName = String.valueOf(tuple[0]);
