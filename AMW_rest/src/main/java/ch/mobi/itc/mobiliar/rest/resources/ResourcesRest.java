@@ -230,6 +230,17 @@ public class ResourcesRest {
         return resourceDTOs;
     }
 
+    @Path("/exists/{resourceId}")
+    @GET
+    @ApiOperation(value = "Checks if a specific Resource still exists - used by Angular")
+    public Response getAllResourceGroups(@PathParam("resourceId") Integer resourceId) throws ValidationException {
+        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        if (resource == null) {
+            return Response.ok(false).build();
+        }
+        return Response.ok(true).build();
+    }
+
     @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}")
     @GET
     @ApiOperation(value = "Get resource in specific release - used by Angular")

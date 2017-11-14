@@ -163,6 +163,18 @@ export class DeploymentsListComponent {
     this.selectAllDeployments.emit(this.allSelected);
   }
 
+  appServerLink(appServerId: number) {
+    if (appServerId) {
+      window.location.href = '/AMW_web/pages/editResourceView.xhtml?id=' + appServerId + '&ctx=1';
+    }
+  }
+
+  appLink(appId: number) {
+    this.resourceService.resourceExists(appId).subscribe(
+      /* happy path */ (r) =>  { if (r) window.location.href = '/AMW_web/pages/editResourceView.xhtml?id=' + appId + '&ctx=1'; }
+    );
+  }
+
   private getDeploymentDetail(deploymentId: number) {
     this.deploymentService.getDeploymentDetail(deploymentId).subscribe(
       /* happy path */ (r) => this.deploymentDetail = r,
@@ -176,7 +188,7 @@ export class DeploymentsListComponent {
       /* onComplete */  () => $('#deploymentConfirmation').modal('show'));
   }
 
-  private range(a: number, b: number) {
+  private range(a: number, b: number): number[] {
     let d: number [] = [];
     let c: number = b - a + 1;
     while (c--) {

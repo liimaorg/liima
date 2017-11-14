@@ -30,6 +30,14 @@ export class ResourceService {
     return resource$;
   }
 
+  resourceExists(resourceId: number): Observable<Resource> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/exists/${resourceId}`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   getAllResourceGroups(): Observable<Resource[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/resources/resourceGroups`, {headers: this.getHeaders()})
