@@ -154,10 +154,10 @@
           </div>
         </div>
 
-        <div class="form-group" *ngIf="isReadyForDeployment()">
+        <div class="form-group" [attr.disabled]="isReadyForDeployment() ? null : ''">
           <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-default btn-main" *ngIf="hasPermissionToRequestDeployment" (click)="requestDeployment()">Request deployment</button>
-            <button type="submit" class="btn btn-primary btn-main" *ngIf="hasPermissionToDeploy" (click)="createDeployment()">Deploy</button>
+            <button type="submit" class="btn btn-default btn-main" [attr.disabled]="hasPermissionToRequestDeployment ? null : ''" (click)="requestDeployment()">Request deployment</button>
+            <button type="submit" class="btn btn-primary btn-main" [attr.disabled]="hasPermissionToDeploy ? null : ''" (click)="createDeployment()">Deploy</button>
           </div>
         </div>
 
