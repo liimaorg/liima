@@ -216,7 +216,7 @@ export class DeploymentService {
     let headerField: string = 'X-Total-Count';
     let ob: { deployments: Deployment[], total: number } = { deployments: [], total: 0 };
     ob.deployments = this.extractPayload(res);
-    ob.total = res.headers.get(headerField) ? parseInt(res.headers.get(headerField)) : 0;
+    ob.total = res.headers.get(headerField) ? parseInt(res.headers.get(headerField), 10) : 0;
     return ob;
   }
 }
