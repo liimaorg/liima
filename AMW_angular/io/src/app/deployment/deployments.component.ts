@@ -30,6 +30,8 @@ export class DeploymentsComponent implements OnInit {
 
   // value of filters parameter. Used to pass as json object to the logView.xhtml
   filtersInUrl: DeploymentFilter[];
+  // enhanced filters for deployment service
+  filtersForBackend: DeploymentFilter[] = [];
 
   // valid for all, loaded once
   filterTypes: DeploymentFilterType[] = [];
@@ -54,11 +56,13 @@ export class DeploymentsComponent implements OnInit {
 
   // already set
   filters: DeploymentFilter[] = [];
+  filterString: string;
 
   // filtered deployments
   deployments: Deployment[] = [];
 
   // csv export
+  deploymentsForExport: Deployment[] = [];
   deploymentDetailMap: { [key: number]: DeploymentDetail } = {};
   csvReadyObjects: any[] = [];
   csvDocument: string;
@@ -137,11 +141,11 @@ export class DeploymentsComponent implements OnInit {
 
   clearFilters() {
     this.filters = [];
-    this.goTo(null);
+    this.filterString = null;
   }
 
   applyFilter() {
-    let filtersForBackend: DeploymentFilter[] = [];
+    this.filtersForBackend = [];
     let filtersForParam: DeploymentFilter[] = [];
     let filtersToBeRemoved: DeploymentFilter[] = [];
     this.errorMessage = '';
@@ -153,13 +157,13 @@ export class DeploymentsComponent implements OnInit {
           if (!dateTime || !dateTime.isValid()) {
             this.errorMessage = 'Invalid date';
           }
-          filtersForBackend.push(<DeploymentFilter> {
+          this.filtersForBackend.push(<DeploymentFilter> {
             name: filter.name,
             comp: filter.comp,
             val: dateTime.valueOf().toString()
           });
         } else {
-          filtersForBackend.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+          this.filtersForBackend.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
         }
       } else {
         filtersToBeRemoved.push(filter);
@@ -168,14 +172,14 @@ export class DeploymentsComponent implements OnInit {
     filtersToBeRemoved.forEach((filter) => this.removeFilter(filter));
 
     if (!this.errorMessage) {
-      this.getFilteredDeployments(JSON.stringify(filtersForBackend));
+      this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
       this.filtersInUrl = filtersForParam;
       let filterString: string;
       if (this.filtersInUrl.length > 0) {
         filterString = JSON.stringify(this.filtersInUrl);
         sessionStorage.setItem('deploymentFilters', filterString);
       }
-      this.goTo(filterString);
+      this.filterString = filterString;
     }
   }
 
@@ -274,14 +278,18 @@ export class DeploymentsComponent implements OnInit {
 
   exportCSV() {
     this.isLoading = true;
+    this.csvReadyObjects = [];
     this.errorMessage = 'Generating your CSV.<br>Please hold on, depending on the requested data this may take a while';
-    this.deployments.forEach((deployment) => {
-      this.getDeploymentDetailForCsvExport(deployment);
-    });
+    this.getFilteredDeploymentsForExport(JSON.stringify(this.filtersForBackend));
   }
 
-  copyURL() {
+  copyBookmarkToClipboard() {
     let url: string = decodeURIComponent(window.location.href);
+    let i: number = url.indexOf('?');
+    if (i > 0) {
+      url = url.substring(0, i);
+    }
+    url += '?filters=' + this.filterString;
     $("body").append($('<input type="text" name="fname" class="textToCopyInput" style="opacity:0"/>')
       .val(url)).find(".textToCopyInput").select();
     try {
@@ -318,6 +326,14 @@ export class DeploymentsComponent implements OnInit {
       _.findIndex(this.filters, {name: this.selectedFilterType.name}) === -1;
   }
 
+  private enhanceDeploymentsForExport() {
+    if (this.deploymentsForExport) {
+      this.deploymentsForExport.forEach((deployment) => {
+        this.getDeploymentDetailForCsvExport(deployment);
+      });
+    }
+  }
+
   private populateCSVrows(deployment: Deployment) {
     let detail: DeploymentDetail = this.deploymentDetailMap[deployment.id];
     let csvReadyObject: any = {
@@ -344,7 +360,7 @@ export class DeploymentsComponent implements OnInit {
       stateMessage: detail.stateMessage
     };
     this.csvReadyObjects.push(csvReadyObject);
-    if (this.csvReadyObjects.length === this.deployments.length) {
+    if (this.csvReadyObjects.length === this.deploymentsForExport.length) {
       this.csvDocument = this.createCSV();
       let docName: string = 'deployments_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
       this.pushDownload(docName);
@@ -380,6 +396,9 @@ export class DeploymentsComponent implements OnInit {
               line += '"' + deploymentParameter['key'] + ' ' + deploymentParameter['value'] + '\n"';
             });
             line += this.csvSeparator;
+            break;
+          case 'stateMessage':
+            line += deployment[field] !== null ? '"' + deployment[field].replace(/"/g, "") + '"' + this.csvSeparator : this.csvSeparator;
             break;
           default:
             line += deployment[field] !== null ? '"' + deployment[field] + '"' + this.csvSeparator : this.csvSeparator;
@@ -597,6 +616,15 @@ export class DeploymentsComponent implements OnInit {
     );
   }
 
+  private getFilteredDeploymentsForExport(filterString: string) {
+    this.deploymentService.getFilteredDeployments(filterString, this.sortCol, this.sortDirection, 0, 0).subscribe(
+      /* happy path */ (r) => this.deploymentsForExport = r.deployments,
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => { this.mapStates();
+                               this.enhanceDeploymentsForExport(); }
+    );
+  }
+
   private canRequestDeployments() {
       this.deploymentService.canRequestDeployments().subscribe(
         /* happy path */ (r) => this.hasPermissionToRequestDeployments = r,
@@ -630,14 +658,6 @@ export class DeploymentsComponent implements OnInit {
       this.comparatorOptionsMap[option.name] = option.displayName;
     });
     this.isLoading = false;
-  }
-
-  private goTo(destination: string) {
-    if (destination) {
-      this.location.go('/deployments?filters=' + destination);
-    } else {
-      this.location.go('/deployments');
-    }
   }
 
 }

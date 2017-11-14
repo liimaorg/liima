@@ -53,15 +53,10 @@
           <span class="state">{{deployment.reason ? failureReason[deployment.reason] : deployment.state }}</span>
         </td>
         <td>
-          <ng-container *ngIf="deployment.resourceId">
-            <a href="/AMW_web/pages/editResourceView.xhtml?id={{deployment.resourceId}}&ctx=1">{{deployment.appServerName}}</a>
-          </ng-container>
-          <ng-container *ngIf="!deployment.resourceId">
-            {{deployment.appServerName}}
-          </ng-container>
-            <ul class="nob">
-              <li *ngFor="let appWithVersion of deployment.appsWithVersion"><a href="/AMW_web/pages/editResourceView.xhtml?id={{appWithVersion.applicationId}}&ctx=1">{{appWithVersion.applicationName}}</a> ({{appWithVersion.version}})</li>
-            </ul>
+          <span class="link" (click)="appServerLink(deployment.resourceId)">{{deployment.appServerName}}</span>
+          <ul class="nob">
+            <li *ngFor="let appWithVersion of deployment.appsWithVersion" class="link" (click)="appLink(appWithVersion.applicationId)">{{appWithVersion.applicationName}} ({{appWithVersion.version}})</li>
+          </ul>
         </td>
         <td>{{deployment.releaseName}}</td>
         <td><strong>{{deployment.environmentName}}</strong></td>

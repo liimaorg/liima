@@ -272,11 +272,13 @@ td.has-checkbox {
 /*
  * Pretend to be a link
  */
+li.link,
 span.link {
   color: #337ab7;
   text-decoration: none;
   cursor: pointer;
 }
+li.link:hover,
 span.link:hover {
   color: #23527c;
   text-decoration: underline;
