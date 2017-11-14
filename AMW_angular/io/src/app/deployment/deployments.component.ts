@@ -281,7 +281,7 @@ export class DeploymentsComponent implements OnInit {
     });
   }
 
-  copyURL() {
+  copyBookmarkToClipboard() {
     let url: string = decodeURIComponent(window.location.href);
     let i: number = url.indexOf('?');
     if (i > 0) {
