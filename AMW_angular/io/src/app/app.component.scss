@@ -345,6 +345,20 @@ span.state {
 }
 
 /*
+ * In the deployment-list table the default glyphicon icon is the info icon (.glyphicon-info-sign).
+ * For the states pre_deploy, progress and simulating the default glyphicon is overwritten by .glyphicon-spin and .glyphicon-refresh
+ */
+table#deployment-list .glyphicon.pointer {
+  @extend .glyphicon-info-sign;
+  &.pre_deploy,
+  &.progress,
+  &.simulating {
+    @extend .glyphicon-spin;
+    @extend .glyphicon-refresh;
+  }
+}
+
+/*
  * Animated glyphicons
  */
 .glyphicon-spin {
