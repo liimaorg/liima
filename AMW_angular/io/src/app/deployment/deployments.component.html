@@ -77,7 +77,7 @@
         <div class="form-group">
           <div class="col-sm-offset-1 col-sm-11">
             <button type="submit" class="btn btn-primary btn-main" (click)="applyFilter()">Apply filter</button>
-            <button type="submit" class="btn btn-danger btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="clearFilters()">Clear filters</button>
+            <button type="submit" class="btn btn-danger btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="clearFiltersAndSessionStorage()">Clear filters</button>
             <button class="btn btn-default btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="copyBookmarkToClipboard()">
               <span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span> Clipboard
             </button>

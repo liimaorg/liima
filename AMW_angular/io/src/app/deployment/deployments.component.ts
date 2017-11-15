@@ -144,6 +144,11 @@ export class DeploymentsComponent implements OnInit {
     this.filterString = null;
   }
 
+  clearFiltersAndSessionStorage() {
+    this.clearFilters();
+    sessionStorage.setItem('deploymentFilters', null);
+  }
+
   applyFilter() {
     this.filtersForBackend = [];
     let filtersForParam: DeploymentFilter[] = [];
