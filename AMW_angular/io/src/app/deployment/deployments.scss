@@ -66,6 +66,8 @@ table#deployment-list .glyphicon.pointer {
   &.simulating {
     @extend .glyphicon-spin;
     @extend .glyphicon-refresh;
+    height: 14px;
+    margin-bottom: 0;
   }
 }
 
