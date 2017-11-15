@@ -27,7 +27,6 @@ import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
 import javax.faces.context.FacesContext;
@@ -56,10 +55,6 @@ public class LogView implements Serializable {
 
 	@Getter
 	List<String> availableLogFiles;
-
-	@Getter
-	@Setter
-	String filters;
 
 	@Inject
     DeploymentBoundary deploymentBoundary;
