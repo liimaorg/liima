@@ -91,7 +91,7 @@
             </a><br>
           </ng-container>
           <ng-container *ngIf="deployment.actions.hasLogFiles">
-            <a class="action" href="/AMW_web/pages/logView.xhtml?deploymentId={{deployment.id}}&filters={{ filtersInUrl | json:0}}">
+            <a class="action"  (click)="logViewerLink(deployment.id)">
               <span class="glyphicon glyphicon-file pointer">
                 <span class="action">logs</span>
               </span>
