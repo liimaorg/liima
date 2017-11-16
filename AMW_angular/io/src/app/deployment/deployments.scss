@@ -1,0 +1,86 @@
+/*
+ * Deployment screen
+ */
+a.action,
+a.action:hover,
+span.action,
+span.action:hover,
+span.confirm,
+span.confirm:hover,
+span.delayed,
+span.delayed:hover,
+span.reject,
+span.reject:hover {
+  color: #333333;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-decoration: none;
+}
+
+span.confirm,
+span.confirm:hover {
+  color: #008400;
+}
+
+span.delayed,
+span.delayed:hover {
+  color: #db4a4a;
+}
+
+span.reject,
+span.reject:hover {
+  color: #db4a4a;
+}
+
+tr.failed {
+  background-color: #f2dede;
+}
+
+tr.success {
+  background-color: #dff0d8;
+}
+
+span.state {
+  margin-left: 8px;
+}
+
+.pagination-amw {
+  display: block;
+  margin: 0;
+}
+
+/*
+ * Nicer alignement of large buttons when they are getting wrapped
+ */
+.btn-main {
+  margin-bottom: 0.5rem;
+}
+
+/*
+ * In the deployment-list table the default glyphicon icon is the info icon (.glyphicon-info-sign).
+ * For the states pre_deploy, progress and simulating the default glyphicon is overwritten by .glyphicon-spin and .glyphicon-refresh
+ */
+table#deployment-list .glyphicon.pointer {
+  @extend .glyphicon-info-sign;
+  &.state-pre_deploy,
+  &.state-progress,
+  &.state-simulating {
+    @extend .glyphicon-spin;
+    @extend .glyphicon-refresh;
+  }
+}
+
+/*
+ * Animated glyphicons
+ */
+.glyphicon-spin {
+  animation: spin 1000ms infinite linear;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}
