@@ -27,7 +27,7 @@ mvn release:clean release:prepare
 
 * Choose the version number of the new release as well as the following version number when asked. Please make sure, that the following version number is postfixed with "SNAPSHOT"
 * This will create a new Git Tag, update the version numbers and commit the changes.
-* Travis will automatically add the binary to the release page on GitHub once it's done building.
+* The new Tag creates a release in GitHub and Travis will automatically add the binary to the release page on GitHub once it's done building. You can then add the release notes.
 * The `*.releaseBackup` files can be removed with `mvn release:clean`
 * Push the changes
 * We do not use `mvn release:perform` as the ear is not uploaded to a maven repository.
