@@ -1,3 +1,11 @@
+# v1.15.1
+Fixes some bugs on the new Angular deployment view.
+
+## Bug fixes
+* AMW_angular/#/deployments: filters come back [#245](https://github.com/liimaorg/liima/issues/245)
+* AMW_angular/#/deployments: progress animation should also be shown on state progress [#244](https://github.com/liimaorg/liima/issues/244)
+* AMW_angular/#/deployments: if filter is set, log view can not be shown and gives a http 500 [#243](https://github.com/liimaorg/liima/issues/243)
+
 # v1.15.0
 
 ## New features
@@ -8,7 +16,7 @@
   * More space for the deployment table.
 * To preserve the deployment histroy deployment entries are no longer deleted if an AppServer, Environment, Release or Runtime is deleted: [#79](https://github.com/liimaorg/liima/issues/79)
 
-# Bug fixes
+## Bug fixes
 * Deployment filter: "Latest deployment job for ..." shows two deployments for one env: [#23](https://github.com/liimaorg/liima/issues/23)
   * Unfortunately this make the filter slower as paging happens now in code instead of SQL.
 * The deployment filters "Latest deployment job for App & State" and "State filter" didn't work correctly together: [#42](https://github.com/liimaorg/liima/issues/42)
