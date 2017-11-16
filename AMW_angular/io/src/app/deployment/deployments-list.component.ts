@@ -175,6 +175,10 @@ export class DeploymentsListComponent {
     );
   }
 
+  logViewerLink(deploymentId: number){
+    window.location.href = '/AMW_web/pages/logView.xhtml?deploymentId=' + deploymentId + '&filters=' + encodeURI(JSON.stringify(this.filtersInUrl))
+  }
+
   private getDeploymentDetail(deploymentId: number) {
     this.deploymentService.getDeploymentDetail(deploymentId).subscribe(
       /* happy path */ (r) => this.deploymentDetail = r,
