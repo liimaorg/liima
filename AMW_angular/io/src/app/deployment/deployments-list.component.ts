@@ -18,7 +18,6 @@ declare var $: any;
 export class DeploymentsListComponent {
 
   @Input() deployments: Deployment[] = [];
-  @Input() filtersInUrl: DeploymentFilter[];
   @Input() sortCol: string;
   @Input() sortDirection: string;
   @Input() currentPage: number;

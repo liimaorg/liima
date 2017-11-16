@@ -28,8 +28,6 @@ export class DeploymentsComponent implements OnInit {
   paramFilters: DeploymentFilter[] = [];
   autoload: boolean = true;
 
-  // value of filters parameter. Used to pass as json object to the logView.xhtml
-  filtersInUrl: DeploymentFilter[];
   // enhanced filters for deployment service
   filtersForBackend: DeploymentFilter[] = [];
 
@@ -178,10 +176,9 @@ export class DeploymentsComponent implements OnInit {
 
     if (!this.errorMessage) {
       this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
-      this.filtersInUrl = filtersForParam;
       let filterString: string;
-      if (this.filtersInUrl.length > 0) {
-        filterString = JSON.stringify(this.filtersInUrl);
+      if (filtersForParam.length > 0) {
+        filterString = JSON.stringify(filtersForParam);
         sessionStorage.setItem('deploymentFilters', filterString);
       }
       this.filterString = filterString;
