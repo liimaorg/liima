@@ -31,23 +31,6 @@ describe('RestrictionComponent', () => {
       expect(restrictionComponent.groupedEnvironments['Dev'][1]['selected']).toBeTruthy();
   }));
 
-  it('should return all parent Environment names',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
-      // given
-      let emptyEnvironment: Environment[] = [ { id: null, name: null, parent: 'All', selected: false } ];
-      let devEnvironments: Environment[] = [ { id: 1, name: 'B', parent: 'Dev', selected: false },
-        { id: 2, name: 'C', parent: 'Dev', selected: false } ];
-      let testEnvironments: Environment[] = [ { id: 11, name: 'T', parent: 'Test', selected: false },
-        { id: 12, name: 'S', parent: 'Test', selected: false } ];
-      restrictionComponent.groupedEnvironments =  { All: emptyEnvironment, Dev: devEnvironments, Test: testEnvironments };
-      // when
-      let groups: string[] = restrictionComponent.getEnvironmentGroups();
-      // then
-      expect(groups[0]).toBe('All');
-      expect(groups[1]).toBe('Dev');
-      expect(groups[2]).toBe('Test');
-  }));
-
   it('should return the right title',
     inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
       // given

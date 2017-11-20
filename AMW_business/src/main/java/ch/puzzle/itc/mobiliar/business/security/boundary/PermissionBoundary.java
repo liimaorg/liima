@@ -423,7 +423,7 @@ public class PermissionBoundary implements Serializable {
     @HasPermission(permission = Permission.RESOURCE, action = Action.CREATE)
     public void createSelfAssignedRestrictions(ResourceEntity resource) throws AMWException {
         Integer resourceGroupId = resource.getResourceGroup().getId();
-        createRestriction(null, getUserName(), Permission.ASSIGN_REMOVE_PERMISSION.name(), resourceGroupId, null, null, null, null, new RestrictionEntity());
+        //createRestriction(null, getUserName(), Permission.ASSIGN_REMOVE_PERMISSION.name(), resourceGroupId, null, null, null, null, new RestrictionEntity());
         createRestriction(null, getUserName(), Permission.RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
         createRestriction(null, getUserName(), Permission.RESOURCE_AMWFUNCTION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
         createRestriction(null, getUserName(), Permission.RESOURCE_PROPERTY_DECRYPT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
@@ -525,7 +525,7 @@ public class PermissionBoundary implements Serializable {
      *
      * @return List<String> UserRestriction.name
      */
-    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
+    @HasPermission(oneOfPermission = { Permission.ASSIGN_REMOVE_PERMISSION, Permission.PERMISSION_DELEGATION })
     public List<String> getAllUserRestrictionNames() {
         return permissionRepository.getAllUserRestrictionNames();
     }

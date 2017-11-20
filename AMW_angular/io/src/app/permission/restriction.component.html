@@ -19,7 +19,7 @@
       <div class="form-group">
         <label for="selectAction" class="col-sm-3 control-label">Action</label>
         <div class="col-sm-9">
-          <select id="selectAction" class="form-control input-sm" [(ngModel)]="restriction.action">
+          <select id="selectAction" class="form-control input-sm" [(ngModel)]="restriction.action" (change)="populateAvailableEnvironments()">
             <option [ngValue]="action" *ngFor="let action of getAvailableActions()">{{action}}</option>
           </select>
         </div>
@@ -28,10 +28,10 @@
       <div class="form-group">
         <label class="col-sm-3 control-label">Environment</label>
         <div class="col-sm-9">
-          <ng-container *ngFor="let group of getAvailableEnvironmentGroups()">
+          <ng-container *ngFor="let group of getEnvironmentGroups()">
             <h5 class="environments-title">{{group}}: </h5>
             <ng-container *ngFor="let env of groupedEnvironments[group]">
-              <label class="checkbox-inline"><input type="checkbox" [(ngModel)]="env.selected"
+              <label class="checkbox-inline"><input type="checkbox" [(ngModel)]="env.selected" [disabled]="!isAvailableEnvironment(env.name)"
                                                     (change)="checkUnique(env)">&nbsp;{{env.name}}</label>
             </ng-container>
           </ng-container>

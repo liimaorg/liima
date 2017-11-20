@@ -29,6 +29,10 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
 
   similarRestrictions: Restriction[] = [];
 
+  availableEnvironmentsPerAction: { [key: string]: string[] } = {}
+
+  availableEnvironments: string[] = [];
+
   constructor(private cdRef: ChangeDetectorRef) {
   }
 
@@ -102,8 +106,21 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
     return this.delegationMode ? this.extractAvailableActions() : this.actions;
   }
 
-  getAvailableEnvironmentGroups(): string[] {
-    return this.delegationMode ? this.extractAvailableEnvironmentGroups() : this.getEnvironmentGroups();
+  populateAvailableEnvironments() {
+    if (this.delegationMode) {
+      // TODO: fill this.availableEnvironments
+      // match this.similarRestrictions.action with this.restriction.action OR ALL
+      //this.availableEnvironmentsPerAction;
+      this.similarRestrictions.forEach((restriction) => {
+        if (restriction.action === 'ALL' || restriction.action === this.restriction.action) {
+          this.availableEnvironments.push(restriction.contextName);
+        }
+      });
+    }
+  }
+
+  isAvailableEnvironment(contextName: string): boolean {
+    return this.delegationMode ? this.checkEnvironment(contextName) : true;
   }
 
   getAvailableResourceGroups(): Resource[] {
@@ -154,7 +171,7 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
     }
   }
 
-  private getEnvironmentGroups(): string[] {
+  getEnvironmentGroups(): string[] {
     return Object.keys(this.groupedEnvironments);
   }
 
@@ -164,31 +181,54 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
 
   private extractAvailableActions(): string[] {
     let actions: string[] = [];
+    //this.availableEnvironmentsPerAction = {};
+    this.availableEnvironments = [];
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
+        if (!this.availableEnvironmentsPerAction[restriction.action]) {
+          this.availableEnvironmentsPerAction[restriction.action] = [];
+        }
+        this.availableEnvironmentsPerAction[restriction.action].push(restriction.contextName);
         if (actions.indexOf(restriction.action) < 0) {
           actions.push(restriction.action);
         }
       });
+      actions.sort();
+      if (!this.restriction.action) {
+        this.restriction.action = actions[0];
+      }
     }
     return actions;
   }
 
-  private extractAvailableEnvironmentGroups(): string[] {
-    // TODO
-    let environmentGroups: string[] = [];
-    if (this.similarRestrictions.length > 0) {
-      if (_.some(this.similarRestrictions, [ 'contextName', null ])) {
-        return this.getEnvironmentGroups();
-      } else {
-        this.similarRestrictions.forEach((restriction) => {
-          if (environmentGroups.indexOf(restriction.contextName) < 0) {
-            environmentGroups.push(restriction.contextName);
-          }
-        });
+  private checkEnvironment(contextName: string): boolean {
+    if (!contextName) {
+      contextName = 'ALL';
+    }
+    if (this.availableEnvironmentsPerAction[this.restriction.action]) {
+      let test: string[] = [];
+      test.push(this.availableEnvironmentsPerAction[this.restriction.action]);
+      let foo: boolean = _.some(test, 'ALL');
+      let bar: boolean = _.some(test, contextName);
+      console.log('foo: ' + foo + ' bar: ' +bar + ' col: ' + this.availableEnvironmentsPerAction[this.restriction.action]);
+      if (_.some(this.availableEnvironmentsPerAction[this.restriction.action], 'ALL') || _.some(this.availableEnvironmentsPerAction[this.restriction.action], contextName)) {
+        return true;
       }
     }
-    return environmentGroups;
+    return false;
+    //
+    // if (_.some(this.similarRestrictions, { contextName: null, action: 'ALL' } ) ||
+    //   _.some(this.similarRestrictions, { contextName: null, action: this.restriction.action } )) {
+    //   return true;
+    // } else {
+    //   for (let i = 0; i < this.similarRestrictions.length; i++) {
+    //     if (this.similarRestrictions[i]['contextName'] === contextName &&
+    //       (this.similarRestrictions[i]['action'] === 'ALL' || this.similarRestrictions[i]['action'] === this.restriction.action)) {
+    //       return true;
+    //     }
+    //   }
+    // }
+    // return false;
   }
 
   private extractAvailableResourceGroups(): Resource[] {
