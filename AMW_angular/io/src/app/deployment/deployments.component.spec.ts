@@ -399,6 +399,35 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.deploymentDate', 'DESC', 0, 10);
   }));
 
+  it('should clean session storage',
+    inject([DeploymentsComponent], (deploymentsComponent: DeploymentsComponent) => {
+      // given
+      sessionStorage.setItem('deploymentFilters', "{name: 'Confirmed', comp: 'eq', val: 'true'}");
+
+      // when
+      deploymentsComponent.clearFiltersAndSessionStorage();
+
+      // then
+      expect(sessionStorage.getItem("deploymentFilters")).toBe('null');
+    }));
+
+  it('should clean filters but keep the session storage',
+    inject([DeploymentsComponent], (deploymentsComponent: DeploymentsComponent) => {
+      // given
+      let filter: string = "{name: 'Confirmed', comp: 'eq', val: 'true'}";
+      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true' }];
+      deploymentsComponent.filterString = filter;
+      sessionStorage.setItem("deploymentFilters", filter);
+
+      // when
+      deploymentsComponent.clearFilters();
+
+      // then
+      expect(sessionStorage.getItem("deploymentFilters")).toBe(filter);
+      expect(deploymentsComponent.filters.length).toBe(0);
+      expect(deploymentsComponent.filterString).toBeNull();
+    }));
+
   it('should invoke service with right params on sort',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
