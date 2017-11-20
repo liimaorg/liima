@@ -31,7 +31,7 @@
         </div>
 
         <ng-container *ngIf="filters.length > 0">
-          <div class="form-group" *ngFor="let filter of filters">
+          <div class="form-group" *ngFor="let filter of filters; let i=index">
             <label class="col-sm-1 control-label"></label>
             <div class="col-sm-4">
               <input class="form-control" disabled type="text" value="{{filter.name}}">
@@ -47,8 +47,8 @@
               </div>
               <ng-container *ngIf="filter.type !== 'DateType'">
                 <div class="col-sm-4" *ngIf="filter.type !== 'booleanType' && filter.type !== 'ENUM_TYPE'">
-                  <input class="form-control" list="filterOptionList" type="text" [(ngModel)]="filter.val">
-                  <datalist id="filterOptionList">
+                  <input class="form-control" attr.list="list{{i}}" type="text" [(ngModel)]="filter.val">
+                  <datalist attr.id="list{{i}}">
                     <option *ngFor="let filterValueOption of filter.valOptions">{{filterValueOption}}</option>
                   </datalist>
                 </div>
