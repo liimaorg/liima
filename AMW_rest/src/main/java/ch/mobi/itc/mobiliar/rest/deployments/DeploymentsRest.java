@@ -53,9 +53,9 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;

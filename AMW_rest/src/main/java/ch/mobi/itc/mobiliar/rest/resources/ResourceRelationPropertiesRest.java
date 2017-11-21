@@ -45,9 +45,9 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelatio
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RequestScoped
 @Path("/resources/{resourceGroupName}/{releaseName}/relations/{relatedResourceGroupName}/{relatedReleaseName}/properties")
