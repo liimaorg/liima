@@ -121,7 +121,7 @@ public class DeploymentsRest {
             sortingDirectionType = CommonFilterService.SortingDirectionType.valueOf(sortDirection);
         }
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
-        boolean doPageingCalculation = maxResults > 0;
+        boolean doPageingCalculation = maxResults == null ? false : (maxResults > 0 ? true : false);
         Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(doPageingCalculation, offset, maxResults, filters, colToSort, sortingDirectionType, null);
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
         return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();

@@ -200,7 +200,7 @@ public class DeploymentTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getDeploymentsBasic() {
-		when(deploymentBoundary.getFilteredDeployments(true, null, null, new LinkedList<CustomFilter>(), null, null, null)).thenReturn(
+		when(deploymentBoundary.getFilteredDeployments(false, null, null, new LinkedList<CustomFilter>(), null, null, null)).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<DeploymentEntity>(), 0));
 
 		Response response = deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, null, null, false);
@@ -215,32 +215,74 @@ public class DeploymentTest {
 
 	@Test
 	public void verifyThatDeploymentServiceIsCalledWithNonEmptyFilterIfDeploymentParametersAreSet() {
-        when(deploymentBoundary.getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
+        when(deploymentBoundary.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
                 new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<DeploymentEntity>(), 0));
 		deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, Collections.singletonList("TEST"), null, false);
 
         verify(deploymentBoundary, never()).getFilteredDeployments(true, null, null, Collections.<CustomFilter>emptyList(), null, null, null);
-		verify(deploymentBoundary, times(1)).getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+		verify(deploymentBoundary, times(1)).getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
 	}
+
+    @Test
+    public void verifyThatDeploymentServiceIsCalledWithoutActivatedPagination_null() {
+        // given
+        verifyDeploymentServiceCallForInactivePagination(null);
+    }
+
+    @Test
+    public void verifyThatDeploymentServiceIsCalledWithoutActivatedPagination() {
+        // given
+        verifyDeploymentServiceCallForInactivePagination(0);
+    }
+
+    private void verifyDeploymentServiceCallForInactivePagination(Integer maxResults) {
+        // given
+        boolean expectedDoPaging = false;
+        String jsonListOfFilters = "[{\"name\":\"Application\",\"val\":\"ch_mobi_fdt\"}]";
+        Tuple<Set<DeploymentEntity>, Integer> integerTuple = new Tuple<>(Collections.<DeploymentEntity>emptySet(), 0);
+        doReturn(integerTuple).when(deploymentBoundary).getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+
+        // when
+        deploymentRestService.getDeployments(jsonListOfFilters, null, null, maxResults, null);
+
+        // then
+        verify(deploymentBoundary).getFilteredDeployments(eq(expectedDoPaging), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+    }
+
+    @Test
+    public void verifyThatDeploymentServiceIsCalledWithActivatedPagination() {
+        // given
+        Integer maxResults = 1;
+        boolean expectedDoPaging = true;
+        String jsonListOfFilters = "[{\"name\":\"Application\",\"val\":\"ch_mobi_fdt\"}]";
+        Tuple<Set<DeploymentEntity>, Integer> integerTuple = new Tuple<>(Collections.<DeploymentEntity>emptySet(), 0);
+        doReturn(integerTuple).when(deploymentBoundary).getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+
+        // when
+        deploymentRestService.getDeployments(jsonListOfFilters, null, null, maxResults, null);
+
+        // then
+        verify(deploymentBoundary).getFilteredDeployments(eq(expectedDoPaging), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+    }
 
 	@Test
 	public void verifyThatDeploymentServiceIsCalledWithNonEmptyFilterIfDeploymentParameterValuesAreSet() {
-		when(deploymentBoundary.getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
+		when(deploymentBoundary.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<DeploymentEntity>(), 0));
 		deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, null, Collections.singletonList("TESTVALUE"), false);
 
 		verify(deploymentBoundary, never()).getFilteredDeployments(true, null, null, Collections.<CustomFilter>emptyList(), null, null, null);
-		verify(deploymentBoundary, times(1)).getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+		verify(deploymentBoundary, times(1)).getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
 	}
 
 	@Test
 	public void verifyThatDeploymentServiceIsCalledWithNonEmptyFilterIfDeploymentParametersAndDeploymentParameterValuesAreSet() {
-		when(deploymentBoundary.getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
+		when(deploymentBoundary.getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
 				new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<DeploymentEntity>(), 0));
 		deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, Collections.singletonList("TEST"), Collections.singletonList("TESTVALUE"), false);
 
 		verify(deploymentBoundary, never()).getFilteredDeployments(true, null, null, Collections.<CustomFilter>emptyList(), null, null, null);
-		verify(deploymentBoundary, times(1)).getFilteredDeployments(eq(true), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+		verify(deploymentBoundary, times(1)).getFilteredDeployments(anyBoolean(), anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
 	}
 
 	@Test
