@@ -299,7 +299,7 @@ describe('DeploymentsComponent (without query params)', () => {
       deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true', type: 'booleanType' } ];
 
       // when
-      deploymentsComponent.setMaxResultsPerPage(20)
+      deploymentsComponent.setMaxResultsPerPage(20);
 
       // then
       expect(deploymentsComponent.offset).toEqual(0);
@@ -332,7 +332,7 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentsComponent.filters.length).toEqual(2);
   }));
 
-  it('should apply filters and add them to the sessionStorage on applyFilter',
+  it('should apply filters and add them to the sessionStorage on applyFilterss',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
       sessionStorage.setItem('deploymentFilters', null);
@@ -355,14 +355,14 @@ describe('DeploymentsComponent (without query params)', () => {
         <DeploymentFilter> { name: 'Application', comp: 'eq', val: 'TestApp', type: 'StringType' } ];
 
       // when
-      deploymentsComponent.applyFilter();
+      deploymentsComponent.applyFilters();
 
       // then
       expect(sessionStorage.getItem('deploymentFilters')).toEqual(JSON.stringify(expectedFilters));
       expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.deploymentDate', 'DESC', 0, 10);
   }));
 
-  it('should sort out filters without a value on apply filters and add the remaining to the sessionStorage on applyFilter',
+  it('should sort out filters without a value on apply filters and add the remaining to the sessionStorage on applyFilters',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
       sessionStorage.setItem('deploymentFilters', null);
@@ -391,7 +391,7 @@ describe('DeploymentsComponent (without query params)', () => {
         <DeploymentFilter> { name: 'Latest deployment', comp: 'eq', val: '', type: 'SpecialFilterType' } ];
 
       // when
-      deploymentsComponent.applyFilter();
+      deploymentsComponent.applyFilters();
 
       // then
       expect(deploymentsComponent.filters.length).toEqual(3);
@@ -399,34 +399,17 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(JSON.stringify(expectedFilters), 'd.deploymentDate', 'DESC', 0, 10);
   }));
 
-  it('should clean session storage',
+  it('should clear filters and session storage',
     inject([DeploymentsComponent], (deploymentsComponent: DeploymentsComponent) => {
       // given
       sessionStorage.setItem('deploymentFilters', "{name: 'Confirmed', comp: 'eq', val: 'true'}");
 
       // when
-      deploymentsComponent.clearFiltersAndSessionStorage();
-
-      // then
-      expect(sessionStorage.getItem("deploymentFilters")).toBe('null');
-    }));
-
-  it('should clean filters but keep the session storage',
-    inject([DeploymentsComponent], (deploymentsComponent: DeploymentsComponent) => {
-      // given
-      let filter: string = "{name: 'Confirmed', comp: 'eq', val: 'true'}";
-      deploymentsComponent.filters = [ <DeploymentFilter> { name: 'Confirmed', comp: 'eq', val: 'true' }];
-      deploymentsComponent.filterString = filter;
-      sessionStorage.setItem("deploymentFilters", filter);
-
-      // when
       deploymentsComponent.clearFilters();
 
       // then
-      expect(sessionStorage.getItem("deploymentFilters")).toBe(filter);
-      expect(deploymentsComponent.filters.length).toBe(0);
-      expect(deploymentsComponent.filterString).toBeNull();
-    }));
+      expect(sessionStorage.getItem('deploymentFilters')).toBe('null');
+  }));
 
   it('should invoke service with right params on sort',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
@@ -551,4 +534,3 @@ describe('DeploymentsComponent (without query params)', () => {
   }));
 
 });
-
