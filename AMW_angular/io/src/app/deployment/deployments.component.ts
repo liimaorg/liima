@@ -28,10 +28,10 @@ export class DeploymentsComponent implements OnInit {
   paramFilters: DeploymentFilter[] = [];
   autoload: boolean = true;
 
-  // value of filters parameter. Used to pass as json object to the logView.xhtml
-  filtersInUrl: DeploymentFilter[];
   // enhanced filters for deployment service
   filtersForBackend: DeploymentFilter[] = [];
+  // value of filters parameter. Used to pass as json object to the logView.xhtml
+  filtersForParam: DeploymentFilter[] = [];
 
   // valid for all, loaded once
   filterTypes: DeploymentFilterType[] = [];
@@ -56,7 +56,6 @@ export class DeploymentsComponent implements OnInit {
 
   // already set
   filters: DeploymentFilter[] = [];
-  filterString: string;
 
   // filtered deployments
   deployments: Deployment[] = [];
@@ -141,22 +140,18 @@ export class DeploymentsComponent implements OnInit {
 
   clearFilters() {
     this.filters = [];
-    this.filterString = null;
-  }
-
-  clearFiltersAndSessionStorage() {
-    this.clearFilters();
     sessionStorage.setItem('deploymentFilters', null);
+    this.updateFiltersInURL(null);
   }
 
-  applyFilter() {
+  applyFilters() {
     this.filtersForBackend = [];
-    let filtersForParam: DeploymentFilter[] = [];
+    this.filtersForParam = [];
     let filtersToBeRemoved: DeploymentFilter[] = [];
     this.errorMessage = '';
     this.filters.forEach((filter) => {
       if (filter.val || filter.type === 'SpecialFilterType') {
-        filtersForParam.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+        this.filtersForParam.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
         if (filter.type === 'DateType') {
           let dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
           if (!dateTime || !dateTime.isValid()) {
@@ -178,13 +173,12 @@ export class DeploymentsComponent implements OnInit {
 
     if (!this.errorMessage) {
       this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
-      this.filtersInUrl = filtersForParam;
-      let filterString: string;
-      if (this.filtersInUrl.length > 0) {
-        filterString = JSON.stringify(this.filtersInUrl);
-        sessionStorage.setItem('deploymentFilters', filterString);
+      let filterString: string = null;
+      if (this.filtersForParam.length > 0) {
+        filterString = JSON.stringify(this.filtersForParam);
       }
-      this.filterString = filterString;
+      sessionStorage.setItem('deploymentFilters', filterString);
+      this.updateFiltersInURL(filterString);
     }
   }
 
@@ -288,13 +282,8 @@ export class DeploymentsComponent implements OnInit {
     this.getFilteredDeploymentsForExport(JSON.stringify(this.filtersForBackend));
   }
 
-  copyBookmarkToClipboard() {
+  copyURL() {
     let url: string = decodeURIComponent(window.location.href);
-    let i: number = url.indexOf('?');
-    if (i > 0) {
-      url = url.substring(0, i);
-    }
-    url += '?filters=' + this.filterString;
     $("body").append($('<input type="text" name="fname" class="textToCopyInput" style="opacity:0"/>')
       .val(url)).find(".textToCopyInput").select();
     try {
@@ -312,18 +301,18 @@ export class DeploymentsComponent implements OnInit {
       this.sortCol = col;
       this.sortDirection = 'DESC';
     }
-    this.applyFilter();
+    this.applyFilters();
   }
 
   setMaxResultsPerPage(max: number) {
     this.maxResults = max;
     this.offset = 0;
-    this.applyFilter();
+    this.applyFilters();
   }
 
   setNewOffset(offset: number) {
     this.offset = offset;
-    this.applyFilter();
+    this.applyFilters();
   }
 
   private canFilterBeAdded(): boolean {
@@ -365,7 +354,7 @@ export class DeploymentsComponent implements OnInit {
       stateMessage: detail.stateMessage
     };
     this.csvReadyObjects.push(csvReadyObject);
-    if (this.csvReadyObjects.length === this.deploymentsForExport.length) {
+    if (this.csvReadyObjects.length === this.deployments.length) {
       this.csvDocument = this.createCSV();
       let docName: string = 'deployments_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
       this.pushDownload(docName);
@@ -628,7 +617,7 @@ export class DeploymentsComponent implements OnInit {
       /* happy path */ (r) => this.deploymentsForExport = r.deployments,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => { this.mapStates();
-                               this.enhanceDeploymentsForExport(); }
+        this.enhanceDeploymentsForExport(); }
     );
   }
 
@@ -656,7 +645,7 @@ export class DeploymentsComponent implements OnInit {
       });
     }
     if (this.autoload) {
-      this.applyFilter();
+      this.applyFilters();
     }
   }
 
@@ -665,6 +654,14 @@ export class DeploymentsComponent implements OnInit {
       this.comparatorOptionsMap[option.name] = option.displayName;
     });
     this.isLoading = false;
+  }
+
+  private updateFiltersInURL(destination: string) {
+    if (destination) {
+      this.location.replaceState('/deployments?filters=' + destination);
+    } else {
+      this.location.replaceState('/deployments');
+    }
   }
 
 }
