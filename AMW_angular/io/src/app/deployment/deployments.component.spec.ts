@@ -332,7 +332,7 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentsComponent.filters.length).toEqual(2);
   }));
 
-  it('should apply filters and add them to the sessionStorage on applyFilterss',
+  it('should apply filters and add them to the sessionStorage on applyFilters',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
       sessionStorage.setItem('deploymentFilters', null);

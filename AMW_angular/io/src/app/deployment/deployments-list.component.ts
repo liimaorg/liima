@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, NgZone } from '@angular/core';
 import { ResourceService } from '../resource/resource.service';
 import { Deployment } from './deployment';
 import { DeploymentDetail } from './deployment-detail';
+import { DeploymentFilter } from './deployment-filter';
 import { DeploymentService } from './deployment.service';
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
@@ -21,6 +22,7 @@ export class DeploymentsListComponent {
   @Input() sortDirection: string;
   @Input() currentPage: number;
   @Input() lastPage: number;
+  @Input() filtersForParam: DeploymentFilter[];
   @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
@@ -174,7 +176,7 @@ export class DeploymentsListComponent {
   }
 
   logViewerLink(deploymentId: number){
-    window.location.href = '/AMW_web/pages/logView.xhtml?deploymentId=' + deploymentId;
+    window.location.href = '/AMW_web/pages/logView.xhtml?deploymentId=' + deploymentId + '&filters=' + encodeURI(JSON.stringify(this.filtersForParam));
   }
 
   private getDeploymentDetail(deploymentId: number) {

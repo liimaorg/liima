@@ -30,6 +30,8 @@ export class DeploymentsComponent implements OnInit {
 
   // enhanced filters for deployment service
   filtersForBackend: DeploymentFilter[] = [];
+  // value of filters parameter. Used to pass as json object to the logView.xhtml
+  filtersForParam: DeploymentFilter[] = [];
 
   // valid for all, loaded once
   filterTypes: DeploymentFilterType[] = [];
@@ -139,17 +141,17 @@ export class DeploymentsComponent implements OnInit {
   clearFilters() {
     this.filters = [];
     sessionStorage.setItem('deploymentFilters', null);
-    this.goTo(null);
+    this.updateFiltersInURL(null);
   }
 
   applyFilters() {
     this.filtersForBackend = [];
-    let filtersForParam: DeploymentFilter[] = [];
+    this.filtersForParam = [];
     let filtersToBeRemoved: DeploymentFilter[] = [];
     this.errorMessage = '';
     this.filters.forEach((filter) => {
       if (filter.val || filter.type === 'SpecialFilterType') {
-        filtersForParam.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+        this.filtersForParam.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
         if (filter.type === 'DateType') {
           let dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
           if (!dateTime || !dateTime.isValid()) {
@@ -172,11 +174,11 @@ export class DeploymentsComponent implements OnInit {
     if (!this.errorMessage) {
       this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
       let filterString: string = null;
-      if (filtersForParam.length > 0) {
-        filterString = JSON.stringify(filtersForParam);
+      if (this.filtersForParam.length > 0) {
+        filterString = JSON.stringify(this.filtersForParam);
       }
       sessionStorage.setItem('deploymentFilters', filterString);
-      this.goTo(filterString);
+      this.updateFiltersInURL(filterString);
     }
   }
 
@@ -652,7 +654,7 @@ export class DeploymentsComponent implements OnInit {
     this.isLoading = false;
   }
 
-  private goTo(destination: string) {
+  private updateFiltersInURL(destination: string) {
     if (destination) {
       this.location.replaceState('/deployments?filters=' + destination);
     } else {
