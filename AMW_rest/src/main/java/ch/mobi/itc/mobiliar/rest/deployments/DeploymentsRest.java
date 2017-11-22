@@ -121,8 +121,7 @@ public class DeploymentsRest {
             sortingDirectionType = CommonFilterService.SortingDirectionType.valueOf(sortDirection);
         }
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
-        boolean doPaging = maxResults == null ? false : (maxResults > 0 ? true : false);
-        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(doPaging, offset, maxResults, filters, colToSort, sortingDirectionType, null);
+        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, colToSort, sortingDirectionType, null);
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
         return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
     }
@@ -266,8 +265,7 @@ public class DeploymentsRest {
         if (deploymentParameterValues != null) {
             createFiltersAndAddToList(DEPLOYMENT_PARAMETER, deploymentParameterValues, filters);
         }
-        boolean doPaging = maxResults == null ? false : (maxResults > 0 ? true : false);
-        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(doPaging, offset, maxResults, filters, null, null, null);
+        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, null, null, null);
 
         List<DeploymentDTO> deploymentDTOs = new ArrayList<>();
 
@@ -461,7 +459,7 @@ public class DeploymentsRest {
         CustomFilter trackingIdFilter = CustomFilter.builder(TRACKING_ID).build();
         trackingIdFilter.setValue(trackingId.toString());
         filters.add(trackingIdFilter);
-        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 1, filters, null, null, null);
+        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments( 0, 1, filters, null, null, null);
 
         DeploymentDTO deploymentDto = new DeploymentDTO(result.getA().iterator().next());
 
