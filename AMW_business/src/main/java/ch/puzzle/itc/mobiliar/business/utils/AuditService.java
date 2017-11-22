@@ -43,6 +43,7 @@ public class AuditService {
         Objects.requireNonNull(id, "Id can not be null");
 
         AuditReader reader = AuditReaderFactory.get(entityManager);
+
         if (reader.isEntityClassAudited(entity.getClass())) {
             AuditQuery query = reader.createQuery()
                     .forRevisionsOfEntity(entity.getClass(), false, true)
@@ -57,4 +58,19 @@ public class AuditService {
         return null;
     }
 
+    public <T> List<T> getAllRevisionsForEntity(T entity, Integer id){
+        Objects.requireNonNull(entity, "Entity can not be null");
+        Objects.requireNonNull(id, "Id can not be null");
+
+        AuditReader reader = AuditReaderFactory.get(entityManager);
+
+        if (reader.isEntityClassAudited(entity.getClass())) {
+            AuditQuery query = reader.createQuery().forRevisionsOfEntity(entity.getClass(), false, true)
+                    .add(AuditEntity.id().eq(id))
+                    .addOrder(AuditEntity.revisionNumber().desc());
+            List<T> resultList = query.getResultList();
+            return resultList;
+        }
+        return null;
+    }
 }
