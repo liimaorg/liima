@@ -18,11 +18,11 @@ declare var $: any;
 export class DeploymentsListComponent {
 
   @Input() deployments: Deployment[] = [];
-  @Input() filtersInUrl: DeploymentFilter[];
   @Input() sortCol: string;
   @Input() sortDirection: string;
   @Input() currentPage: number;
   @Input() lastPage: number;
+  @Input() filtersForParam: DeploymentFilter[];
   @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
@@ -173,6 +173,10 @@ export class DeploymentsListComponent {
     this.resourceService.resourceExists(appId).subscribe(
       /* happy path */ (r) =>  { if (r) window.location.href = '/AMW_web/pages/editResourceView.xhtml?id=' + appId + '&ctx=1'; }
     );
+  }
+
+  logViewerLink(deploymentId: number){
+    window.location.href = '/AMW_web/pages/logView.xhtml?deploymentId=' + deploymentId + '&filters=' + encodeURI(JSON.stringify(this.filtersForParam));
   }
 
   private getDeploymentDetail(deploymentId: number) {
