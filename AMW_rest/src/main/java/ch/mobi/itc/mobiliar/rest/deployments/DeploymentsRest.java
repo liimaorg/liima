@@ -121,8 +121,8 @@ public class DeploymentsRest {
             sortingDirectionType = CommonFilterService.SortingDirectionType.valueOf(sortDirection);
         }
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
-        boolean doPageingCalculation = maxResults == null ? false : (maxResults > 0 ? true : false);
-        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(doPageingCalculation, offset, maxResults, filters, colToSort, sortingDirectionType, null);
+        boolean doPaging = maxResults == null ? false : (maxResults > 0 ? true : false);
+        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(doPaging, offset, maxResults, filters, colToSort, sortingDirectionType, null);
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
         return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
     }
@@ -266,8 +266,8 @@ public class DeploymentsRest {
         if (deploymentParameterValues != null) {
             createFiltersAndAddToList(DEPLOYMENT_PARAMETER, deploymentParameterValues, filters);
         }
-
-        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(false, offset, maxResults, filters, null, null, null);
+        boolean doPaging = maxResults == null ? false : (maxResults > 0 ? true : false);
+        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(doPaging, offset, maxResults, filters, null, null, null);
 
         List<DeploymentDTO> deploymentDTOs = new ArrayList<>();
 
