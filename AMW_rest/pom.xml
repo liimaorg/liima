@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ch.puzzle.itc.mobiliar</groupId>
 		<artifactId>AMW_parent</artifactId>
-		<version>1.13.2-SNAPSHOT</version>
+		<version>1.15.2-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -121,7 +121,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -134,4 +133,5 @@
 		</dependency>
 
 	</dependencies>
+
 </project>
