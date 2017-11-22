@@ -64,8 +64,7 @@ public class DeployScreenController {
     @Inject
     protected DeploymentParameterBoundary deploymentParameterBoundary;
 
-    public Tuple<Set<DeploymentEntity>, Integer> loadPendingDeployments(
-            boolean count, Integer startIndex, Integer maxResults,
+    public Tuple<Set<DeploymentEntity>, Integer> loadPendingDeployments(Integer startIndex, Integer maxResults,
             List<CustomFilter> filter,
             deployscreenColDescriptor sortingColumn,
             SortingDirectionType sortingDirection) {
@@ -113,8 +112,7 @@ public class DeployScreenController {
             }
         }
 
-        return deploymentBoundary.getFilteredDeployments(count,
-                startIndex, maxResults, filter, colToSort,
+        return deploymentBoundary.getFilteredDeployments(startIndex, maxResults, filter, colToSort,
                 sortingDirection, userSettings.getMyAMWFilter());
     }
 

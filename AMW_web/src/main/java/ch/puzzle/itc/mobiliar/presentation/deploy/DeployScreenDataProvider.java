@@ -640,7 +640,7 @@ public class DeployScreenDataProvider implements Serializable {
         if (countAgain) {
             currentPage = 0;
         }
-        Tuple<Set<DeploymentEntity>, Integer> result = controller.loadPendingDeployments(countAgain, currentStartIndex(), getItemsPerPage(), getAppliedFilterList(), sortingColumn, sortingDirection);
+        Tuple<Set<DeploymentEntity>, Integer> result = controller.loadPendingDeployments(currentStartIndex(), getItemsPerPage(), getAppliedFilterList(), sortingColumn, sortingDirection);
         if (result.getB() != null) {
             countAllDeployments = result.getB();
         }

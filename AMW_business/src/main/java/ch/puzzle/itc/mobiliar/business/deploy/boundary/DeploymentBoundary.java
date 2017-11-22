@@ -166,13 +166,19 @@ public class DeploymentBoundary {
     }
 
     /**
-     * @return a Tuple containing the filter deployments and the total deployments for that filter if doPageingCalculation is true
+     * @param startIndex
+     * @param maxResults when maxResults > 0 it is expected to get the deployments for pagination. In this case an additional count() query will be executed.
+     * @param filter
+     * @param colToSort
+     * @param sortingDirection
+     * @param myAmw
+     * @return a Tuple containing the filter deployments and the total deployments for that filter if doPagingCalculation is true
      */
-    public Tuple<Set<DeploymentEntity>, Integer> getFilteredDeployments(
-            boolean doPageingCalculation, Integer startIndex,
+    public Tuple<Set<DeploymentEntity>, Integer> getFilteredDeployments(Integer startIndex,
             Integer maxResults, List<CustomFilter> filter, String colToSort,
             CommonFilterService.SortingDirectionType sortingDirection, List<Integer> myAmw) {
-        Integer totalItemsForCurrentFilter = null;
+        Integer totalItemsForCurrentFilter;
+        boolean doPaging = maxResults == null ? false : (maxResults > 0 ? true : false);
 
         StringBuilder stringQuery = new StringBuilder();
 
@@ -231,7 +237,7 @@ public class DeploymentBoundary {
             deployments.addAll(resultList);
         }
 
-        if (doPageingCalculation) {
+        if (doPaging) {
             String countQueryString = baseQuery.replace("select " + DEPLOYMENT_QL_ALIAS, "select count(" + DEPLOYMENT_QL_ALIAS + ".id)");
             // last param needs to be true if we are dealing with a combination of "State" and "Latest deployment job for App Server and Env"
             Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, hasLastDeploymentForAsEnvFilterSet, lastDeploymentState != null);
@@ -242,6 +248,8 @@ public class DeploymentBoundary {
             if (hasLastDeploymentForAsEnvFilterSet && lastDeploymentState == null && deployments.size() != allResults) {
                 totalItemsForCurrentFilter -= allResults - deployments.size();
             }
+        } else {
+            totalItemsForCurrentFilter = deployments.size();
         }
 
         return new Tuple<>(deployments, totalItemsForCurrentFilter);
