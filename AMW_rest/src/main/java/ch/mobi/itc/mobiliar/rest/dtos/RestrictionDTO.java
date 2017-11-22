@@ -24,7 +24,7 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.entity.ResourceTypePermission;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
-import com.wordnik.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.xml.bind.annotation.XmlAccessType;

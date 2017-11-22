@@ -3,9 +3,9 @@ package ch.mobi.itc.mobiliar.rest.environments;
 import ch.mobi.itc.mobiliar.rest.dtos.EnvironmentDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
