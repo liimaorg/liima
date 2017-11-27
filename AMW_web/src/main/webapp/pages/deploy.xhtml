@@ -26,33 +26,28 @@
             <aside>
                 <nav>
                     <ul>
-                        <li class="current"><h:commandLink value="Deployments"
-                                                           execute="@none"/></li>
+                        <li class="current">
+                            <h:commandLink value="Deployments" execute="@none"/>
+                        </li>
                     </ul>
-
                 </nav>
             </aside>
         </h:panelGroup>
         <section id="content">
             <div class="container">
-
                 <h:panelGroup id="contentPanelGroup"
                               rendered="#{securityDataProvider.hasPermissionOnAllContext('DEPLOYMENT', 'READ')}">
-
                     <article>
                         <div class="well withHeight autoOverflow">
-
-
                             <ui:include src="components/customFilterComp.xhtml">
-                                <ui:param name="customFilterImpl"
-                                          value="#{deployScreenDataProvider.customFilterComp}"/>
+                                <ui:param name="customFilterImpl" value="#{deployScreenDataProvider.customFilterComp}"/>
                             </ui:include>
 
                             <h:panelGroup id="deployments">
-                                <h:dataTable var="deployment" id="deploymentsTable"
+                                <h:dataTable id="deploymentsTable"
+                                             var="deployment"
                                              value="#{deployScreenDataProvider.pendingDeployments}"
                                              styleClass="deployTable well" rowClasses="odd-row,even-row">
-
                                     <f:facet name="caption">
                                         <nav class="actionbar">
                                             <ul>
@@ -80,11 +75,14 @@
                                                 </h:outputLink>
                                                 </li>
                                                 <li>
-                                                    <h:commandLink styleClass="btn disable" value="Edit" disabled="true"
+                                                    <h:commandLink styleClass="btn disable"
+                                                                   value="Edit"
+                                                                   disabled="true"
                                                                    rendered="#{!deployScreenDataProvider.canEditDeployments()}">
                                                         <i class="icon icon-edit"/>
                                                     </h:commandLink>
-                                                    <a4j:commandLink styleClass="btn light" value="Edit"
+                                                    <a4j:commandLink styleClass="btn light"
+                                                                     value="Edit"
                                                                      rendered="#{deployScreenDataProvider.canEditDeployments()}"
                                                                      render="bulkEditPopupPanelGroup"
                                                                      actionListener="#{deployScreenDataProvider.clearEditDeploymentValues()}"
@@ -93,7 +91,8 @@
                                                     </a4j:commandLink>
                                                 </li>
                                                 <li>
-                                                    <h:link outcome="redeploy" rendered="#{deployScreenDataProvider.canRedeploy()}"
+                                                    <h:link outcome="redeploy"
+                                                            rendered="#{deployScreenDataProvider.canRedeploy()}"
                                                             styleClass="btn light">
                                                         <i class="icon icon-redeploy">Redeploy</i>
                                                         <f:param name="deploymentIdArray"
@@ -124,22 +123,23 @@
 
                                     <f:facet name="footer">
                                         <h:panelGroup>
-                                            <a4j:commandLink value="&lt;&lt;" render="deployments"
-                                                             onclick="showLoader();" oncomplete="hideLoader();"
+                                            <a4j:commandLink value="&lt;&lt;"
+                                                             render="deployments"
+                                                             onclick="showLoader();"
+                                                             oncomplete="hideLoader();"
                                                              action="${deployScreenDataProvider.firstScreen()}"
                                                              rendered="${deployScreenDataProvider.currentPage!=0}"/>
-                                            <a4j:commandLink value="&lt;" render="deployments"
+                                            <a4j:commandLink value="&lt;"
+                                                             render="deployments"
                                                              onclick="showLoader();" oncomplete="hideLoader();"
                                                              action="${deployScreenDataProvider.previousScreen()}"
                                                              rendered="${deployScreenDataProvider.currentPage!=0}"
                                                              styleClass="marginLeft10"/>
-
                                             <ui:repeat
                                                     value="${deployScreenDataProvider.availablePages().subList(
 									 deployScreenDataProvider.currentPage-2 > 0 ? deployScreenDataProvider.currentPage-2 : 0,
 									 deployScreenDataProvider.availablePages().size() >= deployScreenDataProvider.currentPage+3 ? deployScreenDataProvider.currentPage + 3 : deployScreenDataProvider.availablePages().size())
-									 }"
-                                                    var="page">
+									 }" var="page">
                                                 <a4j:commandLink
                                                         rendered="${page!=deployScreenDataProvider.currentPage}"
                                                         value="${page+1}" styleClass="marginLeft10"
@@ -164,8 +164,7 @@
                                             <div class="control-group right">
                                                 <label class="control-label">Results per page:</label>
                                                 <div class="controls">
-                                                    <h:selectOneMenu
-                                                            value="#{deployScreenDataProvider.itemsPerPage}">
+                                                    <h:selectOneMenu value="#{deployScreenDataProvider.itemsPerPage}">
                                                         <f:selectItem itemLabel="10" itemValue="10"/>
                                                         <f:selectItem itemLabel="20" itemValue="20"/>
                                                         <f:selectItem itemLabel="50" itemValue="50"/>
@@ -174,16 +173,15 @@
                                                     </h:selectOneMenu>
                                                 </div>
                                             </div>
-
                                         </h:panelGroup>
                                     </f:facet>
-
 
                                     <h:column index="index" headerClass="width_20 nowrap">
                                         <f:facet name="header">
                                             <h:selectBooleanCheckbox class="deploy-checkbox"
                                                                      value="#{deployScreenDataProvider.toggleDeploymentsSelection}">
-                                                <a4j:ajax render="deployments" onbegin="showLoader()"
+                                                <a4j:ajax render="deployments"
+                                                          onbegin="showLoader()"
                                                           oncomplete="hideLoader()"/>
                                             </h:selectBooleanCheckbox>
                                             <a4j:commandLink render="deployments" onclick="showLoader();"
@@ -205,7 +203,8 @@
                                     <h:column index="index" headerClass="width_200 nowrap">
                                         <f:facet name="header">
                                             <h:outputText value="State"/>
-                                            <a4j:commandLink render="deployments" onclick="showLoader();"
+                                            <a4j:commandLink render="deployments"
+                                                             onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('STATE')}">
                                                 <i class="${deployScreenDataProvider.getSortingIconForCol('STATE')} inlineBlockMiddle"></i>
@@ -214,12 +213,10 @@
                                         <div class="deploymentInfo nowrap">
                                             <h:outputText rendered="${deployment.reason == null}"
                                                     value="#{deployScreenDataProvider.getDeploymentStateText(deployment)}"
-                                                    styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock"
-                                            />
+                                                    styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock"/>
                                             <h:outputText rendered="${deployment.reason != null}"
                                                           value="#{deployment.reason.displayName}"
-                                                          styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock reason"
-                                            />
+                                                          styleClass="#{deployScreenDataProvider.getDeploymentStateFrame(deployment)} inlineBlock reason"/>
                                             <a4j:commandLink
                                                     oncomplete="#{rich:component('deploymentDetailPopup')}.show(); return false;"
                                                     render="deploymentDetailPopupFacet, deploymentDetailPopupPanelGroup"
@@ -244,7 +241,8 @@
                                     <h:column index="index" headerClass="nowrap">
                                         <f:facet name="header">
                                             <h:outputText value="App Server"/>
-                                            <a4j:commandLink render="deployments" onclick="showLoader();"
+                                            <a4j:commandLink render="deployments"
+                                                             onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('APPSERVER_NAME')}">
                                                 <i class="${deployScreenDataProvider.getSortingIconForCol('APPSERVER_NAME')} inlineBlockMiddle"></i>
@@ -270,20 +268,18 @@
                                                               styleClass="grey marginLeft10"/>
                                             </h:panelGroup>
                                         </ui:repeat>
-
-
                                     </h:column>
 
                                     <h:column index="index" headerClass="width_80 nowrap">
                                         <f:facet name="header">
                                             <h:outputText value="Release"/>
-                                            <a4j:commandLink render="deployments" onclick="showLoader();"
+                                            <a4j:commandLink render="deployments"
+                                                             onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('RELEASE')}">
                                                 <i class="${deployScreenDataProvider.getSortingIconForCol('RELEASE')} inlineBlockMiddle"></i>
                                             </a4j:commandLink>
                                         </f:facet>
-
                                         <h:outputText rendered="#{deployment.release != null}" value="#{deployment.release.name}"/>
                                         <h:outputText rendered="#{deployment.release == null}" value="#{deployScreenDataProvider.getReleaseName(deployment)}"/>
                                     </h:column>
@@ -298,20 +294,22 @@
                                             </a4j:commandLink>
                                         </f:facet>
 
-                                        <h:outputText rendered="#{deployment.context != null}" value="#{deployment.context.name}"
+                                        <h:outputText rendered="#{deployment.context != null}"
+                                                      value="#{deployment.context.name}"
                                                       styleClass="boldFont"/>
-                                        <h:outputText rendered="#{deployment.context == null}" value="#{deployScreenDataProvider.getContextName(deployment)}"
+                                        <h:outputText rendered="#{deployment.context == null}"
+                                                      value="#{deployScreenDataProvider.getContextName(deployment)}"
                                                       styleClass="boldFont"/>
                                     </h:column>
 
                                     <h:column index="index" headerClass="width_160 nowrap">
                                         <f:facet name="header">
                                             <h:outputText value="deployment date"/>
-                                            <a4j:commandLink render="deployments" onclick="showLoader();"
+                                            <a4j:commandLink render="deployments"
+                                                             onclick="showLoader();"
                                                              oncomplete="hideLoader();"
                                                              action="#{deployScreenDataProvider.changeSortOrderForSelectedColumn('DEPLOY_TIME')}">
                                                 <i class="${deployScreenDataProvider.getSortingIconForCol('DEPLOY_TIME')} inlineBlockMiddle"></i>
-
                                             </a4j:commandLink>
                                         </f:facet>
 
@@ -320,7 +318,6 @@
                                                     rendered="#{!deployScreenDataProvider.isChangeDeploymentDatePossible(deployment)}"
                                                     value="#{deployScreenDataProvider.formatDate(deployment.deploymentDate)}"
                                                     styleClass="#{deployScreenDataProvider.getDeploymentDelayedClass(deployment)} inlineBlock"/>
-
                                             <a4j:commandLink
                                                     rendered="${deployScreenDataProvider.isChangeDeploymentDatePossible(deployment)}"
                                                     oncomplete="#{rich:component('changeDeploymentDatePopupPanel')}.show(); return false;"
@@ -367,7 +364,7 @@
                                                 styleClass="black deployment-action">
                                             <i class="icon icon-canceled height20 inlineBlockMiddle">cancel</i>
                                             <a4j:param assignTo="#{deployScreenDataProvider.selectedDeploymentId}"
-                                                    value="${deployment.id}"></a4j:param>
+                                                       value="${deployment.id}"></a4j:param>
                                         </a4j:commandLink>
 
                                         <h:link outcome="redeploy"
@@ -578,13 +575,13 @@
 
         <h:form prependId="false">
 
-            <rich:popupPanel id="bulkEditPopupPanel" moveable="true"
-                             autosized="true" minWidth="400" domElementAttachment="form">
+            <rich:popupPanel id="bulkEditPopupPanel"
+                             moveable="true"
+                             autosized="true"
+                             minWidth="400"
+                             domElementAttachment="form">
                 <f:facet name="header">
-                    <h2>
-                        <h:outputText value="Edit deployments"
-                                      id="bulkEditPopupPanelFacet"/>
-                    </h2>
+                    <h2><h:outputText id="bulkEditPopupPanelFacet" value="Edit deployments"/></h2>
                 </f:facet>
                 <f:facet name="controls">
                     <h:outputLink value="#"
@@ -600,7 +597,9 @@
                                          value="#{deployScreenDataProvider.bulkAction}">
                             <f:selectItems
                                     value="#{deployScreenDataProvider.deploymentActions}"
-                                    var="action" itemLabel="#{action.label}" itemValue="#{action}"/>
+                                    var="action"
+                                    itemLabel="#{action.label}"
+                                    itemValue="#{action}"/>
                             <a4j:ajax render="bulkEditPopupPanelGroup"/>
                         </h:selectOneMenu>
                         <h:outputLabel value="Date"
@@ -610,7 +609,8 @@
                                 buttonDisabledIcon="/AMW_web/images/calendarIcon.png"
                                 rendered="#{deployScreenDataProvider.bulkAction == 'CONFIRM' or deployScreenDataProvider.bulkAction == 'CHANGE_DATE'}"
                                 value="#{deployScreenDataProvider.deploymentDate}"
-                                enableManualInput="true" showApplyButton="true"
+                                enableManualInput="true"
+                                showApplyButton="true"
                                 datePattern="dd.MM.yyyy HH:mm">
                             <a4j:ajax/>
                         </rich:calendar>
@@ -619,7 +619,9 @@
                         <div>
                             <label class="inlineBlock">
                                 <h:selectBooleanCheckbox
-                                        value="#{deployScreenDataProvider.simulateGeneration}"/>simulate before deployment</label>
+                                        value="#{deployScreenDataProvider.simulateGeneration}"/>
+                                simulate before deployment
+                            </label>
                         </div>
                         <div>
                             <label class="inlineBlock">
@@ -636,15 +638,18 @@
 
                         <h:panelGroup layout="block" class="paddingLeft20"
                                       rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
-                            <label class="inlineBlock"> <h:selectBooleanCheckbox
+                            <label class="inlineBlock">
+                                <h:selectBooleanCheckbox
                                     id="bulkTestNeighbourhoodButtonId"
                                     disabled="#{deployScreenDataProvider.executeShakedownTest==false}"
-                                    value="#{deployScreenDataProvider.neighbourhoodTest}"/>test neighbourhood</label>
+                                    value="#{deployScreenDataProvider.neighbourhoodTest}"/>test neighbourhood
+                            </label>
                         </h:panelGroup>
                     </h:panelGroup>
 
                     <a4j:commandLink styleClass="btn primary right marginLeft20"
-                                     value="Edit" type="button"
+                                     value="Edit"
+                                     type="button"
                                      action="${deployScreenDataProvider.bulkUpdateDeployments}"
                                      render="deployments"
                                      onclick="showLoader();#{rich:component('bulkEditPopupPanel')}.hide();"
