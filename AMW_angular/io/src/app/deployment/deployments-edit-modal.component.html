@@ -1,0 +1,70 @@
+<div id="deploymentsEdit" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Edit deployments</h4>
+      </div>
+      <div class="modal-body">
+          <span class="form-horizontal">
+           <div class="form-group">
+            <label for="selectEditAction" class="col-sm-2 control-label">Action</label>
+            <div class="col-sm-9">
+              <select id="selectEditAction"
+                      class="form-control input-sm"
+                      [(ngModel)]="selectedEditAction"
+                      (change)="changeEditAction()">
+                <option *ngFor="let editAction of editActions" [ngValue]="editAction">{{editAction}}</option>
+              </select>
+            </div>
+          </div>
+          <ng-container *ngIf="selectedEditAction === 'Change date' || selectedEditAction === 'Confirm'">
+            <div class="form-group">
+              <label for="selectEditAction" class="col-sm-2 control-label">Date</label>
+              <div class="col-sm-9">
+                <div class="input-group date datepicker">
+                  <input type="text" class="form-control" #datePicker (blur)="deploymentDate = datePicker.value">
+                  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+            <!-- Confirm Options -->
+          <ng-container *ngIf="selectedEditAction === 'Confirm' && confirmationAttributes">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" [(ngModel)]="confirmationAttributes.sendEmailWhenDeployed">
+              send an email when deployed
+            </label>
+          </div>
+
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" [(ngModel)]="confirmationAttributes.simulateBeforeDeployment">
+              simulate before deployment
+            </label>
+          </div>
+
+          <div class="checkbox" *ngIf="hasPermissionShakedownTest">
+            <label>
+              <input type="checkbox" [(ngModel)]="confirmationAttributes.shakedownTestsWhenDeployed">
+              execute shakedown tests when deployed
+            </label>
+          </div>
+          <div class="checkbox" *ngIf="confirmationAttributes.shakedownTestsWhenDeployed">
+            <label>
+              <input type="checkbox" [(ngModel)]="confirmationAttributes.neighbourhoodTest">
+              test neighbourhood
+            </label>
+          </div>
+
+          </ng-container>
+          </span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="doEdit()">Edit</button>
+      </div>
+    </div>
+  </div>
+</div>
