@@ -182,17 +182,11 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
-  // changeDeploymentDate(deployment: Deployment) {
-  //   if (deployment) {
-  //     this.setDeploymentDate(deployment, deployment.deploymentDate);
-  //   }
-  // }
-  //
-  // changeEditAction() {
-  //   if (this.selectedEditAction === 'Change date') {
-  //     this.addDatePicker();
-  //   }
-  // }
+  changeDeploymentDate(deployment: Deployment) {
+    if (deployment) {
+      this.setDeploymentDate(deployment, deployment.deploymentDate);
+    }
+  }
 
   switchDeployments(enable: boolean) {
     this.deployments.forEach((deployment) => deployment.selected = enable);
@@ -216,34 +210,6 @@ export class DeploymentsComponent implements OnInit {
       );
     }
   }
-
-  // doEdit() {
-  //   if (this.editableDeployments()) {
-  //     this.errorMessage = '';
-  //     switch (this.selectedEditAction) {
-  //       // date
-  //       case this.editActions[0]:
-  //         this.setSelectedDeploymentDates();
-  //         break;
-  //       // confirm
-  //       case this.editActions[1]:
-  //         this.confirmSelectedDeployments();
-  //         break;
-  //       // reject
-  //       case this.editActions[2]:
-  //         this.rejectSelectedDeployments();
-  //         break;
-  //       // cancel
-  //       case this.editActions[3]:
-  //         this.cancelSelectedDeployments();
-  //         break;
-  //       default:
-  //         console.error('Unknown EditAction' + this.selectedEditAction);
-  //         break;
-  //     }
-  //     $('#deploymentsEdit').modal('hide');
-  //   }
-  // }
 
   confirmDeployment(deploymentDetail: DeploymentDetail) {
     if (deploymentDetail) {
@@ -478,49 +444,13 @@ export class DeploymentsComponent implements OnInit {
       /* error path */ (e) => this.errorMessage = e);
   }
 
-  // private confirmSelectedDeployments() {
-  //   this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
-  //     this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
-  //       /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
-  //       /* error path */ (e) => e,
-  //       /* on complete */ () => this.applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deployment.id)
-  //     );
-  //   });
-  // }
-  //
-  // private cancelSelectedDeployments() {
-  //   this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
-  //     this.cancelDeployment(deployment);
-  //   });
-  // }
-  //
-  // private applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deploymentId: number) {
-  //   let deploymentDetail = this.deploymentDetailMap[deploymentId];
-  //   deploymentDetail.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
-  //   deploymentDetail.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
-  //   deploymentDetail.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
-  //   deploymentDetail.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
-  //   this.confirmDeployment(deploymentDetail);
-  // }
-  //
-  // private setSelectedDeploymentDates() {
-  //   let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
-  //   if (!dateTime || !dateTime.isValid()) {
-  //     this.errorMessage = 'Invalid date';
-  //   } else {
-  //     _.filter(this.deployments, {selected: true}).forEach((deployment) => this.setDeploymentDate(deployment, dateTime.valueOf()));
-  //   }
-  // }
-  //
-  // private setDeploymentDate(deployment: Deployment, deploymentDate: number) {
-  //   this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
-  //     /* happy path */ (r) => r,
-  //     /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
-  //     /* on complete */ () => this.reloadDeployment(deployment.id)
-  //   );
-  // }
-
-
+  private setDeploymentDate(deployment: Deployment, deploymentDate: number) {
+    this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
+      /* happy path */ (r) => r,
+      /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
+      /* on complete */ () => this.reloadDeployment(deployment.id)
+    );
+  }
 
   private updateDeploymentsList(deployment: Deployment) {
     this.deployments.splice(_.findIndex(this.deployments, {id: deployment.id}), 1, deployment);
