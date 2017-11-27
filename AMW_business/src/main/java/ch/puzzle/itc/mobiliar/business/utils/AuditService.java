@@ -20,15 +20,20 @@
 
 package ch.puzzle.itc.mobiliar.business.utils;
 
+import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static org.hibernate.envers.RevisionType.DEL;
 
@@ -58,7 +63,19 @@ public class AuditService {
         return null;
     }
 
-    public <T> List<T> getAllRevisionsForEntity(T entity, Integer id){
+    /**
+     * @param entity
+     * @param id
+     * @param <T>
+     * @return a list of three-element arrays, containing:
+     * <ol>
+     * <li>the entity instance</li>
+     * <li>revision entity, corresponding to the revision at which the entity was modified. If no custom
+     * revision entity is used, this will be an instance of {@link org.hibernate.envers.DefaultRevisionEntity}</li>
+     * <li>type of the revision (an enum instance of class {@link org.hibernate.envers.RevisionType})</li>
+     * </ol>
+     */
+    private <T> List getAllRevisionsForEntity(T entity, Integer id){
         Objects.requireNonNull(entity, "Entity can not be null");
         Objects.requireNonNull(id, "Id can not be null");
 
@@ -72,5 +89,27 @@ public class AuditService {
             return resultList;
         }
         return null;
+    }
+
+    public List<AuditViewEntry> getAllRevisionsForPropertyEntity(ResourceEditProperty resourceEditProperty) {
+        PropertyEntity entity = entityManager.find(PropertyEntity.class, resourceEditProperty.getPropertyId());
+        List<Object[]> allRevisionsForEntity = getAllRevisionsForEntity(entity, resourceEditProperty.getPropertyId());
+        List<AuditViewEntry> auditViewEntries = new ArrayList<>();
+
+        for (Object o : allRevisionsForEntity) {
+            Object[] objects = (Object[]) o;
+            PropertyEntity entityForRevision = (PropertyEntity) objects[0];
+            MyRevisionEntity revisionEntity = (MyRevisionEntity) objects[1];
+            RevisionType revisionType = (RevisionType) objects[2];
+
+            AuditViewEntry auditViewEntry = AuditViewEntry.builder()
+                    .value(entityForRevision.getValue())
+                    .type("Property")
+                    .timestamp(revisionEntity.getTimestamp())
+                    .mode(revisionType)
+                    .build();
+            auditViewEntries.add(auditViewEntry);
+        }
+        return auditViewEntries;
     }
 }
