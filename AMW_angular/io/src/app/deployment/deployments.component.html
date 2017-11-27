@@ -119,9 +119,11 @@
     </div>
 </div>
 
-<amw-deployments-edit-modal [deployments]="getSelectedDeployments"
+<amw-deployments-edit-modal [deployments]="getSelectedDeployments()"
                             [deploymentDetailMap]="deploymentDetailMap"
                             [editActions]="editActions"
-                            [selectedEditAction]="selectedEditAction"
-                            (doReloadDeployment)='reloadDeployment($event)'>
+                            (doConfirmDeployment)='confirmDeployment($event)'
+                            (doCancelDeployment)='cancelDeployment($event)'
+                            (doRejectDeployment)='rejectDeployment($event)'
+                            (editDeploymentDate)='changeDeploymentDate($event)'>
 </amw-deployments-edit-modal>
