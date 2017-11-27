@@ -500,20 +500,6 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentService.getWithActions).toHaveBeenCalledWith(deployment.id);
   }));
 
-  it('should log unknown edit actions on doEdit',
-    inject([DeploymentsComponent], (deploymentsComponent: DeploymentsComponent) => {
-      // given
-      deploymentsComponent.selectedEditAction = 'test';
-      deploymentsComponent.deployments = [ <Deployment> { id: 1, selected: true } ];
-      spyOn(console, 'error');
-
-      // when
-      deploymentsComponent.doEdit();
-
-      // then
-      expect(console.error).toHaveBeenCalled();
-  }));
-
   it('should invoke the right deploymentService methods with right arguments on changeDeploymentDate',
     inject([DeploymentsComponent, DeploymentService],
       (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
