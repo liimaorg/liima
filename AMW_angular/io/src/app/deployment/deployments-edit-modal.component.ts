@@ -36,7 +36,6 @@ export class DeploymentsEditModalComponent {
               private deploymentService: DeploymentService,
               private resourceService: ResourceService) {
     this.confirmationAttributes = <DeploymentDetail> {};
-    // this.deploymentDate = sele
   }
 
   changeEditAction() {
@@ -125,7 +124,7 @@ export class DeploymentsEditModalComponent {
   }
 
   private confirmSelectedDeployments() {
-    // TODO apply date
+    this.setSelectedDeploymentDates();
     this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
       this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
         /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
