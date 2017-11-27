@@ -104,18 +104,17 @@
                                   [currentPage]="currentPage"
                                   [lastPage]="lastPage"
                                   [filtersForParam]="filtersForParam"
+                                  (doConfirmDeployment)='confirmDeployment($event)'
+                                  (doCancelDeployment)='cancelDeployment($event)'
+                                  (doRejectDeployment)='rejectDeployment($event)'
+                                  (editDeploymentDate)='changeDeploymentDate($event)'
                                   (selectAllDeployments)='switchDeployments($event)'
                                   (doSort)='sortDeploymentsBy($event)'
                                   (doSetMax)='setMaxResultsPerPage($event)'
                                   (doSetOffset)='setNewOffset($event)'>
-              <!--(editDeploymentDate)='changeDeploymentDate($event)'-->
-              <!--(doConfirmDeployment)='confirmDeployment($event)'-->
-                                  <!--(doCancelDeployment)='cancelDeployment($event)'-->
-                                  <!--(doRejectDeployment)='rejectDeployment($event)'-->
             </amw-deployments-list>
           </div>
         </div>
-
       </span>
     </div>
 </div>
@@ -123,7 +122,6 @@
 <amw-deployments-edit-modal [deployments]="deployments"
                             [deploymentDetailMap]="deploymentDetailMap"
                             [editActions]="editActions"
-                            [deploymentDetailMap]="deploymentDetailMap"
                             [selectedEditAction]="selectedEditAction"
                             (doReloadDeployment)='reloadDeployment($event)'>
 
