@@ -324,6 +324,10 @@ export class DeploymentsComponent implements OnInit {
     );
   }
 
+  public getSelectedDeployments(): Deployment[] {
+    return this.deployments.filter((deployment) => deployment.selected === true);
+  }
+
   private canFilterBeAdded(): boolean {
     return this.selectedFilterType.name !== 'Latest deployment job for App Server and Env' ||
       _.findIndex(this.filters, {name: this.selectedFilterType.name}) === -1;

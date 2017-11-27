@@ -119,10 +119,9 @@
     </div>
 </div>
 
-<amw-deployments-edit-modal [deployments]="deployments"
+<amw-deployments-edit-modal [deployments]="getSelectedDeployments"
                             [deploymentDetailMap]="deploymentDetailMap"
                             [editActions]="editActions"
                             [selectedEditAction]="selectedEditAction"
                             (doReloadDeployment)='reloadDeployment($event)'>
-
 </amw-deployments-edit-modal>
