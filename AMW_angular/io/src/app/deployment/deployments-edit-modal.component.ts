@@ -18,12 +18,11 @@ export class DeploymentsEditModalComponent {
   @Input() editActions: string[];
   @Input() deploymentDetailMap: { [key: number]: DeploymentDetail };
 
-  @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() errorMessage: EventEmitter<string> = new EventEmitter<string>();
-  @Output() doReloadDeployment: EventEmitter<number> = new EventEmitter<number>();
   @Output() doConfirmDeployment: EventEmitter<DeploymentDetail> = new EventEmitter<DeploymentDetail>();
   @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
+  @Output() doEditDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
 
   confirmationAttributes: DeploymentDetail;
   deploymentDate: number; // for deployment date change in during confirmation
@@ -35,8 +34,9 @@ export class DeploymentsEditModalComponent {
   }
 
   changeEditAction() {
-    if (this.selectedEditAction === this.editActions[1]) {
-      // confirm
+    let isConfirm = this.selectedEditAction === this.editActions[1];
+    let isEditDeploymentDate = this.selectedEditAction == this.editActions[0];
+    if (isConfirm || isEditDeploymentDate) {
       this.addDatePicker();
     }
   }
@@ -45,7 +45,7 @@ export class DeploymentsEditModalComponent {
     switch (this.selectedEditAction) {
       // date
       case this.editActions[0]:
-        this.setSelectedDeploymentDates();
+        this.editDeploymentDate();
         break;
       // confirm
       case this.editActions[1]:
@@ -76,7 +76,7 @@ export class DeploymentsEditModalComponent {
   }
 
   private confirmSelectedDeployments() {
-    this.setSelectedDeploymentDates();
+    this.editDeploymentDate();
     for (let deployment of this.deployments) {
       this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
         /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
@@ -98,23 +98,16 @@ export class DeploymentsEditModalComponent {
     }
   }
 
-  private setSelectedDeploymentDates() {
+  private editDeploymentDate() {
     let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
     if (!dateTime || !dateTime.isValid()) {
       this.errorMessage.emit('Invalid date');
     } else {
       for (let deployment of this.deployments) {
-        this.setDeploymentDate(deployment, dateTime.valueOf());
+        deployment.deploymentDate = dateTime.valueOf();
+        this.doEditDeploymentDate.emit(deployment);
       }
     }
-  }
-
-  private setDeploymentDate(deployment: Deployment, deploymentDate: number) {
-    this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
-      /* happy path */ (r) => r,
-      /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
-      /* on complete */ () => this.doReloadDeployment.emit(deployment.id)
-    );
   }
 
   private addDatePicker() {
