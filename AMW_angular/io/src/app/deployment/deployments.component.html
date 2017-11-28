@@ -122,6 +122,7 @@
 <amw-deployments-edit-modal [deployments]="getSelectedDeployments()"
                             [deploymentDetailMap]="deploymentDetailMap"
                             [editActions]="editActions"
+                            [hasPermissionShakedownTest]="hasPermissionShakedownTest"
                             (doConfirmDeployment)='confirmDeployment($event)'
                             (doCancelDeployment)='cancelDeployment($event)'
                             (doRejectDeployment)='rejectDeployment($event)'
