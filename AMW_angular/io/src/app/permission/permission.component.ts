@@ -264,7 +264,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getAllAssignableRestrictions() {
     this.isLoading = true;
     this.permissionService
-      .getUserAndRoleRestrictions(this.actingUserName).subscribe(
+      .getOwnUserAndRoleRestrictions().subscribe(
       /* happy path */ (r) => this.assignableRestrictions = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => { this.extractAllAssignablePermissions(),

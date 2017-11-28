@@ -596,6 +596,11 @@ public class PermissionBoundary implements Serializable {
         return assignablePermissions;
     }
 
+    /**
+     * Returns a list of all Permissions of the calling user
+     *
+     * @return List<PermissionEntity>
+     */
     @HasPermission(permission = Permission.PERMISSION_DELEGATION)
     public List<RestrictionEntity> getAllCallerRestrictions() {
         return permissionService.getAllCallerRestrictions();

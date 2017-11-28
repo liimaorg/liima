@@ -51,15 +51,9 @@ export class PermissionService {
     return resource$;
   }
 
-  getUserAndRoleRestrictions(userName: string): Observable<Restriction[]> {
-    let params: URLSearchParams = new URLSearchParams();
-    params.set('includingByRole', 'true');
-    let options = new RequestOptions({
-      search: params,
-      headers: this.getHeaders()
-    });
+  getOwnUserAndRoleRestrictions(): Observable<Restriction[]> {
     let resource$ = this.http
-      .get(`${this.baseUrl}/permissions/restrictions/users/${userName}`, options)
+      .get(`${this.baseUrl}/permissions/restrictions/ownRestrictions/`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
     return resource$;

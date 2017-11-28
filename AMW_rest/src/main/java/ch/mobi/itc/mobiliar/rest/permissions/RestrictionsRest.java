@@ -264,20 +264,31 @@ public class RestrictionsRest {
     /**
      * Find a specific UserRestriction with its Restrictions identified by UserName
      *
+     * @param userName
      * @return List<RestrictionDTO>
      */
     @GET
     @Path("/users/{userName}")
     @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
-    public Response getUserRestriction(@ApiParam("UserName") @PathParam("userName") String userName, @QueryParam("includingByRole") boolean includingByRole) {
+    public Response getUserRestriction(@ApiParam("UserName") @PathParam("userName") String userName) {
         List<RestrictionDTO> restrictionList = new ArrayList<>();
-        List<RestrictionEntity> restrictions;
-        if (!includingByRole) {
-            restrictions = permissionBoundary.getRestrictionsByUserName(userName);
-        } else {
-            restrictions = permissionBoundary.getAllCallerRestrictions();
+        for (RestrictionEntity restriction : permissionBoundary.getRestrictionsByUserName(userName)) {
+            restrictionList.add(new RestrictionDTO(restriction));
         }
-        for (RestrictionEntity restriction : restrictions) {
+        return Response.status(OK).entity(restrictionList).build();
+    }
+
+    /**
+     * Find all Restrictions of the calling user
+     *
+     * @return List<RestrictionDTO>
+     */
+    @GET
+    @Path("/ownRestrictions/")
+    @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
+    public Response getCallerRestrictions() {
+        List<RestrictionDTO> restrictionList = new ArrayList<>();
+        for (RestrictionEntity restriction : permissionBoundary.getAllCallerRestrictions()) {
             restrictionList.add(new RestrictionDTO(restriction));
         }
         return Response.status(OK).entity(restrictionList).build();
