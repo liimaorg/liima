@@ -64,7 +64,8 @@ public class RestrictionsRest {
      **/
     @POST
     @ApiOperation(value = "Add a Restriction")
-    public Response addRestriction(@ApiParam("Add a Restriction, either a role- or a userName must be set") RestrictionDTO request) {
+    public Response addRestriction(@ApiParam("Add a Restriction, either a role- or a userName must be set") RestrictionDTO request,
+                                   @QueryParam("delegation") boolean delegation) {
         Integer id;
         if (request.getId() != null) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
@@ -74,7 +75,7 @@ public class RestrictionsRest {
         }
         try {
             id = permissionBoundary.createRestriction(request.getRoleName(), request.getUserName(), request.getPermission().getName(), request.getResourceGroupId(),
-                    request.getResourceTypeName(), request.getResourceTypePermission(), request.getContextName(), request.getAction());
+                    request.getResourceTypeName(), request.getResourceTypePermission(), request.getContextName(), request.getAction(), delegation);
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }

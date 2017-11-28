@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <div class="form-group" *ngIf="getAvailableResourceTypePermissions().length > 0">
+      <div class="form-group" *ngIf="getAvailableResourceTypePermissions().length > 0 && isResourceTypePermissionAssignable()">
         <label for="selectRTP" class="col-sm-3 control-label">Resource Type Categories</label>
         <div class="col-sm-9">
           <select id="selectRTP" class="form-control input-sm" [(ngModel)]="restriction.resourceTypePermission"

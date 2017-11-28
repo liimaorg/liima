@@ -55,7 +55,7 @@
         <div class="form-group" *ngIf="restrictions.length > 0">
           <label class="col-sm-1 control-label"></label>
           <div class="col-sm-11">
-            <amw-restriction-list [restrictions]="restrictions" [resourceGroups]="resourceGroups" (deleteRestriction)='removeRestriction($event)' (editRestriction)='modifyRestriction($event)'></amw-restriction-list>
+            <amw-restriction-list [restrictions]="restrictions" [resourceGroups]="resourceGroups" [delegationMode]="delegationMode" (deleteRestriction)='removeRestriction($event)' (editRestriction)='modifyRestriction($event)'></amw-restriction-list>
           </div>
         </div>
 

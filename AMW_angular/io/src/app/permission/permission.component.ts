@@ -143,7 +143,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
           this.restriction = null;
           this.backupRestriction = null; });
     } else {
-      this.permissionService.createRestriction(this.restriction).subscribe(
+      this.permissionService.createRestriction(this.restriction, this.delegationMode).subscribe(
         /* happy path */ (r) => this.restriction = r,
         /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => {
@@ -251,15 +251,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.extractEnvironmentGroups());
   }
-
-/*  private getAllAssignablePermissions() {
-    this.isLoading = true;
-    this.permissionService
-      .getAllAssignablePermissionEnumValues.subscribe(
-      /!* happy path *!/ (r) => this.assignablePermissions = _.sortBy(r, function(s: Permission) { return s.name.replace(/[_]/, ''); }),
-      /!* error path *!/ (e) => this.errorMessage = e,
-      /!* onComplete *!/ () => this.isLoading = false);
-  }*/
 
   private getAllAssignableUserNames() {
     this.isLoading = true;

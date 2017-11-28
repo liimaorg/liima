@@ -818,4 +818,12 @@ public class PermissionService implements Serializable {
         return restrictions;
     }
 
+    public boolean hasPermissionToDelegatePermission(Permission permission,
+                                                  ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType,
+                                                  ContextEntity context, Action action) {
+        if (hasPermission(Permission.PERMISSION_DELEGATION)) {
+            return hasPermission(permission, context, action, resourceGroup, resourceType);
+        }
+        return false;
+    }
 }

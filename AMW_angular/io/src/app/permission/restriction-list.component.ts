@@ -10,6 +10,7 @@ import * as _ from 'lodash';
 
 export class RestrictionListComponent {
 
+  @Input() delegationMode: boolean;
   @Input() restrictions: Restriction[] = [];
   @Input() resourceGroups: Resource[] = [];
   @Output() deleteRestriction: EventEmitter<number> = new EventEmitter<number>();

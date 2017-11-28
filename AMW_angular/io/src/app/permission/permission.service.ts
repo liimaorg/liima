@@ -79,10 +79,15 @@ export class PermissionService {
       .catch(handleError);
   }
 
-  createRestriction(restriction: Restriction): Observable<Restriction> {
-    return this.http.post(`${this.baseUrl}/permissions/restrictions/`, restriction, {headers: this.postHeaders()})
+  createRestriction(restriction: Restriction, delegation: boolean): Observable<Restriction> {
+    let params: URLSearchParams = new URLSearchParams();
+    params.set('delegation', delegation ? 'true' : 'false');
+    let options = new RequestOptions({
+      search: params,
+      headers: this.postHeaders()
+    });
+    return this.http.post(`${this.baseUrl}/permissions/restrictions/`, restriction, options)
       .flatMap((res: Response) => {
-        // var location = res.headers.get('Location');
         return this.http.get(this.baseUrl + res.headers.get('Location'));
       }).map(this.extractPayload)
       .catch(handleError);

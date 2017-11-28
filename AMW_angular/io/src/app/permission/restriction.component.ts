@@ -62,6 +62,9 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
     if (!this.restriction.resourceTypeName) {
       this.restriction.resourceTypeName = null;
     }
+    if (!this.restriction.contextName) {
+      this.restriction.contextName = this.getSelectedEnvName();
+    }
     this.saveRestriction.emit(this.restriction);
   }
 
@@ -69,18 +72,18 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
     return this.checkType() && this.checkGroup();
   }
 
+  isResourceTypePermissionAssignable(): boolean {
+    return !this.restriction.resourceTypeName && !this.restriction.resourceGroupId;
+  }
+
   isResourceTypeAssignable(): boolean {
-    let ty: boolean = (this.restriction.resourceTypePermission === 'ANY' || !this.restriction.resourceTypePermission)
+    return (this.restriction.resourceTypePermission === 'ANY' || !this.restriction.resourceTypePermission)
       && !this.restriction.resourceGroupId;
-    console.log('isResourceTypeAssignable ' +ty);
-    return ty;
   }
 
   isResourceGroupAssignable(): boolean {
-    let gr: boolean = (this.restriction.resourceTypePermission === 'ANY' || !this.restriction.resourceTypePermission)
+    return (this.restriction.resourceTypePermission === 'ANY' || !this.restriction.resourceTypePermission)
       && !this.restriction.resourceTypeName;
-    console.log('isResourceGroupAssignable ' +gr);
-    return gr;
   }
 
   clearTypeAndGroup() {
@@ -165,8 +168,10 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
     let state: boolean = this.groupedEnvironments[env.parent][index].selected;
     this.deSelectAllEnvironments();
     this.groupedEnvironments[env.parent][index].selected = state;
+    console.log('state is: ' + state);
     if (state) {
       this.restriction.contextName = this.groupedEnvironments[env.parent][index].name;
+      console.log(this.restriction.contextName);
     }
   }
 
@@ -218,6 +223,7 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
 
   private resetRestrictionForDelegation() {
     console.log('resetRestrictionForDelegation');
+    this.restriction.contextName = null;
     this.restriction.resourceTypeName = null;
     this.restriction.resourceTypePermission = null;
     this.restriction.resourceGroupId = null;
@@ -308,6 +314,19 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
         }
       });
     });
+  }
+
+  private getSelectedEnvName(): string {
+    let contextName: string;
+    this.getEnvironmentGroups().forEach((group) => {
+      this.groupedEnvironments[group].forEach((environment) => {
+        if (environment.selected === true) {
+          contextName = environment.name;
+          return;
+        }
+      });
+    });
+    return contextName;
   }
 
   private disableAllEnvironments() {
