@@ -42,11 +42,8 @@ export class DeploymentsComponent implements OnInit {
 
   // available edit actions
   editActions: string[] = ['Change date', 'Confirm', 'Reject', 'Cancel'];
-  selectedEditAction: string = this.editActions[0];
-  // confirmation dialog / edit multiple deployments
   hasPermissionShakedownTest: boolean = false;
   deploymentDate: number; // for deployment date change
-  confirmationAttributes: DeploymentDetail;
 
   // available filterValues (if any)
   filterValueOptions: { [key: string]: string[] } = {};
@@ -188,12 +185,6 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
-  changeEditAction() {
-    if (this.selectedEditAction === 'Change date') {
-      this.addDatePicker();
-    }
-  }
-
   switchDeployments(enable: boolean) {
     this.deployments.forEach((deployment) => deployment.selected = enable);
   }
@@ -205,7 +196,6 @@ export class DeploymentsComponent implements OnInit {
   showEdit() {
     if (this.editableDeployments()) {
       this.addDatePicker();
-      this.confirmationAttributes = <DeploymentDetail> {};
       // get shakeDownTestPermission for first element
       let indexOfFirstSelectedElem = _.findIndex(this.deployments, {selected: true});
       let firstDeployment = this.deployments[indexOfFirstSelectedElem];
@@ -214,34 +204,6 @@ export class DeploymentsComponent implements OnInit {
         /* error path */ (e) => this.errorMessage = e,
         /* onComplete */  () => $('#deploymentsEdit').modal('show')
       );
-    }
-  }
-
-  doEdit() {
-    if (this.editableDeployments()) {
-      this.errorMessage = '';
-      switch (this.selectedEditAction) {
-        // date
-        case this.editActions[0]:
-          this.setSelectedDeploymentDates();
-          break;
-        // confirm
-        case this.editActions[1]:
-          this.confirmSelectedDeployments();
-          break;
-        // reject
-        case this.editActions[2]:
-          this.rejectSelectedDeployments();
-          break;
-        // cancel
-        case this.editActions[3]:
-          this.cancelSelectedDeployments();
-          break;
-        default:
-          console.error('Unknown EditAction' + this.selectedEditAction);
-          break;
-      }
-      $('#deploymentsEdit').modal('hide');
     }
   }
 
@@ -313,6 +275,19 @@ export class DeploymentsComponent implements OnInit {
   setNewOffset(offset: number) {
     this.offset = offset;
     this.applyFilters();
+  }
+
+  reloadDeployment(deploymentId: number) {
+    let reloadedDeployment: Deployment;
+    this.deploymentService.getWithActions(deploymentId).subscribe(
+      /* happy path */ (r) => reloadedDeployment = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* on complete */ () => this.updateDeploymentsList(reloadedDeployment)
+    );
+  }
+
+  public getSelectedDeployments(): Deployment[] {
+    return this.deployments.filter((deployment) => deployment.selected === true);
   }
 
   private canFilterBeAdded(): boolean {
@@ -465,60 +440,11 @@ export class DeploymentsComponent implements OnInit {
       /* error path */ (e) => this.errorMessage = e);
   }
 
-  private confirmSelectedDeployments() {
-    this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
-      this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
-        /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
-        /* error path */ (e) => e,
-        /* on complete */ () => this.applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deployment.id)
-      );
-    });
-  }
-
-  private rejectSelectedDeployments() {
-    this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
-      this.rejectDeployment(deployment);
-    });
-  }
-
-  private cancelSelectedDeployments() {
-    this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
-      this.cancelDeployment(deployment);
-    });
-  }
-
-  private applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deploymentId: number) {
-    let deploymentDetail = this.deploymentDetailMap[deploymentId];
-    deploymentDetail.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
-    deploymentDetail.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
-    deploymentDetail.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
-    deploymentDetail.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
-    this.confirmDeployment(deploymentDetail);
-  }
-
-  private setSelectedDeploymentDates() {
-    let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
-    if (!dateTime || !dateTime.isValid()) {
-      this.errorMessage = 'Invalid date';
-    } else {
-      _.filter(this.deployments, {selected: true}).forEach((deployment) => this.setDeploymentDate(deployment, dateTime.valueOf()));
-    }
-  }
-
   private setDeploymentDate(deployment: Deployment, deploymentDate: number) {
     this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
       /* happy path */ (r) => r,
       /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
       /* on complete */ () => this.reloadDeployment(deployment.id)
-    );
-  }
-
-  private reloadDeployment(deploymentId: number) {
-    let reloadedDeployment: Deployment;
-    this.deploymentService.getWithActions(deploymentId).subscribe(
-      /* happy path */ (r) => reloadedDeployment = r,
-      /* error path */ (e) => this.errorMessage = e,
-      /* on complete */ () => this.updateDeploymentsList(reloadedDeployment)
     );
   }
 
