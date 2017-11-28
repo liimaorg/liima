@@ -11,5 +11,6 @@ public class AuditViewEntry {
     String type; // Property, Resource, ...
     String user;
     String value;
+    long revision;
     RevisionType mode;
 }

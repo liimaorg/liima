@@ -105,7 +105,9 @@ public class AuditService {
             AuditViewEntry auditViewEntry = AuditViewEntry.builder()
                     .value(entityForRevision.getValue())
                     .type("Property")
+                    .user(revisionEntity.getUsername())
                     .timestamp(revisionEntity.getTimestamp())
+                    .revision(revisionEntity.getV())
                     .mode(revisionType)
                     .build();
             auditViewEntries.add(auditViewEntry);
