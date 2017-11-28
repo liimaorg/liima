@@ -5,8 +5,7 @@
     <div class="form-group" *ngIf="permissions.length > 0">
       <label for="selectPermission" class="col-sm-3 control-label">Permission</label>
       <div class="col-sm-9">
-        <select id="selectPermission" class="form-control input-sm" [(ngModel)]="restriction.permission.name"
-                (change)="defineAvailableOptions()">
+        <select id="selectPermission" class="form-control input-sm" [(ngModel)]="restriction.permission.name" (change)="defineAvailableOptions()">
           <option [ngValue]="permission.name" *ngFor="let permission of permissions">{{permission.name}}
             <ng-container *ngIf="permission.old"> (GLOBAL)</ng-container>
           </option>
@@ -19,7 +18,7 @@
       <div class="form-group">
         <label for="selectAction" class="col-sm-3 control-label">Action</label>
         <div class="col-sm-9">
-          <select id="selectAction" class="form-control input-sm" [(ngModel)]="restriction.action" (change)="populateAvailableEnvironments()">
+          <select id="selectAction" class="form-control input-sm" [(ngModel)]="restriction.action" (change)="filterAvailableValues()">
             <option [ngValue]="action" *ngFor="let action of getAvailableActions()">{{action}}</option>
           </select>
         </div>
@@ -31,14 +30,15 @@
           <ng-container *ngFor="let group of getEnvironmentGroups()">
             <h5 class="environments-title">{{group}}: </h5>
             <ng-container *ngFor="let env of groupedEnvironments[group]">
-              <label class="checkbox-inline"><input type="checkbox" [(ngModel)]="env.selected" [disabled]="!isAvailableEnvironment(env.name)"
-                                                    (change)="checkUnique(env)">&nbsp;{{env.name}}</label>
+              <label class="checkbox-inline"><input type="checkbox" [attr.disabled]="env.disabled ? '' : null"
+                                                    [(ngModel)]="env.selected"
+                                                    (change)="checkUnique(env)" >&nbsp;{{env.name}}</label>
             </ng-container>
           </ng-container>
         </div>
       </div>
 
-      <div class="form-group" *ngIf="getAvailableResourceTypePermissions().length > 1">
+      <div class="form-group" *ngIf="getAvailableResourceTypePermissions().length > 0">
         <label for="selectRTP" class="col-sm-3 control-label">Resource Type Categories</label>
         <div class="col-sm-9">
           <select id="selectRTP" class="form-control input-sm" [(ngModel)]="restriction.resourceTypePermission"
@@ -48,7 +48,7 @@
         </div>
       </div>
 
-      <div class="form-group" *ngIf="getAvailableResourceTypes().length > 1 && isResourceTypeAssignable()">
+      <div class="form-group" *ngIf="getAvailableResourceTypes().length > 0 && isResourceTypeAssignable()">
         <label for="selectResourceType" class="col-sm-3 control-label">Resource Type</label>
         <div class="col-sm-9">
           <input id="selectResourceType" class="form-control input-sm" list="resTypeList" type="text"
@@ -62,11 +62,17 @@
       <div class="form-group" *ngIf="getAvailableResourceGroups().length > 0 && isResourceGroupAssignable()">
         <label for="selectResourceGroup" class="col-sm-3 control-label">Resource Group</label>
         <div class="col-sm-9">
-          <input id="selectResourceGroup" class="form-control input-sm" list="resGroupList" type="text"
-                 [ngClass]="{'ng-invalid':!checkGroup()}" [(ngModel)]="resourceGroup.name">
-          <datalist id="resGroupList">
-            <option [ngValue]="resGroup.name" *ngFor="let resGroup of getAvailableResourceGroups()">{{resGroup.name}}</option>
-          </datalist>
+          <ng-container *ngIf="getAvailableResourceGroups().length > 1">
+            <input id="selectResourceGroups" class="form-control input-sm" list="resGroupList" type="text"
+                   [ngClass]="{'ng-invalid':!checkGroup()}" [(ngModel)]="resourceGroup.name">
+            <datalist id="resGroupList">
+              <option [ngValue]="resGroup.name" *ngFor="let resGroup of getAvailableResourceGroups()">{{resGroup.name}}</option>
+            </datalist>
+          </ng-container>
+          <ng-container *ngIf="getAvailableResourceGroups().length === 1">
+            <input id="selectResourceGroup" class="form-control input-sm" type="text" disabled
+                   [ngClass]="{'ng-invalid':!checkGroup()}" [(ngModel)]="resourceGroup.name">
+          </ng-container>
         </div>
       </div>
 

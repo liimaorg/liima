@@ -48,7 +48,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -423,14 +422,15 @@ public class PermissionBoundary implements Serializable {
     @HasPermission(permission = Permission.RESOURCE, action = Action.CREATE)
     public void createSelfAssignedRestrictions(ResourceEntity resource) throws AMWException {
         Integer resourceGroupId = resource.getResourceGroup().getId();
-        //createRestriction(null, getUserName(), Permission.ASSIGN_REMOVE_PERMISSION.name(), resourceGroupId, null, null, null, null, new RestrictionEntity());
-        createRestriction(null, getUserName(), Permission.RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-        createRestriction(null, getUserName(), Permission.RESOURCE_AMWFUNCTION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-        createRestriction(null, getUserName(), Permission.RESOURCE_PROPERTY_DECRYPT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-        createRestriction(null, getUserName(), Permission.RESOURCE_TEMPLATE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-        createRestriction(null, getUserName(), Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-        createRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-        createRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+        if (resourceGroupId != null && getUserName() != null) {
+            createRestriction(null, getUserName(), Permission.RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+            createRestriction(null, getUserName(), Permission.RESOURCE_AMWFUNCTION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+            createRestriction(null, getUserName(), Permission.RESOURCE_PROPERTY_DECRYPT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+            createRestriction(null, getUserName(), Permission.RESOURCE_TEMPLATE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+            createRestriction(null, getUserName(), Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+            createRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+            createRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+        }
     }
 
     /**
@@ -445,7 +445,7 @@ public class PermissionBoundary implements Serializable {
      * @return Id of the newly created RestrictionEntity
      * @throws AMWException
      */
-    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.CREATE)
+    @HasPermission(oneOfPermission = { Permission.ASSIGN_REMOVE_PERMISSION, Permission.PERMISSION_DELEGATION }, action = Action.CREATE)
     public Integer createRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
                                      ResourceTypePermission resourceTypePermission, String contextName, Action action)
             throws AMWException {
@@ -585,6 +585,7 @@ public class PermissionBoundary implements Serializable {
         return assignablePermissions;
     }
 
+    @HasPermission(permission = Permission.PERMISSION_DELEGATION)
     public List<RestrictionEntity> getAllCallerRestrictions() {
         return permissionService.getAllCallerRestrictions();
     }

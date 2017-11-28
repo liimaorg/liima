@@ -22,16 +22,22 @@ export class PermissionComponent implements OnInit, OnDestroy {
   roleNames: string[] = [];
   userNames: string[] = [];
   permissions: Permission[] = [];
-  environments: Environment[] = [ { id: null, name: null, parent: 'All', selected: false } ];
+  environments: Environment[] = [ { id: null, name: null, parent: 'All', selected: false, disabled: false } ];
   groupedEnvironments: { [key: string]: Environment[] } = { 'All': [], 'Global': [] };
   resourceGroups: Resource[] = [];
   resourceTypes: ResourceType[] = [ { id: null, name: null } ];
 
+  defaultNavItem: string = 'Roles';
   // role | user
   restrictionType: string = 'role';
+  delegationMode: boolean = false;
   restrictions: Restriction[] = [];
   selectedRoleName: string = null;
   selectedUserName: string = null;
+  actingUserName: string = null;
+  assignableRestrictions: Restriction[] = [];
+  assignablePermissions: Permission[] = [];
+
   // edit or add restriction
   restriction: Restriction = null;
   // backup for cancel
@@ -53,17 +59,28 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
     this.appState.set('navShow', true);
     this.appState.set('navItems', [ { title: 'Roles', target: '/permission/role' }, { title: 'Users', target: '/permission/user' } ]);
+    this.appState.set('navTitle', this.defaultNavItem);
     this.appState.set('pageTitle', 'Permissions');
 
     this.activatedRoute.params.subscribe(
       (param: any) => {
-        this.onChangeType(param['restrictionType']);
+        if (param['restrictionType']) {
+          this.delegationMode = false;
+          this.getAllPermissions();
+          this.onChangeType(param['restrictionType']);
+        }
+        if (param['actingUser']) {
+          this.delegationMode = true;
+          this.restrictionType = 'user';
+          this.onChangeActingUser(param['actingUser']);
+        }
     });
 
-    this.getAllPermissions();
     this.getAllEnvironments();
     this.getAllResourceGroups();
     this.getAllResourceTypes();
+
+    console.log('INIT delegation: ' + this.delegationMode);
   }
 
   ngOnDestroy() {
@@ -141,6 +158,10 @@ export class PermissionComponent implements OnInit, OnDestroy {
       resourceGroupId: null, resourceTypeName: null, resourceTypePermission: null, contextName: null, action: null };
   }
 
+  getPermissions(): Permission[] {
+    return this.delegationMode ? this.assignablePermissions : this.permissions;
+  }
+
   private updateNamesLists() {
     if (this.restriction) {
       if (this.restriction.roleName && !this.isExistingRole(this.restriction.roleName)) {
@@ -180,6 +201,21 @@ export class PermissionComponent implements OnInit, OnDestroy {
     }
   }
 
+  private onChangeActingUser(userName: string) {
+    console.log('onChangeActingUser');
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.restrictions = [];
+    this.actingUserName = userName;
+    this.appState.set('navItems', [ { title: this.actingUserName, target: '/permission/delegation/' + this.actingUserName } ]);
+    this.appState.set('navTitle', this.actingUserName);
+    this.selectedUserName = null;
+    this.selectedRoleName = null;
+//    this.getAllAssignablePermissions();
+    this.getAllAssignableUserNames();
+    this.getAllAssignableRestrictions();
+  }
+
   private getAllRoleNames() {
     this.isLoading = true;
     this.permissionService
@@ -214,6 +250,45 @@ export class PermissionComponent implements OnInit, OnDestroy {
       /* happy path */ (r) => this.environments = this.environments.concat(r),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.extractEnvironmentGroups());
+  }
+
+/*  private getAllAssignablePermissions() {
+    this.isLoading = true;
+    this.permissionService
+      .getAllAssignablePermissionEnumValues.subscribe(
+      /!* happy path *!/ (r) => this.assignablePermissions = _.sortBy(r, function(s: Permission) { return s.name.replace(/[_]/, ''); }),
+      /!* error path *!/ (e) => this.errorMessage = e,
+      /!* onComplete *!/ () => this.isLoading = false);
+  }*/
+
+  private getAllAssignableUserNames() {
+    this.isLoading = true;
+    this.permissionService
+      .getAllUserRestrictionNames().subscribe(
+      /* happy path */ (r) => this.userNames = _.pull(r, this.actingUserName),
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => this.isLoading = false);
+  }
+
+  private getAllAssignableRestrictions() {
+    this.isLoading = true;
+    this.permissionService
+      .getUserAndRoleRestrictions(this.actingUserName).subscribe(
+      /* happy path */ (r) => this.assignableRestrictions = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => { this.extractAllAssignablePermissions(),
+                               this.isLoading = false; }
+    );
+  }
+
+  private extractAllAssignablePermissions() {
+    this.assignablePermissions = [];
+    this.assignableRestrictions.forEach((restriction) => {
+      if (!_.some(this.assignablePermissions, restriction.permission)) {
+        this.assignablePermissions.push(restriction.permission);
+      }}
+    );
+    this.assignablePermissions = _.sortBy(this.assignablePermissions, function(s: Permission) { return s.name.replace(/[_]/, ''); });
   }
 
   private getAllResourceGroups() {

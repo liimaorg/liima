@@ -35,20 +35,6 @@ export class PermissionService {
     return resource$;
   }
 
-  getAllAssignablePermissionEnumValues(): Observable<Permission[]> {
-    let params: URLSearchParams = new URLSearchParams();
-    params.set('onlyUserAssignable', 'true');
-    let options = new RequestOptions({
-      search: params,
-      headers: this.getHeaders()
-    });
-    let resource$ = this.http
-      .get(`${this.baseUrl}/permissions/restrictions/permissionEnumValues`, options)
-      .map(this.extractPayload)
-      .catch(handleError);
-    return resource$;
-  }
-
   getRoleWithRestrictions(roleName: string): Observable<Restriction[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/roles/${roleName}`, {headers: this.getHeaders()})

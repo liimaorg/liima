@@ -800,7 +800,7 @@ public class PermissionService implements Serializable {
      * @return
      */
     public String getCurrentUserName() {
-        return sessionContext.getCallerPrincipal().getName();
+        return sessionContext.getCallerPrincipal() != null ? sessionContext.getCallerPrincipal().getName() : null;
     }
     
     public List<RestrictionEntity> getAllCallerRestrictions() {
