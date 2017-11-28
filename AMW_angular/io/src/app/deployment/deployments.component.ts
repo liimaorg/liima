@@ -42,11 +42,8 @@ export class DeploymentsComponent implements OnInit {
 
   // available edit actions
   editActions: string[] = ['Change date', 'Confirm', 'Reject', 'Cancel'];
-  selectedEditAction: string = this.editActions[0];
-  // confirmation dialog / edit multiple deployments
   hasPermissionShakedownTest: boolean = false;
   deploymentDate: number; // for deployment date change
-  // confirmationAttributes: DeploymentDetail; // moved to deployments-edit-modal
 
   // available filterValues (if any)
   filterValueOptions: { [key: string]: string[] } = {};
@@ -199,7 +196,6 @@ export class DeploymentsComponent implements OnInit {
   showEdit() {
     if (this.editableDeployments()) {
       this.addDatePicker();
-      // this.confirmationAttributes = <DeploymentDetail> {};
       // get shakeDownTestPermission for first element
       let indexOfFirstSelectedElem = _.findIndex(this.deployments, {selected: true});
       let firstDeployment = this.deployments[indexOfFirstSelectedElem];
