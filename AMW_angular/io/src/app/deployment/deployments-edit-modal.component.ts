@@ -64,7 +64,14 @@ export class DeploymentsEditModalComponent {
         console.error('Unknown EditAction' + this.selectedEditAction);
         break;
     }
+    this.clear();
     $('#deploymentsEdit').modal('hide');
+  }
+
+  private clear() {
+    this.confirmationAttributes = <DeploymentDetail> {};
+    this.selectedEditAction = '';
+    this.deploymentDate = '';
   }
 
   private applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deploymentId: number) {
