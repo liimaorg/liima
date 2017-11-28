@@ -9,6 +9,7 @@ import { AppState } from '../app.service';
 import { Deployment } from './deployment';
 import { DeploymentService } from './deployment.service';
 import {DeploymentsEditModalComponent} from "./deployments-edit-modal.component";
+import * as moment from 'moment';
 
 @Component({
   template: ''
@@ -57,6 +58,30 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
 
       // then
       expect(console.error).toHaveBeenCalled();
+  }));
+
+  it('should apply date for confirmation',
+    inject([DeploymentsEditModalComponent], (deploymentsEditModalComponent: DeploymentsEditModalComponent) => {
+      // given
+      let newDeploymentDate: string = '30.11.2017 09:19';
+      let expectedDeploymentDate: number = moment(newDeploymentDate, 'DD.MM.YYYY HH:mm').valueOf();
+
+      deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
+      deploymentsEditModalComponent.deploymentDate = newDeploymentDate;
+      deploymentsEditModalComponent.selectedEditAction = 'Confirm';
+      deploymentsEditModalComponent.deployments = [
+        <Deployment> { id: 1, selected: true, deploymentDate: 5555 },
+        <Deployment> { id: 1, selected: true, deploymentDate: 6666 } ];
+      spyOn(console, 'error');
+
+      // when
+      deploymentsEditModalComponent.doEdit();
+      let deployment1: Deployment = deploymentsEditModalComponent.deployments[0];
+      let deployment2: Deployment = deploymentsEditModalComponent.deployments[1];
+
+      // then
+      expect(deployment1.deploymentDate).toEqual(expectedDeploymentDate);
+      expect(deployment2.deploymentDate).toEqual(expectedDeploymentDate);
   }));
 
 });
