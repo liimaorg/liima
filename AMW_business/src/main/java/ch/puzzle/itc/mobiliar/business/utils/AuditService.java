@@ -107,11 +107,30 @@ public class AuditService {
                     .type("Property")
                     .user(revisionEntity.getUsername())
                     .timestamp(revisionEntity.getTimestamp())
-                    .revision(revisionEntity.getV())
+                    .revision(revisionEntity.getId())
                     .mode(revisionType)
                     .build();
             auditViewEntries.add(auditViewEntry);
         }
         return auditViewEntries;
+    }
+
+    public List<AuditViewEntry> getAuditViewEntriesForResource(int resourceId) {
+        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
+        // load all auditViewEntries for properties of resource
+        // load all auditViewEntries for propertyDescriptors of resources properties
+        // load all auditViewEntries for the relations of the resource
+        // load all auditViewEntries for the templates of the resource
+        return allAuditViewEntries;
+    }
+
+    public List<AuditViewEntry> getAuditViewEntriesForResourceType(int resourceTypeId) {
+
+        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
+        // load all auditViewEntries for properties of resourceType
+        // load all auditViewEntries for propertyDescriptors of resourceTypes properties
+        // load all auditViewEntries for the relations of the resourceType
+        // load all auditViewEntries for the templates of the resourceType
+        return allAuditViewEntries;
     }
 }

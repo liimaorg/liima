@@ -8,6 +8,7 @@ import { HttpModule } from '@angular/http';
 import { ResourceModule } from './resource/resource.module';
 import { DeploymentModule } from './deployment/deployment.module';
 import { PermissionModule } from './permission/permission.module';
+import { AuditviewModule } from './auditview/auditview.module';
 /*
  * Platform and Environment providers/directives/pipes
  */
@@ -47,6 +48,7 @@ type StoreType = {
     AppRoutingModule,
     ResourceModule,
     DeploymentModule,
+    AuditviewModule,
     PermissionModule
   ],
   providers: [ // expose our Services and Providers into Angular's dependency injection
