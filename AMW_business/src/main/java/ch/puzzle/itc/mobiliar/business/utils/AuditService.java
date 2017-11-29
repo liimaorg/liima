@@ -92,25 +92,29 @@ public class AuditService {
     }
 
     public List<AuditViewEntry> getAllRevisionsForPropertyEntity(ResourceEditProperty resourceEditProperty) {
-        PropertyEntity entity = entityManager.find(PropertyEntity.class, resourceEditProperty.getPropertyId());
-        List<Object[]> allRevisionsForEntity = getAllRevisionsForEntity(entity, resourceEditProperty.getPropertyId());
+        Integer propertyId = resourceEditProperty.getPropertyId();
         List<AuditViewEntry> auditViewEntries = new ArrayList<>();
+        if (propertyId != null) {
+            PropertyEntity entity = entityManager.find(PropertyEntity.class, propertyId);
+            List<Object[]> allRevisionsForEntity = getAllRevisionsForEntity(entity, resourceEditProperty.getPropertyId());
 
-        for (Object o : allRevisionsForEntity) {
-            Object[] objects = (Object[]) o;
-            PropertyEntity entityForRevision = (PropertyEntity) objects[0];
-            MyRevisionEntity revisionEntity = (MyRevisionEntity) objects[1];
-            RevisionType revisionType = (RevisionType) objects[2];
+            for (Object o : allRevisionsForEntity) {
+                Object[] objects = (Object[]) o;
+                PropertyEntity entityForRevision = (PropertyEntity) objects[0];
+                MyRevisionEntity revisionEntity = (MyRevisionEntity) objects[1];
+                RevisionType revisionType = (RevisionType) objects[2];
 
-            AuditViewEntry auditViewEntry = AuditViewEntry.builder()
-                    .value(entityForRevision.getValue())
-                    .type("Property")
-                    .user(revisionEntity.getUsername())
-                    .timestamp(revisionEntity.getTimestamp())
-                    .revision(revisionEntity.getId())
-                    .mode(revisionType)
-                    .build();
-            auditViewEntries.add(auditViewEntry);
+                AuditViewEntry auditViewEntry = AuditViewEntry.builder()
+                        .value(entityForRevision.getValue())
+                        .type("Property")
+                        .name(entityForRevision.getDescriptor().getPropertyName())
+                        .username(revisionEntity.getUsername())
+                        .timestamp(revisionEntity.getTimestamp())
+                        .revision(revisionEntity.getId())
+                        .mode(revisionType)
+                        .build();
+                auditViewEntries.add(auditViewEntry);
+            }
         }
         return auditViewEntries;
     }
@@ -131,6 +135,17 @@ public class AuditService {
         // load all auditViewEntries for propertyDescriptors of resourceTypes properties
         // load all auditViewEntries for the relations of the resourceType
         // load all auditViewEntries for the templates of the resourceType
+        return allAuditViewEntries;
+    }
+
+    public List<AuditViewEntry> getAuditViewEntriesForEditProperties(List<ResourceEditProperty> propertiesForResource) {
+        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
+
+//        List<ResourceEditProperty> properties = new ArrayList<>();
+//        List<ResourceEditProperty> propertyDescriptors = new ArrayList<>();
+        for (ResourceEditProperty resourceEditProperty : propertiesForResource) {
+            allAuditViewEntries.addAll(getAllRevisionsForPropertyEntity(resourceEditProperty));
+        }
         return allAuditViewEntries;
     }
 }

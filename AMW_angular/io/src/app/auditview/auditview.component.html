@@ -15,8 +15,32 @@
         <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="errorMessage"></span></div>
 
       </span>
+      <div class="form-group" *ngIf="auditLogEntries.length > 0">
+        <div class="col-sm-12">
+          <table id="deployment-list" class="table table-sm" *ngIf="(auditLogEntries.length > 0)">
+            <tr>
+              <th>Timestamp</th>
+              <th>Type</th>
+              <th>Name (Property Descriptor etc.)</th>
+              <th>Username</th>
+              <th>New Value</th>
+              <th>Revision</th>
+              <th>Mode</th>
+            </tr>
 
-      CONTENT O.o
+            <tr *ngFor="let entry of auditLogEntries">
+              <td>{{entry.timestamp | date:'dd.MM.y HH:mm'}}</td>
+              <td>{{entry.type}}</td>
+              <td>{{entry.name}}</td>
+              <td>{{entry.username}}</td>
+              <td>{{entry.value}}</td>
+              <td>{{entry.revision}}</td>
+              <td>{{entry.mode}}</td>
+            </tr>
+          </table>
+
+        </div>
+      </div>
 
     </div>
 

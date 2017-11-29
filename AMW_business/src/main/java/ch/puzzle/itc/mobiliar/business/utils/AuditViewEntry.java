@@ -9,8 +9,13 @@ import org.hibernate.envers.RevisionType;
 public class AuditViewEntry {
     long timestamp;
     String type; // Property, Resource, ...
-    String user;
+    String name; // PropertyName, ...
+    String username;
     String value;
     long revision;
     RevisionType mode;
+
+    public String getModeAsString() {
+        return this.getMode().name();
+    }
 }
