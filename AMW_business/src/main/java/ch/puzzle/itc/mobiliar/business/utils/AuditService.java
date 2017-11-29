@@ -104,14 +104,11 @@ public class AuditService {
                 MyRevisionEntity revisionEntity = (MyRevisionEntity) objects[1];
                 RevisionType revisionType = (RevisionType) objects[2];
 
-                AuditViewEntry auditViewEntry = AuditViewEntry.builder()
+                AuditViewEntry auditViewEntry = AuditViewEntry
+                        .builder(revisionEntity, revisionType)
                         .value(entityForRevision.getValue())
                         .type("Property")
                         .name(entityForRevision.getDescriptor().getPropertyName())
-                        .username(revisionEntity.getUsername())
-                        .timestamp(revisionEntity.getTimestamp())
-                        .revision(revisionEntity.getId())
-                        .mode(revisionType)
                         .build();
                 auditViewEntries.add(auditViewEntry);
             }
