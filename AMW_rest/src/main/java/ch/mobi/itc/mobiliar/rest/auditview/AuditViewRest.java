@@ -8,6 +8,8 @@ import ch.puzzle.itc.mobiliar.business.utils.AuditViewEntry;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -36,10 +38,21 @@ public class AuditViewRest {
     public Response getAuditLog(@ApiParam("resource ID") @PathParam("id") Integer resourceId,
                                 @QueryParam("contextId") Integer contextId) {
         List<AuditViewEntry> auditlogForResource = new ArrayList<>();
-        List<ResourceEditProperty> propertiesForResource = propertyEditor.getPropertiesForResource(resourceId, contextId);
-        auditlogForResource.addAll(auditViewBoundary.getAuditlogForResource(propertiesForResource));
+        List<ResourceEditProperty> propertiesForResourceIncludingDescriptors = propertyEditor.getPropertiesForResource(resourceId, contextId);
+        List<ResourceEditProperty> propertyDescriptors = filterPropertyDescriptors(propertiesForResourceIncludingDescriptors);
+        List<ResourceEditProperty> propertiesForResource = removePropertyDescriptors(propertiesForResourceIncludingDescriptors, propertyDescriptors);
+
+        auditlogForResource.addAll(auditViewBoundary.getAuditlogForProperties(propertiesForResource));
+//        auditlogForResource.addAll(auditViewBoundary.getAuditlogForPropertyDescriptors(propertyDescriptors));
+
         List<AuditViewEntryDTO> dtos = createDtos(auditlogForResource);
         return Response.status(Response.Status.OK).entity(dtos).build();
+    }
+
+    private List<ResourceEditProperty> removePropertyDescriptors(List<ResourceEditProperty> propertiesForResourceIncludingDescriptors, List<ResourceEditProperty> propertyDescriptors) {
+        ArrayList<ResourceEditProperty> properties = new ArrayList<>(propertiesForResourceIncludingDescriptors);
+        properties.removeAll(propertyDescriptors);
+        return properties;
     }
 
     private List<AuditViewEntryDTO> createDtos(List<AuditViewEntry> auditlogForResource) {
@@ -48,6 +61,24 @@ public class AuditViewRest {
             dtos.add(new AuditViewEntryDTO(auditViewEntry));
         }
         return dtos;
+    }
+
+
+    /**
+     *
+     * @param propertyDescriptors
+     * @return list only containing the propertyDescriptors
+     */
+    private List<ResourceEditProperty> filterPropertyDescriptors(List<ResourceEditProperty> propertyDescriptors) {
+        List<ResourceEditProperty> onlyPropertyDescriptors = new ArrayList<>(propertyDescriptors);
+        CollectionUtils.filter(onlyPropertyDescriptors, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                ResourceEditProperty p = (ResourceEditProperty) object;
+                return p.getPropertyId() == null;
+            }
+        });
+        return onlyPropertyDescriptors;
     }
 
 

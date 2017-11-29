@@ -1,12 +1,15 @@
 package ch.puzzle.itc.mobiliar.business.utils;
 
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.envers.RevisionType;
 
 @Getter
 @Builder(builderMethodName = "hiddenBuilder")
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuditViewEntry {
     long timestamp;
     String type; // Property, Resource, ...

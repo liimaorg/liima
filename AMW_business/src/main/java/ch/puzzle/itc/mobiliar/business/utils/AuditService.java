@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.utils;
 
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import org.hibernate.envers.AuditReader;
@@ -92,57 +93,50 @@ public class AuditService {
     }
 
     public List<AuditViewEntry> getAllRevisionsForPropertyEntity(ResourceEditProperty resourceEditProperty) {
-        Integer propertyId = resourceEditProperty.getPropertyId();
-        List<AuditViewEntry> auditViewEntries = new ArrayList<>();
-        if (propertyId != null) {
-            PropertyEntity entity = entityManager.find(PropertyEntity.class, propertyId);
-            List<Object[]> allRevisionsForEntity = getAllRevisionsForEntity(entity, resourceEditProperty.getPropertyId());
-
-            for (Object o : allRevisionsForEntity) {
-                Object[] objects = (Object[]) o;
-                PropertyEntity entityForRevision = (PropertyEntity) objects[0];
-                MyRevisionEntity revisionEntity = (MyRevisionEntity) objects[1];
-                RevisionType revisionType = (RevisionType) objects[2];
-
-                AuditViewEntry auditViewEntry = AuditViewEntry
-                        .builder(revisionEntity, revisionType)
-                        .value(entityForRevision.getValue())
-                        .type("Property")
-                        .name(entityForRevision.getDescriptor().getPropertyName())
-                        .build();
-                auditViewEntries.add(auditViewEntry);
-            }
-        }
-        return auditViewEntries;
+        PropertyEntity entity = entityManager.find(PropertyEntity.class, resourceEditProperty.getPropertyId());
+        List<Object[]> allRevisionsForEntity = getAllRevisionsForEntity(entity, resourceEditProperty.getPropertyId());
+        return createAuditViewEntries(allRevisionsForEntity);
     }
 
-    public List<AuditViewEntry> getAuditViewEntriesForResource(int resourceId) {
-        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
-        // load all auditViewEntries for properties of resource
-        // load all auditViewEntries for propertyDescriptors of resources properties
-        // load all auditViewEntries for the relations of the resource
-        // load all auditViewEntries for the templates of the resource
-        return allAuditViewEntries;
+    public List<AuditViewEntry> getAllRevisionsForPropertyDescriptorEntity(ResourceEditProperty resourceEditProperty) {
+        PropertyDescriptorEntity entity = entityManager.find(PropertyDescriptorEntity.class, resourceEditProperty.getDescriptorId());
+        List<Object[]> allRevisionsForEntity = getAllRevisionsForEntity(entity, resourceEditProperty.getDescriptorId());
+        return createAuditViewEntries(allRevisionsForEntity);
     }
 
-    public List<AuditViewEntry> getAuditViewEntriesForResourceType(int resourceTypeId) {
-
+    public List<AuditViewEntry> getAuditViewEntriesForProperties(List<ResourceEditProperty> propertiesForResource) {
         List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
-        // load all auditViewEntries for properties of resourceType
-        // load all auditViewEntries for propertyDescriptors of resourceTypes properties
-        // load all auditViewEntries for the relations of the resourceType
-        // load all auditViewEntries for the templates of the resourceType
-        return allAuditViewEntries;
-    }
-
-    public List<AuditViewEntry> getAuditViewEntriesForEditProperties(List<ResourceEditProperty> propertiesForResource) {
-        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
-
-//        List<ResourceEditProperty> properties = new ArrayList<>();
-//        List<ResourceEditProperty> propertyDescriptors = new ArrayList<>();
         for (ResourceEditProperty resourceEditProperty : propertiesForResource) {
             allAuditViewEntries.addAll(getAllRevisionsForPropertyEntity(resourceEditProperty));
         }
         return allAuditViewEntries;
     }
+
+    public List<AuditViewEntry> getAuditViewEntriesForPropertyDescriptors(List<ResourceEditProperty> propertiesForResource) {
+        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
+        for (ResourceEditProperty resourceEditProperty : propertiesForResource) {
+            allAuditViewEntries.addAll(getAllRevisionsForPropertyDescriptorEntity(resourceEditProperty));
+        }
+        return allAuditViewEntries;
+    }
+
+    private List<AuditViewEntry> createAuditViewEntries(List<Object[]> allRevisionsForEntity) {
+        List<AuditViewEntry> auditViewEntries = new ArrayList<>();
+        for (Object o : allRevisionsForEntity) {
+            Object[] objects = (Object[]) o;
+            Auditable entityForRevision = (Auditable) objects[0];
+            MyRevisionEntity revisionEntity = (MyRevisionEntity) objects[1];
+            RevisionType revisionType = (RevisionType) objects[2];
+
+            AuditViewEntry auditViewEntry = AuditViewEntry
+                    .builder(revisionEntity, revisionType)
+                    .value(entityForRevision.getNewValueForAuditLog())
+                    .type(entityForRevision.getType())
+                    .name(entityForRevision.getNameForAuditLog())
+                    .build();
+            auditViewEntries.add(auditViewEntry);
+        }
+        return auditViewEntries;
+    }
+
 }

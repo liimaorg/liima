@@ -24,6 +24,7 @@ import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.Foreignable;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
+import ch.puzzle.itc.mobiliar.business.utils.Auditable;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.business.utils.Copyable;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
@@ -45,7 +46,7 @@ import static javax.persistence.CascadeType.PERSIST;
 @Entity
 @Audited
 @Table(name = "TAMW_propertyDescriptor")
-public class PropertyDescriptorEntity implements Identifiable, Serializable, PropertyTagEntityHolder, Foreignable<PropertyDescriptorEntity>, Copyable<PropertyDescriptorEntity> {
+public class PropertyDescriptorEntity implements Identifiable, Serializable, PropertyTagEntityHolder, Foreignable<PropertyDescriptorEntity>, Copyable<PropertyDescriptorEntity>, Auditable {
 
     // IMPORTANT! Whenever a new field (not relation to other entity) is added then this field must be added to foreignableFieldEquals method!!!
 
@@ -424,4 +425,18 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
         return eb.toHashCode();
     }
 
+	@Override
+	public String getNewValueForAuditLog() {
+		return String.format("Default Value: %s", this.defaultValue);
+	}
+
+	@Override
+	public String getType() {
+		return Auditable.TYPE_PROPERTY_DESCRIPTOR;
+	}
+
+	@Override
+	public String getNameForAuditLog() {
+		return this.propertyName;
+	}
 }

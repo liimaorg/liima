@@ -34,17 +34,11 @@ public class AuditViewBoundary {
     @Inject
     AuditService auditService;
 
-
-    public List<AuditViewEntry> getAuditlogForResource(List<ResourceEditProperty> propertiesForResource) {
-        return auditService.getAuditViewEntriesForEditProperties(propertiesForResource);
+    public List<AuditViewEntry> getAuditlogForProperties(List<ResourceEditProperty> propertiesForResource) {
+        return auditService.getAuditViewEntriesForProperties(propertiesForResource);
     }
 
-    public List<AuditViewEntry> getAuditlogForResource(int resourceId) {
-        return auditService.getAuditViewEntriesForResource(resourceId);
+    public List<AuditViewEntry> getAuditlogForPropertyDescriptors(List<ResourceEditProperty> propertiesForResource) {
+        return auditService.getAuditViewEntriesForPropertyDescriptors(propertiesForResource);
     }
-
-    public List<AuditViewEntry> getAuditlogForResourceType(int resourceTypeId) {
-        return auditService.getAuditViewEntriesForResourceType(resourceTypeId);
-    }
-
 }
