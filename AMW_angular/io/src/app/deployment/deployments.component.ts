@@ -329,7 +329,7 @@ export class DeploymentsComponent implements OnInit {
       stateMessage: detail.stateMessage
     };
     this.csvReadyObjects.push(csvReadyObject);
-    if (this.csvReadyObjects.length === this.deployments.length) {
+    if (this.csvReadyObjects.length === this.deploymentsForExport.length) {
       this.csvDocument = this.createCSV();
       let docName: string = 'deployments_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
       this.pushDownload(docName);
