@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { DeploymentComponent } from './deployment.component';
 import { DeploymentsComponent } from './deployments.component';
 import { DeploymentsListComponent } from './deployments-list.component';
+import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DeploymentService } from './deployment.service';
 import { EnvironmentService } from './environment.service';
 import { DeploymentRoutingModule } from './deployment-routing.module';
 
 @NgModule({
   imports: [CommonModule, FormsModule, DeploymentRoutingModule],
-  declarations: [DeploymentComponent, DeploymentsComponent, DeploymentsListComponent],
+  declarations: [DeploymentComponent, DeploymentsComponent, DeploymentsListComponent, DeploymentsEditModalComponent],
   providers: [DeploymentService, EnvironmentService]
 })
 export class DeploymentModule {
