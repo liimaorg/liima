@@ -339,7 +339,7 @@ public class DeploymentBoundary {
                     Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
                         @Override
                         public int compare(DeploymentEntity o1, DeploymentEntity o2) {
-                            return o1.getResourceGroup().getName().compareTo(o2.getResourceGroup().getName());
+                            return o1.getResourceGroup().getName().toLowerCase().compareTo(o2.getResourceGroup().getName().toLowerCase());
                         }
                     });
                     break;
