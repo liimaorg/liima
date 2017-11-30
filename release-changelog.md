@@ -1,3 +1,16 @@
+# v1.15.2
+Fixes some bugs on the new Angular deployment view and csv export.
+
+## Bug fixes
+* Confirming and changing the date of a deployment doesn't work via edit [#271](https://github.com/liimaorg/liima/issues/271)
+* Deployment environment filter has wrong suggestions [#257](https://github.com/liimaorg/liima/issues/257)
+* Deployment csv export: sort order in csv is slightly different from view [#268](https://github.com/liimaorg/liima/issues/268)
+* editResourceView Properties not visible with window zoom [#251](https://github.com/liimaorg/liima/issues/251)
+* Deployment filters come back after removing them [#245](https://github.com/liimaorg/liima/issues/245)
+* Deployment filter are no longer written to the url [#250](https://github.com/liimaorg/liima/issues/250)
+* Angular resources are cached forever [#255](https://github.com/liimaorg/liima/issues/255)
+* Update swagger ui, the source is no longer checked into liima [#256](https://github.com/liimaorg/liima/issues/256)
+
 # v1.15.1
 Fixes some bugs on the new Angular deployment view.
 
