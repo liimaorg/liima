@@ -264,6 +264,30 @@ public class PermissionBoundaryTest {
         verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
+    @Test
+    public void shouldCheckIfCallerHasSimilarRestrictionIfHeWantsToDelegatePermission() throws AMWException {
+        // given
+        when(permissionService.hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE)).thenReturn(true);
+        when(permissionRepository.getUserRestrictionByName("fed")).thenReturn(new UserRestrictionEntity());
+        // when
+        permissionBoundary.createRestriction(null, "fred", "SHAKEDOWNTEST", null, null, null, null, CREATE, true);
+        // then
+        verify(permissionService, times(1)).hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE);
+        verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
+    }
+
+    @Test(expected=AMWException.class)
+    public void shouldThrowAMWExceptionIfCallerIsNotAllowedToDelegatePermission() throws AMWException {
+        // given
+        when(permissionService.hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE)).thenReturn(false);
+        when(permissionRepository.getUserRestrictionByName("fed")).thenReturn(new UserRestrictionEntity());
+        // when
+        permissionBoundary.createRestriction(null, "fred", "SHAKEDOWNTEST", null, null, null, null, CREATE, true);
+        // then
+        verify(permissionService, times(1)).hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE);
+        verify(restrictionRepository, never()).create(any(RestrictionEntity.class));
+    }
+
     @Test(expected=AMWException.class)
     public void shouldThrowAMWExceptionOnCreateIfResourceIdCanNotBeFound() throws AMWException {
         // given
