@@ -60,6 +60,16 @@
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>yarn build</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
                 </executions>
                 <configuration>
                       <nodeVersion>v6.9.1</nodeVersion>
