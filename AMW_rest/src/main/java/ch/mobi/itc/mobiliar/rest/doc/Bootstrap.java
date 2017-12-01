@@ -20,34 +20,32 @@
 
 package ch.mobi.itc.mobiliar.rest.doc;
 
-import com.wordnik.swagger.config.ConfigFactory;
-import com.wordnik.swagger.config.ScannerFactory;
-import com.wordnik.swagger.config.SwaggerConfig;
-import com.wordnik.swagger.jaxrs.config.DefaultJaxrsScanner;
-import com.wordnik.swagger.jaxrs.reader.DefaultJaxrsApiReader;
-import com.wordnik.swagger.reader.ClassReaders;
+import io.swagger.models.*;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 
 @WebServlet(name = "swagger", loadOnStartup = 1)
-public class Swagger extends HttpServlet {
+public class Bootstrap extends HttpServlet {
 
 	@Override
-	public void init(ServletConfig servletConfig) {
-		try {
-		    super.init(servletConfig);
-		    SwaggerConfig swaggerConfig = new SwaggerConfig();
-		    ConfigFactory.setConfig(swaggerConfig);
-		    swaggerConfig.setBasePath(".");
-		    ScannerFactory.setScanner(new DefaultJaxrsScanner());
-		    ClassReaders.setReader(new DefaultJaxrsApiReader());
-		}
-		catch (ServletException e) {
-			System.out.println(e.getMessage());
-		}
+	public void init(ServletConfig config) throws ServletException {
+
+		Info info = new Info()
+				.title("Liima")
+				.license(new License()
+						.name("GNU Affero General Public License")
+						.url("https://www.gnu.org/licenses/agpl-3.0.en.html"));
+
+		ServletContext context = config.getServletContext();
+		Swagger swagger = new Swagger().info(info);
+		swagger.setBasePath(context.getContextPath()+"/resources");
+		swagger.externalDocs(new ExternalDocs("Find out more about Swagger", "http://swagger.io"));
+
+		context.setAttribute("swagger", swagger);
 	}
 
 }
