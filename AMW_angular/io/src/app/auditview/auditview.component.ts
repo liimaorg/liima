@@ -13,6 +13,7 @@ import * as _ from 'lodash';
 
 export class AuditviewComponent implements OnInit {
 
+  name: string;
   auditLogEntries: Auditviewentrytype[] = [];
 
   errorMessage: string;
@@ -55,12 +56,15 @@ export class AuditviewComponent implements OnInit {
 
     console.log(this.contextId);
 
+    // TODO add get resourceName
+    this.name = "TODO resource name"
+
     if (this.resourceId) {
       this.auditViewService.getAuditLogForResource(this.resourceId, this.contextId).subscribe(
         /* happy path */ (r) => this.auditLogEntries = r,
         /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => {}
-        );
+      );
     } else {
       console.error("Resource Id must be set")
     }
