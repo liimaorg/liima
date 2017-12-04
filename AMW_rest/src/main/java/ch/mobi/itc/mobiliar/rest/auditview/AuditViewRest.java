@@ -2,8 +2,6 @@ package ch.mobi.itc.mobiliar.rest.auditview;
 
 import ch.mobi.itc.mobiliar.rest.dtos.AuditViewEntryDTO;
 import ch.puzzle.itc.mobiliar.business.auditview.boundary.AuditViewBoundary;
-import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.utils.AuditViewEntry;
@@ -36,34 +34,20 @@ public class AuditViewRest {
     @Inject
     PropertyEditor propertyEditor;
 
-    @Inject
-    ContextDomainService contextDomainService;
-
     @GET
     @Path("/resource/{id : \\d+}")
     @ApiOperation(value = "Get detail information of a Deployment - used by Angular")
     public Response getAuditLog(@ApiParam("resource ID") @PathParam("id") Integer resourceId,
                                 @QueryParam("contextId") Integer contextId) {
         List<AuditViewEntry> auditlogForResource = new ArrayList<>();
-        List<AuditViewEntryDTO> dtos = new ArrayList<>();
-        ContextEntity globalResourceContextEntity = contextDomainService.getGlobalResourceContextEntity();
-        List<ContextEntity> contextsInCorrectOrder = new ArrayList<>();
-        contextsInCorrectOrder.add(globalResourceContextEntity);
-        contextsInCorrectOrder.addAll(globalResourceContextEntity.getChildren());
-        for (ContextEntity contextToProces : globalResourceContextEntity.getChildren()) {
-            contextsInCorrectOrder.addAll(contextToProces.getChildren());
-        }
+        List<ResourceEditProperty> propertiesForResourceIncludingDescriptors = propertyEditor.getPropertiesForResource(resourceId, contextId);
+        List<ResourceEditProperty> propertyDescriptors = filterPropertyDescriptors(propertiesForResourceIncludingDescriptors);
+        List<ResourceEditProperty> propertiesForResource = removePropertyDescriptors(propertiesForResourceIncludingDescriptors, propertyDescriptors);
 
-        for (ContextEntity env : contextsInCorrectOrder) {
-            List<ResourceEditProperty> propertiesForResourceIncludingDescriptors = propertyEditor.getPropertiesForResource(resourceId, env.getId());
-            List<ResourceEditProperty> propertyDescriptors = filterPropertyDescriptors(propertiesForResourceIncludingDescriptors);
-            List<ResourceEditProperty> propertiesForResource = removePropertyDescriptors(propertiesForResourceIncludingDescriptors, propertyDescriptors);
-
-            auditlogForResource.addAll(auditViewBoundary.getAuditlogForProperties(propertiesForResource));
+        auditlogForResource.addAll(auditViewBoundary.getAuditlogForProperties(propertiesForResource));
 //        auditlogForResource.addAll(auditViewBoundary.getAuditlogForPropertyDescriptors(propertyDescriptors));
-            createAndAddDtoIfNotAlreadyInList(dtos, auditlogForResource, env.getName());
-        }
-        sortByTimestamp(dtos);
+
+        List<AuditViewEntryDTO> dtos = createDtosAndSortByTimestamp(auditlogForResource);
         return Response.status(Response.Status.OK).entity(dtos).build();
     }
 
@@ -82,13 +66,13 @@ public class AuditViewRest {
         return properties;
     }
 
-    private void createAndAddDtoIfNotAlreadyInList(List<AuditViewEntryDTO> all, List<AuditViewEntry> auditlogForResource, String contextName) {
+    private List<AuditViewEntryDTO> createDtosAndSortByTimestamp(List<AuditViewEntry> auditlogForResource) {
+        List<AuditViewEntryDTO> dtos = new ArrayList<>(auditlogForResource.size());
         for (AuditViewEntry auditViewEntry : auditlogForResource) {
-            AuditViewEntryDTO auditViewEntryDTO = new AuditViewEntryDTO(auditViewEntry, contextName);
-            if (!all.contains(auditViewEntryDTO)) {
-                all.add(new AuditViewEntryDTO(auditViewEntry, contextName));
-            }
+            dtos.add(new AuditViewEntryDTO(auditViewEntry));
         }
+        sortByTimestamp(dtos);
+        return dtos;
     }
 
 
