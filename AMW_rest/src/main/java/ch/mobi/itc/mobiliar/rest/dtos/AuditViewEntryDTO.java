@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Data
 @NoArgsConstructor
 public class AuditViewEntryDTO {
-    long timestamp;
+    Long timestamp;
     String type; // Property, Resource, ...
     String name; // PropertyName, ...
     String username;

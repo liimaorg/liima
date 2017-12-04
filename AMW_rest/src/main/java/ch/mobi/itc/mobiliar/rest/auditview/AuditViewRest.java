@@ -19,6 +19,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Stateless
@@ -45,8 +47,17 @@ public class AuditViewRest {
         auditlogForResource.addAll(auditViewBoundary.getAuditlogForProperties(propertiesForResource));
 //        auditlogForResource.addAll(auditViewBoundary.getAuditlogForPropertyDescriptors(propertyDescriptors));
 
-        List<AuditViewEntryDTO> dtos = createDtos(auditlogForResource);
+        List<AuditViewEntryDTO> dtos = createDtosAndSortByTimestamp(auditlogForResource);
         return Response.status(Response.Status.OK).entity(dtos).build();
+    }
+
+    private void sortByTimestamp(List<AuditViewEntryDTO> dtos) {
+        Collections.sort(dtos, new Comparator<AuditViewEntryDTO>() {
+            @Override
+            public int compare(AuditViewEntryDTO o1, AuditViewEntryDTO o2) {
+                return o1.getTimestamp().compareTo(o2.getTimestamp());
+            }
+        });
     }
 
     private List<ResourceEditProperty> removePropertyDescriptors(List<ResourceEditProperty> propertiesForResourceIncludingDescriptors, List<ResourceEditProperty> propertyDescriptors) {
@@ -55,11 +66,12 @@ public class AuditViewRest {
         return properties;
     }
 
-    private List<AuditViewEntryDTO> createDtos(List<AuditViewEntry> auditlogForResource) {
+    private List<AuditViewEntryDTO> createDtosAndSortByTimestamp(List<AuditViewEntry> auditlogForResource) {
         List<AuditViewEntryDTO> dtos = new ArrayList<>(auditlogForResource.size());
         for (AuditViewEntry auditViewEntry : auditlogForResource) {
             dtos.add(new AuditViewEntryDTO(auditViewEntry));
         }
+        sortByTimestamp(dtos);
         return dtos;
     }
 
