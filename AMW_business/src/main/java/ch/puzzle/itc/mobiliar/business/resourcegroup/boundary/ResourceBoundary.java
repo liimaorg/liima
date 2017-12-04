@@ -168,11 +168,6 @@ public class ResourceBoundary {
                 resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
                 log.info("Neue Resource " + newResourceName + "inkl. Gruppe erstellt für Release "
                         + release.getName());
-                try {
-                    permissionBoundary.createSelfAssignedRestrictions(resourceEntity);
-                } catch (AMWException e) {
-                    throw new NotAuthorizedException("Missing Permission");
-                }
             } else {
                 String message = "A " + anotherGroup.getResourceType().getName()+" with the same name: " + newResourceName
                         + " already exists.";
@@ -192,11 +187,6 @@ public class ResourceBoundary {
                 resourceEntity = ResourceFactory.createNewResourceForOwner(group, creatingOwner);
                 log.info("Neue Resource " + newResourceName
                         + "für existierende Gruppe erstellt für Release " + release.getName());
-                try {
-                    permissionBoundary.createSelfAssignedRestrictions(resourceEntity);
-                } catch (AMWException e) {
-                    throw new NotAuthorizedException("Missing Permission");
-                }
             } else {
                 // if resource with given name, type and release already exists throw an exeption
                 String message = "The "+type.getName()+" with name: " + newResourceName
@@ -256,7 +246,6 @@ public class ResourceBoundary {
                 contextDomainService.getGlobalResourceContextEntity());
         Application app = createUniqueApplicationByName(creatingOwner, applicationName, appReleaseId, false);
         as.addApplication(app, creatingOwner);
-
         entityManager.persist(as.getEntity());
         entityManager.flush();
         log.info("Application " + applicationName + " für ApplicationServer " + asResource.getName()

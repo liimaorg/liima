@@ -457,11 +457,18 @@ public class PermissionBoundary implements Serializable {
         throw new AMWException("No permission to create this permission");
     }
 
+    public boolean canDelegatePermissionsForThisResource(ResourceEntity resource, ContextEntity context) {
+        return (permissionService.hasPermission(Permission.PERMISSION_DELEGATION) && canDelegateThisPermission(Permission.RESOURCE.name(), resource.getResourceGroup().getId(), null, context.getName(), null));
+    }
+
     private boolean canDelegateThisPermission(String permissionName, Integer resourceGroupId, String resourceTypeName, String contextName, Action action) {
         Permission permission = Permission.valueOf(permissionName);
         ResourceGroupEntity resourceGroup = resourceGroupId != null ? resourceGroupRepository.find(resourceGroupId) : null;
         ResourceTypeEntity resourceType = resourceTypeName != null ? resourceTypeRepository.getByName(resourceTypeName) : null;
         ContextEntity context = contextName != null ? contextLocator.getContextByName(contextName) : null;
+        if (action == null) {
+            action = Action.ALL;
+        }
         return permissionService.hasPermissionToDelegatePermission(permission, resourceGroup, resourceType, context, action);
     }
 
