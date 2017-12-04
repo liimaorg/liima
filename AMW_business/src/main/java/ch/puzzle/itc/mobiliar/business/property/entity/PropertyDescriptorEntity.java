@@ -30,6 +30,7 @@ import ch.puzzle.itc.mobiliar.business.utils.Copyable;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.envers.Audited;
 
@@ -425,18 +426,26 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
         return eb.toHashCode();
     }
 
-	@Override
-	public String getNewValueForAuditLog() {
-		return String.format("Default Value: %s", this.defaultValue);
-	}
+    @Override
+    public String getNewValueForAuditLog() {
+        return String.format(
+                    "Technichal Key: %s, " +
+                    "PropertyType: %s, " +
+                    "MIK: %s, " +
+                    "Default Value: %s",
+                this.propertyName,
+                this.propertyTypeEntity == null ? StringUtils.EMPTY : this.propertyTypeEntity.getPropertyTypeName(),
+                this.machineInterpretationKey,
+                this.defaultValue);
+    }
 
-	@Override
-	public String getType() {
-		return Auditable.TYPE_PROPERTY_DESCRIPTOR;
-	}
+    @Override
+    public String getType() {
+        return Auditable.TYPE_PROPERTY_DESCRIPTOR;
+    }
 
-	@Override
-	public String getNameForAuditLog() {
-		return this.propertyName;
-	}
+    @Override
+    public String getNameForAuditLog() {
+        return this.propertyName;
+    }
 }
