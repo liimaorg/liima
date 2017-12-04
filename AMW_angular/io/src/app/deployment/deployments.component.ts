@@ -60,7 +60,7 @@ export class DeploymentsComponent implements OnInit {
   // csv export
   deploymentsForExport: Deployment[] = [];
   deploymentDetailMap: { [key: number]: DeploymentDetail } = {};
-  csvReadyObjects: any[] = [];
+  csvReadyObjects: { [key: number]: any[] } = {};
   csvDocument: string;
 
   // sorting with default values
@@ -239,7 +239,7 @@ export class DeploymentsComponent implements OnInit {
 
   exportCSV() {
     this.isLoading = true;
-    this.csvReadyObjects = [];
+    this.csvReadyObjects = {};
     this.errorMessage = 'Generating your CSV.<br>Please hold on, depending on the requested data this may take a while';
     this.getFilteredDeploymentsForExport(JSON.stringify(this.filtersForBackend));
   }
@@ -328,8 +328,8 @@ export class DeploymentsComponent implements OnInit {
       cancelUser: deployment['cancelUser'],
       stateMessage: detail.stateMessage
     };
-    this.csvReadyObjects.push(csvReadyObject);
-    if (this.csvReadyObjects.length === this.deployments.length) {
+    this.csvReadyObjects[deployment.id] = csvReadyObject;
+    if (Object.keys(this.csvReadyObjects).length === this.deploymentsForExport.length) {
       this.csvDocument = this.createCSV();
       let docName: string = 'deployments_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
       this.pushDownload(docName);
@@ -339,7 +339,8 @@ export class DeploymentsComponent implements OnInit {
 
   private createCSV(): string {
     let content: string = this.createCSVTitles();
-    this.csvReadyObjects.forEach((deployment) => {
+    this.deploymentsForExport.forEach((entry) => {
+      let deployment: any = this.csvReadyObjects[entry.id];
       let line: string = '';
       for (const field of Object.keys(deployment)) {
         switch (field) {
