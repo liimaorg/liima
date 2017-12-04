@@ -32,9 +32,7 @@ import org.hibernate.envers.query.AuditQuery;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.hibernate.envers.RevisionType.DEL;
 
@@ -104,15 +102,25 @@ public class AuditService {
         Objects.requireNonNull(id, "Id can not be null");
 
         AuditReader reader = AuditReaderFactory.get(entityManager);
+        Number revisionNumberOneYearAgo = getRevisionNumberOneYearAgo(reader);
 
         if (reader.isEntityClassAudited(entity.getClass())) {
             AuditQuery query = reader.createQuery().forRevisionsOfEntity(entity.getClass(), false, true)
                     .add(AuditEntity.id().eq(id))
+                    .add(AuditEntity.revisionNumber().gt(revisionNumberOneYearAgo))
                     .addOrder(AuditEntity.revisionNumber().desc());
             List<T> resultList = query.getResultList();
             return resultList;
         }
         return null;
+    }
+
+    private Number getRevisionNumberOneYearAgo(AuditReader reader) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        int currentYear = c.get(Calendar.YEAR);
+        c.set(Calendar.YEAR, currentYear -1);
+        return reader.getRevisionNumberForDate(c.getTime());
     }
 
     private List<AuditViewEntry> getAllRevisionsForPropertyEntity(ResourceEditProperty resourceEditProperty) {
