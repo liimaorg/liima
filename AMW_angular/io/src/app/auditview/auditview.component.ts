@@ -39,6 +39,8 @@ export class AuditviewComponent implements OnInit {
             console.error(e);
             this.errorMessage = 'Error parsing contextId';
           }
+        } else {
+          this.contextId = 1; // TODO get global context from REST
         }
         if (param['resourceId']) {
           try {
