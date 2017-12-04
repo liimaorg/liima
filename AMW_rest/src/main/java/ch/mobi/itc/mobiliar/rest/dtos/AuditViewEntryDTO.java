@@ -2,6 +2,7 @@ package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.utils.AuditViewEntry;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"environment"})
 public class AuditViewEntryDTO {
     Long timestamp;
     String type; // Property, Resource, ...
@@ -23,8 +25,9 @@ public class AuditViewEntryDTO {
     String value;
     long revision;
     String mode;
+    String environment;
 
-    public AuditViewEntryDTO(AuditViewEntry entry) {
+    public AuditViewEntryDTO(AuditViewEntry entry, String environment) {
         this.timestamp = entry.getTimestamp();
         this.type = entry.getType();
         this.name = entry.getName();
@@ -32,5 +35,6 @@ public class AuditViewEntryDTO {
         this.value = entry.getValue();
         this.revision = entry.getRevision();
         this.mode = entry.getModeAsString();
+        this.environment = environment;
     }
 }
