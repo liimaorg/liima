@@ -54,7 +54,7 @@ export class AuditviewComponent implements OnInit {
     console.log(this.contextId);
 
     if (this.resourceId) {
-      this.auditViewService.getAuditLogForResource(this.resourceId, 1).subscribe(
+      this.auditViewService.getAuditLogForResource(this.resourceId, this.contextId).subscribe(
         /* happy path */ (r) => this.auditLogEntries = r,
         /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => {}
