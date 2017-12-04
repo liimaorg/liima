@@ -64,6 +64,29 @@ public class AuditService {
         return null;
     }
 
+//    public List<AuditViewEntry> getAuditViewEntriesForResource(int id) {
+//        ResourceEntity entity = entityManager.find(ResourceEntity.class, id);
+//        List allRevisionsForEntity = getAllRevisionsForEntity(entity, id);
+//        List auditViewEntries = createAuditViewEntries(allRevisionsForEntity);
+//        return allRevisionsForEntity;
+//    }
+
+    public List<AuditViewEntry> getAuditViewEntriesForProperties(List<ResourceEditProperty> propertiesForResource) {
+        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
+        for (ResourceEditProperty resourceEditProperty : propertiesForResource) {
+            allAuditViewEntries.addAll(getAllRevisionsForPropertyEntity(resourceEditProperty));
+        }
+        return allAuditViewEntries;
+    }
+
+    public List<AuditViewEntry> getAuditViewEntriesForPropertyDescriptors(List<ResourceEditProperty> propertiesForResource) {
+        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
+        for (ResourceEditProperty resourceEditProperty : propertiesForResource) {
+            allAuditViewEntries.addAll(getAllRevisionsForPropertyDescriptorEntity(resourceEditProperty));
+        }
+        return allAuditViewEntries;
+    }
+
     /**
      * @param entity
      * @param id
@@ -92,32 +115,16 @@ public class AuditService {
         return null;
     }
 
-    public List<AuditViewEntry> getAllRevisionsForPropertyEntity(ResourceEditProperty resourceEditProperty) {
+    private List<AuditViewEntry> getAllRevisionsForPropertyEntity(ResourceEditProperty resourceEditProperty) {
         PropertyEntity entity = entityManager.find(PropertyEntity.class, resourceEditProperty.getPropertyId());
         List<Object[]> allRevisionsForEntity = getAllRevisionsForEntity(entity, resourceEditProperty.getPropertyId());
         return createAuditViewEntries(allRevisionsForEntity);
     }
 
-    public List<AuditViewEntry> getAllRevisionsForPropertyDescriptorEntity(ResourceEditProperty resourceEditProperty) {
+    private List<AuditViewEntry> getAllRevisionsForPropertyDescriptorEntity(ResourceEditProperty resourceEditProperty) {
         PropertyDescriptorEntity entity = entityManager.find(PropertyDescriptorEntity.class, resourceEditProperty.getDescriptorId());
         List<Object[]> allRevisionsForEntity = getAllRevisionsForEntity(entity, resourceEditProperty.getDescriptorId());
         return createAuditViewEntries(allRevisionsForEntity);
-    }
-
-    public List<AuditViewEntry> getAuditViewEntriesForProperties(List<ResourceEditProperty> propertiesForResource) {
-        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
-        for (ResourceEditProperty resourceEditProperty : propertiesForResource) {
-            allAuditViewEntries.addAll(getAllRevisionsForPropertyEntity(resourceEditProperty));
-        }
-        return allAuditViewEntries;
-    }
-
-    public List<AuditViewEntry> getAuditViewEntriesForPropertyDescriptors(List<ResourceEditProperty> propertiesForResource) {
-        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
-        for (ResourceEditProperty resourceEditProperty : propertiesForResource) {
-            allAuditViewEntries.addAll(getAllRevisionsForPropertyDescriptorEntity(resourceEditProperty));
-        }
-        return allAuditViewEntries;
     }
 
     private List<AuditViewEntry> createAuditViewEntries(List<Object[]> allRevisionsForEntity) {
