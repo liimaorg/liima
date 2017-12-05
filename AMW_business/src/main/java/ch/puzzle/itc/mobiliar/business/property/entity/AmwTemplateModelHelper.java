@@ -25,6 +25,7 @@ import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.AmwModelPreprocessExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.BaseTemplateProcessor;
+import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import freemarker.core.ParseException;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This Helper contains all Helper Methods for the Model
@@ -183,6 +185,19 @@ public class AmwTemplateModelHelper {
         for (String key : templates.keySet()) {
             result.put(key, templates.get(key).toHash());
         }
+        return result;
+    }
+    
+    public static Map<String, Map<String, String>> convertTemplateDescriptorToHash(Set<TemplateDescriptorEntity> resourceTemplates){
+        if(resourceTemplates == null){
+            return null;
+        }
+        Map<String, Map<String, String>> result = new LinkedHashMap<>();
+
+        for (TemplateDescriptorEntity desc : resourceTemplates) {
+            result.put(desc.getName(), desc.toHash());
+        }
+
         return result;
     }
 

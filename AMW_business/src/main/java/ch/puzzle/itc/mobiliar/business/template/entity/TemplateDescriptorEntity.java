@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.business.template.entity;
 
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
+import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -34,7 +35,9 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -200,5 +203,13 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 		target.setRelatedResourceIdentifier(this.getRelatedResourceIdentifier());
 
 		return target;
+	}
+	
+	public Map<String, String> toHash() {
+		Map<String, String> hash = new HashMap<String, String>();
+		hash.put(GeneratedTemplate.RESERVED_PROPERTY_PATH, this.targetPath);
+		hash.put(GeneratedTemplate.RESERVED_PROPERTY_CONTENT, "");
+		hash.put(GeneratedTemplate.RESERVED_PROPERTY_NAME, this.name);
+		return hash;
 	}
 }

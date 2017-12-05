@@ -180,7 +180,7 @@ public class GenerationUnitFactory {
 		if (currentResourceTemplates == null) {
 			currentResourceTemplates = templatesForResource(options, resource);
 		}
-
+		properties.setResourceTemplates(currentResourceTemplates);
 		properties.setFunctions(functionService.getAllFunctionsForResource(resource));
 		
 		GenerationUnit generationUnit = new GenerationUnit(resource, null, currentResourceTemplates, properties);
@@ -389,6 +389,7 @@ public class GenerationUnitFactory {
 		merge(options, mainWorkSet, slaveProperties);
 
 		slaveProperties.setFunctions(functionService.getAllFunctionsForResource(slave));
+		slaveProperties.setResourceTemplates(resourceTemplates);
 		
 		GenerationUnit generationUnit = new GenerationUnit(slave, resource, slaveProperties,
 				resourceTemplates, relationTemplates);

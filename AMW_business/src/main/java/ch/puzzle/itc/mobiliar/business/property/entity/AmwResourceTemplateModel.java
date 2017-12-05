@@ -20,15 +20,28 @@
 
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import freemarker.template.*;
-import lombok.Getter;
+import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.SimpleCollection;
+import freemarker.template.SimpleHash;
+import freemarker.template.TemplateCollectionModel;
+import freemarker.template.TemplateHashModelEx;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
 import lombok.Setter;
-import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 
 public class AmwResourceTemplateModel implements TemplateHashModelEx {
 
@@ -72,6 +85,11 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
 	private List<AmwFunctionEntity> functions = new ArrayList<>();
     @Setter
     Map<String, GeneratedTemplate> templates = new LinkedHashMap<>();
+    /**
+     * Consists also of not generated Templates
+     */
+    @Setter
+    Set<TemplateDescriptorEntity> resourceTemplates = new HashSet<>();
 
     @Setter
     ResourceEntity resourceEntity;
@@ -90,7 +108,16 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
 		}else if(RESERVED_PROPERTY_PROVIDEDRES.equals(key)){
             return getAsSimpleHash(providedResTypes, beansWrapper);
 		}else if(RESERVED_PROPERTY_TEMPLATES.equals(key)){
-            return getAsSimpleHash(AmwTemplateModelHelper.convertTemplatesToHash(templates), beansWrapper);
+			
+			Map<String, Map<String, String>> allTemplates = new HashMap<>();
+			// first add all non generated
+			if(resourceTemplates != null){
+				allTemplates.putAll(AmwTemplateModelHelper.convertTemplateDescriptorToHash(resourceTemplates));
+			}
+			// then the generated so that the content is available
+			allTemplates.putAll(AmwTemplateModelHelper.convertTemplatesToHash(templates));
+			
+            return getAsSimpleHash(allTemplates, beansWrapper);
         }else if(AMW_PROPERTIES.equals(key)){
             return getAsSimpleHash(properties, beansWrapper);
         }else if(PARENT.equals(key)){

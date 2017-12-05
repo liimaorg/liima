@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.*;
@@ -43,6 +44,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -75,6 +77,8 @@ public class AppServerRelationProperties {
 	private Map<String, FreeMarkerProperty> properties = Maps.newLinkedHashMap();
 	@Setter
 	private List<AmwFunctionEntity> functions;
+	@Setter
+	private Set<TemplateDescriptorEntity> resourceTemplates;
 
 	private List<AppServerRelationProperties> consumed = Lists.newArrayList();
 	private List<AppServerRelationProperties> provided = Lists.newArrayList();
@@ -118,6 +122,7 @@ public class AppServerRelationProperties {
         Map<String, Map<String, AmwResourceTemplateModel>> transformConsumedRelated = transformRelated(consumed, model);
 		model.setConsumedResTypes(transformConsumedRelated);
 		model.setProvidedResTypes(transformRelated(provided, model));
+		model.setResourceTemplates(resourceTemplates);
 
 		AmwAppServerNodeModel amwAppServerNodeModel = new AmwAppServerNodeModel();
 		addAppServerNodeViaResolver(amwAppServerNodeModel, resolver);
@@ -198,6 +203,7 @@ public class AppServerRelationProperties {
 		model.setFunctions(functions);
 		model.setResourceEntity(owner);
 		model.setParentResourceTemplateModel(parent);
+		model.setResourceTemplates(resourceTemplates);
         setTemplates(model);
         return model;
 	}
