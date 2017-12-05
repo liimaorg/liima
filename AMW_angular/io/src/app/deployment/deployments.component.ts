@@ -356,17 +356,23 @@ export class DeploymentsComponent implements OnInit {
             line += deployment[field] ? '"' + moment(deployment[field]).format('YYYY-MM-DD HH:mm').toString() + '"' + this.csvSeparator : this.csvSeparator;
             break;
           case 'appsWithVersion':
+            if (deployment[field]) {
+              line += '"';
+            }
             deployment[field].forEach((appsWithVersion) => {
-              line += '"' + appsWithVersion['applicationName'] + ' ' + appsWithVersion['version'] + '\n"';
+              line += appsWithVersion['applicationName'] + ' ' + appsWithVersion['version'] + '\n';
             });
-            line = line.replace(/\n$/, "");
+            line = line.replace(/\n$/, "\"");
             line += this.csvSeparator;
             break;
           case 'deploymentParameters':
+            if (deployment[field]) {
+              line += '"';
+            }
             deployment[field].forEach((deploymentParameter) => {
-              line += '"' + deploymentParameter['key'] + ' ' + deploymentParameter['value'] + '\n"';
+              line += deploymentParameter['key'] + ' ' + deploymentParameter['value'] + '\n';
             });
-            line = line.replace(/\n$/, "");
+            line = line.replace(/\n$/, "\"");
             line += this.csvSeparator;
             break;
           case 'stateMessage':
