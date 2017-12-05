@@ -55,8 +55,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log('hello `Permission` component');
-
     this.appState.set('navShow', true);
     this.appState.set('navItems', [ { title: 'Roles', target: '/permission/role' }, { title: 'Users', target: '/permission/user' } ]);
     this.appState.set('navTitle', this.defaultNavItem);
@@ -88,7 +86,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   onChangeRole() {
-    console.log('onChangeRole');
     if (this.isExistingRole(this.selectedRoleName)) {
       this.getRoleWithRestrictions(this.selectedRoleName);
     } else {
@@ -98,7 +95,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   onChangeUser() {
-    console.log('onChangeUser');
     if (this.isExistingUser(this.selectedUserName)) {
       this.getUserWithRestrictions(this.selectedUserName);
     } else {
@@ -181,7 +177,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   private onChangeType(type: string) {
-    console.log('onChangeType');
     this.errorMessage = '';
     this.successMessage = '';
     this.restrictions = [];
@@ -202,7 +197,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   private onChangeActingUser(userName: string) {
-    console.log('onChangeActingUser');
     this.errorMessage = '';
     this.successMessage = '';
     this.restrictions = [];
