@@ -18,7 +18,8 @@
       <div class="form-group">
         <label for="selectAction" class="col-sm-3 control-label">Action</label>
         <div class="col-sm-9">
-          <select id="selectAction" class="form-control input-sm" [(ngModel)]="restriction.action" (change)="filterAvailableValues()">
+          <select id="selectAction" class="form-control input-sm" [(ngModel)]="restriction.action" (change)="checkAvailableEnvironments()"
+                  [attr.disabled]="getAvailableActions().length === 1 ? '' : null">
             <option [ngValue]="action" *ngFor="let action of getAvailableActions()">{{action}}</option>
           </select>
         </div>

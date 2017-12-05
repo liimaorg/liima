@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 
 export class RestrictionComponent implements OnChanges, AfterViewChecked {
 
-  actions: string[] = [ 'ALL', 'CREATE', 'READ', 'UPDATE', 'DELETE' ];
+  actions: string[] = [ 'ALL', 'CREATE', 'DELETE', 'READ', 'UPDATE' ];
   resourceTypePermissions: string[] = [ 'ANY', 'DEFAULT_ONLY', 'NON_DEFAULT_ONLY' ];
   resourceGroup: Resource = <Resource> {};
 
@@ -105,24 +105,20 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
         this.restriction.resourceTypePermission = 'ANY';
       } else if (this.delegationMode) {
         this.populateSimilarRestrictions();
-        this.extractAvailableActions();
         this.resetRestrictionForDelegation();
+        this.extractAvailableActions();
       }
+    }
+  }
+
+  checkAvailableEnvironments() {
+    if (this.delegationMode) {
+      this.preSelectEnvironment();
     }
   }
 
   getAvailableActions(): string[] {
     return this.delegationMode ? this.extractAvailableActions() : this.actions;
-  }
-
-  filterAvailableValues() {
-    if (this.delegationMode) {
-      this.preSelectEnvironment();
-      this.resetRestrictionForDelegation();
-      // this.extractAvailableResourceTypePermissions();
-      // this.extractAvailableResourceTypes();
-      // this.extractAvailableResourceGroups();
-    }
   }
 
   getAvailableResourceGroups(): Resource[] {
@@ -165,13 +161,11 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
 
   checkUnique(env: Environment) {
     let index: number = this.groupedEnvironments[env.parent].indexOf(env);
-    let state: boolean = this.groupedEnvironments[env.parent][index].selected;
+    let isSelected: boolean = this.groupedEnvironments[env.parent][index].selected;
     this.deSelectAllEnvironments();
-    this.groupedEnvironments[env.parent][index].selected = state;
-    console.log('state is: ' + state);
-    if (state) {
+    this.groupedEnvironments[env.parent][index].selected = isSelected;
+    if (isSelected) {
       this.restriction.contextName = this.groupedEnvironments[env.parent][index].name;
-      console.log(this.restriction.contextName);
     }
   }
 
@@ -184,16 +178,12 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
   }
 
   private preSelectEnvironment() {
+    this.availableEnvironments = [];
     this.disableAllEnvironments();
     this.resourceGroup = <Resource> {};
-    let isPreSet: boolean;
     this.similarRestrictions.forEach((restriction) => {
       if (restriction.action === 'ALL' || restriction.action === this.restriction.action) {
         this.availableEnvironments.push(restriction.contextName);
-        if (!isPreSet) {
-          this.preSelectEnv(restriction.contextName);
-          isPreSet = true;
-        }
         if (!restriction.contextName) {
           // null = All
           this.enableAllEnvironments();
@@ -202,13 +192,19 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
         }
       }
     });
+    if (this.availableEnvironments.length === 1) {
+      this.preSelectEnv(this.availableEnvironments[0]);
+      // this.restriction.contextName = this.availableEnvironments[0];
+    }
   }
 
   private extractAvailableActions(): string[] {
     let actions: string[] = [];
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
-        if (actions.indexOf(restriction.action) < 0) {
+        if (restriction.action === 'ALL') {
+          actions = this.actions;
+        } else if (actions.indexOf(restriction.action) < 0) {
           actions.push(restriction.action);
         }
       });
@@ -222,7 +218,7 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
   }
 
   private resetRestrictionForDelegation() {
-    console.log('resetRestrictionForDelegation');
+    this.restriction.action = null;
     this.restriction.contextName = null;
     this.restriction.resourceTypeName = null;
     this.restriction.resourceTypePermission = null;
@@ -232,56 +228,74 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
 
   private extractAvailableResourceGroups(): Resource[] {
     let groups: Resource[] = [];
+    let addAll: boolean;
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
-        if (restriction.action === this.restriction.action) { // && (restriction.resourceTypeName === 'ANY' || restriction.resourceTypeName === null)) {
+        if (!addAll && restriction.action === this.restriction.action &&
+          (restriction.contextName === null || restriction.contextName === this.restriction.contextName
+          || restriction.contextName === this.getParentContextName(this.restriction.contextName))) {
           if (restriction.resourceGroupId === null) {
-            return this.resourceGroups;
-          }
-          if (!_.some(groups, [ 'id', restriction.resourceGroupId ])) {
+            addAll = true;
+          } else if (!_.some(groups, [ 'id', restriction.resourceGroupId ])) {
             groups.push(_.find(this.resourceGroups, [ 'id', restriction.resourceGroupId ]));
           }
         }
       });
     }
+    if (addAll) {
+      return this.resourceGroups;
+    }
     if (groups.length === 1) {
       this.resourceGroup = groups[0];
     }
-    return groups.length > 0 ? groups : this.resourceGroups;
+    return groups;
   }
 
   private extractAvailableResourceTypePermissions(): string[] {
     let resourceTypePermissions: string[] = [];
+    let addAll: boolean;
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
-        if (restriction.action === this.restriction.action && restriction.resourceGroupId === null) {
-          if (resourceTypePermissions.indexOf(restriction.resourceTypePermission) < 0) {
+        if (restriction.action === this.restriction.action && restriction.resourceGroupId === null &&
+          (restriction.contextName === null || restriction.contextName === this.restriction.contextName
+          || restriction.contextName === this.getParentContextName(this.restriction.contextName))) {
+          if (!addAll && resourceTypePermissions.indexOf(restriction.resourceTypePermission) < 0) {
             if (restriction.resourceTypePermission === 'ANY') {
-              return this.resourceTypePermissions;
+              addAll = true;
+            } else {
+              resourceTypePermissions.push(restriction.resourceTypePermission);
             }
-            resourceTypePermissions.push(restriction.resourceTypePermission);
           }
         }
       });
     }
-    return resourceTypePermissions.length > 0 ? resourceTypePermissions : this.resourceTypePermissions;
+    if (addAll) {
+      return this.resourceTypePermissions;
+    }
+    return resourceTypePermissions;
   }
 
   private extractAvailableResourceTypes(): ResourceType[] {
     let resourceTypes: ResourceType[] = [];
+    let addAll: boolean;
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
-        if (restriction.action === this.restriction.action && restriction.resourceGroupId === null) {
-          if (restriction.resourceTypeName === null) {
-            return this.resourceTypes;
+        if (restriction.action === this.restriction.action && restriction.resourceGroupId === null &&
+          (restriction.contextName === null || restriction.contextName === this.restriction.contextName
+          || restriction.contextName === this.getParentContextName(this.restriction.contextName))) {
+          if (!addAll && restriction.resourceTypeName === null) {
+            addAll = true;
           }
-          if (!_.some(resourceTypes, [ 'name', restriction.resourceTypeName ])) {
+          if (!addAll && !_.some(resourceTypes, [ 'name', restriction.resourceTypeName ])) {
             resourceTypes.push(_.find(this.resourceTypes, [ 'name', restriction.resourceTypeName ]));
           }
         }
       });
     }
-    return resourceTypes.length > 0 ? resourceTypes : this.resourceTypes;
+    if (addAll) {
+      return this.resourceTypes;
+    }
+    return resourceTypes;
   }
 
   private clearType() {
@@ -298,7 +312,6 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
   }
 
   private deSelectAllEnvironments() {
-    console.log('deSelectAllEnvironments');
     this.getEnvironmentGroups().forEach((group) => {
       this.groupedEnvironments[group].forEach((environment) => environment.selected = false);
     });
@@ -310,6 +323,7 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
       this.groupedEnvironments[group].forEach((environment) => {
         if (environment.name === contextName) {
           environment.selected = true;
+          this.restriction.contextName = contextName;
           return;
         }
       });
@@ -350,6 +364,17 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
         }
       });
     });
+  }
+
+  private getParentContextName(contextName: string): string {
+    let keys = this.getEnvironmentGroups();
+    let len: number = keys.length;
+    for (let i = 0; i < len; i++) {
+      if (_.some(this.groupedEnvironments[keys[i]], ['name', contextName])) {
+        return keys[i];
+      }
+    }
+    return null;
   }
 
 }

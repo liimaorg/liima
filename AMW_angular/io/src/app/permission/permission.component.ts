@@ -22,7 +22,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   roleNames: string[] = [];
   userNames: string[] = [];
   permissions: Permission[] = [];
-  environments: Environment[] = [ { id: null, name: null, parent: 'All', selected: false, disabled: false } ];
+  environments: Environment[] = [ <Environment> { id: null, name: null, parent: 'All', selected: false } ];
   groupedEnvironments: { [key: string]: Environment[] } = { 'All': [], 'Global': [] };
   resourceGroups: Resource[] = [];
   resourceTypes: ResourceType[] = [ { id: null, name: null } ];
@@ -64,23 +64,23 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
     this.activatedRoute.params.subscribe(
       (param: any) => {
-        if (param['restrictionType']) {
-          this.delegationMode = false;
-          this.getAllPermissions();
-          this.onChangeType(param['restrictionType']);
-        }
         if (param['actingUser']) {
           this.delegationMode = true;
           this.restrictionType = 'user';
           this.onChangeActingUser(param['actingUser']);
+        } else {
+          if (param['restrictionType']) {
+            this.restrictionType = param['restrictionType'];
+          }
+          this.delegationMode = false;
+          this.getAllPermissions();
+          this.onChangeType(this.restrictionType);
         }
     });
 
     this.getAllEnvironments();
     this.getAllResourceGroups();
     this.getAllResourceTypes();
-
-    console.log('INIT delegation: ' + this.delegationMode);
   }
 
   ngOnDestroy() {
@@ -211,7 +211,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.appState.set('navTitle', this.actingUserName);
     this.selectedUserName = null;
     this.selectedRoleName = null;
-//    this.getAllAssignablePermissions();
     this.getAllAssignableUserNames();
     this.getAllAssignableRestrictions();
   }
