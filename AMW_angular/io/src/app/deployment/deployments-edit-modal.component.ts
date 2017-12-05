@@ -31,12 +31,12 @@ export class DeploymentsEditModalComponent {
 
   constructor(private ngZone: NgZone,
               private deploymentService: DeploymentService) {
-    this.confirmationAttributes = <DeploymentDetail> {};
+    this.confirmationAttributes = {} as DeploymentDetail;
   }
 
   changeEditAction() {
     let isConfirm = this.selectedEditAction === this.editActions[1];
-    let isEditDeploymentDate = this.selectedEditAction == this.editActions[0];
+    let isEditDeploymentDate = this.selectedEditAction === this.editActions[0];
     if (isConfirm || isEditDeploymentDate) {
       this.addDatePicker();
     }
@@ -69,7 +69,7 @@ export class DeploymentsEditModalComponent {
   }
 
   private clear() {
-    this.confirmationAttributes = <DeploymentDetail> {};
+    this.confirmationAttributes = {} as DeploymentDetail;
     this.selectedEditAction = '';
     this.deploymentDate = '';
   }
@@ -91,7 +91,7 @@ export class DeploymentsEditModalComponent {
         /* error path */ (e) => e,
         /* on complete */ () => this.applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deployment.id)
       );
-    };
+    }
   }
 
   private rejectSelectedDeployments() {

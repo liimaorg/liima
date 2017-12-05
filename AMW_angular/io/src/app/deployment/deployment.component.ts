@@ -38,7 +38,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   environments: Environment[] = [];
   groupedEnvironments: { [key: string]: Environment[] } = {};
   deploymentParameters: DeploymentParameter[] = [];
-  defaultResourceTag: ResourceTag = <ResourceTag> {label: 'HEAD'};
+  defaultResourceTag: ResourceTag = {label: 'HEAD'} as ResourceTag;
   isRedeployment: boolean = false;
 
   // per appserver/deployment request
@@ -50,7 +50,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   selectedResourceTag: ResourceTag = this.defaultResourceTag;
   deploymentDate: string = '';
   appsWithVersion: AppWithVersion[] = [];
-  transDeploymentParameter: DeploymentParameter = <DeploymentParameter> {};
+  transDeploymentParameter: DeploymentParameter = {} as DeploymentParameter;
   transDeploymentParameters: DeploymentParameter[] = [];
   deploymentResponse: any = {};
   hasPermissionShakedownTest: boolean = false;
@@ -58,7 +58,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   hasPermissionToRequestDeployment: boolean = false;
 
   // redeploy only
-  selectedDeployment: Deployment = <Deployment> {};
+  selectedDeployment: Deployment = {} as Deployment;
   redeploymentAppserverDisplayName: string = '';
   appsWithVersionForRedeployment: AppWithVersion[] = [];
 
@@ -155,7 +155,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   onAddParam() {
     _.remove(this.transDeploymentParameters, { key: this.transDeploymentParameter.key });
     this.transDeploymentParameters.push(this.transDeploymentParameter);
-    this.transDeploymentParameter = <DeploymentParameter> {};
+    this.transDeploymentParameter = {} as DeploymentParameter;
   }
 
   onRemoveParam(deParam: DeploymentParameter) {
@@ -195,7 +195,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.composeRedeploymentAppserverDisplayName();
     this.transDeploymentParameters = this.selectedDeployment.deploymentParameters;
     this.appsWithVersion = this.selectedDeployment.appsWithVersion;
-    this.selectedAppserver = <Resource> { id: this.selectedDeployment.appServerId, name: this.selectedDeployment.appServerName };
+    this.selectedAppserver = {id: this.selectedDeployment.appServerId, name: this.selectedDeployment.appServerName} as Resource;
     this.loadReleases();
     this.setPreSelectedEnvironment();
     this.canDeploy();
@@ -272,7 +272,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.doExecuteShakedownTest = false;
     this.doNeighbourhoodTest = false;
     this.appsWithVersion = [];
-    this.transDeploymentParameter = <DeploymentParameter> {};
+    this.transDeploymentParameter = {} as DeploymentParameter;
     this.transDeploymentParameters = [];
   }
 
@@ -329,7 +329,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private createDeploymentRequest(contextIds: number[]) {
     this.errorMessage = '';
     this.successMessage = '';
-    let deploymentRequest: DeploymentRequest = <DeploymentRequest> {};
+    let deploymentRequest: DeploymentRequest = {} as DeploymentRequest;
     deploymentRequest.appServerName = this.selectedAppserver.name;
     deploymentRequest.releaseName = this.selectedRelease.release;
     deploymentRequest.contextIds = contextIds;

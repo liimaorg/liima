@@ -10,7 +10,7 @@ describe('EnvironmentService', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function (backend: MockBackend, defaultOptions: BaseRequestOptions) {
+        useFactory: function(backend: MockBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
