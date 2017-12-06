@@ -9,7 +9,7 @@ import { AppState } from '../app.service';
 import { Deployment } from './deployment';
 import { DeploymentDetail } from './deployment-detail';
 import { DeploymentService } from './deployment.service';
-import {DeploymentsEditModalComponent} from "./deployments-edit-modal.component";
+import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import * as moment from 'moment';
 
 @Component({
@@ -34,7 +34,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+        useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]

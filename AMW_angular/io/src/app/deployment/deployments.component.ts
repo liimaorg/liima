@@ -114,7 +114,7 @@ export class DeploymentsComponent implements OnInit {
 
   addFilter() {
     if (this.selectedFilterType && this.canFilterBeAdded()) {
-      const newFilter: DeploymentFilter = {} as Deploymentfilter;
+      const newFilter: DeploymentFilter = {} as DeploymentFilter;
       newFilter.name = this.selectedFilterType.name;
       newFilter.comp = this.defaultComparator;
       newFilter.val = this.selectedFilterType.type === 'booleanType' ? 'true' : '';
@@ -300,8 +300,8 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private populateCSVrows(deployment: Deployment) {
-    let detail: DeploymentDetail = this.deploymentDetailMap[deployment.id];
-    let csvReadyObject: any = {
+    const detail: DeploymentDetail = this.deploymentDetailMap[deployment.id];
+    const csvReadyObject: any = {
       id: deployment['id'],
       trackingId: deployment['trackingId'],
       state: deployment['state'],
@@ -327,7 +327,7 @@ export class DeploymentsComponent implements OnInit {
     this.csvReadyObjects[deployment.id] = csvReadyObject;
     if (Object.keys(this.csvReadyObjects).length === this.deploymentsForExport.length) {
       this.csvDocument = this.createCSV();
-      let docName: string = 'deployments_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
+      const docName: string = 'deployments_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
       this.pushDownload(docName);
       this.errorMessage = '';
     }
@@ -336,7 +336,7 @@ export class DeploymentsComponent implements OnInit {
   private createCSV(): string {
     let content: string = this.createCSVTitles();
     this.deploymentsForExport.forEach((entry) => {
-      let deployment: any = this.csvReadyObjects[entry.id];
+      const deployment: any = this.csvReadyObjects[entry.id];
       let line: string = '';
       for (const field of Object.keys(deployment)) {
         switch (field) {
@@ -385,7 +385,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private createCSVTitles(): string {
-    let labelsArray: string[]  = [
+    const labelsArray: string[]  = [
       'Id',
       'Tracking Id',
       'Deployment state',
@@ -413,12 +413,12 @@ export class DeploymentsComponent implements OnInit {
 
   private pushDownload(docName: string) {
     this.isLoading = false;
-    let blob = new Blob([this.csvDocument], { type: 'text/csv' });
-    let url = window.URL.createObjectURL(blob);
+    const blob = new Blob([this.csvDocument], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
     if (navigator.msSaveOrOpenBlob) {
       navigator.msSaveBlob(blob, docName);
     } else {
-      let a = document.createElement('a');
+      const a = document.createElement('a');
       a.href = url;
       a.download = docName;
       a.setAttribute('style', 'display:none;');
@@ -560,7 +560,7 @@ export class DeploymentsComponent implements OnInit {
     if (this.paramFilters) {
       this.clearFilters();
       this.paramFilters.forEach((filter) => {
-        let i: number = _.findIndex(this.filterTypes, ['name', filter.name]);
+        const i: number = _.findIndex(this.filterTypes, ['name', filter.name]);
         if (i >= 0) {
           filter.type = this.filterTypes[i].type;
           filter.compOptions = this.comparatorOptionsForType(filter.type);

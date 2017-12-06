@@ -277,8 +277,8 @@ describe('DeploymentComponent (create deployment)', () => {
   it('should call the deploymentService with the right values on requestDeployment',
     inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
     // given
-      deploymentComponent.selectedAppserver = {name: 'testServer'} as Resource;
-      deploymentComponent.selectedRelease = {id: 1, release: 'testRelease'} as Release;
+    deploymentComponent.selectedAppserver = {name: 'testServer'} as Resource;
+    deploymentComponent.selectedRelease = {id: 1, release: 'testRelease'} as Release;
     deploymentComponent.environments = [{id: 2, name: 'A'} as Environment, {id: 3, name: 'B', selected: true} as Environment];
     deploymentComponent.doExecuteShakedownTest = true;
     deploymentComponent.appsWithVersion = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion];

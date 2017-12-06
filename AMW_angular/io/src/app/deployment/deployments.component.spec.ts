@@ -23,7 +23,7 @@ class DummyComponent {
 }
 
 describe('DeploymentsComponent (with query params)', () => {
-  let filter: string = JSON.stringify([{name: 'Application', val: 'test'}, {name: 'Confirmed on', comp: 'lt', val: '12.12.2012 12:12'}]);
+  const filter: string = JSON.stringify([{name: 'Application', val: 'test'}, {name: 'Confirmed on', comp: 'lt', val: '12.12.2012 12:12'}]);
   // provide our implementations or mocks to the dependency injector
   beforeEach(() => TestBed.configureTestingModule({
     imports: [

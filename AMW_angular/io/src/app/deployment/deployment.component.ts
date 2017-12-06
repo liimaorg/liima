@@ -209,7 +209,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private setPreSelectedEnvironment() {
-    let env = _.find(this.environments, {name: this.selectedDeployment.environmentName});
+    const env = _.find(this.environments, {name: this.selectedDeployment.environmentName});
     if (env) { env.selected = true; }
   }
 
@@ -285,7 +285,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private canDeploy() {
     if (this.selectedAppserver != null) {
       this.hasPermissionToDeploy = false;
-      let contextIds: number[] = _.filter(this.environments, 'selected').map((val) => val.id);
+      const contextIds: number[] = _.filter(this.environments, 'selected').map((val) => val.id);
       if (contextIds.length > 0) {
         this.deploymentService.canDeploy(this.selectedAppserver.id, contextIds).subscribe(
           /* happy path */ (r) => this.hasPermissionToDeploy = r,
@@ -310,7 +310,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.errorMessage = '';
     this.isDeploymentBlocked = false;
     this.appsWithVersion.forEach((originApp: AppWithVersion) => {
-      let actualApp: AppWithVersion = _.find(this.appsWithVersionForRedeployment, [ 'applicationName', originApp.applicationName ]);
+      const actualApp: AppWithVersion = _.find(this.appsWithVersionForRedeployment, ['applicationName', originApp.applicationName]);
       if (!this.isDeploymentBlocked && !actualApp) {
           this.errorMessage = 'Application <strong>' + originApp.applicationName + '</strong> does not exist anymore';
           this.isDeploymentBlocked = true;
@@ -321,7 +321,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private prepareDeployment() {
     if (this.isReadyForDeployment()) {
-      let contextIds: number[] = _.filter(this.environments, 'selected').map((val) => val.id);
+      const contextIds: number[] = _.filter(this.environments, 'selected').map((val) => val.id);
       this.createDeploymentRequest(contextIds);
     }
   }
@@ -329,7 +329,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private createDeploymentRequest(contextIds: number[]) {
     this.errorMessage = '';
     this.successMessage = '';
-    let deploymentRequest: DeploymentRequest = {} as DeploymentRequest;
+    const deploymentRequest: DeploymentRequest = {} as DeploymentRequest;
     deploymentRequest.appServerName = this.selectedAppserver.name;
     deploymentRequest.releaseName = this.selectedRelease.release;
     deploymentRequest.contextIds = contextIds;
@@ -343,7 +343,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       deploymentRequest.stateToDeploy = (this.selectedResourceTag && this.selectedResourceTag.tagDate) ? this.selectedResourceTag.tagDate : new Date().getTime();
     }
     if (this.deploymentDate) {
-      let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
+      const dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
       if (dateTime && dateTime.isValid()) {
         deploymentRequest.deploymentDate = dateTime.valueOf();
       }
