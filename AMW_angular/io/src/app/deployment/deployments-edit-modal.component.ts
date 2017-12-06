@@ -35,8 +35,8 @@ export class DeploymentsEditModalComponent {
   }
 
   changeEditAction() {
-    let isConfirm = this.selectedEditAction === this.editActions[1];
-    let isEditDeploymentDate = this.selectedEditAction === this.editActions[0];
+    const isConfirm = this.selectedEditAction === this.editActions[1];
+    const isEditDeploymentDate = this.selectedEditAction === this.editActions[0];
     if (isConfirm || isEditDeploymentDate) {
       this.addDatePicker();
     }
@@ -75,7 +75,7 @@ export class DeploymentsEditModalComponent {
   }
 
   private applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deploymentId: number) {
-    let deploymentDetail = this.deploymentDetailMap[deploymentId];
+    const deploymentDetail = this.deploymentDetailMap[deploymentId];
     deploymentDetail.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
     deploymentDetail.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
     deploymentDetail.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
@@ -85,7 +85,7 @@ export class DeploymentsEditModalComponent {
 
   private confirmSelectedDeployments() {
     this.editDeploymentDate();
-    for (let deployment of this.deployments) {
+    for (const deployment of this.deployments) {
       this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
         /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
         /* error path */ (e) => e,
@@ -95,23 +95,23 @@ export class DeploymentsEditModalComponent {
   }
 
   private rejectSelectedDeployments() {
-    for (let deployment of this.deployments) {
+    for (const deployment of this.deployments) {
       this.doRejectDeployment.emit(deployment);
     }
   }
 
   private cancelSelectedDeployments() {
-    for (let deployment of this.deployments) {
+    for (const deployment of this.deployments) {
       this.doCancelDeployment.emit(deployment);
     }
   }
 
   private editDeploymentDate() {
-    let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
+    const dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
     if (!dateTime || !dateTime.isValid()) {
       this.errorMessage.emit('Invalid date');
     } else {
-      for (let deployment of this.deployments) {
+      for (const deployment of this.deployments) {
         deployment.deploymentDate = dateTime.valueOf();
         this.doEditDeploymentDate.emit(deployment);
       }

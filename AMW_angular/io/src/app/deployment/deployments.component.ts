@@ -114,7 +114,7 @@ export class DeploymentsComponent implements OnInit {
 
   addFilter() {
     if (this.selectedFilterType && this.canFilterBeAdded()) {
-      let newFilter: DeploymentFilter = <DeploymentFilter> {};
+      const newFilter: DeploymentFilter = {} as Deploymentfilter;
       newFilter.name = this.selectedFilterType.name;
       newFilter.comp = this.defaultComparator;
       newFilter.val = this.selectedFilterType.type === 'booleanType' ? 'true' : '';
@@ -128,7 +128,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   removeFilter(filter: DeploymentFilter) {
-    let i: number = _.findIndex(this.filters, {name: filter.name, comp: filter.comp, val: filter.val});
+    const i: number = _.findIndex(this.filters, {name: filter.name, comp: filter.comp, val: filter.val});
     if (i !== -1) {
       this.filters.splice(i, 1);
     }
@@ -144,23 +144,19 @@ export class DeploymentsComponent implements OnInit {
   applyFilters() {
     this.filtersForBackend = [];
     this.filtersForParam = [];
-    let filtersToBeRemoved: DeploymentFilter[] = [];
+    const filtersToBeRemoved: DeploymentFilter[] = [];
     this.errorMessage = '';
     this.filters.forEach((filter) => {
       if (filter.val || filter.type === 'SpecialFilterType') {
-        this.filtersForParam.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+        this.filtersForParam.push({name: filter.name, comp: filter.comp, val: filter.val} as DeploymentFilter);
         if (filter.type === 'DateType') {
-          let dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
+          const dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
           if (!dateTime || !dateTime.isValid()) {
             this.errorMessage = 'Invalid date';
           }
-          this.filtersForBackend.push(<DeploymentFilter> {
-            name: filter.name,
-            comp: filter.comp,
-            val: dateTime.valueOf().toString()
-          });
+          this.filtersForBackend.push({name: filter.name, comp: filter.comp, val: dateTime.valueOf().toString()} as DeploymentFilter);
         } else {
-          this.filtersForBackend.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+          this.filtersForBackend.push({name: filter.name, comp: filter.comp, val: filter.val} as DeploymentFilter);
         }
       } else {
         filtersToBeRemoved.push(filter);
@@ -197,8 +193,8 @@ export class DeploymentsComponent implements OnInit {
     if (this.editableDeployments()) {
       this.addDatePicker();
       // get shakeDownTestPermission for first element
-      let indexOfFirstSelectedElem = _.findIndex(this.deployments, {selected: true});
-      let firstDeployment = this.deployments[indexOfFirstSelectedElem];
+      const indexOfFirstSelectedElem = _.findIndex(this.deployments, {selected: true});
+      const firstDeployment = this.deployments[indexOfFirstSelectedElem];
       this.resourceService.canCreateShakedownTest(firstDeployment.appServerId).subscribe(
         /* happy path */ (r) => this.hasPermissionShakedownTest = r,
         /* error path */ (e) => this.errorMessage = e,
@@ -245,7 +241,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   copyURL() {
-    let url: string = decodeURIComponent(window.location.href);
+    const url: string = decodeURIComponent(window.location.href);
     $("body").append($('<input type="text" name="fname" class="textToCopyInput" style="opacity:0"/>')
       .val(url)).find(".textToCopyInput").select();
     try {
