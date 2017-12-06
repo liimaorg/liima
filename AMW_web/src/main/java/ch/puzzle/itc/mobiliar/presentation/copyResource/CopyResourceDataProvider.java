@@ -141,18 +141,14 @@ public class CopyResourceDataProvider implements Serializable {
 	}
 
 	public void copyFromResource(Integer selectedGroup) {
-		boolean success = false;
 		try {
-			success = copyFromResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup)
-					.getSelectedResourceId());
+			copyFromResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup).getSelectedResourceId());
+			propertyEditDataProvider.reloadResourceEditProperties();
 		} catch (ForeignableOwnerViolationException e) {
             GlobalMessageAppender.addErrorMessage("Owner "+e.getViolatingOwner()+" is not allowed to copy from selected resource because of violating "+e.getViolatedForeignableObject().getForeignableObjectName()+" with id "+ ((Identifiable)e.getViolatedForeignableObject()).getId());
         }
 		catch (AMWException e){
 			GlobalMessageAppender.addErrorMessage(e.getMessage());
-		}
-		if (success) {
-			propertyEditDataProvider.reloadResourceEditProperties();
 		}
 	}
 
