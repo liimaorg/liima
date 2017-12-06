@@ -51,7 +51,13 @@
 			<artifactId>liquibase-slf4j</artifactId>
 			<version>${version.liquibase-slf4j}</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${version.h2}</version>
+		</dependency>
+
 	</dependencies>
 
 	<profiles>
