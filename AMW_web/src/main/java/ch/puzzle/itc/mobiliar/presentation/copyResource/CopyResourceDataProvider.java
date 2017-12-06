@@ -37,6 +37,7 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.presentation.common.ResourceTypeDataProvider;
+import ch.puzzle.itc.mobiliar.presentation.propertyEdit.PropertyEditDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
@@ -63,6 +64,9 @@ public class CopyResourceDataProvider implements Serializable {
 
 	@Inject
 	private CopyResource copyResource;
+
+	@Inject
+	private PropertyEditDataProvider propertyEditDataProvider;
 
 	@Inject
 	private MaiaAmwFederationServicePredecessorHandler maiaAmwFederationServicePredecessorHandler;
@@ -137,14 +141,18 @@ public class CopyResourceDataProvider implements Serializable {
 	}
 
 	public void copyFromResource(Integer selectedGroup) {
+		boolean success = false;
 		try {
-			copyFromResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup)
+			success = copyFromResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup)
 					.getSelectedResourceId());
 		} catch (ForeignableOwnerViolationException e) {
             GlobalMessageAppender.addErrorMessage("Owner "+e.getViolatingOwner()+" is not allowed to copy from selected resource because of violating "+e.getViolatedForeignableObject().getForeignableObjectName()+" with id "+ ((Identifiable)e.getViolatedForeignableObject()).getId());
         }
 		catch (AMWException e){
 			GlobalMessageAppender.addErrorMessage(e.getMessage());
+		}
+		if (success) {
+			propertyEditDataProvider.reloadResourceEditProperties();
 		}
 	}
 
@@ -178,6 +186,7 @@ public class CopyResourceDataProvider implements Serializable {
 			}
 			else {
 				GlobalMessageAppender.addSuccessMessage("Copy successful");
+				return true;
 			}
 		}
 		return false;
