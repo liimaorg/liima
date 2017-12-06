@@ -800,4 +800,34 @@ public class PermissionService implements Serializable {
         return sessionContext.getCallerPrincipal().getName();
     }
 
+    /**
+     * Checks if a given Restriction already exists
+     *
+     * @param newRestriction
+     * @return
+     */
+    public boolean restrictionExists(RestrictionEntity newRestriction) {
+        if (newRestriction.getRole() != null) {
+            List<String> allowedRoles = new ArrayList<>();
+            Set<Map.Entry<String, List<RestrictionDTO>>> entries = getPermissions().entrySet();
+            for (Map.Entry<String, List<RestrictionDTO>> entry : entries) {
+                if (entry.getKey().equals(newRestriction.getRole().getName())) {
+                    matchPermissionsAndContext(newRestriction.getPermission().getValue(), newRestriction.getAction(), newRestriction.getContext(), newRestriction.getResourceGroup(), newRestriction.getResourceType(), allowedRoles, entry);
+                    if (allowedRoles.size() > 0) {
+                        return true;
+                    }
+                }
+            }
+        } else if (newRestriction.getUser() != null) {
+            for (RestrictionEntity restrictionEntity : getUserRestrictions(newRestriction.getUser().getName())) {
+                if (restrictionEntity.getPermission().getValue().equals(newRestriction.getPermission().getValue())) {
+                    if (hasRequiredUserRestrictionOnAllContext(newRestriction.getContext(), newRestriction.getAction(), newRestriction.getResourceGroup(), newRestriction.getResourceType(), restrictionEntity)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 }

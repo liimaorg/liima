@@ -431,6 +431,9 @@ public class PermissionBoundary implements Serializable {
         RestrictionEntity restriction = new RestrictionEntity();
         validateRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
                 contextName, action, restriction);
+        if (permissionService.restrictionExists(restriction)) {
+            throw new AMWException("Permission already exists");
+        }
         final Integer id = restrictionRepository.create(restriction);
         permissionRepository.forceReloadingOfLists();
         return id;
@@ -459,6 +462,9 @@ public class PermissionBoundary implements Serializable {
         }
         validateRestriction(roleName, userName, permissionName, resourceId, resourceTypeName, resourceTypePermission,
                 contextName, action, restriction);
+        if (permissionService.restrictionExists(restriction)) {
+            throw new AMWException("Permission already exists");
+        }
         restrictionRepository.merge(restriction);
         permissionRepository.forceReloadingOfLists();
     }
