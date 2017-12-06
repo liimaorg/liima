@@ -1343,5 +1343,103 @@ public class PermissionServiceTest {
 		// then
 		Assert.assertTrue(result);
 	}
+
+	@Test
+	public void shouldReturnTrueIfASameRoleRestrictionAlreadyExists() {
+		// given
+		RoleEntity role = new RoleEntity();
+		role.setName(CONFIG_ADMIN);
+		PermissionEntity permission = new PermissionEntity();
+		permission.setValue(Permission.RESOURCE.name());
+
+		RestrictionEntity restriction = new RestrictionEntity();
+		restriction.setRole(role);
+		restriction.setAction(Action.UPDATE);
+		restriction.setContext(envC);
+		restriction.setPermission(permission);
+		myRoles = new HashMap<>();
+		myRoles.put(role.getName(), Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, restriction)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		// when
+		boolean exists = permissionService.restrictionExists(restriction);
+
+		// then
+		Assert.assertTrue(exists);
+	}
+
+	@Test
+	public void shouldReturnTrueIfASimilarRoleRestrictionAlreadyExists() {
+		// given
+		RoleEntity role = new RoleEntity();
+		role.setName(CONFIG_ADMIN);
+		PermissionEntity permission = new PermissionEntity();
+		permission.setValue(Permission.RESOURCE.name());
+
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+
+		RestrictionEntity existingRestriction = new RestrictionEntity();
+		existingRestriction.setRole(role);
+		existingRestriction.setAction(Action.UPDATE);
+		existingRestriction.setContext(envC);
+		existingRestriction.setPermission(permission);
+
+		RestrictionEntity newRestriction = new RestrictionEntity();
+		newRestriction.setRole(role);
+		newRestriction.setAction(Action.UPDATE);
+		newRestriction.setContext(envC);
+		newRestriction.setResourceGroup(resourceGroup);
+		newRestriction.setPermission(permission);
+
+		myRoles = new HashMap<>();
+		myRoles.put(role.getName(), Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, existingRestriction)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		// when
+		boolean exists = permissionService.restrictionExists(newRestriction);
+
+		// then
+		Assert.assertTrue(exists);
+	}
+
+	@Test
+	public void shouldReturnFalseIfASimilarButMoreRestrictedRoleRestrictionExists() {
+		// given
+		RoleEntity role = new RoleEntity();
+		role.setName(CONFIG_ADMIN);
+		PermissionEntity permission = new PermissionEntity();
+		permission.setValue(Permission.RESOURCE.name());
+
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+
+		RestrictionEntity existingRestriction = new RestrictionEntity();
+		existingRestriction.setRole(role);
+		existingRestriction.setAction(Action.UPDATE);
+		existingRestriction.setContext(envC);
+		existingRestriction.setResourceGroup(resourceGroup);
+		existingRestriction.setPermission(permission);
+
+		RestrictionEntity newRestriction = new RestrictionEntity();
+		newRestriction.setRole(role);
+		newRestriction.setAction(Action.UPDATE);
+		newRestriction.setContext(envC);
+		newRestriction.setPermission(permission);
+
+		myRoles = new HashMap<>();
+		myRoles.put(role.getName(), Arrays.asList(new RestrictionDTOBuilder().mockRestrictionDTO(Permission.RESOURCE, existingRestriction)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		// when
+		boolean exists = permissionService.restrictionExists(newRestriction);
+
+		// then
+		Assert.assertFalse(exists);
+	}
 	
 }
