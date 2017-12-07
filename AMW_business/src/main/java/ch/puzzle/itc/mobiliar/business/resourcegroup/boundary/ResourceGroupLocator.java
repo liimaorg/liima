@@ -84,7 +84,7 @@ public class ResourceGroupLocator {
 				resourceGroupIds.add(userRestriction.getResourceGroup().getId());
 			}
 		}
-		return resourceGroupControl.getResourceGroupsByName(resourceGroupIds);
+		return resourceGroupControl.getResourceGroupsOrderedByName(resourceGroupIds);
 	}
 
 		

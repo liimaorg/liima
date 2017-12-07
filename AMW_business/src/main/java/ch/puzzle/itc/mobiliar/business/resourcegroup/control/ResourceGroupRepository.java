@@ -65,7 +65,7 @@ public class ResourceGroupRepository {
                 "groupId", groupId).getSingleResult();
     }
 
-    public List<ResourceGroupEntity> getResourceGroupsByName(Collection<Integer> resourceGroupIds){
+    public List<ResourceGroupEntity> getResourceGroupsOrderedByName(Collection<Integer> resourceGroupIds){
         return entityManager.createQuery("select r from ResourceGroupEntity r where r.id in(:groupIds) order by r.name", ResourceGroupEntity.class).setParameter("groupIds", resourceGroupIds).getResultList();
     }
     
