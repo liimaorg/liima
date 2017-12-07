@@ -20,13 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import java.util.logging.Logger;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.interceptor.Interceptors;
-import javax.persistence.EntityManager;
-
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -38,7 +31,14 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
-import ch.puzzle.itc.mobiliar.common.exception.*;
+import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.interceptor.Interceptors;
+import javax.persistence.EntityManager;
+import java.util.logging.Logger;
 
 /**
  * USe {@link ResourceRepository} to fulfill CEC pattern. Move all methods!
@@ -104,7 +104,6 @@ public class ResourcesScreenDomainService {
         ResourceEntity resourceEntity = null;
         if (group == null) {
             // if group does not exists a new resource with a new group can be created
-            // TODO add Permission (?)
             resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
             log.info("Neue Resource " + newResourceName + "inkl. Gruppe erstellt für Release "
                     + release.getName());
@@ -119,7 +118,6 @@ public class ResourcesScreenDomainService {
             }
             if (resourceEntity == null) {
                 // if resource is null, a new resource for this release can be created in the existing group
-                // TODO add Permission (?)
                 resourceEntity = ResourceFactory.createNewResourceForOwner(group, creatingOwner);
                 log.info("Neue Resource " + newResourceName
                         + "für existierende Gruppe erstellt für Release " + release.getName());
