@@ -551,6 +551,16 @@ public class PermissionBoundary implements Serializable {
     /**
      * Returns a cached list of all Restrictions assigned to a specific UserRestriction (used by REST)
      *
+     * @return List<RestrictionEntity> for the logged in user
+     */
+    @HasPermission(oneOfPermission = { Permission.ASSIGN_REMOVE_PERMISSION, Permission.PERMISSION_DELEGATION })
+    public List<RestrictionEntity> getRestrictionsForLoggedInUser() {
+        return permissionService.getUserRestrictionsForLoggedInUser();
+    }
+
+    /**
+     * Returns a cached list of all Restrictions assigned to a specific UserRestriction (used by REST)
+     *
      * @param userName the specific User name - if omitted, the name of the logged in user is used instead
      * @return List<RestrictionEntity>
      */

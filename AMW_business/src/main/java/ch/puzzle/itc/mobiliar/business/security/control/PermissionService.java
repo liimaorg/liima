@@ -155,6 +155,10 @@ public class PermissionService implements Serializable {
         return rolesWithRestrictions;
     }
 
+    public List<RestrictionEntity> getUserRestrictionsForLoggedInUser() {
+        return getUserRestrictions(getCurrentUserName());
+    }
+
     /**
      * Returns a (cached) list of all Restrictions assigned to a specific UserRestriction
      *
@@ -162,9 +166,6 @@ public class PermissionService implements Serializable {
      * @return
      */
     public List<RestrictionEntity> getUserRestrictions(String userName) {
-        if (userName == null) {
-            userName = getCurrentUserName();
-        }
         if (permissionRepository.isReloadUserRestrictionsList() || userRestrictions == null) {
             userRestrictions = new ConcurrentHashMap<>();
         }

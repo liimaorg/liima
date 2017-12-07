@@ -20,21 +20,21 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
-import java.util.*;
-import java.util.logging.Logger;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -77,7 +77,7 @@ public class ResourceGroupLocator {
 		for (PermissionEntity userAssignablePermission : allUserAssignablePermissions) {
 			assignablePermissions.add(userAssignablePermission.getValue());
 		}
-		List<RestrictionEntity> userRestrictions = permissionBoundary.getRestrictionsByUserName(null);
+		List<RestrictionEntity> userRestrictions = permissionBoundary.getRestrictionsForLoggedInUser();
 		Set<Integer> resourceGroupIds = new HashSet<>();
 		for (RestrictionEntity userRestriction : userRestrictions) {
 			if (userRestriction.getResourceGroup() != null && assignablePermissions.contains(userRestriction.getPermission().getValue())) {
