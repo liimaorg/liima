@@ -34,7 +34,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
@@ -64,8 +64,8 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
   it('should apply date for confirmation',
     inject([DeploymentsEditModalComponent], (deploymentsEditModalComponent: DeploymentsEditModalComponent) => {
       // given
-      let newDeploymentDate: string = '30.11.2017 09:19';
-      let expectedDeploymentDate: number = moment(newDeploymentDate, 'DD.MM.YYYY HH:mm').valueOf();
+      const newDeploymentDate: string = '30.11.2017 09:19';
+      const expectedDeploymentDate: number = moment(newDeploymentDate, 'DD.MM.YYYY HH:mm').valueOf();
 
       deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
       deploymentsEditModalComponent.deploymentDate = newDeploymentDate;
@@ -78,8 +78,8 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
       deploymentsEditModalComponent.doEdit();
 
       // then
-      let deployment1: Deployment = deploymentsEditModalComponent.deployments[0];
-      let deployment2: Deployment = deploymentsEditModalComponent.deployments[1];
+      const deployment1: Deployment = deploymentsEditModalComponent.deployments[0];
+      const deployment2: Deployment = deploymentsEditModalComponent.deployments[1];
       expect(deployment1.deploymentDate).toEqual(expectedDeploymentDate);
       expect(deployment2.deploymentDate).toEqual(expectedDeploymentDate);
     }));
@@ -87,7 +87,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
   it('should clear data after doEdit()',
     inject([DeploymentsEditModalComponent], (deploymentsEditModalComponent: DeploymentsEditModalComponent) => {
       // given
-      let newDeploymentDate: string = '30.11.2017 09:19';
+      const newDeploymentDate: string = '30.11.2017 09:19';
 
       deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
       deploymentsEditModalComponent.deploymentDate = newDeploymentDate;

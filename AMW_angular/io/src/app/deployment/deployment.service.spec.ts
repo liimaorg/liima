@@ -11,7 +11,7 @@ describe('DeploymentService', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function (backend: MockBackend, defaultOptions: BaseRequestOptions) {
+        useFactory(backend: MockBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
@@ -27,7 +27,7 @@ describe('DeploymentService', () => {
 
   it('should have a createDeployment method',
     inject([DeploymentService], (deploymentService: DeploymentService) => {
-    let deploymentRequest: DeploymentRequest = <DeploymentRequest> {};
+    const deploymentRequest: DeploymentRequest = {} as DeploymentRequest;
     expect(deploymentService.createDeployment(deploymentRequest)).toBeDefined();
   }));
 
@@ -37,9 +37,7 @@ describe('DeploymentService', () => {
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.method).toBe(RequestMethod.Get);
       expect(connection.request.url).toMatch('/AMW_rest/resources/deployments');
-      let mockResponse = new Response(new ResponseOptions({
-        body: [{id: 1}]
-      }));
+      const mockResponse = new Response(new ResponseOptions({body: [{id: 1}]}));
       connection.mockRespond(mockResponse);
     });
     // when then
@@ -54,9 +52,7 @@ describe('DeploymentService', () => {
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.method).toBe(RequestMethod.Get);
       expect(connection.request.url).toMatch('/AMW_rest/resources/deployments/deploymentParameterKeys');
-      let mockResponse = new Response(new ResponseOptions({
-        body: [{key: 1, value: 'test'}]
-      }));
+      const mockResponse = new Response(new ResponseOptions({body: [{key: 1, value: 'test'}]}));
       connection.mockRespond(mockResponse);
     });
     // when then
@@ -71,9 +67,7 @@ describe('DeploymentService', () => {
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.method).toBe(RequestMethod.Get);
       expect(connection.request.url).toMatch('/AMW_rest/resources/deployments/123');
-      let mockResponse = new Response(new ResponseOptions({
-        body: [{id: 123}]
-      }));
+      const mockResponse = new Response(new ResponseOptions({body: [{id: 123}]}));
       connection.mockRespond(mockResponse);
     });
     // when then

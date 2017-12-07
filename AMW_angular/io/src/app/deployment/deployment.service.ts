@@ -195,13 +195,13 @@ export class DeploymentService {
   }
 
   private getHeaders() {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Accept', 'application/json');
     return headers;
   }
 
   private postHeaders() {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Accept', 'application/json');
     return headers;

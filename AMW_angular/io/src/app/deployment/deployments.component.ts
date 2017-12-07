@@ -546,14 +546,14 @@ export class DeploymentsComponent implements OnInit {
       /* happy path */ (r) => this.deploymentsForExport = r.deployments,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => { this.mapStates();
-        this.enhanceDeploymentsForExport(); }
+                               this.enhanceDeploymentsForExport(); }
     );
   }
 
   private canRequestDeployments() {
-      this.deploymentService.canRequestDeployments().subscribe(
-        /* happy path */ (r) => this.hasPermissionToRequestDeployments = r,
-        /* error path */ (e) => this.errorMessage = e);
+    this.deploymentService.canRequestDeployments().subscribe(
+      /* happy path */ (r) => this.hasPermissionToRequestDeployments = r,
+      /* error path */ (e) => this.errorMessage = e);
   }
 
   private enhanceParamFilter() {

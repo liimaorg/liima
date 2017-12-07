@@ -40,7 +40,7 @@ describe('DeploymentComponent (create deployment)', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
@@ -97,7 +97,7 @@ describe('DeploymentComponent (create deployment)', () => {
   it('should populate groupedEnvironments on ngOnInit', inject([DeploymentComponent, EnvironmentService],
     (deploymentComponent: DeploymentComponent, environmentService: EnvironmentService) => {
     // given
-    let environments: Environment[] = [{id: 1, name: 'A', parent: 'DEV'} as Environment];
+    const environments: Environment[] = [{id: 1, name: 'A', parent: 'DEV'} as Environment];
     spyOn(environmentService, 'getAll').and.returnValue(Observable.of(environments));
     expect(deploymentComponent.groupedEnvironments).toEqual({});
     // when
@@ -120,7 +120,7 @@ describe('DeploymentComponent (create deployment)', () => {
   it('should set selectedAppserver and selectedRelease', inject([DeploymentComponent, ResourceService],
     (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
     // given
-    let testReleases: Release[] = [{id: 1, release: 'testRelease'} as Release,
+    const testReleases: Release[] = [{id: 1, release: 'testRelease'} as Release,
       {id: 2, release: 'anotherRelease'} as Release];
     deploymentComponent.appserverName = 'testServer';
     deploymentComponent.releaseName = 'testRelease';
@@ -139,7 +139,7 @@ describe('DeploymentComponent (create deployment)', () => {
   it('should set selectedAppserver but not set selectedRelease if not available for selectedAppserver',
     inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
       // given
-      let testReleases: Release[] = [{id: 1, release: 'testRelease'} as Release];
+      const testReleases: Release[] = [{id: 1, release: 'testRelease'} as Release];
       deploymentComponent.appserverName = 'testServer';
       deploymentComponent.releaseName = 'missingRelease';
       spyOn(resourceService, 'getByType').and.returnValue(Observable.of([{
@@ -156,12 +156,12 @@ describe('DeploymentComponent (create deployment)', () => {
   it('should return environementGroupNames on getEnvironmentGroups()',
     inject([DeploymentComponent, EnvironmentService], (deploymentComponent: DeploymentComponent, environmentService: EnvironmentService) => {
     // given
-    let environments: Environment[] = [{id: 1, name: 'A', parent: 'DEV'} as Environment,
+    const environments: Environment[] = [{id: 1, name: 'A', parent: 'DEV'} as Environment,
       {id: 2, name: 'B', parent: 'DEV'} as Environment, {id: 3, name: 'P', parent: 'PROD'} as Environment];
     spyOn(environmentService, 'getAll').and.returnValue(Observable.of(environments));
     deploymentComponent.ngOnInit();
     // when
-    let groups: string[] = deploymentComponent.getEnvironmentGroups();
+    const groups: string[] = deploymentComponent.getEnvironmentGroups();
     // then
     expect(groups.length).toBe(2);
     expect(groups).toContain('DEV', 'PROD');
@@ -171,7 +171,7 @@ describe('DeploymentComponent (create deployment)', () => {
     inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
     deploymentComponent.selectedRelease = {id: 1} as Release;
-    let appServer: Resource = {name: 'testServer'} as Resource;
+    const appServer: Resource = {name: 'testServer'} as Resource;
     deploymentComponent.environments = [{id: 1} as Environment, {id: 2, selected: true} as Environment];
     deploymentComponent.selectedAppserver = appServer;
     // when
@@ -187,7 +187,7 @@ describe('DeploymentComponent (create deployment)', () => {
       (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
       // given
       deploymentComponent.selectedRelease = {id: 1} as Release;
-      let appServer: Resource = {name: 'testServer', id: 3} as Resource;
+      const appServer: Resource = {name: 'testServer', id: 3} as Resource;
       deploymentComponent.environments = [{id: 1} as Environment, {id: 2, selected: true} as Environment];
       deploymentComponent.selectedAppserver = appServer;
       spyOn(resourceService, 'canCreateShakedownTest').and.returnValue(Observable.of(false));
@@ -204,8 +204,8 @@ describe('DeploymentComponent (create deployment)', () => {
   it('should call resourceService on onChangeRelease',
     inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
     // given
-    let testRelease: Release = {id: 1, release: 'testRelease'} as Release;
-    let betterRelease: Release = {id: 1, release: 'betterRelease'} as Release;
+    const testRelease: Release = {id: 1, release: 'testRelease'} as Release;
+    const betterRelease: Release = {id: 1, release: 'betterRelease'} as Release;
     deploymentComponent.releases = [testRelease];
     deploymentComponent.selectedRelease = testRelease;
     spyOn(resourceService, 'getLatestForRelease').and.returnValue(Observable.of(betterRelease));
@@ -233,8 +233,8 @@ describe('DeploymentComponent (create deployment)', () => {
   it('should remove the right deploymentParameter onRemoveParam',
     inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
     // given
-    let parameterA: DeploymentParameter = {key: 'atest', value: 'foo'} as DeploymentParameter;
-    let parameterB: DeploymentParameter = {key: 'btest', value: 'bar'} as DeploymentParameter;
+    const parameterA: DeploymentParameter = {key: 'atest', value: 'foo'} as DeploymentParameter;
+    const parameterB: DeploymentParameter = {key: 'btest', value: 'bar'} as DeploymentParameter;
     deploymentComponent.transDeploymentParameters = [ parameterA, parameterB ];
     // when
     deploymentComponent.onRemoveParam(parameterA);
@@ -286,12 +286,12 @@ describe('DeploymentComponent (create deployment)', () => {
     deploymentComponent.deploymentDate = '02.01.2017 12:00';
     deploymentComponent.transDeploymentParameters = [{key: 'atest', value: 'foo'} as DeploymentParameter,
       {key: 'btest', value: 'bar'} as DeploymentParameter];
-    let deploymentRequest: DeploymentRequest = {appServerName: 'testServer', contextIds: [3],
+    const deploymentRequest: DeploymentRequest = {appServerName: 'testServer', contextIds: [3],
       releaseName: 'testRelease', simulate: false, sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
       neighbourhoodTest: false, requestOnly: true,  appsWithVersion: deploymentComponent.appsWithVersion,
       stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentDate: 1483354800000,
       deploymentParameters: deploymentComponent.transDeploymentParameters} as DeploymentRequest;
-    spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of(<Deployment> { trackingId: 910 }));
+    spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of({ trackingId: 910 } as Deployment));
     // when
     deploymentComponent.requestDeployment();
     // then
@@ -312,7 +312,7 @@ describe('DeploymentComponent (create deployment)', () => {
     deploymentComponent.selectedResourceTag = {id: 5, tagDate: 1485378084103} as ResourceTag;
     deploymentComponent.transDeploymentParameters = [{key: 'atest', value: 'foo'} as DeploymentParameter,
       {key: 'btest', value: 'bar'} as DeploymentParameter];
-    let deploymentRequest: DeploymentRequest = {appServerName: 'testServer', contextIds: [2, 3],
+    const deploymentRequest: DeploymentRequest = {appServerName: 'testServer', contextIds: [2, 3],
       releaseName: 'testRelease', simulate: deploymentComponent.simulate, sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
       neighbourhoodTest: false, requestOnly: false,  appsWithVersion: deploymentComponent.appsWithVersion,
       stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentParameters: deploymentComponent.transDeploymentParameters} as DeploymentRequest;
@@ -344,7 +344,7 @@ describe('DeploymentComponent (create deployment with params)', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
@@ -388,7 +388,7 @@ describe('DeploymentComponent (create deployment with fake redeploy param)', () 
       MockBackend,
       {
         provide: Http,
-        useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
@@ -431,7 +431,7 @@ describe('DeploymentComponent (redeployment)', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
@@ -448,7 +448,7 @@ describe('DeploymentComponent (redeployment)', () => {
   it('should call deploymentService on ngOnInit', inject([DeploymentComponent, DeploymentService],
     (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
     // given
-    let deployment: Deployment = {appsWithVersion: []} as Deployment;
+    const deployment: Deployment = {appsWithVersion: []} as Deployment;
     spyOn(deploymentService, 'get').and.returnValue(Observable.of(deployment));
     expect(deploymentService.get).not.toHaveBeenCalled();
     // when
@@ -462,10 +462,10 @@ describe('DeploymentComponent (redeployment)', () => {
     (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
     // given
     deploymentComponent.environments = [{name: 'X'} as Environment, {name: 'Y'} as Environment];
-    let appsWithVersion: AppWithVersion[] = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion,
+    const appsWithVersion: AppWithVersion[] = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion,
       {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'} as AppWithVersion];
-    let deploymentParameter: DeploymentParameter = {key: 'atest', value: 'foo'} as DeploymentParameter;
-    let deployment: Deployment = {appsWithVersion: appsWithVersion, deploymentParameters: [deploymentParameter],
+    const deploymentParameter: DeploymentParameter = {key: 'atest', value: 'foo'} as DeploymentParameter;
+    const deployment: Deployment = {appsWithVersion, deploymentParameters: [deploymentParameter],
       releaseName: 'testRelease', appServerName: 'testServer', environmentName: 'Y'} as Deployment;
     spyOn(deploymentService, 'get').and.returnValue(Observable.of(deployment));
     spyOn(resourceService, 'getDeployableReleases').and.returnValue(Observable.of([{ id: 9, release: 'testRelease' } as Release]));
@@ -491,10 +491,10 @@ describe('DeploymentComponent (redeployment)', () => {
     (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
       // given
       deploymentComponent.environments = [{name: 'X'} as Environment, {name: 'Y'} as Environment];
-      let appsWithVersion: AppWithVersion[] = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion,
+      const appsWithVersion: AppWithVersion[] = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion,
         {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'} as AppWithVersion];
-      let deploymentParameter: DeploymentParameter = {key: 'atest', value: 'foo'} as DeploymentParameter;
-      let deployment: Deployment = {appsWithVersion: appsWithVersion, deploymentParameters: [deploymentParameter],
+      const deploymentParameter: DeploymentParameter = {key: 'atest', value: 'foo'} as DeploymentParameter;
+      const deployment: Deployment = {appsWithVersion, deploymentParameters: [deploymentParameter],
         releaseName: 'testRelease', appServerName: 'testServer', appServerId: 1, environmentName: 'Y'} as Deployment;
       spyOn(deploymentService, 'get').and.returnValue(Observable.of(deployment));
       spyOn(resourceService, 'getDeployableReleases').and.returnValue(Observable.of([{id: 9, release: 'testRelease'} as Release]));
@@ -511,17 +511,16 @@ describe('DeploymentComponent (redeployment)', () => {
       (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
       // given
       deploymentComponent.environments = [{name: 'X', id: 1} as Environment, {name: 'Y', id: 2} as Environment];
-      let appsWithVersion: AppWithVersion[] = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion,
+      const appsWithVersion: AppWithVersion[] = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion,
         {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'} as AppWithVersion];
-      let deploymentParameters: DeploymentParameter[] = [{key: 'atest', value: 'foo'} as DeploymentParameter,
+      const deploymentParameters: DeploymentParameter[] = [{key: 'atest', value: 'foo'} as DeploymentParameter,
         {key: 'btest', value: 'bar'} as DeploymentParameter];
-      let deployment: Deployment = {appsWithVersion: appsWithVersion, deploymentParameters: deploymentParameters,
+      const deployment: Deployment = {appsWithVersion, deploymentParameters,
         releaseName: 'testRelease', appServerName: 'testServer', environmentName: 'Y'} as Deployment;
       spyOn(deploymentService, 'get').and.returnValue(Observable.of(deployment));
-      let deploymentRequest: DeploymentRequest = {appServerName: 'testServer',
-        releaseName: 'testRelease', contextIds: [2], simulate: false, sendEmail: false, executeShakedownTest: false,
-        neighbourhoodTest: false, requestOnly: false,  appsWithVersion: appsWithVersion,
-        deploymentParameters: deploymentParameters} as DeploymentRequest;
+      const deploymentRequest: DeploymentRequest = {appServerName: 'testServer', releaseName: 'testRelease',
+        contextIds: [2], simulate: false, sendEmail: false, executeShakedownTest: false, neighbourhoodTest: false,
+        requestOnly: false,  appsWithVersion, deploymentParameters} as DeploymentRequest;
       spyOn(resourceService, 'getDeployableReleases').and.returnValue(Observable.of([{id: 9, release: 'testRelease'} as Release]));
       spyOn(deploymentService, 'createDeployment').and.returnValue(Observable.of({trackingId: 911} as Deployment));
       // when

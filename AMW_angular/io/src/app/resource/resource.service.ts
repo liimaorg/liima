@@ -16,7 +16,7 @@ export class ResourceService {
   }
 
   getAll(): Observable<Resource[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources`, {headers: this.getHeaders()})
       .map(mapResources)
       .catch(handleError);
@@ -24,14 +24,14 @@ export class ResourceService {
   }
 
   get(resourceGroupName: string): Observable<Resource> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/${resourceGroupName}`, {headers: this.getHeaders()})
       .map(mapResource);
     return resource$;
   }
 
   resourceExists(resourceId: number): Observable<Resource> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/exists/${resourceId}`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -39,7 +39,7 @@ export class ResourceService {
   }
 
   getAllResourceGroups(): Observable<Resource[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/resourceGroups`, {headers: this.getHeaders()})
       .map(mapResources)
       .catch(handleError);
@@ -47,7 +47,7 @@ export class ResourceService {
   }
 
   getAllResourceTypes(): Observable<ResourceType[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/resourceTypes`, {headers: this.getHeaders()})
       .map(mapResources)
       .catch(handleError);
@@ -55,7 +55,7 @@ export class ResourceService {
   }
 
   getByType(type: string): Observable<Resource[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources?type=${type}`, {headers: this.getHeaders()})
       .map(mapResources)
       .catch(handleError);
@@ -63,7 +63,7 @@ export class ResourceService {
   }
 
   getLatestForRelease(resourceGroupId: number, releaseId: number): Observable<Release> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/resourceGroups/${resourceGroupId}/releases/${releaseId}`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -71,13 +71,10 @@ export class ResourceService {
   }
 
   getRuntime(resourceGroupName: string, releaseName: string): Observable<Relation[]> {
-    let params: URLSearchParams = new URLSearchParams();
+    const params: URLSearchParams = new URLSearchParams();
     params.set('type', 'RUNTIME');
-    let options = new RequestOptions({
-      search: params,
-      headers: this.getHeaders()
-    });
-    let resource$ = this.http
+    const options = new RequestOptions({search: params, headers: this.getHeaders()});
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/${resourceGroupName}/${releaseName}/relations`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -85,7 +82,7 @@ export class ResourceService {
   }
 
   getProperty(resourceGroupName: string, releaseName: string, propertyName: string): Observable<Property> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/${resourceGroupName}/${releaseName}/properties/${propertyName}`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -93,7 +90,7 @@ export class ResourceService {
   }
 
   getDeployableReleases(resourceGroupId: number): Observable<Release[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/resourceGroups/${resourceGroupId}/releases/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -101,7 +98,7 @@ export class ResourceService {
   }
 
   getMostRelevantRelease(resourceGroupId: number): Observable<Release> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/resourceGroups/${resourceGroupId}/releases/mostRelevant/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -109,13 +106,10 @@ export class ResourceService {
   }
 
   getAppsWithVersions(resourceGroupId: number, releaseId: number, environmentIds: number[]): Observable<AppWithVersion[]> {
-    let params: URLSearchParams = new URLSearchParams();
+    const params: URLSearchParams = new URLSearchParams();
     environmentIds.forEach((id) => params.append('context', String(id)));
-    let options = new RequestOptions({
-      search: params,
-      headers: this.getHeaders()
-    });
-    let resource$ = this.http
+    const options = new RequestOptions({search: params, headers: this.getHeaders()});
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/resourceGroups/${resourceGroupId}/releases/${releaseId}/appWithVersions/`, options)
       .map(mapAppWithVersion)
       .catch(handleError);
@@ -123,7 +117,7 @@ export class ResourceService {
   }
 
   canCreateShakedownTest(resourceGroupId: number): Observable<boolean> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/resourceGroups/${resourceGroupId}/canCreateShakedownTest`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -131,7 +125,7 @@ export class ResourceService {
   }
 
   private getHeaders() {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Accept', 'application/json');
     return headers;
   }
