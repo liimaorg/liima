@@ -194,7 +194,6 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
     });
     if (this.availableEnvironments.length === 1) {
       this.preSelectEnv(this.availableEnvironments[0]);
-      // this.restriction.contextName = this.availableEnvironments[0];
     }
   }
 
