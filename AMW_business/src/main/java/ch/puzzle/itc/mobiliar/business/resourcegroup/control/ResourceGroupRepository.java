@@ -47,7 +47,7 @@ public class ResourceGroupRepository {
     private Logger log;
 
     public List<ResourceGroupEntity> getResourceGroups(){
-        return entityManager.createQuery("select r from ResourceGroupEntity r left join fetch r.resources res", ResourceGroupEntity.class).getResultList();
+        return entityManager.createQuery("select distinct r from ResourceGroupEntity r left join fetch r.resources res", ResourceGroupEntity.class).getResultList();
     }
 
     public List<ResourceGroupEntity> getAllResourceGroupsByName(){
