@@ -32,6 +32,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -62,6 +63,10 @@ public class ResourceGroupRepository {
     public ResourceGroupEntity getResourceGroupById(Integer groupId){
         return entityManager.createQuery("select r from ResourceGroupEntity r where r.id=:groupId", ResourceGroupEntity.class).setParameter(
                 "groupId", groupId).getSingleResult();
+    }
+
+    public List<ResourceGroupEntity> getResourceGroupsOrderedByName(Collection<Integer> resourceGroupIds){
+        return entityManager.createQuery("select r from ResourceGroupEntity r where r.id in(:groupIds) order by r.name", ResourceGroupEntity.class).setParameter("groupIds", resourceGroupIds).getResultList();
     }
     
     /**

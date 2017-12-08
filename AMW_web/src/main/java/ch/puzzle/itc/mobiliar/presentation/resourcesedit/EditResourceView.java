@@ -126,6 +126,9 @@ public class EditResourceView implements Serializable {
     @Getter
     private boolean canShowDeploymentLink;
 
+    @Getter
+    private boolean canDelegatePermissions;
+
     private final boolean useAngularDeploymentLink = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI));
 
     public void setContextIdViewParam(Integer contextIdViewParam) {
@@ -172,6 +175,7 @@ public class EditResourceView implements Serializable {
 
             this.canEditResourceType = permissionBoundary.hasPermission(Permission.RESOURCETYPE, Action.READ);
             this.canGenerateTestConfiguration = permissionBoundary.hasPermission(Permission.RESOURCE_TEST_GENERATION, sessionContext.getCurrentContext(), Action.READ, resource, null);
+            this.canDelegatePermissions = permissionBoundary.canDelegatePermissionsForThisResource(resource, sessionContext.getCurrentContext());
 
             canEditSoftlinkId = isSoftlinkEditable(resource, sessionContext.getCurrentContext());
             canShowSoftlinkField = sessionContext.getIsGlobal() && hasProvidableSoftlinkSuperType(resource);
@@ -197,6 +201,7 @@ public class EditResourceView implements Serializable {
             // this just disables "Go to > Resource type" in dropdown
             this.canEditResourceType = false;
             this.canGenerateTestConfiguration = false;
+            this.canDelegatePermissions = false;
 
             canEditSoftlinkId = false;
             canShowSoftlinkField = false;
@@ -413,13 +418,16 @@ public class EditResourceView implements Serializable {
         return null;
     }
 
-
     public String getDeploymentLinkAngular() {
         JSONArray jsonArray = new JSONArray();
         addFilterToJsonArray(jsonArray, APPLICATION_NAME, getApplicationName());
         addFilterToJsonArray(jsonArray, APPSERVER_NAME, getApplicationServerName());
         addFilterToJsonArray(jsonArray, ENVIRONMENT_NAME, getEnvironmentName());
         return jsonArray.toString();
+    }
+
+    public String getUserName() {
+        return permissionBoundary.getUserName();
     }
 
     private void addFilterToJsonArray(JSONArray jsonArray, DeploymentFilterTypes filterName, String filterValue) {

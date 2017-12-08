@@ -155,6 +155,10 @@ public class PermissionService implements Serializable {
         return rolesWithRestrictions;
     }
 
+    public List<RestrictionEntity> getUserRestrictionsForLoggedInUser() {
+        return getUserRestrictions(getCurrentUserName());
+    }
+
     /**
      * Returns a (cached) list of all Restrictions assigned to a specific UserRestriction
      *
@@ -577,7 +581,9 @@ public class PermissionService implements Serializable {
                 && hasPermissionForDefaultResourceType(restriction, resourceType)) {
             return true;
         } else if (context != null && context.getParent() != null) {
-            hasRequiredUserRestrictionOnAllContext(context.getParent(), action, resource, resourceType, restriction);
+            if (hasRequiredUserRestrictionOnAllContext(context.getParent(), action, resource, resourceType, restriction)) {
+                return true;
+            }
         }
         return false;
     }
@@ -609,6 +615,20 @@ public class PermissionService implements Serializable {
     private boolean hasPermissionForContext(RestrictionEntity restriction, ContextEntity context) {
         return restriction.getContext() == null ||
                 (context != null && restriction.getContext().getId().equals(context.getId()));
+    }
+
+    /**
+     * Checks if a Restriction gives permission for a specific Context or its parent
+     * No Context on Restriction means all Contexts are allowed
+     *
+     * @param restriction
+     * @param context
+     * @return
+     */
+    private boolean hasPermissionForContextOrForParent(RestrictionEntity restriction, ContextEntity context) {
+        return restriction.getContext() == null ||
+                (context != null && (restriction.getContext().getId().equals(context.getId()) ||
+                        (context.getParent() != null && restriction.getContext().getId().equals(context.getParent().getId()))));
     }
 
     /**
@@ -797,7 +817,70 @@ public class PermissionService implements Serializable {
      * @return
      */
     public String getCurrentUserName() {
-        return sessionContext.getCallerPrincipal().getName();
+        return sessionContext.getCallerPrincipal() != null ? sessionContext.getCallerPrincipal().getName() : null;
     }
 
+    /**
+     * Returns a list of ALL Restrictions of the caller (both, Restrictions by User and Role)
+     *
+     */
+    public List<RestrictionEntity> getAllCallerRestrictions() {
+        List<RestrictionEntity> restrictions = new ArrayList<>();
+        Map<String, List<RestrictionDTO>> roleWithRestrictions = getPermissions();
+        for (String roleName : roleWithRestrictions.keySet()) {
+            if (sessionContext.isCallerInRole(roleName)) {
+                for (RestrictionDTO restrictionDTO : roleWithRestrictions.get(roleName)) {
+                    restrictions.add(restrictionDTO.getRestriction());
+                }
+            }
+        }
+        List<RestrictionEntity> userRestrictions = getUserRestrictions(getCurrentUserName());
+        restrictions.addAll(userRestrictions);
+        return restrictions;
+    }
+
+    /**
+     * Checks if the caller has the required rights to delegate a specific Restriction to another user
+     * The caller must have
+     * <li>a PERMISSION_DELEGATION Permission</li>
+     * <li>a similar Restriction as the one he wants to delegate</li>
+     *
+     * @param permission to be delegated
+     * @param resourceGroup allowed by the permission to be delegated
+     * @param resourceType allowed by the permission to be delegated
+     * @param context allowed by the permission to be delegated
+     * @param action allowed by the permission to be delegated
+     */
+    public boolean hasPermissionToDelegatePermission(Permission permission, ResourceGroupEntity resourceGroup,
+                                                     ResourceTypeEntity resourceType, ContextEntity context, Action action) {
+        if (hasPermission(Permission.PERMISSION_DELEGATION)) {
+            // specific
+            if (context != null && action != null && (resourceGroup != null || resourceType != null)) {
+                return hasPermission(permission, context, action, resourceGroup, resourceType);
+            } else {
+                List<RestrictionEntity> callerRestrictions = getAllCallerRestrictions();
+                for (RestrictionEntity restriction : callerRestrictions) {
+                    if (restriction.getPermission().getValue().equals(permission.name())) {
+                        int score = 0;
+                        if (hasPermissionForContextOrForParent(restriction, context)) {
+                            ++score;
+                        }
+                        if (restriction.getAction().equals(Action.ALL) || restriction.getAction().equals(action)) {
+                            ++score;
+                        }
+                        if (restriction.getResourceGroup() == null || restriction.getResourceGroup().equals(resourceGroup)) {
+                            ++score;
+                        }
+                        if (restriction.getResourceType() == null || restriction.getResourceType().equals(resourceType)) {
+                            ++score;
+                        }
+                        if (score == 4) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
