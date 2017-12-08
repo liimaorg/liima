@@ -20,16 +20,21 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
-import java.util.List;
-import java.util.logging.Logger;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -42,6 +47,9 @@ public class ResourceGroupLocator {
 
 	@Inject
 	ResourceGroupRepository resourceGroupControl;
+
+	@Inject
+	PermissionBoundary permissionBoundary;
 
 	public List<ResourceGroupEntity> getResourceGroups() {
 		return resourceGroupControl.getResourceGroups();
@@ -59,8 +67,24 @@ public class ResourceGroupLocator {
 		return resourceGroupControl.getResourceGroupById(groupId);
 	}
 	
-	public ResourceGroupEntity getResourceGroupForCreateDeploy(Integer groupeId) {
-		return resourceGroupControl.getResourceGroupForCreateDeploy(groupeId);
+	public ResourceGroupEntity getResourceGroupForCreateDeploy(Integer groupId) {
+		return resourceGroupControl.getResourceGroupForCreateDeploy(groupId);
+	}
+
+	public List<ResourceGroupEntity> getAllUserAssignableResourceGroupsByName() {
+		List<PermissionEntity> allUserAssignablePermissions = permissionBoundary.getAllUserAssignablePermissions();
+		List<String> assignablePermissions = new ArrayList<>();
+		for (PermissionEntity userAssignablePermission : allUserAssignablePermissions) {
+			assignablePermissions.add(userAssignablePermission.getValue());
+		}
+		List<RestrictionEntity> userRestrictions = permissionBoundary.getRestrictionsForLoggedInUser();
+		Set<Integer> resourceGroupIds = new HashSet<>();
+		for (RestrictionEntity userRestriction : userRestrictions) {
+			if (userRestriction.getResourceGroup() != null && assignablePermissions.contains(userRestriction.getPermission().getValue())) {
+				resourceGroupIds.add(userRestriction.getResourceGroup().getId());
+			}
+		}
+		return resourceGroupControl.getResourceGroupsOrderedByName(resourceGroupIds);
 	}
 
 		

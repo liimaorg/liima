@@ -46,6 +46,20 @@ export class ResourceService {
     return resource$;
   }
 
+  getAllAssignableResourceGroups(): Observable<Resource[]> {
+    let params: URLSearchParams = new URLSearchParams();
+    params.set('onlyUserAssignable', 'true');
+    let options = new RequestOptions({
+      search: params,
+      headers: this.getHeaders()
+    });
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/resourceGroups`, options)
+      .map(mapResources)
+      .catch(handleError);
+    return resource$;
+  }
+
   getAllResourceTypes(): Observable<ResourceType[]> {
     const resource$ = this.http
       .get(`${this.baseUrl}/resources/resourceTypes`, {headers: this.getHeaders()})
