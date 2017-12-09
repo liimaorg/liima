@@ -27,7 +27,7 @@ describe('App', () => {
   it('should navigate to the right target',
     inject([AppComponent, AppState, Router], (app: AppComponent, appState: AppState, router: Router) => {
     // given
-    let item: any = { title: 'test', target: 'target' };
+    const item: any = {title: 'test', target: 'target'};
     // when
     spyOn(appState, 'set').and.callThrough();
     spyOn(router, 'navigateByUrl').and.callThrough();

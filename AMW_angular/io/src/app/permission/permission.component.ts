@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { PermissionService } from  './permission.service';
+import { PermissionService } from './permission.service';
 import { Environment } from '../deployment/environment';
 import { EnvironmentService } from '../deployment/environment.service';
 import { Resource } from '../resource/resource';
@@ -22,10 +22,10 @@ export class PermissionComponent implements OnInit, OnDestroy {
   roleNames: string[] = [];
   userNames: string[] = [];
   permissions: Permission[] = [];
-  environments: Environment[] = [ <Environment> { id: null, name: null, parent: 'All', selected: false } ];
-  groupedEnvironments: { [key: string]: Environment[] } = { 'All': [], 'Global': [] };
+  environments: Environment[] = [{id: null, name: null, parent: 'All', selected: false} as Environment];
+  groupedEnvironments: { [key: string]: Environment[] } = {All: [], Global: []};
   resourceGroups: Resource[] = [];
-  resourceTypes: ResourceType[] = [ { id: null, name: null } ];
+  resourceTypes: ResourceType[] = [{id: null, name: null}];
 
   defaultNavItem: string = 'Roles';
   // role | user
@@ -56,7 +56,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.appState.set('navShow', true);
-    this.appState.set('navItems', [ { title: 'Roles', target: '/permission/role' }, { title: 'Users', target: '/permission/user' } ]);
+    this.appState.set('navItems', [{title: 'Roles', target: '/permission/role'}, {title: 'Users', target: '/permission/user'}]);
     this.appState.set('navTitle', this.defaultNavItem);
     this.appState.set('pageTitle', 'Permissions');
 
@@ -108,7 +108,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
       this.permissionService.removeRestriction(id).subscribe(
         /* happy path */ (r) => '',
         /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */ () => _.remove(this.restrictions, {id: id}));
+        /* onComplete */ () => _.remove(this.restrictions, {id}));
     } else {
       this.restriction = null;
     }
@@ -150,7 +150,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   addRestriction() {
-    this.restriction = { id: null, roleName: this.selectedRoleName, userName: this.selectedUserName, permission: <Permission> {},
+    this.restriction = { id: null, roleName: this.selectedRoleName, userName: this.selectedUserName, permission: {} as Permission,
       resourceGroupId: null, resourceTypeName: null, resourceTypePermission: null, contextName: null, action: null };
   }
 
@@ -318,7 +318,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   private updatePermissions(restriction: Restriction) {
-    let i: number = _.findIndex(this.restrictions, _.pick(restriction, 'id'));
+    const i: number = _.findIndex(this.restrictions, _.pick(restriction, 'id'));
     if (i !== -1) {
       this.restrictions.splice(i, 1, restriction);
     } else {

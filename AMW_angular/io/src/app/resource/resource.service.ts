@@ -47,13 +47,13 @@ export class ResourceService {
   }
 
   getAllAssignableResourceGroups(): Observable<Resource[]> {
-    let params: URLSearchParams = new URLSearchParams();
+    const params: URLSearchParams = new URLSearchParams();
     params.set('onlyUserAssignable', 'true');
-    let options = new RequestOptions({
+    const options = new RequestOptions({
       search: params,
       headers: this.getHeaders()
     });
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/resources/resourceGroups`, options)
       .map(mapResources)
       .catch(handleError);
