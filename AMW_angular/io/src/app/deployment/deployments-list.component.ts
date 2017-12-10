@@ -40,10 +40,10 @@ export class DeploymentsListComponent {
 
   allSelected: boolean = false;
 
-  failureReason: { [key: string]: string } = { 'PRE_DEPLOYMENT_GENERATION': 'pre deployment generation failed',
-    'DEPLOYMENT_GENERATION': 'deployment generation failed', 'PRE_DEPLOYMENT_SCRIPT': 'pre deployment script failed',
-    'DEPLOYMENT_SCRIPT': 'deployment script failed', 'NODE_MISSING': 'no nodes enabled', 'TIMEOUT': 'timeout',
-    'UNEXPECTED_ERROR': 'unexpected error', 'RUNTIME_ERROR': 'runtime error' };
+  failureReason: { [key: string]: string } = { PRE_DEPLOYMENT_GENERATION: 'pre deployment generation failed',
+    DEPLOYMENT_GENERATION: 'deployment generation failed', PRE_DEPLOYMENT_SCRIPT: 'pre deployment script failed',
+    DEPLOYMENT_SCRIPT: 'deployment script failed', NODE_MISSING: 'no nodes enabled', TIMEOUT: 'timeout',
+    UNEXPECTED_ERROR: 'unexpected error', RUNTIME_ERROR: 'runtime error' };
 
   constructor(private ngZone: NgZone,
               private deploymentService: DeploymentService,
@@ -87,7 +87,7 @@ export class DeploymentsListComponent {
   doDateChange() {
     if (this.deployment) {
       this.errorMessage = '';
-      let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
+      const dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
       if (!dateTime || !dateTime.isValid()) {
         this.errorMessage = 'Invalid date';
       } else {
@@ -146,7 +146,7 @@ export class DeploymentsListComponent {
     );
   }
 
-  logViewerLink(deploymentId: number){
+  logViewerLink(deploymentId: number) {
     window.location.href = '/AMW_web/pages/logView.xhtml?deploymentId=' + deploymentId + '&filters=' + encodeURI(JSON.stringify(this.filtersForParam));
   }
 

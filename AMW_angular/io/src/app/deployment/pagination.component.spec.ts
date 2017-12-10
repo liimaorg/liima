@@ -47,7 +47,7 @@ describe('PaginationComponent', () => {
 
       // then
       expect(pages.length).toEqual(2);
-      expect(pages).toEqual([1,2]);
+      expect(pages).toEqual([1, 2]);
   }));
 
   it('should not return the right pages',
@@ -62,7 +62,7 @@ describe('PaginationComponent', () => {
 
       // then
       expect(pages.length).toEqual(paginationComponent.paginatorItems);
-      expect(pages).toEqual([3,4,5,6,7]);
+      expect(pages).toEqual([3, 4, 5, 6, 7]);
   }));
 
   it('should emit the right offset on toPage',
