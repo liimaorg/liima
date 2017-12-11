@@ -99,24 +99,24 @@
         <div class="form-group" *ngIf="deployments.length > 0">
           <div class="col-sm-offset-1 col-sm-11">
             <div class="panel panel-default">
-            <amw-deployments-list [deployments]="deployments"
-                                  [sortCol]="sortCol"
-                                  [sortDirection]="sortDirection"
-                                  [filtersForParam]="filtersForParam"
-                                  (doConfirmDeployment)='confirmDeployment($event)'
-                                  (doCancelDeployment)='cancelDeployment($event)'
-                                  (doRejectDeployment)='rejectDeployment($event)'
-                                  (editDeploymentDate)='changeDeploymentDate($event)'
-                                  (selectAllDeployments)='switchDeployments($event)'
-                                  (doSort)='sortDeploymentsBy($event)'>
-            </amw-deployments-list>
-            </div>
-            <div class="panel-footer">
-              <amw-pagination [currentPage]="currentPage"
-                              [lastPage]="lastPage"
-                              (doSetMax)='setMaxResultsPerPage($event)'
-                              (doSetOffset)='setNewOffset($event)'>
-              </amw-pagination>
+              <amw-deployments-list [deployments]="deployments"
+                                    [sortCol]="sortCol"
+                                    [sortDirection]="sortDirection"
+                                    [filtersForParam]="filtersForParam"
+                                    (doConfirmDeployment)='confirmDeployment($event)'
+                                    (doCancelDeployment)='cancelDeployment($event)'
+                                    (doRejectDeployment)='rejectDeployment($event)'
+                                    (editDeploymentDate)='changeDeploymentDate($event)'
+                                    (selectAllDeployments)='switchDeployments($event)'
+                                    (doSort)='sortDeploymentsBy($event)'>
+              </amw-deployments-list>
+              <div class="panel-footer">
+                <amw-pagination [currentPage]="currentPage"
+                                [lastPage]="lastPage"
+                                (doSetMax)='setMaxResultsPerPage($event)'
+                                (doSetOffset)='setNewOffset($event)'>
+                </amw-pagination>
+              </div>
             </div>
           </div>
         </div>
