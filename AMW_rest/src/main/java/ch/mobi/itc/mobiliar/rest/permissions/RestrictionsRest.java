@@ -79,6 +79,9 @@ public class RestrictionsRest {
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
+        if (id == null) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("A similar permission already exists")).build();
+        }
         return Response.status(CREATED).header("Location", "/permissions/restrictions/" + id).build();
     }
 

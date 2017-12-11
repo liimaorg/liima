@@ -477,12 +477,12 @@ public class PermissionBoundary implements Serializable {
             throws AMWException {
         validateRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
                 contextName, action, restriction);
-        if (permissionService.restrictionExists(restriction)) {
-            throw new AMWException("Permission already exists");
+        if (!permissionService.identicalOrMoreGeneralRestrictionExists(restriction)) {
+            final Integer id = restrictionRepository.create(restriction);
+            permissionRepository.forceReloadingOfLists();
+            return id;
         }
-        final Integer id = restrictionRepository.create(restriction);
-        permissionRepository.forceReloadingOfLists();
-        return id;
+        return null;
     }
 
     /**
@@ -508,7 +508,7 @@ public class PermissionBoundary implements Serializable {
         }
         validateRestriction(roleName, userName, permissionName, resourceId, resourceTypeName, resourceTypePermission,
                 contextName, action, restriction);
-        if (permissionService.restrictionExists(restriction)) {
+        if (permissionService.identicalOrMoreGeneralRestrictionExists(restriction)) {
             throw new AMWException("Permission already exists");
         }
         restrictionRepository.merge(restriction);
