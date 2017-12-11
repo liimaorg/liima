@@ -168,24 +168,24 @@ public class CopyResourceDataProvider implements Serializable {
 		if (resourceToOverwrite == null) {
 			String message = "No resource selected.";
 			GlobalMessageAppender.addErrorMessage(message);
+			return false;
 		}
-		else if (copyFromResourceId == null) {
+		if (copyFromResourceId == null) {
 			String message = "No resource to copy from selected.";
 			GlobalMessageAppender.addErrorMessage(message);
+			return false;
 		}
-		else {
-			CopyResourceResult result = copyResource.doCopyResource(resourceToOverwrite.getId(), copyFromResourceId, ForeignableOwner.getSystemOwner());
-			if (result != null && !result.isSuccess()) {
-				for (String error : result.getExceptions()) {
-					GlobalMessageAppender.addErrorMessage(error);
-				}
+		
+		CopyResourceResult result = copyResource.doCopyResource(resourceToOverwrite.getId(), copyFromResourceId, ForeignableOwner.getSystemOwner());
+		if (result != null && !result.isSuccess()) {
+			for (String error : result.getExceptions()) {
+				GlobalMessageAppender.addErrorMessage(error);
 			}
-			else {
-				GlobalMessageAppender.addSuccessMessage("Copy successful");
-				return true;
-			}
+			return false;
 		}
-		return false;
+
+		GlobalMessageAppender.addSuccessMessage("Copy successful");
+		return true;
 	}
 
 	/**
