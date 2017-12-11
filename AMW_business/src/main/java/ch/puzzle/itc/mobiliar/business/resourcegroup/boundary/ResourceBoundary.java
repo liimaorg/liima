@@ -246,7 +246,6 @@ public class ResourceBoundary {
                 contextDomainService.getGlobalResourceContextEntity());
         Application app = createUniqueApplicationByName(creatingOwner, applicationName, appReleaseId, false);
         as.addApplication(app, creatingOwner);
-
         entityManager.persist(as.getEntity());
         entityManager.flush();
         log.info("Application " + applicationName + " für ApplicationServer " + asResource.getName()

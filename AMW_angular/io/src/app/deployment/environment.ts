@@ -3,4 +3,5 @@ export interface Environment {
   name: string;
   parent: string;
   selected: boolean;
+  disabled: boolean;
 }
