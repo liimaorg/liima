@@ -747,7 +747,7 @@ public class PermissionService implements Serializable {
         if (hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.CREATE, resource.getResourceGroup(), null)) {
             return true;
         }
-        return resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+        return isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     public boolean hasPermissionToUpdateResourceTemplate(ResourceEntity resource, boolean isTestingMode) {
@@ -755,7 +755,7 @@ public class PermissionService implements Serializable {
         if (hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.UPDATE, resource.getResourceGroup(), null)) {
             return true;
         }
-        return resource != null && isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+        return isTestingMode && hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     /**
@@ -900,7 +900,7 @@ public class PermissionService implements Serializable {
      * @param action of the Restriction to be created
      * @param context of the Restriction to be created
      * @param resourceGroup allowed by the Restriction to be created
-     * @param similarRestrictions a list containing similar RestrictionEntites
+     * @param similarRestrictions a list containing similar RestrictionEntities
      * @param existingRestriction an existing RestrictionEntity to which the other will be compared to
      */
     private void checkSimilarRestrictions(String permissionName, Action action, ContextEntity context,
@@ -919,7 +919,7 @@ public class PermissionService implements Serializable {
      * @param action of the Restriction to be created
      * @param resource allowed by the Restriction to be created
      * @param resourceType allowed by the Restriction to be created
-     * @param similarRestrictions a list containing similar RestrictionEntites
+     * @param similarRestrictions a list containing similar RestrictionEntities
      * @param existingRestriction an existing RestrictionEntity to which the other will be compared to
      */
     private void similarByContextAndActionAndResource(ContextEntity context, Action action, ResourceGroupEntity resource, ResourceTypeEntity resourceType,
@@ -933,39 +933,48 @@ public class PermissionService implements Serializable {
         }
     }
 
+    /**
+     * Checks if a more general Restriction (one who grants more rights) exists
+     *
+     * @param newRestriction
+     * @param similarRestrictions
+     */
     private boolean aMoreGeneralRestrictionExists(RestrictionEntity newRestriction, Collection<RestrictionEntity> similarRestrictions) {
         if (similarRestrictions.size() > 0) {
             for (RestrictionEntity existingRestriction : similarRestrictions) {
-                if (isLessRestrictiveRestriction(newRestriction, existingRestriction)) {
-                    return false;
+                if (isMoreSpecificRestriction(newRestriction, existingRestriction)) {
+                    return true;
                 }
             }
-            return true;
         }
         return false;
     }
 
     /**
-     * Checks if restrictionEntityOne is less restrictive than restrictionEntityTwo
+     * Checks if restrictionEntityOne is more specific (grants less rights) than restrictionEntityTwo
      *
      * @param restrictionEntityOne
      * @param restrictionEntityTwo
      */
-    private boolean isLessRestrictiveRestriction(RestrictionEntity restrictionEntityOne, RestrictionEntity restrictionEntityTwo) {
+    private boolean isMoreSpecificRestriction(RestrictionEntity restrictionEntityOne, RestrictionEntity restrictionEntityTwo) {
+        // allow update of existing - do not compare with itself
+        if (restrictionEntityOne.getId() != null && restrictionEntityOne.getId().equals(restrictionEntityTwo.getId())) {
+            return false;
+        }
         if (restrictionEntityOne.getAction().equals(Action.ALL) && !restrictionEntityTwo.getAction().equals(Action.ALL)) {
-            return true;
+            return false;
         }
         if (restrictionEntityOne.getResourceGroup() == null && restrictionEntityTwo.getResourceGroup() != null) {
-            return true;
+            return false;
         }
         if (restrictionEntityOne.getResourceType() == null && restrictionEntityTwo.getResourceType() != null) {
-            return true;
+            return false;
         }
         if (restrictionEntityOne.getResourceTypePermission().equals(ResourceTypePermission.ANY) &&
                 !restrictionEntityTwo.getResourceTypePermission().equals(ResourceTypePermission.ANY)) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
 }
