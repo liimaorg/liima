@@ -1,0 +1,21 @@
+<div class="btn-toolbar" role="toolbar" aria-label="...">
+  <ng-container *ngIf="pages()">
+    <div class="btn-group" role="group">
+      <ul class="pagination pagination-amw pointer">
+        <li class="{{currentPage < 2 ? 'disabled' : ''}}" aria-label="first" (click)="toPage(1)"><span aria-hidden="true">&laquo;</span></li>
+        <li class="{{currentPage < 2 ? 'disabled' : ''}}" aria-label="previous" (click)="toPage(currentPage-1)"><span aria-hidden="true">&lt;</span></li>
+        <li *ngFor="let page of pages()" class="{{currentPage === page ? 'active' : ''}}"><a (click)="toPage(page)">{{page}}<span class="sr-only">(current)</span></a></li>
+        <li class="{{currentPage === lastPage ? 'disabled' : ''}}" aria-label="next" (click)="toPage(currentPage+1)"><span aria-hidden="true">&gt;</span></li>
+        <li class="{{currentPage === lastPage ? 'disabled' : ''}}" aria-label="last" (click)="toPage(lastPage)"><span aria-hidden="true">&raquo;</span></li>
+      </ul>
+    </div>
+  </ng-container>
+  <div class="btn-group pull-right" role="group">
+    <select class="pagination pagination-amw form-control" [(ngModel)]="maxResults" (change)="setMax()">
+      <option>10</option>
+      <option>20</option>
+      <option>50</option>
+      <option>100</option>
+    </select>
+  </div>
+</div>

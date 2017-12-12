@@ -16,7 +16,7 @@ export class DeploymentService {
   }
 
   getAll(): Observable<Deployment[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -24,17 +24,17 @@ export class DeploymentService {
   }
 
   getFilteredDeployments(filterString: string, sortCol: string, sortDir: string, offset: number, maxResults: number): Observable<{ deployments: Deployment[], total: number }> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     params.append('filters', filterString);
     params.append('colToSort', sortCol);
     params.append('sortDirection', sortDir);
     params.append('offset', String(offset));
     params.append('maxResults', String(maxResults));
-    let options = new RequestOptions({
+    const options = new RequestOptions({
       search: params,
       headers: this.getHeaders()
     });
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/filter`, options)
       .map((response: Response) => this.extractDeploymentsAndTotalCount(response))
       .catch(handleError);
@@ -42,7 +42,7 @@ export class DeploymentService {
   }
 
   get(deploymentId: number): Observable<Deployment> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/${deploymentId}`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -50,7 +50,7 @@ export class DeploymentService {
   }
 
   getWithActions(deploymentId: number): Observable<Deployment> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/${deploymentId}/withActions`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -65,7 +65,7 @@ export class DeploymentService {
   }
 
   cancelDeployment(deploymentId: number) {
-    let resource$ = this.http
+    const resource$ = this.http
       .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, 'canceled', {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
@@ -73,7 +73,7 @@ export class DeploymentService {
   }
 
   confirmDeployment(deploymentDetail: DeploymentDetail) {
-    let resource$ = this.http
+    const resource$ = this.http
       .put(`${this.baseUrl}/deployments/${deploymentDetail.deploymentId}/confirm`, deploymentDetail, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
@@ -81,7 +81,7 @@ export class DeploymentService {
   }
 
   rejectDeployment(deploymentId: number) {
-    let resource$ = this.http
+    const resource$ = this.http
       .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, 'rejected', {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
@@ -89,7 +89,7 @@ export class DeploymentService {
   }
 
   getAllDeploymentParameterKeys(): Observable<DeploymentParameter[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/deploymentParameterKeys/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -97,13 +97,13 @@ export class DeploymentService {
   }
 
   canDeploy(resourceGroupId: number, contextIds: number[]): Observable<boolean> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     contextIds.forEach((key) => params.append('contextId', String(key)));
-    let options = new RequestOptions({
+    const options = new RequestOptions({
       search: params,
       headers: this.getHeaders()
     });
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/canDeploy/${resourceGroupId}`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -111,13 +111,13 @@ export class DeploymentService {
   }
 
   canRequestDeployment(resourceGroupId: number, contextIds: number[]): Observable<boolean> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     contextIds.forEach((key) => params.append('contextId', String(key)));
-    let options = new RequestOptions({
+    const options = new RequestOptions({
       search: params,
       headers: this.getHeaders()
     });
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/canRequestDeployment/${resourceGroupId}`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -125,7 +125,7 @@ export class DeploymentService {
   }
 
   canRequestDeployments(): Observable<boolean> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/canRequestDeployment/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -133,7 +133,7 @@ export class DeploymentService {
   }
 
   getAllDeploymentFilterTypes(): Observable<DeploymentFilterType[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/deploymentFilterTypes/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -141,7 +141,7 @@ export class DeploymentService {
   }
 
   getAllComparatorFilterOptions(): Observable<ComparatorFilterOption[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/comparatorFilterOptions/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -149,13 +149,13 @@ export class DeploymentService {
   }
 
   getFilterOptionValues(filterName: string): Observable<string[]> {
-    let param = new URLSearchParams();
+    const param = new URLSearchParams();
     param.append('filterName', filterName);
-    let options = new RequestOptions({
+    const options = new RequestOptions({
       search: param,
       headers: this.getHeaders()
     });
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/filterOptionValues/`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -163,7 +163,7 @@ export class DeploymentService {
   }
 
   getDeploymentDetail(deploymentId: number): Observable<DeploymentDetail> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/${deploymentId}/detail`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -171,7 +171,7 @@ export class DeploymentService {
   }
 
   setDeploymentDate(deploymentId: number, deploymentDate: number) {
-    let resource$ = this.http
+    const resource$ = this.http
       .put(`${this.baseUrl}/deployments/${deploymentId}/date`, deploymentDate, {headers: this.postHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
@@ -179,7 +179,7 @@ export class DeploymentService {
   }
 
   isAngularDeploymentsGuiActive(): Observable<boolean> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/isAngularDeploymentsGuiActive/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -187,7 +187,7 @@ export class DeploymentService {
   }
 
   getCsvSeparator(): Observable<string> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/deployments/csvSeparator/`, {headers: this.getHeaders()})
       .map((response: Response) => response.text())
       .catch(handleError);
@@ -195,13 +195,13 @@ export class DeploymentService {
   }
 
   private getHeaders() {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Accept', 'application/json');
     return headers;
   }
 
   private postHeaders() {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Accept', 'application/json');
     return headers;
@@ -213,8 +213,8 @@ export class DeploymentService {
   }
 
   private extractDeploymentsAndTotalCount(res: Response) {
-    let headerField: string = 'X-Total-Count';
-    let ob: { deployments: Deployment[], total: number } = { deployments: [], total: 0 };
+    const headerField: string = 'X-Total-Count';
+    const ob: { deployments: Deployment[], total: number } = { deployments: [], total: 0 };
     ob.deployments = this.extractPayload(res);
     ob.total = res.headers.get(headerField) ? parseInt(res.headers.get(headerField), 10) : 0;
     return ob;

@@ -1764,6 +1764,10 @@ a.expandable:before {
     color: #8b8b8a !important;
 }
 
+.icon.icon-warning.config-overview {
+    margin: 0 6px 0 -2px;
+}
+
 /* chrome: avoid a horizontal scroll-bar by changing the zoom level */
 table.propertyTable textarea.propertyInputField {
     overflow: hidden;

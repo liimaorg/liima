@@ -35,7 +35,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
@@ -66,10 +66,9 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       (permissionComponent: PermissionComponent, permissionService: PermissionService,
        environmentService: EnvironmentService, resourceService: ResourceService) => {
     // given
-    let permissions: Permission[] = [ {name: 'RESOURCE', old: false}, {name: 'RESOURCE_TYPE', old: false}];
-    let environments: Environment[] = [ <Environment> { id: 1, name: 'U', parent: 'Dev' },
-      <Environment> { id: 2, name: 'V', parent: 'Dev' },
-      <Environment> { id: 3, name: 'T', parent: 'Test' } ];
+    const permissions: Permission[] = [{name: 'RESOURCE', old: false}, {name: 'RESOURCE_TYPE', old: false}];
+    const environments: Environment[] = [{id: 1, name: 'U', parent: 'Dev'} as Environment,
+      {id: 2, name: 'V', parent: 'Dev'} as Environment, {id: 3, name: 'T', parent: 'Test'} as Environment];
     spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(Observable.of(permissions));
     spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(Observable.of(environments));
     spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
@@ -85,21 +84,21 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     expect(resourceService.getAllResourceTypes).toHaveBeenCalled();
     expect(permissionComponent.permissions).toEqual(permissions);
     expect(permissionComponent.restriction).toBeNull();
-    expect(permissionComponent.groupedEnvironments['All']).toContain({ id: null, name: null, parent: 'All', selected: false });
-    expect(permissionComponent.groupedEnvironments['Dev']).toContain({ id: 1, name: 'U', parent: 'Dev', selected: false },
-      { id: 2, name: 'V', parent: 'Dev', selected: false });
-    expect(permissionComponent.groupedEnvironments['Test']).toContain({ id: 3, name: 'T', parent: 'Test', selected: false });
+    expect(permissionComponent.groupedEnvironments['All']).toContain({id: null, name: null, parent: 'All', selected: false});
+    expect(permissionComponent.groupedEnvironments['Dev']).toContain({id: 1, name: 'U', parent: 'Dev', selected: false},
+      {id: 2, name: 'V', parent: 'Dev', selected: false});
+    expect(permissionComponent.groupedEnvironments['Test']).toContain({id: 3, name: 'T', parent: 'Test', selected: false});
   }));
 
   it('should invoke PermissionService and sort the Restrictions by Permission.name, action on changeRole if selected Role exists',
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
     // given
-    let restrictions: Restriction[] = [ <Restriction> { id: 21, action: 'ALL', permission: <Permission> { name: 'RESOURCE' } },
-      <Restriction> { id: 22, action: 'ALL', permission: <Permission> { name: 'DEPLOYMENT' } },
-      <Restriction> { id: 23, action: 'CREATE', permission: <Permission> { name: 'RESOURCE' } }] ;
+    const restrictions: Restriction[] = [{id: 21, action: 'ALL', permission: {name: 'RESOURCE'} as Permission} as Restriction,
+      {id: 22, action: 'ALL', permission: {name: 'DEPLOYMENT'} as Permission} as Restriction,
+      {id: 23, action: 'CREATE', permission: {name: 'RESOURCE'} as Permission} as Restriction] ;
     permissionComponent.selectedRoleName = 'TESTER';
-    permissionComponent.roleNames = [ 'tester', 'role' ];
+    permissionComponent.roleNames = ['tester', 'role'];
     spyOn(permissionService, 'getRoleWithRestrictions').and.returnValue(Observable.of(restrictions));
     // when
     permissionComponent.onChangeRole();
@@ -115,9 +114,9 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
         // given
-        permissionComponent.restrictions = [ <Restriction> { id: 31 }, <Restriction> { id: 32 } ];
+        permissionComponent.restrictions = [{id: 31} as Restriction, {id: 32} as Restriction];
         permissionComponent.selectedRoleName = 'TESTER';
-        permissionComponent.roleNames = [ 'role' ];
+        permissionComponent.roleNames = ['role'];
         spyOn(permissionService, 'getRoleWithRestrictions').and.callThrough();
         // when
         permissionComponent.onChangeRole();
@@ -130,10 +129,10 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
       // given
-      let restrictions: Restriction[] = [ <Restriction> { id: 41, action: 'DELETE', permission: <Permission> { name: 'SAME' } },
-        <Restriction> { id: 42, action: 'CREATE', permission: <Permission> { name: 'SAME' } } ];
+      const restrictions: Restriction[] = [{id: 41, action: 'DELETE', permission: {name: 'SAME'} as Permission} as Restriction,
+        {id: 42, action: 'CREATE', permission: {name: 'SAME'} as Permission} as Restriction];
       permissionComponent.selectedUserName = 'Tester';
-      permissionComponent.userNames = [ 'tester', 'user' ];
+      permissionComponent.userNames = ['tester', 'user'];
       spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(Observable.of(restrictions));
       // when
       permissionComponent.onChangeUser();
@@ -148,9 +147,9 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
         // given
-        permissionComponent.restrictions = [ <Restriction> { id: 51 }, <Restriction> { id: 52 } ];
+        permissionComponent.restrictions = [{id: 51} as Restriction, {id: 52} as Restriction];
         permissionComponent.selectedUserName = 'Tester';
-        permissionComponent.userNames = [ 'user' ];
+        permissionComponent.userNames = ['user'];
         spyOn(permissionService, 'getUserWithRestrictions').and.callThrough();
         // when
         permissionComponent.onChangeUser();
@@ -163,22 +162,22 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
       // given
-      permissionComponent.restrictions = [<Restriction> { id: 121, contextName: 'T' }, <Restriction> { id: 122, contextName: 'B' }];
-      permissionComponent.restriction = <Restriction> { id: 122, contextName: 'B' };
+      permissionComponent.restrictions = [{ id: 121, contextName: 'T'} as Restriction, {id: 122, contextName: 'B'} as Restriction];
+      permissionComponent.restriction = {id: 122, contextName: 'B'} as Restriction;
       spyOn(permissionService, 'removeRestriction').and.callThrough();
       // when
       permissionComponent.removeRestriction(122);
       // then
       expect(permissionService.removeRestriction).toHaveBeenCalledWith(122);
-      expect(permissionComponent.restrictions).toContain({ id: 121, contextName: 'T' });
+      expect(permissionComponent.restrictions).toContain({id: 121, contextName: 'T'});
   }));
 
   it('should reset the Restriction and error message on cancel',
     inject([PermissionComponent],
       (permissionComponent: PermissionComponent) => {
       // given
-      permissionComponent.restriction = <Restriction> { id: 111, contextName: 'T', permission: { name: 'aPermission' } };
-      permissionComponent.backupRestriction = <Restriction> { id: 111, contextName: 'B', permission: { name: 'aPermission' } };
+      permissionComponent.restriction = {id: 111, contextName: 'T', permission: {name: 'aPermission'}} as Restriction;
+      permissionComponent.backupRestriction = {id: 111, contextName: 'B', permission: {name: 'aPermission'}} as Restriction;
       permissionComponent.errorMessage = 'Error';
       // when
       permissionComponent.cancel();
@@ -195,7 +194,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       expect(permissionComponent.restriction).toBeNull();
       expect(permissionComponent.backupRestriction).toBeNull();
       // when
-      permissionComponent.modifyRestriction(<Restriction> { id: 123 });
+      permissionComponent.modifyRestriction({id: 123} as Restriction);
       // then
       expect(permissionComponent.restriction).not.toBeNull();
       expect(permissionComponent.restriction.id).toBe(123);
@@ -207,7 +206,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
       // given
-      permissionComponent.restriction = <Restriction> { id: 111, contextName: 'T' };
+      permissionComponent.restriction = {id: 111, contextName: 'T'} as Restriction;
       spyOn(permissionService, 'updateRestriction').and.callThrough();
       // when
       permissionComponent.persistRestriction();
@@ -219,7 +218,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     inject([PermissionComponent, PermissionService],
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
       // given
-      permissionComponent.restriction = <Restriction> { id: null, contextName: 'S' };
+      permissionComponent.restriction = {id: null, contextName: 'S'} as Restriction;
       spyOn(permissionService, 'createRestriction').and.callThrough();
       // when
       permissionComponent.persistRestriction();
@@ -257,7 +256,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         MockBackend,
         {
           provide: Http,
-          useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+          useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
             return new Http(backend, defaultOptions);
           },
           deps: [MockBackend, BaseRequestOptions]
@@ -276,9 +275,9 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         (permissionComponent: PermissionComponent, permissionService: PermissionService,
          environmentService: EnvironmentService, resourceService: ResourceService) => {
           // given
-          let permissions: Permission[] = [ {name: 'RESOURCE', old: false}, {name: 'RESOURCE_TYPE', old: false}];
-          let environments: Environment[] = [ <Environment> { id: 1, name: 'U', parent: 'Dev' },
-            <Environment> { id: 2, name: 'V', parent: 'Dev' }, <Environment> { id: 3, name: 'T', parent: 'Test' } ];
+          const permissions: Permission[] = [{name: 'RESOURCE', old: false}, {name: 'RESOURCE_TYPE', old: false}];
+          const environments: Environment[] = [{id: 1, name: 'U', parent: 'Dev'} as Environment,
+            {id: 2, name: 'V', parent: 'Dev'} as Environment, {id: 3, name: 'T', parent: 'Test'} as Environment];
           spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(Observable.of(permissions));
           spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(Observable.of(environments));
           spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
@@ -296,10 +295,10 @@ describe('PermissionComponent without any params (default: type Role)', () => {
           expect(permissionService.getAllUserRestrictionNames).toHaveBeenCalled();
           expect(permissionComponent.permissions).toEqual(permissions);
           expect(permissionComponent.restriction).toBeNull();
-          expect(permissionComponent.groupedEnvironments['All']).toContain({ id: null, name: null, parent: 'All', selected: false });
-          expect(permissionComponent.groupedEnvironments['Dev']).toContain({ id: 1, name: 'U', parent: 'Dev', selected: false },
-            { id: 2, name: 'V', parent: 'Dev', selected: false });
-          expect(permissionComponent.groupedEnvironments['Test']).toContain({ id: 3, name: 'T', parent: 'Test', selected: false });
+          expect(permissionComponent.groupedEnvironments['All']).toContain({id: null, name: null, parent: 'All', selected: false});
+          expect(permissionComponent.groupedEnvironments['Dev']).toContain({id: 1, name: 'U', parent: 'Dev', selected: false},
+            {id: 2, name: 'V', parent: 'Dev', selected: false});
+          expect(permissionComponent.groupedEnvironments['Test']).toContain({id: 3, name: 'T', parent: 'Test', selected: false});
     }));
 
   });
@@ -322,7 +321,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         MockBackend,
         {
           provide: Http,
-          useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+          useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
             return new Http(backend, defaultOptions);
           },
           deps: [MockBackend, BaseRequestOptions]
@@ -341,12 +340,12 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         (permissionComponent: PermissionComponent, permissionService: PermissionService,
          environmentService: EnvironmentService, resourceService: ResourceService) => {
           // given
-          let userNames: string[] = [ 'someUserName', 'anotherUserName', 'testUser' ];
-          let restrictions: Restriction[] = [ <Restriction> { id: 1, action: 'CREATE', permission: { name: 'RESOURCE', old: false } },
-            <Restriction> { id: 2, action: 'UPDATE', permission: { name: 'RESOURCE_TYPE', old: false } }];
-          let permissions: Permission[] = [ {name: 'RESOURCE', old: false}, {name: 'RESOURCE_TYPE', old: false}];
-          let environments: Environment[] = [ <Environment> { id: 1, name: 'U', parent: 'Dev' },
-            <Environment> { id: 2, name: 'V', parent: 'Dev' }, <Environment> { id: 3, name: 'T', parent: 'Test' } ];
+          const userNames: string[] = [ 'someUserName', 'anotherUserName', 'testUser' ];
+          const restrictions: Restriction[] = [{id: 1, action: 'CREATE', permission: {name: 'RESOURCE', old: false}} as Restriction,
+            {id: 2, action: 'UPDATE', permission: {name: 'RESOURCE_TYPE', old: false}} as Restriction];
+          const permissions: Permission[] = [{name: 'RESOURCE', old: false}, {name: 'RESOURCE_TYPE', old: false}];
+          const environments: Environment[] = [{id: 1, name: 'U', parent: 'Dev'} as Environment,
+            {id: 2, name: 'V', parent: 'Dev'} as Environment, {id: 3, name: 'T', parent: 'Test'} as Environment];
           spyOn(permissionService, 'getAllUserRestrictionNames').and.returnValue(Observable.of(userNames));
           spyOn(permissionService, 'getOwnUserAndRoleRestrictions').and.returnValue(Observable.of(restrictions));
           spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(Observable.of(environments));

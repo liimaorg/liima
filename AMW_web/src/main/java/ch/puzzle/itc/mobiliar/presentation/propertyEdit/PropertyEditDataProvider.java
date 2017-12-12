@@ -43,6 +43,8 @@ import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.Selected;
+import ch.puzzle.itc.mobiliar.presentation.common.ContextDataProvider;
+import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationModel;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.DataProviderHelper;
@@ -79,6 +81,12 @@ public class PropertyEditDataProvider implements Serializable {
     @Inject
     EditResourceView resourceView;
 
+    @Inject
+    SessionContext sessionContext;
+
+    @Inject
+    ContextDataProvider contextDataProvider;
+
     List<ResourceEditProperty> resourceEditProperties;
 
     List<ResourceEditProperty> filteredResourceProperties;
@@ -86,6 +94,16 @@ public class PropertyEditDataProvider implements Serializable {
     List<ResourceEditProperty> currentRelationProperties;
 
     List<ResourceEditProperty> filteredRelationProperties;
+
+    // Env, value
+    @Getter
+    Map<String, String> valuesForConfigOverview;
+
+    @Getter
+    ResourceEditProperty propertyForConfigOverview;
+
+    @Getter
+    private boolean showWarningForPotentialPropertyOverwriting;
 
     @Getter
     private boolean editableProperties = false;
@@ -178,14 +196,35 @@ public class PropertyEditDataProvider implements Serializable {
                 && !currentRelation.getSlaveTypeName().equals("RUNTIME");
     }
 
+    public void loadConfigOverviewForProperty(ResourceEditProperty property) {
+        this.propertyForConfigOverview = property;
+        List<ContextEntity> relevantContexts = contextDataProvider.getChildrenForContext(currentContext.getId());
+        if (property.getLoadedFor() == ResourceEditProperty.Origin.INSTANCE) {
+            valuesForConfigOverview = editor.getPropertyOverviewForResource(resourceView.getResource(), property, relevantContexts);
+            showWarningForPotentialPropertyOverwriting = false;
+        } else if (property.getLoadedFor() == ResourceEditProperty.Origin.RELATION) {
+            valuesForConfigOverview = editor.getPropertyOverviewForRelation(currentRelation, property, relevantContexts);
+            showWarningForPotentialPropertyOverwriting = true;
+        }
+    }
+
+    public boolean hasOverwrittenProperty(ResourceEditProperty property) {
+        List<ContextEntity> relevantContexts = contextDataProvider.getChildrenForContext(currentContext.getId());
+        if (property.getLoadedFor() == ResourceEditProperty.Origin.INSTANCE) {
+            return !editor.getPropertyOverviewForResource(resourceView.getResource(), property, relevantContexts).isEmpty();
+        } else {
+            return !editor.getPropertyOverviewForRelation(currentRelation, property, relevantContexts).isEmpty();
+        }
+    }
+
     private void loadResourceRelationEditProperties() {
         filteredRelationProperties = new ArrayList<>();
 
         if (currentRelation != null) {
             if (currentRelation.isResourceTypeRelation()) {
-                currentRelationProperties = userSettings.filterTestingProperties(editor
-                        .getPropertiesForRelatedResourceType(currentRelation, getContextId()));
-                typeRelationIdentifier = currentRelation.getDisplayName(); // TODO displayname!?
+                List<ResourceEditProperty> properties = editor.getPropertiesForRelatedResourceType(currentRelation, getContextId());
+                currentRelationProperties = userSettings.filterTestingProperties(properties);
+                typeRelationIdentifier = currentRelation.getDisplayName();
             } else {
                 currentRelationProperties = userSettings.filterTestingProperties(editor
                         .getPropertiesForRelatedResource(getResourceId(), currentRelation, getContextId()));
@@ -374,10 +413,11 @@ public class PropertyEditDataProvider implements Serializable {
         }
     }
 
+
     private List<ResourceEditProperty> reloadResourceEditProperties(ResourceEntity resourceEntity) {
         filteredResourceProperties = new ArrayList<>();
-        resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResource(
-                resourceEntity.getId(), getContextId()));
+        List<ResourceEditProperty> propertiesForResource = editor.getPropertiesForResource(resourceEntity.getId(), getContextId());
+        resourceEditProperties = userSettings.filterTestingProperties(propertiesForResource);
         filterHostNameAndActiveFromNode();
         editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
                 currentContext, userSettings.isTestingMode());
@@ -409,10 +449,7 @@ public class PropertyEditDataProvider implements Serializable {
         return resourceEditProperties;
     }
 
-
-
-
-        public List<ResourceEditProperty> getCurrentRelationProperties() {
+    public List<ResourceEditProperty> getCurrentRelationProperties() {
         List<ResourceEditProperty> sortedList = new ArrayList<>(currentRelationProperties);
         Collections.sort(sortedList);
         return sortedList;

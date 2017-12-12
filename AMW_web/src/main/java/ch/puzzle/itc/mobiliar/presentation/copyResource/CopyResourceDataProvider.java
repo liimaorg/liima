@@ -37,6 +37,7 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.presentation.common.ResourceTypeDataProvider;
+import ch.puzzle.itc.mobiliar.presentation.propertyEdit.PropertyEditDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
@@ -63,6 +64,9 @@ public class CopyResourceDataProvider implements Serializable {
 
 	@Inject
 	private CopyResource copyResource;
+
+	@Inject
+	private PropertyEditDataProvider propertyEditDataProvider;
 
 	@Inject
 	private MaiaAmwFederationServicePredecessorHandler maiaAmwFederationServicePredecessorHandler;
@@ -138,8 +142,8 @@ public class CopyResourceDataProvider implements Serializable {
 
 	public void copyFromResource(Integer selectedGroup) {
 		try {
-			copyFromResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup)
-					.getSelectedResourceId());
+			copyFromResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup).getSelectedResourceId());
+			propertyEditDataProvider.reloadResourceEditProperties();
 		} catch (ForeignableOwnerViolationException e) {
             GlobalMessageAppender.addErrorMessage("Owner "+e.getViolatingOwner()+" is not allowed to copy from selected resource because of violating "+e.getViolatedForeignableObject().getForeignableObjectName()+" with id "+ ((Identifiable)e.getViolatedForeignableObject()).getId());
         }
@@ -164,23 +168,24 @@ public class CopyResourceDataProvider implements Serializable {
 		if (resourceToOverwrite == null) {
 			String message = "No resource selected.";
 			GlobalMessageAppender.addErrorMessage(message);
+			return false;
 		}
-		else if (copyFromResourceId == null) {
+		if (copyFromResourceId == null) {
 			String message = "No resource to copy from selected.";
 			GlobalMessageAppender.addErrorMessage(message);
+			return false;
 		}
-		else {
-			CopyResourceResult result = copyResource.doCopyResource(resourceToOverwrite.getId(), copyFromResourceId, ForeignableOwner.getSystemOwner());
-			if (result != null && !result.isSuccess()) {
-				for (String error : result.getExceptions()) {
-					GlobalMessageAppender.addErrorMessage(error);
-				}
+		
+		CopyResourceResult result = copyResource.doCopyResource(resourceToOverwrite.getId(), copyFromResourceId, ForeignableOwner.getSystemOwner());
+		if (result != null && !result.isSuccess()) {
+			for (String error : result.getExceptions()) {
+				GlobalMessageAppender.addErrorMessage(error);
 			}
-			else {
-				GlobalMessageAppender.addSuccessMessage("Copy successful");
-			}
+			return false;
 		}
-		return false;
+
+		GlobalMessageAppender.addSuccessMessage("Copy successful");
+		return true;
 	}
 
 	/**

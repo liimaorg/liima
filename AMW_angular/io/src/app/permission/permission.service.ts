@@ -12,7 +12,7 @@ export class PermissionService {
   }
 
   getAllRoleNames(): Observable<string[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/roleNames`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
@@ -20,7 +20,7 @@ export class PermissionService {
   }
 
   getAllUserRestrictionNames(): Observable<string[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/userRestrictionNames`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
@@ -28,7 +28,7 @@ export class PermissionService {
   }
 
   getAllPermissionEnumValues(): Observable<Permission[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/permissionEnumValues`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
@@ -36,7 +36,7 @@ export class PermissionService {
   }
 
   getRoleWithRestrictions(roleName: string): Observable<Restriction[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/roles/${roleName}`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
@@ -44,7 +44,7 @@ export class PermissionService {
   }
 
   getUserWithRestrictions(userName: string): Observable<Restriction[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/users/${userName}`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
@@ -52,7 +52,7 @@ export class PermissionService {
   }
 
   getOwnUserAndRoleRestrictions(): Observable<Restriction[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/permissions/restrictions/ownRestrictions/`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
@@ -60,7 +60,7 @@ export class PermissionService {
   }
 
   removeRestriction(id: number) {
-    let resource$ = this.http
+    const resource$ = this.http
       .delete(`${this.baseUrl}/permissions/restrictions/${id}`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
@@ -74,9 +74,9 @@ export class PermissionService {
   }
 
   createRestriction(restriction: Restriction, delegation: boolean): Observable<Restriction> {
-    let params: URLSearchParams = new URLSearchParams();
+    const params: URLSearchParams = new URLSearchParams();
     params.set('delegation', delegation ? 'true' : 'false');
-    let options = new RequestOptions({
+    const options = new RequestOptions({
       search: params,
       headers: this.postHeaders()
     });
@@ -88,13 +88,13 @@ export class PermissionService {
   }
 
   private getHeaders() {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Accept', 'application/json');
     return headers;
   }
 
   private postHeaders() {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Accept', 'application/json');
     return headers;

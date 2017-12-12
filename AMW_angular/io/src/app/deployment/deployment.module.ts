@@ -8,10 +8,11 @@ import { DeploymentsEditModalComponent } from './deployments-edit-modal.componen
 import { DeploymentService } from './deployment.service';
 import { EnvironmentService } from './environment.service';
 import { DeploymentRoutingModule } from './deployment-routing.module';
+import { PaginationComponent } from './pagination.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, DeploymentRoutingModule],
-  declarations: [DeploymentComponent, DeploymentsComponent, DeploymentsListComponent, DeploymentsEditModalComponent],
+  declarations: [DeploymentComponent, DeploymentsComponent, DeploymentsListComponent, DeploymentsEditModalComponent, PaginationComponent],
   providers: [DeploymentService, EnvironmentService]
 })
 export class DeploymentModule {

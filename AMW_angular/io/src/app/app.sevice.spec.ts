@@ -17,7 +17,7 @@ describe('AppService', () => {
   it('should return an array of navItems if navItems have been set',
     inject([AppState], (appState: AppState) => {
       // given
-      let items: any[] = [ { title: 'aTest', target: '/aTarget' }, { title: 'bTest', target: '/bTarget' } ];
+      const items: any[] = [{title: 'aTest', target: '/aTarget'}, {title: 'bTest', target: '/bTarget'}];
       appState.set('navItems', items);
       // when then
       expect(appState.navItems()).toEqual(items);

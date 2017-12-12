@@ -122,8 +122,12 @@ module.exports = function (options) {
           enforce: "pre",
           use: 'source-map-loader',
           exclude: [
-            // these packages have problems with their sourcemaps
-            helpers.root('node_modules/rxjs')
+            /*
+             * Fixes WARNING in ./node_modules/@angular/compiler/@angular/compiler.es5.js
+             * Cannot find source file 'compiler.es5.ts': Error: Can't resolve './compiler.es5.ts'
+             * See: https://github.com/angular/angular-cli/issues/7115
+             */
+            helpers.root('node_modules/')
           ]
         },
 

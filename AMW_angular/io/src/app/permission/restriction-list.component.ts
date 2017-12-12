@@ -26,7 +26,7 @@ export class RestrictionListComponent {
 
   getGroupName(id: number): string {
     if (id) {
-      return _.find(this.resourceGroups, {id: id})['name'];
+      return _.find(this.resourceGroups, {id})['name'];
     }
     return null;
   }
