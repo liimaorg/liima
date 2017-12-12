@@ -744,7 +744,7 @@ public class PropertyEditor {
     /**
      * Checks Permissions and deletes the given property descriptor from database for resource
      */
-    public void deletePropertyDescriptorForResource(ForeignableOwner deletingOwner, Integer resourceId, PropertyDescriptorEntity descriptor) throws AMWException, ForeignableOwnerViolationException {
+    public void deletePropertyDescriptorForResource(ForeignableOwner deletingOwner, Integer resourceId, PropertyDescriptorEntity descriptor, boolean forceDelete) throws AMWException, ForeignableOwnerViolationException {
 
         if (descriptor != null && descriptor.getId() != null) {
             ResourceEntity attachedResource = entityManager.find(ResourceEntity.class, resourceId);
@@ -752,7 +752,11 @@ public class PropertyEditor {
 
             permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, attachedResource.getResourceGroup(), null, null);
             foreignableService.verifyDeletableByOwner(deletingOwner, descriptor);
-            propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceContext);
+            if (forceDelete) {
+                propertyDescriptorService.forceDeletePropertyDescriptorByOwner(descriptor, resourceContext);
+            } else {
+                propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceContext);
+            }
         }
     }
 
@@ -760,7 +764,7 @@ public class PropertyEditor {
     /**
      * Checks Permissions and deletes the given property descriptor from database for resource type
      */
-    public void deletePropertyDescriptorForResourceType(ForeignableOwner deletingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor) throws AMWException, ForeignableOwnerViolationException {
+    public void deletePropertyDescriptorForResourceType(ForeignableOwner deletingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor, boolean forceDelete) throws AMWException, ForeignableOwnerViolationException {
 
         if (descriptor != null && descriptor.getId() != null) {
 
@@ -769,7 +773,11 @@ public class PropertyEditor {
 
             permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, attachedResourceType, null);
             foreignableService.verifyDeletableByOwner(deletingOwner, descriptor);
-            propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceTypeContextEntity);
+            if (forceDelete) {
+                propertyDescriptorService.forceDeletePropertyDescriptorByOwner(descriptor, resourceTypeContextEntity);
+            } else {
+                propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceTypeContextEntity);
+            }
         }
     }
 

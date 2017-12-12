@@ -29,6 +29,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.common.exception.PropertyDescriptorNotDeletableException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -102,6 +103,9 @@ public class EditPropertyView implements Serializable {
 	@Inject
 	@TestingMode
 	private Boolean testing;
+
+	@Getter
+	private boolean showForce;
 
 	@TestingMode
 	public void onChangedTestingMode(@Observes Boolean isTesting) {
@@ -298,25 +302,37 @@ public class EditPropertyView implements Serializable {
     }
 
 	public String delete() {
-		if (propertyDescriptor != null && propertyDescriptor.getId() != null) {
-			try {
+		return deletePropDesc(false);
+	}
 
+	public String forceDelete() {
+		return deletePropDesc(true);
+	}
+
+	private String deletePropDesc(boolean forceDelete) {
+		if (propertyDescriptor != null && propertyDescriptor.getId() != null) {
+			showForce = false;
+			try {
 				if (isEditResource()) {
-					propertyEditor.deletePropertyDescriptorForResource(ForeignableOwner.getSystemOwner(), resourceIdFromParam, propertyDescriptor);
+					propertyEditor.deletePropertyDescriptorForResource(ForeignableOwner.getSystemOwner(), resourceIdFromParam, propertyDescriptor, forceDelete);
 				}
 				else {
-					propertyEditor.deletePropertyDescriptorForResourceType(ForeignableOwner.getSystemOwner(), resourceTypeIdFromParam, propertyDescriptor);
+					propertyEditor.deletePropertyDescriptorForResourceType(ForeignableOwner.getSystemOwner(), resourceTypeIdFromParam, propertyDescriptor, forceDelete);
 				}
 				GlobalMessageAppender.addSuccessMessage(propertyDescriptor.getPropertyDescriptorDisplayName() + " was successfully deleted");
 				propertyDescriptor = null;
 				return "editResourceView?faces-redirect=true&includeViewParams=true";
 
 			}
+			catch (PropertyDescriptorNotDeletableException e) {
+				showForce = true;
+				GlobalMessageAppender.addErrorMessage(e.getMessage());
+			}
 			catch (AMWException e) {
 				GlobalMessageAppender.addErrorMessage(e.getMessage());
 			} catch (ForeignableOwnerViolationException e) {
-                GlobalMessageAppender.addErrorMessage(buildErrorMessage(e, "delete", propertyDescriptor.getPropertyDescriptorDisplayName()));
-            }
+				GlobalMessageAppender.addErrorMessage(buildErrorMessage(e, "delete", propertyDescriptor.getPropertyDescriptorDisplayName()));
+			}
 		}
 		else {
 			GlobalMessageAppender.addErrorMessage("Nothing to delete");
