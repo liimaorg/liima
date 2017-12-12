@@ -2,6 +2,7 @@ $icon-font-path: 'assets/fonts/';
 @import '~bootstrap-sass/assets/stylesheets/bootstrap';
 @import '~bootstrap-tagsinput/dist/bootstrap-tagsinput';
 @import '~eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker';
+@import 'deployment/deployments.scss';
 
 /* add styles here */
 
@@ -13,7 +14,6 @@ $icon-font-path: 'assets/fonts/';
 body {
   padding-top: 50px;
 }
-
 
 /*
  * Global add-ons
@@ -228,8 +228,9 @@ body {
  * Loader
  */
 .loading {
-  z-index: 1;
+  z-index: 1000;
   position: fixed;
+  background-color: #000000;
   top: 0;
   left: 0;
   opacity: 0.6;
@@ -243,9 +244,9 @@ body {
   display: inline-block;
   top: 50%;
   transform: translateY(-50%);
-  background-image: url("assets/images/Spinner.svg");
-  height: 90px;
-  width: 90px;
+  background-image: url("assets/images/ajax-loader.gif");
+  height: 32px;
+  width: 32px;
   text-align: center;
 }
 
@@ -271,34 +272,17 @@ td.has-checkbox {
 /*
  * Pretend to be a link
  */
+li.link,
 span.link {
   color: #337ab7;
   text-decoration: none;
   cursor: pointer;
 }
+li.link:hover,
 span.link:hover {
   color: #23527c;
   text-decoration: underline;
 }
-
-/*
- * Deployment screen
- */
-span.delayed {
-  color: #db4a4a;
-}
-
-tr.failed {
-  background-color: #f2dede;
-}
-
-tr.success {
-  background-color: #dff0d8;
-}
-
-/*
- * Nicer alignement of large buttons when they are getting wrapped
- */
-.btn-main {
-  margin-bottom: 0.5rem;
+.pointer {
+  cursor: pointer;
 }

@@ -8,11 +8,7 @@
   <div class="loading-bg"></div>
 </div>
 
-<div class="col-sm-10 main-full">
-  <div class="panel panel-default">
-    <div class="panel-heading clearfix">
-      <h3 class="panel-title pull-left">{{appState.get('pageTitle')}}</h3>
-    </div>
+<div class="col-sm-11 main-full">
 
     <div class="panel-body">
       <span class="form-horizontal">
@@ -21,8 +17,8 @@
         <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><span [innerHTML]="errorMessage"></span></div>
 
         <div class="form-group">
-          <label for="selectFilterType" class="col-sm-2 control-label">Add filter</label>
-          <div class="col-sm-9">
+          <label for="selectFilterType" class="col-sm-1 control-label">Add filter</label>
+          <div class="col-sm-10">
             <select id="selectFilterType" class="form-control" [(ngModel)]="selectedFilterType" (change)="addFilter()">
               <option *ngFor="let filterType of filterTypes" [ngValue]="filterType">{{filterType.name}}</option>
             </select>
@@ -35,24 +31,24 @@
         </div>
 
         <ng-container *ngIf="filters.length > 0">
-          <div class="form-group" *ngFor="let filter of filters">
-            <label class="col-sm-2 control-label"></label>
+          <div class="form-group" *ngFor="let filter of filters; let i=index">
+            <label class="col-sm-1 control-label"></label>
             <div class="col-sm-4">
               <input class="form-control" disabled type="text" value="{{filter.name}}">
             </div>
             <ng-container *ngIf="filter.type === 'SpecialFilterType'">
-              <div class="col-sm-5"></div>
+              <div class="col-sm-6"></div>
             </ng-container>
             <ng-container *ngIf="filter.type !== 'SpecialFilterType'">
-              <div class="col-sm-1">
+              <div class="col-sm-2">
                 <select id="selectFilterComp" class="form-control" [attr.disabled]="filter.compOptions.length == 1 ? '' : null" [(ngModel)]="filter.comp">
                   <option *ngFor="let compOption of filter.compOptions" [ngValue]="compOption.name">{{compOption.displayName}}</option>
                 </select>
               </div>
               <ng-container *ngIf="filter.type !== 'DateType'">
                 <div class="col-sm-4" *ngIf="filter.type !== 'booleanType' && filter.type !== 'ENUM_TYPE'">
-                  <input class="form-control" list="filterOptionList" type="text" [(ngModel)]="filter.val">
-                  <datalist id="filterOptionList">
+                  <input class="form-control" attr.list="list{{i}}" type="text" [(ngModel)]="filter.val">
+                  <datalist attr.id="list{{i}}">
                     <option *ngFor="let filterValueOption of filter.valOptions">{{filterValueOption}}</option>
                   </datalist>
                 </div>
@@ -79,110 +75,56 @@
         </ng-container>
 
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-primary btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="applyFilter()">Apply filter</button>
+          <div class="col-sm-offset-1 col-sm-11">
+            <button type="submit" class="btn btn-primary btn-main" (click)="applyFilters()">Apply filter</button>
             <button type="submit" class="btn btn-danger btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="clearFilters()">Clear filters</button>
+            <button class="btn btn-default btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="copyURL()">
+              <span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span> Clipboard
+            </button>
             <button type="submit" class="btn btn-default btn-main" [attr.disabled]="deployments.length < 1 ? '' : null" (click)="exportCSV()">
               <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Export</button>
             <button type="submit" class="btn btn-default btn-main" [attr.disabled]="editableDeployments() ? null : ''" (click)="showEdit()">
-              <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> deployments
+              <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
             </button>
             <ng-container *ngIf="hasPermissionToRequestDeployments">
               <a href="#/deployment/">
                 <button type="submit" class="btn btn-default btn-main">
-                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> deployment
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create
                 </button>
               </a>
             </ng-container>
-            <button class="btn btn-default btn-main" [attr.disabled]="filters.length < 1 ? '' : null" (click)="copyURL()">
-              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> clipboard
-            </button>
           </div>
         </div>
 
         <div class="form-group" *ngIf="deployments.length > 0">
-          <div class="col-sm-offset-2 col-sm-10">
+          <div class="col-sm-offset-1 col-sm-11">
             <amw-deployments-list [deployments]="deployments"
-                                  [filtersInUrl]="filtersInUrl"
-                                  (editDeploymentDate)='changeDeploymentDate($event)'
-                                  (selectAllDeployments)='switchDeployments($event)'
+                                  [sortCol]="sortCol"
+                                  [sortDirection]="sortDirection"
+                                  [currentPage]="currentPage"
+                                  [lastPage]="lastPage"
+                                  [filtersForParam]="filtersForParam"
+                                  (doConfirmDeployment)='confirmDeployment($event)'
                                   (doCancelDeployment)='cancelDeployment($event)'
                                   (doRejectDeployment)='rejectDeployment($event)'
-                                  (doConfirmDeployment) = 'confirmDeployment($event)'>
+                                  (editDeploymentDate)='changeDeploymentDate($event)'
+                                  (selectAllDeployments)='switchDeployments($event)'
+                                  (doSort)='sortDeploymentsBy($event)'
+                                  (doSetMax)='setMaxResultsPerPage($event)'
+                                  (doSetOffset)='setNewOffset($event)'>
             </amw-deployments-list>
           </div>
         </div>
-
       </span>
     </div>
-
-  </div>
 </div>
 
-<div id="deploymentsEdit" class="modal fade">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Edit deployments</h4>
-        </div>
-        <div class="modal-body">
-          <span class="form-horizontal">
-           <div class="form-group">
-            <label for="selectEditAction" class="col-sm-2 control-label">Action</label>
-            <div class="col-sm-9">
-              <select id="selectEditAction" class="form-control input-sm" [(ngModel)]="selectedEditAction" (change)="changeEditAction()">
-                <option *ngFor="let editAction of editActions" [ngValue]="editAction">{{editAction}}</option>
-              </select>
-            </div>
-          </div>
-          <ng-container *ngIf="selectedEditAction === 'Change date' || selectedEditAction === 'Confirm'">
-            <div class="form-group">
-              <label for="selectEditAction" class="col-sm-2 control-label">Date</label>
-              <div class="col-sm-9">
-                <div class="input-group date datepicker">
-                  <input type="text" class="form-control" #datePicker (blur)="deploymentDate = datePicker.value">
-                  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                </div>
-              </div>
-            </div>
-          </ng-container>
-
-          <!-- Confirm Options -->
-          <ng-container *ngIf="selectedEditAction === 'Confirm' && confirmationAttributes">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" [(ngModel)]="confirmationAttributes.sendEmailWhenDeployed">
-              send an email when deployed
-            </label>
-          </div>
-
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" [(ngModel)]="confirmationAttributes.simulateBeforeDeployment">
-              simulate before deployment
-            </label>
-          </div>
-
-          <div class="checkbox" *ngIf="hasPermissionShakedownTest">
-            <label>
-              <input type="checkbox" [(ngModel)]="confirmationAttributes.shakedownTestsWhenDeployed">
-              execute shakedown tests when deployed
-            </label>
-          </div>
-          <div class="checkbox" *ngIf="confirmationAttributes.shakedownTestsWhenDeployed">
-            <label>
-              <input type="checkbox" [(ngModel)]="confirmationAttributes.neighbourhoodTest">
-              test neighbourhood
-            </label>
-          </div>
-
-          </ng-container>
-          </span>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" (click)="doEdit()">Edit</button>
-        </div>
-      </div>
-    </div>
-</div>
+<amw-deployments-edit-modal [deployments]="getSelectedDeployments()"
+                            [deploymentDetailMap]="deploymentDetailMap"
+                            [editActions]="editActions"
+                            [hasPermissionShakedownTest]="hasPermissionShakedownTest"
+                            (doConfirmDeployment)='confirmDeployment($event)'
+                            (doCancelDeployment)='cancelDeployment($event)'
+                            (doRejectDeployment)='rejectDeployment($event)'
+                            (doEditDeploymentDate)='changeDeploymentDate($event)'>
+</amw-deployments-edit-modal>

@@ -53,7 +53,6 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
@@ -794,7 +793,7 @@ public class DeploymentBoundaryPersistenceTest
 
 		// when sorting by release ascending (releaseA - releaseC - releaseB)
 		String colToSort =	DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(true, 0, 10, null, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(0, 10, null, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
 		assertNotNull(result1);
@@ -805,7 +804,7 @@ public class DeploymentBoundaryPersistenceTest
 		assertEquals(d3, it.next());
 		
 		// when sorting by release descending (releaseB - releaseC - releaseC)
-		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0,
+		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(0,
 				10, null, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
 
 		// then
@@ -861,7 +860,7 @@ public class DeploymentBoundaryPersistenceTest
 		CustomFilter filter = CustomFilter.builder(DeploymentFilterTypes.RELEASE)
 				.comparatorSelection(ComparatorFilterOption.gte).build();
 		filter.setValue(CustomFilter.convertDateToString(releaseA.getInstallationInProductionAt()));
-		result = deploymentBoundary.getFilteredDeployments(true, 0, 10, Collections.singletonList(filter),
+		result = deploymentBoundary.getFilteredDeployments(0, 10, Collections.singletonList(filter),
 				null, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
@@ -874,7 +873,7 @@ public class DeploymentBoundaryPersistenceTest
 		// when filtering <= releaseC
 		filter.setValue(CustomFilter.convertDateToString(releaseC.getInstallationInProductionAt()));
 		filter.setComparatorSelection(ComparatorFilterOption.lte);
-		result = deploymentBoundary.getFilteredDeployments(true, 0,
+		result = deploymentBoundary.getFilteredDeployments(0,
 				10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);
 
@@ -888,7 +887,7 @@ public class DeploymentBoundaryPersistenceTest
 		// when filtering == releaseB
 		filter.setValue(CustomFilter.convertDateToString(releaseB.getInstallationInProductionAt()));
 		filter.setComparatorSelection(ComparatorFilterOption.eq);
-		result = deploymentBoundary.getFilteredDeployments(true, 0,
+		result = deploymentBoundary.getFilteredDeployments(0,
 				10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);
 
@@ -1090,7 +1089,7 @@ public class DeploymentBoundaryPersistenceTest
 
 		// when sorting by release ascending
 		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
 		assertNotNull(result1);
@@ -1101,7 +1100,7 @@ public class DeploymentBoundaryPersistenceTest
 		assertThat(it.next().getRelease(), is(release2));
 
 		// when sorting by release descending
-		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
+		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
 
 		// then
 		assertNotNull(result2);
@@ -1177,7 +1176,7 @@ public class DeploymentBoundaryPersistenceTest
 		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
 
 		// when
-		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
 		assertNotNull(result);
@@ -1253,7 +1252,7 @@ public class DeploymentBoundaryPersistenceTest
 		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
 
 		// when
-		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
 		assertNotNull(result);
@@ -1328,7 +1327,7 @@ public class DeploymentBoundaryPersistenceTest
 
 		// when sorted by tracking id asc
 		String colToSort = DeploymentFilterTypes.TRACKING_ID.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
 		assertNotNull(result1);
@@ -1346,7 +1345,7 @@ public class DeploymentBoundaryPersistenceTest
 
 		// when sorted by tracking id desc
 		colToSort = DeploymentFilterTypes.TRACKING_ID.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(true, 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
+		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments( 0, 10, filters, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
 
 		// then
 		assertNotNull(result2);

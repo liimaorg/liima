@@ -30,9 +30,9 @@ import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -64,7 +64,8 @@ public class RestrictionsRest {
      **/
     @POST
     @ApiOperation(value = "Add a Restriction")
-    public Response addRestriction(@ApiParam("Add a Restriction, either a role- or a userName must be set") RestrictionDTO request) {
+    public Response addRestriction(@ApiParam("Add a Restriction, either a role- or a userName must be set") RestrictionDTO request,
+                                   @QueryParam("delegation") boolean delegation) {
         Integer id;
         if (request.getId() != null) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
@@ -74,7 +75,7 @@ public class RestrictionsRest {
         }
         try {
             id = permissionBoundary.createRestriction(request.getRoleName(), request.getUserName(), request.getPermission().getName(), request.getResourceGroupId(),
-                    request.getResourceTypeName(), request.getResourceTypePermission(), request.getContextName(), request.getAction());
+                    request.getResourceTypeName(), request.getResourceTypePermission(), request.getContextName(), request.getAction(), delegation);
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
@@ -263,6 +264,7 @@ public class RestrictionsRest {
     /**
      * Find a specific UserRestriction with its Restrictions identified by UserName
      *
+     * @param userName
      * @return List<RestrictionDTO>
      */
     @GET
@@ -270,8 +272,23 @@ public class RestrictionsRest {
     @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
     public Response getUserRestriction(@ApiParam("UserName") @PathParam("userName") String userName) {
         List<RestrictionDTO> restrictionList = new ArrayList<>();
-        final List<RestrictionEntity> restrictions = permissionBoundary.getRestrictionsByUserName(userName);
-        for (RestrictionEntity restriction : restrictions) {
+        for (RestrictionEntity restriction : permissionBoundary.getRestrictionsByUserName(userName)) {
+            restrictionList.add(new RestrictionDTO(restriction));
+        }
+        return Response.status(OK).entity(restrictionList).build();
+    }
+
+    /**
+     * Find all Restrictions of the calling user
+     *
+     * @return List<RestrictionDTO>
+     */
+    @GET
+    @Path("/ownRestrictions/")
+    @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
+    public Response getCallerRestrictions() {
+        List<RestrictionDTO> restrictionList = new ArrayList<>();
+        for (RestrictionEntity restriction : permissionBoundary.getAllCallerRestrictions()) {
             restrictionList.add(new RestrictionDTO(restriction));
         }
         return Response.status(OK).entity(restrictionList).build();

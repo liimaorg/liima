@@ -166,13 +166,19 @@ public class DeploymentBoundary {
     }
 
     /**
-     * @return a Tuple containing the filter deployments and the total deployments for that filter if doPageingCalculation is true
+     * @param startIndex
+     * @param maxResults when maxResults > 0 it is expected to get the deployments for pagination. In this case an additional count() query will be executed.
+     * @param filter
+     * @param colToSort
+     * @param sortingDirection
+     * @param myAmw
+     * @return a Tuple containing the filter deployments and the total deployments for that filter if doPagingCalculation is true
      */
-    public Tuple<Set<DeploymentEntity>, Integer> getFilteredDeployments(
-            boolean doPageingCalculation, Integer startIndex,
+    public Tuple<Set<DeploymentEntity>, Integer> getFilteredDeployments(Integer startIndex,
             Integer maxResults, List<CustomFilter> filter, String colToSort,
             CommonFilterService.SortingDirectionType sortingDirection, List<Integer> myAmw) {
-        Integer totalItemsForCurrentFilter = null;
+        Integer totalItemsForCurrentFilter;
+        boolean doPaging = maxResults == null ? false : (maxResults > 0 ? true : false);
 
         StringBuilder stringQuery = new StringBuilder();
 
@@ -224,14 +230,14 @@ public class DeploymentBoundary {
         if (!hasLastDeploymentForAsEnvFilterSet) {
             deployments.addAll(resultList);
         } else {
-            resultList = specialSort(latestPerContext(resultList), colToSort, sortingDirection);
+            resultList = specialSort(latestPerContextAndGroup(resultList), colToSort, sortingDirection);
             if (to > 0) {
                 resultList = new ArrayList<>(resultList.subList(from, to < resultList.size() ? to : resultList.size()));
             }
             deployments.addAll(resultList);
         }
 
-        if (doPageingCalculation) {
+        if (doPaging) {
             String countQueryString = baseQuery.replace("select " + DEPLOYMENT_QL_ALIAS, "select count(" + DEPLOYMENT_QL_ALIAS + ".id)");
             // last param needs to be true if we are dealing with a combination of "State" and "Latest deployment job for App Server and Env"
             Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, hasLastDeploymentForAsEnvFilterSet, lastDeploymentState != null);
@@ -242,6 +248,8 @@ public class DeploymentBoundary {
             if (hasLastDeploymentForAsEnvFilterSet && lastDeploymentState == null && deployments.size() != allResults) {
                 totalItemsForCurrentFilter -= allResults - deployments.size();
             }
+        } else {
+            totalItemsForCurrentFilter = deployments.size();
         }
 
         return new Tuple<>(deployments, totalItemsForCurrentFilter);
@@ -278,22 +286,34 @@ public class DeploymentBoundary {
         }
         return deployment.getRelease().getName();
     }
-  
-    private List latestPerContext(List<DeploymentEntity> resultList) {
-        HashMap<ContextEntity, DeploymentEntity> latestByContext = new HashMap<>();
+
+    private List<DeploymentEntity> latestPerContextAndGroup(List<DeploymentEntity> resultList) {
+        HashMap<ContextEntity, HashMap<ResourceGroupEntity,  DeploymentEntity>> latestByContext = new HashMap<>();
         for (DeploymentEntity deployment : resultList) {
             if (!latestByContext.containsKey(deployment.getContext())) {
-                latestByContext.put(deployment.getContext(), deployment);
+                HashMap<ResourceGroupEntity,  DeploymentEntity> latestByResourceGrp = new HashMap<>();
+                latestByResourceGrp.put(deployment.getResourceGroup(), deployment);
+                latestByContext.put(deployment.getContext(), latestByResourceGrp);
             } else {
-                if (deployment.getDeploymentDate().after(latestByContext.get(deployment.getContext()).getDeploymentDate())) {
-                    latestByContext.put(deployment.getContext(), deployment);
-                } else if (deployment.getDeploymentDate().equals(latestByContext.get(deployment.getContext()).getDeploymentDate())
-                        && deployment.getId() > latestByContext.get(deployment.getContext()).getId()) {
-                        latestByContext.put(deployment.getContext(), deployment);
+                HashMap<ResourceGroupEntity, DeploymentEntity> innerMap = latestByContext.get(deployment.getContext());
+                if (!innerMap.containsKey(deployment.getResourceGroup()) ) {
+                    innerMap.put(deployment.getResourceGroup(), deployment);
+                } else {
+                    DeploymentEntity latestSoFar = innerMap.get(deployment.getResourceGroup());
+                    if (deployment.getDeploymentDate().after(latestSoFar.getDeploymentDate()))  {
+                        innerMap.put(deployment.getResourceGroup(), deployment);
+                    } else if (deployment.getDeploymentDate().equals(latestSoFar.getDeploymentDate())
+                            &&  deployment.getId() > latestSoFar.getId()) {
+                        innerMap.put(deployment.getResourceGroup(), deployment);
+                    }
                 }
             }
         }
-        return new ArrayList<>(latestByContext.values());
+        List<DeploymentEntity> latestList = new ArrayList<>();
+        for (HashMap<ResourceGroupEntity, DeploymentEntity> groupedDeployments : latestByContext.values()) {
+            latestList.addAll(groupedDeployments.values());
+        }
+        return latestList;
     }
 
     private List<DeploymentEntity> specialSort(List<DeploymentEntity> deploymentsList, String colToSort, CommonFilterService.SortingDirectionType sortingDirection) {
@@ -319,7 +339,7 @@ public class DeploymentBoundary {
                     Collections.sort(deploymentsList, new Comparator<DeploymentEntity>() {
                         @Override
                         public int compare(DeploymentEntity o1, DeploymentEntity o2) {
-                            return o1.getResourceGroup().getName().compareTo(o2.getResourceGroup().getName());
+                            return o1.getResourceGroup().getName().toLowerCase().compareTo(o2.getResourceGroup().getName().toLowerCase());
                         }
                     });
                     break;

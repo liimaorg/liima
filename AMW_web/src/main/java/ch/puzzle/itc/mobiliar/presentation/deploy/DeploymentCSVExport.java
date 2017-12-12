@@ -20,13 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.presentation.deploy;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.Tuple;
+import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -34,14 +34,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
-import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
+import java.io.IOException;
+import java.io.Writer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @WebServlet("/deploymentCsvExport")
 public class DeploymentCSVExport extends HttpServlet{
@@ -59,7 +58,7 @@ public class DeploymentCSVExport extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		Tuple<Set<DeploymentEntity>, Integer> deployments = deployScreenController.loadPendingDeployments(false, null, null, deployScreenDataProvider.getAppliedFilterList(), deployScreenDataProvider.getSortingColumn(), deployScreenDataProvider.getSortingDirection());
+		Tuple<Set<DeploymentEntity>, Integer> deployments = deployScreenController.loadPendingDeployments(null, null, deployScreenDataProvider.getAppliedFilterList(), deployScreenDataProvider.getSortingColumn(), deployScreenDataProvider.getSortingDirection());
 		resp.setCharacterEncoding("utf-8");
 		resp.setContentType("application/octet-stream");
 		resp.setHeader("Content-Disposition", "attachment; filename=deployments_"+new SimpleDateFormat("yyyy-MM-dd_HHmm").format(new Date())+".csv");

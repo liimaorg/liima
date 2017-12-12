@@ -1768,6 +1768,11 @@ a.expandable:before {
     margin: 0 6px 0 -2px;
 }
 
+/* chrome: avoid a horizontal scroll-bar by changing the zoom level */
+table.propertyTable textarea.propertyInputField {
+    overflow: hidden;
+}
+
 .btn.primary.red {
     background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ff0000), color-stop(100%, #770000));
     background: -webkit-linear-gradient(#ff0000, #770000);

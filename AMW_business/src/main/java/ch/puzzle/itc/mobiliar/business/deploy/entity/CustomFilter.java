@@ -321,7 +321,19 @@ public class CustomFilter {
     }
 
     public Enum<?> getEnumValue() {
-        return valueOf(enumType, value.toString());
+        try {
+            return valueOf(enumType, value.toString());
+        } catch (IllegalArgumentException e) {
+            if (enumType.getSimpleName().equals(DeploymentState.class.getSimpleName())) {
+                DeploymentState[] deploymentStates = (DeploymentState[]) enumType.getEnumConstants();
+                for (DeploymentState deploymentState : deploymentStates) {
+                    if (deploymentState.getDisplayName().equals(value.toString())) {
+                        return deploymentState;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public String getSqlComperator() {

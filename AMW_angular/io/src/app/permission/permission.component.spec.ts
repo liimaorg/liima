@@ -21,7 +21,7 @@ import { Permission } from './permission';
 class DummyComponent {
 }
 
-describe('PermissionComponent (type Role)', () => {
+describe('PermissionComponent without any params (default: type Role)', () => {
   // provide our implementations or mocks to the dependency injector
   beforeEach(() => TestBed.configureTestingModule({
     imports: [
@@ -63,11 +63,13 @@ describe('PermissionComponent (type Role)', () => {
 
   it('should invoke some services on ngOnInt',
     inject([PermissionComponent, PermissionService, EnvironmentService, ResourceService],
-      (permissionComponent: PermissionComponent, permissionService: PermissionService, environmentService: EnvironmentService, resourceService: ResourceService) => {
+      (permissionComponent: PermissionComponent, permissionService: PermissionService,
+       environmentService: EnvironmentService, resourceService: ResourceService) => {
     // given
     let permissions: Permission[] = [ {name: 'RESOURCE', old: false}, {name: 'RESOURCE_TYPE', old: false}];
     let environments: Environment[] = [ <Environment> { id: 1, name: 'U', parent: 'Dev' },
-      <Environment> { id: 2, name: 'V', parent: 'Dev' }, <Environment> { id: 3, name: 'T', parent: 'Test' } ];
+      <Environment> { id: 2, name: 'V', parent: 'Dev' },
+      <Environment> { id: 3, name: 'T', parent: 'Test' } ];
     spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(Observable.of(permissions));
     spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(Observable.of(environments));
     spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
@@ -75,6 +77,8 @@ describe('PermissionComponent (type Role)', () => {
     // when
     permissionComponent.ngOnInit();
     // then
+    expect(permissionComponent.delegationMode).toBeFalsy();
+    expect(permissionComponent.restrictionType).toEqual('role');
     expect(permissionService.getAllPermissionEnumValues).toHaveBeenCalled();
     expect(environmentService.getAllIncludingGroups).toHaveBeenCalled();
     expect(resourceService.getAllResourceGroups).toHaveBeenCalled();
@@ -218,7 +222,7 @@ describe('PermissionComponent (type Role)', () => {
       // when
       permissionComponent.persistRestriction();
       // then
-      expect(permissionService.createRestriction).toHaveBeenCalledWith(permissionComponent.restriction);
+      expect(permissionService.createRestriction).toHaveBeenCalledWith(permissionComponent.restriction, false);
   }));
 
   it('should initialize an empty Restriction on addRestriction',
@@ -233,7 +237,7 @@ describe('PermissionComponent (type Role)', () => {
       expect(permissionComponent.restriction.id).toBeNull();
   }));
 
-  describe('PermissionComponent (type User)', () => {
+  describe('PermissionComponent with param restrictionType (type User)', () => {
     beforeEach(() => TestBed.configureTestingModule({
       imports: [
         CommonModule,
@@ -267,7 +271,8 @@ describe('PermissionComponent (type Role)', () => {
 
     it('should invoke some services on ngOnInt',
       inject([PermissionComponent, PermissionService, EnvironmentService, ResourceService],
-        (permissionComponent: PermissionComponent, permissionService: PermissionService, environmentService: EnvironmentService, resourceService: ResourceService) => {
+        (permissionComponent: PermissionComponent, permissionService: PermissionService,
+         environmentService: EnvironmentService, resourceService: ResourceService) => {
           // given
           let permissions: Permission[] = [ {name: 'RESOURCE', old: false}, {name: 'RESOURCE_TYPE', old: false}];
           let environments: Environment[] = [ <Environment> { id: 1, name: 'U', parent: 'Dev' },
@@ -280,6 +285,7 @@ describe('PermissionComponent (type Role)', () => {
           // when
           permissionComponent.ngOnInit();
           // then
+          expect(permissionComponent.delegationMode).toBeFalsy();
           expect(permissionComponent.restrictionType).toEqual('user');
           expect(permissionService.getAllPermissionEnumValues).toHaveBeenCalled();
           expect(environmentService.getAllIncludingGroups).toHaveBeenCalled();
@@ -293,6 +299,74 @@ describe('PermissionComponent (type Role)', () => {
             { id: 2, name: 'V', parent: 'Dev', selected: false });
           expect(permissionComponent.groupedEnvironments['Test']).toContain({ id: 3, name: 'T', parent: 'Test', selected: false });
     }));
+
+  });
+
+  describe('PermissionComponent with param actingUser (delegation mode)', () => {
+    beforeEach(() => TestBed.configureTestingModule({
+      imports: [
+        CommonModule,
+        RouterTestingModule.withRoutes([
+          {path: 'permission', component: DummyComponent}
+        ])
+      ],
+      providers: [
+        BaseRequestOptions, {
+          provide: ActivatedRoute,
+          useValue: {
+            params: Observable.of({actingUser: 'testUser'})
+          },
+        },
+        MockBackend,
+        {
+          provide: Http,
+          useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+            return new Http(backend, defaultOptions);
+          },
+          deps: [MockBackend, BaseRequestOptions]
+        },
+        EnvironmentService,
+        PermissionService,
+        ResourceService,
+        PermissionComponent,
+        AppState,
+      ],
+      declarations: [DummyComponent],
+    }));
+
+    it('should invoke some services on ngOnInt',
+      inject([PermissionComponent, PermissionService, EnvironmentService, ResourceService],
+        (permissionComponent: PermissionComponent, permissionService: PermissionService,
+         environmentService: EnvironmentService, resourceService: ResourceService) => {
+          // given
+          let userNames: string[] = [ 'someUserName', 'anotherUserName', 'testUser' ];
+          let restrictions: Restriction[] = [ <Restriction> { id: 1, action: 'CREATE', permission: { name: 'RESOURCE', old: false } },
+            <Restriction> { id: 2, action: 'UPDATE', permission: { name: 'RESOURCE_TYPE', old: false } }];
+          let permissions: Permission[] = [ {name: 'RESOURCE', old: false}, {name: 'RESOURCE_TYPE', old: false}];
+          let environments: Environment[] = [ <Environment> { id: 1, name: 'U', parent: 'Dev' },
+            <Environment> { id: 2, name: 'V', parent: 'Dev' }, <Environment> { id: 3, name: 'T', parent: 'Test' } ];
+          spyOn(permissionService, 'getAllUserRestrictionNames').and.returnValue(Observable.of(userNames));
+          spyOn(permissionService, 'getOwnUserAndRoleRestrictions').and.returnValue(Observable.of(restrictions));
+          spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(Observable.of(environments));
+          spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
+          spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
+          // when
+          permissionComponent.ngOnInit();
+          // then
+          expect(permissionComponent.delegationMode).toBeTruthy();
+          expect(permissionComponent.restrictionType).toEqual('user');
+          expect(permissionComponent.actingUserName).toEqual('testUser');
+          expect(permissionService.getAllUserRestrictionNames).toHaveBeenCalled();
+          expect(permissionComponent.userNames.length).toEqual(2);
+          expect(permissionComponent.userNames).not.toContain('testUser');
+          expect(environmentService.getAllIncludingGroups).toHaveBeenCalled();
+          expect(resourceService.getAllResourceGroups).toHaveBeenCalled();
+          expect(resourceService.getAllResourceTypes).toHaveBeenCalled();
+          expect(permissionService.getOwnUserAndRoleRestrictions).toHaveBeenCalled();
+          expect(permissionComponent.assignableRestrictions).toEqual(restrictions);
+          expect(permissionComponent.assignablePermissions).toEqual(permissions);
+          expect(permissionComponent.restriction).toBeNull();
+        }));
 
   });
 

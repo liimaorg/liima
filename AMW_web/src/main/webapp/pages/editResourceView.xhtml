@@ -178,7 +178,7 @@
                     </ul>
                 </li>
                 </h:panelGroup>
-                <h:panelGroup rendered="${editResourceView.canEditResourceType or (editResourceView.relativeApplicationServerId ne null) or editResourceView.canShowDeploymentLink}">
+                <h:panelGroup rendered="${editResourceView.canEditResourceType or (editResourceView.relativeApplicationServerId ne null) or editResourceView.canShowDeploymentLink or editResourceView.canDelegatePermissions}">
                 <li class="dropdown">
                     <a class="btn light dropdown-toggle" data-toggle="dropdown">
                         Go to
@@ -218,13 +218,18 @@
                                 <f:param name="appserver_name" value="${editResourceView.applicationServerName}"/>
                                 <f:param name="environment_name" value="${editResourceView.environmentName}"/>
                             </h:link>
-
                             <ui:fragment rendered="${editResourceView.canShowDeploymentLink and editResourceView.angularDeploymentLink}">
-                                <a href="/AMW_angular/#/deployments?filters=${editResourceView.deploymentLinkAngular}">
+                                <a class="btn light" href="/AMW_angular/#/deployments?filters=${editResourceView.deploymentLinkAngular}">
                                     Deployments
                                 </a>
                             </ui:fragment>
-
+                        </li>
+                        <li>
+                            <ui:fragment rendered="${editResourceView.canDelegatePermissions}">
+                                <a class="btn light" href="/AMW_angular/#/permission/delegation/${editResourceView.userName}">
+                                    Permissions
+                                </a>
+                            </ui:fragment>
                         </li>
                     </ul>
                 </li>

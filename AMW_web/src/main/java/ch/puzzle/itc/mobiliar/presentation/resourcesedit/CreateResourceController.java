@@ -27,10 +27,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Application;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ApplicationServer;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
@@ -54,6 +52,9 @@ public class CreateResourceController {
 
     @Inject
     private ResourceBoundary resourceBoundary;
+
+    @Inject
+    private PermissionBoundary permissionBoundary;
 
     @Inject
     private UserSettings userSettings;
@@ -88,6 +89,11 @@ public class CreateResourceController {
                         userSettings.addFavoriteResource(r.getEntity().getResourceGroup().getId(), r.getName(), resourceType.getName());
                         String message = "Resource " + newResourceName + " successfully created";
                         GlobalMessageAppender.addSuccessMessage(message);
+                        try {
+                            permissionBoundary.createSelfAssignedRestrictions(r.getEntity());
+                        } catch (AMWException e) {
+                            GlobalMessageAppender.addSuccessMessage("Failed to add resource permissions");
+                        }
                         isSuccessful = true;
                     }
                 } catch (EJBException e) {
@@ -168,6 +174,11 @@ public class CreateResourceController {
                     } catch (ResourceNotFoundException e) {
                         message = "Could not add Application " + appName + " to favorites.";
                         GlobalMessageAppender.addSuccessMessage(message);
+                    }
+                    try {
+                        permissionBoundary.createSelfAssignedRestrictions(app.getEntity());
+                    } catch (AMWException e) {
+                        GlobalMessageAppender.addSuccessMessage("Failed to add resource permissions");
                     }
                     isSuccessful = true;
                 }

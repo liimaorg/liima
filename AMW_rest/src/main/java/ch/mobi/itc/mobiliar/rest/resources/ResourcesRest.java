@@ -47,9 +47,9 @@ import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 
 import javax.enterprise.context.RequestScoped;
@@ -221,13 +221,24 @@ public class ResourcesRest {
     @Path("/resourceGroups")
     @GET
     @ApiOperation(value = "Get all available ResourceGroups - used by Angular")
-    public List<ResourceDTO> getAllResourceGroups() throws ValidationException {
-        List<ResourceGroupEntity> resourceGroups = resourceGroupLocator.getAllResourceGroupsByName();
+    public List<ResourceDTO> getAllResourceGroups(@QueryParam("onlyUserAssignable") boolean onlyUserAssignable) throws ValidationException {
+        List<ResourceGroupEntity> resourceGroups = onlyUserAssignable ? resourceGroupLocator.getAllResourceGroupsByName() : resourceGroupLocator.getAllResourceGroupsByName();
         List<ResourceDTO> resourceDTOs = new ArrayList<>();
         for (ResourceGroupEntity resourceGroup : resourceGroups) {
             resourceDTOs.add(new ResourceDTO(resourceGroup, null));
         }
         return resourceDTOs;
+    }
+
+    @Path("/exists/{resourceId}")
+    @GET
+    @ApiOperation(value = "Checks if a specific Resource still exists - used by Angular")
+    public Response getAllResourceGroups(@PathParam("resourceId") Integer resourceId) throws ValidationException {
+        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        if (resource == null) {
+            return Response.ok(false).build();
+        }
+        return Response.ok(true).build();
     }
 
     @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}")
@@ -266,7 +277,7 @@ public class ResourcesRest {
         List<AppWithVersionDTO> apps = new ArrayList<>();
         List<DeploymentEntity.ApplicationWithVersion> appVersions = deploymentBoundary.getVersions(appServer, contextIds, release);
         for (DeploymentEntity.ApplicationWithVersion appVersion : appVersions) {
-            apps.add(new AppWithVersionDTO(appVersion.getApplicationName(), appVersion.getVersion()));
+            apps.add(new AppWithVersionDTO(appVersion.getApplicationName(), appVersion.getApplicationId(), appVersion.getVersion()));
         }
         return Response.ok(apps).build();
 

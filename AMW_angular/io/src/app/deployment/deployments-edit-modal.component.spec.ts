@@ -1,0 +1,109 @@
+import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { inject, TestBed } from '@angular/core/testing';
+import { BaseRequestOptions, ConnectionBackend, Http } from '@angular/http';
+import { MockBackend } from '@angular/http/testing';
+import { CommonModule } from '@angular/common';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AppState } from '../app.service';
+import { Deployment } from './deployment';
+import { DeploymentDetail } from './deployment-detail';
+import { DeploymentService } from './deployment.service';
+import {DeploymentsEditModalComponent} from "./deployments-edit-modal.component";
+import * as moment from 'moment';
+
+@Component({
+  template: ''
+})
+class DummyComponent {
+}
+
+describe('DeploymentsEditModalComponent (with query params)', () => {
+  // provide our implementations or mocks to the dependency injector
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [
+      CommonModule,
+      RouterTestingModule.withRoutes([
+        {path: 'deployments', component: DummyComponent}
+      ])
+    ],
+    providers: [
+      BaseRequestOptions, {
+        provide: ActivatedRoute
+      },
+      MockBackend,
+      {
+        provide: Http,
+        useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+          return new Http(backend, defaultOptions);
+        },
+        deps: [MockBackend, BaseRequestOptions]
+      },
+      DeploymentService,
+      DeploymentsEditModalComponent,
+      AppState
+    ],
+    declarations: [DummyComponent],
+  }));
+
+  it('should log unknown edit actions on doEdit',
+    inject([DeploymentsEditModalComponent], (deploymentsEditModalComponent: DeploymentsEditModalComponent) => {
+      // given
+      deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
+      deploymentsEditModalComponent.selectedEditAction = 'test';
+      deploymentsEditModalComponent.deployments = [ <Deployment> { id: 1, selected: true } ];
+      spyOn(console, 'error');
+
+      // when
+      deploymentsEditModalComponent.doEdit();
+
+      // then
+      expect(console.error).toHaveBeenCalled();
+  }));
+
+  it('should apply date for confirmation',
+    inject([DeploymentsEditModalComponent], (deploymentsEditModalComponent: DeploymentsEditModalComponent) => {
+      // given
+      let newDeploymentDate: string = '30.11.2017 09:19';
+      let expectedDeploymentDate: number = moment(newDeploymentDate, 'DD.MM.YYYY HH:mm').valueOf();
+
+      deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
+      deploymentsEditModalComponent.deploymentDate = newDeploymentDate;
+      deploymentsEditModalComponent.selectedEditAction = 'Confirm';
+      deploymentsEditModalComponent.deployments = [
+        <Deployment> { id: 1, selected: true, deploymentDate: 5555 },
+        <Deployment> { id: 1, selected: true, deploymentDate: 6666 } ];
+      spyOn(console, 'error');
+
+      // when
+      deploymentsEditModalComponent.doEdit();
+
+      // then
+      let deployment1: Deployment = deploymentsEditModalComponent.deployments[0];
+      let deployment2: Deployment = deploymentsEditModalComponent.deployments[1];
+      expect(deployment1.deploymentDate).toEqual(expectedDeploymentDate);
+      expect(deployment2.deploymentDate).toEqual(expectedDeploymentDate);
+    }));
+
+  it('should clear data after doEdit()',
+    inject([DeploymentsEditModalComponent], (deploymentsEditModalComponent: DeploymentsEditModalComponent) => {
+      // given
+      let newDeploymentDate: string = '30.11.2017 09:19';
+
+      deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
+      deploymentsEditModalComponent.deploymentDate = newDeploymentDate;
+      deploymentsEditModalComponent.selectedEditAction = 'Confirm';
+      deploymentsEditModalComponent.deployments = [
+        <Deployment> { id: 1, selected: true, deploymentDate: 5555 },
+        <Deployment> { id: 1, selected: true, deploymentDate: 6666 } ];
+
+      // when
+      deploymentsEditModalComponent.doEdit();
+
+      // then
+      expect(deploymentsEditModalComponent.confirmationAttributes).toEqual(<DeploymentDetail> {});
+      expect(deploymentsEditModalComponent.selectedEditAction).toEqual('');
+      expect(deploymentsEditModalComponent.deploymentDate).toEqual('');
+  }));
+
+});

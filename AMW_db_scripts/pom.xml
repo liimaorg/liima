@@ -2,7 +2,7 @@
 	<parent>
 		<groupId>ch.puzzle.itc.mobiliar</groupId>
 		<artifactId>AMW_parent</artifactId>
-		<version>1.13.2-SNAPSHOT</version>
+		<version>1.15.3-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -33,60 +33,11 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<maven.compiler.source>1.7</maven.compiler.source>
 
-		<db>h2</db>
+		<db>h2.test</db>
 		<goal>updateSQL</goal>
 	</properties>
-	
-	<dependencyManagement>
-		<dependencies>
-			<!-- Define the version of JBoss' Java EE 6 APIs we want to use -->
-			<!-- JBoss distributes a complete set of Java EE 6 APIs including a Bill 
-				of Materials (BOM). A BOM specifies the versions of a "stack" (or a collection) 
-				of artifacts. We use this here so that we always get the correct versions 
-				of artifacts. Here we use the jboss-javaee-6.0 stack (you can read this as 
-				the JBoss stack of the Java EE 6 APIs). You can actually use this stack with 
-				any version of JBoss EAP that implements Java EE 6. -->
-			<dependency>
-				<groupId>org.jboss.bom</groupId>
-				<artifactId>jboss-javaee-6.0-with-hibernate</artifactId>
-				<version>${version.jboss.spec.javaee.6.0}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<dependencies>
-
-		<!-- Import the CDI API, we use provided scope as the API is included in 
-			JBoss EAP 6 -->
-		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Import the Common Annotations API (JSR-250), we use provided scope 
-			as the API is included in JBoss EAP 6 -->
-		<dependency>
-			<groupId>org.jboss.spec.javax.annotation</groupId>
-			<artifactId>jboss-annotations-api_1.1_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Import the Servlet API, we use provided scope as the API is included 
-			in JBoss EAP 6 -->
-		<dependency>
-			<groupId>org.jboss.spec.javax.servlet</groupId>
-			<artifactId>jboss-servlet-api_3.0_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>org.liquibase</groupId>
@@ -94,80 +45,29 @@
 			<version>${version.liquibase}</version>
 		</dependency>
 
-
 		<dependency>
 			<!-- logging adapter to prevent liquibase from logging to stderr -->
 			<groupId>com.mattbertolini</groupId>
 			<artifactId>liquibase-slf4j</artifactId>
 			<version>${version.liquibase-slf4j}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>${version.h2}</version>
-		</dependency>
 		
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-		    <version>${version.pg}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>ch.puzzle.itc.mobiliar</groupId>
-			<artifactId>AMW_business</artifactId>
-			<version>1.13.2-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-
 	</dependencies>
-	
-	<build>
-		<!-- Set the name of the war, used as the context root when the app is 
-			deployed -->
-		<finalName>${project.artifactId}</finalName>
-		<plugins>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<!-- Java EE 6 doesn't require web.xml, Maven needs to catch up! -->
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
-			</plugin>
-			<!-- JBoss AS plugin to deploy war -->
-			<plugin>
-				<groupId>org.jboss.as.plugins</groupId>
-				<artifactId>jboss-as-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 
 	<profiles>
 		<profile>
-			<id>liquibaseora</id>
-			<activation>
-				<property>
-					<name>db</name>
-					<value>ora</value>
-				</property>
-			</activation>
+			<id>h2</id>
 			<dependencies>
 				<dependency>
-					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc6</artifactId>
-					<version>${version.ora}</version>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<version>${version.h2}</version>
 				</dependency>
 			</dependencies>
 		</profile>
+		
 		<profile>
-			<id>liquibaseoralocal</id>
-			<activation>
-				<property>
-					<name>db</name>
-					<value>ora.local</value>
-				</property>
-			</activation>
+			<id>ora</id>
 			<dependencies>
 				<dependency>
 					<groupId>com.oracle</groupId>
@@ -176,6 +76,18 @@
 				</dependency>
 			</dependencies>
 		</profile>
+
+		<profile>
+			<id>pg</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+					<version>${version.pg}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
         <profile>
             <id>liquibasecompare</id>
             <build>
@@ -211,7 +123,7 @@
                             <dependency>
                                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                                 <artifactId>AMW_business</artifactId>
-                                <version>1.13.2-SNAPSHOT</version>
+                                <version>1.15.3-SNAPSHOT</version>
                             </dependency>
                         </dependencies>
                     </plugin>
@@ -229,7 +141,6 @@
 				</resources>
 
 				<plugins>
-
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>

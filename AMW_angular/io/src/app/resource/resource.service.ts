@@ -30,9 +30,31 @@ export class ResourceService {
     return resource$;
   }
 
+  resourceExists(resourceId: number): Observable<Resource> {
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/exists/${resourceId}`, {headers: this.getHeaders()})
+      .map((response: Response) => response.json())
+      .catch(handleError);
+    return resource$;
+  }
+
   getAllResourceGroups(): Observable<Resource[]> {
     let resource$ = this.http
       .get(`${this.baseUrl}/resources/resourceGroups`, {headers: this.getHeaders()})
+      .map(mapResources)
+      .catch(handleError);
+    return resource$;
+  }
+
+  getAllAssignableResourceGroups(): Observable<Resource[]> {
+    let params: URLSearchParams = new URLSearchParams();
+    params.set('onlyUserAssignable', 'true');
+    let options = new RequestOptions({
+      search: params,
+      headers: this.getHeaders()
+    });
+    let resource$ = this.http
+      .get(`${this.baseUrl}/resources/resourceGroups`, options)
       .map(mapResources)
       .catch(handleError);
     return resource$;

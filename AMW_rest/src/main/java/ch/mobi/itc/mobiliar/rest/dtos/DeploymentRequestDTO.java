@@ -38,7 +38,7 @@ public class DeploymentRequestDTO {
 	private Date deploymentDate; // optional
 	private Date stateToDeploy; // optional
 	private String environmentName;
-	private List<AppWithVersionDTO> appsWithVersion;
+	private List<AppWithVersionDTO> appsWithVersion; // optional
 	private Boolean requestOnly = false; // optional
 	private Boolean simulate = false; // optional
 	private Boolean executeShakedownTest = false; // optional
@@ -64,7 +64,7 @@ public class DeploymentRequestDTO {
 		environmentName = deploymentRequestDto.getEnvironmentName();
 		appsWithVersion = new LinkedList<>();
 		for(AppWithVersionDTO app : deploymentRequestDto.getAppsWithVersion()) {
-			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getVersion()));
+			appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
 		}
 		requestOnly = deploymentRequestDto.getRequestOnly();
 		simulate = deploymentRequestDto.getSimulate();

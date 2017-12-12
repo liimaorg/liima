@@ -121,8 +121,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   initAppservers() {
     this.isLoading = true;
-    this.resourceService
-      .getByType('APPLICATIONSERVER').subscribe(
+    this.resourceService.getByType('APPLICATIONSERVER').subscribe(
       /* happy path */ (r) => this.appservers = r.sort(function(a, b){return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }); }),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.setPreselected());
@@ -194,11 +193,11 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private initRedeploymentValues() {
     this.isLoading = false;
     this.composeRedeploymentAppserverDisplayName();
-    this.setPreSelectedEnvironment();
     this.transDeploymentParameters = this.selectedDeployment.deploymentParameters;
     this.appsWithVersion = this.selectedDeployment.appsWithVersion;
     this.selectedAppserver = <Resource> { id: this.selectedDeployment.appServerId, name: this.selectedDeployment.appServerName };
     this.loadReleases();
+    this.setPreSelectedEnvironment();
     this.canDeploy();
   }
 
@@ -362,7 +361,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     let link: string;
     if (this.deploymentService.isAngularDeploymentsGuiActive()) {
       link = '<a href="#/deployments?filters=[{%22name%22:%22Tracking%20Id%22,%22val%22:%22'
-        + this.deploymentResponse.trackingId + '%22}]&autoload=true">';
+        + this.deploymentResponse.trackingId + '%22}]">';
     } else {
       link = '<a href="/AMW_web/pages/deploy.xhtml?tracking_id=' + this.deploymentResponse.trackingId + '">';
     }
@@ -372,11 +371,11 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private initEnvironments() {
     this.isLoading = true;
-    this.environmentService
-      .getAll().subscribe(
-      /* happy path */ (r) => this.environments = r,
+    this.environmentService.getAll().subscribe(
+      /* happy path */ (r) => { this.environments = r;
+                                this.extractEnvironmentGroups(); },
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.extractEnvironmentGroups());
+      /* onComplete */ () => this.isLoading = false);
   }
 
   private extractEnvironmentGroups() {
@@ -386,13 +385,12 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       }
       this.groupedEnvironments[environment['parent']].push(environment);
     });
-    this.isLoading = false;
   }
 
   private loadDeploymentParameters() {
-    this.deploymentService
-      .getAllDeploymentParameterKeys().subscribe(
-      /* happy path */ (r) => this.deploymentParameters = r.sort(function(a, b){return a.key.localeCompare(b.key, undefined, { sensitivity: 'base' }); }),
+    this.deploymentService.getAllDeploymentParameterKeys().subscribe(
+      /* happy path */ (r) => this.deploymentParameters = r.sort(function(a, b) {
+        return a.key.localeCompare(b.key, undefined, { sensitivity: 'base' }); }),
       /* error path */ (e) => this.errorMessage = e);
   }
 
