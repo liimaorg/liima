@@ -173,17 +173,19 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       expect(permissionComponent.restrictions).toContain({ id: 121, contextName: 'T' });
   }));
 
-  it('should reset the Restriction on cancel',
+  it('should reset the Restriction and error message on cancel',
     inject([PermissionComponent],
       (permissionComponent: PermissionComponent) => {
       // given
       permissionComponent.restriction = <Restriction> { id: 111, contextName: 'T', permission: { name: 'aPermission' } };
       permissionComponent.backupRestriction = <Restriction> { id: 111, contextName: 'B', permission: { name: 'aPermission' } };
+      permissionComponent.errorMessage = 'Error';
       // when
       permissionComponent.cancel();
       // then
       expect(permissionComponent.restriction).toBeNull();
       expect(permissionComponent.backupRestriction).toBeNull();
+      expect(permissionComponent.errorMessage).toBeNull();
   }));
 
   it('should create a copy of the original Restriction on modifyRestriction',

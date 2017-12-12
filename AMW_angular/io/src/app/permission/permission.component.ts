@@ -119,6 +119,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.resetPermissionList();
     this.restriction = null;
     this.backupRestriction = null;
+    this.errorMessage = null;
   }
 
   modifyRestriction(restriction: Restriction) {
