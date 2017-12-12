@@ -150,8 +150,8 @@ public class ResourceValidationServiceIntegrationTest {
         service.validateResourceTypeName(newTypeName, typeName);
     }
 
-    @Test(expected = AMWException.class)
-    public void shouldNotAllowToAlterCaseOfResourceTypeName() throws Exception {
+    @Test
+    public void shouldAllowToAlterCaseOfResourceTypeName() throws Exception {
         // given
         String typeName = "typeamw";
         String newTypeName = "typeAMW";

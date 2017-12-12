@@ -29,29 +29,28 @@ public class ResourcesScreenQueries {
 	@Inject
 	private EntityManager entityManager;
 	
-	public Query searchResourceTypeByName(String resourceTypeName) {
+	public Query searchResourceTypeByNameCaseInsensitive(String resourceTypeName) {
+		return  entityManager.createQuery("select resType from ResourceTypeEntity resType where lower(resType.name)=:resourceTypeName")
+				.setParameter("resourceTypeName", resourceTypeName.toLowerCase());
+	}
 
-		Query query = entityManager.createQuery("select resType from ResourceTypeEntity resType where lower(resType.name)=:resourceTypeName").setParameter("resourceTypeName", resourceTypeName.toLowerCase());
-		
-		return query;
+	public Query searchResourceTypeByName(String resourceTypeName) {
+		return entityManager.createQuery("select resType from ResourceTypeEntity resType where resType.name=:resourceTypeName")
+				.setParameter("resourceTypeName", resourceTypeName);
 	}
 	
 	public Query searchResourceByName(String resourceName) {
-		Query query = entityManager.createQuery("from ResourceEntity as res where res.name like '" + resourceName + "'");
-		
-		return query;
+		return entityManager.createQuery("from ResourceEntity as res where res.name like '" + resourceName + "'");
 	}
 
 	public Query searchResourceBySoftlinkIdAndHasNotResourceGroupId(String softlinkId, Integer resourceGroupId){
-		Query query = null;
-		if(resourceGroupId != null){
-			query = entityManager.createQuery("FROM ResourceEntity r where LOWER(r.softlinkId)=:softlinkId AND RESOURCEGROUP_ID!=:resourceGroupId");
-			query.setParameter("softlinkId", softlinkId.toLowerCase()).setParameter("resourceGroupId", resourceGroupId);
-		}else{
-			query = entityManager.createQuery("FROM ResourceEntity r where LOWER(r.softlinkId)=:softlinkId");
-			query.setParameter("softlinkId", softlinkId.toLowerCase());
+		if (resourceGroupId != null){
+			return entityManager.createQuery("FROM ResourceEntity r where LOWER(r.softlinkId)=:softlinkId AND RESOURCEGROUP_ID!=:resourceGroupId")
+					.setParameter("softlinkId", softlinkId.toLowerCase()).setParameter("resourceGroupId", resourceGroupId);
 		}
-		return query;
+		return entityManager.createQuery("FROM ResourceEntity r where LOWER(r.softlinkId)=:softlinkId")
+				.setParameter("softlinkId", softlinkId.toLowerCase());
+
 	}
 
 }
