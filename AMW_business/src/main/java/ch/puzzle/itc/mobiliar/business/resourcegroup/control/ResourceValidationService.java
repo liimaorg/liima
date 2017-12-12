@@ -39,36 +39,45 @@ public class ResourceValidationService {
     ResourcesScreenQueries queries;
 
     /**
-     * @param name - the resource name to be validated
+     * @param resourceName - the resource name to be validated
      * @throws AMWException - if the name is invalid, an AMW exception is thrown
      */
-    public void validateResourceName(String name) throws AMWException {
-        if (name == null || name.trim().isEmpty()) {
+    public void validateResourceName(String resourceName) throws AMWException {
+        if (resourceName == null || resourceName.trim().isEmpty()) {
             throw new AMWException("The resource name must not be empty!");
         }
         // Check if a resource with the same name already exists...
         List<ResourceEntity> resourceEntities = QueryUtils.fetch(ResourceEntity.class,
-                  queries.searchResourceByName(name), 0, -1);
-        if (resourceEntities.size() > 0) {
-            String message = "A resource with the name " + name + " already exists!";
-            throw new AMWException(message);
+                  queries.searchResourceByName(resourceName), 0, -1);
+        if (resourceEntities != null) {
+            for (ResourceEntity resourceEntity : resourceEntities) {
+                if (resourceEntity.getName().equalsIgnoreCase(resourceName)) {
+                    String message = "A resource with the name " + resourceName + " already exists!";
+                    throw new ElementAlreadyExistsException(message, ResourceType.class, resourceName);
+                }
+            }
         }
     }
 
     /**
      * @param resourceTypeName - the resource type name to be validated
+     * @param oldResourceTypeName - the current name of the resource type
      * @throws AMWException - if the name is invalid, an AMW exception is thrown
      */
     public void validateResourceTypeName(String resourceTypeName, String oldResourceTypeName) throws AMWException {
         if (resourceTypeName == null || resourceTypeName.trim().isEmpty()) {
             throw new AMWException("The name of the resource type must not be empty!");
         }
-        if (resourceTypeName != null && !resourceTypeName.equals(oldResourceTypeName)) {
+        if (!resourceTypeName.equals(oldResourceTypeName)) {
             List<ResourceTypeEntity> resourceTypeEntities = QueryUtils.fetch(ResourceTypeEntity.class,
                       queries.searchResourceTypeByName(resourceTypeName), 0, -1);
-            if (resourceTypeEntities.size() > 0) {
-                String message = "A resource type with the name " + resourceTypeName + " already exists!";
-                throw new ElementAlreadyExistsException(message, ResourceType.class, resourceTypeName);
+            if (resourceTypeEntities != null) {
+                for (ResourceTypeEntity resourceTypeEntity : resourceTypeEntities) {
+                    if (resourceTypeEntity.getName().equalsIgnoreCase(resourceTypeName)) {
+                        String message = "A resource type with the name " + resourceTypeName + " already exists!";
+                        throw new ElementAlreadyExistsException(message, ResourceType.class, resourceTypeName);
+                    }
+                }
             }
         }
     }

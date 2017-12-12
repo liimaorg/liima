@@ -151,7 +151,7 @@ public class ResourceTypeDomainService {
 	private ResourceTypeEntity getUniqueResourceTypeByName(String resourceTypeName){
 		ResourceTypeEntity resourceType = null;
 		try {
-			Query searchUniqueResourceTypeQuery = queries.searchResourceTypeByName(resourceTypeName);
+			Query searchUniqueResourceTypeQuery = queries.searchResourceTypeByNameCaseInsensitive(resourceTypeName);
 			resourceType = (ResourceTypeEntity) searchUniqueResourceTypeQuery.getSingleResult();
 		}
 		catch (NoResultException nre) {
