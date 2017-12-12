@@ -86,3 +86,10 @@ table#deployment-list .glyphicon-info-combined {
     transform: rotate(359deg);
   }
 }
+
+/*
+ * No whitespace between table and pagination
+ */
+table#deployment-list {
+  margin-bottom: 0;
+}

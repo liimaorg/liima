@@ -19,15 +19,15 @@ export class EnvironmentService {
   }
 
   private getEnvironments(includingGroups: boolean): Observable<Environment[]> {
-    let params: URLSearchParams = new URLSearchParams();
+    const params: URLSearchParams = new URLSearchParams();
     if (includingGroups) {
       params.set('includingGroups', 'true');
     }
-    let options = new RequestOptions({
+    const options = new RequestOptions({
       search: params,
       headers: this.getHeaders()
     });
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/environments`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
@@ -35,7 +35,7 @@ export class EnvironmentService {
   }
 
   private getHeaders() {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Accept', 'application/json');
     return headers;
   }

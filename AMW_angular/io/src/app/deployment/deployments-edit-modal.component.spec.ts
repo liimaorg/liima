@@ -9,7 +9,7 @@ import { AppState } from '../app.service';
 import { Deployment } from './deployment';
 import { DeploymentDetail } from './deployment-detail';
 import { DeploymentService } from './deployment.service';
-import {DeploymentsEditModalComponent} from "./deployments-edit-modal.component";
+import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import * as moment from 'moment';
 
 @Component({
@@ -34,7 +34,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
@@ -51,7 +51,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
       // given
       deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
       deploymentsEditModalComponent.selectedEditAction = 'test';
-      deploymentsEditModalComponent.deployments = [ <Deployment> { id: 1, selected: true } ];
+      deploymentsEditModalComponent.deployments = [{id: 1, selected: true} as Deployment];
       spyOn(console, 'error');
 
       // when
@@ -64,23 +64,22 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
   it('should apply date for confirmation',
     inject([DeploymentsEditModalComponent], (deploymentsEditModalComponent: DeploymentsEditModalComponent) => {
       // given
-      let newDeploymentDate: string = '30.11.2017 09:19';
-      let expectedDeploymentDate: number = moment(newDeploymentDate, 'DD.MM.YYYY HH:mm').valueOf();
+      const newDeploymentDate: string = '30.11.2017 09:19';
+      const expectedDeploymentDate: number = moment(newDeploymentDate, 'DD.MM.YYYY HH:mm').valueOf();
 
       deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
       deploymentsEditModalComponent.deploymentDate = newDeploymentDate;
       deploymentsEditModalComponent.selectedEditAction = 'Confirm';
-      deploymentsEditModalComponent.deployments = [
-        <Deployment> { id: 1, selected: true, deploymentDate: 5555 },
-        <Deployment> { id: 1, selected: true, deploymentDate: 6666 } ];
+      deploymentsEditModalComponent.deployments = [{id: 1, selected: true, deploymentDate: 5555} as Deployment,
+        {id: 1, selected: true, deploymentDate: 6666} as Deployment];
       spyOn(console, 'error');
 
       // when
       deploymentsEditModalComponent.doEdit();
 
       // then
-      let deployment1: Deployment = deploymentsEditModalComponent.deployments[0];
-      let deployment2: Deployment = deploymentsEditModalComponent.deployments[1];
+      const deployment1: Deployment = deploymentsEditModalComponent.deployments[0];
+      const deployment2: Deployment = deploymentsEditModalComponent.deployments[1];
       expect(deployment1.deploymentDate).toEqual(expectedDeploymentDate);
       expect(deployment2.deploymentDate).toEqual(expectedDeploymentDate);
     }));
@@ -88,20 +87,19 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
   it('should clear data after doEdit()',
     inject([DeploymentsEditModalComponent], (deploymentsEditModalComponent: DeploymentsEditModalComponent) => {
       // given
-      let newDeploymentDate: string = '30.11.2017 09:19';
+      const newDeploymentDate: string = '30.11.2017 09:19';
 
       deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
       deploymentsEditModalComponent.deploymentDate = newDeploymentDate;
       deploymentsEditModalComponent.selectedEditAction = 'Confirm';
-      deploymentsEditModalComponent.deployments = [
-        <Deployment> { id: 1, selected: true, deploymentDate: 5555 },
-        <Deployment> { id: 1, selected: true, deploymentDate: 6666 } ];
+      deploymentsEditModalComponent.deployments = [{id: 1, selected: true, deploymentDate: 5555} as Deployment,
+        {id: 1, selected: true, deploymentDate: 6666} as Deployment];
 
       // when
       deploymentsEditModalComponent.doEdit();
 
       // then
-      expect(deploymentsEditModalComponent.confirmationAttributes).toEqual(<DeploymentDetail> {});
+      expect(deploymentsEditModalComponent.confirmationAttributes).toEqual({} as DeploymentDetail);
       expect(deploymentsEditModalComponent.selectedEditAction).toEqual('');
       expect(deploymentsEditModalComponent.deploymentDate).toEqual('');
   }));
