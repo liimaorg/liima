@@ -41,6 +41,7 @@ import org.mockito.Mockito;
 
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
 import static java.util.Collections.EMPTY_LIST;
 import static org.mockito.Mockito.*;
 
@@ -1278,7 +1279,6 @@ public class PermissionServiceTest {
 		resourceGroup.setResourceType(resourceType);
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
-		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
 		res.setContext(envC);
@@ -1327,7 +1327,6 @@ public class PermissionServiceTest {
 		resourceGroup.setResourceType(resourceType);
 		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
 		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
-		myRoles = new HashMap<>();
 		RestrictionEntity res = new RestrictionEntity();
 		res.setAction(Action.ALL);
 		PermissionEntity perm = new PermissionEntity();
@@ -1339,6 +1338,262 @@ public class PermissionServiceTest {
 
 		// when
 		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
+
+		// then
+		Assert.assertTrue(result);
+	}
+
+	@Test
+	public void shouldReturnFalseIfCallerHasNoDelegationPermission() {
+		// given
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res.setPermission(perm);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res));
+
+		// when
+		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, null, Action.CREATE);
+
+		// then
+		Assert.assertFalse(result);
+	}
+
+	@Test
+	public void shouldReturnFalseIfCallerHasDelegationPermissionButNotSimilarRestriction() {
+		// given
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.PERMISSION_DELEGATION.name());
+		res.setPermission(perm);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res));
+
+		// when
+		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, null, Action.CREATE);
+
+		// then
+		Assert.assertFalse(result);
+	}
+
+	@Test
+	public void shouldReturnFalseIfCallerHasDelegationPermissionButHisSimilarRestrictionIsRestrictedToAnExplicitResourceGroupAndTheOneHeWantsToDelegateIsNot() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.PERMISSION_DELEGATION.name());
+		res.setPermission(perm);
+		RestrictionEntity res2 = new RestrictionEntity();
+		res2.setResourceGroup(resourceGroup);
+		res2.setAction(Action.ALL);
+		PermissionEntity perm2 = new PermissionEntity();
+		perm2.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res2.setPermission(perm2);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res, res2));
+
+		// when
+		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, null, Action.CREATE);
+
+		// then
+		Assert.assertFalse(result);
+	}
+
+	@Test
+	public void shouldReturnFalseIfCallerHasDelegationPermissionButHisSimilarRestrictionIsRestrictedToAnExplicitResourceTypeAndTheOneHeWantsToDelegateIsFromAnother() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		ResourceTypeEntity anotherResourceType = new ResourceTypeEntityBuilder().id(9).build();
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.PERMISSION_DELEGATION.name());
+		res.setPermission(perm);
+		RestrictionEntity res2 = new RestrictionEntity();
+		res2.setResourceType(anotherResourceType);
+		res2.setAction(Action.ALL);
+		PermissionEntity perm2 = new PermissionEntity();
+		perm2.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res2.setPermission(perm2);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res, res2));
+
+		// when
+		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, resourceGroup, null, null, Action.CREATE);
+
+		// then
+		Assert.assertFalse(result);
+	}
+
+
+	@Test
+	public void shouldReturnFalseIfCallerHasDelegationPermissionButHisSimilarRestrictionIsRestrictedToAnExplicitContextAndTheOneHeWantsToDelegateIsNot() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.PERMISSION_DELEGATION.name());
+		res.setPermission(perm);
+		RestrictionEntity res2 = new RestrictionEntity();
+		res2.setResourceGroup(resourceGroup);
+		res2.setAction(Action.ALL);
+		res2.setContext(envC);
+		PermissionEntity perm2 = new PermissionEntity();
+		perm2.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res2.setPermission(perm2);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res, res2));
+
+		// when
+		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, resourceGroup, null, null, Action.CREATE);
+
+		// then
+		Assert.assertFalse(result);
+	}
+
+	@Test
+	public void shouldReturnFalseIfCallerHasDelegationPermissionButHisSimilarRestrictionIsRestrictedToAnExplicitResourceTypeAndTheOneHeWantsToDelegateIsNot() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.PERMISSION_DELEGATION.name());
+		res.setPermission(perm);
+		RestrictionEntity res2 = new RestrictionEntity();
+		res2.setResourceType(resourceType);
+		res2.setAction(Action.ALL);
+		res2.setContext(envC);
+		PermissionEntity perm2 = new PermissionEntity();
+		perm2.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res2.setPermission(perm2);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res, res2));
+
+		// when
+		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, null, Action.CREATE);
+
+		// then
+		Assert.assertFalse(result);
+	}
+
+	@Test
+	public void shouldReturnTrueIfCallerHasDelegationPermissionAndHisSimilarRestrictionIsRestrictedToAnExplicitResourceGroupAndAnExplicitContextWhichIsTheParentOfTheOneHeWantsToDelegate() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.PERMISSION_DELEGATION.name());
+		res.setPermission(perm);
+		RestrictionEntity res2 = new RestrictionEntity();
+		res2.setResourceGroup(resourceGroup);
+		res2.setAction(Action.ALL);
+		res2.setContext(parent);
+		PermissionEntity perm2 = new PermissionEntity();
+		perm2.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res2.setPermission(perm2);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res, res2));
+
+		// when
+		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, resourceGroup, null, envC, Action.CREATE);
+
+		// then
+		Assert.assertTrue(result);
+	}
+
+	@Test
+	public void shouldReturnTrueIfCallerHasDelegationPermissionAndHisSimilarRestrictionIsRestrictedToAnExplicitContextWhichIsTheParentOfTheOneHeWantsToDelegate() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.PERMISSION_DELEGATION.name());
+		res.setPermission(perm);
+		RestrictionEntity res2 = new RestrictionEntity();
+		res2.setAction(Action.ALL);
+		res2.setContext(parent);
+		PermissionEntity perm2 = new PermissionEntity();
+		perm2.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res2.setPermission(perm2);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res, res2));
+
+		// when
+		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, envC, Action.CREATE);
+
+		// then
+		Assert.assertTrue(result);
+	}
+
+	@Test
+	public void shouldReturnTrueIfCallerHasDelegationPermissionAndSimilarRestriction() {
+		// given
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.PERMISSION_DELEGATION.name());
+		res.setPermission(perm);
+		RestrictionEntity res2 = new RestrictionEntity();
+		res2.setAction(Action.ALL);
+		PermissionEntity perm2 = new PermissionEntity();
+		perm2.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res2.setPermission(perm2);
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res, res2));
+
+		// when
+		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, null, Action.CREATE);
 
 		// then
 		Assert.assertTrue(result);

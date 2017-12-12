@@ -140,6 +140,7 @@
     <include file="changesets/model/eternalDeployments/eternalDeployments_allowNull.xml" relativeToChangelogFile="true"/>
 
     <!--1.16.0-->
+    <include file="changesets/data/addPermission_delegation.xml" relativeToChangelogFile="true"/>
     <include file="changesets/model/eternalDeployments/eternalDeployments_dropFK.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

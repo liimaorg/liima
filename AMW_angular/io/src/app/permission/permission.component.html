@@ -46,7 +46,7 @@
                 </button>
               </ng-container>
               <ng-container *ngIf="restriction">
-                  <amw-restriction [restriction]="restriction" [groupedEnvironments]="groupedEnvironments" [permissions]="permissions" [resourceGroups]="resourceGroups" [resourceTypes]="resourceTypes" (cancelEdit)='cancel()' (saveRestriction)='persistRestriction()'></amw-restriction>
+                  <amw-restriction [restriction]="restriction" [groupedEnvironments]="groupedEnvironments" [permissions]="getPermissions()" [resourceGroups]="resourceGroups" [resourceTypes]="resourceTypes" [availableRestrictions]="assignableRestrictions" [delegationMode]="delegationMode" (cancelEdit)='cancel()' (saveRestriction)='persistRestriction()'></amw-restriction>
               </ng-container>
             </ng-container>
           </div>
@@ -55,7 +55,7 @@
         <div class="form-group" *ngIf="restrictions.length > 0">
           <label class="col-sm-1 control-label"></label>
           <div class="col-sm-11">
-            <amw-restriction-list [restrictions]="restrictions" [resourceGroups]="resourceGroups" (deleteRestriction)='removeRestriction($event)' (editRestriction)='modifyRestriction($event)'></amw-restriction-list>
+            <amw-restriction-list [restrictions]="restrictions" [resourceGroups]="resourceGroups" [delegationMode]="delegationMode" (deleteRestriction)='removeRestriction($event)' (editRestriction)='modifyRestriction($event)'></amw-restriction-list>
           </div>
         </div>
 
