@@ -193,7 +193,9 @@ public class ResourceGroupRepository {
     }
 
     private void preserveDeployments(Integer resourceGroupId) {
-        entityManager.createQuery("update DeploymentEntity d set d.exResourcegroupId =:groupId, d.resourceGroup = null where d.resourceGroup.id =:groupId").setParameter("groupId", resourceGroupId).executeUpdate();
+        entityManager.createQuery("update DeploymentEntity d set d.exResourcegroupId =:groupId, d.resourceGroup = null where d.resourceGroup.id =:groupId")
+		.setParameter("groupId", resourceGroupId)
+		.executeUpdate();
     }
 
 }
