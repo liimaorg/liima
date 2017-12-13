@@ -187,17 +187,15 @@ public class ResourceGroupRepository {
      */
     public void remove(ResourceGroupEntity resourceGroup) {
         final Integer resourceGroupId = resourceGroup.getId();
-        for (ResourceEntity resource : resourceGroup.getResources()) {
-            if (resource.getDeployments() != null) {
-                for (DeploymentEntity deploymentEntity : resource.getDeployments()) {
-                    deploymentEntity.setExResourcegroupId(resourceGroupId);
-                    deploymentEntity.setResourceGroup(null);
-                    entityManager.merge(deploymentEntity);
-                }
-            }
-        }
         entityManager.remove(resourceGroup);
+        preserveDeployments(resourceGroupId);
         log.info("ResourceGroup with Id: " + resourceGroupId + " was removed from the db");
+    }
+
+    private void preserveDeployments(Integer resourceGroupId) {
+        entityManager.createQuery("update DeploymentEntity d set d.exResourcegroupId =:groupId, d.resourceGroup = null where d.resourceGroup.id =:groupId")
+		.setParameter("groupId", resourceGroupId)
+		.executeUpdate();
     }
 
 }
