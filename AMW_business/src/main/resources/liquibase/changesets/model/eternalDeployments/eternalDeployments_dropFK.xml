@@ -1,0 +1,21 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/eternalDeployments/eternalDeployments_dropFK.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="rgalante" id="eternalDeployments_dropFK">
+
+        <!-- CONTEXT_ID -->
+        <dropForeignKeyConstraint baseTableName="TAMW_deployment" constraintName="FK_IA6HV7VED369G7G5XMIGPXF07"/>
+        <dropForeignKeyConstraint baseTableName="TAMW_deployment" constraintName="DEPLOYMENT_RELEASE_FK"/>
+        <dropForeignKeyConstraint baseTableName="TAMW_deployment" constraintName="DEPLOYMENT_TO_RUNTIME_FK"/>
+        <!-- RESOURCE_ID -->
+        <dropForeignKeyConstraint baseTableName="TAMW_deployment" constraintName="FK_G96KUL2596JJS3R7D26DV33OF"/>
+        <dropForeignKeyConstraint baseTableName="TAMW_deployment" constraintName="DEPLOYMENT_RESOURCEGROUP_FK"/>
+
+
+        <rollback></rollback>
+
+    </changeSet>
+
+</databaseChangeLog>
