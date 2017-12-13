@@ -51,7 +51,7 @@
 			<artifactId>liquibase-slf4j</artifactId>
 			<version>${version.liquibase-slf4j}</version>
 		</dependency>
-		
+
 	</dependencies>
 
 	<profiles>
