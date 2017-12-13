@@ -40,14 +40,12 @@
             </li>
             <li class="dropdown">
                 <h:commandLink value="Delete" styleClass="btn primary red"  
-                 	rendered="#{editPropertyView.canEditProperties() and !editPropertyView.newDescriptorMode and editPropertyView.canManageForeignProperty()}"
+                 	rendered="#{editPropertyView.canEditProperties() and !editPropertyView.newDescriptorMode and editPropertyView.canManageForeignProperty() and !editPropertyView.showForce}"
                  	action="#{editPropertyView.delete()}" >
                 </h:commandLink>
-            </li>
-            <li class="dropdown">
-                <h:commandLink value="Force Delete" styleClass="btn primary red"
-                               rendered="#{editPropertyView.showForce}"
-                               action="#{editPropertyView.forceDelete()}" >
+                <h:commandLink value="Force delete" styleClass="btn primary red"
+                   rendered="#{editPropertyView.showForce}"
+                   action="#{editPropertyView.forceDelete()}" >
                 </h:commandLink>
             </li>
         </ul>

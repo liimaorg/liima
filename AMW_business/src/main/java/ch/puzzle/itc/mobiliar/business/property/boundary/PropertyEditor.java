@@ -753,13 +753,12 @@ public class PropertyEditor {
             permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, attachedResource.getResourceGroup(), null, null);
             foreignableService.verifyDeletableByOwner(deletingOwner, descriptor);
             if (forceDelete) {
-                propertyDescriptorService.forceDeletePropertyDescriptorByOwner(descriptor, resourceContext);
+                propertyDescriptorService.deletePropertyDescriptorByOwnerIncludingPropertyValues(descriptor, resourceContext, attachedResource);
             } else {
                 propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceContext);
             }
         }
     }
-
 
     /**
      * Checks Permissions and deletes the given property descriptor from database for resource type
@@ -767,14 +766,13 @@ public class PropertyEditor {
     public void deletePropertyDescriptorForResourceType(ForeignableOwner deletingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor, boolean forceDelete) throws AMWException, ForeignableOwnerViolationException {
 
         if (descriptor != null && descriptor.getId() != null) {
-
             ResourceTypeEntity attachedResourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
             ResourceTypeContextEntity resourceTypeContextEntity = attachedResourceType.getOrCreateContext(contextService.getGlobalResourceContextEntity());
 
             permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, attachedResourceType, null);
             foreignableService.verifyDeletableByOwner(deletingOwner, descriptor);
             if (forceDelete) {
-                propertyDescriptorService.forceDeletePropertyDescriptorByOwner(descriptor, resourceTypeContextEntity);
+                propertyDescriptorService.deletePropertyDescriptorByOwnerIncludingPropertyValues(descriptor, resourceTypeContextEntity, attachedResourceType);
             } else {
                 propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceTypeContextEntity);
             }
@@ -794,6 +792,10 @@ public class PropertyEditor {
 
     public Map<String, String> getPropertyOverviewForResource(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         return propertyEditingService.getPropertyOverviewForResource(resourceEntity, property, relevantContexts);
+    }
+
+    public Map<String, String> getPropertyOverviewForResourceType(ResourceTypeEntity resourceTypeEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+        return propertyEditingService.getPropertyOverviewForResourceType(resourceTypeEntity, property, relevantContexts);
     }
 
     public Map<String, String> getPropertyOverviewForRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {

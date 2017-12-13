@@ -40,9 +40,7 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolat
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
@@ -70,9 +68,6 @@ public class PropertyDescriptorService {
 
     @Inject
     PropertyTagEditingService propertyTagEditingService;
-
-    @Inject
-    PropertyValueService propertyValueService;
 
 
     public List<PropertyDescriptorEntity> getPropertyDescriptorsForHasContextWithNullCardinality(
@@ -132,27 +127,41 @@ public class PropertyDescriptorService {
 
 
     /**
-     * Deletes PropertyDescriptors and their PropertyTags PropertyDescriptors to be deleted must not have any
-     * Properties
+     * Deletes PropertyDescriptors and their PropertyTags PropertyDescriptors to be deleted must not have any Properties
      * The owner is ignored - therefore this method deletes the property descriptor regardless of the foreignable ownership!
      */
-    public boolean deletePropertyDescriptorByOwner(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext) throws AMWException {
+    public void deletePropertyDescriptorByOwner(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext)
+            throws AMWException {
         // only PropertyDescriptors without Properties (values) shall be deleted (but wee need to reload the descriptor to know it)
-        return removePropertyDescriptorByOwner(descriptorToDelete, abstractContext, false);
-    }
-
-    public boolean forceDeletePropertyDescriptorByOwner(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext) throws AMWException {
-        return removePropertyDescriptorByOwner(descriptorToDelete, abstractContext, true);
-    }
-
-    private boolean removePropertyDescriptorByOwner(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, boolean forceDelete) throws AMWException {
         PropertyDescriptorEntity descriptorToDeleteWithTags = getPropertyDescriptor(descriptorToDelete.getId());
-        if (descriptorToDeleteWithTags.getProperties().isEmpty() || forceDelete) {
-            if (abstractContext instanceof ResourceContextEntity) {
-                propertyValueService.resetPropertyValue((ResourceContextEntity) abstractContext, descriptorToDelete.getId());
-            } else if (abstractContext instanceof ResourceTypeContextEntity) {
-                propertyValueService.resetPropertyValue((ResourceTypeContextEntity) abstractContext, descriptorToDelete.getId());
+        removePropertyDescriptorByOwner(descriptorToDeleteWithTags, abstractContext, false);
+    }
+
+    /**
+     * Deletes PropertyDescriptors and their PropertyTags PropertyDescriptors including all its Properties
+     * The owner is ignored - therefore this method deletes the property descriptor regardless of the foreignable ownership!
+     */
+    public void deletePropertyDescriptorByOwnerIncludingPropertyValues(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, HasContexts attachedResource)
+            throws AMWException {
+        PropertyDescriptorEntity descriptorToDeleteWithTags = getPropertyDescriptor(descriptorToDelete.getId());
+        Set<PropertyEntity> propertiesToBeDeleted = descriptorToDeleteWithTags.getProperties();
+        Set<ContextDependency> resourceContexts = attachedResource.getContexts();
+        for (ContextDependency context : resourceContexts) {
+            if (context.getProperties().size() > 0) {
+                for (PropertyEntity property : propertiesToBeDeleted) {
+                    context.removeProperty(property);
+                }
             }
+            if (context.getPropertyDescriptors().size() > 0) {
+                context.removePropertyDescriptor(descriptorToDelete);
+            }
+        }
+        removePropertyDescriptorByOwner(descriptorToDeleteWithTags, abstractContext, true);
+    }
+
+    private void removePropertyDescriptorByOwner(PropertyDescriptorEntity descriptorToDeleteWithTags, AbstractContext abstractContext, boolean includingPropertyValues)
+            throws AMWException {
+        if (descriptorToDeleteWithTags.getProperties().isEmpty() || includingPropertyValues) {
             abstractContext.removePropertyDescriptor(descriptorToDeleteWithTags);
             List<PropertyTagEntity> tags = descriptorToDeleteWithTags.getPropertyTags();
             for (PropertyTagEntity tag : tags) {
@@ -162,9 +171,8 @@ public class PropertyDescriptorService {
             entityManager.remove(descriptorToDeleteWithTags);
         } else {
             throw new PropertyDescriptorNotDeletableException("The propertydescriptor " + descriptorToDeleteWithTags.getPropertyDescriptorDisplayName()
-                    + " was marked to be deleted but still contains property values.");
+                    + " was marked to be deleted but still contains property values.<br>If you force the deletion, all those property values will be deleted as well");
         }
-        return true;
     }
 
     private void checkForValidTechnicalKey(PropertyDescriptorEntity propertyDescriptor) throws AMWException {
