@@ -22,6 +22,7 @@ package ch.mobi.itc.mobiliar.rest.permissions;
 
 import ch.mobi.itc.mobiliar.rest.dtos.PermissionDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.RestrictionsCreationDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
@@ -83,6 +84,26 @@ public class RestrictionsRest {
             return Response.status(PRECONDITION_FAILED).entity(new ExceptionDto("A similar permission already exists")).build();
         }
         return Response.status(CREATED).header("Location", "/permissions/restrictions/" + id).build();
+    }
+
+    @POST
+    @Path("/multi/")
+    @ApiOperation(value = "Add a multiple Restrictions")
+    public Response addRestriction(@ApiParam("Add multiple Restriction, either a role- or one or more userNames must be set") RestrictionsCreationDTO request) {
+        if (request.getPermissions().isEmpty()) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("At least on Permission is required")).build();
+        }
+        Integer count;
+        try {
+            count = permissionBoundary.createMultipleRestrictions(request.getRoleName(), request.getUserNames(), request.getPermissions(), request.getResourceGroupIds(),
+                    request.getResourceTypeNames(), request.getResourceTypePermission(), request.getContextNames(), request.getActions());
+        } catch (AMWException e) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
+        }
+        if (count == null) {
+            return Response.status(PRECONDITION_FAILED).entity(new ExceptionDto("Similar permissions already exists")).build();
+        }
+        return Response.status(CREATED).header("X-Total-Count", count).build();
     }
 
     /**

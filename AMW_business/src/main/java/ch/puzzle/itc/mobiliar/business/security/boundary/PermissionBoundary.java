@@ -457,6 +457,117 @@ public class PermissionBoundary implements Serializable {
         throw new AMWException("No permission to create this permission");
     }
 
+    /**
+     * Creates multiple RestrctionEntites and returns how many that have been created
+     *
+     * @param roleName
+     * @param userNames
+     * @param permissionNames
+     * @param resourceGroupIds
+     * @param resourceTypeNames
+     * @param resourceTypePermission
+     * @param contextNames
+     * @param actions
+     * @return
+     */
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.CREATE)
+    public Integer createMultipleRestrictions(String roleName, List<String> userNames, List<String> permissionNames, List<Integer> resourceGroupIds, List<String> resourceTypeNames,
+                                              ResourceTypePermission resourceTypePermission, List<String> contextNames, List<Action> actions) throws AMWException {
+        int count = 0;
+        for (String permissionName : permissionNames) {
+            for (Action action : actions) {
+                if (userNames == null || userNames.isEmpty()) {
+                    if (resourceGroupIds != null && !resourceGroupIds.isEmpty()) {
+                        for (Integer resourceGroupId : resourceGroupIds) {
+                            if (contextNames == null || contextNames.isEmpty()) {
+                                RestrictionEntity restriction = new RestrictionEntity();
+                                Integer created = createRestriction(roleName, null, permissionName, resourceGroupId, null,
+                                        resourceTypePermission, null, action, restriction);
+                                if (created != null) {
+                                    count++;
+                                }
+                            } else {
+                                for (String contextName : contextNames) {
+                                    RestrictionEntity restriction = new RestrictionEntity();
+                                    Integer created = createRestriction(roleName, null, permissionName, resourceGroupId, null,
+                                            resourceTypePermission, contextName, action, restriction);
+                                    if (created != null) {
+                                        count++;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        for (String resourceTypeName : resourceTypeNames) {
+                            if (contextNames.isEmpty()) {
+                                RestrictionEntity restriction = new RestrictionEntity();
+                                Integer created = createRestriction(roleName, null, permissionName, null, resourceTypeName,
+                                        resourceTypePermission, null, action, restriction);
+                                if (created != null) {
+                                    count++;
+                                }
+                            } else {
+                                for (String contextName : contextNames) {
+                                    RestrictionEntity restriction = new RestrictionEntity();
+                                    Integer created = createRestriction(roleName, null, permissionName, null, resourceTypeName,
+                                            resourceTypePermission, contextName, action, restriction);
+                                    if (created != null) {
+                                        count++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    for (String userName : userNames) {
+                        if (!resourceGroupIds.isEmpty()) {
+                            for (Integer resourceGroupId : resourceGroupIds) {
+                                if (contextNames.isEmpty()) {
+                                    RestrictionEntity restriction = new RestrictionEntity();
+                                    Integer created = createRestriction(roleName, userName, permissionName, resourceGroupId, null,
+                                            resourceTypePermission, null, action, restriction);
+                                    if (created != null) {
+                                        count++;
+                                    }
+                                } else {
+                                    for (String contextName : contextNames) {
+                                        RestrictionEntity restriction = new RestrictionEntity();
+                                        Integer created = createRestriction(roleName, userName, permissionName, resourceGroupId, null,
+                                                resourceTypePermission, contextName, action, restriction);
+                                        if (created != null) {
+                                            count++;
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            for (String resourceTypeName : resourceTypeNames) {
+                                if (contextNames.isEmpty()) {
+                                    RestrictionEntity restriction = new RestrictionEntity();
+                                    Integer created = createRestriction(roleName, userName, permissionName, null, resourceTypeName,
+                                            resourceTypePermission, null, action, restriction);
+                                    if (created != null) {
+                                        count++;
+                                    }
+                                } else {
+                                    for (String contextName : contextNames) {
+                                        RestrictionEntity restriction = new RestrictionEntity();
+                                        Integer created = createRestriction(roleName, userName, permissionName, null, resourceTypeName,
+                                                resourceTypePermission, contextName, action, restriction);
+                                        if (created != null) {
+                                            count++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
     public boolean canDelegatePermissionsForThisResource(ResourceEntity resource, ContextEntity context) {
         return (permissionService.hasPermission(Permission.PERMISSION_DELEGATION) && canDelegateThisPermission(Permission.RESOURCE.name(), resource.getResourceGroup().getId(), null, context.getName(), null));
     }
