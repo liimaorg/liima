@@ -7,6 +7,7 @@ import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentRequest } from './deployment-request';
 import { DeploymentParameter } from './deployment-parameter';
 import { DeploymentDetail } from './deployment-detail';
+import * as _ from 'lodash';
 
 @Injectable()
 export class DeploymentService {
@@ -16,11 +17,10 @@ export class DeploymentService {
   }
 
   getAll(): Observable<Deployment[]> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   getFilteredDeployments(filterString: string, sortCol: string, sortDir: string, offset: number, maxResults: number): Observable<{ deployments: Deployment[], total: number }> {
@@ -34,66 +34,59 @@ export class DeploymentService {
       search: params,
       headers: this.getHeaders()
     });
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/filter`, options)
       .map((response: Response) => this.extractDeploymentsAndTotalCount(response))
       .catch(handleError);
-    return resource$;
   }
 
   get(deploymentId: number): Observable<Deployment> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/${deploymentId}`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   getWithActions(deploymentId: number): Observable<Deployment> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/${deploymentId}/withActions`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   createDeployment(deploymentRequest: DeploymentRequest): Observable<Deployment> {
     return this.http
       .post(`${this.baseUrl}/deployments`, deploymentRequest, {headers: this.postHeaders()})
       .map((res: Response) => res.json())
-      .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+      .catch(handleError);
   }
 
   cancelDeployment(deploymentId: number) {
-    const resource$ = this.http
+    return this.http
       .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, 'canceled', {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
-    return resource$;
   }
 
   confirmDeployment(deploymentDetail: DeploymentDetail) {
-    const resource$ = this.http
+    return this.http
       .put(`${this.baseUrl}/deployments/${deploymentDetail.deploymentId}/confirm`, deploymentDetail, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
-    return resource$;
   }
 
   rejectDeployment(deploymentId: number) {
-    const resource$ = this.http
+    return this.http
       .put(`${this.baseUrl}/deployments/${deploymentId}/updateState`, 'rejected', {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
-    return resource$;
   }
 
   getAllDeploymentParameterKeys(): Observable<DeploymentParameter[]> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/deploymentParameterKeys/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   canDeploy(resourceGroupId: number, contextIds: number[]): Observable<boolean> {
@@ -103,11 +96,10 @@ export class DeploymentService {
       search: params,
       headers: this.getHeaders()
     });
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/canDeploy/${resourceGroupId}`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   canRequestDeployment(resourceGroupId: number, contextIds: number[]): Observable<boolean> {
@@ -117,35 +109,31 @@ export class DeploymentService {
       search: params,
       headers: this.getHeaders()
     });
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/canRequestDeployment/${resourceGroupId}`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   canRequestDeployments(): Observable<boolean> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/canRequestDeployment/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   getAllDeploymentFilterTypes(): Observable<DeploymentFilterType[]> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/deploymentFilterTypes/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   getAllComparatorFilterOptions(): Observable<ComparatorFilterOption[]> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/comparatorFilterOptions/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   getFilterOptionValues(filterName: string): Observable<string[]> {
@@ -155,43 +143,38 @@ export class DeploymentService {
       search: param,
       headers: this.getHeaders()
     });
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/filterOptionValues/`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   getDeploymentDetail(deploymentId: number): Observable<DeploymentDetail> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/${deploymentId}/detail`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   setDeploymentDate(deploymentId: number, deploymentDate: number) {
-    const resource$ = this.http
+    return this.http
       .put(`${this.baseUrl}/deployments/${deploymentId}/date`, deploymentDate, {headers: this.postHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
-    return resource$;
   }
 
   isAngularDeploymentsGuiActive(): Observable<boolean> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/isAngularDeploymentsGuiActive/`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   getCsvSeparator(): Observable<string> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/deployments/csvSeparator/`, {headers: this.getHeaders()})
       .map((response: Response) => response.text())
       .catch(handleError);
-    return resource$;
   }
 
   private getHeaders() {
@@ -226,7 +209,7 @@ function handleError(error: any) {
   let errorMsg = 'Error retrieving your data';
   if (error._body) {
     try {
-      errorMsg = JSON.parse(error._body).message;
+      errorMsg = _.escape(JSON.parse(error._body).message);
     } catch (e) {
       console.log(e);
     }
