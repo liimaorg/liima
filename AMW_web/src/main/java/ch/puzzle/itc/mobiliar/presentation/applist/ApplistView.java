@@ -103,11 +103,8 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
     @Inject
     private ForeignableBoundary foreignableBoundary;
 
-
 	@PostConstruct
 	public void init() {
-
-
 		if (filterReleaseSelector == null) {
 			filterReleaseSelector = new ReleaseSelector(null, releaseDataProvider.getReleaseMap());
 		}
@@ -132,7 +129,6 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 						.getUpcomingReleaseId());
 			}
 		}
-
 		loadAppServerList();
 	}
 
@@ -200,8 +196,6 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 		}
 		return NavigationUtils.getRefreshOutcomeWithAdditionalParam(query.toString());
 	}
-
-
 	public void setRelease(Integer releaseId) {
 		this.filterReleaseSelector.setSelectedReleaseId(releaseId);
 	}
@@ -210,18 +204,15 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 		appServerName = null;
 	}
 
-
 	public Integer getMaxResults() {
 		return maxResults == null ? 0 : maxResults;
 	}
-
 
 	@Override
 	public void afterAddingAppOrAs() {
 		loadAppServerList();
 		clearPopupFields();
 	}
-
 
 	/**
 	 * Applikation entfernen
@@ -238,8 +229,8 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 					String message = "Application successfully deleted";
 					GlobalMessageAppender.addSuccessMessage(message);
 					isSuccessful = true;
-				}catch(EJBException e){
-					if(e.getCause() instanceof NotAuthorizedException) {
+				} catch(EJBException e) {
+					if (e.getCause() instanceof NotAuthorizedException) {
 						GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
 					} else {
 						throw e;
@@ -274,8 +265,8 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 					String message = "Applicationserver successfully deleted";
 					GlobalMessageAppender.addSuccessMessage(message);
 					isSuccessful = true;
-				}catch(EJBException e){
-					if(e.getCause() instanceof NotAuthorizedException) {
+				} catch(EJBException e) {
+					if (e.getCause() instanceof NotAuthorizedException) {
 						GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
 					} else {
 						throw e;
@@ -288,13 +279,12 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 		} catch (ResourceNotFoundException e) {
 			String errorMessage = "Could not load selected server for deletion.";
 			GlobalMessageAppender.addErrorMessage(errorMessage);
-		} catch(Exception e){
+		} catch (Exception e) {
 			String errorMessage = "Could not delete selected application server.";
 			GlobalMessageAppender.addErrorMessage(errorMessage);
 		}
 		return isSuccessful;
 	}
-
 
 	private List<ResourceWithRelations> loadAppServers(String filter, Integer maxResults, ReleaseEntity release) {
 		if(maxResults!=null && maxResults==0) {
@@ -304,28 +294,24 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 	}
 
 	public boolean canCreateApplicationServerInstance(){
-
 		return permissionBoundary.canCreateResourceInstance(DefaultResourceTypeDefinition.APPLICATIONSERVER);
 	}
+
 	public boolean canCreateApplicationInstance(){
 		return permissionBoundary.canCreateResourceInstance(DefaultResourceTypeDefinition.APPLICATION);
 	}
 
     public boolean canShowDeleteApp(ResourceEntity app){
-		// TODO add context check
         return permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.DELETE, app, null) && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), app);
     }
 
     public boolean canShowDeleteAppServer(ResourceWithRelations appServer){
         ResourceEntity appserverResource = appServer.getResource();
-
-		// TODO add context check
         return appserverResource.isDeletable() && permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.DELETE, appserverResource, null) && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), appserverResource);
     }
 
     public ForeignableAttributesDTO getForeignableAttributes(ResourceEntity app){
         return new ForeignableAttributesDTO(app.getOwner(), app.getExternalKey(), app.getExternalLink());
     }
-
 
 }
