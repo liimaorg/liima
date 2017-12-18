@@ -430,6 +430,7 @@ public class PermissionBoundary implements Serializable {
             createRestriction(null, getUserName(), Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
             createRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
             createRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+            createRestriction(null, getUserName(), Permission.DEPLOYMENT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
         }
     }
 
