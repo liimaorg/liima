@@ -20,11 +20,14 @@
 
 package ch.puzzle.itc.mobiliar.business.database.entity;
 
+import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
+import org.hibernate.envers.RevisionListener;
+
 import javax.ejb.SessionContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.hibernate.envers.RevisionListener;
+import static ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil.KEY_RESOURCE_ID;
 
 public class MyRevisionEntityListener implements RevisionListener {
 	public void newRevision(Object revisionEntity) {
@@ -35,6 +38,11 @@ public class MyRevisionEntityListener implements RevisionListener {
 			entity.setUsername(sctxLookup.getCallerPrincipal()!=null ? sctxLookup.getCallerPrincipal().getName() : "unknown");
 		} catch (NamingException e) {
 			entity.setUsername("unknown");
+		}
+
+		Integer resourceId = (Integer) ThreadLocalUtil.getThreadVariable(KEY_RESOURCE_ID);
+		if (resourceId != null) {
+			entity.setResourceId(resourceId);
 		}
 	}
 

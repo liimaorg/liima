@@ -25,21 +25,6 @@
 
 package ch.puzzle.itc.mobiliar.business.property.boundary;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.logging.Logger;
-
-import javax.ejb.EJBException;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.interceptor.Interceptors;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
@@ -71,11 +56,28 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
+import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
+
+import javax.ejb.EJBException;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
+import javax.interceptor.Interceptors;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.logging.Logger;
+
+import static ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil.KEY_RESOURCE_ID;
 
 /**
  * ALL boundary for property editing
@@ -304,34 +306,35 @@ public class PropertyEditor {
 		return resourceEditService.loadResourceRelationTypesForEdit(resourceType);
 	}
 
-	/**
-	 * Persists changes made on a Resource if the use has the permission to do so
-	 *
-	 * @param changingOwner
-	 * @param contextId
-	 * @param resourceId
-	 * @param resourceProperties
-	 * @param relation
-	 * @param relationProperties
-	 * @param resourceName
-	 * @param softlinkId
-	 * @throws AMWException
-	 * @throws ValidationException
-	 * @throws ForeignableOwnerViolationException
-	 */
-	public void save(ForeignableOwner changingOwner, Integer contextId, Integer resourceId, List<ResourceEditProperty> resourceProperties,
-			ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String softlinkId, String relationIdentifier) throws AMWException, ValidationException, ForeignableOwnerViolationException {
+    /**
+     * Persists changes made on a Resource if the user has the permission to do so
+     *
+     * @param changingOwner
+     * @param contextId
+     * @param resourceId
+     * @param resourceProperties
+     * @param relation
+     * @param relationProperties
+     * @param resourceName
+     * @param softlinkId
+     * @throws AMWException
+     * @throws ValidationException
+     * @throws ForeignableOwnerViolationException
+     */
+    public void save(ForeignableOwner changingOwner, Integer contextId, Integer resourceId, List<ResourceEditProperty> resourceProperties,
+                     ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String softlinkId, String relationIdentifier) throws AMWException, ValidationException, ForeignableOwnerViolationException {
 
-		ContextEntity context = entityManager.find(ContextEntity.class, contextId);
+        ContextEntity context = entityManager.find(ContextEntity.class, contextId);
         ResourceEntity editedResource = verifyAndSaveResource(resourceId, changingOwner, resourceName, softlinkId, context);
 
         if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, editedResource, editedResource.getResourceType())) {
-			propertyValueService.saveProperties(context, editedResource, resourceProperties);
-			if (relation != null) {
-				handleRelations(relation, relationProperties, relationIdentifier, context, editedResource);
-			}
-		}
-	}
+            propertyValueService.saveProperties(context, editedResource, resourceProperties);
+            ThreadLocalUtil.setThreadVariable(KEY_RESOURCE_ID, editedResource.getId());
+            if (relation != null) {
+                handleRelations(relation, relationProperties, relationIdentifier, context, editedResource);
+            }
+        }
+    }
 
 	private void handleRelations(ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String relationIdentifier,
 								 ContextEntity context, ResourceEntity editedResource) throws ValidationException {
