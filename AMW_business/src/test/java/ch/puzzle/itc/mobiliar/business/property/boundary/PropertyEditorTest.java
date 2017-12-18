@@ -1124,7 +1124,7 @@ public class PropertyEditorTest {
         when(permissionBoundaryMock.hasPermission(Permission.IGNORE_FOREIGNABLE_OWNER)).thenReturn(false);
 
         // when
-        editor.deletePropertyDescriptorForResource(deletingOwner, resourceId, descriptor);
+        editor.deletePropertyDescriptorForResource(deletingOwner, resourceId, descriptor, false);
 
         // then
         verify(foreignableServiceMock).verifyDeletableByOwner(deletingOwner, descriptor);
@@ -1146,7 +1146,7 @@ public class PropertyEditorTest {
         when(permissionBoundaryMock.hasPermission(Permission.IGNORE_FOREIGNABLE_OWNER)).thenReturn(false);
 
         // when
-        editor.deletePropertyDescriptorForResourceType(deletingOwner, resourceId, descriptor);
+        editor.deletePropertyDescriptorForResourceType(deletingOwner, resourceId, descriptor, false);
 
         // then
         verify(foreignableServiceMock).verifyDeletableByOwner(deletingOwner, descriptor);

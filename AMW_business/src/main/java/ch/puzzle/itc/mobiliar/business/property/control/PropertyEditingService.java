@@ -252,7 +252,6 @@ public class PropertyEditingService {
         }
     }
 
-
     protected List<Integer> getTypeWithParentIds(List<Integer> result, ResourceTypeEntity type) {
         if (result == null) {
             result = new ArrayList<Integer>();
@@ -283,6 +282,26 @@ public class PropertyEditingService {
         }
         List<Integer> contextIds = buildRelevantContextIdsList(relevantContexts);
         Query query = queries.getPropertyOverviewForResourceQuery(property.getTechnicalKey(), resource.getId(), contextIds);
+        return getDifferingProperties(property, query);
+    }
+
+    /**
+     *
+     * @param resourceType
+     * @param property
+     * @param relevantContexts
+     * @return a Map containing all properties which override the value of its parent context.
+     * <ul>
+     *     <li>Map.key = context Name</li>
+     *     <li>Map.value = context of the value</li>
+     *  </ul>
+     */
+    public Map<String, String> getPropertyOverviewForResourceType(ResourceTypeEntity resourceType, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+        if (relevantContexts.isEmpty()) {
+            return Collections.EMPTY_MAP;
+        }
+        List<Integer> contextIds = buildRelevantContextIdsList(relevantContexts);
+        Query query = queries.getPropertyOverviewForResourceTypeQuery(property.getTechnicalKey(), resourceType.getId(), contextIds);
         return getDifferingProperties(property, query);
     }
 

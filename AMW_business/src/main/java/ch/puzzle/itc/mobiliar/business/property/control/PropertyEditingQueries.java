@@ -137,6 +137,31 @@ public class PropertyEditingQueries {
     /**
      *
      * @param propertyName propertyName which is set on corresponding the propertyDescriptor
+     * @param resourceTypeId
+     * @param relevantContexts
+     * @return
+     */
+    public Query getPropertyOverviewForResourceTypeQuery(String propertyName, int resourceTypeId, List<Integer> relevantContexts) {
+        StringBuffer template = new StringBuffer();
+        template.append(" SELECT context.name, property.VALUE FROM TAMW_PROPERTY property");
+        template.append(" JOIN TAMW_PROPERTYDESCRIPTOR propertydescriptor on property.DESCRIPTOR_ID = propertydescriptor.ID");
+        template.append(" JOIN TAMW_RESTYPECTX_PROP resourcetypecontextprop on property.ID = resourcetypecontextprop.PROPERTIES_ID");
+        template.append(" JOIN TAMW_RESOURCETYPECONTEXT resourcetypecontext on resourcetypecontextprop.TAMW_RESOURCETYPECONTEXT_ID = resourcetypecontext.id");
+        template.append(" JOIN TAMW_CONTEXT context on resourcetypecontext.CONTEXT_ID = context.ID");
+        template.append(" WHERE propertydescriptor.PROPERTYNAME = :propertyName ");
+        template.append(" AND resourcetypecontext.RESOURCETYPEENTITY_ID = :resourceTypeId ");
+        template.append(" AND resourcetypecontext.CONTEXT_ID in (:relevantContexts)");
+        Query query = entityManager.createNativeQuery(template.toString())
+                .setParameter("propertyName", propertyName)
+                .setParameter("resourceTypeId", resourceTypeId)
+                .setParameter("relevantContexts", relevantContexts);
+        return query;
+
+    }
+
+    /**
+     *
+     * @param propertyName propertyName which is set on corresponding the propertyDescriptor
      * @param relationId
      * @param relevantContextIds
      * @return
