@@ -643,7 +643,7 @@ public class PropertyEditor {
     }
 
     public PropertyDescriptorEntity getPropertyDescriptor(Integer propertyDescriptorId) {
-        return propertyDescriptorService.getPropertyDescriptor(propertyDescriptorId);
+        return propertyDescriptorService.getPropertyDescriptorWithTags(propertyDescriptorId);
     }
 
     /**

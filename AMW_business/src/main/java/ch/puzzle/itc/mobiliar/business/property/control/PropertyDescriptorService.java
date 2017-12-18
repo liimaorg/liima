@@ -133,7 +133,7 @@ public class PropertyDescriptorService {
     public void deletePropertyDescriptorByOwner(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext)
             throws AMWException {
         // only PropertyDescriptors without Properties (values) shall be deleted (but wee need to reload the descriptor to know it)
-        PropertyDescriptorEntity descriptorToDeleteWithTags = getPropertyDescriptor(descriptorToDelete.getId());
+        PropertyDescriptorEntity descriptorToDeleteWithTags = getPropertyDescriptorWithTags(descriptorToDelete.getId());
         removePropertyDescriptorByOwner(descriptorToDeleteWithTags, abstractContext, false);
     }
 
@@ -143,7 +143,7 @@ public class PropertyDescriptorService {
      */
     public void deletePropertyDescriptorByOwnerIncludingPropertyValues(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, HasContexts attachedResource)
             throws AMWException {
-        PropertyDescriptorEntity descriptorToDeleteWithTags = getPropertyDescriptor(descriptorToDelete.getId());
+        PropertyDescriptorEntity descriptorToDeleteWithTags = getPropertyDescriptorWithTags(descriptorToDelete.getId());
         Set<PropertyEntity> propertiesToBeDeleted = descriptorToDeleteWithTags.getProperties();
         Set<ContextDependency> resourceContexts = attachedResource.getContexts();
         for (ContextDependency context : resourceContexts) {
@@ -260,7 +260,7 @@ public class PropertyDescriptorService {
     }
 
 
-    public PropertyDescriptorEntity getPropertyDescriptor(Integer propertyDescriptorId) {
+    public PropertyDescriptorEntity getPropertyDescriptorWithTags(Integer propertyDescriptorId) {
         PropertyDescriptorEntity propertyDescriptor;
 
         TypedQuery<PropertyDescriptorEntity> createQuery = entityManager.createQuery("from PropertyDescriptorEntity d  left join fetch d.propertyTags where d.id = :propertyDescriptorId ", PropertyDescriptorEntity.class);
