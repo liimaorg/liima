@@ -64,4 +64,8 @@ public class MyRevisionEntity {
 	@ModifiedEntityNames
 	private Set<String> modifiedEntityNames;
 
+    @Getter
+    @Setter
+    private Integer resourceId;
+
 }

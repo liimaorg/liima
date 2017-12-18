@@ -11,4 +11,10 @@
             <column name="ENTITYNAME" type="varchar(255)" />
         </createTable>
     </changeSet>
+
+    <changeSet author="apollari" id="resourceIdAsContextInfoInRevInfo">
+        <addColumn tableName="TAMW_REVINFO">
+            <column name="RESOURCEID" type="INTEGER"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
