@@ -142,5 +142,6 @@
     <!--1.16.0-->
     <include file="changesets/data/addPermission_delegation.xml" relativeToChangelogFile="true"/>
     <include file="changesets/model/eternalDeployments/eternalDeployments_dropFK.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/addPermission_addAdminPermissionsOnCreatedResource.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
