@@ -715,4 +715,9 @@ public class PermissionBoundary implements Serializable {
         return permissionService.getCurrentUserName();
     }
 
+    @HasPermission(permission = Permission.RESOURCE, action = Action.DELETE, resourceSpecific = true)
+    public void removeAllRestrictionsForResourceGroup(ResourceGroupEntity resourceGroup) {
+        restrictionRepository.deleteAllWithResourceGroup(resourceGroup);
+    }
+
 }

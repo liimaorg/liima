@@ -234,7 +234,7 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 				GlobalMessageAppender.addErrorMessage(errorMessage);
 			} else {
 				try{
-					resourceBoundary.deleteApplicationById(ForeignableOwner.getSystemOwner(), applicationId);
+					resourceBoundary.removeResource(ForeignableOwner.getSystemOwner(), applicationId);
 					String message = "Application successfully deleted";
 					GlobalMessageAppender.addSuccessMessage(message);
 					isSuccessful = true;
@@ -249,12 +249,9 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 		} catch (ResourceNotFoundException e) {
 			String errorMessage = "Could not load selected application for deletation.";
 			GlobalMessageAppender.addErrorMessage(errorMessage);
-		} catch (ResourceNotDeletableException e) {
-            String errorMessage = "The selected application can not be deleted.";
-            GlobalMessageAppender.addErrorMessage(errorMessage);
-        }catch (ForeignableOwnerViolationException e){
+		} catch (ForeignableOwnerViolationException e){
             GlobalMessageAppender.addErrorMessage("Application with id "+applicationId+" can not be deleted by owner "+e.getViolatingOwner());
-        }catch (Exception e) {
+        } catch (Exception e) {
 			String errorMessage = "Could not delete selected application.";
 			GlobalMessageAppender.addErrorMessage(errorMessage);
 		}
