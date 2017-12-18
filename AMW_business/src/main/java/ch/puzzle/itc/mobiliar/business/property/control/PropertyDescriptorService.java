@@ -171,7 +171,7 @@ public class PropertyDescriptorService {
             entityManager.remove(descriptorToDeleteWithTags);
         } else {
             throw new PropertyDescriptorNotDeletableException("The propertydescriptor " + descriptorToDeleteWithTags.getPropertyDescriptorDisplayName()
-                    + " was marked to be deleted but still contains property values.<br>If you force the deletion, all those property values will be deleted as well");
+                    + " was marked to be deleted but still contains property values.");
         }
     }
 
