@@ -119,6 +119,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.resetPermissionList();
     this.restriction = null;
     this.backupRestriction = null;
+    this.errorMessage = null;
   }
 
   modifyRestriction(restriction: Restriction) {
@@ -129,6 +130,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   persistRestriction() {
+    this.errorMessage = null;
     if (this.restriction.id != null) {
       this.permissionService.updateRestriction(this.restriction).subscribe(
         /* happy path */ (r) => '',

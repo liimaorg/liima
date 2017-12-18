@@ -79,6 +79,9 @@ public class RestrictionsRest {
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
+        if (id == null) {
+            return Response.status(PRECONDITION_FAILED).entity(new ExceptionDto("A similar permission already exists")).build();
+        }
         return Response.status(CREATED).header("Location", "/permissions/restrictions/" + id).build();
     }
 
@@ -126,12 +129,16 @@ public class RestrictionsRest {
     @Produces("application/json")
     @ApiOperation(value = "Update a Restriction")
     public Response updateRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id, RestrictionDTO request) {
+        boolean succcess;
         try {
-            permissionBoundary.updateRestriction(id, request.getRoleName(), request.getUserName(), request.getPermission().getName(),
+            succcess = permissionBoundary.updateRestriction(id, request.getRoleName(), request.getUserName(), request.getPermission().getName(),
                     request.getResourceGroupId(), request.getResourceTypeName(), request.getResourceTypePermission(),
                     request.getContextName(), request.getAction());
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
+        }
+        if (!succcess) {
+            return Response.status(PRECONDITION_FAILED).entity(new ExceptionDto("A similar permission already exists")).build();
         }
         return Response.status(OK).build();
     }

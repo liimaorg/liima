@@ -477,6 +477,9 @@ public class PermissionBoundary implements Serializable {
             throws AMWException {
         validateRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
                 contextName, action, restriction);
+        if (permissionService.identicalOrMoreGeneralRestrictionExists(restriction)) {
+            return null;
+        }
         final Integer id = restrictionRepository.create(restriction);
         permissionRepository.forceReloadingOfLists();
         return id;
@@ -490,10 +493,11 @@ public class PermissionBoundary implements Serializable {
      * @param permissionName
      * @param contextName
      * @param action
+     * @return boolean true successful, false if a similar permission exists
      * @throws AMWException
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.UPDATE)
-    public void updateRestriction(Integer id, String roleName, String userName, String permissionName, Integer resourceId,
+    public boolean updateRestriction(Integer id, String roleName, String userName, String permissionName, Integer resourceId,
                                   String resourceTypeName, ResourceTypePermission resourceTypePermission,
                                   String contextName, Action action) throws AMWException {
         if (id == null) {
@@ -505,8 +509,12 @@ public class PermissionBoundary implements Serializable {
         }
         validateRestriction(roleName, userName, permissionName, resourceId, resourceTypeName, resourceTypePermission,
                 contextName, action, restriction);
+        if (permissionService.identicalOrMoreGeneralRestrictionExists(restriction)) {
+            return false;
+        }
         restrictionRepository.merge(restriction);
         permissionRepository.forceReloadingOfLists();
+        return true;
     }
 
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.DELETE)
