@@ -6,6 +6,7 @@ target/
 .idea
 .classpath
 .project
+.vscode
 AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegration.trace.db
 AMW_parent.iml
 todo.tasks
