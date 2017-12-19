@@ -29,6 +29,7 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
@@ -379,6 +380,125 @@ public class PropertyDescriptorServiceTest {
                 ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(CoreMatchers.notNullValue()));
         int resourceId = (int) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID);
         assertThat(resourceId, is(resourceIdForAuditLog));
+    }
+
+    @Test
+    public void shouldStoreResourceTypeIdInThreadLocalDuringPropertyUpdateInResourceTypeContext() throws AMWException {
+        // given
+        Integer resourceTypeIdForAuditLog = 1;
+        ForeignableOwner deletingOwner = ForeignableOwner.AMW;
+        Set<PropertyEntity> properties = new HashSet<>();
+        properties.add(new PropertyEntity());
+        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withOwner(deletingOwner).withId(1).withProperties(properties).build();
+        AbstractContext abstractContextMock = mock(AbstractContext.class);
+        doReturn(true).when(service).deletePropertyDescriptorByOwner(eq(descriptor), eq(abstractContextMock));
+
+        // when
+        service.deletePropertyDescriptorByOwnerInResourceTypeContext(descriptor, abstractContextMock, resourceTypeIdForAuditLog);
+
+        // then
+        assertThat("The resourceTypeId Param must be stored as ThreadLocal variable for auditing (envers)",
+                ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(CoreMatchers.notNullValue()));
+        int resourceTypeId = (int) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID);
+        assertThat(resourceTypeId, is(resourceTypeIdForAuditLog));
+    }
+
+    @Test
+    public void shouldStoreResourceIdInThreadLocalDuringPropertyDescriptorCreation() throws AMWException {
+        // given
+        ForeignableOwner changingOwner = ForeignableOwner.AMW;
+        Integer expectedResourceId = 99;
+        AbstractContext abstractContextMock = mock(AbstractContext.class);
+        PropertyDescriptorEntity newDescriptor = new PropertyDescriptorEntityBuilder().build();
+        List<PropertyTagEntity> tags = new ArrayList<>();
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
+        when(propertyValidationServiceMock.isValidTechnicalKey(newDescriptor.getPropertyName())).thenReturn(true);
+        when(resourceEntityMock.getId()).thenReturn(expectedResourceId);
+
+        // when
+        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, newDescriptor, tags, resourceEntityMock );
+
+        // then
+        assertThat("The resourceId Param must be stored as ThreadLocal variable for auditing (envers)",
+                ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(CoreMatchers.notNullValue()));
+        int actualResourceId = (int) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID);
+        assertThat(actualResourceId, is(expectedResourceId));
+    }
+
+    @Test
+    public void shouldStoreResourceIdInThreadLocalDuringPropertyDescriptorUpdate() throws AMWException {
+        //given
+        ForeignableOwner changingOwner = ForeignableOwner.AMW;
+        Integer expectedResourceId = 99;
+        AbstractContext abstractContextMock = mock(AbstractContext.class);
+        PropertyDescriptorEntity descriptorToUpdate = new PropertyDescriptorEntityBuilder().withId(1).withOwner(ForeignableOwner.MAIA).build();
+        List<PropertyTagEntity> tags = new ArrayList<>();
+        when(propertyValidationServiceMock.isValidTechnicalKey(descriptorToUpdate.getPropertyName())).thenReturn(true);
+        Assert.assertNotNull(descriptorToUpdate.getId());
+        // mock (implicit verify for merge) merging of descriptorToUpdate
+        PropertyDescriptorEntity mergedPropertyDescriptorMock = mock(PropertyDescriptorEntity.class);
+        when(entityManagerMock.merge(descriptorToUpdate)).thenReturn(mergedPropertyDescriptorMock);
+        // mocking the manageChangeOfEncryptedPropertyDescriptor
+        when(entityManagerMock.createQuery("select p from PropertyEntity p where p.descriptor=:descriptor", PropertyEntity.class)).thenReturn(mock(TypedQuery.class));
+        // return descriptorToUpdate with same values (not changed fields)
+        when(entityManagerMock.find(PropertyDescriptorEntity.class, descriptorToUpdate.getId())).thenReturn(descriptorToUpdate);
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
+        when(resourceEntityMock.getId()).thenReturn(expectedResourceId);
+
+        // when
+        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptorToUpdate, tags, resourceEntityMock );
+
+        // then
+        assertThat("The resourceTypeId Param must be stored as ThreadLocal variable for auditing (envers)",
+                ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(CoreMatchers.notNullValue()));
+        int actualResourceId = (int) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID);
+        assertThat(actualResourceId, is(expectedResourceId));
+    }
+
+    @Test
+    public void shouldStoreResourceTypeIdInThreadLocalDuringPropertyDescriptorCreation() throws AMWException {
+        // given
+        ForeignableOwner changingOwner = ForeignableOwner.AMW;
+        Integer resourceTypeId = 2;
+        AbstractContext abstractContextMock = mock(AbstractContext.class);
+        PropertyDescriptorEntity newDescriptor = new PropertyDescriptorEntityBuilder().build();
+        List<PropertyTagEntity> tags = new ArrayList<>();
+        ResourceTypeEntity resourceTypeEntityMock = mock(ResourceTypeEntity.class);
+        doReturn(resourceTypeId).when(resourceTypeEntityMock).getId();
+        when(propertyValidationServiceMock.isValidTechnicalKey(newDescriptor.getPropertyName())).thenReturn(true);
+
+        // when
+        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, newDescriptor, tags, resourceTypeEntityMock);
+
+        // then
+        assertThat("The resourceTypeId Param must be stored as ThreadLocal variable for auditing (envers)",
+                ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(CoreMatchers.notNullValue()));
+        int actualResourceTypeId = (int) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID);
+        assertThat(actualResourceTypeId, is(resourceTypeId));
+    }
+
+    @Test
+    public void shouldStoreResourceTypeIdInThreadLocalDuringPropertyDescriptorUpdate() throws AMWException {
+        // given
+        ForeignableOwner changingOwner = ForeignableOwner.AMW;
+        Integer resourceTypeId = 2;
+        AbstractContext abstractContextMock = mock(AbstractContext.class);
+        PropertyDescriptorEntity newDescriptor = new PropertyDescriptorEntityBuilder().withId(2).build();
+        List<PropertyTagEntity> tags = new ArrayList<>();
+        ResourceTypeEntity resourceTypeEntityMock = mock(ResourceTypeEntity.class);
+        doReturn(resourceTypeId).when(resourceTypeEntityMock).getId();
+        when(propertyValidationServiceMock.isValidTechnicalKey(newDescriptor.getPropertyName())).thenReturn(true);
+        when(entityManagerMock.find(PropertyDescriptorEntity.class, newDescriptor.getId())).thenReturn(newDescriptor);
+        when(entityManagerMock.merge(newDescriptor)).thenReturn(newDescriptor);
+
+        // when
+        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, newDescriptor, tags, resourceTypeEntityMock);
+
+        // then
+        assertThat("The resourceTypeId Param must be stored as ThreadLocal variable for auditing (envers)",
+                ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(CoreMatchers.notNullValue()));
+        int actualResourceTypeId = (int) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID);
+        assertThat(actualResourceTypeId, is(resourceTypeId));
     }
 
 

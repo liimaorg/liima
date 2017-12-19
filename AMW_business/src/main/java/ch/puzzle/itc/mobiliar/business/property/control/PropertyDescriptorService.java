@@ -97,7 +97,6 @@ public class PropertyDescriptorService {
      */
     public PropertyDescriptorEntity savePropertyDescriptorForOwner(ForeignableOwner changingOwner, AbstractContext abstractContext, PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceEntity resource) throws AMWException {
         checkForValidTechnicalKey(descriptor);
-
         ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID, resource.getId());
         if (descriptor.getId() == null) {
             preventDuplicateTechnicalKeys(abstractContext, descriptor);
@@ -117,9 +116,7 @@ public class PropertyDescriptorService {
      */
     public PropertyDescriptorEntity savePropertyDescriptorForOwner(ForeignableOwner changingOwner, AbstractContext abstractContext, PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceTypeEntity resourceType) throws AMWException {
         checkForValidTechnicalKey(descriptor);
-
-        // TODO apollari: store ThreadLocal for resourceType
-        // ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID, resourceType.getId());
+        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID, resourceType.getId());
         if (descriptor.getId() == null) {
             preventDuplicateTechnicalKeys(abstractContext, descriptor);
             createNewPropertyDescriptor(changingOwner, descriptor, abstractContext, tags);
@@ -146,8 +143,7 @@ public class PropertyDescriptorService {
      * The owner is ignored - therefore this method deletes the property descriptor regardless of the foreignable ownership!
      */
     public boolean deletePropertyDescriptorByOwnerInResourceTypeContext(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, int resourceTypeId) throws AMWException {
-        // TODO apollari: store resourceTypeId in ThreadLocal
-//        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID, resourceTypeId);
+        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID, resourceTypeId);
         return deletePropertyDescriptorByOwner(descriptorToDelete, abstractContext);
     }
 
