@@ -851,6 +851,23 @@ public class PermissionService implements Serializable {
     }
 
     /**
+     * Checks if the caller already has a Restriction similar to the given Restriction
+     * Returns true if he already has a similar, equal or less restrictive Restriction
+     * Returns false if he does not have a similar or just one that is more restrictive than the given one
+     *
+     * @param newRestriction
+     */
+    public boolean callerHasIdenticalOrMoreGeneralRestriction(RestrictionEntity newRestriction) {
+        List<RestrictionEntity> similarRestrictions = new ArrayList<>();
+        for (RestrictionEntity restriction : getAllCallerRestrictions()) {
+            if (restriction.getPermission().getValue().equals(newRestriction.getPermission().getValue())) {
+                checkSimilarRestrictions(newRestriction.getPermission().getValue(), newRestriction.getAction(), newRestriction.getContext(), newRestriction.getResourceGroup(), newRestriction.getResourceType(), similarRestrictions, restriction);
+            }
+        }
+        return aMoreGeneralRestrictionExists(newRestriction, similarRestrictions);
+    }
+
+    /**
      * Checks if a Restriction similar to the given Restriction already exists
      * Returns true if a similar, equal or less restrictive Restriction exists
      * Returns false if no similar or one that is more restrictive than the given one exists

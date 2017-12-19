@@ -2135,4 +2135,166 @@ public class PermissionServiceTest {
 		Assert.assertTrue(exists);
 	}
 
+	@Test
+	public void shouldReturnTrueIfCallerHasAnIdenticalPermissionGrantedByItsRole() {
+		// given
+		RoleEntity role = new RoleEntity();
+		role.setName(CONFIG_ADMIN);
+
+		UserRestrictionEntity userRestrictionEntity = new UserRestrictionEntity();
+		userRestrictionEntity.setName("tester");
+
+		PermissionEntity permission = new PermissionEntity();
+		permission.setValue(Permission.RESOURCE.name());
+
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+
+		RestrictionEntity existingUserRestriction = new RestrictionEntity();
+		existingUserRestriction.setUser(userRestrictionEntity);
+		existingUserRestriction.setAction(Action.DELETE);
+		existingUserRestriction.setContext(test);
+		existingUserRestriction.setPermission(permission);
+		existingUserRestriction.setId(1);
+
+		RestrictionEntity existingRoleRestriction = new RestrictionEntity();
+		existingRoleRestriction.setRole(role);
+		existingRoleRestriction.setAction(Action.UPDATE);
+		existingRoleRestriction.setContext(envC);
+		existingRoleRestriction.setPermission(permission);
+		existingRoleRestriction.setId(2);
+
+		RestrictionEntity newRestriction = new RestrictionEntity();
+		newRestriction.setUser(userRestrictionEntity);
+		newRestriction.setAction(Action.UPDATE);
+		newRestriction.setContext(envC);
+		newRestriction.setPermission(permission);
+		newRestriction.setResourceGroup(resourceGroup);
+
+		when(permissionService.sessionContext.isCallerInRole("config_admin")).thenReturn(true);
+
+		myRoles = new HashMap<>();
+		myRoles.put(role.getName(), Arrays.asList(new RestrictionDTOBuilder().buildRestrictionDTO(Permission.RESOURCE, existingRoleRestriction)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		when(permissionRepository.getUserWithRestrictions(principal.getName())).thenReturn(Collections.singletonList(existingUserRestriction));
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+
+		// when
+		boolean exists = permissionService.callerHasIdenticalOrMoreGeneralRestriction(newRestriction);
+
+		// then
+		Assert.assertTrue(exists);
+	}
+
+	@Test
+	public void shouldReturnTrueIfCallerHasAMorePowerfulPermissionGrantedByItsRole() {
+		// given
+		RoleEntity role = new RoleEntity();
+		role.setName(CONFIG_ADMIN);
+
+		UserRestrictionEntity userRestrictionEntity = new UserRestrictionEntity();
+		userRestrictionEntity.setName("tester");
+
+		PermissionEntity permission = new PermissionEntity();
+		permission.setValue(Permission.RESOURCE.name());
+
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+
+		RestrictionEntity existingUserRestriction = new RestrictionEntity();
+		existingUserRestriction.setUser(userRestrictionEntity);
+		existingUserRestriction.setAction(Action.DELETE);
+		existingUserRestriction.setContext(test);
+		existingUserRestriction.setPermission(permission);
+		existingUserRestriction.setId(1);
+
+		RestrictionEntity existingRoleRestriction = new RestrictionEntity();
+		existingRoleRestriction.setRole(role);
+		existingRoleRestriction.setAction(Action.ALL);
+		existingRoleRestriction.setContext(test);
+		existingRoleRestriction.setPermission(permission);
+		existingRoleRestriction.setId(2);
+
+		RestrictionEntity newRestriction = new RestrictionEntity();
+		newRestriction.setUser(userRestrictionEntity);
+		newRestriction.setAction(Action.UPDATE);
+		newRestriction.setContext(envC);
+		newRestriction.setPermission(permission);
+		newRestriction.setResourceGroup(resourceGroup);
+
+		when(permissionService.sessionContext.isCallerInRole("config_admin")).thenReturn(true);
+
+		myRoles = new HashMap<>();
+		myRoles.put(role.getName(), Arrays.asList(new RestrictionDTOBuilder().buildRestrictionDTO(Permission.RESOURCE, existingRoleRestriction)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		when(permissionRepository.getUserWithRestrictions(principal.getName())).thenReturn(Collections.singletonList(existingUserRestriction));
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+
+		// when
+		boolean exists = permissionService.callerHasIdenticalOrMoreGeneralRestriction(newRestriction);
+
+		// then
+		Assert.assertTrue(exists);
+	}
+
+	@Test
+	public void shouldReturnFalseIfCallerHasALessPowerfulPermissionGrantedByItsRole() {
+		// given
+		RoleEntity role = new RoleEntity();
+		role.setName(CONFIG_ADMIN);
+
+		UserRestrictionEntity userRestrictionEntity = new UserRestrictionEntity();
+		userRestrictionEntity.setName("tester");
+
+		PermissionEntity permission = new PermissionEntity();
+		permission.setValue(Permission.RESOURCE.name());
+
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(23);
+		resourceGroup.setResourceType(resourceType);
+
+		RestrictionEntity existingUserRestriction = new RestrictionEntity();
+		existingUserRestriction.setUser(userRestrictionEntity);
+		existingUserRestriction.setAction(Action.DELETE);
+		existingUserRestriction.setContext(test);
+		existingUserRestriction.setPermission(permission);
+		existingUserRestriction.setId(1);
+
+		RestrictionEntity existingRoleRestriction = new RestrictionEntity();
+		existingRoleRestriction.setRole(role);
+		existingRoleRestriction.setAction(Action.ALL);
+		existingRoleRestriction.setContext(envC);
+		existingRoleRestriction.setPermission(permission);
+		existingRoleRestriction.setId(2);
+
+		RestrictionEntity newRestriction = new RestrictionEntity();
+		newRestriction.setUser(userRestrictionEntity);
+		newRestriction.setAction(Action.ALL);
+		newRestriction.setContext(test);
+		newRestriction.setPermission(permission);
+		newRestriction.setResourceGroup(resourceGroup);
+
+		when(permissionService.sessionContext.isCallerInRole("config_admin")).thenReturn(true);
+
+		myRoles = new HashMap<>();
+		myRoles.put(role.getName(), Arrays.asList(new RestrictionDTOBuilder().buildRestrictionDTO(Permission.RESOURCE, existingRoleRestriction)));
+		permissionService.rolesWithRestrictions = myRoles;
+
+		when(permissionRepository.getUserWithRestrictions(principal.getName())).thenReturn(Collections.singletonList(existingUserRestriction));
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+
+		// when
+		boolean exists = permissionService.callerHasIdenticalOrMoreGeneralRestriction(newRestriction);
+
+		// then
+		Assert.assertFalse(exists);
+	}
+
 }

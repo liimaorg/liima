@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.security.boundary;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
@@ -741,6 +742,43 @@ public class PermissionBoundaryTest {
         permissionBoundary.getAllUserRestriction();
         // then
         verify(permissionService, times(1)).getAllUserRestrictions();
+    }
+
+    @Test
+    public void shouldNotCreateSelfAssignedPermissionsIfCallerHasNotTheRequiredPermission() throws AMWException {
+        // given
+        ReleaseEntity aRelease = new ReleaseEntity();
+        aRelease.setName("release");
+        ResourceEntity resource = new ResourceEntityBuilder().buildResourceEntity("TestResource", null, "aType", aRelease, true);
+        resource.getResourceGroup().setId(7);
+        when(permissionService.getCurrentUserName()).thenReturn("tester");
+        when(permissionService.hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE)).thenReturn(false);
+
+        // when
+        permissionBoundary.createAutoAssignedRestrictions(resource);
+
+        // then
+        verify(permissionService).hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE);
+        verify(restrictionRepository, never()).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldCreateAllSelfAssignedPermissionsIfCallerHasTheRequiredPermission() throws Exception {
+        // given
+        ReleaseEntity aRelease = new ReleaseEntity();
+        aRelease.setName("release");
+        ResourceEntity resource = new ResourceEntityBuilder().buildResourceEntity("TestResource", null, "aType", aRelease, true);
+        resource.getResourceGroup().setId(7);
+        when(permissionService.getCurrentUserName()).thenReturn("tester");
+        when(permissionService.hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE)).thenReturn(true);
+        when(resourceGroupRepository.find(resource.getResourceGroup().getId())).thenReturn(resource.getResourceGroup());
+
+        // when
+        permissionBoundary.createAutoAssignedRestrictions(resource);
+
+        // then
+        verify(permissionService).hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE);
+        verify(restrictionRepository, times(8)).create(any(RestrictionEntity.class));
     }
 
 }
