@@ -20,21 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.property.control;
 
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
@@ -43,10 +28,28 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.*;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.*;
 
 
 public class PropertyDescriptorServiceTest {
@@ -70,8 +73,10 @@ public class PropertyDescriptorServiceTest {
     ForeignableService foreignableServiceMock;
 
     @InjectMocks
-    PropertyDescriptorService service;
+    @Spy
+    PropertyDescriptorService service = spy(new PropertyDescriptorService());
 
+    int dummyResourceId = 100;
 
     @Before
     public void setUp() {
@@ -298,7 +303,7 @@ public class PropertyDescriptorServiceTest {
         when(queryMock.getSingleResult()).thenReturn(descriptor);
 
         // when
-        service.deletePropertyDescriptorByOwner(descriptor, abstractContextMock);
+        service.deletePropertyDescriptorByOwnerInResourceContext(descriptor, abstractContextMock, dummyResourceId);
 
         // then
         verify(entityManagerMock).remove(descriptor);
@@ -321,7 +326,7 @@ public class PropertyDescriptorServiceTest {
         when(queryMock.getSingleResult()).thenReturn(descriptor);
 
         // when
-        service.deletePropertyDescriptorByOwner(descriptor, abstractContextMock);
+        service.deletePropertyDescriptorByOwnerInResourceContext(descriptor, abstractContextMock, dummyResourceId);
     }
 
     @Test
@@ -348,11 +353,32 @@ public class PropertyDescriptorServiceTest {
 
 
         // when
-        service.deletePropertyDescriptorByOwner(descriptor, abstractContextMock);
+        service.deletePropertyDescriptorByOwnerInResourceContext(descriptor, abstractContextMock, dummyResourceId);
 
         // then
         verify(entityManagerMock).remove(tag1);
         verify(entityManagerMock).remove(tag2);
+    }
+
+    @Test
+    public void shouldStoreResourceIdInThreadLocalForDuringPropertyUpdateInResourceContext() throws AMWException {
+        // given
+        Integer resourceIdForAuditLog = 200;
+        ForeignableOwner deletingOwner = ForeignableOwner.AMW;
+        Set<PropertyEntity> properties = new HashSet<>();
+        properties.add(new PropertyEntity());
+        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withOwner(deletingOwner).withId(1).withProperties(properties).build();
+        AbstractContext abstractContextMock = mock(AbstractContext.class);
+        doReturn(true).when(service).deletePropertyDescriptorByOwner(eq(descriptor), eq(abstractContextMock));
+
+        // when
+        service.deletePropertyDescriptorByOwnerInResourceContext(descriptor, abstractContextMock, resourceIdForAuditLog);
+
+        // then
+        assertThat("The resourceId Param must be stored as ThreadLocal variable for auditing (envers)",
+                ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(CoreMatchers.notNullValue()));
+        int resourceId = (int) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID);
+        assertThat(resourceId, is(resourceIdForAuditLog));
     }
 
 

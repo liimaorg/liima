@@ -47,6 +47,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 
@@ -97,6 +98,7 @@ public class PropertyDescriptorService {
     public PropertyDescriptorEntity savePropertyDescriptorForOwner(ForeignableOwner changingOwner, AbstractContext abstractContext, PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceEntity resource) throws AMWException {
         checkForValidTechnicalKey(descriptor);
 
+        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID, resource.getId());
         if (descriptor.getId() == null) {
             preventDuplicateTechnicalKeys(abstractContext, descriptor);
             createNewPropertyDescriptor(changingOwner, descriptor, abstractContext, tags);
@@ -116,6 +118,8 @@ public class PropertyDescriptorService {
     public PropertyDescriptorEntity savePropertyDescriptorForOwner(ForeignableOwner changingOwner, AbstractContext abstractContext, PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceTypeEntity resourceType) throws AMWException {
         checkForValidTechnicalKey(descriptor);
 
+        // TODO apollari: store ThreadLocal for resourceType
+        // ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID, resourceType.getId());
         if (descriptor.getId() == null) {
             preventDuplicateTechnicalKeys(abstractContext, descriptor);
             createNewPropertyDescriptor(changingOwner, descriptor, abstractContext, tags);
@@ -126,13 +130,29 @@ public class PropertyDescriptorService {
         return descriptor;
     }
 
+    /**
+     * Deletes PropertyDescriptors and their PropertyTags PropertyDescriptors to be deleted must not have any
+     * Properties
+     * The owner is ignored - therefore this method deletes the property descriptor regardless of the foreignable ownership!
+     */
+    public boolean deletePropertyDescriptorByOwnerInResourceContext(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, int resourceId) throws AMWException {
+        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID, resourceId);
+        return deletePropertyDescriptorByOwner(descriptorToDelete, abstractContext);
+    }
 
     /**
      * Deletes PropertyDescriptors and their PropertyTags PropertyDescriptors to be deleted must not have any
      * Properties
      * The owner is ignored - therefore this method deletes the property descriptor regardless of the foreignable ownership!
      */
-    public boolean deletePropertyDescriptorByOwner(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext) throws AMWException {
+    public boolean deletePropertyDescriptorByOwnerInResourceTypeContext(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, int resourceTypeId) throws AMWException {
+        // TODO apollari: store resourceTypeId in ThreadLocal
+//        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID, resourceTypeId);
+        return deletePropertyDescriptorByOwner(descriptorToDelete, abstractContext);
+    }
+
+
+    protected boolean deletePropertyDescriptorByOwner(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext) throws AMWException {
         // only PropertyDescriptors without Properties (values) shall be deleted (but wee need to reload the descriptor to know it)
         PropertyDescriptorEntity descriptorToDeleteWithTags = getPropertyDescriptor(descriptorToDelete.getId());
         if (descriptorToDeleteWithTags.getProperties().isEmpty()) {

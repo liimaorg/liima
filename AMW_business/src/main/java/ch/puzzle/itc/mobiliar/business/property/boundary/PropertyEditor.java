@@ -762,7 +762,7 @@ public class PropertyEditor {
 
 			permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, attachedResource.getResourceGroup(), null, null);
             foreignableService.verifyDeletableByOwner(deletingOwner, descriptor);
-            propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceContext);
+            propertyDescriptorService.deletePropertyDescriptorByOwnerInResourceContext(descriptor, resourceContext, resourceId);
 		}
 	}
 
@@ -779,7 +779,7 @@ public class PropertyEditor {
 
 			permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, attachedResourceType, null);
             foreignableService.verifyDeletableByOwner(deletingOwner, descriptor);
-            propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceTypeContextEntity);
+            propertyDescriptorService.deletePropertyDescriptorByOwnerInResourceTypeContext(descriptor, resourceTypeContextEntity, resourceTypeId);
 		}
 	}
 
