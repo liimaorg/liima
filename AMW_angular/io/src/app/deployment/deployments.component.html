@@ -19,7 +19,7 @@
         <div class="form-group">
           <label for="selectFilterType" class="col-sm-1 control-label">Add filter</label>
           <div class="col-sm-10">
-            <select id="selectFilterType" class="form-control" [(ngModel)]="selectedFilterType" (change)="addFilter()">
+            <select id="selectFilterType" #selectModel="ngModel" class="form-control" [(ngModel)]="selectedFilterType" (change)="addFilter()">
               <option *ngFor="let filterType of filterTypes" [ngValue]="filterType">{{filterType.name}}</option>
             </select>
           </div>
