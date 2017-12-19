@@ -43,6 +43,7 @@ public class MyRevisionEntityListener implements RevisionListener {
 		Integer resourceId = (Integer) ThreadLocalUtil.getThreadVariable(KEY_RESOURCE_ID);
 		if (resourceId != null) {
 			entity.setResourceId(resourceId);
+            ThreadLocalUtil.destroy();
 		}
 	}
 
