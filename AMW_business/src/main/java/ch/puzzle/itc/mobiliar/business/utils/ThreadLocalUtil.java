@@ -8,6 +8,7 @@ import java.util.HashMap;
  */
 public class ThreadLocalUtil {
     public static final String KEY_RESOURCE_ID = "resourceId";
+    public static final String KEY_RESOURCE_TYPE_ID = "resourceTypeId";
 
     private final static ThreadLocal<ThreadVariables> THREAD_VARIABLES = new ThreadLocal<ThreadVariables>() {
         @Override

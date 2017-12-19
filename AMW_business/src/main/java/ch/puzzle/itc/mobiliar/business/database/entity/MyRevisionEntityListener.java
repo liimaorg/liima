@@ -28,23 +28,30 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import static ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil.KEY_RESOURCE_ID;
+import static ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil.KEY_RESOURCE_TYPE_ID;
 
 public class MyRevisionEntityListener implements RevisionListener {
-	public void newRevision(Object revisionEntity) {
-		MyRevisionEntity entity = (MyRevisionEntity) revisionEntity;
-		try {
-			InitialContext ic = new InitialContext();
-			SessionContext sctxLookup = (SessionContext) ic.lookup("java:comp/EJBContext");
-			entity.setUsername(sctxLookup.getCallerPrincipal()!=null ? sctxLookup.getCallerPrincipal().getName() : "unknown");
-		} catch (NamingException e) {
-			entity.setUsername("unknown");
-		}
 
-		Integer resourceId = (Integer) ThreadLocalUtil.getThreadVariable(KEY_RESOURCE_ID);
-		if (resourceId != null) {
-			entity.setResourceId(resourceId);
-            ThreadLocalUtil.destroy();
-		}
-	}
+    public void newRevision(Object revisionEntity) {
+        MyRevisionEntity entity = (MyRevisionEntity) revisionEntity;
+        try {
+            InitialContext ic = new InitialContext();
+            SessionContext sctxLookup = (SessionContext) ic.lookup("java:comp/EJBContext");
+            entity.setUsername(sctxLookup.getCallerPrincipal()!=null ? sctxLookup.getCallerPrincipal().getName() : "unknown");
+        } catch (NamingException e) {
+            entity.setUsername("unknown");
+        }
+
+        Integer resourceId = (Integer) ThreadLocalUtil.getThreadVariable(KEY_RESOURCE_ID);
+        if (resourceId != null) {
+            entity.setResourceId(resourceId);
+        }
+
+        Integer resourceTypeId = (Integer) ThreadLocalUtil.getThreadVariable(KEY_RESOURCE_TYPE_ID);
+        if (resourceTypeId != null) {
+            entity.setResourceTypeId(resourceTypeId);
+        }
+        ThreadLocalUtil.destroy();
+    }
 
 }
