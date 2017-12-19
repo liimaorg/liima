@@ -40,7 +40,9 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolat
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
@@ -154,6 +156,19 @@ public class PropertyDescriptorService {
             }
             if (context.getPropertyDescriptors().size() > 0) {
                 context.removePropertyDescriptor(descriptorToDelete);
+            }
+        }
+        if (attachedResource instanceof ResourceTypeEntity) {
+            ResourceTypeEntity resourceTypeEntity = (ResourceTypeEntity) attachedResource;
+            for (ResourceEntity resourceEntity : resourceTypeEntity.getResources()) {
+                for (ResourceContextEntity resourceContextEntity : resourceEntity.getContexts()) {
+                    Set<PropertyEntity> properties = resourceContextEntity.getProperties();
+                    for (PropertyEntity propertyEntity : properties) {
+                        if (propertiesToBeDeleted.contains(propertyEntity)) {
+                            resourceContextEntity.removeProperty(propertyEntity);
+                        }
+                    }
+                }
             }
         }
         removePropertyDescriptorByOwner(descriptorToDeleteWithTags, abstractContext, true);
