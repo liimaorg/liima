@@ -17,4 +17,11 @@
             <column name="RESOURCEID" type="INTEGER"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="apollari" id="resourceTypeIdAsContextInfoInRevInfo">
+        <addColumn tableName="TAMW_REVINFO">
+            <column name="RESOURCETYPEID" type="INTEGER"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
