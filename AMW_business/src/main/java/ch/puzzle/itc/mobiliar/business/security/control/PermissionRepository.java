@@ -87,8 +87,9 @@ public class PermissionRepository {
 	}
 
 	public PermissionEntity getPermissionByName(String permissionName) {
-		return entityManager.createQuery("from PermissionEntity p where LOWER(p.value) =:permission", PermissionEntity.class)
-				.setParameter("permission", permissionName.toLowerCase()).getSingleResult();
+		List<PermissionEntity> result = entityManager.createQuery("from PermissionEntity p where LOWER(p.value) =:permission", PermissionEntity.class)
+				.setParameter("permission", permissionName.toLowerCase()).getResultList();
+		return result == null || result.isEmpty() ? null : result.get(0);
 	}
 
     public List<PermissionEntity> getAllPermissions() {

@@ -148,7 +148,7 @@ public class PermissionBoundaryTest {
         // given
         when(restrictionRepository.find(1)).thenReturn(new RestrictionEntity());
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
-        when(permissionRepository.getPermissionByName("invalid")).thenThrow(new NoResultException());
+        when(permissionRepository.getPermissionByName("invalid")).thenReturn(null);
         // when // then
         permissionBoundary.updateRestriction(1, "existing", null, "invalid", null, null, null, null, null);
     }
@@ -270,6 +270,7 @@ public class PermissionBoundaryTest {
         // given
         when(permissionService.hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE)).thenReturn(true);
         when(permissionRepository.getUserRestrictionByName("fed")).thenReturn(new UserRestrictionEntity());
+        when(permissionRepository.getPermissionByName(anyString())).thenReturn(new PermissionEntity());
         // when
         permissionBoundary.createRestriction(null, "fred", "SHAKEDOWNTEST", null, null, null, null, CREATE, true);
         // then
@@ -772,6 +773,7 @@ public class PermissionBoundaryTest {
         when(permissionService.getCurrentUserName()).thenReturn("tester");
         when(permissionService.hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE)).thenReturn(true);
         when(resourceGroupRepository.find(resource.getResourceGroup().getId())).thenReturn(resource.getResourceGroup());
+        when(permissionRepository.getPermissionByName(anyString())).thenReturn(new PermissionEntity());
 
         // when
         permissionBoundary.createAutoAssignedRestrictions(resource);

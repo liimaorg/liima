@@ -89,13 +89,13 @@ public class RestrictionsRest {
     @POST
     @Path("/multi/")
     @ApiOperation(value = "Add a multiple Restrictions")
-    public Response addRestriction(@ApiParam("Add multiple Restriction, either a role- or one or more userNames must be set") RestrictionsCreationDTO request) {
-        if (request.getPermissions().isEmpty()) {
+    public Response addRestriction(@ApiParam("Add multiple Restrictions, either a role- or one or more userNames must be set") RestrictionsCreationDTO request) {
+        if (request.getPermissionNames().isEmpty()) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("At least on Permission is required")).build();
         }
         Integer count;
         try {
-            count = permissionBoundary.createMultipleRestrictions(request.getRoleName(), request.getUserNames(), request.getPermissions(), request.getResourceGroupIds(),
+            count = permissionBoundary.createMultipleRestrictions(request.getRoleName(), request.getUserNames(), request.getPermissionNames(), request.getResourceGroupIds(),
                     request.getResourceTypeNames(), request.getResourceTypePermission(), request.getContextNames(), request.getActions());
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();

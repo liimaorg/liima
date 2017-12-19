@@ -38,7 +38,7 @@ public class RestrictionsCreationDTO {
 
     private List<String> userNames;
 
-    private List<String> permissions;
+    private List<String> permissionNames;
 
     private List<Integer> resourceGroupIds;
 
@@ -52,13 +52,13 @@ public class RestrictionsCreationDTO {
 
     RestrictionsCreationDTO(){}
 
-    public RestrictionsCreationDTO(String roleName, List<String>  userNames, List<String> permissions,
+    public RestrictionsCreationDTO(String roleName, List<String>  userNames, List<String> permissionNames,
                                    List<Integer> resourceGroupIds, List<String> resourceTypeNames,
                                    ResourceTypePermission resourceTypePermission, List<String> contextNames,
                                    List<Action> actions) {
         this.roleName = roleName;
         this.userNames = userNames;
-        this.permissions = permissions;
+        this.permissionNames = permissionNames;
         this.resourceGroupIds = resourceGroupIds;
         this.resourceTypeNames = resourceTypeNames;
         this.resourceTypePermission = resourceTypePermission;
