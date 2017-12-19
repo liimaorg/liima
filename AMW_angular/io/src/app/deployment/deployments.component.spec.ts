@@ -256,7 +256,7 @@ describe('DeploymentsComponent (without query params)', () => {
       expect(deploymentsComponent.filters.length).toEqual(2);
   }));
 
-  it('should reset offset on addFilter',
+  it('should reset offset and selectedFilterType on addFilter',
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
       deploymentsComponent.offset = 10;
@@ -272,6 +272,7 @@ describe('DeploymentsComponent (without query params)', () => {
 
       // then
       expect(deploymentsComponent.offset).toEqual(0);
+      expect(deploymentsComponent.selectedFilterType).toBeNull();
   }));
 
   it('should remove filter and reset offset on removeFilter',
