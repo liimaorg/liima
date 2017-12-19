@@ -2,6 +2,10 @@ package ch.puzzle.itc.mobiliar.business.utils;
 
 import java.util.HashMap;
 
+/**
+ * Copied from <a href="https://gist.github.com/nschlimm/2234464#file-gistfile1-java">here.</a>
+ * More information in <a href="http://niklasschlimm.blogspot.ch/2012/04/threading-stories-threadlocal-in-web.html">this Blogpost</a>.
+ */
 public class ThreadLocalUtil {
     public static final String KEY_RESOURCE_ID = "resourceId";
 
