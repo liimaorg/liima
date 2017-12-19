@@ -31,7 +31,6 @@
         <version.ejb.plugin>2.3</version.ejb.plugin>
         <version.jar.plugin>2.5</version.jar.plugin>
         <version.war.plugin>2.4</version.war.plugin>
-        <version.sonar.maven.plugin>2.5</version.sonar.maven.plugin>
         <version.jacoco.maven.plugin>0.7.4.201502262128</version.jacoco.maven.plugin>
         <version.deploy.maven.plugin>2.8.2</version.deploy.maven.plugin>
         <version.source.maven.plugin>2.4</version.source.maven.plugin>
@@ -205,11 +204,6 @@
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${version.javadoc.maven.plugin}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>sonar-maven-plugin</artifactId>
-                    <version>${version.sonar.maven.plugin}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>

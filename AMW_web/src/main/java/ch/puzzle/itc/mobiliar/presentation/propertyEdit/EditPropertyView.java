@@ -20,20 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.propertyEdit;
 
-import java.io.Serializable;
-import java.util.LinkedHashSet;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import lombok.Getter;
-import lombok.Setter;
-
-import org.apache.commons.lang.StringUtils;
-
 import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesDTO;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -45,9 +31,20 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.PropertyDescriptorNotDeletableException;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import java.io.Serializable;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 @ViewBackingBean
 public class EditPropertyView implements Serializable {
@@ -102,6 +99,9 @@ public class EditPropertyView implements Serializable {
 	@Inject
 	@TestingMode
 	private Boolean testing;
+
+	@Getter
+	private boolean showForce;
 
 	@TestingMode
 	public void onChangedTestingMode(@Observes Boolean isTesting) {
@@ -298,25 +298,39 @@ public class EditPropertyView implements Serializable {
     }
 
 	public String delete() {
-		if (propertyDescriptor != null && propertyDescriptor.getId() != null) {
-			try {
+		return deletePropDesc(false);
+	}
 
+	public String forceDelete() {
+		return deletePropDesc(true);
+	}
+
+	private String deletePropDesc(boolean forceDelete) {
+		if (propertyDescriptor != null && propertyDescriptor.getId() != null) {
+			showForce = false;
+			try {
 				if (isEditResource()) {
-					propertyEditor.deletePropertyDescriptorForResource(ForeignableOwner.getSystemOwner(), resourceIdFromParam, propertyDescriptor);
+					propertyEditor.deletePropertyDescriptorForResource(ForeignableOwner.getSystemOwner(), resourceIdFromParam, propertyDescriptor, forceDelete);
 				}
 				else {
-					propertyEditor.deletePropertyDescriptorForResourceType(ForeignableOwner.getSystemOwner(), resourceTypeIdFromParam, propertyDescriptor);
+					propertyEditor.deletePropertyDescriptorForResourceType(ForeignableOwner.getSystemOwner(), resourceTypeIdFromParam, propertyDescriptor, forceDelete);
 				}
 				GlobalMessageAppender.addSuccessMessage(propertyDescriptor.getPropertyDescriptorDisplayName() + " was successfully deleted");
 				propertyDescriptor = null;
 				return "editResourceView?faces-redirect=true&includeViewParams=true";
 
 			}
+			catch (PropertyDescriptorNotDeletableException e) {
+				showForce = true;
+				String additionalInfo = "If you force the deletion, all those property values will be deleted as well";
+				String errorMessage = String.format("%s <br> %s", e.getMessage(), additionalInfo);
+				GlobalMessageAppender.addErrorMessage(errorMessage);
+			}
 			catch (AMWException e) {
 				GlobalMessageAppender.addErrorMessage(e.getMessage());
 			} catch (ForeignableOwnerViolationException e) {
-                GlobalMessageAppender.addErrorMessage(buildErrorMessage(e, "delete", propertyDescriptor.getPropertyDescriptorDisplayName()));
-            }
+				GlobalMessageAppender.addErrorMessage(buildErrorMessage(e, "delete", propertyDescriptor.getPropertyDescriptorDisplayName()));
+			}
 		}
 		else {
 			GlobalMessageAppender.addErrorMessage("Nothing to delete");

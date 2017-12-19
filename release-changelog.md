@@ -1,3 +1,27 @@
+# v1.16.0
+This release adds some new features, fixes bugs and updates the used JavaScript libraries. Highlight is the new configuration overview that shows where on a resource properties have been overwritten.
+
+## New features
+* Configuration overview [#77](https://github.com/liimaorg/liima/issues/77)
+  * The resource screen now shows where resource properties are overwritten in sub environments.
+* Force delete PropertyDescriptor [#95](https://github.com/liimaorg/liima/issues/95)
+  * If deleting a PropertyDescriptor doesn't work it can now be force deleted, deleting all Property values.
+* Delegation of permission [#74](https://github.com/liimaorg/liima/issues/74)
+  * Usage see [doc](https://github.com/liimaorg/docs/blob/master/content/permissions.md#selbstverwaltung-von-permissions)
+  
+## Bug fixes
+* Deployment Excel Export: remove newline at the end of Applications column [#262](https://github.com/liimaorg/liima/issues/262)
+* Permission Page TypeError: Cannot read property 'name' of undefined [#299](https://github.com/liimaorg/liima/issues/299)
+  * Sometimes no permission where shown.
+* Rename a resource with "-" to "\_" doesn't work [#223](https://github.com/liimaorg/liima/issues/223)
+* REST resource '/resources' returns duplicates of resources if query parameter 'type' is not set [#213](https://github.com/liimaorg/liima/issues/213)
+* AppServer can't be deleted [#284](https://github.com/liimaorg/liima/issues/284)
+* Permissions: prevent adding the same permission multiple times [#260](https://github.com/liimaorg/liima/issues/260)
+* Prevent potential XSS in success and error messages [#286](https://github.com/liimaorg/liima/issues/286)
+* Update NodeJS and dependencies [#290](https://github.com/liimaorg/liima/issues/290), [#292](https://github.com/liimaorg/liima/issues/292), [#292](https://github.com/liimaorg/liima/issues/292), [#300](https://github.com/liimaorg/liima/issues/300)
+* Update to Angular 4 [#71](https://github.com/liimaorg/liima/issues/71)
+* Replace NPM with Yarn [#275](https://github.com/liimaorg/liima/issues/275)
+
 # v1.15.2
 Fixes some bugs on the new Angular deployment view and csv export.
 

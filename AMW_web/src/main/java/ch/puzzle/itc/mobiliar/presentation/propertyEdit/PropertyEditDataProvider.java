@@ -212,9 +212,10 @@ public class PropertyEditDataProvider implements Serializable {
         List<ContextEntity> relevantContexts = contextDataProvider.getChildrenForContext(currentContext.getId());
         if (property.getLoadedFor() == ResourceEditProperty.Origin.INSTANCE) {
             return !editor.getPropertyOverviewForResource(resourceView.getResource(), property, relevantContexts).isEmpty();
-        } else {
-            return !editor.getPropertyOverviewForRelation(currentRelation, property, relevantContexts).isEmpty();
+        } else if (property.getLoadedFor() == ResourceEditProperty.Origin.TYPE) {
+            return !editor.getPropertyOverviewForResourceType(resourceView.getResourceType(), property, relevantContexts).isEmpty();
         }
+        return !editor.getPropertyOverviewForRelation(currentRelation, property, relevantContexts).isEmpty();
     }
 
     private void loadResourceRelationEditProperties() {

@@ -21,6 +21,8 @@
 package ch.puzzle.itc.mobiliar.business.security.control;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
 
@@ -65,6 +67,26 @@ public class RestrictionRepository extends BaseRepository<RestrictionEntity> {
     public void deleteAllWithContext(ContextEntity context) {
         entityManager.createQuery("delete from RestrictionEntity r where r.context =:context")
                 .setParameter("context", context).executeUpdate();
+    }
+
+    /**
+     * Deletes all Restrictions matching a specific ResourceGroup
+     *
+     * @param resourceGroup ResourceGroupEntity to match
+     */
+    public void deleteAllWithResourceGroup(ResourceGroupEntity resourceGroup) {
+        entityManager.createQuery("delete from RestrictionEntity r where r.resourceGroup =:resourceGroup")
+                .setParameter("resourceGroup", resourceGroup).executeUpdate();
+    }
+
+    /**
+     * Deletes all Restrictions matching a specific ResourceType
+     *
+     * @param resourceType ResourceTypeEntity to match
+     */
+    public void deleteAllWithResourceType(ResourceTypeEntity resourceType) {
+        entityManager.createQuery("delete from RestrictionEntity r where r.resourceType =:resourceType")
+                .setParameter("resourceType", resourceType).executeUpdate();
     }
 
 }

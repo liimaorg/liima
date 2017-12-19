@@ -35,6 +35,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import org.apache.commons.lang.StringUtils;
 
@@ -75,6 +76,9 @@ public class ResourceTypeDomainService {
 
 	@Inject
 	private ResourcesScreenQueries queries;
+
+	@Inject
+	RestrictionRepository restrictionRepository;
 
 	public List<ResourceTypeEntity> getAllResourceTypesWithoutChildren() {
 		return entityManager.createQuery("select n from ResourceTypeEntity n order by n.name asc").getResultList();
@@ -172,6 +176,7 @@ public class ResourceTypeDomainService {
 	@HasPermission(permission = Permission.RESOURCETYPE, action = Action.DELETE)
 	public void removeResourceType(Integer resourceTypeId) throws ResourceNotFoundException, ResourceTypeNotFoundException {
 		ResourceTypeEntity resourceTypeEntity = commonService.getResourceTypeEntityById(resourceTypeId);
+		restrictionRepository.deleteAllWithResourceType(resourceTypeEntity);
 		removeResourceTypeEntity(resourceTypeEntity);
 	}
 

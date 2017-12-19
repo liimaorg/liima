@@ -160,7 +160,7 @@ public class PropertyDescriptorServiceTest {
 
 
     @Test(expected = AMWException.class)
-    public void savePropertyDescriptorForOwnerWhenDescriptorIsNullShouldThrowException() throws  AMWException {
+    public void savePropertyDescriptorForOwnerWhenDescriptorIsNullShouldThrowException() throws AMWException {
         // given
         ForeignableOwner changingOwner = ForeignableOwner.AMW;
 
@@ -174,7 +174,7 @@ public class PropertyDescriptorServiceTest {
     }
 
     @Test(expected = AMWException.class)
-    public void savePropertyDescriptorForOwnerWhenTechnicalKeyIsInvalidShouldThrowException() throws  AMWException {
+    public void savePropertyDescriptorForOwnerWhenTechnicalKeyIsInvalidShouldThrowException() throws AMWException {
         // given
         ForeignableOwner changingOwner = ForeignableOwner.AMW;
 
@@ -190,7 +190,7 @@ public class PropertyDescriptorServiceTest {
     }
 
     @Test
-    public void savePropertyDescriptorForOwnerWhenDescriptorIdIsNullShouldCreateNewPropertyDescriptorForOwner() throws  AMWException {
+    public void savePropertyDescriptorForOwnerWhenDescriptorIdIsNullShouldCreateNewPropertyDescriptorForOwner() throws AMWException {
         // given
         ForeignableOwner changingOwner = ForeignableOwner.AMW;
 
@@ -212,7 +212,7 @@ public class PropertyDescriptorServiceTest {
     }
 
     @Test(expected = AMWException.class)
-    public void savePropertyDescriptorShouldNotCreateMultiplePropertyDescriptorsWithSameName() throws  AMWException {
+    public void savePropertyDescriptorShouldNotCreateMultiplePropertyDescriptorsWithSameName() throws AMWException {
         // given
         ForeignableOwner changingOwner = ForeignableOwner.AMW;
 
@@ -229,7 +229,7 @@ public class PropertyDescriptorServiceTest {
     }
 
     @Test
-    public void savePropertyDescriptorForOwnerWhenDescriptorIdIsNotNullAndSameOwnerShouldSavePropertyDescriptor() throws  AMWException {
+    public void savePropertyDescriptorForOwnerWhenDescriptorIdIsNotNullAndSameOwnerShouldSavePropertyDescriptor() throws AMWException {
         // given
         ForeignableOwner changingOwner = ForeignableOwner.AMW;
 
@@ -255,7 +255,7 @@ public class PropertyDescriptorServiceTest {
     }
 
     @Test
-    public void savePropertyDescriptorForOwnerWhenDescriptorIdIsNotNullNoForeignableFieldsChangedButDifferentOwnerShouldSavePropertyDescriptor() throws  AMWException {
+    public void savePropertyDescriptorForOwnerWhenDescriptorIdIsNotNullNoForeignableFieldsChangedButDifferentOwnerShouldSavePropertyDescriptor() throws AMWException {
         // given
         ForeignableOwner changingOwner = ForeignableOwner.AMW;
 
@@ -285,7 +285,7 @@ public class PropertyDescriptorServiceTest {
 
 
     @Test
-    public void deletePropertyDescriptorByOwnerWhenDeletingOwnerIsOwnerOfDescriptorAndNoPropertiesShouldDeletePropertyDescriptor() throws  AMWException {
+    public void deletePropertyDescriptorByOwnerWhenDeletingOwnerIsOwnerOfDescriptorAndNoPropertiesShouldDeletePropertyDescriptor() throws AMWException {
         // given
         ForeignableOwner deletingOwner = ForeignableOwner.AMW;
 
@@ -306,7 +306,7 @@ public class PropertyDescriptorServiceTest {
 
 
     @Test(expected = AMWException.class)
-    public void deletePropertyDescriptorByOwnerWhenDeletingOwnerIsOwnerOfDescriptorButHasPropertiesShouldThrowException() throws  AMWException {
+    public void deletePropertyDescriptorByOwnerWhenDeletingOwnerIsOwnerOfDescriptorButHasPropertiesShouldThrowException() throws AMWException {
         // given
         ForeignableOwner deletingOwner = ForeignableOwner.AMW;
 
@@ -325,7 +325,30 @@ public class PropertyDescriptorServiceTest {
     }
 
     @Test
-    public void deletePropertyDescriptorByOwnerWhenDeletingOwnerIsOwnerOfDescriptorWithTagsAndNoPropertiesShouldDeleteAllTags() throws  AMWException {
+    public void deletePropertyDescriptorByOwnerIncludingPropertyValuesWhenDeletingOwnerIsOwnerOfDescriptorWithPropertiesShouldSucceed() throws AMWException {
+        // given
+        ForeignableOwner deletingOwner = ForeignableOwner.AMW;
+
+        AbstractContext abstractContextMock = mock(AbstractContext.class);
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
+        Set<PropertyEntity> properties = new HashSet<>();
+        properties.add(new PropertyEntity());
+        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withOwner(deletingOwner).withId(1).withProperties(properties).build();
+        Assert.assertEquals(deletingOwner, descriptor.getOwner());
+
+        TypedQuery<PropertyDescriptorEntity> queryMock = mock(TypedQuery.class);
+        when(entityManagerMock.createQuery("from PropertyDescriptorEntity d  left join fetch d.propertyTags where d.id = :propertyDescriptorId ", PropertyDescriptorEntity.class)).thenReturn(queryMock);
+        when(queryMock.getSingleResult()).thenReturn(descriptor);
+
+        // when
+        service.deletePropertyDescriptorByOwnerIncludingPropertyValues(descriptor, abstractContextMock, resourceEntityMock);
+
+        // then
+        verify(entityManagerMock).remove(descriptor);
+    }
+
+    @Test
+    public void deletePropertyDescriptorByOwnerWhenDeletingOwnerIsOwnerOfDescriptorWithTagsAndNoPropertiesShouldDeleteAllTags() throws AMWException {
         // given
         ForeignableOwner deletingOwner = ForeignableOwner.AMW;
 

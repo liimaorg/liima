@@ -3,6 +3,7 @@ import { Http, Response, Headers, URLSearchParams, RequestOptions } from '@angul
 import { Observable } from 'rxjs/Rx';
 import { Permission } from './permission';
 import { Restriction } from './restriction';
+import * as _ from 'lodash';
 
 @Injectable()
 export class PermissionService {
@@ -12,59 +13,52 @@ export class PermissionService {
   }
 
   getAllRoleNames(): Observable<string[]> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/permissions/restrictions/roleNames`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
-    return resource$;
   }
 
   getAllUserRestrictionNames(): Observable<string[]> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/permissions/restrictions/userRestrictionNames`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
-    return resource$;
   }
 
   getAllPermissionEnumValues(): Observable<Permission[]> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/permissions/restrictions/permissionEnumValues`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
-    return resource$;
   }
 
   getRoleWithRestrictions(roleName: string): Observable<Restriction[]> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/permissions/restrictions/roles/${roleName}`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
-    return resource$;
   }
 
   getUserWithRestrictions(userName: string): Observable<Restriction[]> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/permissions/restrictions/users/${userName}`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
-    return resource$;
   }
 
   getOwnUserAndRoleRestrictions(): Observable<Restriction[]> {
-    const resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/permissions/restrictions/ownRestrictions/`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
-    return resource$;
   }
 
   removeRestriction(id: number) {
-    const resource$ = this.http
+    return this.http
       .delete(`${this.baseUrl}/permissions/restrictions/${id}`, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(handleError);
-    return resource$;
   }
 
   updateRestriction(restriction: Restriction) {
@@ -111,7 +105,7 @@ function handleError(error: any) {
   let errorMsg = 'Error retrieving your data';
   if (error._body) {
     try {
-      errorMsg = JSON.parse(error._body).message;
+      errorMsg = _.escape(JSON.parse(error._body).message);
     } catch (e) {
       console.log(e);
     }

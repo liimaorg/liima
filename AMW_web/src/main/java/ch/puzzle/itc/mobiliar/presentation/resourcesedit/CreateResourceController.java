@@ -90,7 +90,7 @@ public class CreateResourceController {
                         String message = "Resource " + newResourceName + " successfully created";
                         GlobalMessageAppender.addSuccessMessage(message);
                         try {
-                            permissionBoundary.createSelfAssignedRestrictions(r.getEntity());
+                            permissionBoundary.createAutoAssignedRestrictions(r.getEntity());
                         } catch (AMWException e) {
                             GlobalMessageAppender.addSuccessMessage("Failed to add resource permissions");
                         }
@@ -176,7 +176,7 @@ public class CreateResourceController {
                         GlobalMessageAppender.addSuccessMessage(message);
                     }
                     try {
-                        permissionBoundary.createSelfAssignedRestrictions(app.getEntity());
+                        permissionBoundary.createAutoAssignedRestrictions(app.getEntity());
                     } catch (AMWException e) {
                         GlobalMessageAppender.addSuccessMessage("Failed to add resource permissions");
                     }
