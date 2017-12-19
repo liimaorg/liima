@@ -11,6 +11,7 @@ This release adds some new features, fixes bugs and updates the used JavaScript 
   
 ## Bug fixes
 * Deployment Excel Export: remove newline at the end of Applications column [#262](https://github.com/liimaorg/liima/issues/262)
+* editResourceView does not refresh correctly after "Copy from resource" [#222](https://github.com/liimaorg/liima/issues/222)
 * Permission Page TypeError: Cannot read property 'name' of undefined [#299](https://github.com/liimaorg/liima/issues/299)
   * Sometimes no permission where shown.
 * Rename a resource with "-" to "\_" doesn't work [#223](https://github.com/liimaorg/liima/issues/223)
