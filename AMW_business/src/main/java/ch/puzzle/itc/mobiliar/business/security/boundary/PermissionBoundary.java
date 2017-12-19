@@ -420,7 +420,7 @@ public class PermissionBoundary implements Serializable {
      * @param resource
      * @throws AMWException
      */
-    public void createSelfAssignedRestrictions(ResourceEntity resource) throws AMWException {
+    public void createAutoAssignedRestrictions(ResourceEntity resource) throws AMWException {
         Integer resourceGroupId = resource.getResourceGroup().getId();
         if (resourceGroupId != null && getUserName() != null
                 && permissionService.hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE)) {

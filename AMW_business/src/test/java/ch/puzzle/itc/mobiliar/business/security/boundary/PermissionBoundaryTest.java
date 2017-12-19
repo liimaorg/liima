@@ -21,7 +21,6 @@
 package ch.puzzle.itc.mobiliar.business.security.boundary;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
-import ch.puzzle.itc.mobiliar.builders.ResourceGroupEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -36,17 +35,14 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.test.TestBoundary;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import javax.interceptor.InvocationContext;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
@@ -57,7 +53,6 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class PermissionBoundaryTest {
 
@@ -760,7 +755,7 @@ public class PermissionBoundaryTest {
         when(permissionService.hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE)).thenReturn(false);
 
         // when
-        permissionBoundary.createSelfAssignedRestrictions(resource);
+        permissionBoundary.createAutoAssignedRestrictions(resource);
 
         // then
         verify(permissionService).hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE);
@@ -779,7 +774,7 @@ public class PermissionBoundaryTest {
         when(resourceGroupRepository.find(resource.getResourceGroup().getId())).thenReturn(resource.getResourceGroup());
 
         // when
-        permissionBoundary.createSelfAssignedRestrictions(resource);
+        permissionBoundary.createAutoAssignedRestrictions(resource);
 
         // then
         verify(permissionService).hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE);
