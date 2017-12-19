@@ -45,6 +45,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
@@ -162,20 +163,9 @@ public class PropertyDescriptorService {
             removeRelationPropertyValues((ResourceEntity) attachedResource, propertiesToBeDeleted);
         } else if (attachedResource instanceof ResourceTypeEntity) {
             removeInstancePropertyValues((ResourceTypeEntity) attachedResource, propertiesToBeDeleted);
+            removeRelationPropertyValues((ResourceTypeEntity) attachedResource, propertiesToBeDeleted);
         }
         removePropertyDescriptorByOwner(descriptorToDeleteWithTags, abstractContext, true);
-    }
-
-    private void removeRelationPropertyValues(ResourceEntity attachedResource, Set<PropertyEntity> propertiesToBeDeleted) {
-        for (ConsumedResourceRelationEntity consumedResourceRelationEntity : attachedResource.getConsumedSlaveRelations()) {
-            for (ResourceRelationContextEntity context : consumedResourceRelationEntity.getContexts()) {
-                if (context.getProperties().size() > 0) {
-                    for (PropertyEntity property : propertiesToBeDeleted) {
-                        context.removeProperty(property);
-                    }
-                }
-            }
-        }
     }
 
     private void removeInstancePropertyValues(ResourceTypeEntity attachedResource, Set<PropertyEntity> propertiesToBeDeleted) {
@@ -185,6 +175,30 @@ public class PropertyDescriptorService {
                     for (PropertyEntity property : propertiesToBeDeleted) {
                         context.removeProperty(property);
                     }
+                }
+            }
+        }
+    }
+
+    private void removeRelationPropertyValues(ResourceEntity attachedResource, Set<PropertyEntity> propertiesToBeDeleted) {
+        for (ConsumedResourceRelationEntity consumedResourceRelation : attachedResource.getConsumedSlaveRelations()) {
+            removeRelationProperties(propertiesToBeDeleted, consumedResourceRelation);
+        }
+    }
+
+    private void removeRelationPropertyValues(ResourceTypeEntity attachedResource, Set<PropertyEntity> propertiesToBeDeleted) {
+        for (ResourceRelationTypeEntity resourceRelationTypeEntity : attachedResource.getResourceRelationTypesB()) {
+            for(ConsumedResourceRelationEntity consumedResourceRelation : resourceRelationTypeEntity.getConsumedResourceRelations()) {
+                removeRelationProperties(propertiesToBeDeleted, consumedResourceRelation);
+            }
+        }
+    }
+
+    private void removeRelationProperties(Set<PropertyEntity> propertiesToBeDeleted, ConsumedResourceRelationEntity consumedResourceRelation) {
+        for (ResourceRelationContextEntity context : consumedResourceRelation.getContexts()) {
+            if (context.getProperties().size() > 0) {
+                for (PropertyEntity property : propertiesToBeDeleted) {
+                    context.removeProperty(property);
                 }
             }
         }
