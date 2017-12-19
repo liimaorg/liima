@@ -124,6 +124,7 @@ export class DeploymentsComponent implements OnInit {
       this.filters.unshift(newFilter);
       this.enableDatepicker(newFilter.type);
       this.offset = 0;
+      this.selectedFilterType = null;
     }
   }
 
