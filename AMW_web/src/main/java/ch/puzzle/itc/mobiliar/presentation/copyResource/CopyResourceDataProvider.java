@@ -78,6 +78,9 @@ public class CopyResourceDataProvider implements Serializable {
     ForeignableBoundary foreignableBoundary;
 
 	@Inject
+	EditResourceView editResourceView;
+
+	@Inject
 	@Getter
 	private ResourceTypeDataProvider resourceTypeDataProvider;
 
@@ -143,7 +146,7 @@ public class CopyResourceDataProvider implements Serializable {
 	public void copyFromResource(Integer selectedGroup) {
 		try {
 			copyFromResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup).getSelectedResourceId());
-			propertyEditDataProvider.reloadResourceEditProperties();
+			editResourceView.forceReload();
 		} catch (ForeignableOwnerViolationException e) {
             GlobalMessageAppender.addErrorMessage("Owner "+e.getViolatingOwner()+" is not allowed to copy from selected resource because of violating "+e.getViolatedForeignableObject().getForeignableObjectName()+" with id "+ ((Identifiable)e.getViolatedForeignableObject()).getId());
         }
