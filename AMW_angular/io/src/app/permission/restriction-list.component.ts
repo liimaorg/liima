@@ -10,6 +10,7 @@ import * as _ from 'lodash';
 
 export class RestrictionListComponent {
 
+  @Input() delegationMode: boolean;
   @Input() restrictions: Restriction[] = [];
   @Input() resourceGroups: Resource[] = [];
   @Output() deleteRestriction: EventEmitter<number> = new EventEmitter<number>();
@@ -25,7 +26,10 @@ export class RestrictionListComponent {
 
   getGroupName(id: number): string {
     if (id) {
-      return _.find(this.resourceGroups, [id, id]).name;
+      const resource = _.find(this.resourceGroups, {id});
+      if (resource) {
+        return resource['name'];
+      }
     }
     return null;
   }

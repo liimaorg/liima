@@ -18,19 +18,15 @@ declare var $: any;
 export class DeploymentsListComponent {
 
   @Input() deployments: Deployment[] = [];
-  @Input() filtersInUrl: DeploymentFilter[];
   @Input() sortCol: string;
   @Input() sortDirection: string;
-  @Input() currentPage: number;
-  @Input() lastPage: number;
+  @Input() filtersForParam: DeploymentFilter[];
   @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doConfirmDeployment: EventEmitter<DeploymentDetail> = new EventEmitter<DeploymentDetail>();
   @Output() doSort: EventEmitter<string> = new EventEmitter<string>();
-  @Output() doSetMax: EventEmitter<number> = new EventEmitter<number>();
-  @Output() doSetOffset: EventEmitter<number> = new EventEmitter<number>();
 
   deployment: Deployment;
 
@@ -44,28 +40,14 @@ export class DeploymentsListComponent {
 
   allSelected: boolean = false;
 
-  maxResults: number = 10;
-
-  paginatorItems: number = 5;
-
-  failureReason: { [key: string]: string } = { 'PRE_DEPLOYMENT_GENERATION': 'pre deployment generation failed',
-    'DEPLOYMENT_GENERATION': 'deployment generation failed', 'PRE_DEPLOYMENT_SCRIPT': 'pre deployment script failed',
-    'DEPLOYMENT_SCRIPT': 'deployment script failed', 'NODE_MISSING': 'no nodes enabled', 'TIMEOUT': 'timeout',
-    'UNEXPECTED_ERROR': 'unexpected error', 'RUNTIME_ERROR': 'runtime error' };
+  failureReason: { [key: string]: string } = { PRE_DEPLOYMENT_GENERATION: 'pre deployment generation failed',
+    DEPLOYMENT_GENERATION: 'deployment generation failed', PRE_DEPLOYMENT_SCRIPT: 'pre deployment script failed',
+    DEPLOYMENT_SCRIPT: 'deployment script failed', NODE_MISSING: 'no nodes enabled', TIMEOUT: 'timeout',
+    UNEXPECTED_ERROR: 'unexpected error', RUNTIME_ERROR: 'runtime error' };
 
   constructor(private ngZone: NgZone,
               private deploymentService: DeploymentService,
               private resourceService: ResourceService) {
-  }
-
-  pages(): number[] {
-    if (this.lastPage > 1) {
-      let itemsBefore: number = Math.floor(this.paginatorItems / 2);
-      let start: number = this.currentPage > itemsBefore ? this.currentPage - itemsBefore : 1;
-      let end: number = start + this.paginatorItems - 1;
-      return this.range(start, end < this.lastPage ? end : this.lastPage);
-    }
-    return;
   }
 
   showDetails(deploymentId: number) {
@@ -105,7 +87,7 @@ export class DeploymentsListComponent {
   doDateChange() {
     if (this.deployment) {
       this.errorMessage = '';
-      let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
+      const dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
       if (!dateTime || !dateTime.isValid()) {
         this.errorMessage = 'Invalid date';
       } else {
@@ -147,17 +129,6 @@ export class DeploymentsListComponent {
     this.doSort.emit(col);
   }
 
-  setMax() {
-    this.doSetMax.emit(this.maxResults);
-  }
-
-  toPage(page: number) {
-    if (page <= this.lastPage && page !== this.currentPage) {
-      page = page > 0 ? page - 1 : 0;
-      this.doSetOffset.emit(page * this.maxResults);
-    }
-  }
-
   switchAllDeployments() {
     this.allSelected = !this.allSelected;
     this.selectAllDeployments.emit(this.allSelected);
@@ -175,8 +146,8 @@ export class DeploymentsListComponent {
     );
   }
 
-  logViewerLink(deploymentId: number){
-    window.location.href = '/AMW_web/pages/logView.xhtml?deploymentId=' + deploymentId + '&filters=' + encodeURI(JSON.stringify(this.filtersInUrl))
+  logViewerLink(deploymentId: number) {
+    window.location.href = '/AMW_web/pages/logView.xhtml?deploymentId=' + deploymentId + '&filters=' + encodeURI(JSON.stringify(this.filtersForParam));
   }
 
   private getDeploymentDetail(deploymentId: number) {
@@ -190,15 +161,6 @@ export class DeploymentsListComponent {
       /* happy path */ (r) => this.deploymentDetail = r,
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */  () => $('#deploymentConfirmation').modal('show'));
-  }
-
-  private range(a: number, b: number): number[] {
-    let d: number [] = [];
-    let c: number = b - a + 1;
-    while (c--) {
-      d[c] = b--;
-    }
-    return d;
   }
 
 }

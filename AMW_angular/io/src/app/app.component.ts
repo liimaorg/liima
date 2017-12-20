@@ -1,7 +1,7 @@
 /*
  * Angular 2 decorators and services
  */
-import { Component, ViewEncapsulation, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, AfterViewInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppState } from './app.service';
 
@@ -19,14 +19,20 @@ declare var $: any;
   ],
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit, AfterViewInit {
-  name = 'Angular 2';
+export class AppComponent implements OnInit, AfterViewInit, AfterViewChecked {
+  name = 'Angular 4';
 
   constructor(public appState: AppState,
-              private router: Router) {
+              private router: Router,
+              private cdRef: ChangeDetectorRef) {
   }
 
   ngOnInit() {}
+
+  ngAfterViewChecked() {
+    // explicit change detection to avoid "expression-has-changed-after-it-was-checked-error"
+    this.cdRef.detectChanges();
+  }
 
   ngAfterViewInit() {
     $('.navbar-lower').affix({offset: {top: 50}});

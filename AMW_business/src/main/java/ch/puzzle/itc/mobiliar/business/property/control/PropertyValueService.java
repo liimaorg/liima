@@ -27,7 +27,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 
 import javax.inject.Inject;
@@ -136,21 +135,4 @@ public class PropertyValueService {
         }
         return properties;
     }
-
-    /**
-     * Reverts the transfer object {@link ResourceEditProperty} to a {@link PropertyEntity} to make it
-     * possible to store it in the database
-     *
-     * @param property
-     * @return
-     */
-    private PropertyEntity toNewProperty(ResourceEditProperty property) {
-        PropertyDescriptorEntity propertyDescriptor = entityManager.find(PropertyDescriptorEntity.class,
-                property.getDescriptorId());
-        PropertyEntity prop = new PropertyEntity();
-        prop.setValue(property.getUnobfuscatedValue());
-        prop.setDescriptor(propertyDescriptor);
-        return prop;
-    }
-
 }

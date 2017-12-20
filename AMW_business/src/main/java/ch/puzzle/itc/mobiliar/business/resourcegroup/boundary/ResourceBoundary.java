@@ -246,7 +246,6 @@ public class ResourceBoundary {
                 contextDomainService.getGlobalResourceContextEntity());
         Application app = createUniqueApplicationByName(creatingOwner, applicationName, appReleaseId, false);
         as.addApplication(app, creatingOwner);
-
         entityManager.persist(as.getEntity());
         entityManager.flush();
         log.info("Application " + applicationName + " für ApplicationServer " + asResource.getName()
@@ -307,11 +306,6 @@ public class ResourceBoundary {
         doRemoveResourceEntity(deletingOwner, resourceId);
     }
 
-    public void deleteApplicationById(ForeignableOwner deletingOwner, int applicationResId) throws ResourceNotFoundException,
-            ResourceNotDeletableException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-        doRemoveResourceEntity(deletingOwner, applicationResId);
-    }
-
     private void doRemoveResourceEntity(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
 
         ResourceEntity resourceEntity = commonService.getResourceEntityById(resourceId);
@@ -328,6 +322,7 @@ public class ResourceBoundary {
                 contextDomainService.getGlobalResourceContextEntity(), Action.DELETE, resourceEntity, resourceEntity.getResourceType())) {
             throw new NotAuthorizedException();
         }
+        permissionBoundary.removeAllRestrictionsForResourceGroup(resourceEntity.getResourceGroup());
 
         Integer groupId = resourceEntity.getResourceGroup().getId();
         //Special logic for the removal of an application server: If the current application server instance is the only release previously consuming this resource, the relation has to be attached to the default application server container.
@@ -346,6 +341,7 @@ public class ResourceBoundary {
             }
 
         }
+
         log.info("Resource with id: " + resourceEntity.getId() + " is going to be removed from the database...");
         resourceRepository.remove(resourceEntity);
 

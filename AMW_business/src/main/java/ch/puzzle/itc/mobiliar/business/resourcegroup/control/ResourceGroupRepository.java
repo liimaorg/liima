@@ -32,6 +32,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ResourceGroupRepository {
     private Logger log;
 
     public List<ResourceGroupEntity> getResourceGroups(){
-        return entityManager.createQuery("select r from ResourceGroupEntity r left join fetch r.resources res", ResourceGroupEntity.class).getResultList();
+        return entityManager.createQuery("select distinct r from ResourceGroupEntity r left join fetch r.resources res", ResourceGroupEntity.class).getResultList();
     }
 
     public List<ResourceGroupEntity> getAllResourceGroupsByName(){
@@ -62,6 +63,10 @@ public class ResourceGroupRepository {
     public ResourceGroupEntity getResourceGroupById(Integer groupId){
         return entityManager.createQuery("select r from ResourceGroupEntity r where r.id=:groupId", ResourceGroupEntity.class).setParameter(
                 "groupId", groupId).getSingleResult();
+    }
+
+    public List<ResourceGroupEntity> getResourceGroupsOrderedByName(Collection<Integer> resourceGroupIds){
+        return entityManager.createQuery("select r from ResourceGroupEntity r where r.id in(:groupIds) order by r.name", ResourceGroupEntity.class).setParameter("groupIds", resourceGroupIds).getResultList();
     }
     
     /**
@@ -182,17 +187,15 @@ public class ResourceGroupRepository {
      */
     public void remove(ResourceGroupEntity resourceGroup) {
         final Integer resourceGroupId = resourceGroup.getId();
-        for (ResourceEntity resource : resourceGroup.getResources()) {
-            if (resource.getDeployments() != null) {
-                for (DeploymentEntity deploymentEntity : resource.getDeployments()) {
-                    deploymentEntity.setExResourcegroupId(resourceGroupId);
-                    deploymentEntity.setResourceGroup(null);
-                    entityManager.merge(deploymentEntity);
-                }
-            }
-        }
         entityManager.remove(resourceGroup);
+        preserveDeployments(resourceGroupId);
         log.info("ResourceGroup with Id: " + resourceGroupId + " was removed from the db");
+    }
+
+    private void preserveDeployments(Integer resourceGroupId) {
+        entityManager.createQuery("update DeploymentEntity d set d.exResourcegroupId =:groupId, d.resourceGroup = null where d.resourceGroup.id =:groupId")
+		.setParameter("groupId", resourceGroupId)
+		.executeUpdate();
     }
 
 }

@@ -1,5 +1,6 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
+import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AppState } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
@@ -21,6 +22,7 @@ declare var $: any;
 })
 
 export class DeploymentsComponent implements OnInit {
+  @ViewChild('selectModel') private selectModel: NgModel;
 
   defaultComparator: string = 'eq';
 
@@ -28,10 +30,10 @@ export class DeploymentsComponent implements OnInit {
   paramFilters: DeploymentFilter[] = [];
   autoload: boolean = true;
 
-  // value of filters parameter. Used to pass as json object to the logView.xhtml
-  filtersInUrl: DeploymentFilter[];
   // enhanced filters for deployment service
   filtersForBackend: DeploymentFilter[] = [];
+  // value of filters parameter. Used to pass as json object to the logView.xhtml
+  filtersForParam: DeploymentFilter[] = [];
 
   // valid for all, loaded once
   filterTypes: DeploymentFilterType[] = [];
@@ -42,11 +44,8 @@ export class DeploymentsComponent implements OnInit {
 
   // available edit actions
   editActions: string[] = ['Change date', 'Confirm', 'Reject', 'Cancel'];
-  selectedEditAction: string = this.editActions[0];
-  // confirmation dialog / edit multiple deployments
   hasPermissionShakedownTest: boolean = false;
   deploymentDate: number; // for deployment date change
-  confirmationAttributes: DeploymentDetail;
 
   // available filterValues (if any)
   filterValueOptions: { [key: string]: string[] } = {};
@@ -56,7 +55,6 @@ export class DeploymentsComponent implements OnInit {
 
   // already set
   filters: DeploymentFilter[] = [];
-  filterString: string;
 
   // filtered deployments
   deployments: Deployment[] = [];
@@ -64,7 +62,7 @@ export class DeploymentsComponent implements OnInit {
   // csv export
   deploymentsForExport: Deployment[] = [];
   deploymentDetailMap: { [key: number]: DeploymentDetail } = {};
-  csvReadyObjects: any[] = [];
+  csvReadyObjects: { [key: number]: any[] } = {};
   csvDocument: string;
 
   // sorting with default values
@@ -118,21 +116,23 @@ export class DeploymentsComponent implements OnInit {
 
   addFilter() {
     if (this.selectedFilterType && this.canFilterBeAdded()) {
-      let newFilter: DeploymentFilter = <DeploymentFilter> {};
+      const newFilter: DeploymentFilter = {} as DeploymentFilter;
       newFilter.name = this.selectedFilterType.name;
       newFilter.comp = this.defaultComparator;
       newFilter.val = this.selectedFilterType.type === 'booleanType' ? 'true' : '';
       newFilter.type = this.selectedFilterType.type;
       newFilter.compOptions = this.comparatorOptionsForType(this.selectedFilterType.type);
       this.setValueOptionsForFilter(newFilter);
-      this.filters.unshift(newFilter);
+      this.filters.push(newFilter);
       this.enableDatepicker(newFilter.type);
       this.offset = 0;
+      this.selectedFilterType = null;
+      this.selectModel.reset(null);
     }
   }
 
   removeFilter(filter: DeploymentFilter) {
-    let i: number = _.findIndex(this.filters, {name: filter.name, comp: filter.comp, val: filter.val});
+    const i: number = _.findIndex(this.filters, {name: filter.name, comp: filter.comp, val: filter.val});
     if (i !== -1) {
       this.filters.splice(i, 1);
     }
@@ -141,34 +141,26 @@ export class DeploymentsComponent implements OnInit {
 
   clearFilters() {
     this.filters = [];
-    this.filterString = null;
-  }
-
-  clearFiltersAndSessionStorage() {
-    this.clearFilters();
     sessionStorage.setItem('deploymentFilters', null);
+    this.updateFiltersInURL(null);
   }
 
-  applyFilter() {
+  applyFilters() {
     this.filtersForBackend = [];
-    let filtersForParam: DeploymentFilter[] = [];
-    let filtersToBeRemoved: DeploymentFilter[] = [];
+    this.filtersForParam = [];
+    const filtersToBeRemoved: DeploymentFilter[] = [];
     this.errorMessage = '';
     this.filters.forEach((filter) => {
       if (filter.val || filter.type === 'SpecialFilterType') {
-        filtersForParam.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+        this.filtersForParam.push({name: filter.name, comp: filter.comp, val: filter.val} as DeploymentFilter);
         if (filter.type === 'DateType') {
-          let dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
+          const dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
           if (!dateTime || !dateTime.isValid()) {
             this.errorMessage = 'Invalid date';
           }
-          this.filtersForBackend.push(<DeploymentFilter> {
-            name: filter.name,
-            comp: filter.comp,
-            val: dateTime.valueOf().toString()
-          });
+          this.filtersForBackend.push({name: filter.name, comp: filter.comp, val: dateTime.valueOf().toString()} as DeploymentFilter);
         } else {
-          this.filtersForBackend.push(<DeploymentFilter> {name: filter.name, comp: filter.comp, val: filter.val});
+          this.filtersForBackend.push({name: filter.name, comp: filter.comp, val: filter.val} as DeploymentFilter);
         }
       } else {
         filtersToBeRemoved.push(filter);
@@ -178,25 +170,18 @@ export class DeploymentsComponent implements OnInit {
 
     if (!this.errorMessage) {
       this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
-      this.filtersInUrl = filtersForParam;
-      let filterString: string;
-      if (this.filtersInUrl.length > 0) {
-        filterString = JSON.stringify(this.filtersInUrl);
-        sessionStorage.setItem('deploymentFilters', filterString);
+      let filterString: string = null;
+      if (this.filtersForParam.length > 0) {
+        filterString = JSON.stringify(this.filtersForParam);
       }
-      this.filterString = filterString;
+      sessionStorage.setItem('deploymentFilters', filterString);
+      this.updateFiltersInURL(filterString);
     }
   }
 
   changeDeploymentDate(deployment: Deployment) {
     if (deployment) {
       this.setDeploymentDate(deployment, deployment.deploymentDate);
-    }
-  }
-
-  changeEditAction() {
-    if (this.selectedEditAction === 'Change date') {
-      this.addDatePicker();
     }
   }
 
@@ -211,43 +196,14 @@ export class DeploymentsComponent implements OnInit {
   showEdit() {
     if (this.editableDeployments()) {
       this.addDatePicker();
-      this.confirmationAttributes = <DeploymentDetail> {};
       // get shakeDownTestPermission for first element
-      let indexOfFirstSelectedElem = _.findIndex(this.deployments, {selected: true});
-      let firstDeployment = this.deployments[indexOfFirstSelectedElem];
+      const indexOfFirstSelectedElem = _.findIndex(this.deployments, {selected: true});
+      const firstDeployment = this.deployments[indexOfFirstSelectedElem];
       this.resourceService.canCreateShakedownTest(firstDeployment.appServerId).subscribe(
         /* happy path */ (r) => this.hasPermissionShakedownTest = r,
         /* error path */ (e) => this.errorMessage = e,
         /* onComplete */  () => $('#deploymentsEdit').modal('show')
       );
-    }
-  }
-
-  doEdit() {
-    if (this.editableDeployments()) {
-      this.errorMessage = '';
-      switch (this.selectedEditAction) {
-        // date
-        case this.editActions[0]:
-          this.setSelectedDeploymentDates();
-          break;
-        // confirm
-        case this.editActions[1]:
-          this.confirmSelectedDeployments();
-          break;
-        // reject
-        case this.editActions[2]:
-          this.rejectSelectedDeployments();
-          break;
-        // cancel
-        case this.editActions[3]:
-          this.cancelSelectedDeployments();
-          break;
-        default:
-          console.error('Unknown EditAction' + this.selectedEditAction);
-          break;
-      }
-      $('#deploymentsEdit').modal('hide');
     }
   }
 
@@ -283,18 +239,13 @@ export class DeploymentsComponent implements OnInit {
 
   exportCSV() {
     this.isLoading = true;
-    this.csvReadyObjects = [];
+    this.csvReadyObjects = {};
     this.errorMessage = 'Generating your CSV.<br>Please hold on, depending on the requested data this may take a while';
     this.getFilteredDeploymentsForExport(JSON.stringify(this.filtersForBackend));
   }
 
-  copyBookmarkToClipboard() {
-    let url: string = decodeURIComponent(window.location.href);
-    let i: number = url.indexOf('?');
-    if (i > 0) {
-      url = url.substring(0, i);
-    }
-    url += '?filters=' + this.filterString;
+  copyURL() {
+    const url: string = decodeURIComponent(window.location.href);
     $("body").append($('<input type="text" name="fname" class="textToCopyInput" style="opacity:0"/>')
       .val(url)).find(".textToCopyInput").select();
     try {
@@ -312,18 +263,31 @@ export class DeploymentsComponent implements OnInit {
       this.sortCol = col;
       this.sortDirection = 'DESC';
     }
-    this.applyFilter();
+    this.applyFilters();
   }
 
   setMaxResultsPerPage(max: number) {
     this.maxResults = max;
     this.offset = 0;
-    this.applyFilter();
+    this.applyFilters();
   }
 
   setNewOffset(offset: number) {
     this.offset = offset;
-    this.applyFilter();
+    this.applyFilters();
+  }
+
+  reloadDeployment(deploymentId: number) {
+    let reloadedDeployment: Deployment;
+    this.deploymentService.getWithActions(deploymentId).subscribe(
+      /* happy path */ (r) => reloadedDeployment = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* on complete */ () => this.updateDeploymentsList(reloadedDeployment)
+    );
+  }
+
+  public getSelectedDeployments(): Deployment[] {
+    return this.deployments.filter((deployment) => deployment.selected === true);
   }
 
   private canFilterBeAdded(): boolean {
@@ -340,8 +304,8 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private populateCSVrows(deployment: Deployment) {
-    let detail: DeploymentDetail = this.deploymentDetailMap[deployment.id];
-    let csvReadyObject: any = {
+    const detail: DeploymentDetail = this.deploymentDetailMap[deployment.id];
+    const csvReadyObject: any = {
       id: deployment['id'],
       trackingId: deployment['trackingId'],
       state: deployment['state'],
@@ -364,10 +328,10 @@ export class DeploymentsComponent implements OnInit {
       cancelUser: deployment['cancelUser'],
       stateMessage: detail.stateMessage
     };
-    this.csvReadyObjects.push(csvReadyObject);
-    if (this.csvReadyObjects.length === this.deploymentsForExport.length) {
+    this.csvReadyObjects[deployment.id] = csvReadyObject;
+    if (Object.keys(this.csvReadyObjects).length === this.deploymentsForExport.length) {
       this.csvDocument = this.createCSV();
-      let docName: string = 'deployments_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
+      const docName: string = 'deployments_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
       this.pushDownload(docName);
       this.errorMessage = '';
     }
@@ -375,7 +339,8 @@ export class DeploymentsComponent implements OnInit {
 
   private createCSV(): string {
     let content: string = this.createCSVTitles();
-    this.csvReadyObjects.forEach((deployment) => {
+    this.deploymentsForExport.forEach((entry) => {
+      const deployment: any = this.csvReadyObjects[entry.id];
       let line: string = '';
       for (const field of Object.keys(deployment)) {
         switch (field) {
@@ -391,19 +356,27 @@ export class DeploymentsComponent implements OnInit {
             line += deployment[field] ? '"' + moment(deployment[field]).format('YYYY-MM-DD HH:mm').toString() + '"' + this.csvSeparator : this.csvSeparator;
             break;
           case 'appsWithVersion':
+            if (deployment[field]) {
+              line += '"';
+            }
             deployment[field].forEach((appsWithVersion) => {
-              line += '"' + appsWithVersion['applicationName'] + ' ' + appsWithVersion['version'] + '\n"';
+              line += appsWithVersion['applicationName'] + ' ' + appsWithVersion['version'] + '\n';
             });
+            line = line.replace(/\n$/, "\"");
             line += this.csvSeparator;
             break;
           case 'deploymentParameters':
+            if (deployment[field]) {
+              line += '"';
+            }
             deployment[field].forEach((deploymentParameter) => {
-              line += '"' + deploymentParameter['key'] + ' ' + deploymentParameter['value'] + '\n"';
+              line += deploymentParameter['key'] + ' ' + deploymentParameter['value'] + '\n';
             });
+            line = line.replace(/\n$/, "\"");
             line += this.csvSeparator;
             break;
           case 'stateMessage':
-            line += deployment[field] !== null ? '"' + deployment[field].replace(/"/g, "") + '"' + this.csvSeparator : this.csvSeparator;
+            line += deployment[field] !== null ? '"' + deployment[field].replace(/"/g, "").replace(/\n$/, "") + '"' + this.csvSeparator : this.csvSeparator;
             break;
           default:
             line += deployment[field] !== null ? '"' + deployment[field] + '"' + this.csvSeparator : this.csvSeparator;
@@ -416,7 +389,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private createCSVTitles(): string {
-    let labelsArray: string[]  = [
+    const labelsArray: string[]  = [
       'Id',
       'Tracking Id',
       'Deployment state',
@@ -444,12 +417,12 @@ export class DeploymentsComponent implements OnInit {
 
   private pushDownload(docName: string) {
     this.isLoading = false;
-    let blob = new Blob([this.csvDocument], { type: 'text/csv' });
-    let url = window.URL.createObjectURL(blob);
+    const blob = new Blob([this.csvDocument], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
     if (navigator.msSaveOrOpenBlob) {
       navigator.msSaveBlob(blob, docName);
     } else {
-      let a = document.createElement('a');
+      const a = document.createElement('a');
       a.href = url;
       a.download = docName;
       a.setAttribute('style', 'display:none;');
@@ -474,60 +447,11 @@ export class DeploymentsComponent implements OnInit {
       /* error path */ (e) => this.errorMessage = e);
   }
 
-  private confirmSelectedDeployments() {
-    this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
-      this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
-        /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
-        /* error path */ (e) => e,
-        /* on complete */ () => this.applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deployment.id)
-      );
-    });
-  }
-
-  private rejectSelectedDeployments() {
-    this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
-      this.rejectDeployment(deployment);
-    });
-  }
-
-  private cancelSelectedDeployments() {
-    this.deployments.filter((deployment) => deployment.selected === true).forEach((deployment) => {
-      this.cancelDeployment(deployment);
-    });
-  }
-
-  private applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deploymentId: number) {
-    let deploymentDetail = this.deploymentDetailMap[deploymentId];
-    deploymentDetail.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
-    deploymentDetail.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
-    deploymentDetail.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
-    deploymentDetail.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
-    this.confirmDeployment(deploymentDetail);
-  }
-
-  private setSelectedDeploymentDates() {
-    let dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
-    if (!dateTime || !dateTime.isValid()) {
-      this.errorMessage = 'Invalid date';
-    } else {
-      _.filter(this.deployments, {selected: true}).forEach((deployment) => this.setDeploymentDate(deployment, dateTime.valueOf()));
-    }
-  }
-
   private setDeploymentDate(deployment: Deployment, deploymentDate: number) {
     this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
       /* happy path */ (r) => r,
       /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
       /* on complete */ () => this.reloadDeployment(deployment.id)
-    );
-  }
-
-  private reloadDeployment(deploymentId: number) {
-    let reloadedDeployment: Deployment;
-    this.deploymentService.getWithActions(deploymentId).subscribe(
-      /* happy path */ (r) => reloadedDeployment = r,
-      /* error path */ (e) => this.errorMessage = e,
-      /* on complete */ () => this.updateDeploymentsList(reloadedDeployment)
     );
   }
 
@@ -631,16 +555,16 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private canRequestDeployments() {
-      this.deploymentService.canRequestDeployments().subscribe(
-        /* happy path */ (r) => this.hasPermissionToRequestDeployments = r,
-        /* error path */ (e) => this.errorMessage = e);
+    this.deploymentService.canRequestDeployments().subscribe(
+      /* happy path */ (r) => this.hasPermissionToRequestDeployments = r,
+      /* error path */ (e) => this.errorMessage = e);
   }
 
   private enhanceParamFilter() {
     if (this.paramFilters) {
       this.clearFilters();
       this.paramFilters.forEach((filter) => {
-        let i: number = _.findIndex(this.filterTypes, ['name', filter.name]);
+        const i: number = _.findIndex(this.filterTypes, ['name', filter.name]);
         if (i >= 0) {
           filter.type = this.filterTypes[i].type;
           filter.compOptions = this.comparatorOptionsForType(filter.type);
@@ -654,7 +578,7 @@ export class DeploymentsComponent implements OnInit {
       });
     }
     if (this.autoload) {
-      this.applyFilter();
+      this.applyFilters();
     }
   }
 
@@ -663,6 +587,14 @@ export class DeploymentsComponent implements OnInit {
       this.comparatorOptionsMap[option.name] = option.displayName;
     });
     this.isLoading = false;
+  }
+
+  private updateFiltersInURL(destination: string) {
+    if (destination) {
+      this.location.replaceState('/deployments?filters=' + destination);
+    } else {
+      this.location.replaceState('/deployments');
+    }
   }
 
 }

@@ -10,7 +10,7 @@ describe('ResourceService', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function (backend: MockBackend, defaultOptions: BaseRequestOptions) {
+        useFactory(backend: MockBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
@@ -27,9 +27,7 @@ describe('ResourceService', () => {
     // given
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.url).toMatch('/AMW_rest/resources/resources');
-      let mockResponse = new Response(new ResponseOptions({
-        body: [{id: 1}]
-      }));
+      const mockResponse = new Response(new ResponseOptions({body: [{id: 1}]}));
       connection.mockRespond(mockResponse);
     });
     // when then
@@ -43,9 +41,7 @@ describe('ResourceService', () => {
     // given
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.url).toContain('/AMW_rest/resources/resources/resourceGroups/1/releases/2');
-      let mockResponse = new Response(new ResponseOptions({
-        body: [{name: 'testApp'}]
-      }));
+      const mockResponse = new Response(new ResponseOptions({body: [{name: 'testApp'}]}));
       connection.mockRespond(mockResponse);
     });
     // when then
@@ -59,9 +55,7 @@ describe('ResourceService', () => {
     // given
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.url).toContain('/AMW_rest/resources/resources/testGroup/testRelease/relations?type=RUNTIME');
-      let mockResponse = new Response(new ResponseOptions({
-        body: [{identifier: 'EAP6'}]
-      }));
+      const mockResponse = new Response(new ResponseOptions({body: [{identifier: 'EAP6'}]}));
       connection.mockRespond(mockResponse);
     });
     // when then
@@ -75,9 +69,8 @@ describe('ResourceService', () => {
     // given
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.url).toContain('/AMW_rest/resources/resources/resourceGroups/123/releases/321/appWithVersions/?context=1&context=2');
-      let mockResponse = new Response(new ResponseOptions({
-        body: [{version: 0.1, mavenVersion: 1.0}, {version: 0.2, mavenVersion: 1.2}]
-      }));
+      const mockResponse = new Response(new ResponseOptions({body: [{version: 0.1, mavenVersion: 1.0},
+        {version: 0.2, mavenVersion: 1.2}]}));
       connection.mockRespond(mockResponse);
     });
     // when then
@@ -90,9 +83,8 @@ describe('ResourceService', () => {
     // given
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.url).toContain('/AMW_rest/resources/resources/resourceGroups/123/releases/321/appWithVersions/?context=1&context=2');
-      let mockResponse = new Response(new ResponseOptions({
-        body: [{version: 0.1, mavenVersion: 1.0}, {version: 0.2, mavenVersion: 1.2}]
-      }));
+      const mockResponse = new Response(new ResponseOptions({body: [{version: 0.1, mavenVersion: 1.0},
+        {version: 0.2, mavenVersion: 1.2}]}));
       connection.mockRespond(mockResponse);
     });
     // when then

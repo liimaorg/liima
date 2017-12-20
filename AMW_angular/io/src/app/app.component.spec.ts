@@ -1,6 +1,7 @@
 import { inject, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
+import { ChangeDetectorRef } from '@angular/core';
 // Load the implementations that should be tested
 import { AppComponent } from './app.component';
 import { AppState } from './app.service';
@@ -16,18 +17,19 @@ describe('App', () => {
     providers: [
       AppState,
       AppComponent,
+      ChangeDetectorRef,
       { provide: Router, useClass: RouterStub }
     ]
   }));
 
   it('should have a name', inject([AppComponent], (app: AppComponent) => {
-    expect(app.name).toEqual('Angular 2');
+    expect(app.name).toEqual('Angular 4');
   }));
 
   it('should navigate to the right target',
     inject([AppComponent, AppState, Router], (app: AppComponent, appState: AppState, router: Router) => {
     // given
-    let item: any = { title: 'test', target: 'target' };
+    const item: any = {title: 'test', target: 'target'};
     // when
     spyOn(appState, 'set').and.callThrough();
     spyOn(router, 'navigateByUrl').and.callThrough();

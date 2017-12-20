@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { PermissionService } from  './permission.service';
+import { PermissionService } from './permission.service';
 import { Environment } from '../deployment/environment';
 import { EnvironmentService } from '../deployment/environment.service';
 import { Resource } from '../resource/resource';
@@ -22,16 +22,22 @@ export class PermissionComponent implements OnInit, OnDestroy {
   roleNames: string[] = [];
   userNames: string[] = [];
   permissions: Permission[] = [];
-  environments: Environment[] = [ { id: null, name: null, parent: 'All', selected: false } ];
-  groupedEnvironments: { [key: string]: Environment[] } = { 'All': [], 'Global': [] };
+  environments: Environment[] = [{id: null, name: null, parent: 'All', selected: false} as Environment];
+  groupedEnvironments: { [key: string]: Environment[] } = {All: [], Global: []};
   resourceGroups: Resource[] = [];
-  resourceTypes: ResourceType[] = [ { id: null, name: null } ];
+  resourceTypes: ResourceType[] = [{id: null, name: null}];
 
+  defaultNavItem: string = 'Roles';
   // role | user
   restrictionType: string = 'role';
+  delegationMode: boolean = false;
   restrictions: Restriction[] = [];
   selectedRoleName: string = null;
   selectedUserName: string = null;
+  actingUserName: string = null;
+  assignableRestrictions: Restriction[] = [];
+  assignablePermissions: Permission[] = [];
+
   // edit or add restriction
   restriction: Restriction = null;
   // backup for cancel
@@ -49,18 +55,27 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log('hello `Permission` component');
-
     this.appState.set('navShow', true);
-    this.appState.set('navItems', [ { title: 'Roles', target: '/permission/role' }, { title: 'Users', target: '/permission/user' } ]);
+    this.appState.set('navItems', [{title: 'Roles', target: '/permission/role'}, {title: 'Users', target: '/permission/user'}]);
+    this.appState.set('navTitle', this.defaultNavItem);
     this.appState.set('pageTitle', 'Permissions');
 
     this.activatedRoute.params.subscribe(
       (param: any) => {
-        this.onChangeType(param['restrictionType']);
+        if (param['actingUser']) {
+          this.delegationMode = true;
+          this.restrictionType = 'user';
+          this.onChangeActingUser(param['actingUser']);
+        } else {
+          if (param['restrictionType']) {
+            this.restrictionType = param['restrictionType'];
+          }
+          this.delegationMode = false;
+          this.getAllPermissions();
+          this.onChangeType(this.restrictionType);
+        }
     });
 
-    this.getAllPermissions();
     this.getAllEnvironments();
     this.getAllResourceGroups();
     this.getAllResourceTypes();
@@ -71,7 +86,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   onChangeRole() {
-    console.log('onChangeRole');
     if (this.isExistingRole(this.selectedRoleName)) {
       this.getRoleWithRestrictions(this.selectedRoleName);
     } else {
@@ -81,7 +95,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   onChangeUser() {
-    console.log('onChangeUser');
     if (this.isExistingUser(this.selectedUserName)) {
       this.getUserWithRestrictions(this.selectedUserName);
     } else {
@@ -95,7 +108,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
       this.permissionService.removeRestriction(id).subscribe(
         /* happy path */ (r) => '',
         /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */ () => _.remove(this.restrictions, {id: id}));
+        /* onComplete */ () => _.remove(this.restrictions, {id}));
     } else {
       this.restriction = null;
     }
@@ -106,6 +119,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.resetPermissionList();
     this.restriction = null;
     this.backupRestriction = null;
+    this.errorMessage = null;
   }
 
   modifyRestriction(restriction: Restriction) {
@@ -116,6 +130,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   persistRestriction() {
+    this.errorMessage = null;
     if (this.restriction.id != null) {
       this.permissionService.updateRestriction(this.restriction).subscribe(
         /* happy path */ (r) => '',
@@ -126,7 +141,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
           this.restriction = null;
           this.backupRestriction = null; });
     } else {
-      this.permissionService.createRestriction(this.restriction).subscribe(
+      this.permissionService.createRestriction(this.restriction, this.delegationMode).subscribe(
         /* happy path */ (r) => this.restriction = r,
         /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => {
@@ -137,8 +152,12 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   addRestriction() {
-    this.restriction = { id: null, roleName: this.selectedRoleName, userName: this.selectedUserName, permission: <Permission> {},
+    this.restriction = { id: null, roleName: this.selectedRoleName, userName: this.selectedUserName, permission: {} as Permission,
       resourceGroupId: null, resourceTypeName: null, resourceTypePermission: null, contextName: null, action: null };
+  }
+
+  getPermissions(): Permission[] {
+    return this.delegationMode ? this.assignablePermissions : this.permissions;
   }
 
   private updateNamesLists() {
@@ -160,7 +179,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   private onChangeType(type: string) {
-    console.log('onChangeType');
     this.errorMessage = '';
     this.successMessage = '';
     this.restrictions = [];
@@ -178,6 +196,19 @@ export class PermissionComponent implements OnInit, OnDestroy {
         this.getAllRoleNames();
       }
     }
+  }
+
+  private onChangeActingUser(userName: string) {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.restrictions = [];
+    this.actingUserName = userName;
+    this.appState.set('navItems', [ { title: this.actingUserName, target: '/permission/delegation/' + this.actingUserName } ]);
+    this.appState.set('navTitle', this.actingUserName);
+    this.selectedUserName = null;
+    this.selectedRoleName = null;
+    this.getAllAssignableUserNames();
+    this.getAllAssignableRestrictions();
   }
 
   private getAllRoleNames() {
@@ -214,6 +245,36 @@ export class PermissionComponent implements OnInit, OnDestroy {
       /* happy path */ (r) => this.environments = this.environments.concat(r),
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => this.extractEnvironmentGroups());
+  }
+
+  private getAllAssignableUserNames() {
+    this.isLoading = true;
+    this.permissionService
+      .getAllUserRestrictionNames().subscribe(
+      /* happy path */ (r) => this.userNames = _.pull(r, this.actingUserName),
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => this.isLoading = false);
+  }
+
+  private getAllAssignableRestrictions() {
+    this.isLoading = true;
+    this.permissionService
+      .getOwnUserAndRoleRestrictions().subscribe(
+      /* happy path */ (r) => this.assignableRestrictions = r,
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => { this.extractAllAssignablePermissions(),
+                               this.isLoading = false; }
+    );
+  }
+
+  private extractAllAssignablePermissions() {
+    this.assignablePermissions = [];
+    this.assignableRestrictions.forEach((restriction) => {
+      if (!_.some(this.assignablePermissions, restriction.permission)) {
+        this.assignablePermissions.push(restriction.permission);
+      }}
+    );
+    this.assignablePermissions = _.sortBy(this.assignablePermissions, function(s: Permission) { return s.name.replace(/[_]/, ''); });
   }
 
   private getAllResourceGroups() {
@@ -259,7 +320,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   private updatePermissions(restriction: Restriction) {
-    let i: number = _.findIndex(this.restrictions, _.pick(restriction, 'id'));
+    const i: number = _.findIndex(this.restrictions, _.pick(restriction, 'id'));
     if (i !== -1) {
       this.restrictions.splice(i, 1, restriction);
     } else {

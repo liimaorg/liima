@@ -22,16 +22,24 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotDeletableException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
@@ -51,6 +59,8 @@ import java.util.logging.Logger;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(PersistenceTestRunner.class)
@@ -68,6 +78,12 @@ public class ResourceBoundaryPersistenceTest {
 
     @Mock
     private ResourceTypeProvider resourceTypeProvider;
+
+    @Mock
+    ForeignableService foreignableService;
+
+    @Mock
+    ResourceRepository resourceRepository;
 
     @Mock
     ResourceGroupRepository resourceGroupRepository;
@@ -161,4 +177,36 @@ public class ResourceBoundaryPersistenceTest {
         // when // then
         resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "test", asType.getId(), release1.getId());
     }
+
+    @Test
+    public void shouldDeleteRestrictionsWhenDeletingResource() throws ElementAlreadyExistsException, ResourceTypeNotFoundException,
+            ResourceNotFoundException, ResourceNotDeletableException, ForeignableOwnerViolationException {
+        // given
+        ResourceTypeEntity appType = new ResourceTypeEntity();
+        appType.setName("application");
+        entityManager.persist(appType);
+        ReleaseEntity release1 = new ReleaseEntity();
+        release1.setName("release1");
+        entityManager.persist(release1);
+
+        when(releaseService.getById(release1.getId())).thenReturn(release1);
+        when(commonService.getResourceTypeEntityById(appType.getId())).thenReturn(appType);
+        when(permissionBoundary.canCreateResourceInstance(appType)).thenReturn(Boolean.TRUE);
+        when(resourceGroupRepository.loadUniqueGroupByNameAndType("app1", appType.getId())).thenReturn(null);
+        when(resourceGroupRepository.getResourceGroupByName("app1")).thenReturn(null);
+        Resource r1 = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1", appType.getId(),
+                release1.getId());
+        when(commonService.getResourceEntityById(r1.getId())).thenReturn(r1.getEntity());
+        when(permissionBoundary.hasPermission(any(Permission.class), any(ContextEntity.class), any(Action.class),
+                any(ResourceEntity.class), any(ResourceTypeEntity.class))).thenReturn(true);
+        when(resourceGroupRepository.find(r1.getEntity().getResourceGroup().getId())).thenReturn(r1.getEntity().getResourceGroup());
+
+        // when
+        resourceBoundary.removeResource(ForeignableOwner.AMW, r1.getId());
+
+        // then
+        verify(permissionBoundary).removeAllRestrictionsForResourceGroup(r1.getEntity().getResourceGroup());
+        verify(resourceGroupRepository).remove(r1.getEntity().getResourceGroup());
+    }
+
 }

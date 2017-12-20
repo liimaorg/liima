@@ -77,6 +77,34 @@ public class ResourceValidationServiceIntegrationTest {
         service.validateResourceName(resourceName);
     }
 
+    @Test
+    public void shouldAllowToRenameAResourceToANameContainingUnderscore() throws Exception {
+        // given
+        String resourceName = "amw-wma";
+        String newResourceName = "amw_wma";
+        ResourceEntity resourceA = new ResourceEntityBuilder().withName(resourceName).build();
+        entityManager.persist(resourceA);
+
+        assertNotNull(entityManager.find(ResourceEntity.class, resourceA.getId()));
+
+        // when
+        service.validateResourceName(newResourceName);
+    }
+
+    @Test
+    public void shouldAllowToAlterCaseOfResourceName() throws Exception {
+        // given
+        String resourceName = "amw";
+        String newResourceName = "AMW";
+        ResourceEntity resourceA = new ResourceEntityBuilder().withName(resourceName).build();
+        entityManager.persist(resourceA);
+
+        assertNotNull(entityManager.find(ResourceEntity.class, resourceA.getId()));
+
+        // when
+        service.validateResourceName(newResourceName);
+    }
+
     @Test(expected = AMWException.class)
     public void testValidateResourceName_emptyName() throws Exception {
         // when
@@ -106,6 +134,34 @@ public class ResourceValidationServiceIntegrationTest {
 
         // when
         service.validateResourceTypeName(typeNameB, typeNameA);
+    }
+
+    @Test
+    public void shouldAllowToRenameAResourceTypeToANameContainingUnderscore() throws Exception {
+        // given
+        String typeName = "type-amw";
+        String newTypeName = "type_amw";
+        ResourceTypeEntity typeA = new ResourceTypeEntityBuilder().buildResourceTypeEntity(typeName, null, false);
+        entityManager.persist(typeA);
+
+        assertNotNull(entityManager.find(ResourceTypeEntity.class, typeA.getId()));
+
+        // when
+        service.validateResourceTypeName(newTypeName, typeName);
+    }
+
+    @Test
+    public void shouldAllowToAlterCaseOfResourceTypeName() throws Exception {
+        // given
+        String typeName = "typeamw";
+        String newTypeName = "typeAMW";
+        ResourceTypeEntity typeA = new ResourceTypeEntityBuilder().buildResourceTypeEntity(typeName, null, false);
+        entityManager.persist(typeA);
+
+        assertNotNull(entityManager.find(ResourceTypeEntity.class, typeA.getId()));
+
+        // when
+        service.validateResourceTypeName(newTypeName, typeName);
     }
 
     @Test(expected = AMWException.class)

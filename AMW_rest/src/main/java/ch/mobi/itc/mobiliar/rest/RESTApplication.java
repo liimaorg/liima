@@ -39,10 +39,8 @@ public class RESTApplication extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> resources = new java.util.HashSet<>();
-        resources.add(com.wordnik.swagger.jaxrs.listing.ApiListingResource.class);
-        resources.add(com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider.class);
-        resources.add(com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON.class);
-        resources.add(com.wordnik.swagger.jaxrs.listing.ResourceListingProvider.class);
+        resources.add(io.swagger.jaxrs.listing.SwaggerSerializers.class);
+        resources.add(io.swagger.jaxrs.listing.ApiListingResource.class);
         addRestResourceClasses(resources);
         return resources;
     }

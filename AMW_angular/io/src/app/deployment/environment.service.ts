@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response, Headers, URLSearchParams, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Environment } from './environment';
+import * as _ from 'lodash';
 
 @Injectable()
 export class EnvironmentService {
@@ -19,23 +20,22 @@ export class EnvironmentService {
   }
 
   private getEnvironments(includingGroups: boolean): Observable<Environment[]> {
-    let params: URLSearchParams = new URLSearchParams();
+    const params: URLSearchParams = new URLSearchParams();
     if (includingGroups) {
       params.set('includingGroups', 'true');
     }
-    let options = new RequestOptions({
+    const options = new RequestOptions({
       search: params,
       headers: this.getHeaders()
     });
-    let resource$ = this.http
+    return this.http
       .get(`${this.baseUrl}/environments`, options)
       .map((response: Response) => response.json())
       .catch(handleError);
-    return resource$;
   }
 
   private getHeaders() {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Accept', 'application/json');
     return headers;
   }
@@ -46,7 +46,7 @@ function handleError(error: any) {
   let errorMsg = 'Error retrieving your data';
   if (error._body) {
     try {
-      errorMsg = JSON.parse(error._body).message;
+      errorMsg = _.escape(JSON.parse(error._body).message);
     } catch (e) {
       console.log(e);
     }

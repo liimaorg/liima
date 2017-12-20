@@ -11,7 +11,7 @@ describe('PermissiontService', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function (backend: MockBackend, defaultOptions: BaseRequestOptions) {
+        useFactory(backend: MockBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
@@ -31,9 +31,7 @@ describe('PermissiontService', () => {
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.method).toBe(RequestMethod.Get);
       expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/roleNames');
-      let mockResponse = new Response(new ResponseOptions({
-        body: [ 'viewer' ]
-      }));
+      const mockResponse = new Response(new ResponseOptions({body: ['viewer']}));
       connection.mockRespond(mockResponse);
     });
     // when then
@@ -48,9 +46,7 @@ describe('PermissiontService', () => {
       mockBackend.connections.subscribe((connection) => {
         expect(connection.request.method).toBe(RequestMethod.Get);
         expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/userRestrictionNames');
-        let mockResponse = new Response(new ResponseOptions({
-          body: [ 'testerli' ]
-        }));
+        const mockResponse = new Response(new ResponseOptions({body: ['testerli']}));
         connection.mockRespond(mockResponse);
       });
       // when then
@@ -65,9 +61,7 @@ describe('PermissiontService', () => {
       mockBackend.connections.subscribe((connection) => {
         expect(connection.request.method).toBe(RequestMethod.Get);
         expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/permissionEnumValues');
-        let mockResponse = new Response(new ResponseOptions({
-          body: [ 'RESOURCE' ]
-        }));
+        const mockResponse = new Response(new ResponseOptions({body: ['RESOURCE']}));
         connection.mockRespond(mockResponse);
       });
       // when then
@@ -82,14 +76,13 @@ describe('PermissiontService', () => {
       mockBackend.connections.subscribe((connection) => {
         expect(connection.request.method).toBe(RequestMethod.Get);
         expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/roles/viewer');
-        let mockResponse = new Response(new ResponseOptions({
-          body: [ { id: 1, roleName: 'viewer' }, { id: 2, roleName: 'viewer' } ]
-        }));
+        const mockResponse = new Response(new ResponseOptions({body: [{id: 1, roleName: 'viewer'},
+          {id: 2, roleName: 'viewer'}]}));
         connection.mockRespond(mockResponse);
       });
       // when then
       permissionService.getRoleWithRestrictions('viewer').subscribe((response) => {
-        expect(response).toEqual([ { id: 1, roleName: 'viewer' }, { id: 2, roleName: 'viewer' } ]);
+        expect(response).toEqual([{id: 1, roleName: 'viewer'}, {id: 2, roleName: 'viewer'}]);
       });
     }));
 
@@ -99,9 +92,8 @@ describe('PermissiontService', () => {
       mockBackend.connections.subscribe((connection) => {
         expect(connection.request.method).toBe(RequestMethod.Get);
         expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/users/tester');
-        let mockResponse = new Response(new ResponseOptions({
-          body: [ { id: 1, userName: 'tester' }, { id: 2, userName: 'tester' } ]
-        }));
+        const mockResponse = new Response(new ResponseOptions({body: [{id: 1, userName: 'tester'},
+          {id: 2, userName: 'tester'}]}));
         connection.mockRespond(mockResponse);
       });
       // when then
@@ -116,7 +108,7 @@ describe('PermissiontService', () => {
       mockBackend.connections.subscribe((connection) => {
         expect(connection.request.method).toBe(RequestMethod.Delete);
         expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/23');
-        let mockResponse = new Response(new ResponseOptions({}));
+        const mockResponse = new Response(new ResponseOptions({}));
         connection.mockRespond(mockResponse);
       });
       // when then
@@ -131,13 +123,11 @@ describe('PermissiontService', () => {
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.method).toBe(RequestMethod.Put);
       expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/2');
-      let mockResponse = new Response(new ResponseOptions({
-        status: 200
-      }));
+      const mockResponse = new Response(new ResponseOptions({status: 200}));
       connection.mockRespond(mockResponse);
     });
     // when then
-    permissionService.updateRestriction(<Restriction> { id: 2 }).subscribe((response) => {
+    permissionService.updateRestriction({ id: 2} as Restriction).subscribe((response) => {
       expect(response).toEqual({});
     });
   }));
@@ -148,25 +138,20 @@ describe('PermissiontService', () => {
     mockBackend.connections.subscribe((connection) => {
       if (connection.request.method === RequestMethod.Post) {
         expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/');
-        let locationHeaders = new Headers();
+        const locationHeaders = new Headers();
         locationHeaders.set('Location', '/permissions/restrictions/8');
-        let mockResponse = new Response(new ResponseOptions({
-          status: 201,
-          headers: locationHeaders
-        }));
+        const mockResponse = new Response(new ResponseOptions({status: 201, headers: locationHeaders}));
         connection.mockRespond(mockResponse);
       } else {
         expect(connection.request.method).toBe(RequestMethod.Get);
         expect(connection.request.url).toMatch('/AMW_rest/resources/permissions/restrictions/8');
-        let mockResponse = new Response(new ResponseOptions({
-          body: { id: 8, roleName: 'TESTER' }
-        }));
+        const mockResponse = new Response(new ResponseOptions({body: {id: 8, roleName: 'TESTER'}}));
         connection.mockRespond(mockResponse);
       }
     });
     // when then
-    permissionService.createRestriction(<Restriction> { roleName: 'TESTER' }).subscribe((response) => {
-      expect(response).toEqual({ id: 8, roleName: 'TESTER' });
+    permissionService.createRestriction({roleName: 'TESTER'} as Restriction, false).subscribe((response) => {
+      expect(response).toEqual({id: 8, roleName: 'TESTER'});
     });
   }));
 

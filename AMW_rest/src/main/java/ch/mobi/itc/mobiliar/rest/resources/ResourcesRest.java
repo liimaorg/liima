@@ -47,9 +47,9 @@ import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 
 import javax.enterprise.context.RequestScoped;
@@ -221,8 +221,8 @@ public class ResourcesRest {
     @Path("/resourceGroups")
     @GET
     @ApiOperation(value = "Get all available ResourceGroups - used by Angular")
-    public List<ResourceDTO> getAllResourceGroups() throws ValidationException {
-        List<ResourceGroupEntity> resourceGroups = resourceGroupLocator.getAllResourceGroupsByName();
+    public List<ResourceDTO> getAllResourceGroups(@QueryParam("onlyUserAssignable") boolean onlyUserAssignable) throws ValidationException {
+        List<ResourceGroupEntity> resourceGroups = onlyUserAssignable ? resourceGroupLocator.getAllResourceGroupsByName() : resourceGroupLocator.getAllResourceGroupsByName();
         List<ResourceDTO> resourceDTOs = new ArrayList<>();
         for (ResourceGroupEntity resourceGroup : resourceGroups) {
             resourceDTOs.add(new ResourceDTO(resourceGroup, null));

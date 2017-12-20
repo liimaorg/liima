@@ -10,7 +10,7 @@ describe('EnvironmentService', () => {
       MockBackend,
       {
         provide: Http,
-        useFactory: function (backend: MockBackend, defaultOptions: BaseRequestOptions) {
+        useFactory(backend: MockBackend, defaultOptions: BaseRequestOptions) {
           return new Http(backend, defaultOptions);
         },
         deps: [MockBackend, BaseRequestOptions]
@@ -35,9 +35,7 @@ describe('EnvironmentService', () => {
     mockBackend.connections.subscribe((connection) => {
       expect(connection.request.method).toBe(RequestMethod.Get);
       expect(connection.request.url).toMatch('/AMW_rest/resources/environments');
-      let mockResponse = new Response(new ResponseOptions({
-        body: [{id: 1, name: 'test'}]
-      }));
+      const mockResponse = new Response(new ResponseOptions({body: [{id: 1, name: 'test'}]}));
       connection.mockRespond(mockResponse);
     });
     // when then
@@ -52,9 +50,7 @@ describe('EnvironmentService', () => {
       mockBackend.connections.subscribe((connection) => {
         expect(connection.request.method).toBe(RequestMethod.Get);
         expect(connection.request.url).toContain('/AMW_rest/resources/environments?includingGroups=true');
-        let mockResponse = new Response(new ResponseOptions({
-          body: [{id: 1, name: 'test'}]
-        }));
+        const mockResponse = new Response(new ResponseOptions({body: [{id: 1, name: 'test'}]}));
         connection.mockRespond(mockResponse);
       });
       // when then

@@ -53,7 +53,12 @@ public class PropertyEditingQueries {
     public Query getPropertyValueForResource(int resourceId, List<Integer> resourceTypeIds, List<Integer> contextIds) {
         String template = loadPropertyDescriptorQuery();
         Query query = entityManager.createNativeQuery(template);
-        query.setParameter("loadedFor", Origin.INSTANCE.name()).setParameter("resourceId", resourceId).setParameter("resourceTypeIds", resourceTypeIds).setParameter("contextIds", contextIds).setParameter("resourceRelationId", -1).setParameter("masterResourceTypeIds", Arrays.asList(-1));
+        query.setParameter("loadedFor", Origin.INSTANCE.name())
+                .setParameter("resourceId", resourceId)
+                .setParameter("resourceTypeIds", resourceTypeIds)
+                .setParameter("contextIds", contextIds)
+                .setParameter("resourceRelationId", -1)
+                .setParameter("masterResourceTypeIds", Arrays.asList(-1));
         return query;
     }
 
@@ -61,8 +66,10 @@ public class PropertyEditingQueries {
         String template = loadSQLFile("loadPropertyDescriptorsForResourceType.sql");
         template = String.format(template, loadPropertyTypeValueQuery());
         Query query = entityManager.createNativeQuery(template);
-        query.setParameter("loadedFor", Origin.TYPE.name()).setParameter("resourceTypeIds", resourceTypeIds).setParameter("contextIds", contextIds)
-                  .setParameter("masterResourceTypeIds", Arrays.asList(-1))
+        query.setParameter("loadedFor", Origin.TYPE.name())
+                .setParameter("resourceTypeIds", resourceTypeIds)
+                .setParameter("contextIds", contextIds)
+                .setParameter("masterResourceTypeIds", Arrays.asList(-1))
         ;
         return query;
     }
@@ -70,16 +77,24 @@ public class PropertyEditingQueries {
     public Query getPropertyValueForConsumedRelationQuery(int resourceRelationId, int relatedResourceId, List<Integer> masterResourceTypeIds, List<Integer> relatedResourceTypeIds, List<Integer> contextIds) {
         String template = loadRelationPropertyDescriptorQuery(CONSUMEDRESRELTABLE, CONSUMEDRESRELFK);
         Query query = entityManager.createNativeQuery(template);
-        query.setParameter("loadedFor", Origin.RELATION.name()).setParameter("resourceRelationId",
-                  resourceRelationId).setParameter("resourceId", relatedResourceId).setParameter(
-                  "resourceTypeIds", relatedResourceTypeIds).setParameter("contextIds", contextIds).setParameter("masterResourceTypeIds", masterResourceTypeIds);
+        query.setParameter("loadedFor", Origin.RELATION.name())
+                .setParameter("resourceRelationId",resourceRelationId)
+                .setParameter("resourceId", relatedResourceId)
+                .setParameter("resourceTypeIds", relatedResourceTypeIds)
+                .setParameter("contextIds", contextIds)
+                .setParameter("masterResourceTypeIds", masterResourceTypeIds);
         return query;
     }
 
     public Query getPropertyValueForProvidedRelationQuery(int resourceRelationId, int relatedResourceId, List<Integer> masterResourceTypeIds, List<Integer> relatedResourceTypeIds, List<Integer> contextIds) {
         String template = loadRelationPropertyDescriptorQuery(PROVIDEDRESRELTABLE, PROVIDEDRESRELFK);
         Query query = entityManager.createNativeQuery(template);
-        query.setParameter("loadedFor", Origin.RELATION.name()).setParameter("resourceRelationId", resourceRelationId).setParameter("resourceId", relatedResourceId).setParameter("resourceTypeIds", relatedResourceTypeIds).setParameter("contextIds", contextIds).setParameter("masterResourceTypeIds", masterResourceTypeIds);
+        query.setParameter("loadedFor", Origin.RELATION.name())
+                .setParameter("resourceRelationId", resourceRelationId)
+                .setParameter("resourceId", relatedResourceId)
+                .setParameter("resourceTypeIds", relatedResourceTypeIds)
+                .setParameter("contextIds", contextIds)
+                .setParameter("masterResourceTypeIds", masterResourceTypeIds);
         return query;
     }
 
@@ -87,8 +102,114 @@ public class PropertyEditingQueries {
         String template = loadSQLFile("loadPropertyDescriptorsForResourceType.sql");
         template = String.format(template, loadPropertyTypeValuesForRelation());
         Query query = entityManager.createNativeQuery(template);
-        query.setParameter("loadedFor", Origin.TYPE_REL.name()).setParameter("resourceTypeIds",
-                  relatedResourceTypeIds).setParameter("contextIds", contextIds).setParameter("masterResourceTypeIds", masterResourceTypeIds);
+        query.setParameter("loadedFor", Origin.TYPE_REL.name())
+                .setParameter("resourceTypeIds", relatedResourceTypeIds)
+                .setParameter("contextIds", contextIds)
+                .setParameter("masterResourceTypeIds", masterResourceTypeIds);
+        return query;
+    }
+
+    /**
+     *
+     * @param propertyName propertyName which is set on corresponding the propertyDescriptor
+     * @param resourceId
+     * @param relevantContexts
+     * @return
+     */
+    public Query getPropertyOverviewForResourceQuery(String propertyName, int resourceId, List<Integer> relevantContexts) {
+        StringBuffer template = new StringBuffer();
+        template.append(" SELECT context.name, property.VALUE FROM TAMW_PROPERTY property");
+        template.append(" JOIN TAMW_PROPERTYDESCRIPTOR propertydescriptor on property.DESCRIPTOR_ID = propertydescriptor.ID");
+        template.append(" JOIN TAMW_RESOURCECTX_PROP resourcecontextprop on property.ID = resourcecontextprop.PROPERTIES_ID");
+        template.append(" JOIN TAMW_RESOURCECONTEXT resourcecontext on resourcecontextprop.TAMW_RESOURCECONTEXT_ID = resourcecontext.id");
+        template.append(" JOIN TAMW_CONTEXT context on resourcecontext.CONTEXT_ID = context.ID");
+        template.append(" WHERE propertydescriptor.PROPERTYNAME = :propertyName ");
+        template.append(" AND resourcecontext.RESOURCE_ID = :resourceId ");
+        template.append(" AND resourcecontext.CONTEXT_ID in (:relevantContexts)");
+        Query query = entityManager.createNativeQuery(template.toString())
+            .setParameter("propertyName", propertyName)
+            .setParameter("resourceId", resourceId)
+            .setParameter("relevantContexts", relevantContexts);
+        return query;
+
+    }
+
+    /**
+     *
+     * @param propertyName propertyName which is set on corresponding the propertyDescriptor
+     * @param resourceTypeId
+     * @param relevantContexts
+     * @return
+     */
+    public Query getPropertyOverviewForResourceTypeQuery(String propertyName, int resourceTypeId, List<Integer> relevantContexts) {
+        StringBuffer template = new StringBuffer();
+        template.append(" SELECT context.name, property.VALUE FROM TAMW_PROPERTY property");
+        template.append(" JOIN TAMW_PROPERTYDESCRIPTOR propertydescriptor on property.DESCRIPTOR_ID = propertydescriptor.ID");
+        template.append(" JOIN TAMW_RESTYPECTX_PROP resourcetypecontextprop on property.ID = resourcetypecontextprop.PROPERTIES_ID");
+        template.append(" JOIN TAMW_RESOURCETYPECONTEXT resourcetypecontext on resourcetypecontextprop.TAMW_RESOURCETYPECONTEXT_ID = resourcetypecontext.id");
+        template.append(" JOIN TAMW_CONTEXT context on resourcetypecontext.CONTEXT_ID = context.ID");
+        template.append(" WHERE propertydescriptor.PROPERTYNAME = :propertyName ");
+        template.append(" AND resourcetypecontext.RESOURCETYPEENTITY_ID = :resourceTypeId ");
+        template.append(" AND resourcetypecontext.CONTEXT_ID in (:relevantContexts)");
+        Query query = entityManager.createNativeQuery(template.toString())
+                .setParameter("propertyName", propertyName)
+                .setParameter("resourceTypeId", resourceTypeId)
+                .setParameter("relevantContexts", relevantContexts);
+        return query;
+
+    }
+
+    /**
+     *
+     * @param propertyName propertyName which is set on corresponding the propertyDescriptor
+     * @param relationId
+     * @param relevantContextIds
+     * @return
+     */
+    public Query getPropertyOverviewForConsumedRelatedResourceQuery(String propertyName, int relationId, List<Integer> relevantContextIds) {
+        StringBuffer template = new StringBuffer();
+        template.append(" SELECT");
+        template.append(" context.name, property.value, propertydescriptor.PROPERTYNAME");
+        template.append(" FROM TAMW_PROPERTY property");
+        template.append(" JOIN TAMW_PROPERTYDESCRIPTOR propertydescriptor on property.DESCRIPTOR_ID = propertydescriptor.ID");
+        template.append(" JOIN TAMW_RESRELCTX_PROP propResRelCont ON propResRelCont.PROPERTIES_ID=property.ID");
+        template.append(" JOIN TAMW_RESRELCONTEXT resRelContext ON resRelContext.ID=propResRelCont.TAMW_RESRELCONTEXT_ID");
+        template.append(" JOIN TAMW_consumedResRel resRelation ON resRelation.ID=resRelContext.CONSUMEDRESOURCERELATION_ID");
+        template.append(" JOIN TAMW_CONTEXT context ON context.ID=resRelContext.CONTEXT_ID");
+        template.append(" WHERE propertydescriptor.PROPERTYNAME = :propertyName");
+        template.append(" AND resRelation.ID = :relationId");
+        template.append(" AND context.ID in (:relevantContextIds)");
+        Query query = entityManager.createNativeQuery(template.toString())
+            .setParameter("propertyName", propertyName)
+            .setParameter("relationId", relationId)
+            .setParameter("relevantContextIds", relevantContextIds);
+        return query;
+    }
+
+    /**
+     *
+     * @param propertyName propertyName which is set on corresponding the propertyDescriptor
+     * @param relationId
+     * @param relevantContextIds
+     * @return
+     */
+    public Query getPropertyOverviewForProvidedRelatedResourceQuery(String propertyName, int relationId, List<Integer> relevantContextIds) {
+        StringBuffer template = new StringBuffer();
+        template.append(" SELECT");
+        template.append(" context.name,property.value,propertydescriptor.PROPERTYNAME");
+        template.append(" FROM TAMW_PROPERTY property");
+        template.append(" JOIN TAMW_PROPERTYDESCRIPTOR propertydescriptor on property.DESCRIPTOR_ID = propertydescriptor.ID");
+        template.append(" JOIN TAMW_RESRELCTX_PROP propResRelCont ON propResRelCont.PROPERTIES_ID=property.ID");
+        template.append(" JOIN TAMW_RESRELCONTEXT resRelContext ON resRelContext.ID=propResRelCont.TAMW_RESRELCONTEXT_ID");
+        template.append(" JOIN TAMW_PROVIDEDRESREL providedRelation ON providedRelation.ID = resRelContext.PROVIDEDRESOURCERELATION_ID");
+        template.append(" JOIN TAMW_CONTEXT context ON context.ID=resRelContext.CONTEXT_ID");
+        template.append(" WHERE propertydescriptor.PROPERTYNAME = :propertyName");
+        template.append(" AND providedRelation.ID = :relationId");
+        template.append(" AND context.ID in (:relevantContextIds)");
+        Query query = entityManager.createNativeQuery(template.toString())
+            .setParameter("propertyName", propertyName)
+            .setParameter("relationId", relationId)
+            .setParameter("relevantContextIds", relevantContextIds);
         return query;
     }
 
@@ -155,11 +276,10 @@ public class PropertyEditingQueries {
                     reader.close();
                 }
             }
-			return sw.toString().trim();
+            return sw.toString().trim();
         } catch (IOException e) {
             //if we have issues of reading the sql files of the current classpath, there is something completely wrong - we better throw a runtime exception
             throw new RuntimeException(e);
         }
     }
-
 }

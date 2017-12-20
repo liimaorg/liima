@@ -139,6 +139,11 @@
     <include file="changesets/model/deploymentFailureReason/extendDeploymentEntity.xml" relativeToChangelogFile="true"/>
     <include file="changesets/model/eternalDeployments/eternalDeployments_allowNull.xml" relativeToChangelogFile="true"/>
 
+    <!--1.16.0-->
+    <include file="changesets/data/addPermission_delegation.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/eternalDeployments/eternalDeployments_dropFK.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/addPermission_addAdminPermissionsOnCreatedResource.xml" relativeToChangelogFile="true"/>
+
     <!--1.17-->
     <include file="changesets/model/auditView/trackEntitiesChangedInRevisionTable.xml" relativeToChangelogFile="true"/>
 

@@ -1,0 +1,23 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/addPermission_delegation.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="rgalante" id="addPermission_delegation.xml">
+
+        <insert tableName="TAMW_permission">
+            <column name="id" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
+            <column name="value" value="PERMISSION_DELEGATION"></column>
+            <column name="v" valueNumeric="0" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+    </changeSet>
+
+</databaseChangeLog>
