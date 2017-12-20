@@ -45,7 +45,6 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -424,14 +423,14 @@ public class PermissionBoundary implements Serializable {
         Integer resourceGroupId = resource.getResourceGroup().getId();
         if (resourceGroupId != null && getUserName() != null
                 && permissionService.hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE)) {
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_AMWFUNCTION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_PROPERTY_DECRYPT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_TEMPLATE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.DEPLOYMENT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_AMWFUNCTION.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_PROPERTY_DECRYPT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEMPLATE.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.DEPLOYMENT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
         }
     }
 
@@ -473,7 +472,7 @@ public class PermissionBoundary implements Serializable {
      * @return
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.CREATE)
-    public Integer createMultipleRestrictions(String roleName, List<String> userNames, List<String> permissionNames, List<Integer> resourceGroupIds, List<String> resourceTypeNames,
+    public int createMultipleRestrictions(String roleName, List<String> userNames, List<String> permissionNames, List<Integer> resourceGroupIds, List<String> resourceTypeNames,
                                               ResourceTypePermission resourceTypePermission, List<String> contextNames, List<Action> actions) throws AMWException {
         int count = 0;
         for (String permissionName : permissionNames) {
@@ -483,17 +482,15 @@ public class PermissionBoundary implements Serializable {
                         for (Integer resourceGroupId : resourceGroupIds) {
                             if (contextNames == null || contextNames.isEmpty()) {
                                 RestrictionEntity restriction = new RestrictionEntity();
-                                Integer created = createRestriction(roleName, null, permissionName, resourceGroupId, null,
-                                        resourceTypePermission, null, action, restriction);
-                                if (created != null) {
+                                if (createRestriction(roleName, null, permissionName, resourceGroupId, null,
+                                        resourceTypePermission, null, action, restriction) != null) {
                                     count++;
                                 }
                             } else {
                                 for (String contextName : contextNames) {
                                     RestrictionEntity restriction = new RestrictionEntity();
-                                    Integer created = createRestriction(roleName, null, permissionName, resourceGroupId, null,
-                                            resourceTypePermission, contextName, action, restriction);
-                                    if (created != null) {
+                                    if (createRestriction(roleName, null, permissionName, resourceGroupId, null,
+                                            resourceTypePermission, contextName, action, restriction) != null) {
                                         count++;
                                     }
                                 }
@@ -503,17 +500,15 @@ public class PermissionBoundary implements Serializable {
                         for (String resourceTypeName : resourceTypeNames) {
                             if (contextNames == null || contextNames.isEmpty()) {
                                 RestrictionEntity restriction = new RestrictionEntity();
-                                Integer created = createRestriction(roleName, null, permissionName, null, resourceTypeName,
-                                        resourceTypePermission, null, action, restriction);
-                                if (created != null) {
+                                if (createRestriction(roleName, null, permissionName, null, resourceTypeName,
+                                        resourceTypePermission, null, action, restriction) != null) {
                                     count++;
                                 }
                             } else {
                                 for (String contextName : contextNames) {
                                     RestrictionEntity restriction = new RestrictionEntity();
-                                    Integer created = createRestriction(roleName, null, permissionName, null, resourceTypeName,
-                                            resourceTypePermission, contextName, action, restriction);
-                                    if (created != null) {
+                                    if (createRestriction(roleName, null, permissionName, null, resourceTypeName,
+                                            resourceTypePermission, contextName, action, restriction) != null) {
                                         count++;
                                     }
                                 }
@@ -526,17 +521,15 @@ public class PermissionBoundary implements Serializable {
                             for (Integer resourceGroupId : resourceGroupIds) {
                                 if (contextNames == null ||contextNames.isEmpty()) {
                                     RestrictionEntity restriction = new RestrictionEntity();
-                                    Integer created = createRestriction(roleName, userName, permissionName, resourceGroupId, null,
-                                            resourceTypePermission, null, action, restriction);
-                                    if (created != null) {
+                                    if (createRestriction(roleName, userName, permissionName, resourceGroupId, null,
+                                            resourceTypePermission, null, action, restriction) != null) {
                                         count++;
                                     }
                                 } else {
                                     for (String contextName : contextNames) {
                                         RestrictionEntity restriction = new RestrictionEntity();
-                                        Integer created = createRestriction(roleName, userName, permissionName, resourceGroupId, null,
-                                                resourceTypePermission, contextName, action, restriction);
-                                        if (created != null) {
+                                        if (createRestriction(roleName, userName, permissionName, resourceGroupId, null,
+                                                resourceTypePermission, contextName, action, restriction) != null) {
                                             count++;
                                         }
                                     }
@@ -546,17 +539,15 @@ public class PermissionBoundary implements Serializable {
                             for (String resourceTypeName : resourceTypeNames) {
                                 if (contextNames == null || contextNames.isEmpty()) {
                                     RestrictionEntity restriction = new RestrictionEntity();
-                                    Integer created = createRestriction(roleName, userName, permissionName, null, resourceTypeName,
-                                            resourceTypePermission, null, action, restriction);
-                                    if (created != null) {
+                                    if (createRestriction(roleName, userName, permissionName, null, resourceTypeName,
+                                            resourceTypePermission, null, action, restriction) != null) {
                                         count++;
                                     }
                                 } else {
                                     for (String contextName : contextNames) {
                                         RestrictionEntity restriction = new RestrictionEntity();
-                                        Integer created = createRestriction(roleName, userName, permissionName, null, resourceTypeName,
-                                                resourceTypePermission, contextName, action, restriction);
-                                        if (created != null) {
+                                        if (createRestriction(roleName, userName, permissionName, null, resourceTypeName,
+                                                resourceTypePermission, contextName, action, restriction) != null) {
                                             count++;
                                         }
                                     }
@@ -598,11 +589,9 @@ public class PermissionBoundary implements Serializable {
         return id;
     }
 
-    private Integer createAutoAssignedRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
-                                      ResourceTypePermission resourceTypePermission, String contextName, Action action, RestrictionEntity restriction)
+    private Integer createAutoAssignedRestriction(String userName, String permissionName, Integer resourceGroupId, Action action, RestrictionEntity restriction)
             throws AMWException {
-        validateRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
-                contextName, action, restriction);
+        validateRestriction(null, userName, permissionName, resourceGroupId, null, null, null, action, restriction);
         if (permissionService.callerHasIdenticalOrMoreGeneralRestriction(restriction)) {
             return null;
         }
