@@ -308,9 +308,9 @@ public class PropertyEditingService {
     public Map<String,String> getPropertyOverviewForRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         switch (relation.getMode()) {
             case CONSUMED:
-                return getPropertyOverviewForConsumedRelation(relation.getResRelId(), property, relevantContexts);
+                return getPropertyOverviewForConsumedRelation(relation, property, relevantContexts);
             case PROVIDED:
-                return getPropertyOverviewForProvidedRelation(relation.getResRelId(), property, relevantContexts);
+                return getPropertyOverviewForProvidedRelation(relation, property, relevantContexts);
             default:
                 String msg = String.format("Relation mode '%s' is not supported for property overview (property id: %d)",
                         relation.getMode().name(),
@@ -321,41 +321,56 @@ public class PropertyEditingService {
     }
     /**
      *
-     * @param relationId
+     * @param relation
      * @param property
      * @param relevantContexts
-     * @return a Map containing all properties which override the value of its parent context.
+     * @return a Map containing all properties which would be overridden by setting the property on the relation.
      * <ul>
      *     <li>Map.key = context Name</li>
      *     <li>Map.value = context of the value</li>
      *  </ul>
      */
-    private Map<String, String> getPropertyOverviewForConsumedRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    private Map<String, String> getPropertyOverviewForConsumedRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         if (relevantContexts.isEmpty()) {
             return Collections.EMPTY_MAP;
         }
         List<Integer> relevantContextIds = buildRelevantContextIdsList(relevantContexts);
-        Query query = queries.getPropertyOverviewForConsumedRelatedResourceQuery(property.getTechnicalKey(), relationId, relevantContextIds);
-        return getDifferingProperties(property, query);
+        Query query = queries.getPropertyOverviewForConsumedRelatedResourceQuery(property.getTechnicalKey(), relation.getResRelId(), relevantContextIds);
+        Map<String, String> differingProperties = getDifferingProperties(property, query);
+        // TODO check if we need the first query/diff at all
+        // global context is relevant here
+        relevantContextIds.add(contextHierarchy.getContextWithParentIds(relevantContexts.get(0)).get(0));
+        differingProperties.putAll(getPropertyDefinedOnResource(relation, property, relevantContextIds));
+        return differingProperties;
     }
 
     /**
      *
-     * @param relationId
+     * @param relation
      * @param property
      * @param relevantContexts
-     * @return a Map containing all properties which override the value of its parent context.
+     * @return a Map containing all properties which would be overridden by setting the property on the relation.
      * <ul>
      *     <li>Map.key = context Name</li>
      *     <li>Map.value = context of the value</li>
      *  </ul>
      */
-    private Map<String, String> getPropertyOverviewForProvidedRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    private Map<String, String> getPropertyOverviewForProvidedRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         if (relevantContexts.isEmpty()) {
             return Collections.EMPTY_MAP;
         }
         List<Integer> relevantContextIds = buildRelevantContextIdsList(relevantContexts);
-        Query query = queries.getPropertyOverviewForProvidedRelatedResourceQuery(property.getTechnicalKey(), relationId, relevantContextIds);
+        Query query = queries.getPropertyOverviewForProvidedRelatedResourceQuery(property.getTechnicalKey(), relation.getResRelId(), relevantContextIds);
+        Map<String, String> differingProperties = getDifferingProperties(property, query);
+        // TODO check if we need the first query/diff at all
+        // global context is relevant here
+        relevantContextIds.add(contextHierarchy.getContextWithParentIds(relevantContexts.get(0)).get(0));
+        differingProperties.putAll(getPropertyDefinedOnResource(relation, property, relevantContextIds));
+        return differingProperties;
+    }
+
+    private Map<String, String> getPropertyDefinedOnResource(ResourceEditRelation relation, ResourceEditProperty property, List<Integer> relevantContextIds) {
+        Query query = queries.getPropertyOverviewForResourceQuery(property.getTechnicalKey(), relation.getSlaveId(), relevantContextIds);
         return getDifferingProperties(property, query);
     }
 
