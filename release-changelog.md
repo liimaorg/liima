@@ -11,14 +11,16 @@ This release adds some new features, fixes bugs and updates the used JavaScript 
   
 ## Bug fixes
 * Deployment Excel Export: remove newline at the end of Applications column [#262](https://github.com/liimaorg/liima/issues/262)
+* editResourceView does not refresh correctly after "Copy from resource" [#222](https://github.com/liimaorg/liima/issues/222)
 * Permission Page TypeError: Cannot read property 'name' of undefined [#299](https://github.com/liimaorg/liima/issues/299)
   * Sometimes no permission where shown.
 * Rename a resource with "-" to "\_" doesn't work [#223](https://github.com/liimaorg/liima/issues/223)
+* deployments: reset Add filter after add bug [#306](https://github.com/liimaorg/liima/issues/306)
 * REST resource '/resources' returns duplicates of resources if query parameter 'type' is not set [#213](https://github.com/liimaorg/liima/issues/213)
 * AppServer can't be deleted [#284](https://github.com/liimaorg/liima/issues/284)
 * Permissions: prevent adding the same permission multiple times [#260](https://github.com/liimaorg/liima/issues/260)
 * Prevent potential XSS in success and error messages [#286](https://github.com/liimaorg/liima/issues/286)
-* Update NodeJS and dependencies [#290](https://github.com/liimaorg/liima/issues/290), [#292](https://github.com/liimaorg/liima/issues/292), [#292](https://github.com/liimaorg/liima/issues/292), [#300](https://github.com/liimaorg/liima/issues/300)
+* Update NodeJS and dependencies [#290](https://github.com/liimaorg/liima/issues/290), [#292](https://github.com/liimaorg/liima/issues/292), [#300](https://github.com/liimaorg/liima/issues/300)
 * Update to Angular 4 [#71](https://github.com/liimaorg/liima/issues/71)
 * Replace NPM with Yarn [#275](https://github.com/liimaorg/liima/issues/275)
 

@@ -1,5 +1,6 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
+import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AppState } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
@@ -21,6 +22,7 @@ declare var $: any;
 })
 
 export class DeploymentsComponent implements OnInit {
+  @ViewChild('selectModel') private selectModel: NgModel;
 
   defaultComparator: string = 'eq';
 
@@ -121,9 +123,11 @@ export class DeploymentsComponent implements OnInit {
       newFilter.type = this.selectedFilterType.type;
       newFilter.compOptions = this.comparatorOptionsForType(this.selectedFilterType.type);
       this.setValueOptionsForFilter(newFilter);
-      this.filters.unshift(newFilter);
+      this.filters.push(newFilter);
       this.enableDatepicker(newFilter.type);
       this.offset = 0;
+      this.selectedFilterType = null;
+      this.selectModel.reset(null);
     }
   }
 

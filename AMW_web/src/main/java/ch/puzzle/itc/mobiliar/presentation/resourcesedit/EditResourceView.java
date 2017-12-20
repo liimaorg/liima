@@ -164,7 +164,18 @@ public class EditResourceView implements Serializable {
     public void setResourceIdFromParam(Integer resourceIdFromParam) {
         permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "edit resources");
         this.resourceIdFromParam = resourceIdFromParam;
-        if (resource == null || !resource.getId().equals(resourceIdFromParam)) {
+        loadResource(false);
+    }
+
+    /**
+     * Forces a reload
+     */
+    public void forceReload() {
+        loadResource(true);
+    }
+
+    private void loadResource(boolean forced) {
+        if (forced || resource == null || !resource.getId().equals(resourceIdFromParam)) {
             resource = resourceLocator.getResourceWithGroupAndRelatedResources(resourceIdFromParam);
             if (resource.getResourceType().isApplicationResourceType()) {
                 relativeApplicationServer = resourceLocator.getApplicationServerForApplication(resource);
