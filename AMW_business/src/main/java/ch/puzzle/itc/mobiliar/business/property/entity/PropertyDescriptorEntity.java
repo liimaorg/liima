@@ -430,13 +430,30 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
     public String getNewValueForAuditLog() {
         return String.format(
                     "Technichal Key: %s, " +
-                    "PropertyType: %s, " +
-                    "MIK: %s, " +
-                    "Default Value: %s",
+                    "\nPropertyType: %s, " +
+                    "\nMIK: %s, " +
+                    "\nDefault Value: %s " +
+                    "\nDisplay Name: %s " +
+                    "\nValidation: %s" +
+                    "\nvalue optional: %s " + // nullable
+                    "\nKey optional: %s " +  // optional
+                    "\nEncrypted: %s " +
+                    "\nExample value: %s" +
+                    "\nComment: %s" +
+                    "\nTags: %s",
                 this.propertyName,
                 this.propertyTypeEntity == null ? StringUtils.EMPTY : this.propertyTypeEntity.getPropertyTypeName(),
                 this.machineInterpretationKey,
-                this.defaultValue);
+                this.defaultValue,
+                this.displayName,
+                this.getValidationLogic(),
+                String.valueOf(this.isNullable()),
+                String.valueOf(this.isOptional()),
+                String.valueOf(this.isEncrypt()),
+                this.exampleValue,
+                this.propertyComment,
+                this.getPropertyTags().toString()
+                );
     }
 
     @Override
