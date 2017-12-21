@@ -10,6 +10,7 @@ public class AuditViewEntry {
     long timestamp;
     String type; // Property, Resource, ...
     String user;
+    String oldValue;
     String value;
     long revision;
     RevisionType mode;

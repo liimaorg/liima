@@ -5,6 +5,7 @@ public interface Auditable {
     String TYPE_PROPERTY = "Property";
     String TYPE_PROPERTY_DESCRIPTOR = "PropertyDescriptor";
 
+    Integer getId();
 
     String getNewValueForAuditLog();
 

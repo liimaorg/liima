@@ -36,6 +36,7 @@ import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.*;
 
@@ -102,24 +103,44 @@ public class AuditService {
                         .add(AuditEntity.revisionNumber().eq(revisionEntity.getId()))
                         .setMaxResults(1)
                         .getSingleResult();
-                if (! (entityRevisionAndRevisionType[0] instanceof Auditable) ) {
-                    System.out.println("NOT IMPLEMENTED YET FOR ENTITY: " + entityRevisionAndRevisionType[0].getClass());
+                Object entity = entityRevisionAndRevisionType[0];
+                if (! (entity instanceof Auditable) ) {
+                    System.out.println("NOT IMPLEMENTED YET FOR ENTITY: " + entity.getClass());
                     continue;
                 }
-                Auditable entityForRevision = (Auditable) entityRevisionAndRevisionType[0];
-                MyRevisionEntity revEntity = (MyRevisionEntity) entityRevisionAndRevisionType[1];
-                RevisionType revisionType = (RevisionType) entityRevisionAndRevisionType[2];
-
-                AuditViewEntry auditViewEntry = AuditViewEntry
-                        .builder(revEntity, revisionType)
-                        .value(entityForRevision.getNewValueForAuditLog())
-                        .type(entityForRevision.getType())
-                        .name(entityForRevision.getNameForAuditLog())
-                        .build();
+                AuditViewEntry auditViewEntry = createAuditViewEntry(entityRevisionAndRevisionType);
                 allAuditViewEntries.add(auditViewEntry);
             }
         }
         return allAuditViewEntries;
+    }
+
+    private AuditViewEntry createAuditViewEntry(Object[] entityRevisionAndRevisionType) {
+        AuditReader reader = AuditReaderFactory.get(entityManager);
+        Auditable entityForRevision = (Auditable) entityRevisionAndRevisionType[0];
+        MyRevisionEntity revEntity = (MyRevisionEntity) entityRevisionAndRevisionType[1];
+        RevisionType revisionType = (RevisionType) entityRevisionAndRevisionType[2];
+        Auditable previous = getPrevious(reader, entityForRevision, revEntity);
+        return AuditViewEntry
+                .builder(revEntity, revisionType)
+                .oldValue(previous == null ? "n.a." : previous.getNewValueForAuditLog())
+                .value(entityForRevision.getNewValueForAuditLog())
+                .type(entityForRevision.getType())
+                .name(entityForRevision.getNameForAuditLog())
+                .build();
+    }
+
+    private Auditable getPrevious(AuditReader reader, Auditable entityForRevision, MyRevisionEntity revEntity) {
+        try {
+            return (Auditable) reader.createQuery().forRevisionsOfEntity(entityForRevision.getClass(), true, true)
+                    .add(AuditEntity.id().eq(entityForRevision.getId()))
+                    .add(AuditEntity.revisionNumber().lt(revEntity.getId()))
+                    .addOrder(AuditEntity.revisionNumber().desc())
+                    .setMaxResults(1)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     private List<MyRevisionEntity> getRevisionsForResource(Integer resourceId) {
@@ -202,16 +223,7 @@ public class AuditService {
         List<AuditViewEntry> auditViewEntries = new ArrayList<>();
         for (Object o : allRevisionsForEntity) {
             Object[] objects = (Object[]) o;
-            Auditable entityForRevision = (Auditable) objects[0];
-            MyRevisionEntity revisionEntity = (MyRevisionEntity) objects[1];
-            RevisionType revisionType = (RevisionType) objects[2];
-
-            AuditViewEntry auditViewEntry = AuditViewEntry
-                    .builder(revisionEntity, revisionType)
-                    .value(entityForRevision.getNewValueForAuditLog())
-                    .type(entityForRevision.getType())
-                    .name(entityForRevision.getNameForAuditLog())
-                    .build();
+            AuditViewEntry auditViewEntry = createAuditViewEntry(objects);
             auditViewEntries.add(auditViewEntry);
         }
         return auditViewEntries;
