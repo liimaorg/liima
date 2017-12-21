@@ -20,6 +20,7 @@ public class AuditViewEntryDTO {
     String type; // Property, Resource, ...
     String name; // PropertyName, ...
     String username;
+    String oldValue;
     String value;
     long revision;
     String mode;
@@ -29,6 +30,7 @@ public class AuditViewEntryDTO {
         this.type = entry.getType();
         this.name = entry.getName();
         this.username = entry.getUsername();
+        this.oldValue = entry.getOldValue();
         this.value = entry.getValue();
         this.revision = entry.getRevision();
         this.mode = entry.getModeAsString();
