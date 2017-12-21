@@ -21,9 +21,13 @@
 package ch.puzzle.itc.mobiliar.business.utils;
 
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
+import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.RevisionType;
@@ -83,6 +87,26 @@ public class AuditService {
             allAuditViewEntries.addAll(getAllRevisionsForPropertyDescriptorEntity(resourceEditProperty));
         }
         return allAuditViewEntries;
+    }
+
+
+    public void storeIdInThreadLocalForAuditLog(HasContexts<?> hasContexts) {
+        if (hasContexts instanceof ResourceTypeEntity) {
+            setResourceTypeIdInThreadLocal(hasContexts.getId());
+        } else if (hasContexts instanceof ResourceEntity) {
+            setResourceIdInThreadLocal(hasContexts.getId());
+        } else if (hasContexts instanceof ResourceRelationTypeEntity) {
+            // TODO apollari
+            ThreadLocalUtil.setThreadVariable("ThreadLocalUtil.KEY_RESOURCE_RELATION_TYPE_ID", hasContexts.getId());
+        }
+    }
+
+    public void setResourceTypeIdInThreadLocal(int resourceTypeId) {
+        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID, resourceTypeId);
+    }
+
+    public void setResourceIdInThreadLocal(int resourceId) {
+        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID, resourceId);
     }
 
     /**
