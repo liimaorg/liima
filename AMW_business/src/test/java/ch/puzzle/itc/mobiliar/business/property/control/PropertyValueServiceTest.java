@@ -20,27 +20,36 @@
 
 package ch.puzzle.itc.mobiliar.business.property.control;
 
+import ch.puzzle.itc.mobiliar.builders.ResourceEditPropertyBuilder;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextTypeEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.utils.AuditService;
+import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
-import org.junit.Before;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PropertyValueServiceTest {
@@ -57,14 +66,12 @@ public class PropertyValueServiceTest {
     @Mock
     PropertyValidationService propertyValidationServiceMock;
 
+    @Spy
+    AuditService auditService = spy(new AuditService());
+
+    @Spy
     @InjectMocks
-    PropertyValueService service;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
-
+    PropertyValueService service = spy(new PropertyValueService());
 
     @Test
     public void resetPropertyValueShouldRemovePropertyOnContext(){
@@ -250,4 +257,65 @@ public class PropertyValueServiceTest {
         // then
         assertTrue(true);
     }
+
+    @Test
+    public void shouldNotStoreAnythingInThreadLocalWhenNoPropertyBeenHasChanged() throws ValidationException {
+        // given
+        ContextEntity contextEntity = new ContextEntity();
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
+        when(resourceEntityMock.getId()).thenReturn(22);
+
+        // when
+        service.saveProperties(contextEntity, resourceEntityMock, Collections.EMPTY_LIST);
+
+        // then
+        assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(CoreMatchers.nullValue()));
+    }
+
+    @Test
+    public void shouldStoreResourceIdInThreadLocalWhenPropertyHasBeenChanged() throws ValidationException {
+        // given
+        ContextEntity contextEntity = new ContextEntity();
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
+        int resourceId = 22;
+        ResourceEditProperty changedProperty = new ResourceEditPropertyBuilder()
+                .withDisplayAndTechKeyName("Memory")
+                .withValue("100")
+                .build();
+        changedProperty.setPropertyValue("101");
+        List<ResourceEditProperty> resourceProperties = Arrays.asList(changedProperty);
+        when(resourceEntityMock.getId()).thenReturn(resourceId);
+        doNothing().when(service).setPropertyValue(any(ContextDependency.class), anyInt(), anyString());
+
+        // when
+        service.saveProperties(contextEntity, resourceEntityMock, resourceProperties);
+
+        // then
+        assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(resourceId));
+    }
+
+    @Test
+    public void shouldStoreResourceIdInThreadLocalWhenPropertyHasBeenRemoved() throws ValidationException {
+        // given
+        ContextEntity contextEntity = new ContextEntity();
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
+        int resourceId = 22;
+        when(resourceEntityMock.getId()).thenReturn(resourceId);
+        ResourceEditProperty changedProperty = new ResourceEditPropertyBuilder()
+                .withDisplayAndTechKeyName("Memory")
+                .withValue("100")
+                .build();
+        changedProperty.setReset(true);
+        List<ResourceEditProperty> resourceProperties = Arrays.asList(changedProperty);
+        doNothing().when(service).resetPropertyValue(any(ContextDependency.class), anyInt());
+
+        // when
+        service.saveProperties(contextEntity, resourceEntityMock, resourceProperties);
+
+        // then
+        assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(resourceId));
+    }
+
+
+
 }
