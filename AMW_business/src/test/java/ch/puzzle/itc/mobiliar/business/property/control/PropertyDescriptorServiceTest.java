@@ -32,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.utils.AuditService;
 import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
@@ -72,6 +73,9 @@ public class PropertyDescriptorServiceTest {
 
     @Mock
     ForeignableService foreignableServiceMock;
+
+    @Spy
+    AuditService auditService = spy(new AuditService());
 
     @InjectMocks
     @Spy
@@ -474,7 +478,7 @@ public class PropertyDescriptorServiceTest {
         service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptorToUpdate, tags, resourceEntityMock );
 
         // then
-        assertThat("The resourceTypeId Param must be stored as ThreadLocal variable for auditing (envers)",
+        assertThat("The resourceId Param must be stored as ThreadLocal variable for auditing (envers)",
                 ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(CoreMatchers.notNullValue()));
         int actualResourceId = (int) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID);
         assertThat(actualResourceId, is(expectedResourceId));
@@ -524,6 +528,34 @@ public class PropertyDescriptorServiceTest {
                 ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(CoreMatchers.notNullValue()));
         int actualResourceTypeId = (int) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID);
         assertThat(actualResourceTypeId, is(resourceTypeId));
+    }
+
+    @Test
+    public void shouldStoreResourceIdInThreadLocalWhenPropertyDescriptorsInlcudingPropertyValuesAreDeleted() throws AMWException {
+        // given
+        ForeignableOwner deletingOwner = ForeignableOwner.AMW;
+        Integer resourceId = 22;
+
+        AbstractContext abstractContextMock = mock(AbstractContext.class);
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
+        when(resourceEntityMock.getId()).thenReturn(resourceId);
+        Set<PropertyEntity> properties = new HashSet<>();
+        properties.add(new PropertyEntity());
+        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withOwner(deletingOwner).withId(1).withProperties(properties).build();
+        Assert.assertEquals(deletingOwner, descriptor.getOwner());
+
+        TypedQuery<PropertyDescriptorEntity> queryMock = mock(TypedQuery.class);
+        when(entityManagerMock.createQuery("from PropertyDescriptorEntity d  left join fetch d.propertyTags where d.id = :propertyDescriptorId ", PropertyDescriptorEntity.class)).thenReturn(queryMock);
+        when(queryMock.getSingleResult()).thenReturn(descriptor);
+
+        // when
+        service.deletePropertyDescriptorByOwnerIncludingPropertyValues(descriptor, abstractContextMock, resourceEntityMock);
+
+        // then
+        assertThat("The resourceId Param must be stored as ThreadLocal variable for auditing (envers)",
+                ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(CoreMatchers.notNullValue()));
+        int actualResourceId = (int) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID);
+        assertThat(actualResourceId, is(resourceId));
     }
 
 
