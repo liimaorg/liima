@@ -27,7 +27,13 @@ import java.util.*;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import ch.puzzle.itc.mobiliar.builders.PropertyEntityBuilder;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +78,6 @@ public class PropertyDescriptorServiceTest {
     @InjectMocks
     PropertyDescriptorService service;
 
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -107,6 +112,7 @@ public class PropertyDescriptorServiceTest {
     public void testManageChangeOfEncryptedPropertyDescriptorEncryptNotAuthorized() throws Exception {
         testManageChangeOfEncryptedPropertyDescriptor(Boolean.TRUE, false);
     }
+
     /**
      * We don't expect an exception since nothing is changed
      */
@@ -119,45 +125,40 @@ public class PropertyDescriptorServiceTest {
         TypedQuery queryMock = mock(TypedQuery.class);
         when(entityManagerMock.createQuery(anyString(), any(Class.class))).thenReturn(queryMock);
         when(queryMock.setParameter(anyString(), any())).thenReturn(queryMock);
-        if(hasPermission){
+        if (hasPermission) {
             doNothing().when(permissionServiceMock).checkPermissionAndFireException(any(Permission.class), anyString());
-        }
-        else{
+        } else {
             doThrow(NotAuthorizedException.class).when(permissionServiceMock).checkPermissionAndFireException(any(Permission.class), anyString());
         }
         PropertyEntity p = mock(PropertyEntity.class);
         when(queryMock.getResultList()).thenReturn(Arrays.asList(p));
         PropertyDescriptorEntity propertyDescriptorEntity = new PropertyDescriptorEntity();
-        if(encrypt!=null){
+        if (encrypt != null) {
             propertyDescriptorEntity.setEncrypt(encrypt);
         }
         propertyDescriptorEntity.setId(1);
 
         List<Integer> encryptedProperties;
-        if(encrypt==null || encrypt){
-               encryptedProperties = Collections.emptyList();
-        }
-        else{
+        if (encrypt == null || encrypt) {
+            encryptedProperties = Collections.emptyList();
+        } else {
             encryptedProperties = Arrays.asList(propertyDescriptorEntity.getId());
         }
         service.manageChangeOfEncryptedPropertyDescriptor(propertyDescriptorEntity, encryptedProperties, hasPermission);
-        if(encrypt!=null){
-            if(encrypt){
+        if (encrypt != null) {
+            if (encrypt) {
                 verify(p, times(0)).decrypt();
                 verify(p, times(1)).encrypt();
-            }
-            else{
+            } else {
                 verify(p, times(1)).decrypt();
                 verify(p, times(0)).encrypt();
             }
-        }
-        else{
+        } else {
             verify(p, times(0)).decrypt();
             verify(p, times(0)).encrypt();
         }
 
     }
-
 
     @Test(expected = AMWException.class)
     public void savePropertyDescriptorForOwnerWhenDescriptorIsNullShouldThrowException() throws AMWException {
@@ -170,7 +171,7 @@ public class PropertyDescriptorServiceTest {
         ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
 
         // when
-        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags, resourceEntityMock );
+        service.savePropertyDescriptorForOwner(changingOwner, abstractContextMock, descriptor, tags, resourceEntityMock);
     }
 
     @Test(expected = AMWException.class)
@@ -179,7 +180,8 @@ public class PropertyDescriptorServiceTest {
         ForeignableOwner changingOwner = ForeignableOwner.AMW;
 
         AbstractContext abstractContextMock = mock(AbstractContext.class);
-        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().build();;
+        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().build();
+
         List<PropertyTagEntity> tags = new ArrayList<>();
         Assert.assertNull(descriptor.getId());
         ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
@@ -325,25 +327,62 @@ public class PropertyDescriptorServiceTest {
     }
 
     @Test
-    public void deletePropertyDescriptorByOwnerIncludingPropertyValuesWhenDeletingOwnerIsOwnerOfDescriptorWithPropertiesShouldSucceed() throws AMWException {
+    public void deletePropertyDescriptorByOwnerIncludingPropertyValuesWhenDeletingOwnerIsOwnerOfDescriptorWithPropertiesOnResourceShouldSucceed() throws AMWException {
         // given
         ForeignableOwner deletingOwner = ForeignableOwner.AMW;
 
         AbstractContext abstractContextMock = mock(AbstractContext.class);
         ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
+        PropertyEntity property = new PropertyEntity();
         Set<PropertyEntity> properties = new HashSet<>();
-        properties.add(new PropertyEntity());
+        properties.add(property);
         PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withOwner(deletingOwner).withId(1).withProperties(properties).build();
         Assert.assertEquals(deletingOwner, descriptor.getOwner());
+        ResourceContextEntity resourceContextEntityMock = mock(ResourceContextEntity.class);
 
         TypedQuery<PropertyDescriptorEntity> queryMock = mock(TypedQuery.class);
         when(entityManagerMock.createQuery("from PropertyDescriptorEntity d  left join fetch d.propertyTags where d.id = :propertyDescriptorId ", PropertyDescriptorEntity.class)).thenReturn(queryMock);
         when(queryMock.getSingleResult()).thenReturn(descriptor);
+        when(resourceEntityMock.getContexts()).thenReturn(Collections.singleton(resourceContextEntityMock));
+        when(resourceContextEntityMock.getProperties()).thenReturn(properties);
 
         // when
         service.deletePropertyDescriptorByOwnerIncludingPropertyValues(descriptor, abstractContextMock, resourceEntityMock);
 
         // then
+        verify(resourceContextEntityMock).removeProperty(property);
+        verify(entityManagerMock).remove(descriptor);
+    }
+
+    @Test
+    public void deletePropertyDescriptorByOwnerIncludingPropertyValuesWhenDeletingOwnerIsOwnerOfDescriptorWithPropertiesOnResourceRelationShouldSucceed() throws AMWException {
+        // given
+        ForeignableOwner deletingOwner = ForeignableOwner.AMW;
+
+        AbstractContext abstractContextMock = mock(AbstractContext.class);
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
+        PropertyEntity property = new PropertyEntity();
+        Set<PropertyEntity> properties = new HashSet<>();
+        properties.add(property);
+        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withOwner(deletingOwner).withId(1).withProperties(properties).build();
+        Assert.assertEquals(deletingOwner, descriptor.getOwner());
+        ResourceContextEntity resourceContextEntityMock = mock(ResourceContextEntity.class);
+        ConsumedResourceRelationEntity consumedResourceRelationEntityMock = mock(ConsumedResourceRelationEntity.class);
+        ResourceRelationContextEntity resourceRelationContextEntityMock = mock(ResourceRelationContextEntity.class);
+
+        TypedQuery<PropertyDescriptorEntity> queryMock = mock(TypedQuery.class);
+        when(entityManagerMock.createQuery("from PropertyDescriptorEntity d  left join fetch d.propertyTags where d.id = :propertyDescriptorId ", PropertyDescriptorEntity.class)).thenReturn(queryMock);
+        when(queryMock.getSingleResult()).thenReturn(descriptor);
+        when(resourceEntityMock.getContexts()).thenReturn(Collections.singleton(resourceContextEntityMock));
+        when(resourceEntityMock.getConsumedSlaveRelations()).thenReturn(Collections.singleton(consumedResourceRelationEntityMock));
+        when(consumedResourceRelationEntityMock.getContexts()).thenReturn(Collections.singleton(resourceRelationContextEntityMock));
+        when(resourceRelationContextEntityMock.getProperties()).thenReturn(properties);
+
+        // when
+        service.deletePropertyDescriptorByOwnerIncludingPropertyValues(descriptor, abstractContextMock, resourceEntityMock);
+
+        // then
+        verify(resourceRelationContextEntityMock).removeProperty(property);
         verify(entityManagerMock).remove(descriptor);
     }
 
@@ -360,7 +399,6 @@ public class PropertyDescriptorServiceTest {
         PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withOwner(deletingOwner).withTags(tag1, tag2).withId(1).build();
         Assert.assertEquals(deletingOwner, descriptor.getOwner());
 
-
         TypedQuery<PropertyDescriptorEntity> queryMock = mock(TypedQuery.class);
         when(entityManagerMock.createQuery("from PropertyDescriptorEntity d  left join fetch d.propertyTags where d.id = :propertyDescriptorId ", PropertyDescriptorEntity.class)).thenReturn(queryMock);
         when(queryMock.getSingleResult()).thenReturn(descriptor);
@@ -368,7 +406,6 @@ public class PropertyDescriptorServiceTest {
         when(entityManagerMock.find(PropertyDescriptorEntity.class, descriptor.getId())).thenReturn(descriptor);
         when(entityManagerMock.find(PropertyTagEntity.class, tag1.getId())).thenReturn(tag1);
         when(entityManagerMock.find(PropertyTagEntity.class, tag2.getId())).thenReturn(tag2);
-
 
         // when
         service.deletePropertyDescriptorByOwner(descriptor, abstractContextMock);
@@ -378,5 +415,67 @@ public class PropertyDescriptorServiceTest {
         verify(entityManagerMock).remove(tag2);
     }
 
+    @Test
+    public void deletePropertyDescriptorByOwnerIncludingPropertyValuesWhenDeletingOwnerIsOwnerOfDescriptorDefinedOnResourceTypeWithPropertiesOnResourceShouldSucceed() throws AMWException {
+        // given
+        ForeignableOwner deletingOwner = ForeignableOwner.AMW;
+
+        AbstractContext abstractContextMock = mock(AbstractContext.class);
+        ResourceTypeEntity resourceTypeEntityMock = mock(ResourceTypeEntity.class);
+        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
+        ResourceContextEntity resourceContextEntityMock = mock(ResourceContextEntity.class);
+        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withOwner(deletingOwner).withId(1).build();
+        PropertyEntity property = new PropertyEntityBuilder().buildPropertyEntity("propVal", descriptor);
+        descriptor.addProperty(property);
+        Set<PropertyEntity> properties = new HashSet<>();
+        properties.add(property);
+
+        TypedQuery<PropertyDescriptorEntity> queryMock = mock(TypedQuery.class);
+        when(entityManagerMock.createQuery("from PropertyDescriptorEntity d  left join fetch d.propertyTags where d.id = :propertyDescriptorId ", PropertyDescriptorEntity.class)).thenReturn(queryMock);
+        when(queryMock.getSingleResult()).thenReturn(descriptor);
+        when(entityManagerMock.find(PropertyDescriptorEntity.class, descriptor.getId())).thenReturn(descriptor);
+        when(resourceTypeEntityMock.getResources()).thenReturn(Collections.singleton(resourceEntityMock));
+        when(resourceEntityMock.getContexts()).thenReturn(Collections.singleton(resourceContextEntityMock));
+        when(resourceContextEntityMock.getProperties()).thenReturn(properties);
+
+        // when
+        service.deletePropertyDescriptorByOwnerIncludingPropertyValues(descriptor, abstractContextMock, resourceTypeEntityMock);
+
+        // then
+        verify(resourceContextEntityMock).removeProperty(property);
+        verify(entityManagerMock).remove(descriptor);
+    }
+
+    @Test
+    public void deletePropertyDescriptorByOwnerIncludingPropertyValuesWhenDeletingOwnerIsOwnerOfDescriptorDefinedOnResourceTypeWithPropertiesOnResourceRelationShouldSucceed() throws AMWException {
+        // given
+        ForeignableOwner deletingOwner = ForeignableOwner.AMW;
+
+        AbstractContext abstractContextMock = mock(AbstractContext.class);
+        ResourceTypeEntity resourceTypeEntityMock = mock(ResourceTypeEntity.class);
+        PropertyEntity property = new PropertyEntity();
+        Set<PropertyEntity> properties = new HashSet<>();
+        properties.add(property);
+        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withOwner(deletingOwner).withId(1).withProperties(properties).build();
+        Assert.assertEquals(deletingOwner, descriptor.getOwner());
+        ResourceRelationTypeEntity resourceRelationTypeEntityMock = mock(ResourceRelationTypeEntity.class);
+        ConsumedResourceRelationEntity consumedResourceRelationEntityMock = mock(ConsumedResourceRelationEntity.class);
+        ResourceRelationContextEntity resourceRelationContextEntityMock = mock(ResourceRelationContextEntity.class);
+
+        TypedQuery<PropertyDescriptorEntity> queryMock = mock(TypedQuery.class);
+        when(entityManagerMock.createQuery("from PropertyDescriptorEntity d  left join fetch d.propertyTags where d.id = :propertyDescriptorId ", PropertyDescriptorEntity.class)).thenReturn(queryMock);
+        when(queryMock.getSingleResult()).thenReturn(descriptor);
+        when(resourceTypeEntityMock.getResourceRelationTypesB()).thenReturn(Collections.singleton(resourceRelationTypeEntityMock));
+        when(resourceRelationTypeEntityMock.getConsumedResourceRelations()).thenReturn(Collections.singleton(consumedResourceRelationEntityMock));
+        when(consumedResourceRelationEntityMock.getContexts()).thenReturn(Collections.singleton(resourceRelationContextEntityMock));
+        when(resourceRelationContextEntityMock.getProperties()).thenReturn(properties);
+
+        // when
+        service.deletePropertyDescriptorByOwnerIncludingPropertyValues(descriptor, abstractContextMock, resourceTypeEntityMock);
+
+        // then
+        verify(resourceRelationContextEntityMock).removeProperty(property);
+        verify(entityManagerMock).remove(descriptor);
+    }
 
 }
