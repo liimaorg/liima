@@ -30,6 +30,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.CrossTypeRevisionChangesReader;
 import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
@@ -91,13 +92,42 @@ public class AuditService {
 
     public List<AuditViewEntry> getAuditViewEntriesForResource(Integer resourceId) {
         List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
-        List<MyRevisionEntity> revisionsForResource = this.entityManager
-                .createQuery("FROM MyRevisionEntity n WHERE n.resourceId = :resourceId", MyRevisionEntity.class)
-                .setParameter("resourceId", resourceId)
-                .getResultList();
+        AuditReader reader = AuditReaderFactory.get(entityManager);
+        CrossTypeRevisionChangesReader crossTypeRevisionChangesReader = reader.getCrossTypeRevisionChangesReader();
+        List<MyRevisionEntity> revisionsForResource = getRevisionsForResource(resourceId);
+        for (MyRevisionEntity revisionEntity : revisionsForResource) {
+            List<Object> changedEntitiesForRevision = crossTypeRevisionChangesReader.findEntities(revisionEntity.getId());
+            for (Object o : changedEntitiesForRevision) {
+                Object[] entityRevisionAndRevisionType = (Object[]) reader.createQuery().forRevisionsOfEntity(o.getClass(), false, true)
+                        .add(AuditEntity.revisionNumber().eq(revisionEntity.getId()))
+                        .setMaxResults(1)
+                        .getSingleResult();
+                if (! (entityRevisionAndRevisionType[0] instanceof Auditable) ) {
+                    System.out.println("NOT IMPLEMENTED YET FOR ENTITY: " + entityRevisionAndRevisionType[0].getClass());
+                    continue;
+                }
+                Auditable entityForRevision = (Auditable) entityRevisionAndRevisionType[0];
+                MyRevisionEntity revEntity = (MyRevisionEntity) entityRevisionAndRevisionType[1];
+                RevisionType revisionType = (RevisionType) entityRevisionAndRevisionType[2];
+
+                AuditViewEntry auditViewEntry = AuditViewEntry
+                        .builder(revEntity, revisionType)
+                        .value(entityForRevision.getNewValueForAuditLog())
+                        .type(entityForRevision.getType())
+                        .name(entityForRevision.getNameForAuditLog())
+                        .build();
+                allAuditViewEntries.add(auditViewEntry);
+            }
+        }
         return allAuditViewEntries;
     }
 
+    private List<MyRevisionEntity> getRevisionsForResource(Integer resourceId) {
+        return this.entityManager
+                    .createQuery("FROM MyRevisionEntity n WHERE n.resourceId = :resourceId", MyRevisionEntity.class)
+                    .setParameter("resourceId", resourceId)
+                    .getResultList();
+    }
 
     public void storeIdInThreadLocalForAuditLog(HasContexts<?> hasContexts) {
         if (hasContexts instanceof ResourceTypeEntity) {

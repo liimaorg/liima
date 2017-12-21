@@ -40,12 +40,14 @@ public class AuditViewRest {
     public Response getAuditLog(@ApiParam("resource ID") @PathParam("id") Integer resourceId,
                                 @QueryParam("contextId") Integer contextId) {
         List<AuditViewEntry> auditlogForResource = new ArrayList<>();
-        List<ResourceEditProperty> propertiesForResourceIncludingDescriptors = propertyEditor.getPropertiesForResource(resourceId, contextId);
-        List<ResourceEditProperty> propertyDescriptors = filterPropertyDescriptors(propertiesForResourceIncludingDescriptors);
-        List<ResourceEditProperty> propertiesForResource = removePropertyDescriptors(propertiesForResourceIncludingDescriptors, propertyDescriptors);
+//        List<ResourceEditProperty> propertiesForResourceIncludingDescriptors = propertyEditor.getPropertiesForResource(resourceId, contextId);
+//        List<ResourceEditProperty> propertyDescriptors = filterPropertyDescriptors(propertiesForResourceIncludingDescriptors);
+//        List<ResourceEditProperty> propertiesForResource = removePropertyDescriptors(propertiesForResourceIncludingDescriptors, propertyDescriptors);
 
-        auditlogForResource.addAll(auditViewBoundary.getAuditlogForProperties(propertiesForResource));
+//        auditlogForResource.addAll(auditViewBoundary.getAuditlogForProperties(propertiesForResource));
 //        auditlogForResource.addAll(auditViewBoundary.getAuditlogForPropertyDescriptors(propertyDescriptors));
+
+        auditlogForResource.addAll(auditViewBoundary.getAuditlogForResource(resourceId));
 
         List<AuditViewEntryDTO> dtos = createDtosAndSortByTimestamp(auditlogForResource);
         return Response.status(Response.Status.OK).entity(dtos).build();

@@ -41,4 +41,8 @@ public class AuditViewBoundary {
     public List<AuditViewEntry> getAuditlogForPropertyDescriptors(List<ResourceEditProperty> propertiesForResource) {
         return auditService.getAuditViewEntriesForPropertyDescriptors(propertiesForResource);
     }
+
+    public List<AuditViewEntry> getAuditlogForResource(Integer resourceId) {
+        return auditService.getAuditViewEntriesForResource(resourceId);
+    }
 }
