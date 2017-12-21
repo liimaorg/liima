@@ -89,6 +89,15 @@ public class AuditService {
         return allAuditViewEntries;
     }
 
+    public List<AuditViewEntry> getAuditViewEntriesForResource(Integer resourceId) {
+        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
+        List<MyRevisionEntity> revisionsForResource = this.entityManager
+                .createQuery("FROM MyRevisionEntity n WHERE n.resourceId = :resourceId", MyRevisionEntity.class)
+                .setParameter("resourceId", resourceId)
+                .getResultList();
+        return allAuditViewEntries;
+    }
+
 
     public void storeIdInThreadLocalForAuditLog(HasContexts<?> hasContexts) {
         if (hasContexts instanceof ResourceTypeEntity) {
