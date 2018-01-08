@@ -106,9 +106,6 @@ public class RestrictionsRest {
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
-        if (count == 0) {
-            return Response.status(PRECONDITION_FAILED).entity(new ExceptionDto("Similar permissions already exists")).build();
-        }
         return Response.status(CREATED).header("X-Total-Count", count).build();
     }
 
