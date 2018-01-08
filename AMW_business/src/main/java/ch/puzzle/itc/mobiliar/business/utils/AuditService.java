@@ -28,6 +28,7 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.CrossTypeRevisionChangesReader;
@@ -121,10 +122,11 @@ public class AuditService {
         MyRevisionEntity revEntity = (MyRevisionEntity) entityRevisionAndRevisionType[1];
         RevisionType revisionType = (RevisionType) entityRevisionAndRevisionType[2];
         Auditable previous = getPrevious(reader, entityForRevision, revEntity);
+        String newValueForAuditLog = revisionType == DEL ? StringUtils.EMPTY : entityForRevision.getNewValueForAuditLog();
         return AuditViewEntry
                 .builder(revEntity, revisionType)
-                .oldValue(previous == null ? "n.a." : previous.getNewValueForAuditLog())
-                .value(entityForRevision.getNewValueForAuditLog())
+                .oldValue(previous == null ? StringUtils.EMPTY : previous.getNewValueForAuditLog())
+                .value(newValueForAuditLog)
                 .type(entityForRevision.getType())
                 .name(entityForRevision.getNameForAuditLog())
                 .build();
