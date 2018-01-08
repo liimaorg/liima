@@ -746,7 +746,7 @@ public class PermissionBoundary implements Serializable {
         return permissionService.getAllCallerRestrictions();
     }
 
-    private void validateRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
+    protected void validateRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
                                      ResourceTypePermission resourceTypePermission, String contextName, Action action,
                                      RestrictionEntity restriction) throws AMWException {
         if (roleName == null && userName == null) {
@@ -783,6 +783,13 @@ public class PermissionBoundary implements Serializable {
                 throw new AMWException("Permission " + permissionName +  " not found.");
             }
             restriction.setPermission(permission);
+            if (Permission.valueOf(permission.getValue()).isOld()) {
+                resourceTypePermission = null;
+                resourceGroupId = null;
+                resourceTypeName = null;
+                contextName = null;
+                action = null;
+            }
         } else {
             throw new AMWException("Missing PermissionName");
         }

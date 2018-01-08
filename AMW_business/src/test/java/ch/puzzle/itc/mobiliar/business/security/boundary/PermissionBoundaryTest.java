@@ -50,7 +50,10 @@ import javax.persistence.NoResultException;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
 import static ch.puzzle.itc.mobiliar.business.security.entity.ResourceTypePermission.*;
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -77,6 +80,8 @@ public class PermissionBoundaryTest {
     @Mock
     EntityManager entityManager;
 
+    private PermissionEntity resourcePermission;
+
     @Before
     public void setup() {
         permissionBoundary = new PermissionBoundary();
@@ -98,6 +103,8 @@ public class PermissionBoundaryTest {
         permissionBoundary.permissionService = permissionService;
         entityManager = Mockito.mock(EntityManager.class);
         permissionBoundary.entityManager = entityManager;
+        resourcePermission = new PermissionEntity();
+        resourcePermission.setValue("RESOURCE");
     }
 
     @Test(expected=AMWException.class)
@@ -127,11 +134,11 @@ public class PermissionBoundaryTest {
         // given
         when(restrictionRepository.find(1)).thenReturn(new RestrictionEntity());
         when(permissionRepository.getRoleByName("newRole")).thenReturn(null);
-        when(permissionRepository.getPermissionByName("valid")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("valid")).thenReturn(resourcePermission);
         // when
         permissionBoundary.updateRestriction(1, "newRole", null, "valid", null, null, null, null, null);
         // then
-        verify(permissionRepository, times(1)).createRole("newRole");
+        verify(permissionRepository).createRole("newRole");
     }
 
     @Test(expected=AMWException.class)
@@ -158,7 +165,7 @@ public class PermissionBoundaryTest {
         // given
         when(restrictionRepository.find(1)).thenReturn(new RestrictionEntity());
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         when(contextLocator.getContextByName("bad")).thenThrow(new NoResultException());
         // when // then
         permissionBoundary.updateRestriction(1, "existing", null, "good", null, null, null, "bad", null);
@@ -169,7 +176,7 @@ public class PermissionBoundaryTest {
         // given
         when(restrictionRepository.find(1)).thenReturn(new RestrictionEntity());
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         when(resourceTypeRepository.getByName("bad")).thenReturn(null);
         // when // then
         permissionBoundary.updateRestriction(1, "existing", null, "good", null, "bad", null, null, null);
@@ -180,12 +187,12 @@ public class PermissionBoundaryTest {
         // given
         when(restrictionRepository.find(1)).thenReturn(new RestrictionEntity());
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         // when
         permissionBoundary.updateRestriction(1, "existing", null, "good", null, null, null, null, null);
         // then
-        verify(restrictionRepository, times(1)).merge(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(restrictionRepository).merge(any(RestrictionEntity.class));
+        verify(permissionRepository).forceReloadingOfLists();
     }
 
     @Test(expected=AMWException.class)
@@ -210,59 +217,59 @@ public class PermissionBoundaryTest {
     public void shouldCreateRoleAndUserRestrictionOnCreateIfRoleCanNotBeFound() throws AMWException {
         // given
         when(permissionRepository.getRoleByName("newRole")).thenReturn(null);
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         // when
         permissionBoundary.createRestriction("newRole", null, "good", null, null, null, null, null, false);
         // then
-        verify(permissionRepository, times(1)).createRole("newRole");
-        verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
+        verify(permissionRepository).createRole("newRole");
+        verify(restrictionRepository).create(any(RestrictionEntity.class));
     }
 
     @Test
     public void shouldCreateUserRestrictionAndRestrictionIfUserNameIsNotNull() throws AMWException {
         // given
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         // when
         permissionBoundary.createRestriction(null, "hans", "good", null, null, null, null, null, false);
         // then
-        verify(permissionRepository, times(1)).getUserRestrictionByName("hans");
-        verify(permissionRepository, times(1)).createUserRestriciton("hans");
-        verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
+        verify(permissionRepository).getUserRestrictionByName("hans");
+        verify(permissionRepository).createUserRestriciton("hans");
+        verify(restrictionRepository).create(any(RestrictionEntity.class));
     }
 
     @Test
     public void shouldAssignUserRestrictionAndCreateRestrictionIfUserNameHasBeenFound() throws AMWException {
         // given
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         when(permissionRepository.getUserRestrictionByName("fritz")).thenReturn(new UserRestrictionEntity());
         // when
         permissionBoundary.createRestriction(null, "fritz", "good", null, null, null, null, null, false);
         // then
         verify(permissionRepository, never()).createUserRestriciton(anyString());
-        verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
+        verify(restrictionRepository).create(any(RestrictionEntity.class));
     }
 
     @Test
     public void shouldCreateIfContextIsNull() throws AMWException {
         // given
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         // when
         permissionBoundary.createRestriction("existing", null, "good", null, null, null, null, CREATE, false);
         // then
-        verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
+        verify(restrictionRepository).create(any(RestrictionEntity.class));
     }
 
     @Test
     public void shouldCreateIfContextAndActionAreNull() throws AMWException {
         // given
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         // when
         permissionBoundary.createRestriction("existing", null, "good", null, null, null, null, null, false);
         // then
-        verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(restrictionRepository).create(any(RestrictionEntity.class));
+        verify(permissionRepository).forceReloadingOfLists();
     }
 
     @Test
@@ -270,12 +277,12 @@ public class PermissionBoundaryTest {
         // given
         when(permissionService.hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE)).thenReturn(true);
         when(permissionRepository.getUserRestrictionByName("fed")).thenReturn(new UserRestrictionEntity());
-        when(permissionRepository.getPermissionByName(anyString())).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName(anyString())).thenReturn(resourcePermission);
         // when
         permissionBoundary.createRestriction(null, "fred", "SHAKEDOWNTEST", null, null, null, null, CREATE, true);
         // then
-        verify(permissionService, times(1)).hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE);
-        verify(restrictionRepository, times(1)).create(any(RestrictionEntity.class));
+        verify(permissionService).hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE);
+        verify(restrictionRepository).create(any(RestrictionEntity.class));
     }
 
     @Test(expected=AMWException.class)
@@ -286,7 +293,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.createRestriction(null, "fred", "SHAKEDOWNTEST", null, null, null, null, CREATE, true);
         // then
-        verify(permissionService, times(1)).hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE);
+        verify(permissionService).hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE);
         verify(restrictionRepository, never()).create(any(RestrictionEntity.class));
     }
 
@@ -294,7 +301,7 @@ public class PermissionBoundaryTest {
     public void shouldThrowAMWExceptionOnCreateIfResourceIdCanNotBeFound() throws AMWException {
         // given
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         when(resourceGroupRepository.find(7)).thenReturn(null);
         // when // then
         permissionBoundary.createRestriction("existing", null, "good", 7, null, null, null, null, false);
@@ -304,7 +311,7 @@ public class PermissionBoundaryTest {
     public void shouldThrowAMWExceptionOnCreateIfResourceGroupAndResourceTypeAreSet() throws AMWException {
         // given
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         // when // then
         permissionBoundary.createRestriction("existing", null, "good", 7, "bad", null, null, null, false);
     }
@@ -313,7 +320,7 @@ public class PermissionBoundaryTest {
     public void shouldThrowAMWExceptionOnCreateIfResourceTypePermissionIsNotEmptyAndResourceGroupIsSet() throws AMWException {
         // given
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         // when // then
         permissionBoundary.createRestriction("existing", null, "good", 7, null, DEFAULT_ONLY, null, null, false);
     }
@@ -322,9 +329,46 @@ public class PermissionBoundaryTest {
     public void shouldThrowAMWExceptionOnCreateIfResourceTypePermissionIsNotEmptyAndResourceTypeIsSet() throws AMWException {
         // given
         when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
-        when(permissionRepository.getPermissionByName("good")).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
         // when // then
         permissionBoundary.createRestriction("existing", null, "good", null, "bad", NON_DEFAULT_ONLY, null, null, false);
+    }
+
+    @Test
+    public void shouldPreserveRestrictionPropertiesIfPermissionIsNotOld() throws AMWException {
+        // given
+        ContextEntity envX = new ContextEntity();
+        envX.setName("X");
+        RestrictionEntity restriction = new RestrictionEntity();
+        when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(resourcePermission);
+        when(contextLocator.getContextByName("X")).thenReturn(envX);
+        // when
+        permissionBoundary.validateRestriction("existing", null, "good", null, null, ResourceTypePermission.NON_DEFAULT_ONLY, "X", CREATE, restriction);
+        // then
+        assertThat(restriction.getResourceTypePermission(), is(ResourceTypePermission.NON_DEFAULT_ONLY));
+        assertThat(restriction.getAction(), is(CREATE));
+        assertThat(restriction.getContext(), is(envX));
+        assertNull(restriction.getResourceGroup());
+        assertNull(restriction.getResourceType());
+    }
+
+    @Test
+    public void shouldResetRestrictionPropertiesIfPermissionIsOld() throws AMWException {
+        // given
+        PermissionEntity globalPerm = new PermissionEntity();
+        globalPerm.setValue("APP_TAB");
+        RestrictionEntity restriction = new RestrictionEntity();
+        when(permissionRepository.getRoleByName("existing")).thenReturn(new RoleEntity());
+        when(permissionRepository.getPermissionByName("good")).thenReturn(globalPerm);
+        // when
+        permissionBoundary.validateRestriction("existing", null, "good", 1, null, ResourceTypePermission.NON_DEFAULT_ONLY, "X", CREATE, restriction);
+        // then
+        assertThat(restriction.getResourceTypePermission(), is(ResourceTypePermission.ANY));
+        assertThat(restriction.getAction(), is(ALL));
+        assertNull(restriction.getContext());
+        assertNull(restriction.getResourceGroup());
+        assertNull(restriction.getResourceType());
     }
 
     @Test(expected=AMWException.class)
@@ -340,8 +384,8 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.removeRestriction(42);
         // then
-        verify(restrictionRepository, times(1)).deleteRestrictionById(42);
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(restrictionRepository).deleteRestrictionById(42);
+        verify(permissionRepository).forceReloadingOfLists();
     }
 
     @Test
@@ -351,7 +395,7 @@ public class PermissionBoundaryTest {
         // when
         boolean result = permissionBoundary.hasPermission("RESOURCE");
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE);
+        verify(permissionService).hasPermission(Permission.RESOURCE);
         assertTrue(result);
     }
 
@@ -362,7 +406,7 @@ public class PermissionBoundaryTest {
         // when
         boolean result = permissionBoundary.hasPermission(Permission.RESOURCE);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE);
+        verify(permissionService).hasPermission(Permission.RESOURCE);
         assertTrue(result);
     }
 
@@ -373,7 +417,7 @@ public class PermissionBoundaryTest {
         // when
         boolean result = permissionBoundary.hasPermission("RESOURCE", "READ");
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, READ);
+        verify(permissionService).hasPermission(Permission.RESOURCE, READ);
         assertTrue(result);
     }
 
@@ -384,7 +428,7 @@ public class PermissionBoundaryTest {
         // when
         boolean result = permissionBoundary.hasPermission(Permission.RESOURCE, READ);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, READ);
+        verify(permissionService).hasPermission(Permission.RESOURCE, READ);
         assertTrue(result);
     }
 
@@ -413,7 +457,7 @@ public class PermissionBoundaryTest {
         // given // when
         permissionBoundary.hasPermissionForResourceType("RESOURCE", "CREATE", "APP");
         // then
-        verify(resourceTypeRepository, times(1)).getByName("APP");
+        verify(resourceTypeRepository).getByName("APP");
     }
 
     @Test
@@ -425,8 +469,8 @@ public class PermissionBoundaryTest {
         // when
         boolean result = permissionBoundary.hasPermissionForResourceType("RESOURCE", "CREATE", "APP");
         // then
-        verify(resourceTypeRepository, times(1)).getByName("APP");
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, CREATE, resType);
+        verify(resourceTypeRepository).getByName("APP");
+        verify(permissionService).hasPermission(Permission.RESOURCE, CREATE, resType);
         assertTrue(result);
     }
 
@@ -441,8 +485,8 @@ public class PermissionBoundaryTest {
         // when
         boolean result = permissionBoundary.hasPermissionForResourceType("RESOURCE", "CREATE", "APP", 1);
         // then
-        verify(resourceTypeRepository, times(1)).getByName("APP");
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, context, CREATE, null, resType);
+        verify(resourceTypeRepository).getByName("APP");
+        verify(permissionService).hasPermission(Permission.RESOURCE, context, CREATE, null, resType);
         assertTrue(result);
     }
 
@@ -459,7 +503,7 @@ public class PermissionBoundaryTest {
         // when
         boolean result = permissionBoundary.hasPermission(Permission.RESOURCE, context, CREATE, resource, type);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, context, CREATE, rg, type);
+        verify(permissionService).hasPermission(Permission.RESOURCE, context, CREATE, rg, type);
         assertTrue(result);
     }
 
@@ -470,7 +514,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.hasPermissionToRemoveInstanceOfResType(resType);
         // then
-        verify(permissionService, times(1)).hasPermissionToRemoveInstanceOfResType(resType);
+        verify(permissionService).hasPermissionToRemoveInstanceOfResType(resType);
     }
 
     @Test
@@ -485,7 +529,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.canCopyFromResource(resource);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
+        verify(permissionService).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
     }
 
     @Test
@@ -504,8 +548,8 @@ public class PermissionBoundaryTest {
         when(permissionService.hasPermission(Permission.RESOURCE, null, READ, org, type)).thenReturn(false);
         // when
         boolean can = permissionBoundary.canCopyFromSpecificResource(resource, org);
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, READ, org, type);
+        verify(permissionService).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
+        verify(permissionService).hasPermission(Permission.RESOURCE, null, READ, org, type);
         assertFalse(can);
     }
 
@@ -525,7 +569,7 @@ public class PermissionBoundaryTest {
         when(permissionService.hasPermission(Permission.RESOURCE, null, READ, org, type)).thenReturn(true);
         // when
         boolean can = permissionBoundary.canCopyFromSpecificResource(resource, org);
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
+        verify(permissionService).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
         verify(permissionService, never()).hasPermission(Permission.RESOURCE, null, READ, org, type);
         assertFalse(can);
     }
@@ -546,8 +590,8 @@ public class PermissionBoundaryTest {
         when(permissionService.hasPermission(Permission.RESOURCE, null, READ, org, type)).thenReturn(true);
         // when
         boolean can = permissionBoundary.canCopyFromSpecificResource(resource, org);
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, null, READ, org, type);
+        verify(permissionService).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
+        verify(permissionService).hasPermission(Permission.RESOURCE, null, READ, org, type);
         assertTrue(can);
     }
 
@@ -558,7 +602,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.canCreateResourceInstance(resType);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, CREATE, resType);
+        verify(permissionService).hasPermission(Permission.RESOURCE, CREATE, resType);
     }
 
     @Test
@@ -574,8 +618,8 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.canCreateAppAndAddToAppServer(resource);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, CREATE, type);
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, UPDATE, asType);
+        verify(permissionService).hasPermission(Permission.RESOURCE, CREATE, type);
+        verify(permissionService).hasPermission(Permission.RESOURCE, UPDATE, asType);
     }
 
     @Test
@@ -583,7 +627,7 @@ public class PermissionBoundaryTest {
         // given // when
         permissionBoundary.getAllPermissions();
         // then
-        verify(permissionService, times(1)).getPermissions();
+        verify(permissionService).getPermissions();
     }
 
     @Test
@@ -597,7 +641,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(21, 23, false);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE, context, UPDATE, null, type);
+        verify(permissionService).hasPermission(Permission.RESOURCETYPE, context, UPDATE, null, type);
         verify(permissionService, never()).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
@@ -616,7 +660,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(21, context, false);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE, context, UPDATE, rg, null);
+        verify(permissionService).hasPermission(Permission.RESOURCE, context, UPDATE, rg, null);
         verify(permissionService, never()).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
@@ -627,7 +671,7 @@ public class PermissionBoundaryTest {
         // then
         verify(permissionService, never()).hasPermission(any(Permission.class), any(ContextEntity.class),
                 any(Action.class), any(ResourceGroupEntity.class), any(ResourceTypeEntity.class));
-        verify(permissionService, times(1)).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+        verify(permissionService).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     @Test
@@ -635,7 +679,7 @@ public class PermissionBoundaryTest {
         // given // when
         permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, "Message");
         // then
-        verify(permissionService, times(1)).checkPermissionAndFireException(Permission.RESOURCE, "Message");
+        verify(permissionService).checkPermissionAndFireException(Permission.RESOURCE, "Message");
     }
 
     @Test
@@ -643,7 +687,7 @@ public class PermissionBoundaryTest {
         // given // when
         permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "Message");
         // then
-        verify(permissionService, times(1)).checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "Message");
+        verify(permissionService).checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "Message");
     }
 
     @Test
@@ -656,7 +700,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.hasPermissionToAddRelation(resource, aContext);
         // then
-        verify(permissionService, times(1)).hasPermissionToAddRelation(resource, aContext);
+        verify(permissionService).hasPermissionToAddRelation(resource, aContext);
     }
 
     @Test
@@ -669,7 +713,7 @@ public class PermissionBoundaryTest {
         permissionBoundary.hasPermissionToAddTemplate(resource, false);
         // then
         verify(permissionService, never()).hasPermissionToAddResourceTypeTemplate((ResourceTypeEntity) anyObject(), anyBoolean());
-        verify(permissionService, times(1)).hasPermissionToAddResourceTemplate(resource, false);
+        verify(permissionService).hasPermissionToAddResourceTemplate(resource, false);
     }
 
     @Test
@@ -682,7 +726,7 @@ public class PermissionBoundaryTest {
         permissionBoundary.hasPermissionToAddTemplate(type, true);
         // then
         verify(permissionService, never()).hasPermissionToAddResourceTemplate((ResourceEntity) anyObject(), anyBoolean());
-        verify(permissionService, times(1)).hasPermissionToAddResourceTypeTemplate(type, true);
+        verify(permissionService).hasPermissionToAddResourceTypeTemplate(type, true);
     }
 
     @Test
@@ -694,7 +738,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.canUpdateFunctionOfResourceOrResourceType(null, type.getId());
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, UPDATE, null, type);
+        verify(permissionService).hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, UPDATE, null, type);
     }
 
     @Test
@@ -706,7 +750,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.canUpdateFunctionOfResourceOrResourceType(null, type.getId());
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, UPDATE, null, type);
+        verify(permissionService).hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, UPDATE, null, type);
     }
 
     @Test
@@ -720,7 +764,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.canUpdateFunctionOfResourceOrResourceType(resource.getId(), null);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_AMWFUNCTION, null, UPDATE, rg, null);
+        verify(permissionService).hasPermission(Permission.RESOURCE_AMWFUNCTION, null, UPDATE, rg, null);
     }
 
     @Test
@@ -734,7 +778,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.canUpdateFunctionOfResourceOrResourceType(resource.getId(), null);
         // then
-        verify(permissionService, times(1)).hasPermission(Permission.RESOURCE_AMWFUNCTION, null, UPDATE, rg, null);
+        verify(permissionService).hasPermission(Permission.RESOURCE_AMWFUNCTION, null, UPDATE, rg, null);
     }
 
     @Test
@@ -742,7 +786,7 @@ public class PermissionBoundaryTest {
         // given // when
         permissionBoundary.getAllUserRestriction();
         // then
-        verify(permissionService, times(1)).getAllUserRestrictions();
+        verify(permissionService).getAllUserRestrictions();
     }
 
     @Test
@@ -773,7 +817,7 @@ public class PermissionBoundaryTest {
         when(permissionService.getCurrentUserName()).thenReturn("tester");
         when(permissionService.hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE)).thenReturn(true);
         when(resourceGroupRepository.find(resource.getResourceGroup().getId())).thenReturn(resource.getResourceGroup());
-        when(permissionRepository.getPermissionByName(anyString())).thenReturn(new PermissionEntity());
+        when(permissionRepository.getPermissionByName(anyString())).thenReturn(resourcePermission);
 
         // when
         permissionBoundary.createAutoAssignedRestrictions(resource);
