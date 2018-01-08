@@ -429,7 +429,7 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
     @Override
     public String getNewValueForAuditLog() {
         return String.format(
-                    "Technichal Key: %s, " +
+                    "Technical Key: %s, " +
                     "\nPropertyType: %s, " +
                     "\nMIK: %s, " +
                     "\nDefault Value: %s " +
