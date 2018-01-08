@@ -2,9 +2,11 @@ import { Component, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AppState } from '../app.service';
 import { AuditviewService } from './auditview.service';
+import { ResourceService } from '../resource/resource.service';
 import { Auditviewentrytype } from './auditview-entry-type';
 
 import * as _ from 'lodash';
+
 
 @Component({
   selector: 'amw-auditview',
@@ -24,6 +26,7 @@ export class AuditviewComponent implements OnInit {
 
   constructor(public appState: AppState,
               private auditViewService: AuditviewService,
+              private resourceService: ResourceService,
               private activatedRoute: ActivatedRoute) {
   }
 
@@ -57,10 +60,12 @@ export class AuditviewComponent implements OnInit {
 
     console.log(this.contextId);
 
-    // TODO add get resourceName
-    this.name = "TODO resource name"
-
     if (this.resourceId) {
+      this.resourceService.getResourceName(this.resourceId).subscribe(
+        /* happy path */ (r) => this.name = r,
+        /* error path */ (e) => this.errorMessage = e,
+        /* onComplete */ () => {}
+      )
       this.auditViewService.getAuditLogForResource(this.resourceId, this.contextId).subscribe(
         /* happy path */ (r) => this.auditLogEntries = r,
         /* error path */ (e) => this.errorMessage = e,
@@ -71,6 +76,7 @@ export class AuditviewComponent implements OnInit {
     }
 
   }
+
 
 
 
