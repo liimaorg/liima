@@ -15,6 +15,7 @@ export class AuditviewComponent implements OnInit {
 
   name: string;
   auditLogEntries: Auditviewentrytype[] = [];
+  filterQuery: string = "";
 
   errorMessage: string;
   contextId: number;
