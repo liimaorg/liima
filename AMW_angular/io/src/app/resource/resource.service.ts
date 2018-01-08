@@ -23,6 +23,12 @@ export class ResourceService {
       .catch(handleError);
   }
 
+  getResourceName(resourceId: number): Observable<string> {
+    return this.http
+      .get(`${this.baseUrl}/resources/name/${resourceId}`, {headers: this.getHeaders()})
+      .map((response: Response) => response.text());
+  }
+
   get(resourceGroupName: string): Observable<Resource> {
     return this.http
       .get(`${this.baseUrl}/resources/${resourceGroupName}`, {headers: this.getHeaders()})

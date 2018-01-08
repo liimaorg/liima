@@ -306,6 +306,14 @@ public class ResourceBoundary {
         doRemoveResourceEntity(deletingOwner, resourceId);
     }
 
+    public String getResourceName(int resourceId) {
+        ResourceEntity resourceEntity = resourceRepository.find(resourceId);
+        if (resourceEntity == null) {
+            throw new NoResultException("No Resource with id " + resourceId);
+        }
+        return resourceEntity.getName();
+    }
+
     private void doRemoveResourceEntity(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
 
         ResourceEntity resourceEntity = commonService.getResourceEntityById(resourceId);
