@@ -1,4 +1,4 @@
-package ch.puzzle.itc.mobiliar.business.utils;
+package ch.puzzle.itc.mobiliar.business.auditview.entity;
 
 public interface Auditable {
 

@@ -1,6 +1,6 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
-import ch.puzzle.itc.mobiliar.business.utils.AuditViewEntry;
+import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

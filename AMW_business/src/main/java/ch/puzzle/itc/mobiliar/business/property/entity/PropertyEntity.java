@@ -24,7 +24,7 @@ import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.generator.control.TemplateUtils;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
-import ch.puzzle.itc.mobiliar.business.utils.Auditable;
+import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.utils.Copyable;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import lombok.Getter;

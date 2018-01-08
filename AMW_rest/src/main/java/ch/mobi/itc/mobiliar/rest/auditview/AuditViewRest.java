@@ -4,7 +4,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.AuditViewEntryDTO;
 import ch.puzzle.itc.mobiliar.business.auditview.boundary.AuditViewBoundary;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import ch.puzzle.itc.mobiliar.business.utils.AuditViewEntry;
+import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

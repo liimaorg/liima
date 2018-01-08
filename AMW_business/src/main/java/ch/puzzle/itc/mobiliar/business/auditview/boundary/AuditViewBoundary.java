@@ -21,8 +21,8 @@
 package ch.puzzle.itc.mobiliar.business.auditview.boundary;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import ch.puzzle.itc.mobiliar.business.utils.AuditService;
-import ch.puzzle.itc.mobiliar.business.utils.AuditViewEntry;
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
+import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;

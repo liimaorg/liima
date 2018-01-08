@@ -24,7 +24,7 @@ import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.Foreignable;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
-import ch.puzzle.itc.mobiliar.business.utils.Auditable;
+import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.business.utils.Copyable;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
