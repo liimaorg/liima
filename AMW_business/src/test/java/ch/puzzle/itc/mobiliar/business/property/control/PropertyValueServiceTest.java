@@ -32,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import org.hamcrest.CoreMatchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -72,6 +73,11 @@ public class PropertyValueServiceTest {
     @Spy
     @InjectMocks
     PropertyValueService service = spy(new PropertyValueService());
+
+    @Before
+    public void init() {
+        ThreadLocalUtil.destroy();
+    }
 
     @Test
     public void resetPropertyValueShouldRemovePropertyOnContext(){
