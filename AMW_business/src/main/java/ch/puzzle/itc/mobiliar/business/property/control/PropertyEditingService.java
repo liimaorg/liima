@@ -266,11 +266,7 @@ public class PropertyEditingService {
      * @param resource
      * @param property
      * @param relevantContexts
-     * @return a Map containing all properties which override the value of its parent context.
-     * <ul>
-     *     <li>Map.key = context Name</li>
-     *     <li>Map.value = context of the value</li>
-     *  </ul>
+     * @return a List containing all properties which override the value of its parent context.
      */
     public List<DifferingProperty> getPropertyOverviewForResource(ResourceEntity resource, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         if (relevantContexts.isEmpty()) {
