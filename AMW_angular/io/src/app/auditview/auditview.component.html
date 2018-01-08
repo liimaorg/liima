@@ -15,7 +15,7 @@
       </span>
       <div class="form-group" *ngIf="auditLogEntries.length > 0">
         <div class="table-responsive">
-          <table id="deployment-list"
+          <table id="auditview-list"
                  class="table table-sm"
                  [mfData]="auditLogEntries | auditviewFilter : filterQuery"
                  #mf="mfDataTable"
