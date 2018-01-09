@@ -19,6 +19,8 @@
                  class="table table-sm"
                  [mfData]="auditLogEntries | auditviewFilter : filterQuery"
                  #mf="mfDataTable"
+                 mfSortOrder="desc"
+                 mfSortBy="timestamp"
                  *ngIf="(auditLogEntries.length > 0)">
             <tr>
               <th colspan="7">
