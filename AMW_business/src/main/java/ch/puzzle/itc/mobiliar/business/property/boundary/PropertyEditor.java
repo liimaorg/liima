@@ -25,6 +25,7 @@
 
 package ch.puzzle.itc.mobiliar.business.property.boundary;
 
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
@@ -56,7 +57,6 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
-import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -77,8 +77,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import static ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil.KEY_RESOURCE_ID;
-
 /**
  * ALL boundary for property editing
  */
@@ -88,6 +86,9 @@ import static ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil.KEY_RESOURCE
 public class PropertyEditor {
 
     // TODO Move methods to the proper boundary
+
+    @Inject
+    AuditService auditService;
 
     @Inject
     PropertyDescriptorService propertyDescriptorService;
@@ -329,7 +330,7 @@ public class PropertyEditor {
 
         if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, editedResource, editedResource.getResourceType())) {
             propertyValueService.saveProperties(context, editedResource, resourceProperties);
-            ThreadLocalUtil.setThreadVariable(KEY_RESOURCE_ID, editedResource.getId());
+            auditService.setResourceIdInThreadLocal(editedResource.getId(), contextId);
             if (relation != null) {
                 handleRelations(relation, relationProperties, relationIdentifier, context, editedResource);
             }

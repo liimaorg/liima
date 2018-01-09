@@ -29,7 +29,7 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
-import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
+import ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;

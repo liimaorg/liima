@@ -1,4 +1,4 @@
-package ch.puzzle.itc.mobiliar.business.utils;
+package ch.puzzle.itc.mobiliar.business.auditview.control;
 
 import java.util.HashMap;
 
@@ -32,7 +32,7 @@ public class ThreadLocalUtil {
         }
     }
 
-    public static void setThreadVariable(String name, Object value) {
+    protected static void setThreadVariable(String name, Object value) {
         THREAD_VARIABLES.get().put(name, value);
     }
 

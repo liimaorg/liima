@@ -20,15 +20,15 @@
 
 package ch.puzzle.itc.mobiliar.business.database.entity;
 
-import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
+import ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil;
 import org.hibernate.envers.RevisionListener;
 
 import javax.ejb.SessionContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import static ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil.KEY_RESOURCE_ID;
-import static ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil.KEY_RESOURCE_TYPE_ID;
+import static ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil.KEY_RESOURCE_ID;
+import static ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil.KEY_RESOURCE_TYPE_ID;
 
 public class MyRevisionEntityListener implements RevisionListener {
 

@@ -20,7 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.database.entity;
 
-import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
+import ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil;
 import org.hibernate.envers.RevisionListener;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +34,8 @@ public class MyRevisionEntityListenerTest {
 
     RevisionListener liimaRevisionListener = new MyRevisionEntityListener();
 
+    AuditService auditService = new AuditService();
+
     @Before
     public void init() {
         ThreadLocalUtil.destroy();
@@ -42,13 +45,15 @@ public class MyRevisionEntityListenerTest {
     public void shouldDestroyThreadLocalVariables() {
         // given
         MyRevisionEntity revisionEntity = new MyRevisionEntity();
-        ThreadLocalUtil.setThreadVariable("dada", "dada");
+        auditService.setResourceTypeIdInThreadLocal(100, 8);
+        auditService.setResourceIdInThreadLocal(50, 5);
 
         // when
         liimaRevisionListener.newRevision(revisionEntity);
 
         // then
-        assertThat(ThreadLocalUtil.getThreadVariable("dada"), is(nullValue()));
+        assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(nullValue()));
+        assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(nullValue()));
     }
 
     @Test
@@ -56,7 +61,7 @@ public class MyRevisionEntityListenerTest {
         // given
         int resourceId = 44;
         MyRevisionEntity revisionEntity = new MyRevisionEntity();
-        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID, resourceId);
+        auditService.setResourceIdInThreadLocal(resourceId, 5);
 
         // when
         liimaRevisionListener.newRevision(revisionEntity);
@@ -71,7 +76,7 @@ public class MyRevisionEntityListenerTest {
         // given
         int resourceTypeId = 2;
         MyRevisionEntity revisionEntity = new MyRevisionEntity();
-        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID, resourceTypeId);
+        auditService.setResourceTypeIdInThreadLocal(resourceTypeId, 5);
 
         // when
         liimaRevisionListener.newRevision(revisionEntity);
