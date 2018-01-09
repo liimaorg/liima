@@ -47,6 +47,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 
+import java.util.Arrays;
+
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
 import static ch.puzzle.itc.mobiliar.business.security.entity.ResourceTypePermission.*;
 import static junit.framework.TestCase.assertTrue;
@@ -81,6 +83,7 @@ public class PermissionBoundaryTest {
     EntityManager entityManager;
 
     private PermissionEntity resourcePermission;
+    private PermissionEntity resourceTypePermission;
 
     @Before
     public void setup() {
@@ -105,6 +108,8 @@ public class PermissionBoundaryTest {
         permissionBoundary.entityManager = entityManager;
         resourcePermission = new PermissionEntity();
         resourcePermission.setValue("RESOURCE");
+        resourceTypePermission = new PermissionEntity();
+        resourceTypePermission.setValue("RESOURCETYPE");
     }
 
     @Test(expected=AMWException.class)
@@ -825,6 +830,213 @@ public class PermissionBoundaryTest {
         // then
         verify(permissionService).hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE);
         verify(restrictionRepository, times(8)).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldCreateTheRightAmountOfRestrictionsIfARoleIsGiven() throws Exception {
+        //given
+        String roleName1 = "Role1";
+        String permissionName1 = "RESOURCE";
+        String permissionName2 = "RESOURCETYPE";
+        String contextNameA = "A";
+        when(permissionRepository.getPermissionByName("RESOURCE")).thenReturn(resourcePermission);
+        when(permissionRepository.getPermissionByName("RESOURCETYPE")).thenReturn(resourceTypePermission);
+        when(resourceGroupRepository.find(1)).thenReturn(new ResourceGroupEntity());
+
+        // when
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, null, Arrays.asList(permissionName1, permissionName2), Arrays.asList(1), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA), Arrays.asList(Action.CREATE));
+
+        // then
+        assertThat(total, is(2));
+        verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldCreateTheRightAmountOfRestrictionsIfUsersAreGiven() throws Exception {
+        //given
+        String userName1 = "User1";
+        String userName2 = "User2";
+        String permissionName1 = "RESOURCE";
+        String permissionName2 = "RESOURCETYPE";
+        when(permissionRepository.getPermissionByName("RESOURCE")).thenReturn(resourcePermission);
+        when(permissionRepository.getPermissionByName("RESOURCETYPE")).thenReturn(resourceTypePermission);
+        when(resourceGroupRepository.find(1)).thenReturn(new ResourceGroupEntity());
+
+        // when
+        int total = permissionBoundary.createMultipleRestrictions(null, Arrays.asList(userName1, userName2), Arrays.asList(permissionName1, permissionName2), Arrays.asList(1), null, ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE));
+
+        // then
+        assertThat(total, is(4));
+        verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldCreateTheRightAmountOfRestrictionsIfUsersAndRoleAreGiven() throws Exception {
+        //given
+        String roleName1 = "Role1";
+        String userName1 = "User1";
+        String userName2 = "User2";
+        String permissionName1 = "RESOURCE";
+        String permissionName2 = "RESOURCETYPE";
+        String contextNameA = "A";
+        when(permissionRepository.getPermissionByName("RESOURCE")).thenReturn(resourcePermission);
+        when(permissionRepository.getPermissionByName("RESOURCETYPE")).thenReturn(resourceTypePermission);
+        when(resourceGroupRepository.find(1)).thenReturn(new ResourceGroupEntity());
+
+        // when
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(permissionName1, permissionName2), Arrays.asList(1), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA), Arrays.asList(Action.CREATE));
+
+        // then
+        assertThat(total, is(6));
+        verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldCreateTheRightAmountOfRestrictionsIfUsersAndRoleAndTwoActionsAreGiven() throws Exception {
+        //given
+        String roleName1 = "Role1";
+        String userName1 = "User1";
+        String userName2 = "User2";
+        when(permissionRepository.getPermissionByName(resourcePermission.getValue())).thenReturn(resourcePermission);
+        when(permissionRepository.getPermissionByName(resourceTypePermission.getValue())).thenReturn(resourceTypePermission);
+        when(resourceGroupRepository.find(1)).thenReturn(new ResourceGroupEntity());
+
+        // when
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), Arrays.asList(1), null, ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE));
+
+        // then
+        assertThat(total, is(12));
+        verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldCreateTheRightAmountOfRestrictionsIfUsersAndRoleAndTwoActionsAndTwoContextsAreGiven() throws Exception {
+        //given
+        String roleName1 = "Role1";
+        String userName1 = "User1";
+        String userName2 = "User2";
+        String contextNameA = "A";
+        String contextNameB = "B";
+        when(permissionRepository.getPermissionByName(resourcePermission.getValue())).thenReturn(resourcePermission);
+        when(permissionRepository.getPermissionByName(resourceTypePermission.getValue())).thenReturn(resourceTypePermission);
+        when(resourceGroupRepository.find(1)).thenReturn(new ResourceGroupEntity());
+
+        // when
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), Arrays.asList(1), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE));
+
+        // then
+        assertThat(total, is(24));
+        verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldCreateTheRightAmountOfRestrictionsIfUsersAndRoleAndTwoActionsAndTwoContextsAndTwoResourceGroupsAreGiven() throws Exception {
+        //given
+        String roleName1 = "Role1";
+        String userName1 = "User1";
+        String userName2 = "User2";
+        String contextNameA = "A";
+        String contextNameB = "B";
+        when(permissionRepository.getPermissionByName(resourcePermission.getValue())).thenReturn(resourcePermission);
+        when(permissionRepository.getPermissionByName(resourceTypePermission.getValue())).thenReturn(resourceTypePermission);
+        when(resourceGroupRepository.find(anyInt())).thenReturn(new ResourceGroupEntity());
+
+        // when
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), Arrays.asList(1, 2), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE));
+
+        // then
+        assertThat(total, is(48));
+        verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldCreateTheRightAmountOfRestrictionsIfUsersAndRoleAndTwoActionsAndTwoContextsAndTwoResourceTypesAreGiven() throws Exception {
+        //given
+        String roleName1 = "Role1";
+        String userName1 = "User1";
+        String userName2 = "User2";
+        String resourceTypeName1 = "APPLICATION";
+        String resourceTypeName2 = "APPSERVER";
+        String contextNameA = "A";
+        String contextNameB = "B";
+        when(permissionRepository.getPermissionByName(resourcePermission.getValue())).thenReturn(resourcePermission);
+        when(permissionRepository.getPermissionByName(resourceTypePermission.getValue())).thenReturn(resourceTypePermission);
+        when(resourceTypeRepository.getByName(anyString())).thenReturn(new ResourceTypeEntity());
+
+        // when
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, Arrays.asList(resourceTypeName1, resourceTypeName2), ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE));
+
+        // then
+        assertThat(total, is(48));
+        verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldCreateTheRightAmountOfRestrictionsIfUsersAndRoleAndTwoActionsAndTwoResourceTypesAreGiven() throws Exception {
+        //given
+        String roleName1 = "Role1";
+        String userName1 = "User1";
+        String userName2 = "User2";
+        String resourceTypeName1 = "APPLICATION";
+        String resourceTypeName2 = "APPSERVER";
+        when(permissionRepository.getPermissionByName(resourcePermission.getValue())).thenReturn(resourcePermission);
+        when(permissionRepository.getPermissionByName(resourceTypePermission.getValue())).thenReturn(resourceTypePermission);
+        when(resourceTypeRepository.getByName(anyString())).thenReturn(new ResourceTypeEntity());
+
+        // when
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, Arrays.asList(resourceTypeName1, resourceTypeName2), ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE));
+
+        // then
+        assertThat(total, is(24));
+        verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldCreateTheRightAmountOfRestrictionsIfUsersAndRoleAndTwoActionsAndTwoContextsAreButNoResourceGroupsOrResourceTypesAreGiven() throws Exception {
+        //given
+        String roleName1 = "Role1";
+        String userName1 = "User1";
+        String userName2 = "User2";
+        String contextNameA = "A";
+        String contextNameB = "B";
+        when(permissionRepository.getPermissionByName(resourcePermission.getValue())).thenReturn(resourcePermission);
+        when(permissionRepository.getPermissionByName(resourceTypePermission.getValue())).thenReturn(resourceTypePermission);
+
+        // when
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, null, ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE));
+
+        // then
+        assertThat(total, is(24));
+        verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+    }
+
+    @Test
+    public void shouldCreateTheRightAmountOfRestrictionsIfUsersAndRoleAndTwoActionsAreButNoResourceGroupsOrResourceTypesAreGiven() throws Exception {
+        //given
+        String roleName1 = "Role1";
+        String userName1 = "User1";
+        String userName2 = "User2";
+        when(permissionRepository.getPermissionByName(resourcePermission.getValue())).thenReturn(resourcePermission);
+        when(permissionRepository.getPermissionByName(resourceTypePermission.getValue())).thenReturn(resourceTypePermission);
+
+        // when
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, null, ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE));
+
+        // then
+        assertThat(total, is(12));
+        verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+    }
+
+    @Test(expected=AMWException.class)
+    public void shouldThrowAnExceptionIfBothResourceTypeAndResourceGroupAreGiven() throws Exception {
+        //given
+        String roleName1 = "Role1";
+        String resourceTypeName1 = "APPLICATION";
+        when(permissionRepository.getPermissionByName(resourcePermission.getValue())).thenReturn(resourcePermission);
+        when(resourceTypeRepository.getByName(anyString())).thenReturn(new ResourceTypeEntity());
+
+        // when // then
+        permissionBoundary.createMultipleRestrictions(roleName1, null, Arrays.asList(resourcePermission.getValue()), Arrays.asList(1), Arrays.asList(resourceTypeName1), ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE));
     }
 
 }

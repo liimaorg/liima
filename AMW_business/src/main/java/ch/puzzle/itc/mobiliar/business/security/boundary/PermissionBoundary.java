@@ -461,20 +461,23 @@ public class PermissionBoundary implements Serializable {
     /**
      * Creates multiple RestrctionEntites and returns how many that have been created
      *
-     * @param roleName
-     * @param userNames
-     * @param permissionNames
-     * @param resourceGroupIds
-     * @param resourceTypeNames
-     * @param resourceTypePermission
-     * @param contextNames
-     * @param actions
-     * @return
+     * @param roleName max one Role name
+     * @param userNames none or more User names
+     * @param permissionNames at least one Permission name
+     * @param resourceGroupIds none or more ResourceGroup ids
+     * @param resourceTypeNames none or more ResourceType names
+     * @param resourceTypePermission max one ResourceTypePermission
+     * @param contextNames none or more Context names
+     * @param actions at least one Action
+     * @return int number of created Restrictions
      */
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.CREATE)
     public int createMultipleRestrictions(String roleName, List<String> userNames, List<String> permissionNames, List<Integer> resourceGroupIds, List<String> resourceTypeNames,
                                               ResourceTypePermission resourceTypePermission, List<String> contextNames, List<Action> actions) throws AMWException {
         int count = 0;
+        if (resourceGroupIds != null && !resourceGroupIds.isEmpty() && resourceTypeNames != null && !resourceTypeNames.isEmpty()) {
+            throw new AMWException("Only ResourceGroupId(s) OR ResourceTypeName(s) must be set");
+        }
         for (String permissionName : permissionNames) {
             for (Action action : actions) {
                 if (roleName != null) {
