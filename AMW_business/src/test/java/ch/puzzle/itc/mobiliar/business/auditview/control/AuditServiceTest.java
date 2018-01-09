@@ -22,8 +22,12 @@ package ch.puzzle.itc.mobiliar.business.auditview.control;
 
 import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
+import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +38,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import static junit.framework.TestCase.assertNull;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(PersistenceTestRunner.class)
@@ -50,6 +54,7 @@ public class AuditServiceTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         auditService.entityManager = entityManager;
+        ThreadLocalUtil.destroy();
     }
 
     @Test
@@ -92,5 +97,122 @@ public class AuditServiceTest {
         assertThat(deletedEntity.getId(), is(9992));
         assertThat(deletedEntity.getPropertyName(), is("proforma"));
     }
+
+    @Test
+    public void shouldSetResourceTypeIdInThreadLocal() {
+        // given
+        int resourceTypeId = 700;
+        int contextId = 1;
+
+        // when
+        auditService.setResourceTypeIdInThreadLocal(resourceTypeId, contextId);
+
+        // then
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(resourceTypeId));
+    }
+
+    @Test
+    public void shouldSetContextIdInThreadLocalDuringSetResourceTypeIdInThreadLocal() {
+        // given
+        int resourceTypeId = 700;
+        int contextId = 9;
+
+        // when
+        auditService.setResourceTypeIdInThreadLocal(resourceTypeId, contextId);
+
+        // then
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID), is(contextId));
+    }
+
+    @Test
+    public void shouldSetResourceIdInThreadLocal() {
+        // given
+        int resourceTypeId = 700;
+        int contextId = 1;
+
+        // when
+        auditService.setResourceIdInThreadLocal(resourceTypeId, contextId);
+
+        // then
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(resourceTypeId));
+    }
+
+    @Test
+    public void shouldSetContextIdInThreadLocalDuringSetResourceIdInThreadLocal() {
+        // given
+        int resourceId = 700;
+        int contextId = 9;
+
+        // when
+        auditService.setResourceIdInThreadLocal(resourceId, contextId);
+
+        // then
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID), is(contextId));
+    }
+
+    @Test
+    public void shouldSetResourceTypeIdInThreadLocalDuringStoreIdInThreadLocalForAuditLog_resourceType() {
+        // given
+        int resourceTypeId = 700;
+        ResourceTypeEntity resourceType = new ResourceTypeEntity();
+        resourceType.setId(resourceTypeId);
+        int contextId = 1;
+
+        // when
+        auditService.storeIdInThreadLocalForAuditLog(resourceType, contextId);
+
+        // then
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(resourceTypeId));
+    }
+
+    @Test
+    public void shouldSetContextIdInThreadLocalDuringStoreIdInThreadLocalForAuditLog_resourceType() {
+        // given
+        int resourceTypeId = 700;
+        ResourceTypeEntity resourceType = new ResourceTypeEntity();
+        resourceType.setId(resourceTypeId);
+        int contextId = 9;
+
+        // when
+        auditService.storeIdInThreadLocalForAuditLog(resourceType, contextId);
+
+        // then
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID), is(contextId));
+    }
+
+    @Test
+    public void shouldSetResourceIdInThreadLocalDuringStoreIdInThreadLocalForAuditLog_resource() {
+        // given
+        int resourceId = 700;
+        ResourceEntity resource = new ResourceEntity();
+        resource.setId(resourceId);
+        int contextId = 1;
+
+        // when
+        auditService.storeIdInThreadLocalForAuditLog(resource, contextId);
+
+        // then
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(resourceId));
+    }
+
+    @Test
+    public void shouldSetContextIdInThreadLocalDuringStoreIdInThreadLocalForAuditLog_resource() {
+        // given
+        int resourceId = 700;
+        ResourceEntity resource = new ResourceEntity();
+        resource.setId(resourceId);
+        int contextId = 1;
+
+        // when
+        auditService.storeIdInThreadLocalForAuditLog(resource, contextId);
+
+        // then
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID), is(contextId));
+    }
+
+
+
+
+
 
 }

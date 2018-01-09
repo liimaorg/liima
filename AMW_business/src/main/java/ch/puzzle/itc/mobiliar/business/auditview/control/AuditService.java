@@ -155,23 +155,29 @@ public class AuditService {
                     .getResultList();
     }
 
-    public void storeIdInThreadLocalForAuditLog(HasContexts<?> hasContexts) {
+    public void storeIdInThreadLocalForAuditLog(HasContexts<?> hasContexts, int editingContext) {
         if (hasContexts instanceof ResourceTypeEntity) {
-            setResourceTypeIdInThreadLocal(hasContexts.getId());
+            setResourceTypeIdInThreadLocal(hasContexts.getId(), editingContext);
         } else if (hasContexts instanceof ResourceEntity) {
-            setResourceIdInThreadLocal(hasContexts.getId());
+            setResourceIdInThreadLocal(hasContexts.getId(), editingContext);
         } else if (hasContexts instanceof ResourceRelationTypeEntity) {
             // TODO apollari
             ThreadLocalUtil.setThreadVariable("ThreadLocalUtil.KEY_RESOURCE_RELATION_TYPE_ID", hasContexts.getId());
         }
     }
 
-    public void setResourceTypeIdInThreadLocal(int resourceTypeId) {
+    public void setResourceTypeIdInThreadLocal(int resourceTypeId, int editingContextId) {
         ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID, resourceTypeId);
+        setContextIdInThreadLocal(editingContextId);
     }
 
-    public void setResourceIdInThreadLocal(int resourceId) {
+    public void setResourceIdInThreadLocal(int resourceId, int editingContextId) {
         ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID, resourceId);
+        setContextIdInThreadLocal(editingContextId);
+    }
+
+    private void setContextIdInThreadLocal(int editingContext) {
+        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID, editingContext);
     }
 
     /**

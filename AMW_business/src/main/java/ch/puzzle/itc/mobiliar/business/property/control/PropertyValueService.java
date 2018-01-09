@@ -90,7 +90,7 @@ public class PropertyValueService {
             }
         }
         if (!propertiesToBeSaved.isEmpty() || !propertiesToBeRemoved.isEmpty()) {
-            auditService.storeIdInThreadLocalForAuditLog(hasContexts);
+            auditService.storeIdInThreadLocalForAuditLog(hasContexts, context.getId());
             if (!propertiesToBeSaved.isEmpty()) {
                 ContextDependency<?> resourceContext = hasContexts.getOrCreateContext(context);
                 for (ResourceEditProperty saveProp : propertiesToBeSaved) {
