@@ -27,6 +27,7 @@ import javax.ejb.SessionContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import static ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil.KEY_EDIT_CONTEXT_ID;
 import static ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil.KEY_RESOURCE_ID;
 import static ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil.KEY_RESOURCE_TYPE_ID;
 
@@ -43,14 +44,18 @@ public class MyRevisionEntityListener implements RevisionListener {
         }
 
         Integer resourceId = (Integer) ThreadLocalUtil.getThreadVariable(KEY_RESOURCE_ID);
+        Integer resourceTypeId = (Integer) ThreadLocalUtil.getThreadVariable(KEY_RESOURCE_TYPE_ID);
+        Integer editContextId = (Integer) ThreadLocalUtil.getThreadVariable(KEY_EDIT_CONTEXT_ID);
         if (resourceId != null) {
             entity.setResourceId(resourceId);
-        }
-
-        Integer resourceTypeId = (Integer) ThreadLocalUtil.getThreadVariable(KEY_RESOURCE_TYPE_ID);
-        if (resourceTypeId != null) {
+        } else if (resourceTypeId != null) {
             entity.setResourceTypeId(resourceTypeId);
         }
+
+        if (editContextId != null) {
+            entity.setEditContextId(editContextId);
+        }
+
         ThreadLocalUtil.destroy();
     }
 

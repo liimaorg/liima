@@ -54,6 +54,7 @@ public class MyRevisionEntityListenerTest {
         // then
         assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(nullValue()));
         assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(nullValue()));
+        assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID), is(nullValue()));
     }
 
     @Test
@@ -84,6 +85,20 @@ public class MyRevisionEntityListenerTest {
         // then
         assertThat(revisionEntity.getResourceId(), is(nullValue()));
         assertThat(revisionEntity.getResourceTypeId(), is(resourceTypeId));
+    }
+
+    @Test
+    public void shouldSetContextIdOnRevisionEntity() {
+        // given
+        int contextId = 3;
+        MyRevisionEntity revisionEntity = new MyRevisionEntity();
+        auditService.setResourceTypeIdInThreadLocal(2, contextId);
+
+        // when
+        liimaRevisionListener.newRevision(revisionEntity);
+
+        // then
+        assertThat(revisionEntity.getEditContextId(), is(contextId));
     }
 
 }
