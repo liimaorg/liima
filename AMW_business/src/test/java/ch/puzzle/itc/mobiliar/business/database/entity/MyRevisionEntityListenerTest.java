@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.business.database.entity;
 
 import ch.puzzle.itc.mobiliar.business.utils.ThreadLocalUtil;
 import org.hibernate.envers.RevisionListener;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,6 +32,11 @@ import static org.hamcrest.Matchers.nullValue;
 public class MyRevisionEntityListenerTest {
 
     RevisionListener liimaRevisionListener = new MyRevisionEntityListener();
+
+    @Before
+    public void init() {
+        ThreadLocalUtil.destroy();
+    }
 
     @Test
     public void shouldDestroyThreadLocalVariables() {
