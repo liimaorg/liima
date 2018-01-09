@@ -7,4 +7,5 @@ export interface Auditviewentrytype {
   value: string;
   revision: number;
   mode: string;
+  editContextName: string;
 }

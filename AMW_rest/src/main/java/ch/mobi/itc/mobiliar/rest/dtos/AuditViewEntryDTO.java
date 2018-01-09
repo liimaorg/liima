@@ -24,6 +24,7 @@ public class AuditViewEntryDTO {
     String value;
     long revision;
     String mode;
+    String editContextName;
 
     public AuditViewEntryDTO(AuditViewEntry entry) {
         this.timestamp = entry.getTimestamp();
@@ -34,5 +35,6 @@ public class AuditViewEntryDTO {
         this.value = entry.getValue();
         this.revision = entry.getRevision();
         this.mode = entry.getModeAsString();
+        this.editContextName = entry.getEditContextName();
     }
 }
