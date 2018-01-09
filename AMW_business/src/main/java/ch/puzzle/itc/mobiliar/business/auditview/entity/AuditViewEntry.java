@@ -19,12 +19,7 @@ public class AuditViewEntry {
     String value;
     long revision;
     RevisionType mode;
-
-    public AuditViewEntry(MyRevisionEntity myRevisionEntity) {
-        this.username = myRevisionEntity.getUsername();
-        this.timestamp = myRevisionEntity.getTimestamp();
-        this.revision = myRevisionEntity.getId();
-    }
+    String editContextName;
 
     public String getModeAsString() {
         return this.getMode().name();

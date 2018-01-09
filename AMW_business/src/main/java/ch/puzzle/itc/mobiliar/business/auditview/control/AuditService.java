@@ -22,6 +22,8 @@ package ch.puzzle.itc.mobiliar.business.auditview.control;
 
 import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
+import ch.puzzle.itc.mobiliar.business.environment.control.ContextRepository;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
@@ -38,6 +40,7 @@ import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -49,6 +52,9 @@ public class AuditService {
 
     @PersistenceContext
     EntityManager entityManager;
+
+    @Inject
+    ContextRepository contextRepository;
 
     @SuppressWarnings("unchecked")
     public <T> Object getDeletedEntity(T entity, Integer id) {
@@ -131,7 +137,19 @@ public class AuditService {
                 .value(newValueForAuditLog)
                 .type(entityForRevision.getType())
                 .name(entityForRevision.getNameForAuditLog())
+                .editContextName(getContextName(revEntity.getEditContextId()))
                 .build();
+    }
+
+    private String getContextName(Integer editContextId) {
+        if (editContextId == null) {
+            return StringUtils.EMPTY;
+        }
+        ContextEntity contextEntity = contextRepository.find(editContextId);
+        if (contextEntity == null) {
+            return String.format("Context with id %i does not exist.", editContextId);
+        }
+        return contextEntity.getName();
     }
 
     private Auditable getPrevious(AuditReader reader, Auditable entityForRevision, MyRevisionEntity revEntity) {
