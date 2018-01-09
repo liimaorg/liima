@@ -24,9 +24,9 @@
         </addColumn>
     </changeSet>
 
-    <changeSet author="apollari" id="editedContextIdInRevInfo">
+    <changeSet author="apollari" id="editContextIdInRevInfo">
         <addColumn tableName="TAMW_REVINFO">
-            <column name="EDITEDCONTEXTID" type="INTEGER"/>
+            <column name="EDITCONTEXTID" type="INTEGER"/>
         </addColumn>
     </changeSet>
 
