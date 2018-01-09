@@ -282,6 +282,7 @@ public class PropertyValueServiceTest {
     public void shouldStoreResourceIdInThreadLocalWhenPropertyHasBeenChanged() throws ValidationException {
         // given
         ContextEntity contextEntity = new ContextEntity();
+        contextEntity.setId(2);
         ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
         int resourceId = 22;
         ResourceEditProperty changedProperty = new ResourceEditPropertyBuilder()
@@ -304,6 +305,7 @@ public class PropertyValueServiceTest {
     public void shouldStoreResourceIdInThreadLocalWhenPropertyHasBeenRemoved() throws ValidationException {
         // given
         ContextEntity contextEntity = new ContextEntity();
+        contextEntity.setId(2);
         ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
         int resourceId = 22;
         when(resourceEntityMock.getId()).thenReturn(resourceId);
