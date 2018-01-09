@@ -68,8 +68,12 @@ public class MyRevisionEntity {
     @Setter
     private Integer resourceId;
 
-	@Getter
-	@Setter
-	private Integer resourceTypeId;
+    @Getter
+    @Setter
+    private Integer resourceTypeId;
+
+    @Getter
+    @Setter
+    private Integer editContextId;
 
 }
