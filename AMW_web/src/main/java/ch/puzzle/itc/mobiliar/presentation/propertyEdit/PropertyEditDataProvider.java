@@ -26,6 +26,7 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.AppServerRelationsTemplateProcessor;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
+import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
@@ -95,9 +96,8 @@ public class PropertyEditDataProvider implements Serializable {
 
     List<ResourceEditProperty> filteredRelationProperties;
 
-    // Env, value
     @Getter
-    Map<String, String> valuesForConfigOverview;
+    List<PropertyEditingService.DifferingProperty> valuesForConfigOverview;
 
     @Getter
     ResourceEditProperty propertyForConfigOverview;
@@ -204,7 +204,14 @@ public class PropertyEditDataProvider implements Serializable {
             showWarningForPotentialPropertyOverwriting = false;
         } else if (property.getLoadedFor() == ResourceEditProperty.Origin.RELATION) {
             valuesForConfigOverview = editor.getPropertyOverviewForRelation(currentRelation, property, relevantContexts);
-            showWarningForPotentialPropertyOverwriting = true;
+            showWarningForPotentialPropertyOverwriting = false;
+            for (PropertyEditingService.DifferingProperty differingProperty : valuesForConfigOverview) {
+                // only show warning if Properties defined directly on the Resource would be overwritten
+                if (differingProperty.getOrigin() == ResourceEditProperty.Origin.INSTANCE) {
+                    showWarningForPotentialPropertyOverwriting = true;
+                    break;
+                }
+            }
         }
     }
 
