@@ -11,16 +11,9 @@ export class AuditviewService {
 
   }
 
-  getAuditLogForResource(resourceId: number, contextId: number): Observable<Auditviewentrytype[]> {
-    let params = new URLSearchParams();
-    params.append('contextId', String(contextId));
-    let options = new RequestOptions({
-      search: params,
-      headers: this.getHeaders()
-    });
-
+  getAuditLogForResource(resourceId: number): Observable<Auditviewentrytype[]> {
     let resource$ = this.http
-      .get(`${this.baseUrl}/auditview/resource/${resourceId}`, options)
+      .get(`${this.baseUrl}/auditview/resource/${resourceId}`)
       .map((response: Response) => this.extractPayload(response))
       .catch(handleError);
     return resource$;

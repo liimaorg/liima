@@ -20,7 +20,6 @@ export class AuditviewComponent implements OnInit {
   filterQuery: string = "";
 
   errorMessage: string;
-  contextId: number;
   resourceId: number;
 
 
@@ -36,21 +35,9 @@ export class AuditviewComponent implements OnInit {
 
     this.activatedRoute.queryParams.subscribe(
       (param: any) => {
-        if (param['contextId']) {
-          try {
-            this.contextId = JSON.parse(param['contextId']);
-            console.log(this.contextId);
-          } catch (e) {
-            console.error(e);
-            this.errorMessage = 'Error parsing contextId';
-          }
-        } else {
-          this.contextId = 1; // TODO get global context from REST
-        }
         if (param['resourceId']) {
           try {
             this.resourceId = JSON.parse(param['resourceId']);
-            console.log(this.contextId);
           } catch (e) {
             console.error(e);
             this.errorMessage = 'Error parsing resourceId';
@@ -58,15 +45,13 @@ export class AuditviewComponent implements OnInit {
         }
       });
 
-    console.log(this.contextId);
-
     if (this.resourceId) {
       this.resourceService.getResourceName(this.resourceId).subscribe(
         /* happy path */ (r) => this.name = r,
         /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => {}
       )
-      this.auditViewService.getAuditLogForResource(this.resourceId, this.contextId).subscribe(
+      this.auditViewService.getAuditLogForResource(this.resourceId).subscribe(
         /* happy path */ (r) => this.auditLogEntries = r,
         /* error path */ (e) => this.errorMessage = e,
         /* onComplete */ () => {}
@@ -74,12 +59,7 @@ export class AuditviewComponent implements OnInit {
     } else {
       console.error("Resource Id must be set")
     }
-
   }
-
-
-
-
 }
 
 
