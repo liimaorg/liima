@@ -52,4 +52,12 @@ public abstract class ContextDependency<T> extends AbstractContext {
 		return "ContextDependency [context=" + context + ", resource=" + getContextualizedObject() + "]";
 	}
 
+    @Override
+    public Integer getId() {
+        if (this.context != null) {
+            return this.context.getId();
+        }
+        return super.getId();
+    }
+
 }
