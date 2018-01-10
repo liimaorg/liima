@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.auditview.control;
 
+import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextRepository;
@@ -28,10 +29,10 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
-import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -44,6 +45,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.math.BigDecimal;
 import java.util.*;
 
 import static org.hibernate.envers.RevisionType.DEL;
@@ -77,13 +80,6 @@ public class AuditService {
         return null;
     }
 
-//    public List<AuditViewEntry> getAuditViewEntriesForResource(int id) {
-//        ResourceEntity entity = entityManager.find(ResourceEntity.class, id);
-//        List allRevisionsForEntity = getAllRevisionsForEntity(entity, id);
-//        List auditViewEntries = createAuditViewEntries(allRevisionsForEntity);
-//        return allRevisionsForEntity;
-//    }
-
     public List<AuditViewEntry> getAuditViewEntriesForProperties(List<ResourceEditProperty> propertiesForResource) {
         List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
         for (ResourceEditProperty resourceEditProperty : propertiesForResource) {
@@ -101,40 +97,110 @@ public class AuditService {
     }
 
     public List<AuditViewEntry> getAuditViewEntriesForResource(Integer resourceId) {
-        List<AuditViewEntry> allAuditViewEntries = new ArrayList<>();
+        // Map<Hashcode, AuditViewEntry>
+        Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>();
         AuditReader reader = AuditReaderFactory.get(entityManager);
         CrossTypeRevisionChangesReader crossTypeRevisionChangesReader = reader.getCrossTypeRevisionChangesReader();
         List<MyRevisionEntity> revisionsForResource = getRevisionsForResource(resourceId);
         for (MyRevisionEntity revisionEntity : revisionsForResource) {
             List<Object> changedEntitiesForRevision = crossTypeRevisionChangesReader.findEntities(revisionEntity.getId());
             for (Object o : changedEntitiesForRevision) {
-                Object[] entityRevisionAndRevisionType = (Object[]) reader.createQuery().forRevisionsOfEntity(o.getClass(), false, true)
+                List resultList = reader.createQuery()
+                        .forRevisionsOfEntity(o.getClass(), false, true)
                         .add(AuditEntity.revisionNumber().eq(revisionEntity.getId()))
-                        .setMaxResults(1)
-                        .getSingleResult();
-                Object entity = entityRevisionAndRevisionType[0];
-                if (! (entity instanceof Auditable) ) {
-                    System.out.println("NOT IMPLEMENTED YET FOR ENTITY: " + entity.getClass());
+                        .getResultList();
+                if (resultList.size() == 1) {
+                    createSingleAuditViewEntryAndAddToMap(allAuditViewEntries, (Object[]) resultList.get(0));
                     continue;
-                }
-                AuditViewEntry auditViewEntry = createAuditViewEntry(entityRevisionAndRevisionType);
-                if (isAuditViewEntryRelevant(auditViewEntry)) {
-                    allAuditViewEntries.add(auditViewEntry);
+                } else {
+                    createMultipleAuditViewEntriesAndAddToMap(allAuditViewEntries, resultList);
+                    continue;
                 }
             }
         }
-        return allAuditViewEntries;
+        return new ArrayList<>(allAuditViewEntries.values());
     }
 
-    protected boolean isAuditViewEntryRelevant(AuditViewEntry entry) {
+    private void createMultipleAuditViewEntriesAndAddToMap(Map<Integer, AuditViewEntry> allAuditViewEntries, List resultList) {
+        for (Object triple : resultList) {
+            createSingleAuditViewEntryAndAddToMap(allAuditViewEntries, (Object[]) triple);
+        }
+    }
+
+    private void createSingleAuditViewEntryAndAddToMap(Map<Integer, AuditViewEntry> allAuditViewEntries, Object[] entityRevisionAndRevisionType) {
+        Object entity = entityRevisionAndRevisionType[0];
+        if (! (entity instanceof Auditable) ) {
+            System.out.println("NOT IMPLEMENTED YET FOR ENTITY: " + entity.getClass());
+            return;
+        }
+
+        AuditViewEntry auditViewEntry;
+        if (entity instanceof PropertyEntity) {
+            auditViewEntry = createAuditViewEntryForProperty(entityRevisionAndRevisionType);
+        } else {
+            auditViewEntry = createAuditViewEntry(entityRevisionAndRevisionType);
+        }
+        if (isAuditViewEntryRelevant(auditViewEntry, allAuditViewEntries)) {
+            allAuditViewEntries.put(auditViewEntry.hashCode(), auditViewEntry);
+        }
+    }
+
+    private AuditViewEntry createAuditViewEntryForProperty(Object[] tripleForRevision) {
+        Auditable entityForRevision = (Auditable) tripleForRevision[0];
+        MyRevisionEntity revEntity = (MyRevisionEntity) tripleForRevision[1];
+        RevisionType revisionType = (RevisionType) tripleForRevision[2];
+
+        int contextId = getContextIdForProperty(tripleForRevision);
+        revEntity.setEditContextId(contextId);
+        return createAuditViewEntry(entityForRevision, revEntity, revisionType);
+    }
+
+    private int getContextIdForProperty(Object[] tripleForRevision) {
+        PropertyEntity entityForRevision = (PropertyEntity) tripleForRevision[0];
+        MyRevisionEntity revEntity = (MyRevisionEntity) tripleForRevision[1];
+
+        BigDecimal resourceContextId;
+        try {
+            String select = "SELECT TAMW_RESOURCECONTEXT_ID " +
+                    "FROM TAMW_RESOURCECTX_PROP " +
+                    "WHERE PROPERTIES_ID = :propertyId";
+            Query query = entityManager
+                    .createNativeQuery(select)
+                    .setParameter("propertyId", entityForRevision.getId());
+            resourceContextId = (BigDecimal) query.getSingleResult();
+        } catch (NoResultException e) {
+            String selectFromAudit = "SELECT TAMW_RESOURCECONTEXT_ID " +
+                    "FROM TAMW_RESOURCECTX_PROP_AUD " +
+                    "WHERE rev >= :rev " +
+                    "AND PROPERTIES_ID = :propertyId";
+            Query query = entityManager
+                    .createNativeQuery(selectFromAudit)
+                    .setParameter("rev", revEntity.getId())
+                    .setParameter("propertyId", entityForRevision.getId());
+            resourceContextId = (BigDecimal) query.getSingleResult();
+        }
+
+        AuditReader reader = AuditReaderFactory.get(entityManager);
+        ResourceContextEntity resourceContextEntity = (ResourceContextEntity) reader.createQuery()
+                .forRevisionsOfEntity(ResourceContextEntity.class, true, true)
+                .add(AuditEntity.id().eq(resourceContextId.intValue()))
+                .setMaxResults(1)
+                .getSingleResult();
+        return resourceContextEntity.getId();
+    }
+
+    protected boolean isAuditViewEntryRelevant(AuditViewEntry entry, Map<Integer, AuditViewEntry> allAuditViewEntries) {
+        if (entry == null) {
+            return false;
+        }
+        if (allAuditViewEntries.get(entry.hashCode()) != null) {
+            return false;
+        }
         return !StringUtils.equals(entry.getOldValue(), entry.getValue());
     }
 
-    private AuditViewEntry createAuditViewEntry(Object[] entityRevisionAndRevisionType) {
+    private AuditViewEntry createAuditViewEntry(Auditable entityForRevision, MyRevisionEntity revEntity, RevisionType revisionType) {
         AuditReader reader = AuditReaderFactory.get(entityManager);
-        Auditable entityForRevision = (Auditable) entityRevisionAndRevisionType[0];
-        MyRevisionEntity revEntity = (MyRevisionEntity) entityRevisionAndRevisionType[1];
-        RevisionType revisionType = (RevisionType) entityRevisionAndRevisionType[2];
         Auditable previous = getPrevious(reader, entityForRevision, revEntity);
         String newValueForAuditLog = revisionType == DEL ? StringUtils.EMPTY : entityForRevision.getNewValueForAuditLog();
         return AuditViewEntry
@@ -145,6 +211,13 @@ public class AuditService {
                 .name(entityForRevision.getNameForAuditLog())
                 .editContextName(getContextName(revEntity.getEditContextId()))
                 .build();
+    }
+
+    private AuditViewEntry createAuditViewEntry(Object[] entityRevisionAndRevisionType) {
+        Auditable entityForRevision = (Auditable) entityRevisionAndRevisionType[0];
+        MyRevisionEntity revEntity = (MyRevisionEntity) entityRevisionAndRevisionType[1];
+        RevisionType revisionType = (RevisionType) entityRevisionAndRevisionType[2];
+        return createAuditViewEntry(entityForRevision, revEntity, revisionType);
     }
 
     private String getContextName(Integer editContextId) {
@@ -256,8 +329,8 @@ public class AuditService {
     private List<AuditViewEntry> createAuditViewEntries(List<Object[]> allRevisionsForEntity) {
         List<AuditViewEntry> auditViewEntries = new ArrayList<>();
         for (Object o : allRevisionsForEntity) {
-            Object[] objects = (Object[]) o;
-            AuditViewEntry auditViewEntry = createAuditViewEntry(objects);
+            Object[] enversTriple = (Object[]) o;
+            AuditViewEntry auditViewEntry = createAuditViewEntry(enversTriple);
             auditViewEntries.add(auditViewEntry);
         }
         return auditViewEntries;

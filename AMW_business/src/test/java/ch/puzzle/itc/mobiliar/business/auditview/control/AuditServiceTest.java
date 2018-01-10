@@ -39,6 +39,8 @@ import org.mockito.MockitoAnnotations;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import java.util.Collections;
+
 import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -224,7 +226,7 @@ public class AuditServiceTest {
                 .build();
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(entry);
+        boolean relevant = auditService.isAuditViewEntryRelevant(entry, Collections.<Integer, AuditViewEntry>emptyMap());
 
         // then
         assertThat(relevant, is(true));
@@ -243,7 +245,7 @@ public class AuditServiceTest {
                 .build();
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(entry);
+        boolean relevant = auditService.isAuditViewEntryRelevant(entry, Collections.<Integer, AuditViewEntry>emptyMap());
 
         // then
         assertThat(relevant, is(false));
