@@ -118,10 +118,16 @@ public class AuditService {
                     continue;
                 }
                 AuditViewEntry auditViewEntry = createAuditViewEntry(entityRevisionAndRevisionType);
-                allAuditViewEntries.add(auditViewEntry);
+                if (isAuditViewEntryRelevant(auditViewEntry)) {
+                    allAuditViewEntries.add(auditViewEntry);
+                }
             }
         }
         return allAuditViewEntries;
+    }
+
+    protected boolean isAuditViewEntryRelevant(AuditViewEntry entry) {
+        return !StringUtils.equals(entry.getOldValue(), entry.getValue());
     }
 
     private AuditViewEntry createAuditViewEntry(Object[] entityRevisionAndRevisionType) {

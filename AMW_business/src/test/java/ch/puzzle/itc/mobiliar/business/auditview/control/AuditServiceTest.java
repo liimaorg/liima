@@ -21,12 +21,15 @@
 package ch.puzzle.itc.mobiliar.business.auditview.control;
 
 import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
+import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
+import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.hamcrest.MatcherAssert;
+import org.hibernate.envers.RevisionType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -209,9 +212,41 @@ public class AuditServiceTest {
         MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID), is(contextId));
     }
 
+    @Test
+    public void shouldAuditViewEntryIsRelevant(){
+        // given
+        String oldValue = "Technical Key: appLogLevel-tmp";
+        String newValue = "Technical Key: appLogLevel";
+        MyRevisionEntity revisionEntity = new MyRevisionEntity();
+        AuditViewEntry entry = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
+                .oldValue(oldValue)
+                .value(newValue)
+                .build();
+
+        // when
+        boolean relevant = auditService.isAuditViewEntryRelevant(entry);
+
+        // then
+        assertThat(relevant, is(true));
+    }
 
 
+    @Test
+    public void shouldAuditViewEntryIsNotRelevant(){
+        // given
+        String oldValue = "Technical Key: appLogLevel";
+        String newValue = "Technical Key: appLogLevel";
+        MyRevisionEntity revisionEntity = new MyRevisionEntity();
+        AuditViewEntry entry = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
+                .oldValue(oldValue)
+                .value(newValue)
+                .build();
 
+        // when
+        boolean relevant = auditService.isAuditViewEntryRelevant(entry);
 
+        // then
+        assertThat(relevant, is(false));
+    }
 
 }
