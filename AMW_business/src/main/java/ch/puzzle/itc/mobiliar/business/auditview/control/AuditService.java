@@ -109,19 +109,13 @@ public class AuditService {
                         .forRevisionsOfEntity(o.getClass(), false, true)
                         .add(AuditEntity.revisionNumber().eq(revisionEntity.getId()))
                         .getResultList();
-                if (resultList.size() == 1) {
-                    createSingleAuditViewEntryAndAddToMap(allAuditViewEntries, (Object[]) resultList.get(0));
-                    continue;
-                } else {
-                    createMultipleAuditViewEntriesAndAddToMap(allAuditViewEntries, resultList);
-                    continue;
-                }
+                createAuditViewEntriesAndAddToMap(allAuditViewEntries, resultList);
             }
         }
         return new ArrayList<>(allAuditViewEntries.values());
     }
 
-    private void createMultipleAuditViewEntriesAndAddToMap(Map<Integer, AuditViewEntry> allAuditViewEntries, List resultList) {
+    private void createAuditViewEntriesAndAddToMap(Map<Integer, AuditViewEntry> allAuditViewEntries, List resultList) {
         for (Object triple : resultList) {
             createSingleAuditViewEntryAndAddToMap(allAuditViewEntries, (Object[]) triple);
         }
