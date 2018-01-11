@@ -40,6 +40,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.Matchers.is;
@@ -215,7 +217,7 @@ public class AuditServiceTest {
     }
 
     @Test
-    public void shouldAuditViewEntryIsRelevant(){
+    public void shouldAuditViewEntryIsRelevantBecauseOldAndNewValueAreNotEqual(){
         // given
         String oldValue = "Technical Key: appLogLevel-tmp";
         String newValue = "Technical Key: appLogLevel";
@@ -234,7 +236,7 @@ public class AuditServiceTest {
 
 
     @Test
-    public void shouldAuditViewEntryIsNotRelevant(){
+    public void shouldAuditViewEntryIsNotRelevantBecauseOldAndNewValueAreEqual(){
         // given
         String oldValue = "Technical Key: appLogLevel";
         String newValue = "Technical Key: appLogLevel";
@@ -250,5 +252,61 @@ public class AuditServiceTest {
         // then
         assertThat(relevant, is(false));
     }
+
+    @Test
+    public void shouldReturnFalseWhenEntryIsNull(){
+        // given
+        // when
+        boolean relevant = auditService.isAuditViewEntryRelevant(null, Collections.<Integer, AuditViewEntry>emptyMap());
+
+        // then
+        assertThat(relevant, is(false));
+    }
+
+
+    @Test
+    public void shouldReturnTrueIfEntryIsNotAlreadyInList(){
+        // given
+        String oldValue = "Technical Key: appLogLevel-tmp";
+        String newValue = "Technical Key: appLogLevel";
+        MyRevisionEntity revisionEntity = new MyRevisionEntity();
+        AuditViewEntry entryInList = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
+                .oldValue(oldValue)
+                .value(newValue)
+                .build();
+        AuditViewEntry newEntry = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
+                .oldValue(oldValue + ".")
+                .value(newValue)
+                .build();
+        Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
+        allAuditViewEntries.put(entryInList.hashCode(), entryInList);
+
+        // when
+        boolean relevant = auditService.isAuditViewEntryRelevant(newEntry, allAuditViewEntries);
+
+        // then
+        assertThat(relevant, is(true));
+    }
+
+    @Test
+    public void shouldReturnFalseIfEntryIsAlreadyInList(){
+        // given
+        String oldValue = "Technical Key: appLogLevel-tmp";
+        String newValue = "Technical Key: appLogLevel";
+        MyRevisionEntity revisionEntity = new MyRevisionEntity();
+        AuditViewEntry entryInList = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
+                .oldValue(oldValue)
+                .value(newValue)
+                .build();
+        Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
+        allAuditViewEntries.put(entryInList.hashCode(), entryInList);
+
+        // when
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
+
+        // then
+        assertThat(relevant, is(false));
+    }
+
 
 }
