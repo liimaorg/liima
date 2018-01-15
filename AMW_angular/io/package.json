@@ -50,6 +50,7 @@
     "webpack": "webpack"
   },
   "dependencies": {
+    "@angular/animations": "^4.2.0",
     "@angular/common": "^4.2.0",
     "@angular/compiler": "^4.2.0",
     "@angular/core": "^4.2.0",
@@ -68,12 +69,12 @@
     "jquery": "2.2.4",
     "lodash": "4.17.4",
     "moment": "2.18.1",
+    "ngx-typeahead": "0.1.0",
     "resolve-url-loader": "2.2.0",
     "rxjs": "5.5.5",
     "zone.js": "0.8.18"
   },
   "devDependencies": {
-    "@angular/animations": "^4.2.0",
     "@types/bootstrap": "3.3.36",
     "@types/hammerjs": "2.0.33",
     "@types/jasmine": "2.5.44",
