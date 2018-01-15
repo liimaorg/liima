@@ -16,6 +16,7 @@ import * as _ from 'lodash';
 export class AuditviewComponent implements OnInit {
 
   name: string;
+  entriesLoaded: boolean = false;
   auditLogEntries: Auditviewentrytype[] = [];
   filterQuery: string = "";
 
@@ -54,7 +55,7 @@ export class AuditviewComponent implements OnInit {
       this.auditViewService.getAuditLogForResource(this.resourceId).subscribe(
         /* happy path */ (r) => this.auditLogEntries = r,
         /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */ () => {}
+        /* onComplete */ () => {this.entriesLoaded = true}
       );
     } else {
       console.error("Resource Id must be set")
