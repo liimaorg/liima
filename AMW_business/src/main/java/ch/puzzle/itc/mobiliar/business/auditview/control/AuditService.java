@@ -147,10 +147,9 @@ public class AuditService {
             int contextIdForProperty = getContextIdForProperty(propertyEntity, auditViewEntryContainer.getRevEntity());
             auditViewEntryContainer.setEditContextId(contextIdForProperty);
         } catch (NoResultException e) {
-            int contextIdForPropertyOfRelation = getContextIdForPropertyOfRelation(propertyEntity);
-            auditViewEntryContainer.setEditContextId(contextIdForPropertyOfRelation);
+            getAndSetRelationNameAndContextForPropertyOfRelation(propertyEntity, auditViewEntryContainer);
         }
-        return createAuditViewEntry(propertyEntity, auditViewEntryContainer.getRevEntity(), auditViewEntryContainer.getRevisionType());
+        return createAuditViewEntry(auditViewEntryContainer);
     }
 
     private int getContextIdForProperty(PropertyEntity entityForRevision, MyRevisionEntity revEntity) throws NoResultException{
@@ -176,17 +175,21 @@ public class AuditService {
         return resourceContextEntity.getId();
     }
 
-    private int getContextIdForPropertyOfRelation(PropertyEntity entityForRevision) {
-        String selectContextForPropertyOnSlave = "select resource_relation_context.CONTEXT_ID from TAMW_RESOURCE slave_resource " +
-                "JOIN TAMW_CONSUMEDRESREL consumed_resource_relation on consumed_resource_relation.SLAVERESOURCE_ID = slave_resource.ID " +
-                "JOIN TAMW_RESRELCONTEXT resource_relation_context on consumed_resource_relation.ID = resource_relation_context.CONSUMEDRESOURCERELATION_ID " +
-                "JOIN TAMW_RESRELCTX_PROP resource_relation_context_prop on resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
-                "WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId";
+    private void getAndSetRelationNameAndContextForPropertyOfRelation(PropertyEntity entityForRevision, AuditViewEntryContainer auditViewEntryContainer) {
+        String selectContextForPropertyOnSlave = "select consumed_resource.NAME, resource_relation_context.CONTEXT_ID " +
+                " FROM TAMW_RESOURCE consumed_resource " +
+                " JOIN TAMW_CONSUMEDRESREL consumed_resource_relation on consumed_resource_relation.SLAVERESOURCE_ID = consumed_resource.ID " +
+                " JOIN TAMW_RESRELCONTEXT resource_relation_context on consumed_resource_relation.ID = resource_relation_context.CONSUMEDRESOURCERELATION_ID " +
+                " JOIN TAMW_RESRELCTX_PROP resource_relation_context_prop on resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
+                " WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId";
         Query query = entityManager
                 .createNativeQuery(selectContextForPropertyOnSlave)
                 .setParameter("propertyId", entityForRevision.getId());
-        BigDecimal resourceContextId = (BigDecimal) query.getSingleResult();
-        return resourceContextId.intValue();
+        Object[] nameAndId = (Object[]) query.getSingleResult();
+        String name = (String) nameAndId[0];
+        int resourceContextId = ((BigDecimal) nameAndId[1]).intValue();
+        auditViewEntryContainer.setRelationName(String.format("Consumed Resource: %s", name));
+        auditViewEntryContainer.setEditContextId(resourceContextId);
     }
 
     protected boolean isAuditViewEntryRelevant(AuditViewEntry entry, Map<Integer, AuditViewEntry> allAuditViewEntries) {
@@ -199,7 +202,11 @@ public class AuditService {
         return !StringUtils.equals(entry.getOldValue(), entry.getValue());
     }
 
-    private AuditViewEntry createAuditViewEntry(Auditable entityForRevision, MyRevisionEntity revEntity, RevisionType revisionType) {
+    private AuditViewEntry createAuditViewEntry(AuditViewEntryContainer auditViewEntryContainer) {
+        Auditable entityForRevision = auditViewEntryContainer.getEntityForRevision();
+        MyRevisionEntity revEntity = auditViewEntryContainer.getRevEntity();
+        RevisionType revisionType = auditViewEntryContainer.getRevisionType();
+
         AuditReader reader = AuditReaderFactory.get(entityManager);
         Auditable previous = getPrevious(reader, entityForRevision, revEntity);
         String newValueForAuditLog = revisionType == DEL ? StringUtils.EMPTY : entityForRevision.getNewValueForAuditLog();
@@ -210,15 +217,8 @@ public class AuditService {
                 .type(entityForRevision.getType())
                 .name(entityForRevision.getNameForAuditLog())
                 .editContextName(getContextName(revEntity.getEditContextId()))
+                .relation(auditViewEntryContainer.getRelationName())
                 .build();
-    }
-
-    private AuditViewEntry createAuditViewEntry(AuditViewEntryContainer auditViewEntryContainer) {
-        return createAuditViewEntry(
-                auditViewEntryContainer.getEntityForRevision(),
-                auditViewEntryContainer.getRevEntity(),
-                auditViewEntryContainer.getRevisionType()
-        );
     }
 
     private String getContextName(Integer editContextId) {

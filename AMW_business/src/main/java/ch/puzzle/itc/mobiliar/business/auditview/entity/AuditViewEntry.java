@@ -18,6 +18,7 @@ public class AuditViewEntry {
     long revision;
     RevisionType mode;
     String editContextName;
+    String relation; // consumed resource, ...
 
     public String getModeAsString() {
         return this.getMode().name();

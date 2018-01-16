@@ -57,6 +57,7 @@
 
             <tr>
               <th><mfDefaultSorter by="timestamp">Timestamp</mfDefaultSorter></th>
+              <th><mfDefaultSorter by="relation">Relation</mfDefaultSorter></th>
               <th><mfDefaultSorter by="type">Type</mfDefaultSorter></th>
               <th><mfDefaultSorter by="name">Name (Property Descriptor etc.)</mfDefaultSorter></th>
               <th><mfDefaultSorter by="editContextName">Context</mfDefaultSorter></th>
@@ -68,6 +69,7 @@
 
             <tr *ngFor="let entry of mf.data">
               <td>{{entry.timestamp | date:'dd.MM.y HH:mm:ss'}}</td>
+              <td>{{entry.relation}}</td>
               <td>{{entry.type}}</td>
               <td>{{entry.name}}</td>
               <td>{{entry.editContextName}}</td>

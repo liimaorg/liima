@@ -8,4 +8,5 @@ export interface Auditviewentrytype {
   revision: number;
   mode: string;
   editContextName: string;
+  relation: string;
 }
