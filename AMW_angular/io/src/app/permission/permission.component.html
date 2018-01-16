@@ -23,55 +23,13 @@
             </datalist>
           </div>
         </div>
-<!--
-        <div class="form-group" *ngIf="restrictionType == 'user'">
-          <label for="selectUser" class="col-sm-1 control-label">User</label>
-          <div class="col-sm-11 col-md-5">
-            <input id="selectUser" class="form-control input-sm" list="userList" type="text" [(ngModel)]="selectedUserName" (ngModelChange)="onChangeUser($event)">
-            <datalist id="userList">
-              <ng-container *ngIf="userNames.length > 0">
-                <option [ngValue]="userName" *ngFor="let userName of userNames">{{userName}}</option>
-              </ng-container>
-            </datalist>
-          </div>
-        </div>
 
-            <tag-input id="selectUsers" [(ngModel)]="selectedUserNames" [onlyFromAutocomplete]="true" theme="minimal" placeholder="" secondaryPlaceholder="">
-                <tag-input-dropdown [autocompleteItems]="userNames"></tag-input-dropdown>
-            </tag-input>
--->
-<!--        <div class="form-group" *ngIf="restrictionType == 'user'">
+        <div class="form-group" *ngIf="restrictionType == 'user'">
           <label for="selectUsers" class="col-sm-1 control-label">User</label>
           <div class="col-sm-11">
-            <tag-input id="selectUsers" [(ngModel)]="selectedUserNames" theme="minimal" placeholder="" secondaryPlaceholder="" (ngModelChange)="onChangeUser($event)">
-                <tag-input-dropdown [autocompleteItems]="userNames"></tag-input-dropdown>
-            </tag-input>
-          </div>
-        </div>-->
-
-<!--        <div class="form-group" *ngIf="restrictionType == 'user'">
-          <label class="col-sm-1 control-label">User</label>
-          <div class="col-sm-11">
-            <tags-input class="form-control input-lg" (onTagsChanged)="onChangeUser($event)" [(ngModel)]="selectedUserNames" name="tags" options="userNames"></tags-input>
-          </div>
-        </div>-->
-
-        <div class="form-group" *ngIf="restrictionType == 'user'">
-          <label class="col-sm-1 control-label">User</label>
-          <div class="col-sm-11">
-
-                  <input type="text" [(value)]="selectedUserNames"
-                         ngxTypeahead
-                         [taList]="userNames"
-                         (taSelected)="onChangeUser($event)">
-
-
-            <!--<select multiple data-role="tagsinput" [(ngModel)]="selectedUserNames">-->
-                            <!--<ng-container *ngIf="userNames.length > 0">-->
-                <!--<option [ngValue]="userName" *ngFor="let userName of userNames">{{userName}}</option>-->
-              <!--</ng-container>-->
-
-            <!--</select>-->
+              <ng-select id="selectUsers" [items]="userNames" multiple="true" [addTag]="true" placeholder=""
+                         addTagText="add user" [(ngModel)]="selectedUserNames" (change)="onChangeUser()">
+              </ng-select>
           </div>
         </div>
 
@@ -87,9 +45,9 @@
               <ng-container *ngIf="restriction">
                   <amw-restriction-edit [restriction]="restriction" [groupedEnvironments]="groupedEnvironments" [permissions]="getPermissions()" [resourceGroups]="resourceGroups" [resourceTypes]="resourceTypes" [availableRestrictions]="assignableRestrictions" [delegationMode]="delegationMode" (cancelEdit)='cancel()' (saveRestriction)='persistRestriction()'></amw-restriction-edit>
               </ng-container>
-<!--              <ng-container *ngIf="create">
-                  <amw-restriction-add [roleName]="selectedRoleName" [userNames]="selectedUserNames" [groupedEnvironments]="groupedEnvironments" [permissions]="getPermissions()" [resourceGroups]="resourceGroups" [resourceTypes]="resourceTypes" [availableRestrictions]="assignableRestrictions" [delegationMode]="delegationMode" (cancelEdit)='cancel()' (saveRestrictions)='createRestrictions()'></amw-restriction-add>
-              </ng-container>-->
+              <ng-container *ngIf="create">
+                  <amw-restriction-add [roleName]="selectedRoleName" [userNames]="selectedUserNames" [groupedEnvironments]="groupedEnvironments" [permissions]="getPermissions()" [resourceGroups]="resourceGroups" [resourceTypes]="resourceTypes" [availableRestrictions]="assignableRestrictions" [delegationMode]="delegationMode" (cancelEdit)='cancel()' (saveRestrictions)='createRestrictions($event)'></amw-restriction-add>
+              </ng-container>
             </ng-container>
           </div>
         </div>

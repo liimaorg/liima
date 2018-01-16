@@ -3,6 +3,7 @@ import { Http, Response, Headers, URLSearchParams, RequestOptions } from '@angul
 import { Observable } from 'rxjs/Rx';
 import { Permission } from './permission';
 import { Restriction } from './restriction';
+import { RestrictionsCreation } from './restrictions-creation';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -78,6 +79,12 @@ export class PermissionService {
       .flatMap((res: Response) => {
         return this.http.get(this.baseUrl + res.headers.get('Location'));
       }).map(this.extractPayload)
+      .catch(handleError);
+  }
+
+  createRestrictions(restrictionsCreation: RestrictionsCreation) {
+    return this.http.post(`${this.baseUrl}/permissions/restrictions/multi/`, restrictionsCreation, {headers: this.postHeaders()})
+      .map(this.extractPayload)
       .catch(handleError);
   }
 

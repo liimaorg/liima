@@ -10,6 +10,7 @@ import { AppState } from '../app.service';
 import { Restriction } from './restriction';
 import { RestrictionsCreation } from './restrictions-creation';
 import { Permission } from './permission';
+import { Tag } from './tag';
 import * as _ from 'lodash';
 
 @Component({
@@ -21,7 +22,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   // loaded only once
   roleNames: string[] = [];
-  userNames: string[] = [];
+  userNames: any[] = [];
   permissions: Permission[] = [];
   environments: Environment[] = [{id: null, name: null, parent: 'All', selected: false} as Environment];
   groupedEnvironments: { [key: string]: Environment[] } = {All: [], Global: []};
@@ -34,18 +35,17 @@ export class PermissionComponent implements OnInit, OnDestroy {
   delegationMode: boolean = false;
   assignedRestrictions: Restriction[] = [];
   selectedRoleName: string = null;
-  selectedUserNames: string[] = [];
+  selectedUserNames: Tag[] = [];
   actingUserName: string = null;
   assignableRestrictions: Restriction[] = [];
   assignablePermissions: Permission[] = [];
 
-  create: boolean = false;
-  // edit or add restriction
+  // edit restriction
   restriction: Restriction = null;
-  // add multiple restrictions
-  restrictionsCreation: RestrictionsCreation = null;
   // backup for cancel
   backupRestriction: Restriction = null;
+  // create new restrictions if true
+  create: boolean = false;
 
   errorMessage: string = '';
   successMessage: string = '';
@@ -98,14 +98,9 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.restriction = null;
   }
 
-  onChangeUser(userName: string) {
-    console.log('onChangeUser' + userName);
-    if (this.isExistingUser(userName)) {
-      this.selectedUserNames.push(userName);
-      console.log(this.selectedUserNames);
-    }
+  onChangeUser() {
     if (this.selectedUserNames.length === 1) {
-      this.getUserWithRestrictions(this.selectedUserNames);
+      this.getUserWithRestrictions(this.selectedUserNames[0].label);
     } else {
       this.assignedRestrictions = [];
     }
@@ -161,21 +156,15 @@ export class PermissionComponent implements OnInit, OnDestroy {
     }
   }
 
-  createRestrictions() {
+  createRestrictions(restrictionsCreation: RestrictionsCreation) {
     this.errorMessage = null;
-    console.log('createRestrictions '+JSON.stringify(this.restrictionsCreation));
+    console.log('createRestrictions '+JSON.stringify(restrictionsCreation));
+    this.permissionService.createRestrictions(restrictionsCreation).subscribe(
+      /* happy path */ (r) => '',
+      /* error path */ (e) => this.errorMessage = e);
   }
 
   addRestriction() {
-/*    if (this.selectedUserNames.length === 1) {
-      this.restriction = { id: null, roleName: null, userName: this.selectedUserNames[0].value, permission: {} as Permission,
-        resourceGroupId: null, resourceTypeName: null, resourceTypePermission: null, contextName: null, action: null };
-    } else if (this.selectedUserNames.length > 1) {
-      let userNames: string[] = [];
-      this.selectedUserNames.forEach((user) => { userNames.push(user.value); });
-      this.restrictionsCreation = { roleName: null, userNames: this.selectedUserNames, permissionNames: [], resourceGroupIds: [],
-        resourceTypeNames: [], resourceTypePermission: null, contextNames: [], actions: [] };
-    }*/
     if (this.selectedRoleName || this.selectedUserNames.length > 0) {
       this.create = true;
     }
