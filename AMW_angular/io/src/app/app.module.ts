@@ -20,8 +20,10 @@ import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
 import { PageNotFoundComponent } from './not-found.component';
 
-import { NgxTypeaheadModule } from 'ngx-typeahead';
-// import { TagsInputModule } from 'ngx-tags-input/dist';
+// import { NgxTypeaheadModule } from 'ngx-typeahead';
+//import { SelectModule } from 'ng-select';
+import { NgSelectModule } from '@ng-select/ng-select';
+
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -46,8 +48,8 @@ type StoreType = {
   imports: [ // import Angular's modules
     BrowserModule,
     BrowserAnimationsModule,
-    NgxTypeaheadModule,
-    // TagsInputModule.forRoot(),
+    //NgxTypeaheadModule,
+    NgSelectModule,
     FormsModule,
     HttpModule,
     AppRoutingModule,

@@ -64,6 +64,10 @@
   dependencies:
     tslib "^1.7.1"
 
+"@ng-select/ng-select@0.14.4":
+  version "0.14.4"
+  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-0.14.4.tgz#5ba16a4de3e25c6d12df3d9e47968e5c74114209"
+
 "@types/bootstrap@3.3.36":
   version "3.3.36"
   resolved "https://registry.yarnpkg.com/@types/bootstrap/-/bootstrap-3.3.36.tgz#5ca0b81655427398fe7c8728bccdc395069093d0"
@@ -3973,12 +3977,6 @@ ncname@1.0.x:
 negotiator@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.1.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
-
-ngx-typeahead@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/ngx-typeahead/-/ngx-typeahead-0.1.0.tgz#4757cd955902ae29ae9ece737c5f7aa34c267128"
-  dependencies:
-    tslib "^1.7.1"
 
 no-case@^2.2.0:
   version "2.3.2"
