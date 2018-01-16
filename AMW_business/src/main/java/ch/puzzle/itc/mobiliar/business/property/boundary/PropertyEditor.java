@@ -18,11 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * To change this license header, choose License Headers in Project Properties. To change this template file,
- * choose Tools | Templates and open the template in the editor.
- */
-
 package ch.puzzle.itc.mobiliar.business.property.boundary;
 
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
@@ -639,7 +634,8 @@ public class PropertyEditor {
         ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL.getDisplayName() : contextName);
 
         ResourceEditProperty property = getPropertyForRelationAndContext(propertyName, context, resourceRelation);
-        setSingleProperty(resourceRelation, context, property.getDescriptorId(), propertyValue);
+        property.setPropertyValue(propertyValue);
+        setSingleProperty(resourceRelation, context, property.getDescriptorId(), property.getUnobfuscatedValue());
     }
 
     public PropertyDescriptorEntity getPropertyDescriptor(Integer propertyDescriptorId) {
@@ -700,7 +696,7 @@ public class PropertyEditor {
         return savePropertyDescriptorResource(editingOwner, resourceId, descriptor, propertyTagsString);
     }
 
-    private PropertyDescriptorEntity savePropertyDescriptorResource(ForeignableOwner editingOwner, Integer resourceId, PropertyDescriptorEntity descriptor, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
+    private PropertyDescriptorEntity savePropertyDescriptorResource(ForeignableOwner editingOwner, Integer resourceId, PropertyDescriptorEntity descriptor, String propertyTagsString) throws AMWException {
         ResourceEntity attachedResource = entityManager.find(ResourceEntity.class, Objects.requireNonNull(resourceId));
         ResourceContextEntity resourceContext = attachedResource.getOrCreateContext(contextService.getGlobalResourceContextEntity());
         ResourceTypeContextEntity resourceTypeContextEntity = attachedResource.getResourceType().getOrCreateContext(contextService.getGlobalResourceContextEntity());
@@ -735,7 +731,7 @@ public class PropertyEditor {
         return savePropertyDescriptorResourceType(editingOwner, resourceTypeId, descriptor, propertyTagsString);
     }
 
-    private PropertyDescriptorEntity savePropertyDescriptorResourceType(ForeignableOwner editingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
+    private PropertyDescriptorEntity savePropertyDescriptorResourceType(ForeignableOwner editingOwner, Integer resourceTypeId, PropertyDescriptorEntity descriptor, String propertyTagsString) throws AMWException {
         ResourceTypeEntity attachedResourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
         ResourceTypeContextEntity resourceTypeContextEntity = attachedResourceType.getOrCreateContext(contextService.getGlobalResourceContextEntity());
         return propertyDescriptorService.savePropertyDescriptorForOwner(editingOwner, resourceTypeContextEntity, descriptor, propertyTagEditingService.convertToTags(propertyTagsString), attachedResourceType);
