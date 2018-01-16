@@ -157,7 +157,7 @@ public class ResourceRelationsRest {
         }
         try {
             relationEditor.addResourceRelationForSpecificRelease(resourceGroupName, slaveGroupName,
-                    resourceType.toLowerCase().equals("provided"), null, null, releaseName, ForeignableOwner.getSystemOwner());
+                    resourceType.toLowerCase().equals("provided"), null, resourceType, releaseName, ForeignableOwner.getSystemOwner());
         } catch (ResourceNotFoundException | ElementAlreadyExistsException | ValidationException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }

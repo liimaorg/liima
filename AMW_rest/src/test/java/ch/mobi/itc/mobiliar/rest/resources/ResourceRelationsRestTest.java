@@ -104,7 +104,7 @@ public class ResourceRelationsRestTest {
         Response response = rest.addRelation(slaveResourceGroupName);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, false, null, null, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, false, null, rest.resourceType, rest.releaseName, ForeignableOwner.getSystemOwner());
         assertEquals(CREATED.getStatusCode(), response.getStatus());
     }
 
@@ -120,7 +120,7 @@ public class ResourceRelationsRestTest {
         Response response = rest.addRelation(slaveResourceGroupName);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, null, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, rest.resourceType, rest.releaseName, ForeignableOwner.getSystemOwner());
         assertEquals(CREATED.getStatusCode(), response.getStatus());
     }
 
@@ -133,13 +133,13 @@ public class ResourceRelationsRestTest {
         String slaveResourceGroupName = "Slave";
 
         doThrow(new ValidationException("Resource is already provided by another ResourceGroup")).when(relationEditorMock)
-                .addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, null, rest.releaseName, ForeignableOwner.getSystemOwner());
+                .addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, rest.resourceType, rest.releaseName, ForeignableOwner.getSystemOwner());
 
         // when
         Response response = rest.addRelation(slaveResourceGroupName);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, null, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, rest.resourceType, rest.releaseName, ForeignableOwner.getSystemOwner());
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
