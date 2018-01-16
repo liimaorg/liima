@@ -140,40 +140,31 @@ public class AuditService {
     }
 
     private AuditViewEntry createAuditViewEntryForProperty(Object[] tripleForRevision) {
-        Auditable entityForRevision = (Auditable) tripleForRevision[0];
+        PropertyEntity entityForRevision = (PropertyEntity) tripleForRevision[0];
         MyRevisionEntity revEntity = (MyRevisionEntity) tripleForRevision[1];
         RevisionType revisionType = (RevisionType) tripleForRevision[2];
-
-        int contextId = getContextIdForProperty(tripleForRevision);
-        revEntity.setEditContextId(contextId);
+        try {
+            revEntity.setEditContextId(getContextIdForProperty(entityForRevision, revEntity));
+        } catch (NoResultException e) {
+            revEntity.setEditContextId(getContextIdForPropertyOfRelation(entityForRevision));
+        }
         return createAuditViewEntry(entityForRevision, revEntity, revisionType);
     }
 
-    private int getContextIdForProperty(Object[] tripleForRevision) {
-        PropertyEntity entityForRevision = (PropertyEntity) tripleForRevision[0];
-        MyRevisionEntity revEntity = (MyRevisionEntity) tripleForRevision[1];
-
-        BigDecimal resourceContextId;
-        try {
-            String select = "SELECT TAMW_RESOURCECONTEXT_ID " +
+    private int getContextIdForProperty(PropertyEntity entityForRevision, MyRevisionEntity revEntity) throws NoResultException{
+            String selectForResource = "SELECT TAMW_RESOURCECONTEXT_ID " +
                     "FROM TAMW_RESOURCECTX_PROP " +
                     "WHERE PROPERTIES_ID = :propertyId";
-            Query query = entityManager
-                    .createNativeQuery(select)
-                    .setParameter("propertyId", entityForRevision.getId());
-            resourceContextId = (BigDecimal) query.getSingleResult();
-        } catch (NoResultException e) {
-            String selectFromAudit = "SELECT TAMW_RESOURCECONTEXT_ID " +
+            String selectForResourceFromAudit = "SELECT TAMW_RESOURCECONTEXT_ID " +
                     "FROM TAMW_RESOURCECTX_PROP_AUD " +
                     "WHERE rev >= :rev " +
                     "AND PROPERTIES_ID = :propertyId";
+            String selectForPropertyOnResource = String.format("%s UNION %s", selectForResource, selectForResourceFromAudit);
             Query query = entityManager
-                    .createNativeQuery(selectFromAudit)
+                    .createNativeQuery(selectForPropertyOnResource)
                     .setParameter("rev", revEntity.getId())
                     .setParameter("propertyId", entityForRevision.getId());
-            resourceContextId = (BigDecimal) query.getSingleResult();
-        }
-
+        BigDecimal resourceContextId = (BigDecimal) query.getSingleResult();
         AuditReader reader = AuditReaderFactory.get(entityManager);
         ResourceContextEntity resourceContextEntity = (ResourceContextEntity) reader.createQuery()
                 .forRevisionsOfEntity(ResourceContextEntity.class, true, true)
@@ -181,6 +172,19 @@ public class AuditService {
                 .setMaxResults(1)
                 .getSingleResult();
         return resourceContextEntity.getId();
+    }
+
+    private int getContextIdForPropertyOfRelation(PropertyEntity entityForRevision) {
+        String selectContextForPropertyOnSlave = "select resource_relation_context.CONTEXT_ID from TAMW_RESOURCE slave_resource " +
+                "JOIN TAMW_CONSUMEDRESREL consumed_resource_relation on consumed_resource_relation.SLAVERESOURCE_ID = slave_resource.ID " +
+                "JOIN TAMW_RESRELCONTEXT resource_relation_context on consumed_resource_relation.ID = resource_relation_context.CONSUMEDRESOURCERELATION_ID " +
+                "JOIN TAMW_RESRELCTX_PROP resource_relation_context_prop on resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
+                "WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId";
+        Query query = entityManager
+                .createNativeQuery(selectContextForPropertyOnSlave)
+                .setParameter("propertyId", entityForRevision.getId());
+        BigDecimal resourceContextId = (BigDecimal) query.getSingleResult();
+        return resourceContextId.intValue();
     }
 
     protected boolean isAuditViewEntryRelevant(AuditViewEntry entry, Map<Integer, AuditViewEntry> allAuditViewEntries) {
@@ -220,7 +224,7 @@ public class AuditService {
         }
         ContextEntity contextEntity = contextRepository.find(editContextId);
         if (contextEntity == null) {
-            return String.format("Context with id %i does not exist.", editContextId);
+            return String.format("Context with id %d does not exist.", editContextId);
         }
         return contextEntity.getName();
     }
