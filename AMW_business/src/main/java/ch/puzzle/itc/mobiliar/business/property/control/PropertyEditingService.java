@@ -18,10 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * To change this license header, choose License Headers in Project Properties. To change this template file,
- * choose Tools | Templates and open the template in the editor.
- */
 package ch.puzzle.itc.mobiliar.business.property.control;
 
 import ch.puzzle.itc.mobiliar.business.database.control.JpaSqlResultMapper;
@@ -35,7 +31,7 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation.Mode
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import org.apache.commons.collections.MapUtils;
+import lombok.Getter;
 
 import javax.inject.Inject;
 import javax.persistence.Query;
@@ -76,7 +72,7 @@ public class PropertyEditingService {
      */
     public List<ResourceEditProperty> loadPropertiesForEditResource(Integer resourceId,
             ResourceTypeEntity type, ContextEntity currentContext) {
-        Map<Integer, ResourceEditProperty> propMap = new HashMap<Integer, ResourceEditProperty>();
+        Map<Integer, ResourceEditProperty> propMap = new HashMap<>();
 
         List<Integer> contextList = contextHierarchy.getContextWithParentIds(currentContext);
         List<Integer> typeList = getTypeWithParentIds(null, type);
@@ -90,7 +86,7 @@ public class PropertyEditingService {
             propMap.put(prop.getDescriptorId(),
                     findChildPropAndSetParent(prop, propMap.get(prop.getDescriptorId()), contextList));
         }
-        return new ArrayList<ResourceEditProperty>(new TreeSet<ResourceEditProperty>(propMap.values()));
+        return new ArrayList<>(new TreeSet<>(propMap.values()));
 
     }
 
@@ -104,7 +100,7 @@ public class PropertyEditingService {
     * @return a list of containers which contain the required property information
     */
     public List<ResourceEditProperty> loadPropertiesForEditResourceType(ResourceTypeEntity resourceType, ContextEntity currentContext) {
-       Map<Integer, ResourceEditProperty> propMap = new HashMap<Integer, ResourceEditProperty>();
+       Map<Integer, ResourceEditProperty> propMap = new HashMap<>();
 
        List<Integer> contextList = contextHierarchy.getContextWithParentIds(currentContext);
        List<Integer> typeList = getTypeWithParentIds(null, resourceType);
@@ -124,7 +120,7 @@ public class PropertyEditingService {
                prop.setDefinedOnSuperResourceType(true);
            }
        }
-       return new ArrayList<ResourceEditProperty>(new TreeSet<ResourceEditProperty>(propMap.values()));
+       return new ArrayList<>(new TreeSet<>(propMap.values()));
     }
 
 
@@ -132,7 +128,7 @@ public class PropertyEditingService {
             Integer resourceRelationId, Integer relatedResourceId, ResourceTypeEntity masterResourceType,
             ResourceTypeEntity slaveResourceType, ContextEntity currentContext) {
 
-        Map<Integer, ResourceEditProperty> propMap = new HashMap<Integer, ResourceEditProperty>();
+        Map<Integer, ResourceEditProperty> propMap = new HashMap<>();
         List<Integer> contextList = contextHierarchy.getContextWithParentIds(currentContext);
         List<Integer> masterResourceTypeList = getTypeWithParentIds(null, masterResourceType);
         List<Integer> slaveResourceTypeList = getTypeWithParentIds(null, slaveResourceType);
@@ -156,7 +152,7 @@ public class PropertyEditingService {
             propMap.put(prop.getDescriptorId(),
                     findChildPropAndSetParent(prop, propMap.get(prop.getDescriptorId()), contextList));
         }
-        return new ArrayList<ResourceEditProperty>(new TreeSet<ResourceEditProperty>(propMap.values()));
+        return new ArrayList<>(new TreeSet<>(propMap.values()));
     }
 
 
@@ -179,7 +175,7 @@ public class PropertyEditingService {
           propMap.put(prop.getDescriptorId(),
                   findChildPropAndSetParent(prop, propMap.get(prop.getDescriptorId()), contextList));
        }
-       return new ArrayList<ResourceEditProperty>(new TreeSet<ResourceEditProperty>(propMap.values()));
+       return new ArrayList<>(new TreeSet<>(propMap.values()));
     }
 
 
@@ -254,7 +250,7 @@ public class PropertyEditingService {
 
     protected List<Integer> getTypeWithParentIds(List<Integer> result, ResourceTypeEntity type) {
         if (result == null) {
-            result = new ArrayList<Integer>();
+            result = new ArrayList<>();
         }
         if (type != null) {
             result.add(type.getId());
@@ -270,19 +266,15 @@ public class PropertyEditingService {
      * @param resource
      * @param property
      * @param relevantContexts
-     * @return a Map containing all properties which override the value of its parent context.
-     * <ul>
-     *     <li>Map.key = context Name</li>
-     *     <li>Map.value = context of the value</li>
-     *  </ul>
+     * @return a List containing all properties which override the value of its parent context.
      */
-    public Map<String, String> getPropertyOverviewForResource(ResourceEntity resource, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    public List<DifferingProperty> getPropertyOverviewForResource(ResourceEntity resource, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         if (relevantContexts.isEmpty()) {
-            return Collections.EMPTY_MAP;
+            return Collections.EMPTY_LIST;
         }
         List<Integer> contextIds = buildRelevantContextIdsList(relevantContexts);
         Query query = queries.getPropertyOverviewForResourceQuery(property.getTechnicalKey(), resource.getId(), contextIds);
-        return getDifferingProperties(property, query);
+        return getDifferingProperties(property, query, Origin.INSTANCE);
     }
 
     /**
@@ -290,81 +282,82 @@ public class PropertyEditingService {
      * @param resourceType
      * @param property
      * @param relevantContexts
-     * @return a Map containing all properties which override the value of its parent context.
-     * <ul>
-     *     <li>Map.key = context Name</li>
-     *     <li>Map.value = context of the value</li>
-     *  </ul>
+     * @return a List containing all properties which override the value of its parent context.
      */
-    public Map<String, String> getPropertyOverviewForResourceType(ResourceTypeEntity resourceType, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    public List<DifferingProperty> getPropertyOverviewForResourceType(ResourceTypeEntity resourceType, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         if (relevantContexts.isEmpty()) {
-            return Collections.EMPTY_MAP;
+            return Collections.EMPTY_LIST;
         }
         List<Integer> contextIds = buildRelevantContextIdsList(relevantContexts);
         Query query = queries.getPropertyOverviewForResourceTypeQuery(property.getTechnicalKey(), resourceType.getId(), contextIds);
-        return getDifferingProperties(property, query);
+        return getDifferingProperties(property, query, Origin.INSTANCE);
     }
 
-    public Map<String,String> getPropertyOverviewForRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    public List<DifferingProperty> getPropertyOverviewForRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         switch (relation.getMode()) {
             case CONSUMED:
-                return getPropertyOverviewForConsumedRelation(relation.getResRelId(), property, relevantContexts);
+                return getPropertyOverviewForConsumedRelation(relation, property, relevantContexts);
             case PROVIDED:
-                return getPropertyOverviewForProvidedRelation(relation.getResRelId(), property, relevantContexts);
+                return getPropertyOverviewForProvidedRelation(relation, property, relevantContexts);
             default:
                 String msg = String.format("Relation mode '%s' is not supported for property overview (property id: %d)",
                         relation.getMode().name(),
                         property.getPropertyId());
                 log.warning(msg);
-                return MapUtils.EMPTY_MAP;
+                return Collections.EMPTY_LIST;
         }
     }
     /**
      *
-     * @param relationId
+     * @param relation
      * @param property
      * @param relevantContexts
-     * @return a Map containing all properties which override the value of its parent context.
-     * <ul>
-     *     <li>Map.key = context Name</li>
-     *     <li>Map.value = context of the value</li>
-     *  </ul>
+     * @return a List containing all properties which would be overridden by setting the property on the relation.
      */
-    private Map<String, String> getPropertyOverviewForConsumedRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    private List<DifferingProperty> getPropertyOverviewForConsumedRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         if (relevantContexts.isEmpty()) {
-            return Collections.EMPTY_MAP;
+            return Collections.EMPTY_LIST;
         }
         List<Integer> relevantContextIds = buildRelevantContextIdsList(relevantContexts);
-        Query query = queries.getPropertyOverviewForConsumedRelatedResourceQuery(property.getTechnicalKey(), relationId, relevantContextIds);
-        return getDifferingProperties(property, query);
+        Query query = queries.getPropertyOverviewForConsumedRelatedResourceQuery(property.getTechnicalKey(), relation.getResRelId(), relevantContextIds);
+        List<DifferingProperty> differingProperties = getDifferingProperties(property, query, Origin.RELATION);
+        // obtain property values defined on the (slave) resource, which would be overwritten by defining one on the relation - global context is relevant here
+        relevantContextIds.add(contextHierarchy.getContextWithParentIds(relevantContexts.get(0)).get(0));
+        differingProperties.addAll(getPropertyDefinedOnResource(relation, property, relevantContextIds, Origin.INSTANCE));
+        return differingProperties;
     }
 
     /**
      *
-     * @param relationId
+     * @param relation
      * @param property
      * @param relevantContexts
-     * @return a Map containing all properties which override the value of its parent context.
-     * <ul>
-     *     <li>Map.key = context Name</li>
-     *     <li>Map.value = context of the value</li>
-     *  </ul>
+     * @return a List containing all properties which would be overridden by setting the property on the relation.
      */
-    private Map<String, String> getPropertyOverviewForProvidedRelation(int relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    private List<DifferingProperty> getPropertyOverviewForProvidedRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         if (relevantContexts.isEmpty()) {
-            return Collections.EMPTY_MAP;
+            return Collections.EMPTY_LIST;
         }
         List<Integer> relevantContextIds = buildRelevantContextIdsList(relevantContexts);
-        Query query = queries.getPropertyOverviewForProvidedRelatedResourceQuery(property.getTechnicalKey(), relationId, relevantContextIds);
-        return getDifferingProperties(property, query);
+        Query query = queries.getPropertyOverviewForProvidedRelatedResourceQuery(property.getTechnicalKey(), relation.getResRelId(), relevantContextIds);
+        List<DifferingProperty> differingProperties = getDifferingProperties(property, query, Origin.RELATION);
+        // obtain property values defined on the (slave) resource, which would be overwritten by defining one on the relation - global context is relevant here
+        relevantContextIds.add(contextHierarchy.getContextWithParentIds(relevantContexts.get(0)).get(0));
+        differingProperties.addAll(getPropertyDefinedOnResource(relation, property, relevantContextIds, Origin.INSTANCE));
+        return differingProperties;
     }
 
-    private Map<String, String> getDifferingProperties(ResourceEditProperty property, Query query) {
-        HashMap<String, String> differingProps = new HashMap<>();
+    private List<DifferingProperty> getPropertyDefinedOnResource(ResourceEditRelation relation, ResourceEditProperty property, List<Integer> relevantContextIds, Origin origin) {
+        Query query = queries.getPropertyOverviewForResourceQuery(property.getTechnicalKey(), relation.getSlaveId(), relevantContextIds);
+        return getDifferingProperties(property, query, origin);
+    }
+
+    private List<DifferingProperty> getDifferingProperties(ResourceEditProperty property, Query query, Origin origin) {
+        List<DifferingProperty> differingProps = new ArrayList<>();
         List resultList = query.getResultList();
         for (Object o : resultList) {
             Map.Entry<String, String> entry = createEntryForOverridenProperty(o, property.getPropertyId());
-            differingProps.put(entry.getKey(), entry.getValue());
+            differingProps.add(new DifferingProperty(origin, entry.getKey(), entry.getValue()));
         }
         return differingProps;
     }
@@ -398,5 +391,23 @@ public class PropertyEditingService {
             log.log(Level.WARNING, "ERROR: failed to parse the CLOB field TAMW_PROPERTY.valueForContext of property with id " + propertyId);
         }
         return new AbstractMap.SimpleEntry(contextName, valueForContext);
+    }
+
+    @Getter
+    public class DifferingProperty {
+        private Origin origin;
+        private String env;
+        private String val;
+
+        /**
+         * @param origin Origin where the Property value is set (Instance / Relation)
+         * @param env String identifying the environment (ContextEntity.name)
+         * @param val String the Property value on that environment
+         */
+        public DifferingProperty(Origin origin, String env, String val) {
+            this.origin = origin;
+            this.env = env;
+            this.val = val;
+        }
     }
 }

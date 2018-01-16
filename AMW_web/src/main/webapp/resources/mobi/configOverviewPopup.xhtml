@@ -33,13 +33,13 @@
                         <span class="symbol"></span>
                         <h3 class="alert-heading">WARNING!</h3>
                         <br></br>
-                        By changing the value of this property you will override the value of the following environments.
+                        Changing this property will override the values defined on the resource (instance).
                     </div>
                 </ui:fragment>
 
 
                 <div style="display: inline-block; float: left;">
-                    <h:dataTable value="#{propertyEditDataProvider.valuesForConfigOverview.entrySet().toArray()}"
+                    <h:dataTable value="#{propertyEditDataProvider.valuesForConfigOverview.toArray()}"
                                  rendered="#{!propertyEditDataProvider.valuesForConfigOverview.isEmpty()}"
                                  rowClasses="odd-row,even-row"
                                  styleClass="well"
@@ -48,14 +48,21 @@
                             <f:facet name="header">
                                 <strong>Environment</strong>
                             </f:facet>
-                            <span>#{entry.key}</span>
+                            <span>#{entry.env}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <strong>Origin</strong>
+                            </f:facet>
+                            <span>#{entry.origin}</span>
                         </h:column>
 
                         <h:column>
                             <f:facet name="header">
                                 <strong>Value</strong>
                             </f:facet>
-                            <span>#{entry.value}</span>
+                            <span>#{entry.val}</span>
                         </h:column>
                     </h:dataTable>
 
