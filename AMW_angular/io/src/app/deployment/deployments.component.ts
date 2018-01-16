@@ -22,7 +22,6 @@ declare var $: any;
 })
 
 export class DeploymentsComponent implements OnInit {
-  @ViewChild('selectModel') private selectModel: NgModel;
 
   defaultComparator: string = 'eq';
 
@@ -79,6 +78,8 @@ export class DeploymentsComponent implements OnInit {
   errorMessage: string = '';
   successMessage: string = '';
   isLoading: boolean = true;
+
+  @ViewChild('selectModel') private selectModel: NgModel;
 
   constructor(private activatedRoute: ActivatedRoute,
               private ngZone: NgZone,
