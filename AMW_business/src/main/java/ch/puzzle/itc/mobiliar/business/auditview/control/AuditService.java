@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.auditview.control;
 
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
+import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntryContainer;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextRepository;
@@ -127,28 +128,29 @@ public class AuditService {
             System.out.println("NOT IMPLEMENTED YET FOR ENTITY: " + entity.getClass());
             return;
         }
+        AuditViewEntryContainer auditViewEntryContainer = new AuditViewEntryContainer(entityRevisionAndRevisionType);
 
         AuditViewEntry auditViewEntry;
         if (entity instanceof PropertyEntity) {
-            auditViewEntry = createAuditViewEntryForProperty(entityRevisionAndRevisionType);
+            auditViewEntry = createAuditViewEntryForProperty(auditViewEntryContainer);
         } else {
-            auditViewEntry = createAuditViewEntry(entityRevisionAndRevisionType);
+            auditViewEntry = createAuditViewEntry(auditViewEntryContainer);
         }
         if (isAuditViewEntryRelevant(auditViewEntry, allAuditViewEntries)) {
             allAuditViewEntries.put(auditViewEntry.hashCode(), auditViewEntry);
         }
     }
 
-    private AuditViewEntry createAuditViewEntryForProperty(Object[] tripleForRevision) {
-        PropertyEntity entityForRevision = (PropertyEntity) tripleForRevision[0];
-        MyRevisionEntity revEntity = (MyRevisionEntity) tripleForRevision[1];
-        RevisionType revisionType = (RevisionType) tripleForRevision[2];
+    private AuditViewEntry createAuditViewEntryForProperty(AuditViewEntryContainer auditViewEntryContainer) {
+        PropertyEntity propertyEntity = (PropertyEntity) auditViewEntryContainer.getEntityForRevision();
         try {
-            revEntity.setEditContextId(getContextIdForProperty(entityForRevision, revEntity));
+            int contextIdForProperty = getContextIdForProperty(propertyEntity, auditViewEntryContainer.getRevEntity());
+            auditViewEntryContainer.setEditContextId(contextIdForProperty);
         } catch (NoResultException e) {
-            revEntity.setEditContextId(getContextIdForPropertyOfRelation(entityForRevision));
+            int contextIdForPropertyOfRelation = getContextIdForPropertyOfRelation(propertyEntity);
+            auditViewEntryContainer.setEditContextId(contextIdForPropertyOfRelation);
         }
-        return createAuditViewEntry(entityForRevision, revEntity, revisionType);
+        return createAuditViewEntry(propertyEntity, auditViewEntryContainer.getRevEntity(), auditViewEntryContainer.getRevisionType());
     }
 
     private int getContextIdForProperty(PropertyEntity entityForRevision, MyRevisionEntity revEntity) throws NoResultException{
@@ -211,11 +213,12 @@ public class AuditService {
                 .build();
     }
 
-    private AuditViewEntry createAuditViewEntry(Object[] entityRevisionAndRevisionType) {
-        Auditable entityForRevision = (Auditable) entityRevisionAndRevisionType[0];
-        MyRevisionEntity revEntity = (MyRevisionEntity) entityRevisionAndRevisionType[1];
-        RevisionType revisionType = (RevisionType) entityRevisionAndRevisionType[2];
-        return createAuditViewEntry(entityForRevision, revEntity, revisionType);
+    private AuditViewEntry createAuditViewEntry(AuditViewEntryContainer auditViewEntryContainer) {
+        return createAuditViewEntry(
+                auditViewEntryContainer.getEntityForRevision(),
+                auditViewEntryContainer.getRevEntity(),
+                auditViewEntryContainer.getRevisionType()
+        );
     }
 
     private String getContextName(Integer editContextId) {
@@ -328,7 +331,7 @@ public class AuditService {
         List<AuditViewEntry> auditViewEntries = new ArrayList<>();
         for (Object o : allRevisionsForEntity) {
             Object[] enversTriple = (Object[]) o;
-            AuditViewEntry auditViewEntry = createAuditViewEntry(enversTriple);
+            AuditViewEntry auditViewEntry = createAuditViewEntry(new AuditViewEntryContainer(enversTriple));
             auditViewEntries.add(auditViewEntry);
         }
         return auditViewEntries;
