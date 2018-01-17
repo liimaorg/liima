@@ -258,7 +258,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     inject([PermissionComponent],
       (permissionComponent: PermissionComponent) => {
         // given
-        permissionComponent.selectedUserNames = ['Tester'];
+        permissionComponent.selectedUserNames = [{label:'Tester'} as Tag];
         expect(permissionComponent.create).toBeFalsy();
         expect(permissionComponent.restriction).toBeNull();
         // when
