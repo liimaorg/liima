@@ -142,7 +142,7 @@ export class DeploymentsListComponent {
 
   appLink(appId: number) {
     this.resourceService.resourceExists(appId).subscribe(
-      /* happy path */ (r) =>  { if (r) window.location.href = '/AMW_web/pages/editResourceView.xhtml?id=' + appId + '&ctx=1'; }
+      /* happy path */ (r) =>  { if (r) { window.location.href = '/AMW_web/pages/editResourceView.xhtml?id=' + appId + '&ctx=1'; } }
     );
   }
 
