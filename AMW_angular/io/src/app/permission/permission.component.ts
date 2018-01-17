@@ -100,7 +100,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   onChangeUser() {
-    if (this.selectedUserNames.length === 1) {
+    if (this.selectedUserNames.length === 1 && this.isExistingUser(this.selectedUserNames[0].label)) {
       this.getUserWithRestrictions(this.selectedUserNames[0].label);
     } else {
       this.assignedRestrictions = [];
@@ -197,12 +197,10 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   private isExistingRole(roleName: string) {
-    console.log('isExistingRole? ' + roleName);
     return roleName !== null && this.roleNames.indexOf(roleName.toLowerCase()) > -1;
   }
 
   private isExistingUser(userName: string) {
-    console.log('isExistingUser? ' + userName);
     return userName !== null && this.userNames.indexOf(userName.toLowerCase()) > -1;
   }
 

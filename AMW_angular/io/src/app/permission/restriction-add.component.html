@@ -18,57 +18,63 @@
         <div class="col-sm-9">
           <ng-container *ngFor="let action of getAvailableActions()">
             <label class="checkbox-inline"><input type="checkbox" [attr.disabled]="action.disabled ? '' : null"
-                                                  [(ngModel)]="action.selected">&nbsp;{{action.name}}</label>
+                                                  [(ngModel)]="action.selected"
+                                                  (change)="checkAvailableEnvironments()">&nbsp;{{action.name}}</label>
           </ng-container>
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="col-sm-3 control-label">Environment</label>
-        <div class="col-sm-9">
-          <ng-container *ngFor="let group of getEnvironmentGroups()">
-            <h5 class="environments-title">{{group}}: </h5>
-            <ng-container *ngFor="let env of groupedEnvironments[group]">
-              <label class="checkbox-inline"><input type="checkbox" [attr.disabled]="env.disabled ? '' : null"
-                                                    [(ngModel)]="env.selected"
-                                                    (change)="checkUnique(env)">&nbsp;{{env.name}}</label>
+      <ng-container *ngIf="hasSelectedActions()">
+
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Environment</label>
+          <div class="col-sm-9">
+            <ng-container *ngFor="let group of getEnvironmentGroups()">
+              <h5 class="environments-title">{{group}}: </h5>
+              <ng-container *ngFor="let env of groupedEnvironments[group]">
+                <label class="checkbox-inline"><input type="checkbox" [attr.disabled]="env.disabled ? '' : null"
+                                                      [(ngModel)]="env.selected"
+                                                      (change)="checkUnique(env)">&nbsp;{{env.name}}</label>
+              </ng-container>
             </ng-container>
-          </ng-container>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group" *ngIf="getAvailableResourceTypePermissions().length > 0 && isResourceTypePermissionAssignable()">
-        <label for="selectRTP" class="col-sm-3 control-label">Resource Type Categories</label>
-        <div class="col-sm-9">
-          <select id="selectRTP" class="form-control input-sm" [(ngModel)]="selectedResourceTypePermission"
-                  (change)="clearTypeAndGroup()">
-            <option [ngValue]="rtp" *ngFor="let rtp of getAvailableResourceTypePermissions()">{{rtp}}</option>
-          </select>
+        <div class="form-group" *ngIf="getAvailableResourceTypePermissions().length > 0 && isResourceTypePermissionAssignable()">
+          <label for="selectRTP" class="col-sm-3 control-label">Resource Type Categories</label>
+          <div class="col-sm-9">
+            <select id="selectRTP" class="form-control input-sm" [(ngModel)]="selectedResourceTypePermission"
+                    [attr.disabled]="getAvailableResourceTypePermissions().length === 1 ? '' : null"
+                    (change)="clearTypeAndGroup()">
+              <option [ngValue]="rtp" *ngFor="let rtp of getAvailableResourceTypePermissions()">{{rtp}}</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group" *ngIf="getAvailableResourceTypes().length > 0 && isResourceTypeAssignable()">
-        <label for="selectResourceTypes" class="col-sm-3 control-label">Resource Type</label>
-        <div class="col-sm-9">
-          <ng-select id="selectResourceTypes" [items]="getAvailableResourceTypes()" bindLabel="name" bindValue="name"
-                     placeholder="" multiple="true" [disableVirtualScroll]="true" [(ngModel)]="selectedResourceTypeNames">
-          </ng-select>
-        </div>
-      </div>
-
-      <div class="form-group" *ngIf="getAvailableResourceGroups().length > 0 && isResourceGroupAssignable()">
-        <label for="selectResourceGroup" class="col-sm-3 control-label">Resource Group</label>
-        <div class="col-sm-9">
-          <ng-container *ngIf="getAvailableResourceGroups().length > 1">
-            <ng-select id="selectResourceGroup" [items]="getAvailableResourceGroups()" bindLabel="name" bindValue="name"
-                       placeholder="" multiple="true" [disableVirtualScroll]="true" [(ngModel)]="selectedResourceGroupNames">
+        <div class="form-group" *ngIf="getAvailableResourceTypes().length > 0 && isResourceTypeAssignable()">
+          <label for="selectResourceTypes" class="col-sm-3 control-label">Resource Type</label>
+          <div class="col-sm-9">
+            <ng-select id="selectResourceTypes" [items]="getAvailableResourceTypes()" bindLabel="name" bindValue="name"
+                       placeholder="" multiple="true" [disableVirtualScroll]="true" [(ngModel)]="selectedResourceTypeNames">
             </ng-select>
-          </ng-container>
-          <ng-container *ngIf="getAvailableResourceGroups().length === 1">
-            <input id="selectResourceGroup" type="text" disabled [(ngModel)]="selectedResourceGroupNames">
-          </ng-container>
+          </div>
         </div>
-      </div>
+
+        <div class="form-group" *ngIf="getAvailableResourceGroups().length > 0 && isResourceGroupAssignable()">
+          <label for="selectResourceGroup" class="col-sm-3 control-label">Resource Group</label>
+          <div class="col-sm-9">
+            <ng-container *ngIf="getAvailableResourceGroups().length > 1">
+              <ng-select id="selectResourceGroup" [items]="getAvailableResourceGroups()" bindLabel="name" bindValue="name"
+                         placeholder="" multiple="true" [disableVirtualScroll]="true" [(ngModel)]="selectedResourceGroupNames">
+              </ng-select>
+            </ng-container>
+            <ng-container *ngIf="getAvailableResourceGroups().length === 1">
+              <input id="selectResourceGroup" type="text" disabled [(ngModel)]="selectedResourceGroupNames">
+            </ng-container>
+          </div>
+        </div>
+
+      </ng-container>
 
     </ng-container>
 

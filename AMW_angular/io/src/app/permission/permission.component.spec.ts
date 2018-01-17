@@ -14,6 +14,7 @@ import { AppState } from '../app.service';
 import { Restriction } from './restriction';
 import { Observable } from 'rxjs';
 import { Permission } from './permission';
+import { Tag } from './tag';
 
 @Component({
   template: ''
@@ -131,7 +132,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       // given
       const restrictions: Restriction[] = [{id: 41, action: 'DELETE', permission: {name: 'SAME'} as Permission} as Restriction,
         {id: 42, action: 'CREATE', permission: {name: 'SAME'} as Permission} as Restriction];
-      permissionComponent.selectedUserNames = ['Tester'];
+      permissionComponent.selectedUserNames = [ {label: 'Tester'} as Tag ];
       permissionComponent.userNames = ['tester', 'user'];
       spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(Observable.of(restrictions));
       // when
@@ -148,7 +149,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
         // given
         permissionComponent.assignedRestrictions = [{id: 51} as Restriction, {id: 52} as Restriction];
-        permissionComponent.selectedUserNames = ['Tester'];
+        permissionComponent.selectedUserNames = [ {label: 'Tester'} as Tag ];
         permissionComponent.userNames = ['user'];
         spyOn(permissionService, 'getUserWithRestrictions').and.callThrough();
         // when
@@ -226,16 +227,45 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       expect(permissionService.createRestriction).toHaveBeenCalledWith(permissionComponent.restriction, false);
   }));
 
-  it('should initialize an empty Restriction on addRestriction',
+  it('should not set create to true and not initialize a Restriction on addRestriction if no User or Role is selected',
     inject([PermissionComponent],
       (permissionComponent: PermissionComponent) => {
       // given
+      expect(permissionComponent.create).toBeFalsy();
       expect(permissionComponent.restriction).toBeNull();
       // when
       permissionComponent.addRestriction();
       // then
-      expect(permissionComponent.restriction).not.toBeNull();
-      expect(permissionComponent.restriction.id).toBeNull();
+      expect(permissionComponent.create).toBeFalsy();
+      expect(permissionComponent.restriction).toBeNull();
+  }));
+
+  it('should set create to true but not initialize a Restriction on addRestriction if a RoleName is selected',
+    inject([PermissionComponent],
+      (permissionComponent: PermissionComponent) => {
+        // given
+        permissionComponent.selectedRoleName = 'Test';
+        expect(permissionComponent.create).toBeFalsy();
+        expect(permissionComponent.restriction).toBeNull();
+        // when
+        permissionComponent.addRestriction();
+        // then
+        expect(permissionComponent.create).toBeTruthy();
+        expect(permissionComponent.restriction).toBeNull();
+  }));
+
+  it('should set create to true but not initialize a Restriction on addRestriction if a UserName is selected',
+    inject([PermissionComponent],
+      (permissionComponent: PermissionComponent) => {
+        // given
+        permissionComponent.selectedUserNames = ['Tester'];
+        expect(permissionComponent.create).toBeFalsy();
+        expect(permissionComponent.restriction).toBeNull();
+        // when
+        permissionComponent.addRestriction();
+        // then
+        expect(permissionComponent.create).toBeTruthy();
+        expect(permissionComponent.restriction).toBeNull();
   }));
 
   describe('PermissionComponent with param restrictionType (type User)', () => {
