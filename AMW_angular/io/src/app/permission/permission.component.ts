@@ -93,6 +93,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     if (this.isExistingRole(this.selectedRoleName)) {
       this.getRoleWithRestrictions(this.selectedRoleName);
     } else {
+      this.selectedRoleName = null;
       this.assignedRestrictions = [];
     }
     this.restriction = null;
@@ -152,16 +153,19 @@ export class PermissionComponent implements OnInit, OnDestroy {
         /* onComplete */ () => {
           this.updatePermissions(this.restriction);
           this.updateNamesLists();
-          this.restriction = null;});
+          this.restriction = null; });
     }
   }
 
   createRestrictions(restrictionsCreation: RestrictionsCreation) {
     this.errorMessage = null;
-    console.log('createRestrictions '+JSON.stringify(restrictionsCreation));
+    console.log('createRestrictions ' + JSON.stringify(restrictionsCreation));
     this.permissionService.createRestrictions(restrictionsCreation).subscribe(
       /* happy path */ (r) => '',
-      /* error path */ (e) => this.errorMessage = e);
+      /* error path */ (e) => this.errorMessage = e,
+      /* onComplete */ () => {
+        this.create = false;
+        this.reloadAssignedRestrictions(restrictionsCreation); });
   }
 
   addRestriction() {
@@ -172,6 +176,14 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   getPermissions(): Permission[] {
     return this.delegationMode ? this.assignablePermissions : this.permissions;
+  }
+
+  private reloadAssignedRestrictions(restrictionsCreation: RestrictionsCreation) {
+    if (restrictionsCreation.roleName) {
+      this.getRoleWithRestrictions(restrictionsCreation.roleName);
+    } else if (restrictionsCreation.userNames.length === 1) {
+      this.getUserWithRestrictions(restrictionsCreation.userNames[0]);
+    }
   }
 
   private updateNamesLists() {
@@ -185,11 +197,12 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   private isExistingRole(roleName: string) {
+    console.log('isExistingRole? ' + roleName);
     return roleName !== null && this.roleNames.indexOf(roleName.toLowerCase()) > -1;
   }
 
   private isExistingUser(userName: string) {
-    console.log('isExistingUser ' + userName);
+    console.log('isExistingUser? ' + userName);
     return userName !== null && this.userNames.indexOf(userName.toLowerCase()) > -1;
   }
 

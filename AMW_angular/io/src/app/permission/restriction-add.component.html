@@ -6,18 +6,19 @@
       <label for="selectPermissions" class="col-sm-3 control-label">Permission</label>
       <div class="col-sm-9">
         <ng-select id="selectPermissions" [items]="permissions" bindLabel="name" bindValue="name" placeholder=""
-                   multiple="true" [disableVirtualScroll]="true" [(ngModel)]="selectedPermissionNames">
+                   multiple="true" [disableVirtualScroll]="true" [(ngModel)]="selectedPermissionNames" (change)="defineAvailableOptions()">
         </ng-select>
       </div>
     </div>
 
-    <ng-container *ngIf="selectedPermissionNames.length > 0">
+    <ng-container *ngIf="selectedPermissionNames.length > 0 && !onlyGlobal">
 
       <div class="form-group">
         <label class="col-sm-3 control-label">Action</label>
         <div class="col-sm-9">
-          <ng-container *ngFor="let action of actions">
-            <label class="checkbox-inline"><input type="checkbox" [(ngModel)]="action.selected">&nbsp;{{action.name}}</label>
+          <ng-container *ngFor="let action of getAvailableActions()">
+            <label class="checkbox-inline"><input type="checkbox" [attr.disabled]="action.disabled ? '' : null"
+                                                  [(ngModel)]="action.selected">&nbsp;{{action.name}}</label>
           </ng-container>
         </div>
       </div>
