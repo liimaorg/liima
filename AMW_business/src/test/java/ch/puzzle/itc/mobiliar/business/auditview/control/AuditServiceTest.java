@@ -108,52 +108,25 @@ public class AuditServiceTest {
     public void shouldSetResourceTypeIdInThreadLocal() {
         // given
         int resourceTypeId = 700;
-        int contextId = 1;
 
         // when
-        auditService.setResourceTypeIdInThreadLocal(resourceTypeId, contextId);
+        auditService.setResourceTypeIdInThreadLocal(resourceTypeId);
 
         // then
         MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(resourceTypeId));
     }
 
-    @Test
-    public void shouldSetContextIdInThreadLocalDuringSetResourceTypeIdInThreadLocal() {
-        // given
-        int resourceTypeId = 700;
-        int contextId = 9;
-
-        // when
-        auditService.setResourceTypeIdInThreadLocal(resourceTypeId, contextId);
-
-        // then
-        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID), is(contextId));
-    }
 
     @Test
     public void shouldSetResourceIdInThreadLocal() {
         // given
         int resourceTypeId = 700;
-        int contextId = 1;
 
         // when
-        auditService.setResourceIdInThreadLocal(resourceTypeId, contextId);
+        auditService.setResourceIdInThreadLocal(resourceTypeId);
 
         // then
         MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(resourceTypeId));
-    }
-
-    @Test
-    public void shouldSetContextIdInThreadLocalDuringSetResourceIdInThreadLocal() {
-        // given
-        int resourceId = 700;
-        int contextId = 9;
-
-        // when
-        auditService.setResourceIdInThreadLocal(resourceId, contextId);
-
-        // then
-        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID), is(contextId));
     }
 
     @Test
@@ -162,28 +135,12 @@ public class AuditServiceTest {
         int resourceTypeId = 700;
         ResourceTypeEntity resourceType = new ResourceTypeEntity();
         resourceType.setId(resourceTypeId);
-        int contextId = 1;
 
         // when
-        auditService.storeIdInThreadLocalForAuditLog(resourceType, contextId);
+        auditService.storeIdInThreadLocalForAuditLog(resourceType);
 
         // then
         MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(resourceTypeId));
-    }
-
-    @Test
-    public void shouldSetContextIdInThreadLocalDuringStoreIdInThreadLocalForAuditLog_resourceType() {
-        // given
-        int resourceTypeId = 700;
-        ResourceTypeEntity resourceType = new ResourceTypeEntity();
-        resourceType.setId(resourceTypeId);
-        int contextId = 9;
-
-        // when
-        auditService.storeIdInThreadLocalForAuditLog(resourceType, contextId);
-
-        // then
-        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID), is(contextId));
     }
 
     @Test
@@ -192,28 +149,12 @@ public class AuditServiceTest {
         int resourceId = 700;
         ResourceEntity resource = new ResourceEntity();
         resource.setId(resourceId);
-        int contextId = 1;
 
         // when
-        auditService.storeIdInThreadLocalForAuditLog(resource, contextId);
+        auditService.storeIdInThreadLocalForAuditLog(resource);
 
         // then
         MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(resourceId));
-    }
-
-    @Test
-    public void shouldSetContextIdInThreadLocalDuringStoreIdInThreadLocalForAuditLog_resource() {
-        // given
-        int resourceId = 700;
-        ResourceEntity resource = new ResourceEntity();
-        resource.setId(resourceId);
-        int contextId = 1;
-
-        // when
-        auditService.storeIdInThreadLocalForAuditLog(resource, contextId);
-
-        // then
-        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID), is(contextId));
     }
 
     @Test

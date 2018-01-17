@@ -20,21 +20,18 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class ResourceRepository {
 
@@ -74,6 +71,16 @@ public class ResourceRepository {
                         "select r from ResourceEntity r left join fetch r.consumedMasterRelations rel left join fetch rel.slaveResource where LOWER(r.name)=:name and r.release=:release",
                         ResourceEntity.class)
                 .setParameter("name", name.toLowerCase()).setParameter("release", release).getSingleResult();
+    }
+
+    public ResourceEntity getResourceByIdWithRelations(int resourceId) {
+        String qlString = "SELECT r FROM ResourceEntity r " +
+                          "LEFT JOIN FETCH r.consumedMasterRelations rel " +
+                          "LEFT JOIN FETCH rel.slaveResource " +
+                          "WHERE LOWER(r.id)=:resourceId";
+        return entityManager.createQuery(qlString,ResourceEntity.class)
+                .setParameter("resourceId", resourceId)
+                .getSingleResult();
     }
 
     public List<ResourceEntity> getResourcesByGroupNameWithRelations(String name) {

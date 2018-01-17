@@ -244,7 +244,7 @@ public class AuditService {
                 .value(newValueForAuditLog)
                 .type(entityForRevision.getType())
                 .name(entityForRevision.getNameForAuditLog())
-                .editContextName(getContextName(revEntity.getEditContextId()))
+                .editContextName(getContextName(auditViewEntryContainer.getEditContextId()))
                 .relation(auditViewEntryContainer.getRelationName())
                 .build();
     }
@@ -280,29 +280,23 @@ public class AuditService {
                     .getResultList();
     }
 
-    public void storeIdInThreadLocalForAuditLog(HasContexts<?> hasContexts, int editingContext) {
+    public void storeIdInThreadLocalForAuditLog(HasContexts<?> hasContexts) {
         if (hasContexts instanceof ResourceTypeEntity) {
-            setResourceTypeIdInThreadLocal(hasContexts.getId(), editingContext);
+            setResourceTypeIdInThreadLocal(hasContexts.getId());
         } else if (hasContexts instanceof ResourceEntity) {
-            setResourceIdInThreadLocal(hasContexts.getId(), editingContext);
+            setResourceIdInThreadLocal(hasContexts.getId());
         } else if (hasContexts instanceof ResourceRelationTypeEntity) {
             // TODO apollari
             ThreadLocalUtil.setThreadVariable("ThreadLocalUtil.KEY_RESOURCE_RELATION_TYPE_ID", hasContexts.getId());
         }
     }
 
-    public void setResourceTypeIdInThreadLocal(int resourceTypeId, int editingContextId) {
+    public void setResourceTypeIdInThreadLocal(int resourceTypeId) {
         ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID, resourceTypeId);
-        setContextIdInThreadLocal(editingContextId);
     }
 
-    public void setResourceIdInThreadLocal(int resourceId, int editingContextId) {
+    public void setResourceIdInThreadLocal(int resourceId) {
         ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID, resourceId);
-        setContextIdInThreadLocal(editingContextId);
-    }
-
-    private void setContextIdInThreadLocal(int editingContext) {
-        ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID, editingContext);
     }
 
     /**

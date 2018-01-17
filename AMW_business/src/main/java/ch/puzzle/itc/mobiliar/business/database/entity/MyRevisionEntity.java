@@ -71,9 +71,4 @@ public class MyRevisionEntity {
     @Getter
     @Setter
     private Integer resourceTypeId;
-
-    @Getter
-    @Setter
-    private Integer editContextId;
-
 }

@@ -325,7 +325,7 @@ public class PropertyEditor {
 
         if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, editedResource, editedResource.getResourceType())) {
             propertyValueService.saveProperties(context, editedResource, resourceProperties);
-            auditService.setResourceIdInThreadLocal(editedResource.getId(), contextId);
+            auditService.setResourceIdInThreadLocal(editedResource.getId());
             if (relation != null) {
                 handleRelations(relation, relationProperties, relationIdentifier, context, editedResource);
             }

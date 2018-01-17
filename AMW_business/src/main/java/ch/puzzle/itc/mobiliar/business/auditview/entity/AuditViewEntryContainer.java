@@ -11,14 +11,11 @@ public class AuditViewEntryContainer {
     RevisionType revisionType;
 
     String relationName;
+    int editContextId;
 
     public AuditViewEntryContainer(Object[] enversTriple) {
        this.entityForRevision = (Auditable) enversTriple[0];
        this.revEntity = (MyRevisionEntity) enversTriple[1];
        this.revisionType = (RevisionType) enversTriple[2];
-    }
-
-    public void setEditContextId(int contextId) {
-        this.revEntity.setEditContextId(contextId);
     }
 }

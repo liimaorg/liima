@@ -24,10 +24,4 @@
         </addColumn>
     </changeSet>
 
-    <changeSet author="apollari" id="editContextIdInRevInfo">
-        <addColumn tableName="TAMW_REVINFO">
-            <column name="EDITCONTEXTID" type="INTEGER"/>
-        </addColumn>
-    </changeSet>
-
 </databaseChangeLog>

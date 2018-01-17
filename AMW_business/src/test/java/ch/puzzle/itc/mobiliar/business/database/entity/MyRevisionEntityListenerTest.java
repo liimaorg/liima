@@ -45,8 +45,8 @@ public class MyRevisionEntityListenerTest {
     public void shouldDestroyThreadLocalVariables() {
         // given
         MyRevisionEntity revisionEntity = new MyRevisionEntity();
-        auditService.setResourceTypeIdInThreadLocal(100, 8);
-        auditService.setResourceIdInThreadLocal(50, 5);
+        auditService.setResourceTypeIdInThreadLocal(100);
+        auditService.setResourceIdInThreadLocal(50);
 
         // when
         liimaRevisionListener.newRevision(revisionEntity);
@@ -54,7 +54,6 @@ public class MyRevisionEntityListenerTest {
         // then
         assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(nullValue()));
         assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(nullValue()));
-        assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_EDIT_CONTEXT_ID), is(nullValue()));
     }
 
     @Test
@@ -62,7 +61,7 @@ public class MyRevisionEntityListenerTest {
         // given
         int resourceId = 44;
         MyRevisionEntity revisionEntity = new MyRevisionEntity();
-        auditService.setResourceIdInThreadLocal(resourceId, 5);
+        auditService.setResourceIdInThreadLocal(resourceId);
 
         // when
         liimaRevisionListener.newRevision(revisionEntity);
@@ -77,7 +76,7 @@ public class MyRevisionEntityListenerTest {
         // given
         int resourceTypeId = 2;
         MyRevisionEntity revisionEntity = new MyRevisionEntity();
-        auditService.setResourceTypeIdInThreadLocal(resourceTypeId, 5);
+        auditService.setResourceTypeIdInThreadLocal(resourceTypeId);
 
         // when
         liimaRevisionListener.newRevision(revisionEntity);
@@ -86,19 +85,4 @@ public class MyRevisionEntityListenerTest {
         assertThat(revisionEntity.getResourceId(), is(nullValue()));
         assertThat(revisionEntity.getResourceTypeId(), is(resourceTypeId));
     }
-
-    @Test
-    public void shouldSetContextIdOnRevisionEntity() {
-        // given
-        int contextId = 3;
-        MyRevisionEntity revisionEntity = new MyRevisionEntity();
-        auditService.setResourceTypeIdInThreadLocal(2, contextId);
-
-        // when
-        liimaRevisionListener.newRevision(revisionEntity);
-
-        // then
-        assertThat(revisionEntity.getEditContextId(), is(contextId));
-    }
-
 }
