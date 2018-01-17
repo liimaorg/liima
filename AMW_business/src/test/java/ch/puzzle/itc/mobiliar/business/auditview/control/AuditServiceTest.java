@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static junit.framework.TestCase.assertNull;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -238,6 +239,25 @@ public class AuditServiceTest {
         AuditViewEntry entryInList = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
                 .oldValue(oldValue)
                 .value(newValue)
+                .build();
+        Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
+        allAuditViewEntries.put(entryInList.hashCode(), entryInList);
+
+        // when
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
+
+        // then
+        assertThat(relevant, is(false));
+    }
+
+    @Test
+    public void shouldReturnTrueIfRevisionTypeIsAdd(){
+        // given
+        String value = EMPTY;
+        MyRevisionEntity revisionEntity = new MyRevisionEntity();
+        AuditViewEntry entryInList = AuditViewEntry.builder(revisionEntity, RevisionType.ADD)
+                .oldValue(value)
+                .value(value)
                 .build();
         Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
         allAuditViewEntries.put(entryInList.hashCode(), entryInList);

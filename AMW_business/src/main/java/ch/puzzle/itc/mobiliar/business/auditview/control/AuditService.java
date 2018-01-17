@@ -50,6 +50,7 @@ import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static org.hibernate.envers.RevisionType.ADD;
 import static org.hibernate.envers.RevisionType.DEL;
 
 public class AuditService {
@@ -232,6 +233,9 @@ public class AuditService {
         }
         if (allAuditViewEntries.get(entry.hashCode()) != null) {
             return false;
+        }
+        if (entry.getMode() == ADD) {
+            return true;
         }
         return !StringUtils.equals(entry.getOldValue(), entry.getValue());
     }
