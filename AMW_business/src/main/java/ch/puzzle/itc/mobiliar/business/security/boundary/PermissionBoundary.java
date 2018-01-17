@@ -478,124 +478,58 @@ public class PermissionBoundary implements Serializable {
         if (resourceGroupIds != null && !resourceGroupIds.isEmpty() && resourceTypeNames != null && !resourceTypeNames.isEmpty()) {
             throw new AMWException("Only ResourceGroupId(s) OR ResourceTypeName(s) must be set");
         }
+        if (userNames == null) {
+            userNames = new ArrayList();
+        }
+        if (resourceGroupIds == null) {
+            resourceGroupIds = new ArrayList();
+        }
+        if (resourceTypeNames == null) {
+            resourceTypeNames = new ArrayList();
+        }
+        if (contextNames == null || contextNames.isEmpty()) {
+            contextNames = new ArrayList();
+            contextNames.add(null);
+        }
+
         for (String permissionName : permissionNames) {
             for (Action action : actions) {
                 if (roleName != null) {
-                    if (resourceGroupIds != null && !resourceGroupIds.isEmpty()) {
-                        for (Integer resourceGroupId : resourceGroupIds) {
-                            if (contextNames == null || contextNames.isEmpty()) {
-                                RestrictionEntity restriction = new RestrictionEntity();
-                                if (createRestriction(roleName, null, permissionName, resourceGroupId, null,
-                                        resourceTypePermission, null, action, restriction) != null) {
-                                    count++;
-                                }
-                            } else {
-                                for (String contextName : contextNames) {
-                                    RestrictionEntity restriction = new RestrictionEntity();
-                                    if (createRestriction(roleName, null, permissionName, resourceGroupId, null,
-                                            resourceTypePermission, contextName, action, restriction) != null) {
-                                        count++;
-                                    }
-                                }
-                            }
-                        }
+                    if (resourceGroupIds.isEmpty() && resourceTypeNames.isEmpty()) {
+                        count += createRestrictionPerContext(roleName, null, permissionName, null, null, resourceTypePermission, contextNames, action);
                     } else {
-                        if (resourceTypeNames != null && !resourceTypeNames.isEmpty()) {
-                            for (String resourceTypeName : resourceTypeNames) {
-                                if (contextNames == null || contextNames.isEmpty()) {
-                                    RestrictionEntity restriction = new RestrictionEntity();
-                                    if (createRestriction(roleName, null, permissionName, null, resourceTypeName,
-                                            resourceTypePermission, null, action, restriction) != null) {
-                                        count++;
-                                    }
-                                } else {
-                                    for (String contextName : contextNames) {
-                                        RestrictionEntity restriction = new RestrictionEntity();
-                                        if (createRestriction(roleName, null, permissionName, null, resourceTypeName,
-                                                resourceTypePermission, contextName, action, restriction) != null) {
-                                            count++;
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            if (contextNames == null || contextNames.isEmpty()) {
-                                RestrictionEntity restriction = new RestrictionEntity();
-                                if (createRestriction(roleName, null, permissionName, null, null,
-                                        resourceTypePermission, null, action, restriction) != null) {
-                                    count++;
-                                }
-                            } else {
-                                for (String contextName : contextNames) {
-                                    RestrictionEntity restriction = new RestrictionEntity();
-                                    if (createRestriction(roleName, null, permissionName, null, null,
-                                            resourceTypePermission, contextName, action, restriction) != null) {
-                                        count++;
-                                    }
-                                }
-                            }
+                        for (Integer resourceGroupId : resourceGroupIds) {
+                            count += createRestrictionPerContext(roleName, null, permissionName, resourceGroupId, null, resourceTypePermission, contextNames, action);
+                        }
+                        for (String resourceTypeName : resourceTypeNames) {
+                            count += createRestrictionPerContext(roleName, null, permissionName, null, resourceTypeName, resourceTypePermission, contextNames, action);
                         }
                     }
                 }
-                if (userNames != null && !userNames.isEmpty()) {
-                    for (String userName : userNames) {
-                        if (resourceGroupIds != null && !resourceGroupIds.isEmpty()) {
-                            for (Integer resourceGroupId : resourceGroupIds) {
-                                if (contextNames == null ||contextNames.isEmpty()) {
-                                    RestrictionEntity restriction = new RestrictionEntity();
-                                    if (createRestriction(null, userName, permissionName, resourceGroupId, null,
-                                            resourceTypePermission, null, action, restriction) != null) {
-                                        count++;
-                                    }
-                                } else {
-                                    for (String contextName : contextNames) {
-                                        RestrictionEntity restriction = new RestrictionEntity();
-                                        if (createRestriction(null, userName, permissionName, resourceGroupId, null,
-                                                resourceTypePermission, contextName, action, restriction) != null) {
-                                            count++;
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            if (resourceTypeNames != null && !resourceTypeNames.isEmpty()) {
-                                for (String resourceTypeName : resourceTypeNames) {
-                                    if (contextNames == null || contextNames.isEmpty()) {
-                                        RestrictionEntity restriction = new RestrictionEntity();
-                                        if (createRestriction(null, userName, permissionName, null, resourceTypeName,
-                                                resourceTypePermission, null, action, restriction) != null) {
-                                            count++;
-                                        }
-                                    } else {
-                                        for (String contextName : contextNames) {
-                                            RestrictionEntity restriction = new RestrictionEntity();
-                                            if (createRestriction(null, userName, permissionName, null, resourceTypeName,
-                                                    resourceTypePermission, contextName, action, restriction) != null) {
-                                                count++;
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                if (contextNames == null || contextNames.isEmpty()) {
-                                    RestrictionEntity restriction = new RestrictionEntity();
-                                    if (createRestriction(null, userName, permissionName, null, null,
-                                            resourceTypePermission, null, action, restriction) != null) {
-                                        count++;
-                                    }
-                                } else {
-                                    for (String contextName : contextNames) {
-                                        RestrictionEntity restriction = new RestrictionEntity();
-                                        if (createRestriction(null, userName, permissionName, null, null,
-                                                resourceTypePermission, contextName, action, restriction) != null) {
-                                            count++;
-                                        }
-                                    }
-                                }
-                            }
+                for (String userName : userNames) {
+                    if (resourceGroupIds.isEmpty() && resourceTypeNames.isEmpty()) {
+                        count += createRestrictionPerContext(null, userName, permissionName, null, null, resourceTypePermission, contextNames, action);
+                    } else {
+                        for (Integer resourceGroupId : resourceGroupIds) {
+                            count += createRestrictionPerContext(null, userName, permissionName, resourceGroupId, null, resourceTypePermission, contextNames, action);
+                        }
+                        for (String resourceTypeName : resourceTypeNames) {
+                            count += createRestrictionPerContext(null, userName, permissionName, null, resourceTypeName, resourceTypePermission, contextNames, action);
                         }
                     }
                 }
+            }
+        }
+        return count;
+    }
+
+    private int createRestrictionPerContext(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName, ResourceTypePermission resourceTypePermission, List<String> contextNames, Action action) throws AMWException {
+        int count = 0;
+        for (String contextName : contextNames) {
+            RestrictionEntity restriction = new RestrictionEntity();
+            if (createRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName,
+                    resourceTypePermission, contextName, action, restriction) != null) {
+                count++;
             }
         }
         return count;

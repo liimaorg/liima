@@ -1,3 +1,14 @@
+# v1.16.1
+This release contains bug fixes and one new feature.
+
+## New featrue
+* Rest: multiple permissions in one post [#258](https://github.com/liimaorg/liima/issues/258)
+  * Preparation for the new create permission GUI: Permission GUI: make it simple to create multiple permissions [#259](https://github.com/liimaorg/liima/issues/259)
+
+## Bug fixes
+* Add relation REST endpoint throws NullPointer exception [#320](https://github.com/liimaorg/liima/issues/320)
+* Error: "Was not able to decrypt properties" after setting encrypted property over REST [#322](https://github.com/liimaorg/liima/issues/322)
+
 # v1.16.0
 This release adds some new features, fixes bugs and updates the used JavaScript libraries. Highlight is the new configuration overview that shows where on a resource properties have been overwritten.
 
