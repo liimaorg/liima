@@ -25,6 +25,7 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.envers.Audited;
 
@@ -44,57 +45,57 @@ public class ConsumedResourceRelationEntity extends AbstractResourceRelationEnti
     // IMPORTANT! Whenever a new field (not relation to other entity) is added then this field must be added to foreignableFieldEquals method!!!
 
 
-	@OneToMany(mappedBy = "consumedResourceRelation", cascade = ALL)
-	private Set<ResourceRelationContextEntity> contexts;
+    @OneToMany(mappedBy = "consumedResourceRelation", cascade = ALL)
+    private Set<ResourceRelationContextEntity> contexts;
 
 
-	/**
-	 * Creates new entity object with default system owner
-	 */
+    /**
+     * Creates new entity object with default system owner
+     */
 
-	public ConsumedResourceRelationEntity() {
-		super(ForeignableOwner.getSystemOwner());
-	}
+    public ConsumedResourceRelationEntity() {
+        super(ForeignableOwner.getSystemOwner());
+    }
 
-	public ConsumedResourceRelationEntity(ForeignableOwner owner) {
-		super(Objects.requireNonNull(owner, "Owner must not be null"));
-	}
-	
-	@Override
-	public Set<ResourceRelationContextEntity> getContexts() {
-		return contexts;
-	}
+    public ConsumedResourceRelationEntity(ForeignableOwner owner) {
+        super(Objects.requireNonNull(owner, "Owner must not be null"));
+    }
 
-	@Override
-	public void setContexts(Set<ResourceRelationContextEntity> contexts) {
-		this.contexts = contexts;
-	}
+    @Override
+    public Set<ResourceRelationContextEntity> getContexts() {
+        return contexts;
+    }
 
-	@Override
-	public String toString() {
-		return "ConsumedResourceRelationEntity [getId()=" + getId() + ", getMasterResource()=" + getMasterResource() + ", getSlaveResource()="
-				+ getSlaveResource() + "]";
-	}
+    @Override
+    public void setContexts(Set<ResourceRelationContextEntity> contexts) {
+        this.contexts = contexts;
+    }
 
-	public String getMasterResourceName() {
-		return getMasterResource().getName();
-	}
+    @Override
+    public String toString() {
+        return "ConsumedResourceRelationEntity [getId()=" + getId() + ", getMasterResource()=" + getMasterResource() + ", getSlaveResource()="
+                + getSlaveResource() + "]";
+    }
 
-	public Integer getMasterResourceId() {
-		return getMasterResource().getId();
-	}
+    public String getMasterResourceName() {
+        return getMasterResource().getName();
+    }
 
-	public Integer getSlaveResourceTypeId() {
-		return this.getSlaveResource().getResourceType().getId();				
-	}
+    public Integer getMasterResourceId() {
+        return getMasterResource().getId();
+    }
 
-	public String getRelationIdentifier() {
-		return getIdentifier() != null ? getIdentifier() : getResourceRelationType().getIdentifierOrTypeBName();
-	}
+    public Integer getSlaveResourceTypeId() {
+        return this.getSlaveResource().getResourceType().getId();
+    }
 
-	public String getMasterRelease() {
-		return getMasterResource().getRelease().getName();
-	}
+    public String getRelationIdentifier() {
+        return getIdentifier() != null ? getIdentifier() : getResourceRelationType().getIdentifierOrTypeBName();
+    }
+
+    public String getMasterRelease() {
+        return getMasterResource().getRelease().getName();
+    }
 
     @Override
     protected int foreignableRelationFieldHashCode() {
@@ -102,69 +103,68 @@ public class ConsumedResourceRelationEntity extends AbstractResourceRelationEnti
         return hcb.toHashCode();
     }
 
-	@Override
-	public ConsumedResourceRelationEntity getCopy(AbstractResourceRelationEntity target, CopyUnit copyUnit) {
-		boolean isMasterRelation = isMasterResource(copyUnit.getOriginResource());
-		// only Copy AMW owned Relations and the target is null, if target is set we need to proceed to also add values
-		if(copyUnit.getMode() == CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR
-				&& !ForeignableOwner.getSystemOwner().isSameOwner(this.getOwner()) && target == null){
-			return null;
-		}
+    @Override
+    public ConsumedResourceRelationEntity getCopy(AbstractResourceRelationEntity target, CopyUnit copyUnit) {
+        boolean isMasterRelation = isMasterResource(copyUnit.getOriginResource());
+        // only Copy AMW owned Relations and the target is null, if target is set we need to proceed to also add values
+        if (copyUnit.getMode() == CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR
+                && !ForeignableOwner.getSystemOwner().isSameOwner(this.getOwner()) && target == null) {
+            return null;
+        }
 
-		// slave relations will be only copied in RELEASE mode
-		if(isMasterRelation || copyUnit.getMode() == CopyResourceDomainService.CopyMode.RELEASE) {
-			ConsumedResourceRelationEntity consumedTarget;
-			if (copyUnit.getMode() == CopyResourceDomainService.CopyMode.COPY && copyUnit.getOriginResource().getResourceType().isApplicationServerResourceType()
-					&& getSlaveResource().getResourceType().isApplicationResourceType()) {
-				// an application can only belong to one as - do not copy the as->app relation
-				copyUnit.getResult().addSkippedConsumedRelation(getId(),
-						getMasterResource().getName(), getSlaveResource().getName(),
-						getIdentifier(), getMasterResource().getResourceType().getName(),
-						getSlaveResource().getResourceType().getName());
-				return null;
-			}
+        // slave relations will be only copied in RELEASE mode
+        if (isMasterRelation || copyUnit.getMode() == CopyResourceDomainService.CopyMode.RELEASE) {
+            ConsumedResourceRelationEntity consumedTarget;
+            if (copyUnit.getMode() == CopyResourceDomainService.CopyMode.COPY && copyUnit.getOriginResource().getResourceType().isApplicationServerResourceType()
+                    && getSlaveResource().getResourceType().isApplicationResourceType()) {
+                // an application can only belong to one as - do not copy the as->app relation
+                copyUnit.getResult().addSkippedConsumedRelation(getId(),
+                        getMasterResource().getName(), getSlaveResource().getName(),
+                        getIdentifier(), getMasterResource().getResourceType().getName(),
+                        getSlaveResource().getResourceType().getName());
+                return null;
+            }
 
-			if (target == null) {
-				consumedTarget = new ConsumedResourceRelationEntity();
-			} else {
-				consumedTarget = (ConsumedResourceRelationEntity) target;
-			}
+            if (target == null) {
+                consumedTarget = new ConsumedResourceRelationEntity();
+            } else {
+                consumedTarget = (ConsumedResourceRelationEntity) target;
+            }
 
-			consumedTarget.setIdentifier(getIdentifier());
+            consumedTarget.setIdentifier(getIdentifier());
 
-			if (isMasterRelation) {
-				// master relation
-				consumedTarget.setMasterResource(copyUnit.getTargetResource());
-				if(CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR != copyUnit.getMode()
-						|| consumedTarget.getSlaveResource() == null){
-					consumedTarget.setSlaveResource(getSlaveResource());
-				}
-			} else {
-				// slave relation
-				consumedTarget.setMasterResource(getMasterResource());
-				consumedTarget.setSlaveResource(copyUnit.getTargetResource());
-			}
-			consumedTarget.setResourceRelationType(getResourceRelationType());
-			CopyHelper.copyForeignable(consumedTarget, this, copyUnit);
-			
-			return consumedTarget;
-		}
-		return null;
-	}
+            if (isMasterRelation) {
+                // master relation
+                consumedTarget.setMasterResource(copyUnit.getTargetResource());
+                if (CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR != copyUnit.getMode()
+                        || consumedTarget.getSlaveResource() == null) {
+                    consumedTarget.setSlaveResource(getSlaveResource());
+                }
+            } else {
+                // slave relation
+                consumedTarget.setMasterResource(getMasterResource());
+                consumedTarget.setSlaveResource(copyUnit.getTargetResource());
+            }
+            consumedTarget.setResourceRelationType(getResourceRelationType());
+            CopyHelper.copyForeignable(consumedTarget, this, copyUnit);
 
-	@Override
-	public String getNewValueForAuditLog() {
-		return String
-				.format("RelationName: \"%s\"", getIdentifier());
-	}
+            return consumedTarget;
+        }
+        return null;
+    }
 
-	@Override
-	public String getType() {
-		return Auditable.TYPE_CONSUMED_RESOURCE_RELATION;
-	}
+    @Override
+    public String getNewValueForAuditLog() {
+        return getIdentifier() == null ? StringUtils.EMPTY : String.format("RelationName: \"%s\"", getIdentifier());
+    }
 
-	@Override
-	public String getNameForAuditLog() {
-		return String.format("Consumed Resource Type: '%s'", this.getSlaveResource().getName());
-	}
+    @Override
+    public String getType() {
+        return Auditable.TYPE_CONSUMED_RESOURCE_RELATION;
+    }
+
+    @Override
+    public String getNameForAuditLog() {
+        return String.format("Consumed Resource: '%s'", this.getSlaveResource().getName());
+    }
 }
