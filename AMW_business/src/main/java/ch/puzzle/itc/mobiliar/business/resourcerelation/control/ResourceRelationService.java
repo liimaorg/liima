@@ -24,6 +24,7 @@
  */
 package ch.puzzle.itc.mobiliar.business.resourcerelation.control;
 
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -83,6 +84,9 @@ public class ResourceRelationService implements Serializable{
     @Inject
     ResourceDependencyResolverService resourceDependencyResolverService;
 
+    @Inject
+    AuditService auditService;
+
 	@Inject
 	public Logger log;
 
@@ -131,6 +135,7 @@ public class ResourceRelationService implements Serializable{
 			String typeIdentifier, ForeignableOwner changingOwner) throws ElementAlreadyExistsException, ResourceNotFoundException {
 		ResourceEntity master = entityManager.find(ResourceEntity.class, masterId);
 		ResourceGroupEntity slaveGroup = entityManager.find(ResourceGroupEntity.class, slaveGroupId);
+        auditService.setResourceIdInThreadLocal(master.getId());
 
 		String slaveResourceType = slaveGroup.getResourceType().getName();
 		if (DefaultResourceTypeDefinition.NODE.name().equals(slaveResourceType)) {
