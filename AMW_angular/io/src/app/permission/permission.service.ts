@@ -82,8 +82,14 @@ export class PermissionService {
       .catch(handleError);
   }
 
-  createRestrictions(restrictionsCreation: RestrictionsCreation) {
-    return this.http.post(`${this.baseUrl}/permissions/restrictions/multi/`, restrictionsCreation, {headers: this.postHeaders()})
+  createRestrictions(restrictionsCreation: RestrictionsCreation, delegation: boolean) {
+    const params: URLSearchParams = new URLSearchParams();
+    params.set('delegation', delegation ? 'true' : 'false');
+    const options = new RequestOptions({
+      search: params,
+      headers: this.postHeaders()
+    });
+    return this.http.post(`${this.baseUrl}/permissions/restrictions/multi/`, restrictionsCreation, options)
       .map(this.extractPayload)
       .catch(handleError);
   }

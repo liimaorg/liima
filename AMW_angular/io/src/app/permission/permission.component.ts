@@ -160,7 +160,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   createRestrictions(restrictionsCreation: RestrictionsCreation) {
     this.errorMessage = null;
     console.log('createRestrictions ' + JSON.stringify(restrictionsCreation));
-    this.permissionService.createRestrictions(restrictionsCreation).subscribe(
+    this.permissionService.createRestrictions(restrictionsCreation, this.delegationMode).subscribe(
       /* happy path */ (r) => '',
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => {
