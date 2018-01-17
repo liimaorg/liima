@@ -786,15 +786,15 @@ public class PropertyEditor {
         throw new NoResultException("Could not find property " + propertyName);
     }
 
-    public Map<String, String> getPropertyOverviewForResource(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    public List<PropertyEditingService.DifferingProperty> getPropertyOverviewForResource(ResourceEntity resourceEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         return propertyEditingService.getPropertyOverviewForResource(resourceEntity, property, relevantContexts);
     }
 
-    public Map<String, String> getPropertyOverviewForResourceType(ResourceTypeEntity resourceTypeEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    public List<PropertyEditingService.DifferingProperty> getPropertyOverviewForResourceType(ResourceTypeEntity resourceTypeEntity, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         return propertyEditingService.getPropertyOverviewForResourceType(resourceTypeEntity, property, relevantContexts);
     }
 
-    public Map<String, String> getPropertyOverviewForRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
+    public List<PropertyEditingService.DifferingProperty> getPropertyOverviewForRelation(ResourceEditRelation relation, ResourceEditProperty property, List<ContextEntity> relevantContexts) {
         return propertyEditingService.getPropertyOverviewForRelation(relation, property, relevantContexts);
     }
 }

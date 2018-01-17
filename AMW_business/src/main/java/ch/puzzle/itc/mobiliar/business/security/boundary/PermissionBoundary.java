@@ -45,7 +45,6 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -424,14 +423,14 @@ public class PermissionBoundary implements Serializable {
         Integer resourceGroupId = resource.getResourceGroup().getId();
         if (resourceGroupId != null && getUserName() != null
                 && permissionService.hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE)) {
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_AMWFUNCTION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_PROPERTY_DECRYPT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_TEMPLATE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(null, getUserName(), Permission.DEPLOYMENT.name(), resourceGroupId, null, null, null, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_AMWFUNCTION.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_PROPERTY_DECRYPT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEMPLATE.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            createAutoAssignedRestriction(getUserName(), Permission.DEPLOYMENT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
         }
     }
 
@@ -457,6 +456,83 @@ public class PermissionBoundary implements Serializable {
                     contextName, action, restriction);
         }
         throw new AMWException("No permission to create this permission");
+    }
+
+    /**
+     * Creates multiple RestrctionEntites and returns how many that have been created
+     *
+     * @param roleName max one Role name
+     * @param userNames none or more User names
+     * @param permissionNames at least one Permission name
+     * @param resourceGroupIds none or more ResourceGroup ids
+     * @param resourceTypeNames none or more ResourceType names
+     * @param resourceTypePermission max one ResourceTypePermission
+     * @param contextNames none or more Context names
+     * @param actions at least one Action
+     * @return int number of created Restrictions
+     */
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.CREATE)
+    public int createMultipleRestrictions(String roleName, List<String> userNames, List<String> permissionNames, List<Integer> resourceGroupIds, List<String> resourceTypeNames,
+                                              ResourceTypePermission resourceTypePermission, List<String> contextNames, List<Action> actions) throws AMWException {
+        int count = 0;
+        if (resourceGroupIds != null && !resourceGroupIds.isEmpty() && resourceTypeNames != null && !resourceTypeNames.isEmpty()) {
+            throw new AMWException("Only ResourceGroupId(s) OR ResourceTypeName(s) must be set");
+        }
+        if (userNames == null) {
+            userNames = new ArrayList();
+        }
+        if (resourceGroupIds == null) {
+            resourceGroupIds = new ArrayList();
+        }
+        if (resourceTypeNames == null) {
+            resourceTypeNames = new ArrayList();
+        }
+        if (contextNames == null || contextNames.isEmpty()) {
+            contextNames = new ArrayList();
+            contextNames.add(null);
+        }
+
+        for (String permissionName : permissionNames) {
+            for (Action action : actions) {
+                if (roleName != null) {
+                    if (resourceGroupIds.isEmpty() && resourceTypeNames.isEmpty()) {
+                        count += createRestrictionPerContext(roleName, null, permissionName, null, null, resourceTypePermission, contextNames, action);
+                    } else {
+                        for (Integer resourceGroupId : resourceGroupIds) {
+                            count += createRestrictionPerContext(roleName, null, permissionName, resourceGroupId, null, resourceTypePermission, contextNames, action);
+                        }
+                        for (String resourceTypeName : resourceTypeNames) {
+                            count += createRestrictionPerContext(roleName, null, permissionName, null, resourceTypeName, resourceTypePermission, contextNames, action);
+                        }
+                    }
+                }
+                for (String userName : userNames) {
+                    if (resourceGroupIds.isEmpty() && resourceTypeNames.isEmpty()) {
+                        count += createRestrictionPerContext(null, userName, permissionName, null, null, resourceTypePermission, contextNames, action);
+                    } else {
+                        for (Integer resourceGroupId : resourceGroupIds) {
+                            count += createRestrictionPerContext(null, userName, permissionName, resourceGroupId, null, resourceTypePermission, contextNames, action);
+                        }
+                        for (String resourceTypeName : resourceTypeNames) {
+                            count += createRestrictionPerContext(null, userName, permissionName, null, resourceTypeName, resourceTypePermission, contextNames, action);
+                        }
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    private int createRestrictionPerContext(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName, ResourceTypePermission resourceTypePermission, List<String> contextNames, Action action) throws AMWException {
+        int count = 0;
+        for (String contextName : contextNames) {
+            RestrictionEntity restriction = new RestrictionEntity();
+            if (createRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName,
+                    resourceTypePermission, contextName, action, restriction) != null) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public boolean canDelegatePermissionsForThisResource(ResourceEntity resource, ContextEntity context) {
@@ -487,11 +563,9 @@ public class PermissionBoundary implements Serializable {
         return id;
     }
 
-    private Integer createAutoAssignedRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
-                                      ResourceTypePermission resourceTypePermission, String contextName, Action action, RestrictionEntity restriction)
+    private Integer createAutoAssignedRestriction(String userName, String permissionName, Integer resourceGroupId, Action action, RestrictionEntity restriction)
             throws AMWException {
-        validateRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
-                contextName, action, restriction);
+        validateRestriction(null, userName, permissionName, resourceGroupId, null, null, null, action, restriction);
         if (permissionService.callerHasIdenticalOrMoreGeneralRestriction(restriction)) {
             return null;
         }
@@ -646,7 +720,7 @@ public class PermissionBoundary implements Serializable {
         return permissionService.getAllCallerRestrictions();
     }
 
-    private void validateRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
+    protected void validateRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
                                      ResourceTypePermission resourceTypePermission, String contextName, Action action,
                                      RestrictionEntity restriction) throws AMWException {
         if (roleName == null && userName == null) {
@@ -678,17 +752,24 @@ public class PermissionBoundary implements Serializable {
         }
 
         if (permissionName != null) {
-            try {
-                restriction.setPermission(permissionRepository.getPermissionByName(permissionName));
-            } catch (NoResultException ne) {
+            PermissionEntity permission = permissionRepository.getPermissionByName(permissionName);
+            if (permission == null) {
                 throw new AMWException("Permission " + permissionName +  " not found.");
+            }
+            restriction.setPermission(permission);
+            if (Permission.valueOf(permission.getValue()).isOld()) {
+                resourceTypePermission = null;
+                resourceGroupId = null;
+                resourceTypeName = null;
+                contextName = null;
+                action = null;
             }
         } else {
             throw new AMWException("Missing PermissionName");
         }
 
         if (resourceTypePermission == null || resourceTypePermission.equals(ResourceTypePermission.ANY)) {
-            if (resourceGroupId != null && resourceTypeName!= null) {
+            if (resourceGroupId != null && resourceTypeName != null) {
                 throw new AMWException("Only ResourceGroup OR ResourceType must be set");
             }
         } else if (resourceGroupId != null || resourceTypeName!= null) {
