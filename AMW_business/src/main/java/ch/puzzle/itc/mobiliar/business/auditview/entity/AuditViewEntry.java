@@ -9,6 +9,8 @@ import org.hibernate.envers.RevisionType;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public class AuditViewEntry {
+    public static final String RELATION_CONSUMED_RESOURCE = "Consumed Resource";
+    public static final String RELATION_PROVIDED_RESOURCE = "Provided Resource";
     long timestamp;
     String type; // Property, Resource, ...
     String name; // PropertyName, ...

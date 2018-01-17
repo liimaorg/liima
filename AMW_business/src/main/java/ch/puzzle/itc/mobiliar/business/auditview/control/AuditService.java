@@ -145,15 +145,15 @@ public class AuditService {
         try {
             setContextIdForProperty(auditViewEntryContainer);
         } catch (NoResultException e) {
-            setContextIdForPropertyOfRelatedResource(auditViewEntryContainer);
+            setRelationNameAndContextForPropertyOfRelatedResource(auditViewEntryContainer);
         }
         return createAuditViewEntry(auditViewEntryContainer);
     }
 
-    private void setContextIdForPropertyOfRelatedResource(AuditViewEntryContainer auditViewEntryContainer) {
+    private void setRelationNameAndContextForPropertyOfRelatedResource(AuditViewEntryContainer auditViewEntryContainer) {
         try {
             setRelationNameAndContextForPropertyOfConsumedResource(auditViewEntryContainer);
-        } catch (NoResultException e2) {
+        } catch (NoResultException e) {
             setRelationNameAndContextForPropertyOfProvidedResource(auditViewEntryContainer);
         }
     }
@@ -181,36 +181,43 @@ public class AuditService {
         container.setEditContextId(resourceContextEntity.getId());
     }
 
-    private void setRelationNameAndContextForPropertyOfProvidedResource(AuditViewEntryContainer auditViewEntryContainer) {
+    private void setRelationNameAndContextForPropertyOfProvidedResource(AuditViewEntryContainer container) {
         String selectNameAndContext =
-                " SELECT provided_resource.NAME, resource_relation_context.id from TAMW_RESOURCE provided_resource " +
-                        " JOIN TAMW_PROVIDEDRESREL provided_resource_relation on provided_resource_relation.SLAVERESOURCE_ID = provided_resource.ID " +
-                        " JOIN TAMW_RESRELCONTEXT resource_relation_context on provided_resource_relation.ID = resource_relation_context.PROVIDEDRESOURCERELATION_ID " +
-                        " JOIN TAMW_RESRELCTX_PROP resource_relation_context_prop on resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
-                        " WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId";
-        executeRelatedResourceQueryAndEnrichAuditViewContainer(auditViewEntryContainer, selectNameAndContext, "Provided Resource: ");
+                " SELECT provided_resource.NAME, resource_relation_context.id " +
+                " FROM TAMW_RESOURCE provided_resource " +
+                " JOIN TAMW_PROVIDEDRESREL provided_resource_relation " +
+                "     ON provided_resource_relation.SLAVERESOURCE_ID = provided_resource.ID " +
+                " JOIN TAMW_RESRELCONTEXT resource_relation_context " +
+                "     ON provided_resource_relation.ID = resource_relation_context.PROVIDEDRESOURCERELATION_ID " +
+                " JOIN TAMW_RESRELCTX_PROP resource_relation_context_prop " +
+                "     ON resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
+                " WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId";
+        executeRelatedResourceQueryAndEnrichAuditViewContainer(container, selectNameAndContext, AuditViewEntry.RELATION_PROVIDED_RESOURCE);
     }
 
-    private void executeRelatedResourceQueryAndEnrichAuditViewContainer(AuditViewEntryContainer container, String select, String resourceType) {
+    private void setRelationNameAndContextForPropertyOfConsumedResource(AuditViewEntryContainer container) {
+        String selectNameAndContext =
+                " SELECT consumed_resource.NAME, resource_relation_context.CONTEXT_ID " +
+                " FROM TAMW_RESOURCE consumed_resource " +
+                " JOIN TAMW_CONSUMEDRESREL consumed_resource_relation " +
+                "     ON consumed_resource_relation.SLAVERESOURCE_ID = consumed_resource.ID " +
+                " JOIN TAMW_RESRELCONTEXT resource_relation_context " +
+                "     ON consumed_resource_relation.ID = resource_relation_context.CONSUMEDRESOURCERELATION_ID " +
+                " JOIN TAMW_RESRELCTX_PROP resource_relation_context_prop " +
+                "     ON resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
+                " WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId";
+        executeRelatedResourceQueryAndEnrichAuditViewContainer(container, selectNameAndContext, AuditViewEntry.RELATION_CONSUMED_RESOURCE);
+    }
+
+    private void executeRelatedResourceQueryAndEnrichAuditViewContainer(AuditViewEntryContainer container, String select, String relationName) {
         Query query = entityManager
                 .createNativeQuery(select)
                 .setParameter("propertyId", container.getEntityForRevision().getId());
         Object[] nameAndId = (Object[]) query.getSingleResult();
         String name = (String) nameAndId[0];
         int resourceContextId = ((BigDecimal) nameAndId[1]).intValue();
-        container.setRelationName(resourceType + name);
+        container.setRelationName(String.format("%s: %s", relationName, name));
         container.setEditContextId(resourceContextId);
-    }
-
-    private void setRelationNameAndContextForPropertyOfConsumedResource(AuditViewEntryContainer auditViewEntryContainer) {
-        String selectNameAndContext =
-                " SELECT consumed_resource.NAME, resource_relation_context.CONTEXT_ID " +
-                " FROM TAMW_RESOURCE consumed_resource " +
-                " JOIN TAMW_CONSUMEDRESREL consumed_resource_relation on consumed_resource_relation.SLAVERESOURCE_ID = consumed_resource.ID " +
-                " JOIN TAMW_RESRELCONTEXT resource_relation_context on consumed_resource_relation.ID = resource_relation_context.CONSUMEDRESOURCERELATION_ID " +
-                " JOIN TAMW_RESRELCTX_PROP resource_relation_context_prop on resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
-                " WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId";
-        executeRelatedResourceQueryAndEnrichAuditViewContainer(auditViewEntryContainer, selectNameAndContext, "Consumed Resource: ");
     }
 
     protected boolean isAuditViewEntryRelevant(AuditViewEntry entry, Map<Integer, AuditViewEntry> allAuditViewEntries) {
@@ -299,9 +306,6 @@ public class AuditService {
     }
 
     /**
-     * @param entity
-     * @param id
-     * @param <T>
      * @return a list of three-element arrays, containing:
      * <ol>
      * <li>the entity instance</li>
