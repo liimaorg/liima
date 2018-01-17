@@ -183,7 +183,7 @@ public class AuditService {
 
     private void setRelationNameAndContextForPropertyOfProvidedResource(AuditViewEntryContainer container) {
         String selectNameAndContext =
-                " SELECT provided_resource.NAME, resource_relation_context.id " +
+                " SELECT provided_resource.NAME, resource_relation_context.CONTEXT_ID " +
                 " FROM TAMW_RESOURCE provided_resource " +
                 " JOIN TAMW_PROVIDEDRESREL provided_resource_relation " +
                 "     ON provided_resource_relation.SLAVERESOURCE_ID = provided_resource.ID " +
