@@ -197,7 +197,13 @@ public class AuditService {
 
     private void setRelationNameAndContextForPropertyOfConsumedResource(AuditViewEntryContainer container) {
         String selectNameAndContext =
-                " SELECT consumed_resource.NAME, resource_relation_context.CONTEXT_ID " +
+                " SELECT " +
+                        "consumed_resource.NAME || " +
+                        "  CASE WHEN consumed_resource_relation.IDENTIFIER IS NOT NULL " +
+                        "    THEN ' (' || consumed_resource_relation.IDENTIFIER || ')' " +
+                        "    ELSE '' " +
+                        "  END, " +
+                        "resource_relation_context.CONTEXT_ID " +
                 " FROM TAMW_RESOURCE consumed_resource " +
                 " JOIN TAMW_CONSUMEDRESREL consumed_resource_relation " +
                 "     ON consumed_resource_relation.SLAVERESOURCE_ID = consumed_resource.ID " +
