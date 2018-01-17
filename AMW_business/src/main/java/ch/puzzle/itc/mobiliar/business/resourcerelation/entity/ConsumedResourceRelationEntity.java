@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcerelation.entity;
 
+import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
@@ -38,7 +39,7 @@ import static javax.persistence.CascadeType.ALL;
 @Entity
 @Audited()
 @Table(name = "TAMW_consumedResRel")
-public class ConsumedResourceRelationEntity extends AbstractResourceRelationEntity {
+public class ConsumedResourceRelationEntity extends AbstractResourceRelationEntity implements Auditable {
 
     // IMPORTANT! Whenever a new field (not relation to other entity) is added then this field must be added to foreignableFieldEquals method!!!
 
@@ -149,5 +150,21 @@ public class ConsumedResourceRelationEntity extends AbstractResourceRelationEnti
 			return consumedTarget;
 		}
 		return null;
+	}
+
+	@Override
+	public String getNewValueForAuditLog() {
+		return String
+				.format("RelationName: \"%s\"", getIdentifier());
+	}
+
+	@Override
+	public String getType() {
+		return Auditable.TYPE_CONSUMED_RESOURCE_RELATION;
+	}
+
+	@Override
+	public String getNameForAuditLog() {
+		return String.format("Consumed Resource Type: '%s'", this.getSlaveResource().getName());
 	}
 }
