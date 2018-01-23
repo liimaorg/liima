@@ -193,7 +193,19 @@ public class AuditService {
                 " JOIN TAMW_RESRELCTX_PROP resource_relation_context_prop " +
                 "     ON resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
                 " WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId";
-        executeRelatedResourceQueryAndEnrichAuditViewContainer(container, selectNameAndContext, AuditViewEntry.RELATION_PROVIDED_RESOURCE);
+//        String selectNameAndContextInAuditLog =
+//                " SELECT provided_resource.NAME, resource_relation_context.CONTEXT_ID " +
+//                        " FROM TAMW_RESOURCE_AUD provided_resource " +
+//                        " JOIN TAMW_PROVIDEDRESREL_AUD provided_resource_relation " +
+//                        "     ON provided_resource_relation.SLAVERESOURCE_ID = provided_resource.ID " +
+//                        " JOIN TAMW_RESRELCONTEXT_AUD resource_relation_context " +
+//                        "     ON provided_resource_relation.ID = resource_relation_context.PROVIDEDRESOURCERELATION_ID " +
+//                        " JOIN TAMW_RESRELCTX_PROP_AUD resource_relation_context_prop " +
+//                        "     ON resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
+//                        " WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId " +
+//                        " AND ROWNUM = 1" +
+//                        " ORDER BY provided_resource_relation.REV DESC";
+        executeRelatedResourceQueryAndEnrichAuditViewContainer(container, selectNameAndContext, selectNameAndContext, AuditViewEntry.RELATION_PROVIDED_RESOURCE);
     }
 
     private void setRelationNameAndContextForPropertyOfConsumedResource(AuditViewEntryContainer container) {
@@ -213,14 +225,22 @@ public class AuditService {
                 " JOIN TAMW_RESRELCTX_PROP resource_relation_context_prop " +
                 "     ON resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
                 " WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId";
-        executeRelatedResourceQueryAndEnrichAuditViewContainer(container, selectNameAndContext, AuditViewEntry.RELATION_CONSUMED_RESOURCE);
+        executeRelatedResourceQueryAndEnrichAuditViewContainer(container, selectNameAndContext, null, AuditViewEntry.RELATION_CONSUMED_RESOURCE);
     }
 
-    private void executeRelatedResourceQueryAndEnrichAuditViewContainer(AuditViewEntryContainer container, String select, String relationName) {
-        Query query = entityManager
-                .createNativeQuery(select)
-                .setParameter("propertyId", container.getEntityForRevision().getId());
-        Object[] nameAndId = (Object[]) query.getSingleResult();
+    private void executeRelatedResourceQueryAndEnrichAuditViewContainer(AuditViewEntryContainer container, String select, String selectInAuditLog, String relationName) {
+        Object[] nameAndId;
+        try {
+            nameAndId = (Object[]) entityManager
+                    .createNativeQuery(select)
+                    .setParameter("propertyId", container.getEntityForRevision().getId())
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            nameAndId = (Object[]) entityManager
+                    .createNativeQuery(selectInAuditLog)
+                    .setParameter("propertyId", container.getEntityForRevision().getId())
+                    .getSingleResult();
+        }
         String name = (String) nameAndId[0];
         int resourceContextId = ((BigDecimal) nameAndId[1]).intValue();
         container.setRelationName(String.format("%s: %s", relationName, name));
