@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.auditview.boundary;
 
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 
@@ -33,14 +32,6 @@ public class AuditViewBoundary {
 
     @Inject
     AuditService auditService;
-
-    public List<AuditViewEntry> getAuditlogForProperties(List<ResourceEditProperty> propertiesForResource) {
-        return auditService.getAuditViewEntriesForProperties(propertiesForResource);
-    }
-
-    public List<AuditViewEntry> getAuditlogForPropertyDescriptors(List<ResourceEditProperty> propertiesForResource) {
-        return auditService.getAuditViewEntriesForPropertyDescriptors(propertiesForResource);
-    }
 
     public List<AuditViewEntry> getAuditlogForResource(Integer resourceId) {
         return auditService.getAuditViewEntriesForResource(resourceId);
