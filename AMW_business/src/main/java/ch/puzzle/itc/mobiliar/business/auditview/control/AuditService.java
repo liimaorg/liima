@@ -30,6 +30,8 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.AuditReader;
@@ -70,6 +72,8 @@ public class AuditService {
         auditHandlerRegistry = new HashMap<>();
         auditHandlerRegistry.put(PropertyEntity.class, propertyEntityAuditviewHandler);
         auditHandlerRegistry.put(PropertyDescriptorEntity.class, genericAuditHandler);
+        auditHandlerRegistry.put(ConsumedResourceRelationEntity.class, genericAuditHandler);
+        auditHandlerRegistry.put(ProvidedResourceRelationEntity.class, genericAuditHandler);
     }
 
     @SuppressWarnings("unchecked")
