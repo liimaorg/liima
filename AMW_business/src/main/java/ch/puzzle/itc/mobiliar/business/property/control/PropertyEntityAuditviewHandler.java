@@ -46,6 +46,25 @@ public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
                     "     ON resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
                     " WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId";
 
+    private static final String SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_CONSUMED_RESOURCE_FROM_AUDIT =
+            " SELECT DISTINCT " +
+                    "consumed_resource.NAME || " +
+                    "  CASE WHEN consumed_resource_relation.IDENTIFIER IS NOT NULL " +
+                    "    THEN ' (' || consumed_resource_relation.IDENTIFIER || ')' " +
+                    "    ELSE '' " +
+                    "  END, " +
+                    "resource_relation_context.CONTEXT_ID " +
+                    "FROM TAMW_RESOURCE_AUD consumed_resource " +
+                    "JOIN TAMW_CONSUMEDRESREL_AUD consumed_resource_relation ON consumed_resource_relation.SLAVERESOURCE_ID = consumed_resource.ID " +
+                    "JOIN TAMW_RESRELCONTEXT_AUD resource_relation_context ON consumed_resource_relation.ID = resource_relation_context.CONSUMEDRESOURCERELATION_ID " +
+                    "JOIN TAMW_RESRELCTX_PROP_AUD resource_relation_context_prop ON resource_relation_context_prop.TAMW_RESRELCONTEXT_ID = resource_relation_context.ID " +
+                    "JOIN TAMW_PROPERTY_AUD property on resource_relation_context_prop.PROPERTIES_ID = property.ID  " +
+                    "WHERE  " +
+                    "resource_relation_context_prop.PROPERTIES_ID = :propertyId " +
+                    "AND property.REV = :revision " +
+                    "AND rownum <= 1 " +
+                    "ORDER BY property.REV";
+
     private static final String SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_PROVIDED_RESOURCE =
             " SELECT provided_resource.NAME, resource_relation_context.CONTEXT_ID " +
                     " FROM TAMW_RESOURCE provided_resource " +
@@ -121,18 +140,22 @@ public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
      * @return a Tuple&lt;Name of consumed Resource, ContextId&gt; or null
      */
     private Tuple<String, Integer> getNameAndContextOfConsumedResource(AuditViewEntryContainer container) {
+        Object[] nameAndId;
         try {
-            Object[] nameAndId;
             nameAndId = (Object[]) entityManager
                     .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_CONSUMED_RESOURCE)
                     .setParameter("propertyId", container.getEntityForRevision().getId())
                     .getSingleResult();
-            String name = (String) nameAndId[0];
-            int resourceContextId = ((BigDecimal) nameAndId[1]).intValue();
-            return new Tuple<>(name, resourceContextId);
         } catch (NoResultException e) {
-            return null;
+            nameAndId = (Object[]) entityManager
+                    .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_CONSUMED_RESOURCE_FROM_AUDIT)
+                    .setParameter("propertyId", container.getEntityForRevision().getId())
+                    .setParameter("revision", container.getRevEntity().getId())
+                    .getSingleResult();
         }
+        String name = (String) nameAndId[0];
+        int resourceContextId = ((BigDecimal) nameAndId[1]).intValue();
+        return new Tuple<>(name, resourceContextId);
     }
 
     public ResourceContextEntity getResourceContextEntityForPropertyOnMasterResource(AuditViewEntryContainer container) {
