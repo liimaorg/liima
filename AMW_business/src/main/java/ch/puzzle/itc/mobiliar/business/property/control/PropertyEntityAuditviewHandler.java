@@ -17,40 +17,26 @@ import java.math.BigDecimal;
 @Stateless
 @Named("propertyEntityAuditviewHandler")
 public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
+    private static final String SELECT_FOR_RESOURCE = "SELECT TAMW_RESOURCECONTEXT_ID " +
+            "FROM TAMW_RESOURCECTX_PROP " +
+            "WHERE PROPERTIES_ID = :propertyId";
+    private static final String SELECT_FOR_RESOURCE_FROM_AUDIT = "SELECT TAMW_RESOURCECONTEXT_ID " +
+            "FROM TAMW_RESOURCECTX_PROP_AUD " +
+            "WHERE rev >= :rev " +
+            "AND PROPERTIES_ID = :propertyId";
+    private static final String SELECT_FOR_PROP_ON_RESOURCE = String.format("%s UNION %s", SELECT_FOR_RESOURCE, SELECT_FOR_RESOURCE_FROM_AUDIT);
 
     @Override
     public AuditViewEntry createAuditViewEntry(AuditViewEntryContainer auditViewEntryContainer) {
-        try {
-            setContextIdForProperty(auditViewEntryContainer);
-        } catch (NoResultException e) {
+        ResourceContextEntity resourceContextEntity = getResourceContextEntityForPropertyOnMasterResource(auditViewEntryContainer);
+        boolean isPropertyOnMasterResource = resourceContextEntity != null;
+        if (isPropertyOnMasterResource) {
+            auditViewEntryContainer.setEditContextId(resourceContextEntity.getId());
+        } else {
+            // property is on related resource (provided/consumed)
             setRelationNameAndContextForPropertyOfRelatedResource(auditViewEntryContainer);
         }
         return super.createAuditViewEntry(auditViewEntryContainer);
-
-    }
-
-
-    private void setContextIdForProperty(AuditViewEntryContainer container) throws NoResultException {
-        String selectForResource = "SELECT TAMW_RESOURCECONTEXT_ID " +
-                "FROM TAMW_RESOURCECTX_PROP " +
-                "WHERE PROPERTIES_ID = :propertyId";
-        String selectForResourceFromAudit = "SELECT TAMW_RESOURCECONTEXT_ID " +
-                "FROM TAMW_RESOURCECTX_PROP_AUD " +
-                "WHERE rev >= :rev " +
-                "AND PROPERTIES_ID = :propertyId";
-        String selectForPropertyOnResource = String.format("%s UNION %s", selectForResource, selectForResourceFromAudit);
-        Query query = entityManager
-                .createNativeQuery(selectForPropertyOnResource)
-                .setParameter("rev", container.getRevEntity().getId())
-                .setParameter("propertyId", container.getEntityForRevision().getId());
-        BigDecimal resourceContextId = (BigDecimal) query.getSingleResult();
-        AuditReader reader = AuditReaderFactory.get(entityManager);
-        ResourceContextEntity resourceContextEntity = (ResourceContextEntity) reader.createQuery()
-                .forRevisionsOfEntity(ResourceContextEntity.class, true, true)
-                .add(AuditEntity.id().eq(resourceContextId.intValue()))
-                .setMaxResults(1)
-                .getSingleResult();
-        container.setEditContextId(resourceContextEntity.getId());
     }
 
     private void setRelationNameAndContextForPropertyOfRelatedResource(AuditViewEntryContainer auditViewEntryContainer) {
@@ -126,4 +112,22 @@ public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
         container.setEditContextId(resourceContextId);
     }
 
+    public ResourceContextEntity getResourceContextEntityForPropertyOnMasterResource(AuditViewEntryContainer container) {
+        try {
+
+            Query query = entityManager
+                    .createNativeQuery(SELECT_FOR_PROP_ON_RESOURCE)
+                    .setParameter("rev", container.getRevEntity().getId())
+                    .setParameter("propertyId", container.getEntityForRevision().getId());
+            BigDecimal resourceContextId = (BigDecimal) query.getSingleResult();
+            AuditReader reader = AuditReaderFactory.get(entityManager);
+            return (ResourceContextEntity) reader.createQuery()
+                    .forRevisionsOfEntity(ResourceContextEntity.class, true, true)
+                    .add(AuditEntity.id().eq(resourceContextId.intValue()))
+                    .setMaxResults(1)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }
