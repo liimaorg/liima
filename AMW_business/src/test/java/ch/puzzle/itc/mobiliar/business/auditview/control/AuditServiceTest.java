@@ -27,6 +27,7 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
@@ -175,6 +176,32 @@ public class AuditServiceTest {
         slaveResource.setId(slaveResourceId);
 
         ConsumedResourceRelationEntity consumedResource = new ConsumedResourceRelationEntity();
+        consumedResource.setMasterResource(masterResource);
+        consumedResource.setSlaveResource(slaveResource);
+        consumedResource.setId(resourceId);
+
+        // when
+        auditService.storeIdInThreadLocalForAuditLog(consumedResource);
+
+        // then
+        MatcherAssert.assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(nullValue()));
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(masterResourceId));
+    }
+
+    @Test
+    public void shouldSetResourceIdInThreadLocalDuringStoreIdInThreadLocalForAuditLog_providedResource() {
+        // given
+        int masterResourceId = 500;
+        int slaveResourceId = 300;
+        int resourceId = 700;
+
+        ResourceEntity masterResource = new ResourceEntity();
+        masterResource.setId(masterResourceId);
+
+        ResourceEntity slaveResource = new ResourceEntity();
+        slaveResource.setId(slaveResourceId);
+
+        ProvidedResourceRelationEntity consumedResource = new ProvidedResourceRelationEntity();
         consumedResource.setMasterResource(masterResource);
         consumedResource.setSlaveResource(slaveResource);
         consumedResource.setId(resourceId);
