@@ -144,11 +144,11 @@ public class AuditService {
         if (entry == null) {
             return false;
         }
+        if (entry.getMode() == ADD || entry.getMode() == DEL) {
+            return true;
+        }
         if (allAuditViewEntries.get(entry.hashCode()) != null) {
             return false;
-        }
-        if (entry.getMode() == ADD) {
-            return true;
         }
         return !StringUtils.equals(entry.getOldValue(), entry.getValue());
     }

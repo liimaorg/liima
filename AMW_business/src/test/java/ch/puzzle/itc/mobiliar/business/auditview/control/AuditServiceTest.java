@@ -317,6 +317,25 @@ public class AuditServiceTest {
         boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
 
         // then
-        assertThat(relevant, is(false));
+        assertThat(relevant, is(true));
+    }
+
+    @Test
+    public void shouldReturnTrueIfRevisionTypeIsDel(){
+        // given
+        String value = EMPTY;
+        MyRevisionEntity revisionEntity = new MyRevisionEntity();
+        AuditViewEntry entryInList = AuditViewEntry.builder(revisionEntity, RevisionType.DEL)
+                .oldValue(value)
+                .value(value)
+                .build();
+        Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
+        allAuditViewEntries.put(entryInList.hashCode(), entryInList);
+
+        // when
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
+
+        // then
+        assertThat(relevant, is(true));
     }
 }
