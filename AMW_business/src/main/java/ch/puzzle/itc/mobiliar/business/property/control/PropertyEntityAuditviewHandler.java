@@ -1,6 +1,7 @@
 package ch.puzzle.itc.mobiliar.business.property.control;
 
 import ch.puzzle.itc.mobiliar.business.auditview.control.GenericAuditHandler;
+import ch.puzzle.itc.mobiliar.business.auditview.control.PropertyNotOnConsumedResourceException;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntryContainer;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
@@ -100,14 +101,13 @@ public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
             container.setEditContextId(resourceContextEntity.getId());
         } else {
             // property is on related resource (provided/consumed)
-            Tuple<String, Integer> nameAndContext = getNameAndContextOfConsumedResource(container);
-            boolean isPropertyOnConsumedResource = nameAndContext != null;
-            if (isPropertyOnConsumedResource){
+            try {
+                Tuple<String, Integer> nameAndContext = getNameAndContextOfConsumedResource(container);
                 container.setRelationName(String.format("%s: %s", AuditViewEntry.RELATION_CONSUMED_RESOURCE, nameAndContext.getA()));
                 container.setEditContextId(nameAndContext.getB());
-            } else {
+            } catch (PropertyNotOnConsumedResourceException e) {
                 // property is on provided resource
-                nameAndContext = getNameAndContextOfProvidedResource(container);
+                Tuple<String, Integer> nameAndContext = getNameAndContextOfProvidedResource(container);
                 container.setRelationName(String.format("%s: %s", AuditViewEntry.RELATION_PROVIDED_RESOURCE, nameAndContext.getA()));
                 container.setEditContextId(nameAndContext.getB());
             }
@@ -139,7 +139,7 @@ public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
      * @param container
      * @return a Tuple&lt;Name of consumed Resource, ContextId&gt; or null
      */
-    private Tuple<String, Integer> getNameAndContextOfConsumedResource(AuditViewEntryContainer container) {
+    private Tuple<String, Integer> getNameAndContextOfConsumedResource(AuditViewEntryContainer container) throws PropertyNotOnConsumedResourceException {
         Object[] nameAndId;
         try {
             nameAndId = (Object[]) entityManager
@@ -147,11 +147,15 @@ public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
                     .setParameter("propertyId", container.getEntityForRevision().getId())
                     .getSingleResult();
         } catch (NoResultException e) {
-            nameAndId = (Object[]) entityManager
-                    .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_CONSUMED_RESOURCE_FROM_AUDIT)
-                    .setParameter("propertyId", container.getEntityForRevision().getId())
-                    .setParameter("revision", container.getRevEntity().getId())
-                    .getSingleResult();
+            try {
+                nameAndId = (Object[]) entityManager
+                        .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_CONSUMED_RESOURCE_FROM_AUDIT)
+                        .setParameter("propertyId", container.getEntityForRevision().getId())
+                        .setParameter("revision", container.getRevEntity().getId())
+                        .getSingleResult();
+            } catch (NoResultException ef) {
+                throw new PropertyNotOnConsumedResourceException();
+            }
         }
         String name = (String) nameAndId[0];
         int resourceContextId = ((BigDecimal) nameAndId[1]).intValue();
