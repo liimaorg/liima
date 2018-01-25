@@ -165,8 +165,10 @@ public class AuditService {
             setResourceTypeIdInThreadLocal(hasContexts.getId());
         } else if (hasContexts instanceof ResourceEntity) {
             setResourceIdInThreadLocal(hasContexts.getId());
+        } else if (hasContexts instanceof ConsumedResourceRelationEntity) {
+            setResourceIdInThreadLocal(((ConsumedResourceRelationEntity) hasContexts).getMasterResourceId());
         } else if (hasContexts instanceof ResourceRelationTypeEntity) {
-            ThreadLocalUtil.setThreadVariable("ThreadLocalUtil.KEY_RESOURCE_RELATION_TYPE_ID", hasContexts.getId());
+            setResourceTypeIdInThreadLocal(((ResourceRelationTypeEntity) hasContexts).getResourceTypeA().getId());
         }
     }
 

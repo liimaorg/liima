@@ -26,6 +26,8 @@ import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.hamcrest.MatcherAssert;
@@ -38,7 +40,6 @@ import org.mockito.MockitoAnnotations;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,7 @@ import java.util.Map;
 import static junit.framework.TestCase.assertNull;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(PersistenceTestRunner.class)
@@ -158,6 +160,55 @@ public class AuditServiceTest {
         MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(resourceId));
     }
 
+
+    @Test
+    public void shouldSetResourceIdInThreadLocalDuringStoreIdInThreadLocalForAuditLog_consumedResource() {
+        // given
+        int masterResourceId = 500;
+        int slaveResourceId = 300;
+        int resourceId = 700;
+
+        ResourceEntity masterResource = new ResourceEntity();
+        masterResource.setId(masterResourceId);
+
+        ResourceEntity slaveResource = new ResourceEntity();
+        slaveResource.setId(slaveResourceId);
+
+        ConsumedResourceRelationEntity consumedResource = new ConsumedResourceRelationEntity();
+        consumedResource.setMasterResource(masterResource);
+        consumedResource.setSlaveResource(slaveResource);
+        consumedResource.setId(resourceId);
+
+        // when
+        auditService.storeIdInThreadLocalForAuditLog(consumedResource);
+
+        // then
+        MatcherAssert.assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(nullValue()));
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(masterResourceId));
+    }
+
+    @Test
+    public void shouldSetResourceIdInThreadLocalDuringStoreIdInThreadLocalForAuditLog_resourceRelationTypeEntity() {
+        // given
+        int idA = 500;
+        int idB = 300;
+
+        ResourceTypeEntity resourceTypeA = new ResourceTypeEntity();
+        resourceTypeA.setId(idA);
+        ResourceTypeEntity resourceTypeB = new ResourceTypeEntity();
+        resourceTypeB.setId(idB);
+        ResourceRelationTypeEntity resourceRelationTypeEntity = new ResourceRelationTypeEntity();
+        resourceRelationTypeEntity.setResourceTypes(resourceTypeA, resourceTypeB);
+
+        // when
+        auditService.storeIdInThreadLocalForAuditLog(resourceRelationTypeEntity);
+
+        // then
+        MatcherAssert.assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(nullValue()));
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(idA));
+    }
+
+
     @Test
     public void shouldAuditViewEntryIsRelevantBecauseOldAndNewValueAreNotEqual(){
         // given
@@ -268,6 +319,4 @@ public class AuditServiceTest {
         // then
         assertThat(relevant, is(false));
     }
-
-
 }
