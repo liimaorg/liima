@@ -33,6 +33,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
+import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -74,6 +75,7 @@ public class AuditService {
         auditHandlerRegistry.put(PropertyDescriptorEntity.class, genericAuditHandler);
         auditHandlerRegistry.put(ConsumedResourceRelationEntity.class, genericAuditHandler);
         auditHandlerRegistry.put(ProvidedResourceRelationEntity.class, genericAuditHandler);
+        auditHandlerRegistry.put(TemplateDescriptorEntity.class, genericAuditHandler);
     }
 
     @SuppressWarnings("unchecked")
@@ -150,6 +152,10 @@ public class AuditService {
         if (allAuditViewEntries.get(entry.hashCode()) != null) {
             return false;
         }
+        if (entry.getType() == Auditable.TYPE_TEMPLATE_DESCRIPTOR) {
+            // the content of the template descriptors are ignored
+            return true;
+        }
         return !StringUtils.equals(entry.getOldValue(), entry.getValue());
     }
 
@@ -216,5 +222,6 @@ public class AuditService {
         c.set(Calendar.YEAR, currentYear -1);
         return reader.getRevisionNumberForDate(c.getTime());
     }
+
 
 }

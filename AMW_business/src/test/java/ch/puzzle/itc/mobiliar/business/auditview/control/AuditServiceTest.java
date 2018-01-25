@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.business.auditview.control;
 
 import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
+import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -358,6 +359,44 @@ public class AuditServiceTest {
                 .build();
         Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
         allAuditViewEntries.put(entryInList.hashCode(), entryInList);
+
+        // when
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
+
+        // then
+        assertThat(relevant, is(true));
+    }
+
+    @Test
+    public void shouldReturnTrueIfTypeIsTemplateDescriptor_valuesEqual(){
+        // given
+        String value = EMPTY;
+        MyRevisionEntity revisionEntity = new MyRevisionEntity();
+        AuditViewEntry entryInList = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
+                .oldValue(value)
+                .value(value)
+                .type(Auditable.TYPE_TEMPLATE_DESCRIPTOR)
+                .build();
+        Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
+
+        // when
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
+
+        // then
+        assertThat(relevant, is(true));
+    }
+
+    @Test
+    public void shouldReturnTrueIfTypeIsTemplateDescriptor_valuesNotEqual(){
+        // given
+        String value = EMPTY;
+        MyRevisionEntity revisionEntity = new MyRevisionEntity();
+        AuditViewEntry entryInList = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
+                .oldValue(value)
+                .value("abcd")
+                .type(Auditable.TYPE_TEMPLATE_DESCRIPTOR)
+                .build();
+        Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
 
         // when
         boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
