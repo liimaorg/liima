@@ -25,7 +25,9 @@ import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
@@ -234,6 +236,41 @@ public class AuditServiceTest {
         // then
         MatcherAssert.assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(nullValue()));
         MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(idA));
+    }
+
+    @Test
+    public void shouldSetResourceIdInThreadLocalForAbstractContext_resourceContextEntity() {
+        // given
+        int resourceId = 456;
+        ResourceContextEntity resourceContextEntity = new ResourceContextEntity();
+        ResourceEntity resource = new ResourceEntity();
+        resource.setId(resourceId);
+        resourceContextEntity.setContextualizedObject(resource);
+
+        // when
+        auditService.storeIdInThreadLocalForAuditLog(resourceContextEntity);
+
+        // then
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(resourceId));
+        MatcherAssert.assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(nullValue()));
+    }
+
+
+    @Test
+    public void shouldSetResourceIdInThreadLocalForAbstractContext_resourceTypeContextEntity() {
+        // given
+        int resourceTypeId = 456;
+        ResourceTypeContextEntity resourceContextEntity = new ResourceTypeContextEntity();
+        ResourceTypeEntity resourceType = new ResourceTypeEntity();
+        resourceType.setId(resourceTypeId);
+        resourceContextEntity.setContextualizedObject(resourceType);
+
+        // when
+        auditService.storeIdInThreadLocalForAuditLog(resourceContextEntity);
+
+        // then
+        MatcherAssert.assertThat(ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(nullValue()));
+        MatcherAssert.assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID), is(resourceTypeId));
     }
 
 

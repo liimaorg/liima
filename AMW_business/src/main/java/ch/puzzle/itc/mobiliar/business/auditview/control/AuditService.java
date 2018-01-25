@@ -24,11 +24,14 @@ import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntryContainer;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
+import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyEntityAuditviewHandler;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
@@ -177,6 +180,14 @@ public class AuditService {
             setResourceIdInThreadLocal(((ProvidedResourceRelationEntity) hasContexts).getMasterResource().getId());
         } else if (hasContexts instanceof ResourceRelationTypeEntity) {
             setResourceTypeIdInThreadLocal(((ResourceRelationTypeEntity) hasContexts).getResourceTypeA().getId());
+        }
+    }
+
+    public void storeIdInThreadLocalForAuditLog(AbstractContext owner) {
+        if (owner instanceof ResourceContextEntity) {
+            setResourceIdInThreadLocal(((ResourceContextEntity) owner).getResource().getId());
+        } else if (owner instanceof ResourceTypeContextEntity) {
+            setResourceTypeIdInThreadLocal(((ResourceTypeContextEntity) owner).getResourceTypeEntity().getId());
         }
     }
 

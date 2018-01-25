@@ -20,46 +20,42 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
+import lombok.Getter;
 import org.hibernate.envers.Audited;
+
+import javax.persistence.*;
 
 @Entity
 @Audited
-@Table(name="TAMW_resourceTypeContext")
+@Table(name = "TAMW_resourceTypeContext")
 @AssociationOverrides({
-	@AssociationOverride(name="properties", joinTable=@JoinTable(name="TAMW_resTypeCtx_prop",
-			joinColumns=@JoinColumn(name="TAMW_RESOURCETYPECONTEXT_ID"), 
-			inverseJoinColumns=@JoinColumn(name="PROPERTIES_ID"))),
-	@AssociationOverride(name="propertyDescriptors", joinTable=@JoinTable(name="TAMW_resTypeCtx_propDesc",
-			joinColumns=@JoinColumn(name="TAMW_RESOURCETYPECONTEXT_ID"), 
-			inverseJoinColumns=@JoinColumn(name="PROPERTYDESCRIPTORS_ID"))),
-	@AssociationOverride(name="templates", joinTable=@JoinTable(name="TAMW_resTypeCtx_tmplDesc",
-			joinColumns=@JoinColumn(name="TAMW_RESOURCETYPECONTEXT_ID"), 
-			inverseJoinColumns=@JoinColumn(name="TEMPLATES_ID")))
+        @AssociationOverride(name = "properties", joinTable = @JoinTable(name = "TAMW_resTypeCtx_prop",
+                joinColumns = @JoinColumn(name = "TAMW_RESOURCETYPECONTEXT_ID"),
+                inverseJoinColumns = @JoinColumn(name = "PROPERTIES_ID"))),
+        @AssociationOverride(name = "propertyDescriptors", joinTable = @JoinTable(name = "TAMW_resTypeCtx_propDesc",
+                joinColumns = @JoinColumn(name = "TAMW_RESOURCETYPECONTEXT_ID"),
+                inverseJoinColumns = @JoinColumn(name = "PROPERTYDESCRIPTORS_ID"))),
+        @AssociationOverride(name = "templates", joinTable = @JoinTable(name = "TAMW_resTypeCtx_tmplDesc",
+                joinColumns = @JoinColumn(name = "TAMW_RESOURCETYPECONTEXT_ID"),
+                inverseJoinColumns = @JoinColumn(name = "TEMPLATES_ID")))
 })
 public class ResourceTypeContextEntity extends ContextDependency<ResourceTypeEntity> {
-	private static final long serialVersionUID = 1L;
-	
-	@ManyToOne(cascade = CascadeType.PERSIST)
-	private ResourceTypeEntity resourceTypeEntity;
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public ResourceTypeEntity getContextualizedObject() {
-		return resourceTypeEntity;
-	}
-	@Override
-	public void setContextualizedObject(ResourceTypeEntity contextualizedObject) {
-		this.resourceTypeEntity = contextualizedObject;
-	}
-	
-	
+    @Getter
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    private ResourceTypeEntity resourceTypeEntity;
+
+    @Override
+    public ResourceTypeEntity getContextualizedObject() {
+        return resourceTypeEntity;
+    }
+
+    @Override
+    public void setContextualizedObject(ResourceTypeEntity contextualizedObject) {
+        this.resourceTypeEntity = contextualizedObject;
+    }
+
+
 }

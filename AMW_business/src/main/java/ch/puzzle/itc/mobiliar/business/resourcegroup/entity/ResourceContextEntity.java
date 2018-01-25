@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
+import lombok.Getter;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -29,31 +30,33 @@ import static javax.persistence.CascadeType.PERSIST;
 
 @Entity
 @Audited
-@Table(name="TAMW_resourceContext")
+@Table(name = "TAMW_resourceContext")
 @AssociationOverrides({
-	@AssociationOverride(name="properties", joinTable=@JoinTable(name="TAMW_resourceCtx_prop", 
-			joinColumns=@JoinColumn(name="TAMW_RESOURCECONTEXT_ID"), 
-			inverseJoinColumns=@JoinColumn(name="PROPERTIES_ID"))),
-	@AssociationOverride(name="propertyDescriptors", joinTable=@JoinTable(name="TAMW_resourceCtx_propDesc", 
-			joinColumns=@JoinColumn(name="TAMW_RESOURCECONTEXT_ID"), 
-			inverseJoinColumns=@JoinColumn(name="PROPERTYDESCRIPTORS_ID"))),
-	@AssociationOverride(name="templates", joinTable=@JoinTable(name="TAMW_resourceCtx_tmplDesc", 
-			joinColumns=@JoinColumn(name="TAMW_RESOURCECONTEXT_ID"), 
-			inverseJoinColumns=@JoinColumn(name="TEMPLATES_ID")))
+        @AssociationOverride(name = "properties", joinTable = @JoinTable(name = "TAMW_resourceCtx_prop",
+                joinColumns = @JoinColumn(name = "TAMW_RESOURCECONTEXT_ID"),
+                inverseJoinColumns = @JoinColumn(name = "PROPERTIES_ID"))),
+        @AssociationOverride(name = "propertyDescriptors", joinTable = @JoinTable(name = "TAMW_resourceCtx_propDesc",
+                joinColumns = @JoinColumn(name = "TAMW_RESOURCECONTEXT_ID"),
+                inverseJoinColumns = @JoinColumn(name = "PROPERTYDESCRIPTORS_ID"))),
+        @AssociationOverride(name = "templates", joinTable = @JoinTable(name = "TAMW_resourceCtx_tmplDesc",
+                joinColumns = @JoinColumn(name = "TAMW_RESOURCECONTEXT_ID"),
+                inverseJoinColumns = @JoinColumn(name = "TEMPLATES_ID")))
 })
 public class ResourceContextEntity extends ContextDependency<ResourceEntity> {
-	private static final long serialVersionUID = 1L;
-	
-	@ManyToOne(cascade = PERSIST)
-	private ResourceEntity resource;
-		
-	@Override
-	public ResourceEntity getContextualizedObject() {
-		return resource;
-	}
-	@Override
-	public void setContextualizedObject(ResourceEntity contextualizedObject) {
-		this.resource = contextualizedObject;
-	}
-	
+    private static final long serialVersionUID = 1L;
+
+    @Getter
+    @ManyToOne(cascade = PERSIST)
+    private ResourceEntity resource;
+
+    @Override
+    public ResourceEntity getContextualizedObject() {
+        return resource;
+    }
+
+    @Override
+    public void setContextualizedObject(ResourceEntity contextualizedObject) {
+        this.resource = contextualizedObject;
+    }
+
 }
