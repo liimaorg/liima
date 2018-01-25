@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.template.entity;
 
+import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
@@ -44,7 +45,7 @@ import java.util.Set;
 @Entity
 @Audited
 @Table(name = "TAMW_templateDescriptor")
-public class TemplateDescriptorEntity implements Identifiable, Serializable, Copyable<TemplateDescriptorEntity> {
+public class TemplateDescriptorEntity implements Identifiable, Serializable, Copyable<TemplateDescriptorEntity>, Auditable {
 
 	@TableGenerator(name = "templateDescriptorIdGen", table = Constants.GENERATORTABLE, pkColumnName = Constants.GENERATORPKCOLUMNNAME, valueColumnName = Constants.GENERATORVALUECOLUMNNAME, pkColumnValue = "templateDescriptorId")
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "templateDescriptorIdGen")
@@ -81,15 +82,30 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 		super();
 	}
 
-	@Override
-	public Integer getId() {
-		return this.id;
-	}
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	@Override
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    @Override
+    public Integer getId() {
+        return this.id;
+    }
+
+    @Override
+    public String getNewValueForAuditLog() {
+        return "";
+    }
+
+    @Override
+    public String getType() {
+        return Auditable.TYPE_TEMPLATE_DESCRIPTOR;
+    }
+
+    @Override
+    public String getNameForAuditLog() {
+        return this.name;
+    }
 
 	public String getFileContent() {
 		// Oracle saves empty strings as null & Freemarker doesn't like null. See #7532
