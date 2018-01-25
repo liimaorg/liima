@@ -307,7 +307,8 @@ public class ResourceRelationService implements Serializable{
 	 * @throws ElementAlreadyExistsException
 	 */
 	public void removeRelation(AbstractResourceRelationEntity relation) throws ResourceNotFoundException, ElementAlreadyExistsException {
-        Integer relationId = relation.getId();
+        auditService.storeIdInThreadLocalForAuditLog(relation);
+		Integer relationId = relation.getId();
 		ResourceEntity master = entityManager.find(ResourceEntity.class, relation.getMasterResource()
 				.getId());
 		String slaveResourceType = relation.getSlaveResource().getResourceType().getName();
