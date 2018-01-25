@@ -16,6 +16,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.math.BigDecimal;
 
+import static ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry.RELATION_CONSUMED_RESOURCE;
+import static ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry.RELATION_PROVIDED_RESOURCE;
+
 @Stateless
 @Named("propertyEntityAuditviewHandler")
 public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
@@ -103,16 +106,18 @@ public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
             // property is on related resource (provided/consumed)
             try {
                 Tuple<String, Integer> nameAndContext = getNameAndContextOfConsumedResource(container);
-                container.setRelationName(String.format("%s: %s", AuditViewEntry.RELATION_CONSUMED_RESOURCE, nameAndContext.getA()));
-                container.setEditContextId(nameAndContext.getB());
+                setRelationNameAndEditedContexIdOnContainer(container, nameAndContext, RELATION_CONSUMED_RESOURCE);
             } catch (PropertyNotOnConsumedResourceException e) {
-                // property is on provided resource
                 Tuple<String, Integer> nameAndContext = getNameAndContextOfProvidedResource(container);
-                container.setRelationName(String.format("%s: %s", AuditViewEntry.RELATION_PROVIDED_RESOURCE, nameAndContext.getA()));
-                container.setEditContextId(nameAndContext.getB());
+                setRelationNameAndEditedContexIdOnContainer(container, nameAndContext, RELATION_PROVIDED_RESOURCE);
             }
         }
         return super.createAuditViewEntry(container);
+    }
+
+    private void setRelationNameAndEditedContexIdOnContainer(AuditViewEntryContainer container, Tuple<String, Integer> nameAndContextOfResource, String relationConsumedResource) {
+        container.setRelationName(String.format("%s: %s", relationConsumedResource, nameAndContextOfResource.getA()));
+        container.setEditContextId(nameAndContextOfResource.getB());
     }
 
     private Tuple<String, Integer> getNameAndContextOfProvidedResource(AuditViewEntryContainer container) {
