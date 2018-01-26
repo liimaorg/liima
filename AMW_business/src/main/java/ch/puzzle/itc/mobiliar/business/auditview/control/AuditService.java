@@ -26,9 +26,6 @@ import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
-import ch.puzzle.itc.mobiliar.business.property.control.PropertyEntityAuditviewHandler;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
@@ -36,7 +33,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
-import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -44,13 +40,12 @@ import org.hibernate.envers.CrossTypeRevisionChangesReader;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static org.hibernate.envers.RevisionType.ADD;
 import static org.hibernate.envers.RevisionType.DEL;
@@ -58,28 +53,14 @@ import static org.hibernate.envers.RevisionType.DEL;
 @Stateless
 public class AuditService {
 
+    @Inject
+    private Logger log;
+
     @PersistenceContext
     EntityManager entityManager;
 
     @Inject
-    @Named("genericAuditHandler")
-    GenericAuditHandler genericAuditHandler;
-
-    @Inject
-    @Named("propertyEntityAuditviewHandler")
-    PropertyEntityAuditviewHandler propertyEntityAuditviewHandler;
-
-    Map<Class<? extends Auditable>, GenericAuditHandler> auditHandlerRegistry;
-
-    @PostConstruct
-    public void init() {
-        auditHandlerRegistry = new HashMap<>();
-        auditHandlerRegistry.put(PropertyEntity.class, propertyEntityAuditviewHandler);
-        auditHandlerRegistry.put(PropertyDescriptorEntity.class, genericAuditHandler);
-        auditHandlerRegistry.put(ConsumedResourceRelationEntity.class, genericAuditHandler);
-        auditHandlerRegistry.put(ProvidedResourceRelationEntity.class, genericAuditHandler);
-        auditHandlerRegistry.put(TemplateDescriptorEntity.class, genericAuditHandler);
-    }
+    AuditHandlerRegistry auditHandlerRegistry;
 
     @SuppressWarnings("unchecked")
     public <T> Object getDeletedEntity(T entity, Integer id) {
@@ -130,19 +111,21 @@ public class AuditService {
     private void createSingleAuditViewEntryAndAddToMap(Map<Integer, AuditViewEntry> allAuditViewEntries, Object[] entityRevisionAndRevisionType) {
         Object entity = entityRevisionAndRevisionType[0];
         if (! (entity instanceof Auditable) ) {
-            System.out.println("NOT IMPLEMENTED YET FOR ENTITY: " + entity.getClass());
+            log.info(String.format("The Entity %s does not implement interface Auditable. No Audit log entry will be created for the log view.",
+                    entity.getClass().getSimpleName()));
             return;
         }
         AuditViewEntryContainer auditViewEntryContainer = new AuditViewEntryContainer(entityRevisionAndRevisionType);
 
-        GenericAuditHandler handler = auditHandlerRegistry.get(entity.getClass());
-        if (handler != null) {
+        try {
+            GenericAuditHandler handler = auditHandlerRegistry.getAuditHandler(entity.getClass());
             AuditViewEntry auditViewEntry = handler.createAuditViewEntry(auditViewEntryContainer);
             if (isAuditViewEntryRelevant(auditViewEntry, allAuditViewEntries)) {
                 allAuditViewEntries.put(auditViewEntry.hashCode(), auditViewEntry);
             }
+        } catch (NoAuditHandlerException e) {
+            log.info(String.format("No AuditHandler found for %s in AuditHandlerRegistry", entity,getClass().getSimpleName()));
         }
-
     }
 
     protected boolean isAuditViewEntryRelevant(AuditViewEntry entry, Map<Integer, AuditViewEntry> allAuditViewEntries) {
