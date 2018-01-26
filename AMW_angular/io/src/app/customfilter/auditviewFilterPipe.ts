@@ -14,6 +14,6 @@ export class AuditviewFilterPipe implements PipeTransform {
   }
 
   private allColumnsConcatenated(row: any): string {
-    return row.type + row.name + row.username + row.oldValue + row.value + row.mode;
+    return row.type + row.relation + row.name + row.username + row.oldValue + row.value + row.mode;
   }
 }
