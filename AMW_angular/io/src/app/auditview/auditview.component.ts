@@ -16,13 +16,11 @@ import * as _ from 'lodash';
 export class AuditviewComponent implements OnInit {
 
   name: string;
-  entriesLoaded: boolean = false;
   auditLogEntries: Auditviewentrytype[] = [];
   filterQuery: string = "";
-
   errorMessage: string;
   resourceId: number;
-
+  isLoading: boolean = true;
 
   constructor(public appState: AppState,
               private auditViewService: AuditviewService,
@@ -55,7 +53,7 @@ export class AuditviewComponent implements OnInit {
       this.auditViewService.getAuditLogForResource(this.resourceId).subscribe(
         /* happy path */ (r) => this.auditLogEntries = r,
         /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */ () => {this.entriesLoaded = true}
+        /* onComplete */ () => this.isLoading = false
       );
     } else {
       console.error("Resource Id must be set")
