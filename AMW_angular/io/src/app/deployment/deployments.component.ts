@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Location } from '@angular/common';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -79,7 +79,8 @@ export class DeploymentsComponent implements OnInit {
   successMessage: string = '';
   isLoading: boolean = true;
 
-  @ViewChild('selectModel') private selectModel: NgModel;
+  @ViewChild('selectModel')
+  selectModel: NgModel;
 
   constructor(private activatedRoute: ActivatedRoute,
               private ngZone: NgZone,
