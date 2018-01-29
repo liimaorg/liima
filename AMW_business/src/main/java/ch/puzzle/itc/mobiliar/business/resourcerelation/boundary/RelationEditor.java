@@ -18,11 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * To change this license header, choose License Headers in Project Properties. To change this template file,
- * choose Tools | Templates and open the template in the editor.
- */
-
 package ch.puzzle.itc.mobiliar.business.resourcerelation.boundary;
 
 import java.util.*;
@@ -33,7 +28,6 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
