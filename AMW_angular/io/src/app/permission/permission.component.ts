@@ -22,7 +22,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   // loaded only once
   roleNames: string[] = [];
-  userNames: any[] = [];
+  userNames: string[] = [];
   permissions: Permission[] = [];
   environments: Environment[] = [{id: null, name: null, parent: 'All', selected: false} as Environment];
   groupedEnvironments: { [key: string]: Environment[] } = {All: [], Global: []};
@@ -35,7 +35,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   delegationMode: boolean = false;
   assignedRestrictions: Restriction[] = [];
   selectedRoleName: string = null;
-  selectedUserNames: Tag[] = [];
+  selectedUserNames: string[] = [];
   actingUserName: string = null;
   assignableRestrictions: Restriction[] = [];
   assignablePermissions: Permission[] = [];
@@ -99,9 +99,9 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.restriction = null;
   }
 
-  onChangeUser() {
-    if (this.selectedUserNames.length === 1 && this.isExistingUser(this.selectedUserNames[0].label)) {
-      this.getUserWithRestrictions(this.selectedUserNames[0].label);
+  onChangeUser(users: Tag[]) {
+    if (users.length === 1 && this.isExistingUser(users[0].label)) {
+      this.getUserWithRestrictions(users[0].label);
     } else {
       this.assignedRestrictions = [];
     }

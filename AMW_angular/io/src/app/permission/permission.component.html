@@ -26,9 +26,9 @@
 
         <div class="form-group" *ngIf="restrictionType == 'user'">
           <label for="selectUsers" class="col-sm-1 control-label">User</label>
-          <div class="col-sm-11">
+          <div class="col-sm-11 col-md-5">
               <ng-select id="selectUsers" [items]="userNames" multiple="true" [addTag]="true" placeholder=""
-                         addTagText="add user" [(ngModel)]="selectedUserNames" (change)="onChangeUser()">
+                         addTagText="add user" [(ngModel)]="selectedUserNames" (change)="onChangeUser($event)">
               </ng-select>
           </div>
         </div>

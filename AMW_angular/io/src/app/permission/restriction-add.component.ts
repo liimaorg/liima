@@ -65,7 +65,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   }
 
   persistRestriction() {
-    let restrictionsCreation: RestrictionsCreation = { roleName: this.roleName, userNames: this.getSelectedUserNames(),
+    const restrictionsCreation: RestrictionsCreation = { roleName: this.roleName, userNames: this.getSelectedUserNames(),
       permissionNames: this.selectedPermissionNames, resourceGroupIds: this.getSelectedGroupIds(),
       resourceTypeNames: this.selectedResourceTypeNames, resourceTypePermission: this.selectedResourceTypePermission,
       contextNames: this.getSelectedEnvNames(), actions: this.getSelectedActionNames() };
@@ -114,7 +114,6 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
         this.selectedContextNames = [];
       } else if (this.delegationMode) {
         this.populateSimilarRestrictions();
-        // TODO reset all selected?
         this.extractAvailableActions();
       }
     }
@@ -320,7 +319,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   }
 
   private getSelectedUserNames(): string[] {
-    let userNames: string[] = [];
+    const userNames: string[] = [];
     this.userNames.forEach((user) => {
       if (user.label) {
         userNames.push(user.label);
@@ -332,7 +331,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   }
 
   private getSelectedEnvNames(): string[] {
-    let contextNames: string[] = [];
+    const contextNames: string[] = [];
     this.getEnvironmentGroups().forEach((group) => {
       this.groupedEnvironments[group].forEach((environment) => {
         if (environment.selected === true) {
@@ -344,7 +343,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   }
 
   private getSelectedActionNames(): string[] {
-    let actionNames: string[] = [];
+    const actionNames: string[] = [];
     this.actions.forEach((action) => {
       if (action.selected === true) {
         actionNames.push(action.name);
@@ -357,7 +356,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   }
 
   private getSelectedGroupIds(): number[] {
-    let groupIds: number[] = [];
+    const groupIds: number[] = [];
     this.selectedResourceGroupNames.forEach((groupName) => {
       groupIds.push(this.resourceGroups.find((rg) => rg.name.toLowerCase() === groupName.toLowerCase()).id);
     });

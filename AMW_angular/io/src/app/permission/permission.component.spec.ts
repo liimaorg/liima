@@ -132,11 +132,11 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       // given
       const restrictions: Restriction[] = [{id: 41, action: 'DELETE', permission: {name: 'SAME'} as Permission} as Restriction,
         {id: 42, action: 'CREATE', permission: {name: 'SAME'} as Permission} as Restriction];
-      permissionComponent.selectedUserNames = [ {label: 'Tester'} as Tag ];
+      permissionComponent.selectedUserNames = ['Tester'];
       permissionComponent.userNames = ['tester', 'user'];
       spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(Observable.of(restrictions));
       // when
-      permissionComponent.onChangeUser();
+      permissionComponent.onChangeUser([{label: 'Tester'} as Tag]);
       // then
       expect(permissionService.getUserWithRestrictions).toHaveBeenCalledWith('Tester');
       expect(permissionComponent.assignedRestrictions.length).toBe(2);
@@ -149,11 +149,11 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
         // given
         permissionComponent.assignedRestrictions = [{id: 51} as Restriction, {id: 52} as Restriction];
-        permissionComponent.selectedUserNames = [ {label: 'Tester'} as Tag ];
+        permissionComponent.selectedUserNames = ['Tester'];
         permissionComponent.userNames = ['user'];
         spyOn(permissionService, 'getUserWithRestrictions').and.callThrough();
         // when
-        permissionComponent.onChangeUser();
+        permissionComponent.onChangeUser([{label: 'Tester'} as Tag]);
         // then
         expect(permissionService.getUserWithRestrictions).not.toHaveBeenCalled();
         expect(permissionComponent.assignedRestrictions).toEqual([]);
@@ -258,7 +258,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     inject([PermissionComponent],
       (permissionComponent: PermissionComponent) => {
         // given
-        permissionComponent.selectedUserNames = [{label:'Tester'} as Tag];
+        permissionComponent.selectedUserNames = ['Tester'];
         expect(permissionComponent.create).toBeFalsy();
         expect(permissionComponent.restriction).toBeNull();
         // when
