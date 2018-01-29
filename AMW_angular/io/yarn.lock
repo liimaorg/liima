@@ -64,9 +64,9 @@
   dependencies:
     tslib "^1.7.1"
 
-"@ng-select/ng-select@0.14.4":
-  version "0.14.4"
-  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-0.14.4.tgz#5ba16a4de3e25c6d12df3d9e47968e5c74114209"
+"@ng-select/ng-select@0.15.2":
+  version "0.15.2"
+  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-0.15.2.tgz#4b0d69cf238b7c7fd60ec2841c1e16d04f16b1df"
 
 "@types/bootstrap@3.3.36":
   version "3.3.36"
