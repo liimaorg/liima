@@ -315,6 +315,7 @@ public class AuditServiceTest {
         AuditViewEntry entry = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
                 .oldValue(oldValue)
                 .value(newValue)
+                .type(EMPTY)
                 .build();
 
         // when
@@ -334,6 +335,7 @@ public class AuditServiceTest {
         AuditViewEntry entry = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
                 .oldValue(oldValue)
                 .value(newValue)
+                .type(EMPTY)
                 .build();
 
         // when
@@ -363,10 +365,12 @@ public class AuditServiceTest {
         AuditViewEntry entryInList = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
                 .oldValue(oldValue)
                 .value(newValue)
+                .type(EMPTY)
                 .build();
         AuditViewEntry newEntry = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
                 .oldValue(oldValue + ".")
                 .value(newValue)
+                .type(EMPTY)
                 .build();
         Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
         allAuditViewEntries.put(entryInList.hashCode(), entryInList);
@@ -387,6 +391,7 @@ public class AuditServiceTest {
         AuditViewEntry entryInList = AuditViewEntry.builder(revisionEntity, RevisionType.MOD)
                 .oldValue(oldValue)
                 .value(newValue)
+                .type(EMPTY)
                 .build();
         Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
         allAuditViewEntries.put(entryInList.hashCode(), entryInList);
