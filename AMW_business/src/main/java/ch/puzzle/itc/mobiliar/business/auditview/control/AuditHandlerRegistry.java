@@ -6,6 +6,7 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.template.control.TemplateDescriptorEntityAuditviewHandler;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 
 import javax.annotation.PostConstruct;
@@ -26,7 +27,11 @@ public class AuditHandlerRegistry {
     @Named("propertyEntityAuditviewHandler")
     PropertyEntityAuditviewHandler propertyEntityAuditviewHandler;
 
-    Map<Class<? extends Auditable>, GenericAuditHandler> auditHandlerRegistry;
+    @Inject
+    @Named("templateDescriptorEntityAuditviewHandler")
+    TemplateDescriptorEntityAuditviewHandler templateDescriptorEntityAuditviewHandler;
+
+    private Map<Class<? extends Auditable>, GenericAuditHandler> auditHandlerRegistry;
 
     @PostConstruct
     public void init() {
@@ -35,7 +40,7 @@ public class AuditHandlerRegistry {
         auditHandlerRegistry.put(PropertyDescriptorEntity.class, genericAuditHandler);
         auditHandlerRegistry.put(ConsumedResourceRelationEntity.class, genericAuditHandler);
         auditHandlerRegistry.put(ProvidedResourceRelationEntity.class, genericAuditHandler);
-        auditHandlerRegistry.put(TemplateDescriptorEntity.class, genericAuditHandler);
+        auditHandlerRegistry.put(TemplateDescriptorEntity.class, templateDescriptorEntityAuditviewHandler);
     }
 
     public GenericAuditHandler getAuditHandler(Class<?> aClass) throws NoAuditHandlerException {

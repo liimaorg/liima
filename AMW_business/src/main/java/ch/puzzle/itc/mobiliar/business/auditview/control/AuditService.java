@@ -32,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextE
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.AuditReader;
@@ -60,7 +61,7 @@ public class AuditService {
     EntityManager entityManager;
 
     @Inject
-    AuditHandlerRegistry auditHandlerRegistry;
+    private AuditHandlerRegistry auditHandlerRegistry;
 
     @SuppressWarnings("unchecked")
     public <T> Object getDeletedEntity(T entity, Integer id) {
@@ -124,7 +125,7 @@ public class AuditService {
                 allAuditViewEntries.put(auditViewEntry.hashCode(), auditViewEntry);
             }
         } catch (NoAuditHandlerException e) {
-            log.info(String.format("No AuditHandler found for %s in AuditHandlerRegistry", entity,getClass().getSimpleName()));
+            log.info(String.format("No AuditHandler found for %s in AuditHandlerRegistry", entity));
         }
     }
 
@@ -138,7 +139,7 @@ public class AuditService {
         if (allAuditViewEntries.get(entry.hashCode()) != null) {
             return false;
         }
-        if (entry.getType() == Auditable.TYPE_TEMPLATE_DESCRIPTOR) {
+        if (entry.getType().equals(Auditable.TYPE_TEMPLATE_DESCRIPTOR)) {
             // the content of the template descriptors are ignored
             return true;
         }
@@ -171,6 +172,11 @@ public class AuditService {
             setResourceIdInThreadLocal(((ResourceContextEntity) owner).getResource().getId());
         } else if (owner instanceof ResourceTypeContextEntity) {
             setResourceTypeIdInThreadLocal(((ResourceTypeContextEntity) owner).getResourceTypeEntity().getId());
+        } else if (owner instanceof ResourceRelationContextEntity) {
+            ConsumedResourceRelationEntity consumed = ((ResourceRelationContextEntity) owner).getConsumedResourceRelation();
+            if (consumed != null) {
+                setResourceIdInThreadLocal(consumed.getMasterResourceId());
+            }
         }
     }
 
@@ -203,8 +209,7 @@ public class AuditService {
                     .add(AuditEntity.id().eq(id))
                     .add(AuditEntity.revisionNumber().gt(revisionNumberOneYearAgo))
                     .addOrder(AuditEntity.revisionNumber().desc());
-            List<T> resultList = query.getResultList();
-            return resultList;
+            return (List<T>) query.getResultList();
         }
         return null;
     }
