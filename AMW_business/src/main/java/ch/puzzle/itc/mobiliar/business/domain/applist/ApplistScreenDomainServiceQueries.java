@@ -100,12 +100,12 @@ public class ApplistScreenDomainServiceQueries {
 		p = cb.and(cb.equal(appServerType.<String> get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name()));
 		
 		if (!nameFilterIsEmpty) {
-			nameFilter = JpaWildcardConverter.convertWildCards(nameFilter);
+			String nameFilterLower = JpaWildcardConverter.convertWildCards(nameFilter).toLowerCase();
 			p = cb.and(
 					p,
 					cb.or(
-							cb.like(appServer.<String> get("name"), nameFilter, JpaWildcardConverter.ESCAPE_CHARACTER),
-							cb.like(app.<String> get("name"), nameFilter, JpaWildcardConverter.ESCAPE_CHARACTER)));
+							cb.like(cb.lower(appServer.<String> get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER),
+							cb.like(cb.lower(app.<String> get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER)));
 		}
 		if (myAmwIds != null) {
 			p = cb.and(p,
