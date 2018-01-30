@@ -2,6 +2,8 @@ import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+import { AnonymousSubscription } from 'rxjs/Subscription';
 import { AppState } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
 import { Deployment } from './deployment';
@@ -22,7 +24,6 @@ declare var $: any;
 })
 
 export class DeploymentsComponent implements OnInit {
-  @ViewChild('selectModel') private selectModel: NgModel;
 
   defaultComparator: string = 'eq';
 
@@ -76,9 +77,17 @@ export class DeploymentsComponent implements OnInit {
   currentPage: number;
   lastPage: number;
 
+  // auto refresh
+  refreshIntervals: number[] = [0, 5, 10, 30, 60, 120];
+  refreshInterval: number = 0;
+  timerSubscription: AnonymousSubscription;
+
   errorMessage: string = '';
   successMessage: string = '';
   isLoading: boolean = true;
+
+  @ViewChild('selectModel')
+  selectModel: NgModel;
 
   constructor(private activatedRoute: ActivatedRoute,
               private ngZone: NgZone,
@@ -286,8 +295,17 @@ export class DeploymentsComponent implements OnInit {
     );
   }
 
-  public getSelectedDeployments(): Deployment[] {
+  getSelectedDeployments(): Deployment[] {
     return this.deployments.filter((deployment) => deployment.selected === true);
+  }
+
+  autoRefresh() {
+    if (this.refreshInterval > 0 && !this.timerSubscription) {
+      this.timerSubscription = Observable.timer(this.refreshInterval * 1000).first().subscribe(() => {
+        this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
+        this.timerSubscription = null;
+      });
+    }
   }
 
   private canFilterBeAdded(): boolean {
@@ -541,7 +559,8 @@ export class DeploymentsComponent implements OnInit {
       /* error path */ (e) => { this.errorMessage = e;
                                 this.isLoading = false; },
       /* onComplete */ () => { this.isLoading = false;
-                               this.mapStates(); }
+                               this.mapStates();
+                               this.autoRefresh(); }
     );
   }
 

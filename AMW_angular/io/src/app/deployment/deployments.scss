@@ -49,10 +49,18 @@ span.state {
 }
 
 /*
- * Nicer alignement of large buttons when they are getting wrapped
+ * Nicer alignment of large buttons when they are getting wrapped
  */
 .btn-main {
   margin-bottom: 0.5rem;
+}
+
+/*
+ * Nicer alignment of label after selection
+ */
+span.interval-label {
+  margin-left: 1rem;
+  line-height: 2;
 }
 
 /*
