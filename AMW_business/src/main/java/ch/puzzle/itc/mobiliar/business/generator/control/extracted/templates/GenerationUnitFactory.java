@@ -151,7 +151,7 @@ public class GenerationUnitFactory {
 	private GenerationSubPackage getGenerationUnitForResource(GenerationPackage mainWorkSet,
 			GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler,
 			ResourceEntity resource,  List<Integer> excludedApplicationGroupIds,
-			Set<TemplateDescriptorEntity> currentResourceTemplates, int walkingPathIndex, boolean generateTemplates, 
+			Set<TemplateDescriptorEntity> currentResourceTemplates, int walkingPathIndex, boolean generateTemplates,
 			GenerationSubPackage parentResourceWorkSet) {
 		log.info(resource.getName());
 
@@ -168,8 +168,9 @@ public class GenerationUnitFactory {
 
 		GenerationSubPackage resourceWorkSet = new GenerationSubPackage();
 
-		// generate consumedResources
-		handleConsumedRelations(mainWorkSet, options, templateExceptionHandler, resource, excludedApplicationGroupIds, walkingPathIndex, properties, resourceWorkSet, generateTemplates, parentResourceWorkSet);
+		// generate consumedResources, add relationTemplates
+		Set<TemplateDescriptorEntity> resourceRelationTemplates = handleConsumedRelations(mainWorkSet, options, templateExceptionHandler, resource, excludedApplicationGroupIds, walkingPathIndex, properties, resourceWorkSet, generateTemplates, parentResourceWorkSet);
+		properties.setResourceRelationTemplates(resourceRelationTemplates);
 
 		// is this resource a CPI which is connected to a PPI by softlink
 		handleSoftlinkRelation(options, templateExceptionHandler, resource, properties, options.getContext().getDeployment().getDeploymentStateDate());
@@ -192,12 +193,13 @@ public class GenerationUnitFactory {
 		return resourceWorkSet;
 	}
 
-	private void handleConsumedRelations(GenerationPackage mainWorkSet, GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler, ResourceEntity resource, List<Integer> excludedApplicationGroupIds, int walkingPathIndex, AppServerRelationProperties properties, GenerationSubPackage resourceWorkSet, boolean parentGenerateTemplates, GenerationSubPackage parentResourceWorkSet) {
+	private Set<TemplateDescriptorEntity> handleConsumedRelations(GenerationPackage mainWorkSet, GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler, ResourceEntity resource, List<Integer> excludedApplicationGroupIds, int walkingPathIndex, AppServerRelationProperties properties, GenerationSubPackage resourceWorkSet, boolean parentGenerateTemplates, GenerationSubPackage parentResourceWorkSet) {
 		Set<ConsumedResourceRelationEntity> consumedMasterRelations = dependencyResolver.getConsumedMasterRelationsForRelease(resource, options.getContext().getTargetRelease());
 		List<ConsumedResourceRelationEntity> consumedMasterRelationsSorted = new ArrayList<>(
 				consumedMasterRelations);
 		Collections.sort(consumedMasterRelationsSorted,
 				AbstractResourceRelationEntity.COMPARE_BY_SLAVE_NAME);
+		Set<TemplateDescriptorEntity> relationTemplates = Sets.newLinkedHashSet();
 
 		for (ConsumedResourceRelationEntity resourceRelation : consumedMasterRelationsSorted) {
 
@@ -211,9 +213,10 @@ public class GenerationUnitFactory {
                 generateTemplates = false;
 		    }
 
-			createGenerationUnitForConsumedResource(mainWorkSet, options, templateExceptionHandler,
-					resource, walkingPathIndex, properties, resourceWorkSet, resourceRelation, excludedApplicationGroupIds,  slave, generateTemplates, parentResourceWorkSet);
+			relationTemplates.addAll(createGenerationUnitForConsumedResource(mainWorkSet, options, templateExceptionHandler,
+					resource, walkingPathIndex, properties, resourceWorkSet, resourceRelation, excludedApplicationGroupIds,  slave, generateTemplates, parentResourceWorkSet));
 		}
+		return relationTemplates;
 	}
 
 	private void handleProvidedRelations(GenerationPackage mainWorkSet, GenerationOptions options, ResourceEntity resource, AppServerRelationProperties properties, GenerationSubPackage resourceWorkSet) {
@@ -343,7 +346,7 @@ public class GenerationUnitFactory {
 	}
 
 
-	private void createGenerationUnitForConsumedResource(GenerationPackage mainWorkSet,
+	private Set<TemplateDescriptorEntity> createGenerationUnitForConsumedResource(GenerationPackage mainWorkSet,
 			GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler,
 			ResourceEntity resource, int walkingPathIndex, AppServerRelationProperties properties,
 			GenerationSubPackage resourceWorkSet, ConsumedResourceRelationEntity resourceRelation, List<Integer> excludedApplicationGroupIds,
@@ -355,7 +358,7 @@ public class GenerationUnitFactory {
 				templateExceptionHandler, slave, excludedApplicationGroupIds, resourceTemplates, ++walkingPathIndex, generateTemplates, resourceWorkSet);
 	     //There is no generation sub package - this means, that we ignore this consumed resource and therefore don't need to continue.
 	    if(generationUnitForResource==null){
-		    return;
+		    return Collections.EMPTY_SET;
 	    }
 
 		// do not add if the slave resource has no relations
@@ -399,6 +402,8 @@ public class GenerationUnitFactory {
         }
 
         addUnit(resourceWorkSet, generationUnit);
+
+        return relationTemplates;
 	}
 
 	private void addUnit(GenerationSubPackage workSet, GenerationUnit generationUnit) {

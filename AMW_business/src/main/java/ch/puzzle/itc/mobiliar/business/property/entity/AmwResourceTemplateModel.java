@@ -90,6 +90,8 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
      */
     @Setter
     Set<TemplateDescriptorEntity> resourceTemplates = new HashSet<>();
+    @Setter
+    Set<TemplateDescriptorEntity> resourceRelationTemplates = new HashSet<>();
 
     @Setter
     ResourceEntity resourceEntity;
@@ -114,6 +116,9 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
 			if(resourceTemplates != null){
 				allTemplates.putAll(AmwTemplateModelHelper.convertTemplateDescriptorToHash(resourceTemplates));
 			}
+            if(resourceRelationTemplates != null){
+                allTemplates.putAll(AmwTemplateModelHelper.convertTemplateDescriptorToHash(resourceRelationTemplates));
+            }
 			// then the generated so that the content is available
 			allTemplates.putAll(AmwTemplateModelHelper.convertTemplatesToHash(templates));
 			

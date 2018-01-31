@@ -79,6 +79,8 @@ public class AppServerRelationProperties {
 	private List<AmwFunctionEntity> functions;
 	@Setter
 	private Set<TemplateDescriptorEntity> resourceTemplates;
+	@Setter
+	private Set<TemplateDescriptorEntity> resourceRelationTemplates;
 
 	private List<AppServerRelationProperties> consumed = Lists.newArrayList();
 	private List<AppServerRelationProperties> provided = Lists.newArrayList();
@@ -123,6 +125,7 @@ public class AppServerRelationProperties {
 		model.setConsumedResTypes(transformConsumedRelated);
 		model.setProvidedResTypes(transformRelated(provided, model));
 		model.setResourceTemplates(resourceTemplates);
+		model.setResourceRelationTemplates(resourceRelationTemplates);
 
 		AmwAppServerNodeModel amwAppServerNodeModel = new AmwAppServerNodeModel();
 		addAppServerNodeViaResolver(amwAppServerNodeModel, resolver);
@@ -204,6 +207,7 @@ public class AppServerRelationProperties {
 		model.setResourceEntity(owner);
 		model.setParentResourceTemplateModel(parent);
 		model.setResourceTemplates(resourceTemplates);
+		model.setResourceRelationTemplates(resourceRelationTemplates);
         setTemplates(model);
         return model;
 	}
