@@ -75,6 +75,11 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 	@Transient
 	private AbstractContext ownerResource;
 
+	@Getter
+	@Setter
+	@Transient
+	private boolean relationTemplate;
+
 	@Version
 	private long v;
 
