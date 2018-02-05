@@ -459,9 +459,6 @@ public class GenerationUnitFactory {
 			// relation is null when handed a ASR base on TYPES
 			utils.getTemplates(options.getContext().getContext(), resourceRelation, templates, options
 					.getContext().getTargetPlatformId(), options.getContext().isTesting());
-			for (TemplateDescriptorEntity template : templates) {
-				template.setRelationTemplate(true);
-			}
 		}
 		return templates;
 	}
