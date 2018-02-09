@@ -262,6 +262,7 @@ public class GeneratorUtils {
 								|| (!testing && !template.isTesting())
 								&& (targetPlatform != null && containsRuntimeId(targetPlatform,
 										template.getTargetPlatforms()))) {
+							template.setRelationTemplate(true);
 							result.add(template);
 						}
 					}
