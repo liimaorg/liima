@@ -3,10 +3,11 @@ package ch.puzzle.itc.mobiliar.business.auditview.control;
 import ch.puzzle.itc.mobiliar.business.auditview.GenericAuditHandler;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntryContainer;
-import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextRepository;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import org.hibernate.envers.RevisionType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,16 +35,18 @@ public class GenericAuditViewHandlerTest {
     @Test
     public void shouldObfuscateValues() {
         // given
-        Auditable entityForRevision = new PropertyDescriptorEntity();
+        PropertyDescriptorEntity encryptedDescriptor = new PropertyDescriptorEntity(ForeignableOwner.AMW);
+        encryptedDescriptor.setEncrypt(true);
+        PropertyEntity propertyEntity = new PropertyEntity();
+        propertyEntity.setDescriptor(encryptedDescriptor);
         MyRevisionEntity revEntity = new MyRevisionEntity();
         RevisionType revisionType = RevisionType.MOD;
-        Object[] enversTriple = {entityForRevision, revEntity, revisionType};
+        Object[] enversTriple = {propertyEntity, revEntity, revisionType};
 
         AuditViewEntryContainer container = new AuditViewEntryContainer(enversTriple);
-        container.setObfuscated(true);
 
         // when
-        AuditViewEntry auditViewEntryWithObfuscatedValues = genericAuditHandler.buildAuditViewEntry(container, entityForRevision);
+        AuditViewEntry auditViewEntryWithObfuscatedValues = genericAuditHandler.buildAuditViewEntry(container, propertyEntity);
 
         // then
         assertThat(auditViewEntryWithObfuscatedValues.getValue(), is(AuditHandler.OBFUSCATED_VALUE));

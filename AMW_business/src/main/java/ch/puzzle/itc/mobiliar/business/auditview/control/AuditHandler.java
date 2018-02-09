@@ -46,9 +46,8 @@ public abstract class AuditHandler {
         MyRevisionEntity revEntity = auditViewEntryContainer.getRevEntity();
         RevisionType revisionType = auditViewEntryContainer.getRevisionType();
 
-        boolean isObfuscated = auditViewEntryContainer.isObfuscated();
-        String value = getNewValueForAuditLog(entityForRevision, revisionType, isObfuscated);
-        String oldValue = getOldValueForAuditLog(previous, isObfuscated);
+        String value = getNewValueForAuditLog(entityForRevision, revisionType);
+        String oldValue = getOldValueForAuditLog(previous);
         return AuditViewEntry
                 .builder(revEntity, revisionType)
                 .oldValue(oldValue)
@@ -57,21 +56,22 @@ public abstract class AuditHandler {
                 .name(entityForRevision.getNameForAuditLog())
                 .editContextName(getContextName(auditViewEntryContainer.getEditContextId()))
                 .relation(auditViewEntryContainer.getRelationName())
+                .isObfuscatedValue(entityForRevision.isObfuscatedValue())
                 .build();
     }
 
-    protected String getOldValueForAuditLog(Auditable previous, boolean isObfuscated) {
+    protected String getOldValueForAuditLog(Auditable previous) {
         if (previous == null) {
             return StringUtils.EMPTY;
         }
-        return isObfuscated ? OBFUSCATED_VALUE : previous.getNewValueForAuditLog();
+        return previous.isObfuscatedValue() ? OBFUSCATED_VALUE : previous.getNewValueForAuditLog();
     }
 
-    protected String getNewValueForAuditLog(Auditable entityForRevision, RevisionType revisionType, boolean isObfuscated) {
+    protected String getNewValueForAuditLog(Auditable entityForRevision, RevisionType revisionType) {
         if (revisionType == DEL) {
             return StringUtils.EMPTY;
         }
-        return isObfuscated ? OBFUSCATED_VALUE : entityForRevision.getNewValueForAuditLog();
+        return entityForRevision.isObfuscatedValue() ? OBFUSCATED_VALUE : entityForRevision.getNewValueForAuditLog();
     }
 
     private Auditable getPrevious(AuditReader reader, Auditable entityForRevision, MyRevisionEntity revEntity) {

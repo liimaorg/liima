@@ -13,9 +13,6 @@ public class AuditViewEntryContainer {
     String relationName;
     Integer editContextId = null;
 
-    // used to mask encrypted values
-    boolean obfuscated = false;
-
     public AuditViewEntryContainer(Object[] enversTriple) {
        this.entityForRevision = (Auditable) enversTriple[0];
        this.revEntity = (MyRevisionEntity) enversTriple[1];

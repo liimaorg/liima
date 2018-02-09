@@ -71,8 +71,6 @@ public class AuditServiceTest {
         ThreadLocalUtil.destroy();
     }
 
-    boolean isObfuscated = false;
-
     @Test
     public void shouldReturnNullIfEntityIsNotAudited() {
         // given
@@ -321,7 +319,7 @@ public class AuditServiceTest {
                 .build();
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(entry, Collections.<Integer, AuditViewEntry>emptyMap(), isObfuscated);
+        boolean relevant = auditService.isAuditViewEntryRelevant(entry, Collections.<Integer, AuditViewEntry>emptyMap());
 
         // then
         assertThat(relevant, is(true));
@@ -341,7 +339,7 @@ public class AuditServiceTest {
                 .build();
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(entry, Collections.<Integer, AuditViewEntry>emptyMap(), isObfuscated);
+        boolean relevant = auditService.isAuditViewEntryRelevant(entry, Collections.<Integer, AuditViewEntry>emptyMap());
 
         // then
         assertThat(relevant, is(false));
@@ -351,7 +349,7 @@ public class AuditServiceTest {
     public void shouldReturnFalseWhenEntryIsNull(){
         // given
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(null, Collections.<Integer, AuditViewEntry>emptyMap(), isObfuscated);
+        boolean relevant = auditService.isAuditViewEntryRelevant(null, Collections.<Integer, AuditViewEntry>emptyMap());
 
         // then
         assertThat(relevant, is(false));
@@ -378,7 +376,7 @@ public class AuditServiceTest {
         allAuditViewEntries.put(entryInList.hashCode(), entryInList);
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(newEntry, allAuditViewEntries, isObfuscated);
+        boolean relevant = auditService.isAuditViewEntryRelevant(newEntry, allAuditViewEntries);
 
         // then
         assertThat(relevant, is(true));
@@ -399,7 +397,7 @@ public class AuditServiceTest {
         allAuditViewEntries.put(entryInList.hashCode(), entryInList);
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries, isObfuscated);
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
 
         // then
         assertThat(relevant, is(false));
@@ -418,7 +416,7 @@ public class AuditServiceTest {
         allAuditViewEntries.put(entryInList.hashCode(), entryInList);
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries, isObfuscated);
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
 
         // then
         assertThat(relevant, is(true));
@@ -437,7 +435,7 @@ public class AuditServiceTest {
         allAuditViewEntries.put(entryInList.hashCode(), entryInList);
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries, isObfuscated);
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
 
         // then
         assertThat(relevant, is(true));
@@ -456,7 +454,7 @@ public class AuditServiceTest {
         Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries, isObfuscated);
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
 
         // then
         assertThat(relevant, is(true));
@@ -475,7 +473,7 @@ public class AuditServiceTest {
         Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries, isObfuscated);
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
 
         // then
         assertThat(relevant, is(true));
@@ -489,11 +487,12 @@ public class AuditServiceTest {
                 .oldValue("abcd")
                 .value("abcd")
                 .type(Auditable.TYPE_TEMPLATE_DESCRIPTOR)
+                .isObfuscatedValue(true)
                 .build();
         Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries, true);
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
 
         // then
         assertThat(relevant, is(true));
@@ -509,11 +508,12 @@ public class AuditServiceTest {
                 .oldValue(value)
                 .value("abcd")
                 .type(Auditable.TYPE_TEMPLATE_DESCRIPTOR)
+                .isObfuscatedValue(true)
                 .build();
         Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>(1);
 
         // when
-        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries, true);
+        boolean relevant = auditService.isAuditViewEntryRelevant(entryInList, allAuditViewEntries);
 
         // then
         assertThat(relevant, is(true));

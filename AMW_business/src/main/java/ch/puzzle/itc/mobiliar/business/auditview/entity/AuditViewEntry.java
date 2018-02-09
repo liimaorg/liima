@@ -21,6 +21,7 @@ public class AuditViewEntry {
     RevisionType mode;
     String editContextName;
     String relation; // consumed resource, ...
+    boolean isObfuscatedValue = false;
 
     public String getModeAsString() {
         return this.getMode().name();
