@@ -465,4 +465,9 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
     public String getNameForAuditLog() {
         return this.propertyName;
     }
+
+	@Override
+	public boolean isObfuscatedValue() {
+		return false;
+	}
 }

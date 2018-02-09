@@ -213,4 +213,9 @@ public class PropertyEntity implements Identifiable, Serializable, Copyable<Prop
 	public String getNameForAuditLog() {
 		return this.getDescriptor().getPropertyName();
 	}
+
+	@Override
+	public boolean isObfuscatedValue() {
+		return this.descriptor.isEncrypt();
+	}
 }

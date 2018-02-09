@@ -107,6 +107,11 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
         return this.name;
     }
 
+	@Override
+	public boolean isObfuscatedValue() {
+		return false;
+	}
+
 	public String getFileContent() {
 		// Oracle saves empty strings as null & Freemarker doesn't like null. See #7532
 		if (this.fileContent == null) {

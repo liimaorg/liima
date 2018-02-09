@@ -124,4 +124,9 @@ public class ProvidedResourceRelationEntity extends AbstractResourceRelationEnti
     public String getNameForAuditLog() {
         return String.format("Provided Resource: '%s'", this.getSlaveResource().getName());
     }
+
+    @Override
+    public boolean isObfuscatedValue() {
+        return false;
+    }
 }

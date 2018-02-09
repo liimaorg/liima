@@ -15,4 +15,6 @@ public interface Auditable {
     String getType();
 
     String getNameForAuditLog();
+
+    boolean isObfuscatedValue();
 }

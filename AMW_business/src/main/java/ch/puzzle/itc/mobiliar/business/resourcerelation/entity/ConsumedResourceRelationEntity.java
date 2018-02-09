@@ -167,4 +167,10 @@ public class ConsumedResourceRelationEntity extends AbstractResourceRelationEnti
     public String getNameForAuditLog() {
         return String.format("Consumed Resource: '%s'", this.getSlaveResource().getName());
     }
+
+    @Override
+    public boolean isObfuscatedValue() {
+        return false;
+    }
+
 }
