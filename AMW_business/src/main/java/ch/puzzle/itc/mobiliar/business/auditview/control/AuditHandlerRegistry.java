@@ -21,7 +21,7 @@ public class AuditHandlerRegistry {
 
     @Inject
     @Named("genericAuditHandler")
-    GenericAuditHandler genericAuditHandler;
+    AuditHandler genericAuditHandler;
 
     @Inject
     @Named("propertyEntityAuditviewHandler")
@@ -31,7 +31,7 @@ public class AuditHandlerRegistry {
     @Named("templateDescriptorEntityAuditviewHandler")
     TemplateDescriptorEntityAuditviewHandler templateDescriptorEntityAuditviewHandler;
 
-    private Map<Class<? extends Auditable>, GenericAuditHandler> auditHandlerRegistry;
+    private Map<Class<? extends Auditable>, AuditHandler> auditHandlerRegistry;
 
     @PostConstruct
     public void init() {
@@ -43,8 +43,8 @@ public class AuditHandlerRegistry {
         auditHandlerRegistry.put(TemplateDescriptorEntity.class, templateDescriptorEntityAuditviewHandler);
     }
 
-    public GenericAuditHandler getAuditHandler(Class<?> aClass) throws NoAuditHandlerException {
-        GenericAuditHandler handler = this.auditHandlerRegistry.get(aClass);
+    public AuditHandler getAuditHandler(Class<?> aClass) throws NoAuditHandlerException {
+        AuditHandler handler = this.auditHandlerRegistry.get(aClass);
         if (handler == null) {
             throw new NoAuditHandlerException();
         }

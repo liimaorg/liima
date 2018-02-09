@@ -6,26 +6,20 @@ import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextRepository;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 
-import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 import static org.hibernate.envers.RevisionType.DEL;
 
-@Stateless
-@NoArgsConstructor
-@Named("genericAuditHandler")
-public class GenericAuditHandler {
+public abstract class AuditHandler {
 
     public static final String OBFUSCATED_VALUE = "*******";
 
@@ -36,12 +30,14 @@ public class GenericAuditHandler {
     protected ContextRepository contextRepository;
 
 
-    public AuditViewEntry createAuditViewEntry(AuditViewEntryContainer auditViewEntryContainer) {
+    public abstract AuditViewEntry createAuditViewEntry(AuditViewEntryContainer auditViewEntryContainer);
+
+    public AuditViewEntry createGenericAuditViewEntry(AuditViewEntryContainer auditViewEntryContainer) {
         Auditable entityForRevision = auditViewEntryContainer.getEntityForRevision();
         MyRevisionEntity revEntity = auditViewEntryContainer.getRevEntity();
 
-        AuditReader a = AuditReaderFactory.get(entityManager);
-        Auditable previous = getPrevious(a, entityForRevision, revEntity);
+        AuditReader reader = AuditReaderFactory.get(entityManager);
+        Auditable previous = getPrevious(reader, entityForRevision, revEntity);
         return buildAuditViewEntry(auditViewEntryContainer, previous);
     }
 

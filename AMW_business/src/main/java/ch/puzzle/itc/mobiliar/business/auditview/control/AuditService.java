@@ -119,7 +119,7 @@ public class AuditService {
         AuditViewEntryContainer auditViewEntryContainer = new AuditViewEntryContainer(entityRevisionAndRevisionType);
 
         try {
-            GenericAuditHandler handler = auditHandlerRegistry.getAuditHandler(entity.getClass());
+            AuditHandler handler = auditHandlerRegistry.getAuditHandler(entity.getClass());
             AuditViewEntry auditViewEntry = handler.createAuditViewEntry(auditViewEntryContainer);
             boolean isObfuscated = auditViewEntryContainer.isObfuscated();
             if (isAuditViewEntryRelevant(auditViewEntry, allAuditViewEntries, isObfuscated)) {

@@ -1,5 +1,6 @@
 package ch.puzzle.itc.mobiliar.business.auditview.control;
 
+import ch.puzzle.itc.mobiliar.business.auditview.GenericAuditHandler;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntryContainer;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
@@ -28,7 +29,7 @@ public class GenericAuditViewHandlerTest {
     protected ContextRepository contextRepository;
 
     @InjectMocks
-    GenericAuditHandler genericAuditHandler = new GenericAuditHandler();
+    AuditHandler genericAuditHandler = new GenericAuditHandler();
 
     @Test
     public void shouldObfuscateValues() {
@@ -45,8 +46,8 @@ public class GenericAuditViewHandlerTest {
         AuditViewEntry auditViewEntryWithObfuscatedValues = genericAuditHandler.buildAuditViewEntry(container, entityForRevision);
 
         // then
-        assertThat(auditViewEntryWithObfuscatedValues.getValue(), is(GenericAuditHandler.OBFUSCATED_VALUE));
-        assertThat(auditViewEntryWithObfuscatedValues.getOldValue(), is(GenericAuditHandler.OBFUSCATED_VALUE));
+        assertThat(auditViewEntryWithObfuscatedValues.getValue(), is(AuditHandler.OBFUSCATED_VALUE));
+        assertThat(auditViewEntryWithObfuscatedValues.getOldValue(), is(AuditHandler.OBFUSCATED_VALUE));
     }
 
 }

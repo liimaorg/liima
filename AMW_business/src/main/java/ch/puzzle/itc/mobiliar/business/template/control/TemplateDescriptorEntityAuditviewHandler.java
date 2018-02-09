@@ -1,6 +1,6 @@
 package ch.puzzle.itc.mobiliar.business.template.control;
 
-import ch.puzzle.itc.mobiliar.business.auditview.control.GenericAuditHandler;
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditHandler;
 import ch.puzzle.itc.mobiliar.business.auditview.control.TemplateNotOnConsumedResourceException;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntryContainer;
@@ -13,7 +13,7 @@ import static ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry.RE
 
 @Stateless
 @Named("templateDescriptorEntityAuditviewHandler")
-public class TemplateDescriptorEntityAuditviewHandler extends GenericAuditHandler {
+public class TemplateDescriptorEntityAuditviewHandler extends AuditHandler {
 
 
     private static final String SELECT_IDENTIFIER_FOR_CONSUMED_RESOURCE =
@@ -54,7 +54,7 @@ public class TemplateDescriptorEntityAuditviewHandler extends GenericAuditHandle
         } catch (TemplateNotOnConsumedResourceException e) {
             // do nothing
         }
-        return super.createAuditViewEntry(container);
+        return super.createGenericAuditViewEntry(container);
     }
 
 

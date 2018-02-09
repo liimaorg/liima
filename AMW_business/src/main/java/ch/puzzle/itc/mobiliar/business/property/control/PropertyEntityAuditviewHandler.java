@@ -1,6 +1,6 @@
 package ch.puzzle.itc.mobiliar.business.property.control;
 
-import ch.puzzle.itc.mobiliar.business.auditview.control.GenericAuditHandler;
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditHandler;
 import ch.puzzle.itc.mobiliar.business.auditview.control.PropertyNotOnConsumedResourceException;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntryContainer;
@@ -22,7 +22,7 @@ import static ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry.RE
 
 @Stateless
 @Named("propertyEntityAuditviewHandler")
-public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
+public class PropertyEntityAuditviewHandler extends AuditHandler {
     // Property on Master Resource
     private static final String SELECT_FOR_RESOURCE = "SELECT TAMW_RESOURCECONTEXT_ID " +
             "FROM TAMW_RESOURCECTX_PROP " +
@@ -116,7 +116,7 @@ public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
         if (((PropertyEntity) container.getEntityForRevision()).getDescriptor().isEncrypt()) {
             container.setObfuscated(true);
         }
-        return super.createAuditViewEntry(container);
+        return super.createGenericAuditViewEntry(container);
     }
 
     private void setRelationNameAndEditedContexIdOnContainer(AuditViewEntryContainer container, Tuple<String, Integer> nameAndContextOfResource, String relationConsumedResource) {
