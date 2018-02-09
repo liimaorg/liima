@@ -27,6 +27,8 @@ import static org.hibernate.envers.RevisionType.DEL;
 @Named("genericAuditHandler")
 public class GenericAuditHandler {
 
+    public static final String OBFUSCATED_VALUE = "*******";
+
     @PersistenceContext
     protected EntityManager entityManager;
 
@@ -37,20 +39,43 @@ public class GenericAuditHandler {
     public AuditViewEntry createAuditViewEntry(AuditViewEntryContainer auditViewEntryContainer) {
         Auditable entityForRevision = auditViewEntryContainer.getEntityForRevision();
         MyRevisionEntity revEntity = auditViewEntryContainer.getRevEntity();
-        RevisionType revisionType = auditViewEntryContainer.getRevisionType();
 
         AuditReader a = AuditReaderFactory.get(entityManager);
         Auditable previous = getPrevious(a, entityForRevision, revEntity);
-        String newValueForAuditLog = revisionType == DEL ? StringUtils.EMPTY : entityForRevision.getNewValueForAuditLog();
+        return buildAuditViewEntry(auditViewEntryContainer, previous);
+    }
+
+    protected AuditViewEntry buildAuditViewEntry(AuditViewEntryContainer auditViewEntryContainer, Auditable previous) {
+        Auditable entityForRevision = auditViewEntryContainer.getEntityForRevision();
+        MyRevisionEntity revEntity = auditViewEntryContainer.getRevEntity();
+        RevisionType revisionType = auditViewEntryContainer.getRevisionType();
+
+        boolean isObfuscated = auditViewEntryContainer.isObfuscated();
+        String value = getNewValueForAuditLog(entityForRevision, revisionType, isObfuscated);
+        String oldValue = getOldValueForAuditLog(previous, isObfuscated);
         return AuditViewEntry
                 .builder(revEntity, revisionType)
-                .oldValue(previous == null ? StringUtils.EMPTY : previous.getNewValueForAuditLog())
-                .value(newValueForAuditLog)
+                .oldValue(oldValue)
+                .value(value)
                 .type(entityForRevision.getType())
                 .name(entityForRevision.getNameForAuditLog())
                 .editContextName(getContextName(auditViewEntryContainer.getEditContextId()))
                 .relation(auditViewEntryContainer.getRelationName())
                 .build();
+    }
+
+    protected String getOldValueForAuditLog(Auditable previous, boolean isObfuscated) {
+        if (previous == null) {
+            return StringUtils.EMPTY;
+        }
+        return isObfuscated ? OBFUSCATED_VALUE : previous.getNewValueForAuditLog();
+    }
+
+    protected String getNewValueForAuditLog(Auditable entityForRevision, RevisionType revisionType, boolean isObfuscated) {
+        if (revisionType == DEL) {
+            return StringUtils.EMPTY;
+        }
+        return isObfuscated ? OBFUSCATED_VALUE : entityForRevision.getNewValueForAuditLog();
     }
 
     private Auditable getPrevious(AuditReader reader, Auditable entityForRevision, MyRevisionEntity revEntity) {

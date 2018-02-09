@@ -4,6 +4,7 @@ import ch.puzzle.itc.mobiliar.business.auditview.control.GenericAuditHandler;
 import ch.puzzle.itc.mobiliar.business.auditview.control.PropertyNotOnConsumedResourceException;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntryContainer;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import org.hibernate.envers.AuditReader;
@@ -111,6 +112,9 @@ public class PropertyEntityAuditviewHandler extends GenericAuditHandler {
                 Tuple<String, Integer> nameAndContext = getNameAndContextOfProvidedResource(container);
                 setRelationNameAndEditedContexIdOnContainer(container, nameAndContext, RELATION_PROVIDED_RESOURCE);
             }
+        }
+        if (((PropertyEntity) container.getEntityForRevision()).getDescriptor().isEncrypt()) {
+            container.setObfuscated(true);
         }
         return super.createAuditViewEntry(container);
     }

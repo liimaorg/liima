@@ -121,7 +121,8 @@ public class AuditService {
         try {
             GenericAuditHandler handler = auditHandlerRegistry.getAuditHandler(entity.getClass());
             AuditViewEntry auditViewEntry = handler.createAuditViewEntry(auditViewEntryContainer);
-            if (isAuditViewEntryRelevant(auditViewEntry, allAuditViewEntries)) {
+            boolean isObfuscated = auditViewEntryContainer.isObfuscated();
+            if (isAuditViewEntryRelevant(auditViewEntry, allAuditViewEntries, isObfuscated)) {
                 allAuditViewEntries.put(auditViewEntry.hashCode(), auditViewEntry);
             }
         } catch (NoAuditHandlerException e) {
@@ -129,7 +130,7 @@ public class AuditService {
         }
     }
 
-    protected boolean isAuditViewEntryRelevant(AuditViewEntry entry, Map<Integer, AuditViewEntry> allAuditViewEntries) {
+    protected boolean isAuditViewEntryRelevant(AuditViewEntry entry, Map<Integer, AuditViewEntry> allAuditViewEntries, boolean isObfuscated) {
         if (entry == null) {
             return false;
         }
@@ -141,6 +142,9 @@ public class AuditService {
         }
         if (entry.getType().equals(Auditable.TYPE_TEMPLATE_DESCRIPTOR)) {
             // the content of the template descriptors are ignored
+            return true;
+        }
+        if (isObfuscated) {
             return true;
         }
         return !StringUtils.equals(entry.getOldValue(), entry.getValue());
