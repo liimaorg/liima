@@ -4,6 +4,7 @@ import { inject, TestBed } from '@angular/core/testing';
 import { BaseRequestOptions, ConnectionBackend, Http } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
 import { CommonModule } from '@angular/common';
+import { NgModel } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
 import { AppState } from '../app.service';
@@ -221,7 +222,8 @@ describe('DeploymentsComponent (without query params)', () => {
       DeploymentService,
       ResourceService,
       DeploymentsComponent,
-      AppState
+      AppState,
+      NgModel
     ],
     declarations: [DummyComponent],
   }));
@@ -239,8 +241,10 @@ describe('DeploymentsComponent (without query params)', () => {
   }));
 
   it('should add a filter',
-    inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+    inject([DeploymentsComponent, DeploymentService, NgModel],
+      (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService, selectModel: NgModel) => {
       // given
+      deploymentsComponent.selectModel = selectModel;
       deploymentsComponent.filters = [{name: 'Confirmed', comp: 'eq', val: 'true', type: 'booleanType'} as DeploymentFilter];
       deploymentsComponent.selectedFilterType = {name: 'Application', type: 'StringType'};
       const deploymentFilters: DeploymentFilterType[] = [{name: 'Application', type: 'StringType'}, {name: 'Confirmed on', type: 'DateType'}];
@@ -257,8 +261,10 @@ describe('DeploymentsComponent (without query params)', () => {
   }));
 
   it('should reset offset and selectedFilterType on addFilter',
-    inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+    inject([DeploymentsComponent, DeploymentService, NgModel],
+      (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService, selectModel: NgModel) => {
       // given
+      deploymentsComponent.selectModel = selectModel;
       deploymentsComponent.offset = 10;
       deploymentsComponent.filters = [{name: 'Confirmed', comp: 'eq', val: 'true', type: 'booleanType'} as DeploymentFilter];
       deploymentsComponent.selectedFilterType = {name: 'Application', type: 'StringType'};
@@ -307,8 +313,10 @@ describe('DeploymentsComponent (without query params)', () => {
   }));
 
   it('should not add latest deployment job filter more than once',
-    inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
+    inject([DeploymentsComponent, DeploymentService, NgModel],
+      (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService, selectModel: NgModel) => {
       // given
+      deploymentsComponent.selectModel = selectModel;
       deploymentsComponent.filters = [{name: 'Confirmed', comp: 'eq', val: 'true', type: 'booleanType'} as DeploymentFilter];
       deploymentsComponent.selectedFilterType = {name: 'Latest deployment job for App Server and Env', type: 'SpecialFilterType'};
       const deploymentFilters: DeploymentFilterType[] = [{name: 'Latest deployment job for App Server and Env', type: 'SpecialFilterType'},
