@@ -25,37 +25,37 @@
         </div>
 
         <div class="form-group" *ngIf="restrictionType == 'user'">
-          <label for="selectUser" class="col-sm-1 control-label">User</label>
+          <label for="selectUsers" class="col-sm-1 control-label">User</label>
           <div class="col-sm-11 col-md-5">
-            <input id="selectUser" class="form-control input-sm" list="userList" type="text" [(ngModel)]="selectedUserName" (ngModelChange)="onChangeUser($event)">
-            <datalist id="userList">
-              <ng-container *ngIf="userNames.length > 0">
-                <option [ngValue]="userName" *ngFor="let userName of userNames">{{userName}}</option>
-              </ng-container>
-            </datalist>
+              <ng-select id="selectUsers" [items]="userNames" multiple="true" [addTag]="true" placeholder=""
+                         addTagText="add user" [(ngModel)]="selectedUserNames" (change)="onChangeUser($event)">
+              </ng-select>
           </div>
         </div>
 
         <div class="form-group">
           <label class="col-sm-1 control-label"></label>
           <div class="col-sm-11">
-            <ng-container *ngIf="(selectedRoleName || selectedUserName)">
-              <ng-container *ngIf="!restriction">
+            <ng-container *ngIf="(selectedRoleName || selectedUserNames.length > 0)">
+              <ng-container *ngIf="!restriction && !create">
                 <button type="button" class="btn btn-primary" (click)="addRestriction()">
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add permission
                 </button>
               </ng-container>
               <ng-container *ngIf="restriction">
-                  <amw-restriction [restriction]="restriction" [groupedEnvironments]="groupedEnvironments" [permissions]="getPermissions()" [resourceGroups]="resourceGroups" [resourceTypes]="resourceTypes" [availableRestrictions]="assignableRestrictions" [delegationMode]="delegationMode" (cancelEdit)='cancel()' (saveRestriction)='persistRestriction()'></amw-restriction>
+                  <amw-restriction-edit [restriction]="restriction" [groupedEnvironments]="groupedEnvironments" [permissions]="getPermissions()" [resourceGroups]="resourceGroups" [resourceTypes]="resourceTypes" [availableRestrictions]="assignableRestrictions" [delegationMode]="delegationMode" (cancelEdit)='cancel()' (saveRestriction)='persistRestriction()'></amw-restriction-edit>
+              </ng-container>
+              <ng-container *ngIf="create">
+                  <amw-restriction-add [roleName]="selectedRoleName" [userNames]="selectedUserNames" [groupedEnvironments]="groupedEnvironments" [permissions]="getPermissions()" [resourceGroups]="resourceGroups" [resourceTypes]="resourceTypes" [availableRestrictions]="assignableRestrictions" [delegationMode]="delegationMode" (cancelEdit)='cancel()' (saveRestrictions)='createRestrictions($event)'></amw-restriction-add>
               </ng-container>
             </ng-container>
           </div>
         </div>
 
-        <div class="form-group" *ngIf="restrictions.length > 0">
+        <div class="form-group" *ngIf="assignedRestrictions.length > 0">
           <label class="col-sm-1 control-label"></label>
           <div class="col-sm-11">
-            <amw-restriction-list [restrictions]="restrictions" [resourceGroups]="resourceGroups" [delegationMode]="delegationMode" (deleteRestriction)='removeRestriction($event)' (editRestriction)='modifyRestriction($event)'></amw-restriction-list>
+            <amw-restriction-list [restrictions]="assignedRestrictions" [resourceGroups]="resourceGroups" [delegationMode]="delegationMode" (deleteRestriction)='removeRestriction($event)' (editRestriction)='modifyRestriction($event)'></amw-restriction-list>
           </div>
         </div>
 

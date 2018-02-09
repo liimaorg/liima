@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 /*
@@ -8,6 +9,7 @@ import { HttpModule } from '@angular/http';
 import { ResourceModule } from './resource/resource.module';
 import { DeploymentModule } from './deployment/deployment.module';
 import { PermissionModule } from './permission/permission.module';
+import { NgSelectModule } from '@ng-select/ng-select';
 /*
  * Platform and Environment providers/directives/pipes
  */
@@ -18,6 +20,8 @@ import { AppComponent } from './app.component';
 import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
 import { PageNotFoundComponent } from './not-found.component';
+
+
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -35,13 +39,14 @@ type StoreType = {
  * `AppModule` is the main entry point into Angular2's bootstraping process
  */
 @NgModule({
-  bootstrap: [AppComponent],
   declarations: [
     AppComponent,
     PageNotFoundComponent
   ],
   imports: [ // import Angular's modules
     BrowserModule,
+    BrowserAnimationsModule,
+    NgSelectModule,
     FormsModule,
     HttpModule,
     AppRoutingModule,
@@ -52,6 +57,7 @@ type StoreType = {
   providers: [ // expose our Services and Providers into Angular's dependency injection
     ENV_PROVIDERS,
     APP_PROVIDERS
-  ]
+  ],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}
