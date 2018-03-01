@@ -844,7 +844,7 @@ public class PermissionBoundaryTest {
         when(resourceGroupRepository.find(1)).thenReturn(new ResourceGroupEntity());
 
         // when
-        int total = permissionBoundary.createMultipleRestrictions(roleName1, null, Arrays.asList(permissionName1, permissionName2), Arrays.asList(1), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA), Arrays.asList(Action.CREATE));
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, null, Arrays.asList(permissionName1, permissionName2), Arrays.asList(1), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA), Arrays.asList(Action.CREATE), false);
 
         // then
         assertThat(total, is(2));
@@ -863,7 +863,7 @@ public class PermissionBoundaryTest {
         when(resourceGroupRepository.find(1)).thenReturn(new ResourceGroupEntity());
 
         // when
-        int total = permissionBoundary.createMultipleRestrictions(null, Arrays.asList(userName1, userName2), Arrays.asList(permissionName1, permissionName2), Arrays.asList(1), null, ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE));
+        int total = permissionBoundary.createMultipleRestrictions(null, Arrays.asList(userName1, userName2), Arrays.asList(permissionName1, permissionName2), Arrays.asList(1), null, ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE), false);
 
         // then
         assertThat(total, is(4));
@@ -884,7 +884,7 @@ public class PermissionBoundaryTest {
         when(resourceGroupRepository.find(1)).thenReturn(new ResourceGroupEntity());
 
         // when
-        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(permissionName1, permissionName2), Arrays.asList(1), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA), Arrays.asList(Action.CREATE));
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(permissionName1, permissionName2), Arrays.asList(1), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA), Arrays.asList(Action.CREATE), false);
 
         // then
         assertThat(total, is(6));
@@ -902,7 +902,7 @@ public class PermissionBoundaryTest {
         when(resourceGroupRepository.find(1)).thenReturn(new ResourceGroupEntity());
 
         // when
-        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), Arrays.asList(1), null, ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE));
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), Arrays.asList(1), null, ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE), false);
 
         // then
         assertThat(total, is(12));
@@ -922,7 +922,7 @@ public class PermissionBoundaryTest {
         when(resourceGroupRepository.find(1)).thenReturn(new ResourceGroupEntity());
 
         // when
-        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), Arrays.asList(1), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE));
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), Arrays.asList(1), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE), false);
 
         // then
         assertThat(total, is(24));
@@ -942,7 +942,7 @@ public class PermissionBoundaryTest {
         when(resourceGroupRepository.find(anyInt())).thenReturn(new ResourceGroupEntity());
 
         // when
-        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), Arrays.asList(1, 2), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE));
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), Arrays.asList(1, 2), null, ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE), false);
 
         // then
         assertThat(total, is(48));
@@ -964,7 +964,7 @@ public class PermissionBoundaryTest {
         when(resourceTypeRepository.getByName(anyString())).thenReturn(new ResourceTypeEntity());
 
         // when
-        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, Arrays.asList(resourceTypeName1, resourceTypeName2), ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE));
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, Arrays.asList(resourceTypeName1, resourceTypeName2), ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE), false);
 
         // then
         assertThat(total, is(48));
@@ -984,7 +984,7 @@ public class PermissionBoundaryTest {
         when(resourceTypeRepository.getByName(anyString())).thenReturn(new ResourceTypeEntity());
 
         // when
-        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, Arrays.asList(resourceTypeName1, resourceTypeName2), ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE));
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, Arrays.asList(resourceTypeName1, resourceTypeName2), ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE), false);
 
         // then
         assertThat(total, is(24));
@@ -1003,7 +1003,7 @@ public class PermissionBoundaryTest {
         when(permissionRepository.getPermissionByName(resourceTypePermission.getValue())).thenReturn(resourceTypePermission);
 
         // when
-        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, null, ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE));
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, null, ResourceTypePermission.ANY, Arrays.asList(contextNameA, contextNameB), Arrays.asList(Action.CREATE, Action.UPDATE), false);
 
         // then
         assertThat(total, is(24));
@@ -1020,7 +1020,7 @@ public class PermissionBoundaryTest {
         when(permissionRepository.getPermissionByName(resourceTypePermission.getValue())).thenReturn(resourceTypePermission);
 
         // when
-        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, null, ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE));
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, null, ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE), false);
 
         // then
         assertThat(total, is(12));
@@ -1036,7 +1036,7 @@ public class PermissionBoundaryTest {
         when(resourceTypeRepository.getByName(anyString())).thenReturn(new ResourceTypeEntity());
 
         // when // then
-        permissionBoundary.createMultipleRestrictions(roleName1, null, Arrays.asList(resourcePermission.getValue()), Arrays.asList(1), Arrays.asList(resourceTypeName1), ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE));
+        permissionBoundary.createMultipleRestrictions(roleName1, null, Arrays.asList(resourcePermission.getValue()), Arrays.asList(1), Arrays.asList(resourceTypeName1), ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE), false);
     }
 
 }

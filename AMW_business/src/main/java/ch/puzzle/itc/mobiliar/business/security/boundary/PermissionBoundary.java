@@ -443,6 +443,7 @@ public class PermissionBoundary implements Serializable {
      * @param resourceTypeName
      * @param contextName
      * @param action
+     * @param delegated true if the Restriction to be created is delegated
      * @return Id of the newly created RestrictionEntity
      * @throws AMWException
      */
@@ -469,11 +470,12 @@ public class PermissionBoundary implements Serializable {
      * @param resourceTypePermission max one ResourceTypePermission
      * @param contextNames none or more Context names
      * @param actions at least one Action
+     * @param delegated true if the Restrictions to be created are delegated
      * @return int number of created Restrictions
      */
-    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.CREATE)
+    @HasPermission(oneOfPermission = { Permission.ASSIGN_REMOVE_PERMISSION, Permission.PERMISSION_DELEGATION }, action = Action.CREATE)
     public int createMultipleRestrictions(String roleName, List<String> userNames, List<String> permissionNames, List<Integer> resourceGroupIds, List<String> resourceTypeNames,
-                                              ResourceTypePermission resourceTypePermission, List<String> contextNames, List<Action> actions) throws AMWException {
+                                              ResourceTypePermission resourceTypePermission, List<String> contextNames, List<Action> actions, boolean delegated) throws AMWException {
         int count = 0;
         if (resourceGroupIds != null && !resourceGroupIds.isEmpty() && resourceTypeNames != null && !resourceTypeNames.isEmpty()) {
             throw new AMWException("Only ResourceGroupId(s) OR ResourceTypeName(s) must be set");
@@ -496,25 +498,25 @@ public class PermissionBoundary implements Serializable {
             for (Action action : actions) {
                 if (roleName != null) {
                     if (resourceGroupIds.isEmpty() && resourceTypeNames.isEmpty()) {
-                        count += createRestrictionPerContext(roleName, null, permissionName, null, null, resourceTypePermission, contextNames, action);
+                        count += createRestrictionPerContext(roleName, null, permissionName, null, null, resourceTypePermission, contextNames, action, delegated);
                     } else {
                         for (Integer resourceGroupId : resourceGroupIds) {
-                            count += createRestrictionPerContext(roleName, null, permissionName, resourceGroupId, null, resourceTypePermission, contextNames, action);
+                            count += createRestrictionPerContext(roleName, null, permissionName, resourceGroupId, null, resourceTypePermission, contextNames, action, delegated);
                         }
                         for (String resourceTypeName : resourceTypeNames) {
-                            count += createRestrictionPerContext(roleName, null, permissionName, null, resourceTypeName, resourceTypePermission, contextNames, action);
+                            count += createRestrictionPerContext(roleName, null, permissionName, null, resourceTypeName, resourceTypePermission, contextNames, action, delegated);
                         }
                     }
                 }
                 for (String userName : userNames) {
                     if (resourceGroupIds.isEmpty() && resourceTypeNames.isEmpty()) {
-                        count += createRestrictionPerContext(null, userName, permissionName, null, null, resourceTypePermission, contextNames, action);
+                        count += createRestrictionPerContext(null, userName, permissionName, null, null, resourceTypePermission, contextNames, action, delegated);
                     } else {
                         for (Integer resourceGroupId : resourceGroupIds) {
-                            count += createRestrictionPerContext(null, userName, permissionName, resourceGroupId, null, resourceTypePermission, contextNames, action);
+                            count += createRestrictionPerContext(null, userName, permissionName, resourceGroupId, null, resourceTypePermission, contextNames, action, delegated);
                         }
                         for (String resourceTypeName : resourceTypeNames) {
-                            count += createRestrictionPerContext(null, userName, permissionName, null, resourceTypeName, resourceTypePermission, contextNames, action);
+                            count += createRestrictionPerContext(null, userName, permissionName, null, resourceTypeName, resourceTypePermission, contextNames, action, delegated);
                         }
                     }
                 }
@@ -523,13 +525,15 @@ public class PermissionBoundary implements Serializable {
         return count;
     }
 
-    private int createRestrictionPerContext(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName, ResourceTypePermission resourceTypePermission, List<String> contextNames, Action action) throws AMWException {
+    private int createRestrictionPerContext(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName, ResourceTypePermission resourceTypePermission, List<String> contextNames, Action action, boolean delegated) throws AMWException {
         int count = 0;
         for (String contextName : contextNames) {
-            RestrictionEntity restriction = new RestrictionEntity();
-            if (createRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName,
-                    resourceTypePermission, contextName, action, restriction) != null) {
-                count++;
+            if (!delegated || canDelegateThisPermission(permissionName, resourceGroupId, resourceTypeName, contextName, action)) {
+                RestrictionEntity restriction = new RestrictionEntity();
+                if (createRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName,
+                        resourceTypePermission, contextName, action, restriction) != null) {
+                    count++;
+                }
             }
         }
         return count;

@@ -1,22 +1,22 @@
 import { inject, TestBed } from '@angular/core/testing';
-import { RestrictionComponent } from './restriction.component';
+import { RestrictionEditComponent } from './restriction-edit.component';
 import { Restriction } from './restriction';
 import { Environment } from '../deployment/environment';
 import { Resource } from '../resource/resource';
 import { Permission } from './permission';
 import { ChangeDetectorRef } from '@angular/core';
 
-describe('RestrictionComponent', () => {
+describe('RestrictionEditComponent', () => {
   // provide our implementations or mocks to the dependency injector
   beforeEach(() => TestBed.configureTestingModule({
     providers: [
-      RestrictionComponent,
+      RestrictionEditComponent,
       ChangeDetectorRef
     ]
   }));
 
   it('should preSelect the right Environment on ngOnChanges',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       const emptyEnvironment: Environment[] = [{id: null, name: null, parent: 'All', selected: false, disabled: false}];
       const devEnvironments: Environment[] = [{id: 1, name: 'B', parent: 'Dev', selected: false, disabled: false},
@@ -32,7 +32,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return the right title',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.restriction = {id: 1} as Restriction;
       // when then
@@ -40,7 +40,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return false if ResourceGroup has a name which is not available',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.resourceGroups = [ {id: 21, name: 'Test'} as Resource];
       restrictionComponent.resourceGroup = {id: null, name: 'West'} as Resource;
@@ -49,7 +49,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return true if ResourceGroup has a name which is available',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.resourceGroups = [{id: 21, name: 'Test'} as Resource, {id: 42, name: 'Rest'} as Resource];
       restrictionComponent.resourceGroup = {id: null, name: 'rest'} as Resource;
@@ -59,7 +59,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return invalid if ResourceType is not available',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.resourceTypes = [{id: 1, name: 'APP'}, {id: 2, name: 'APPSERVER'}];
       restrictionComponent.restriction = {resourceTypeName: 'INVALID'} as Restriction;
@@ -68,7 +68,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return valid if ResourceType is available',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.resourceTypes = [{id: 1, name: 'APP'}, {id: 2, name: 'APPSERVER'}];
       restrictionComponent.restriction = {resourceTypeName: 'APPSERVER'} as Restriction;
@@ -77,7 +77,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should set ResourceTypeName to null if its value is empty',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.restriction = {resourceTypeName: ''} as Restriction;
       // when
@@ -87,7 +87,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should preserve Restriction values on defineAvailableOptions if selected Permission is not old (not global)',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: 9,
         resourceTypeName: null, resourceTypePermission: 'ANY', permission: {name: 'NEO'}} as Restriction;
@@ -104,7 +104,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should reset Restriction values on defineAvailableOptions if selected Permission is old (global)',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: 9, resourceTypeName: null,
         resourceTypePermission: 'ANY', permission: {name: 'OLD_GLOBAL'} as Permission} as Restriction;
@@ -120,7 +120,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should prepare available options on defineAvailableOptions if in delegationMode and selected Permission is not old (not global)',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: 9,
@@ -144,7 +144,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return filtered resource groups on getAvailableResourceGroups if in delegationMode',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.delegationMode = true;
       const emptyEnvironment: Environment[] = [{id: null, name: null, parent: 'All'} as Environment];
@@ -169,7 +169,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return all resource groups on getAvailableResourceGroups if not in delegationMode',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.resourceGroups = [{id: 1} as Resource, {id: 9} as Resource, {id: 10} as Resource];
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: 9,
@@ -181,7 +181,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return filtered actions on getAvailableActions if in delegationMode',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: 9,
@@ -197,7 +197,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return all actions on getAvailableActions if in delegationMode and one of the similar restrictions has action ALL',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: 9,
@@ -213,7 +213,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return all actions on getAvailableActions if not in delegationMode',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given // when
       const actions = restrictionComponent.getAvailableActions();
       // then
@@ -221,7 +221,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return filtered resource types on getAvailableResourceTypes if in delegationMode',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.resourceTypes = [{id: 1, name: 'APP'}, {id: 2, name: 'AS'}, {id: 3, name: 'FOO'}];
@@ -239,7 +239,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return empty filtered resource types on getAvailableResourceTypes if in delegationMode',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.resourceTypes = [{id: 1, name: 'APP'}, {id: 2, name: 'AS'}, {id: 3, name: 'FOO'}];
@@ -256,7 +256,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should return all resource types on getAvailableResourceTypes if in delegationMode and similar restriction has resource type null',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.resourceTypes = [{id: 1, name: 'APP'}, {id: 2, name: 'AS'}, {id: 3, name: 'FOO'}];
@@ -273,7 +273,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should allow to assign ResourceType if ResourceTypePermission is ANY and ResourceGroup is null',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: null,
         resourceTypeName: null, resourceTypePermission: 'ANY', permission: {name: 'test'} as Permission} as Restriction;
@@ -284,7 +284,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should not allow to assign ResourceType if ResourceGroup is not null',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: 8, resourceTypeName: null,
         resourceTypePermission: 'ANY', permission: {name: 'test'} as Permission} as Restriction;
@@ -295,7 +295,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should not allow to assign ResourceType if ResourceTypePermission is not ANY',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: null,
         resourceTypeName: null, resourceTypePermission: 'DEFAULT_ONLY', permission: {name: 'test'} as Permission} as Restriction;
@@ -306,7 +306,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should allow to assign ResourceGroup if ResourceTypePermission is ANY and ResourceTypeName is null',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: null,
         resourceTypeName: null, resourceTypePermission: 'ANY', permission: {name: 'test'} as Permission} as Restriction;
@@ -317,7 +317,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should not allow to assign ResourceGroup if ResourceTypeName is not null',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: null,
         resourceTypeName: 'test', resourceTypePermission: 'ANY', permission: {name: 'test'} as Permission} as Restriction;
@@ -328,7 +328,7 @@ describe('RestrictionComponent', () => {
   }));
 
   it('should not allow to assign ResourceGroup if ResourceTypePermission is not ANY',
-    inject([RestrictionComponent], (restrictionComponent: RestrictionComponent) => {
+    inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.restriction = {action: 'CREATE', contextName: 'T', resourceGroupId: null, resourceTypeName: null,
         resourceTypePermission: 'DEFAULT_ONLY', permission: {name: 'test'} as Permission} as Restriction;

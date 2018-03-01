@@ -32,9 +32,9 @@ import java.util.Map;
 
 public class GeneratedTemplate {
 	
-	protected static String RESERVED_PROPERTY_NAME = "name";
-	protected static String RESERVED_PROPERTY_PATH = "path";
-	protected static String RESERVED_PROPERTY_CONTENT = "content";
+	public static String RESERVED_PROPERTY_NAME = "name";
+	public static String RESERVED_PROPERTY_PATH = "path";
+	public static String RESERVED_PROPERTY_CONTENT = "content";
 	
 	@Getter
 	private String name;

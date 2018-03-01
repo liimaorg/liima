@@ -7,11 +7,11 @@ import { ResourceType } from '../resource/resource-type';
 import * as _ from 'lodash';
 
 @Component({
-  selector: 'amw-restriction',
-  templateUrl: './restriction.component.html'
+  selector: 'amw-restriction-edit',
+  templateUrl: './restriction-edit.component.html'
 })
 
-export class RestrictionComponent implements OnChanges, AfterViewChecked {
+export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
 
   actions: string[] = ['ALL', 'CREATE', 'DELETE', 'READ', 'UPDATE'];
   resourceTypePermissions: string[] = ['ANY', 'DEFAULT_ONLY', 'NON_DEFAULT_ONLY'];
@@ -160,12 +160,14 @@ export class RestrictionComponent implements OnChanges, AfterViewChecked {
   }
 
   checkUnique(env: Environment) {
-    const index: number = this.groupedEnvironments[env.parent].indexOf(env);
-    const isSelected: boolean = this.groupedEnvironments[env.parent][index].selected;
-    this.deSelectAllEnvironments();
-    this.groupedEnvironments[env.parent][index].selected = isSelected;
-    if (isSelected) {
-      this.restriction.contextName = this.groupedEnvironments[env.parent][index].name;
+    if (this.delegationMode) {
+      const index: number = this.groupedEnvironments[env.parent].indexOf(env);
+      const isSelected: boolean = this.groupedEnvironments[env.parent][index].selected;
+      this.deSelectAllEnvironments();
+      this.groupedEnvironments[env.parent][index].selected = isSelected;
+      if (isSelected) {
+        this.restriction.contextName = this.groupedEnvironments[env.parent][index].name;
+      }
     }
   }
 
