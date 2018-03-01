@@ -50,9 +50,11 @@ public class ResourceRelationContextEntity extends ContextDependency<AbstractRes
 	private static final long serialVersionUID = 1L;
 
 	@ManyToOne(cascade = PERSIST)
+	@Getter
 	private ConsumedResourceRelationEntity consumedResourceRelation;
 	
 	@ManyToOne(cascade = PERSIST)
+	@Getter
 	private ProvidedResourceRelationEntity providedResourceRelation;
 
 

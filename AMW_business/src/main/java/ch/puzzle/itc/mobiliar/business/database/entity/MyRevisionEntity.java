@@ -23,11 +23,13 @@ package ch.puzzle.itc.mobiliar.business.database.entity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.envers.ModifiedEntityNames;
 import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @RevisionEntity(MyRevisionEntityListener.class)
@@ -56,5 +58,17 @@ public class MyRevisionEntity {
 	@Version
 	private long v;
 
+	@ElementCollection
+	@JoinTable(name = "TAMW_REVCHANGES", joinColumns = @JoinColumn(name = "REV"))
+	@Column(name = "ENTITYNAME")
+	@ModifiedEntityNames
+	private Set<String> modifiedEntityNames;
 
+    @Getter
+    @Setter
+    private Integer resourceId;
+
+    @Getter
+    @Setter
+    private Integer resourceTypeId;
 }

@@ -179,6 +179,14 @@ public class ResourcesRest {
         return resourceType != null && type != null && type.equals(resourceType.getName());
     }
 
+    @Path("/name/{resourceId}")
+    @GET
+    @ApiOperation(value = "Get resource by id")
+    public Response getResourceName(@PathParam("resourceId") Integer resourceId) {
+        String resourceName = resourceBoundary.getResourceName(resourceId);
+        return Response.status(Response.Status.OK).entity(resourceName).build();
+    }
+
     @Path("/{resourceGroupName}")
     @GET
     @ApiOperation(value = "Get resource")

@@ -27,6 +27,7 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 
 import javax.inject.Inject;
@@ -48,6 +49,9 @@ public class PropertyValueService {
 
     @Inject
     PropertyValidationService propertyValidationService;
+
+    @Inject
+    AuditService auditService;
 
 
     public void resetPropertyValue(ContextDependency<?> resourceContext, Integer propertyDescriptorId) {
@@ -76,8 +80,8 @@ public class PropertyValueService {
 
     public void saveProperties(ContextEntity context, HasContexts<?> hasContexts,
                                List<ResourceEditProperty> resourceProperties) throws ValidationException {
-        List<ResourceEditProperty> propertiesToBeSaved = new ArrayList<ResourceEditProperty>();
-        List<ResourceEditProperty> propertiesToBeRemoved = new ArrayList<ResourceEditProperty>();
+        List<ResourceEditProperty> propertiesToBeSaved = new ArrayList<>();
+        List<ResourceEditProperty> propertiesToBeRemoved = new ArrayList<>();
         for (ResourceEditProperty p : resourceProperties) {
             if (isNotNullOrEmpty(p.getPropertyValue()) && p.hasChanged()) {
                 propertiesToBeSaved.add(p);
@@ -85,17 +89,20 @@ public class PropertyValueService {
                 propertiesToBeRemoved.add(p);
             }
         }
-        if (!propertiesToBeSaved.isEmpty()) {
-            ContextDependency<?> resourceContext = hasContexts.getOrCreateContext(context);
-            for (ResourceEditProperty saveProp : propertiesToBeSaved) {
-                verifyDefaultPropertyCanBeSet(saveProp, context);
-                setPropertyValue(resourceContext, saveProp.getDescriptorId(), saveProp.getUnobfuscatedValue());
+        if (!propertiesToBeSaved.isEmpty() || !propertiesToBeRemoved.isEmpty()) {
+            auditService.storeIdInThreadLocalForAuditLog(hasContexts);
+            if (!propertiesToBeSaved.isEmpty()) {
+                ContextDependency<?> resourceContext = hasContexts.getOrCreateContext(context);
+                for (ResourceEditProperty saveProp : propertiesToBeSaved) {
+                    verifyDefaultPropertyCanBeSet(saveProp, context);
+                    setPropertyValue(resourceContext, saveProp.getDescriptorId(), saveProp.getUnobfuscatedValue());
+                }
             }
-        }
-        if (!propertiesToBeRemoved.isEmpty()) {
-            ContextDependency<?> resourceContext = hasContexts.getOrCreateContext(context);
-            for (ResourceEditProperty removeProp : propertiesToBeRemoved) {
-                resetPropertyValue(resourceContext, removeProp.getDescriptorId());
+            if (!propertiesToBeRemoved.isEmpty()) {
+                ContextDependency<?> resourceContext = hasContexts.getOrCreateContext(context);
+                for (ResourceEditProperty removeProp : propertiesToBeRemoved) {
+                    resetPropertyValue(resourceContext, removeProp.getDescriptorId());
+                }
             }
         }
     }
@@ -135,4 +142,5 @@ public class PropertyValueService {
         }
         return properties;
     }
+
 }

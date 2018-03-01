@@ -3,13 +3,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { NgSelectModule } from '@ng-select/ng-select';
 /*
  * Feature Modules
  */
 import { ResourceModule } from './resource/resource.module';
 import { DeploymentModule } from './deployment/deployment.module';
 import { PermissionModule } from './permission/permission.module';
-import { NgSelectModule } from '@ng-select/ng-select';
+import { AuditviewModule } from './auditview/auditview.module';
+
 /*
  * Platform and Environment providers/directives/pipes
  */
@@ -52,6 +54,7 @@ type StoreType = {
     AppRoutingModule,
     ResourceModule,
     DeploymentModule,
+    AuditviewModule,
     PermissionModule
   ],
   providers: [ // expose our Services and Providers into Angular's dependency injection

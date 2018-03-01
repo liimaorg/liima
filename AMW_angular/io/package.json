@@ -60,6 +60,7 @@
     "@angular/platform-browser-dynamic": "^4.2.0",
     "@angular/platform-server": "^4.2.0",
     "@angular/router": "^4.2.0",
+    "angular2-datatable": "0.6.0",
     "bootstrap-sass": "3.3.7",
     "bootstrap-tagsinput": "0.7.1",
     "bootstrap-3-typeahead": "4.0.2",

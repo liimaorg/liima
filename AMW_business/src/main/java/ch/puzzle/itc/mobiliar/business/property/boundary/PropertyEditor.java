@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.property.boundary;
 
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
@@ -29,7 +30,10 @@ import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.property.control.*;
-import ch.puzzle.itc.mobiliar.business.property.entity.*;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
@@ -62,7 +66,10 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
@@ -74,6 +81,9 @@ import java.util.logging.Logger;
 public class PropertyEditor {
 
     // TODO Move methods to the proper boundary
+
+    @Inject
+    AuditService auditService;
 
     @Inject
     PropertyDescriptorService propertyDescriptorService;
@@ -315,6 +325,7 @@ public class PropertyEditor {
 
         if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, editedResource, editedResource.getResourceType())) {
             propertyValueService.saveProperties(context, editedResource, resourceProperties);
+            auditService.setResourceIdInThreadLocal(editedResource.getId());
             if (relation != null) {
                 handleRelations(relation, relationProperties, relationIdentifier, context, editedResource);
             }
@@ -751,7 +762,7 @@ public class PropertyEditor {
             if (forceDelete) {
                 propertyDescriptorService.deletePropertyDescriptorByOwnerIncludingPropertyValues(descriptor, resourceContext, attachedResource);
             } else {
-                propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceContext);
+                propertyDescriptorService.deletePropertyDescriptorByOwnerInResourceContext(descriptor, resourceContext, resourceId);
             }
         }
     }
@@ -770,7 +781,7 @@ public class PropertyEditor {
             if (forceDelete) {
                 propertyDescriptorService.deletePropertyDescriptorByOwnerIncludingPropertyValues(descriptor, resourceTypeContextEntity, attachedResourceType);
             } else {
-                propertyDescriptorService.deletePropertyDescriptorByOwner(descriptor, resourceTypeContextEntity);
+                propertyDescriptorService.deletePropertyDescriptorByOwnerInResourceTypeContext(descriptor, resourceTypeContextEntity, resourceTypeId);
             }
         }
     }

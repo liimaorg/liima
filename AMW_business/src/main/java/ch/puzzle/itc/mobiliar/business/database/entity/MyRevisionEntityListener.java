@@ -20,22 +20,36 @@
 
 package ch.puzzle.itc.mobiliar.business.database.entity;
 
+import ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil;
+import org.hibernate.envers.RevisionListener;
+
 import javax.ejb.SessionContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.hibernate.envers.RevisionListener;
+import static ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil.KEY_RESOURCE_ID;
+import static ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil.KEY_RESOURCE_TYPE_ID;
 
 public class MyRevisionEntityListener implements RevisionListener {
-	public void newRevision(Object revisionEntity) {
-		MyRevisionEntity entity = (MyRevisionEntity) revisionEntity;
-		try {
-			InitialContext ic = new InitialContext();
-			SessionContext sctxLookup = (SessionContext) ic.lookup("java:comp/EJBContext");
-			entity.setUsername(sctxLookup.getCallerPrincipal()!=null ? sctxLookup.getCallerPrincipal().getName() : "unknown");
-		} catch (NamingException e) {
-			entity.setUsername("unknown");
-		}
-	}
+
+    public void newRevision(Object revisionEntity) {
+        MyRevisionEntity entity = (MyRevisionEntity) revisionEntity;
+        try {
+            InitialContext ic = new InitialContext();
+            SessionContext sctxLookup = (SessionContext) ic.lookup("java:comp/EJBContext");
+            entity.setUsername(sctxLookup.getCallerPrincipal()!=null ? sctxLookup.getCallerPrincipal().getName() : "unknown");
+        } catch (NamingException e) {
+            entity.setUsername("unknown");
+        }
+
+        Integer resourceId = (Integer) ThreadLocalUtil.getThreadVariable(KEY_RESOURCE_ID);
+        Integer resourceTypeId = (Integer) ThreadLocalUtil.getThreadVariable(KEY_RESOURCE_TYPE_ID);
+        if (resourceId != null) {
+            entity.setResourceId(resourceId);
+        } else if (resourceTypeId != null) {
+            entity.setResourceTypeId(resourceTypeId);
+        }
+        ThreadLocalUtil.destroy();
+    }
 
 }

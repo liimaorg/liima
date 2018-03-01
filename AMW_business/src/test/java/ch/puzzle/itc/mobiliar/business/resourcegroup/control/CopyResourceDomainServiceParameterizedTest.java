@@ -48,7 +48,7 @@ import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import org.junit.Assert;
+import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -242,7 +242,7 @@ public class CopyResourceDomainServiceParameterizedTest {
 		assertNotNull(copy);
 		assertTrue(copyUnit.getResult().isSuccess());
 		assertEquals(origin.getContext(), copy.getContext());
-		assertNull(copy.getId());
+		assertThat(copy.getId(), Is.is(context.getId()));
 	}
 
 	@Test

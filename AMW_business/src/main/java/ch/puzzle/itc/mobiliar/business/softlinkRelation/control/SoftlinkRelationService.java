@@ -24,22 +24,25 @@
  */
 package ch.puzzle.itc.mobiliar.business.softlinkRelation.control;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
+
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
 public class SoftlinkRelationService implements Serializable{
 
 	private static final long serialVersionUID = 1L;
+
+    @Inject
+    AuditService auditService;
 
 	@Inject
 	EntityManager entityManager;
@@ -62,15 +65,16 @@ public class SoftlinkRelationService implements Serializable{
 		}
 	}
 
-	private List<SoftlinkRelationEntity> getSoftlinksForCpi(ResourceEntity cpi){
-		if(cpi.getId() != null) {
-			return entityManager
-					.createQuery(
-							"select s from SoftlinkRelationEntity s where s.cpiResource.id=:id",
-							SoftlinkRelationEntity.class).setParameter("id", cpi.getId()).getResultList();
-		}
-		return Collections.emptyList();
-	}
+    private List<SoftlinkRelationEntity> getSoftlinksForCpi(ResourceEntity cpi) {
+        if (cpi.getId() != null) {
+            String query = "select s from SoftlinkRelationEntity s where s.cpiResource.id=:id";
+            return entityManager
+                    .createQuery(query, SoftlinkRelationEntity.class)
+                    .setParameter("id", cpi.getId())
+                    .getResultList();
+        }
+        return Collections.emptyList();
+    }
 
     /**
      * Returns cpi resources which reference (consume) a given ppi resource
@@ -116,17 +120,19 @@ public class SoftlinkRelationService implements Serializable{
 		entityManager.persist(softlinkRelation);
 	}
 
-	/**
-	 * Removes the softlinkrelation of a cpi resource.
-	 * @param cpiResource
-	 */
-	public void removeSoftlinkRelation(ResourceEntity cpiResource) {
-		List<SoftlinkRelationEntity> existing = getSoftlinksForCpi(cpiResource);
-		cpiResource.clearSoftlinkRelations();
-		for (SoftlinkRelationEntity sl : existing) {
-			entityManager.remove(sl);
-		}
-	}
+    /**
+     * Removes the softlinkrelation of a cpi resource.
+     *
+     * @param cpiResource
+     */
+    public void removeSoftlinkRelation(ResourceEntity cpiResource) {
+        auditService.setResourceIdInThreadLocal(cpiResource.getId());
+        List<SoftlinkRelationEntity> existing = getSoftlinksForCpi(cpiResource);
+        cpiResource.clearSoftlinkRelations();
+        for (SoftlinkRelationEntity sl : existing) {
+            entityManager.remove(sl);
+        }
+    }
 
 
 }

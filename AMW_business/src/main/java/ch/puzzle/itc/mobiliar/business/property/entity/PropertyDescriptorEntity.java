@@ -24,11 +24,13 @@ import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.Foreignable;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
+import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.business.utils.Copyable;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.envers.Audited;
 
@@ -45,7 +47,7 @@ import static javax.persistence.CascadeType.PERSIST;
 @Entity
 @Audited
 @Table(name = "TAMW_propertyDescriptor")
-public class PropertyDescriptorEntity implements Identifiable, Serializable, PropertyTagEntityHolder, Foreignable<PropertyDescriptorEntity>, Copyable<PropertyDescriptorEntity> {
+public class PropertyDescriptorEntity implements Identifiable, Serializable, PropertyTagEntityHolder, Foreignable<PropertyDescriptorEntity>, Copyable<PropertyDescriptorEntity>, Auditable {
 
     // IMPORTANT! Whenever a new field (not relation to other entity) is added then this field must be added to foreignableFieldEquals method!!!
 
@@ -424,4 +426,48 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
         return eb.toHashCode();
     }
 
+    @Override
+    public String getNewValueForAuditLog() {
+        return String.format(
+                    "Technical Key: %s, " +
+                    "\nPropertyType: %s, " +
+                    "\nMIK: %s, " +
+                    "\nDefault Value: %s " +
+                    "\nDisplay Name: %s " +
+                    "\nValidation: %s" +
+                    "\nvalue optional: %s " + // nullable
+                    "\nKey optional: %s " +  // optional
+                    "\nEncrypted: %s " +
+                    "\nExample value: %s" +
+                    "\nComment: %s" +
+                    "\nTags: %s",
+                this.propertyName,
+                this.propertyTypeEntity == null ? StringUtils.EMPTY : this.propertyTypeEntity.getPropertyTypeName(),
+                this.machineInterpretationKey,
+                this.defaultValue,
+                this.displayName,
+                this.getValidationLogic(),
+                String.valueOf(this.isNullable()),
+                String.valueOf(this.isOptional()),
+                String.valueOf(this.isEncrypt()),
+                this.exampleValue,
+                this.propertyComment,
+                this.getPropertyTags().toString()
+                );
+    }
+
+    @Override
+    public String getType() {
+        return Auditable.TYPE_PROPERTY_DESCRIPTOR;
+    }
+
+    @Override
+    public String getNameForAuditLog() {
+        return this.propertyName;
+    }
+
+	@Override
+	public boolean isObfuscatedValue() {
+		return false;
+	}
 }

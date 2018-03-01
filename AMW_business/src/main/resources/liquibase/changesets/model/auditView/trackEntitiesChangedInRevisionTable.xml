@@ -1,0 +1,27 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/auditView/trackEntitiesChangedInRevisionTable.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="apollari" id="trackEntitiesChangedInRevisionTable">
+        <createTable tableName="TAMW_REVCHANGES">
+            <column name="REV" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENTITYNAME" type="varchar(255)" />
+        </createTable>
+    </changeSet>
+
+    <changeSet author="apollari" id="resourceIdAsContextInfoInRevInfo">
+        <addColumn tableName="TAMW_REVINFO">
+            <column name="RESOURCEID" type="INTEGER"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="apollari" id="resourceTypeIdAsContextInfoInRevInfo">
+        <addColumn tableName="TAMW_REVINFO">
+            <column name="RESOURCETYPEID" type="INTEGER"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

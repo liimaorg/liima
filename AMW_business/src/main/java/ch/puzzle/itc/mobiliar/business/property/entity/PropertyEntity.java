@@ -24,6 +24,7 @@ import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.generator.control.TemplateUtils;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
+import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.utils.Copyable;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import lombok.Getter;
@@ -41,7 +42,7 @@ import java.util.Comparator;
 @Entity
 @Audited
 @Table(name="TAMW_property")
-public class PropertyEntity implements Identifiable, Serializable, Copyable<PropertyEntity> {
+public class PropertyEntity implements Identifiable, Serializable, Copyable<PropertyEntity>, Auditable {
 	   
 	@Getter
 	@Setter
@@ -196,5 +197,25 @@ public class PropertyEntity implements Identifiable, Serializable, Copyable<Prop
 		}
 		target.getDescriptor().addProperty(target);
 		return target;
+	}
+
+	@Override
+	public String getNewValueForAuditLog() {
+		return this.getValue();
+	}
+
+	@Override
+	public String getType() {
+		return Auditable.TYPE_PROPERTY;
+	}
+
+	@Override
+	public String getNameForAuditLog() {
+		return this.getDescriptor().getPropertyName();
+	}
+
+	@Override
+	public boolean isObfuscatedValue() {
+		return this.descriptor.isEncrypt();
 	}
 }

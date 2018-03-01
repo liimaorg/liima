@@ -20,11 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest;
 
-import java.util.Set;
-
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
-
+import ch.mobi.itc.mobiliar.rest.auditview.AuditViewRest;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentsRest;
 import ch.mobi.itc.mobiliar.rest.environments.EnvironmentsRest;
 import ch.mobi.itc.mobiliar.rest.exceptions.IllegalArgumentExceptionMapper;
@@ -32,14 +28,11 @@ import ch.mobi.itc.mobiliar.rest.exceptions.IllegalStateExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.exceptions.NoResultExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.exceptions.NotAuthorizedExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
-import ch.mobi.itc.mobiliar.rest.resources.HostNamesRest;
-import ch.mobi.itc.mobiliar.rest.resources.ResourcePropertiesRest;
-import ch.mobi.itc.mobiliar.rest.resources.ResourceRelationPropertiesRest;
-import ch.mobi.itc.mobiliar.rest.resources.ResourceRelationTemplatesRest;
-import ch.mobi.itc.mobiliar.rest.resources.ResourceRelationsRest;
-import ch.mobi.itc.mobiliar.rest.resources.ResourceTemplatesRest;
-import ch.mobi.itc.mobiliar.rest.resources.ResourcesRest;
-import ch.mobi.itc.mobiliar.rest.resources.ServerTupleCSVBodyWriter;
+import ch.mobi.itc.mobiliar.rest.resources.*;
+
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
+import java.util.Set;
 
 @ApplicationPath("/resources/")
 public class RESTApplication extends Application {
@@ -67,6 +60,7 @@ public class RESTApplication extends Application {
         resources.add(HostNamesRest.class);
         resources.add(DeploymentsRest.class);
         resources.add(EnvironmentsRest.class);
+        resources.add(AuditViewRest.class);
         resources.add(RestrictionsRest.class);
         resources.add(NoResultExceptionMapper.class);
         resources.add(IllegalStateExceptionMapper.class);

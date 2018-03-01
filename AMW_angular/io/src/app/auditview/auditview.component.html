@@ -1,0 +1,93 @@
+<div class="row page-header">
+  <div class="col-md-4">
+    <h1>{{appState.get('pageTitle')}}</h1>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="loading">
+  <div class="loading-bg"></div>
+</div>
+
+<div class="col-sm-10 main-full">
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix">{{name}}</div>
+
+    <div class="panel-body">
+      <span class="form-horizontal">
+        <div *ngIf="successMessage"
+             class="alert alert-success alert-dismissible fade in"
+             role="alert">
+          <button type="button"
+                  class="close"
+                  data-dismiss="alert"
+                  aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <span [innerHTML]="successMessage"></span>
+        </div>
+        <div *ngIf="errorMessage"
+             class="alert alert-warning alert-dismissible fade in"
+             role="alert">
+          <button type="button"
+                  class="close"
+                  data-dismiss="alert"
+                  aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <span [innerHTML]="errorMessage"></span>
+        </div>
+      </span>
+
+      <div class="form-group"
+           *ngIf="!isLoading && auditLogEntries.length == 0">
+        Not audit log entries found
+      </div>
+      <div class="form-group" *ngIf="auditLogEntries.length > 0">
+        <div class="table-responsive">
+          <table id="auditview-list"
+                 class="table table-sm"
+                 [mfData]="auditLogEntries | auditviewFilter : filterQuery"
+                 #mf="mfDataTable"
+                 mfSortOrder="desc"
+                 mfSortBy="timestamp"
+                 *ngIf="(auditLogEntries.length > 0)">
+            <tr>
+              <th colspan="9">
+                <input class="form-control"
+                       placeholder="Search"
+                       [(ngModel)]="filterQuery"/>
+              </th>
+            </tr>
+
+            <tr>
+              <th><mfDefaultSorter by="timestamp">Timestamp</mfDefaultSorter></th>
+              <th><mfDefaultSorter by="relation">Relation</mfDefaultSorter></th>
+              <th><mfDefaultSorter by="type">Type</mfDefaultSorter></th>
+              <th><mfDefaultSorter by="name">Name (Property Descriptor etc.)</mfDefaultSorter></th>
+              <th><mfDefaultSorter by="editContextName">Context</mfDefaultSorter></th>
+              <th><mfDefaultSorter by="mode">Mode</mfDefaultSorter></th>
+              <th><mfDefaultSorter by="oldValue">Old Value</mfDefaultSorter></th>
+              <th><mfDefaultSorter by="value">New Value</mfDefaultSorter></th>
+              <th><mfDefaultSorter by="username">Username</mfDefaultSorter></th>
+            </tr>
+
+            <tr *ngFor="let entry of mf.data">
+              <td>{{entry.timestamp | date:'dd.MM.y HH:mm:ss'}}</td>
+              <td>{{entry.relation}}</td>
+              <td>{{entry.type}}</td>
+              <td>{{entry.name}}</td>
+              <td>{{entry.editContextName}}</td>
+              <td>{{entry.mode}}</td>
+              <td><span innerHTML="{{entry.oldValue | newlineFilter}}"></span></td>
+              <td><span innerHTML="{{entry.value | newlineFilter}}"></span></td>
+              <td>{{entry.username}}</td>
+            </tr>
+          </table>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

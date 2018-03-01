@@ -20,29 +20,28 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcerelation.entity;
 
-import static javax.persistence.CascadeType.ALL;
-
-import java.util.Objects;
-import java.util.Set;
-
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
+import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import lombok.Getter;
 import lombok.Setter;
-
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.util.Objects;
+import java.util.Set;
+
+import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @Audited
 @Table(name = "TAMW_providedResRel")
-public class ProvidedResourceRelationEntity extends AbstractResourceRelationEntity {
+public class ProvidedResourceRelationEntity extends AbstractResourceRelationEntity implements Auditable {
 
     // IMPORTANT! Whenever a new field (not relation to other entity) is added then this field must be added to foreignableFieldEquals method!!!
 	
@@ -111,4 +110,23 @@ public class ProvidedResourceRelationEntity extends AbstractResourceRelationEnti
     }
 
 
+    @Override
+    public String getNewValueForAuditLog() {
+        return StringUtils.EMPTY;
+    }
+
+    @Override
+    public String getType() {
+        return Auditable.TYPE_PROVIDED_RESOURCE_RELATION;
+    }
+
+    @Override
+    public String getNameForAuditLog() {
+        return String.format("Provided Resource: '%s'", this.getSlaveResource().getName());
+    }
+
+    @Override
+    public boolean isObfuscatedValue() {
+        return false;
+    }
 }

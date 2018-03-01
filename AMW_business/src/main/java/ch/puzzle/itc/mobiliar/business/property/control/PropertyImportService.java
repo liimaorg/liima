@@ -24,9 +24,6 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.GlobalContext;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.property.control.PropertyDescriptorService;
-import ch.puzzle.itc.mobiliar.business.property.control.PropertyTagEditingService;
-import ch.puzzle.itc.mobiliar.business.property.control.PropertyValueService;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
@@ -109,7 +106,7 @@ public class PropertyImportService {
     public void removeProperty(PropertyDescriptorEntity propertyDescriptor, ResourceEntity resourceEntity) {
         ResourceContextEntity resourceContext = resourceEntity.getOrCreateContext(globalContext);
         try {
-            descriptorService.deletePropertyDescriptorByOwner(propertyDescriptor, resourceContext);
+            descriptorService.deletePropertyDescriptorByOwnerInResourceContext(propertyDescriptor, resourceContext, resourceEntity.getId());
         } catch (AMWException e) {
             throw new AMWRuntimeException("Failed to delete property " + propertyDescriptor.getPropertyDescriptorDisplayName() + " which has still assigned values");
         }

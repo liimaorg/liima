@@ -20,8 +20,35 @@
 
 package ch.puzzle.itc.mobiliar.business.template.boundary;
 
-import java.util.*;
-import java.util.logging.Logger;
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
+import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
+import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
+import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
+import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
+import ch.puzzle.itc.mobiliar.business.environment.entity.HasTypeContext;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
+import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
+import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
+import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
+import ch.puzzle.itc.mobiliar.common.util.SystemCallTemplate;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -31,30 +58,8 @@ import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-
-import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
-import ch.puzzle.itc.mobiliar.business.environment.entity.*;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.Action;
-import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import ch.puzzle.itc.mobiliar.common.exception.*;
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
-
-import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
-import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.common.util.SystemCallTemplate;
+import java.util.*;
+import java.util.logging.Logger;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -75,6 +80,9 @@ public class TemplateEditor {
 
 	@Inject
 	FreemarkerSyntaxValidator freemarkerValidator;
+
+    @Inject
+    AuditService auditService;
 
 	@Inject
 	private Logger log;
@@ -196,6 +204,7 @@ public class TemplateEditor {
 		}
 		freemarkerValidator.validateFreemarkerSyntax(template.getFileContent());
 		hasContext = entityManager.find(hasContext.getClass(), hasContext.getId());
+		auditService.storeIdInThreadLocalForAuditLog(hasContext);
 		if (hasTemplateWithSameName(template, hasContext)) {
 			throw new AMWException("The defined template name is already in use");
 		}
@@ -242,6 +251,7 @@ public class TemplateEditor {
 					Action.DELETE, null, ((ResourceTypeContextEntity) owner).getContextualizedObject())) {
 				throw new NotAuthorizedException("Not authorized to remove the template of a resource type");
 			}
+			auditService.storeIdInThreadLocalForAuditLog(owner);
 			owner.removeTemplate(templateDescriptor);
 		}
 		entityManager.remove(templateDescriptor);
