@@ -1,20 +1,20 @@
 # v1.17.0
-This release contains two mayor features: the resouce audit view and the Multi Permission GUI.
+This release contains two mayor features: the resource audit view and the multi permission GUI.
 
 ## New features
 * Audit view: [#332](https://github.com/liimaorg/liima/issues/332)
   * Reachable via editResourceView -> Go to -> Audit view
-  * Shows all changes made to a ressource like Property Descriptors, Properties, Templates etc., the date and the user who made the change.
+  * Shows all changes made to a resource like Property Descriptors, Properties, Templates etc., the date and the user who made the change.
   * Current limitations of the implementation:
     * Only changes are shown that are made after v1.17 is deployed. Older changes can only be viewed in the Liima Database.
-    * Changes on ResourceTypes and Functions are not recoded.
-    * Passwords can't be viewed and are always hidden.
-    * Releation for relation templates isn't shown.
-* Multi Permission GUI: [#259](https://github.com/liimaorg/liima/issues/259)
+    * Changes to ResourceTypes and Functions are not shown.
+    * Passwords can't be viewed and are always masked.
+    * Relation of relation template isn't shown.
+* Multi permission GUI: [#259](https://github.com/liimaorg/liima/issues/259)
   * The new GUI allows to select multiple environments, permissions, resources and so on. This dramatically reduced the amount of clicks needed to create multiple permissions.
 * Applist search is now case insensitive: [#307](https://github.com/liimaorg/liima/issues/307)
 * Auto-Refresh on Deploy page: [#293](https://github.com/liimaorg/liima/issues/293)
-* Minor correction to the config overview from v1.16.1: [#295](https://github.com/liimaorg/liima/issues/295)
+* Minor enhancements to the config overview from v1.16.1: [#295](https://github.com/liimaorg/liima/issues/295)
 
 ## Bug fixes
 * Add test for force property descriptor deletion: [#310](https://github.com/liimaorg/liima/issues/310)
