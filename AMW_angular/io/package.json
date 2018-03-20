@@ -7,7 +7,7 @@
     "build:dev": "webpack --config config/webpack.dev.js --progress --profile",
     "build:docker": "yarn run build:prod && docker build -t angular2-webpack-start:latest .",
     "build:prod": "webpack --config config/webpack.prod.js --profile --bail",
-    "build": "yarn run build:dev",
+    "build": "yarn run build:prod",
     "ci": "yarn run lint && yarn test && yarn run e2e",
     "clean:dist": "yarn run rimraf dist",
     "clean:install": "yarn set progress=false && yarn install",
