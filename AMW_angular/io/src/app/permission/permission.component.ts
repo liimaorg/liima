@@ -92,7 +92,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
     if (this.isExistingRole(this.selectedRoleName)) {
       this.getRoleWithRestrictions(this.selectedRoleName);
     } else {
-      //this.selectedRoleName = null;
       this.assignedRestrictions = [];
     }
     this.restriction = null;
