@@ -371,7 +371,6 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private reorderRestrictions(restrictions: Restriction[]) {
     this.assignedRestrictions = _.sortBy(restrictions, [function(s: Restriction) {
       return s.permission.name.replace(/[_]/, ''); }, 'action']);
-    console.log(this.assignedRestrictions);
   }
 
   private extractEnvironmentGroups() {
