@@ -7,7 +7,7 @@
     "build:dev": "webpack --config config/webpack.dev.js --progress --profile",
     "build:docker": "yarn run build:prod && docker build -t angular2-webpack-start:latest .",
     "build:prod": "webpack --config config/webpack.prod.js --profile --bail",
-    "build": "yarn run build:prod",
+    "build": "yarn run build:dev",
     "ci": "yarn run lint && yarn test && yarn run e2e",
     "clean:dist": "yarn run rimraf dist",
     "clean:install": "yarn set progress=false && yarn install",
@@ -70,7 +70,7 @@
     "jquery": "3.3.1",
     "lodash": "4.17.4",
     "moment": "2.21.0",
-    "@ng-select/ng-select": "0.16.0",
+    "@ng-select/ng-select": "0.19.0",
     "resolve-url-loader": "2.2.0",
     "rxjs": "5.5.5",
     "zone.js": "0.8.18"
