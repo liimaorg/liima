@@ -10,7 +10,6 @@ import { AppState } from '../app.service';
 import { Restriction } from './restriction';
 import { RestrictionsCreation } from './restrictions-creation';
 import { Permission } from './permission';
-import { Tag } from './tag';
 import * as _ from 'lodash';
 
 @Component({
@@ -93,15 +92,17 @@ export class PermissionComponent implements OnInit, OnDestroy {
     if (this.isExistingRole(this.selectedRoleName)) {
       this.getRoleWithRestrictions(this.selectedRoleName);
     } else {
-      this.selectedRoleName = null;
+      //this.selectedRoleName = null;
       this.assignedRestrictions = [];
     }
     this.restriction = null;
   }
 
-  onChangeUser(users: Tag[]) {
-    if (users.length === 1 && this.isExistingUser(users[0].label)) {
+  onChangeUser(users: any) {
+    if (users.length === 1 && users[0].label && this.isExistingUser(users[0].label)) {
       this.getUserWithRestrictions(users[0].label);
+    } else if (users.length === 1 && !users[0].label && this.isExistingUser(users[0])) {
+      this.getUserWithRestrictions(users[0]);
     } else {
       this.assignedRestrictions = [];
     }
@@ -165,6 +166,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => {
         this.create = false;
+        this.updateExistingNamesLists(restrictionsCreation);
         this.reloadAssignedRestrictions(restrictionsCreation); });
   }
 
@@ -193,6 +195,18 @@ export class PermissionComponent implements OnInit, OnDestroy {
       } else if (this.restriction.userName && !this.isExistingUser(this.restriction.userName)) {
         this.userNames.push(this.restriction.userName.toLowerCase());
       }
+    }
+  }
+
+  private updateExistingNamesLists(restrictionsCreation: RestrictionsCreation) {
+    if (restrictionsCreation.roleName && !this.isExistingRole(restrictionsCreation.roleName)) {
+      this.roleNames.push(restrictionsCreation.roleName.toLowerCase());
+    } else if (restrictionsCreation.userNames.length > 0) {
+      restrictionsCreation.userNames.forEach((userName) => {
+        if (!this.isExistingUser(userName)) {
+          this.userNames.push(userName.toLowerCase());
+        }
+      });
     }
   }
 
@@ -288,9 +302,9 @@ export class PermissionComponent implements OnInit, OnDestroy {
       .getOwnUserAndRoleRestrictions().subscribe(
       /* happy path */ (r) => this.assignableRestrictions = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => { this.extractAllAssignablePermissions(),
-                               this.isLoading = false; }
-    );
+      /* onComplete */ () => {
+        this.extractAllAssignablePermissions();
+        this.isLoading = false; });
   }
 
   private extractAllAssignablePermissions() {
@@ -358,6 +372,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private reorderRestrictions(restrictions: Restriction[]) {
     this.assignedRestrictions = _.sortBy(restrictions, [function(s: Restriction) {
       return s.permission.name.replace(/[_]/, ''); }, 'action']);
+    console.log(this.assignedRestrictions);
   }
 
   private extractEnvironmentGroups() {

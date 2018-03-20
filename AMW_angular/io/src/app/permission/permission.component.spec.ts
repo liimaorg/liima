@@ -136,7 +136,25 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       permissionComponent.userNames = ['tester', 'user'];
       spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(Observable.of(restrictions));
       // when
-      permissionComponent.onChangeUser([{label: 'Tester'} as Tag]);
+      permissionComponent.onChangeUser(['Tester']);
+      // then
+      expect(permissionService.getUserWithRestrictions).toHaveBeenCalledWith('Tester');
+      expect(permissionComponent.assignedRestrictions.length).toBe(2);
+      expect(permissionComponent.assignedRestrictions[0].id).toBe(42);
+      expect(permissionComponent.assignedRestrictions[1].id).toBe(41);
+  }));
+
+  it('should invoke PermissionService and sort the Restrictions by Permission.name, action on changeUser if selected User (provided as Tag) exists',
+    inject([PermissionComponent, PermissionService],
+      (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
+      // given
+      const restrictions: Restriction[] = [{id: 41, action: 'DELETE', permission: {name: 'SAME'} as Permission} as Restriction,
+        {id: 42, action: 'CREATE', permission: {name: 'SAME'} as Permission} as Restriction];
+      permissionComponent.selectedUserNames = ['Tester'];
+      permissionComponent.userNames = ['tester', 'user'];
+      spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(Observable.of(restrictions));
+      // when
+      permissionComponent.onChangeUser([{ label: 'Tester' } as Tag]);
       // then
       expect(permissionService.getUserWithRestrictions).toHaveBeenCalledWith('Tester');
       expect(permissionComponent.assignedRestrictions.length).toBe(2);
@@ -153,11 +171,26 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         permissionComponent.userNames = ['user'];
         spyOn(permissionService, 'getUserWithRestrictions').and.callThrough();
         // when
-        permissionComponent.onChangeUser([{label: 'Tester'} as Tag]);
+        permissionComponent.onChangeUser(['tester']);
         // then
         expect(permissionService.getUserWithRestrictions).not.toHaveBeenCalled();
         expect(permissionComponent.assignedRestrictions).toEqual([]);
   }));
+
+  it('should not invoke PermissionService on changeUser if selected User (provided as Tag) does not exist',
+    inject([PermissionComponent, PermissionService],
+    (permissionComponent: PermissionComponent, permissionService: PermissionService) => {
+      // given
+      permissionComponent.assignedRestrictions = [{id: 51} as Restriction, {id: 52} as Restriction];
+      permissionComponent.selectedUserNames = ['Tester'];
+      permissionComponent.userNames = ['user'];
+      spyOn(permissionService, 'getUserWithRestrictions').and.callThrough();
+      // when
+      permissionComponent.onChangeUser([{ label: 'Tester' } as Tag]);
+      // then
+      expect(permissionService.getUserWithRestrictions).not.toHaveBeenCalled();
+      expect(permissionComponent.assignedRestrictions).toEqual([]);
+   }));
 
   it('should invoke PermissionService on removeRestriction',
     inject([PermissionComponent, PermissionService],
