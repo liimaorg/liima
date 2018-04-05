@@ -3,6 +3,7 @@ This release contains two mayor features: the resource audit view and the multi 
 
 ## New features
 * Audit view: [#332](https://github.com/liimaorg/liima/issues/332)
+![image](https://user-images.githubusercontent.com/15231595/38356216-6c319af4-38bf-11e8-9b3c-bcc38c115b54.png)
   * Reachable via editResourceView -> Go to -> Audit view
   * Shows all changes made to a resource like Property Descriptors, Properties, Templates etc., the date and the user who made the change.
   * Current limitations of the implementation:
@@ -11,6 +12,7 @@ This release contains two mayor features: the resource audit view and the multi 
     * Passwords can't be viewed and are always masked.
     * Relation of relation template isn't shown.
 * Multi permission GUI: [#259](https://github.com/liimaorg/liima/issues/259)
+![image](https://user-images.githubusercontent.com/15231595/38356482-26455944-38c0-11e8-8f0d-1ba7a7186be6.png)
   * The new GUI allows to select multiple environments, permissions, resources and so on. This dramatically reduced the amount of clicks needed to create multiple permissions.
 * Applist search is now case insensitive: [#307](https://github.com/liimaorg/liima/issues/307)
 * Auto-Refresh on Deploy page: [#293](https://github.com/liimaorg/liima/issues/293)
