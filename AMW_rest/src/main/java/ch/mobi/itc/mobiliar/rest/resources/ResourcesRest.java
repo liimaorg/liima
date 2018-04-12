@@ -652,7 +652,6 @@ public class ResourcesRest {
      */
     @Path("/{resourceGroupName}/{releaseName}/copyFrom")
     @PUT
-    @Consumes("text/plain")
     @ApiOperation(value = "Copy the properties of a Resource into another")
     public Response copyFromResource(@ApiParam(value = "The target ResourceGroup (to)") @PathParam("resourceGroupName") String targetResourceGroupName,
                                 @ApiParam(value = "The target ReleaseName (to)") @PathParam("releaseName") String targetReleaseName,
