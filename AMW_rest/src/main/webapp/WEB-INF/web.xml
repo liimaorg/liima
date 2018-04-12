@@ -66,7 +66,7 @@
 
 	<login-config>
 		<auth-method>BASIC</auth-method>
-		<realm-name>JBoss Authorization "Application Middleware"</realm-name>
+		<realm-name>AMW login</realm-name>
 	</login-config>
 
 </web-app>
