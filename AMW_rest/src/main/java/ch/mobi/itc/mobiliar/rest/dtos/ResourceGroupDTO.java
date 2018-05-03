@@ -26,30 +26,31 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import lombok.Data;
 
 @XmlRootElement(name = "resource")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
-public class ResourceWithRelationsDTO {
+public class ResourceGroupDTO {
+
+    private Integer id;
 
     private String name;
 
     private String type;
 
-    private String release;
-
-    private List<ResourceRelationDTO> relations;
+    private List<ReleaseEntity> releases;
     
-    ResourceWithRelationsDTO(){}
+    ResourceGroupDTO(){}
 
-    public ResourceWithRelationsDTO(ResourceGroupEntity resourceGroup, String release, List<ResourceRelationDTO> relations){
+    public ResourceGroupDTO(ResourceGroupEntity resourceGroup, List<ReleaseEntity> releases){
+        this.id = resourceGroup.getId();
         this.name = resourceGroup.getName();
         this.type = resourceGroup.getResourceType() != null ? resourceGroup.getResourceType().getName(): null;
-        this.release = release;
-        if(relations!=null && !relations.isEmpty()){
-            this.relations = relations;
+        if(releases!=null && !releases.isEmpty()){
+            this.releases = releases;
         }
     }
 }

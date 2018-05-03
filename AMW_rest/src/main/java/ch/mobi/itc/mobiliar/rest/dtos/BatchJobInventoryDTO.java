@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BatchJobInventoryDTO {
 
-    private List<ResourceDTO> resources = new ArrayList<ResourceDTO>();
+    private List<ResourceGroupDTO> resources = new ArrayList<ResourceGroupDTO>();
 
     private List<BatchResourceRelationDTO> batchRelations = new ArrayList<BatchResourceRelationDTO>();
 
@@ -44,7 +44,7 @@ public class BatchJobInventoryDTO {
        
     public BatchJobInventoryDTO(){}
 
-    public BatchJobInventoryDTO(List<ResourceDTO> resources, List<BatchResourceRelationDTO> relations){
+    public BatchJobInventoryDTO(List<ResourceGroupDTO> resources, List<BatchResourceRelationDTO> relations){
         if(resources!=null && !resources.isEmpty()){
             this.resources = resources;
         }
@@ -54,11 +54,11 @@ public class BatchJobInventoryDTO {
         }
     }
 
-    public List<ResourceDTO> getResources() {
+    public List<ResourceGroupDTO> getResources() {
         return resources;
     }
 
-    public void setResources(List<ResourceDTO> resources) {
+    public void setResources(List<ResourceGroupDTO> resources) {
         this.resources = resources;
     }
 

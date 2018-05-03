@@ -138,50 +138,32 @@ public class ResourcesRest {
     PropertyEditor propertyEditor;
 
     @GET
-    @ApiOperation(value = "Get resources", notes = "Returns the available resources")
-    public List<ResourceDTO> getResources(
+    @ApiOperation(value = "Get get resource groups", notes = "Returns the available resource groups")
+    public List<ResourceGroupDTO> getResources(
             @ApiParam(value = "a resource type, the list should be filtered by") @QueryParam("type") String type) {
-        List<ResourceDTO> result = new ArrayList<>();
+        List<ResourceGroupDTO> result = new ArrayList<>();
+        List<ResourceGroupEntity> resourceGroups;
         // used by angular
         if (type != null) {
             // TODO my favorites only
-            List<Integer> myAmw = Collections.EMPTY_LIST;
-            List<ResourceGroupEntity> groupsForType = resourceGroupLocator.getGroupsForType(type, myAmw, true, true);
-            for (ResourceGroupEntity resourceGroupEntity : groupsForType) {
-                if (hasResourceTypeName(type, resourceGroupEntity)) {
-                    Set<ResourceEntity> resources = resourceGroupEntity.getResources();
-                    List<ReleaseDTO> releases = new ArrayList<>();
-                    for (ResourceEntity resource : resources) {
-                        if (resource != null && resource.getRelease() != null) {
-                            releases.add(new ReleaseDTO(resource, null, null, null));
-                        }
-                    }
-                    result.add(new ResourceDTO(resourceGroupEntity, releases));
-                }
-            }
+            resourceGroups = resourceGroupLocator.getGroupsForType(type, Collections.EMPTY_LIST, true, true);
         } else {
-            for (ResourceGroupEntity resourceGroupEntity : resourceGroupLocator.getResourceGroups()) {
-                Set<ResourceEntity> resources = resourceGroupEntity.getResources();
-                List<ReleaseDTO> releases = new ArrayList<>();
-                for (ResourceEntity resource : resources) {
-                    if (resource != null && resource.getRelease() != null) {
-                        releases.add(new ReleaseDTO(resource, null, null, null));
-                    }
-                }
-                result.add(new ResourceDTO(resourceGroupEntity, releases));
+            resourceGroups = resourceGroupLocator.getResourceGroups();
+        }
+
+        for (ResourceGroupEntity resourceGroup : resourceGroups) {
+            List<ReleaseEntity> releases = new ArrayList<>();
+            for (ResourceEntity resource : resourceGroup.getResources()) {
+                releases.add(resource.getRelease());
             }
+            result.add(new ResourceGroupDTO(resourceGroup, releases));
         }
         return result;
     }
 
-    private boolean hasResourceTypeName(String type, ResourceGroupEntity resourceGroupEntity) {
-        ResourceTypeEntity resourceType = resourceGroupEntity.getResourceType();
-        return resourceType != null && type != null && type.equals(resourceType.getName());
-    }
-
     @Path("/name/{resourceId}")
     @GET
-    @ApiOperation(value = "Get resource by id")
+    @ApiOperation(value = "Get resource name by id")
     public Response getResourceName(@PathParam("resourceId") Integer resourceId) {
         String resourceName = resourceBoundary.getResourceName(resourceId);
         return Response.status(Response.Status.OK).entity(resourceName).build();
@@ -189,39 +171,35 @@ public class ResourcesRest {
 
     @Path("/{resourceGroupName}")
     @GET
-    @ApiOperation(value = "Get resource")
-    public ResourceDTO getResourceGroup(@PathParam("resourceGroupName") String resourceGroupName) {
+    @ApiOperation(value = "Get a resource group")
+    public ResourceGroupDTO getResourceGroup(@PathParam("resourceGroupName") String resourceGroupName) {
         ResourceGroupEntity resourceGroupByName = resourceGroupLocator.getResourceGroupByName(resourceGroupName);
         List<ReleaseEntity> releases = releaseLocator.getReleasesForResourceGroup(resourceGroupByName);
-        List<ReleaseDTO> result = new ArrayList<>();
-        for (ReleaseEntity release : releases) {
-            result.add(new ReleaseDTO(release, null, null, null));
-        }
-        return new ResourceDTO(resourceGroupByName, result);
+        return new ResourceGroupDTO(resourceGroupByName, releases);
     }
 
     @Path("/{resourceGroupName}/{releaseName}")
     @GET
     @ApiOperation(value = "Get resource in specific release")
-    public ReleaseDTO getResource(@PathParam("resourceGroupName") String resourceGroupName,
+    public ResourceDTO getResource(@PathParam("resourceGroupName") String resourceGroupName,
                                   @PathParam("releaseName") String releaseName,
                                   @QueryParam("env") @DefaultValue("Global") String environment,
                                   @QueryParam("type") String resourceType) throws ValidationException {
         ResourceEntity resourceByRelease = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
-        return new ReleaseDTO(resourceByRelease, resourceRelations.getResourceRelations(resourceGroupName,
+        return new ResourceDTO(resourceByRelease, resourceRelations.getResourceRelations(resourceGroupName,
                 releaseName, resourceType), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
     }
 
     @Path("/{resourceGroupName}/lte/{releaseName}")
     @GET
-    @ApiOperation(value = "Get exact or closest past release")
-    public ReleaseDTO getExactOrClosestPastRelease(@PathParam("resourceGroupName") String resourceGroupName,
+    @ApiOperation(value = "Get exact or closest past resource release")
+    public ResourceDTO getExactOrClosestPastRelease(@PathParam("resourceGroupName") String resourceGroupName,
                                   @PathParam("releaseName") String releaseName,
                                   @QueryParam("env") @DefaultValue("Global") String environment,
                                   @QueryParam("type") String resourceType) throws ValidationException {
         ReleaseEntity release = resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName);
-        return new ReleaseDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
+        return new ResourceDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
                 release.getName(), resourceType), resourceProperties.getResourceProperties(resourceGroupName, release.getName(),
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, release.getName(), ""));
     }
@@ -229,11 +207,11 @@ public class ResourcesRest {
     @Path("/resourceGroups")
     @GET
     @ApiOperation(value = "Get all available ResourceGroups - used by Angular")
-    public List<ResourceDTO> getAllResourceGroups(@QueryParam("onlyUserAssignable") boolean onlyUserAssignable) throws ValidationException {
+    public List<ResourceGroupDTO> getAllResourceGroups(@QueryParam("onlyUserAssignable") boolean onlyUserAssignable) throws ValidationException {
         List<ResourceGroupEntity> resourceGroups = onlyUserAssignable ? resourceGroupLocator.getAllResourceGroupsByName() : resourceGroupLocator.getAllResourceGroupsByName();
-        List<ResourceDTO> resourceDTOs = new ArrayList<>();
+        List<ResourceGroupDTO> resourceDTOs = new ArrayList<>();
         for (ResourceGroupEntity resourceGroup : resourceGroups) {
-            resourceDTOs.add(new ResourceDTO(resourceGroup, null));
+            resourceDTOs.add(new ResourceGroupDTO(resourceGroup, null));
         }
         return resourceDTOs;
     }
@@ -252,7 +230,7 @@ public class ResourcesRest {
     @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}")
     @GET
     @ApiOperation(value = "Get resource in specific release - used by Angular")
-    public ReleaseDTO getResourceRelationListForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
+    public ResourceDTO getResourceRelationListForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
                                                         @PathParam("releaseId") Integer releaseId) throws ValidationException {
 
         ResourceEntity resource = resourceDependencyResolverService.getResourceEntityForRelease(resourceGroupId, releaseId);
@@ -267,7 +245,7 @@ public class ResourcesRest {
                 resourceRelationDTOs.add(new ResourceRelationDTO(consumedResourceRelationEntity));
             }
         }
-        return new ReleaseDTO(resource, resourceRelationDTOs);
+        return new ResourceDTO(resource, resourceRelationDTOs);
     }
 
     @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}/appWithVersions/")
@@ -300,10 +278,10 @@ public class ResourcesRest {
         if (group == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        List<ReleaseDTO> releases = new ArrayList<>();
+        List<ResourceDTO> releases = new ArrayList<>();
         List<ReleaseEntity> deployableReleases = releaseMgmtService.getDeployableReleasesForResourceGroup(group);
         for (ReleaseEntity deployableRelease : deployableReleases) {
-            releases.add(new ReleaseDTO(deployableRelease));
+            releases.add(new ResourceDTO(deployableRelease));
         }
         return Response.ok(releases).build();
 
@@ -318,7 +296,7 @@ public class ResourcesRest {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         SortedSet<ReleaseEntity> deployableReleases = new TreeSet(releaseMgmtService.getDeployableReleasesForResourceGroup(group));
-        ReleaseDTO mostRelevant = new ReleaseDTO(resourceDependencyResolverService.findMostRelevantRelease(deployableReleases, null));
+        ResourceDTO mostRelevant = new ResourceDTO(resourceDependencyResolverService.findMostRelevantRelease(deployableReleases, null));
         return Response.ok(mostRelevant).build();
     }
 
