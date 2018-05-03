@@ -164,35 +164,11 @@ public class ResourcesRestTest {
     }
 
     @Test
-    public void getResourcesForTypeWhereTypeExistsShouldReturnGroup() {
-        // given
-        String typeName = "type";
-        String groupName = "name";
-        List<ResourceGroupEntity> resourceGroupEntities = new ArrayList<>();
-        resourceGroupEntities.add(createResourceGroupEntity(groupName, typeName));
-        resourceGroupEntities.add(createResourceGroupEntity("name2", "type2"));
-
-        when(resourceGroupLocatorMock.getGroupsForType(typeName, Collections.EMPTY_LIST, true, true)).thenReturn(resourceGroupEntities);
-
-        // when
-        List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName);
-
-        // then
-        Assert.assertEquals(1, resourcesResult.size());
-        Assert.assertEquals(groupName, resourcesResult.get(0).getName());
-        Assert.assertEquals(typeName, resourcesResult.get(0).getType());
-    }
-
-    @Test
     public void getResourcesForTypeWhereTypeDoesNotExistsShouldReturnEmptyResult() {
         // given
         String typeName = "type";
-        String groupName = "name";
-        List<ResourceGroupEntity> resourceGroupEntities = new ArrayList<>();
-        resourceGroupEntities.add(createResourceGroupEntity("otherName", "otherType"));
-        resourceGroupEntities.add(createResourceGroupEntity("otherName2", "otherType2"));
 
-        when(resourceGroupLocatorMock.getGroupsForType(typeName, Collections.EMPTY_LIST, true, true)).thenReturn(resourceGroupEntities);
+        when(resourceGroupLocatorMock.getGroupsForType(typeName, Collections.EMPTY_LIST, true, true)).thenReturn(new ArrayList<ResourceGroupEntity>());
 
         // when
         List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName);
