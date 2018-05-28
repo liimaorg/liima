@@ -9,7 +9,7 @@
     "tests"
   ],
   "dependencies": {
-    "codemirror": "5.17.0",
+    "codemirror": "^5.38.0",
     "google-diff-match-patch-js": "~1.0.0",
     "cm-show-invisibles": "~1.2.0"
   },

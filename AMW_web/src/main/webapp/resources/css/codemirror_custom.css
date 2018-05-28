@@ -17,9 +17,9 @@
 
 /* overide cm-show-invisibles styles */
 .cm-whitespace::before {
-	color: #b2b2b2 !important;
+	color: #eeeded !important;
 }
 
 .CodeMirror-code > div > pre > span::after {
-	color: #b2b2b2 !important;
+	color: #adacac !important;
 }
