@@ -16,6 +16,7 @@
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
+                    <packagingExcludes>resources/bower/codemirror/src/</packagingExcludes>
                     <webResources>
                         <resource>
                             <directory>src/main/webapp</directory>
