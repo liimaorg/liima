@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -31,6 +32,7 @@ import javax.ws.rs.core.Response;
 
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;;
 
@@ -40,7 +42,9 @@ import io.swagger.annotations.ApiOperation;;
 public class ReleasesRest {
 
     @Inject
-    ReleaseMgmtService releaseMgmtService;
+    private ReleaseMgmtService releaseMgmtService;
+    @Inject
+    private ReleaseLocator releaseLocator;
 
     @GET
     @ApiOperation(value = "Get releases", notes = "Returns all releases")
@@ -49,11 +53,13 @@ public class ReleasesRest {
     }
 
     @GET
-    @Path("/{releaseName}")
+    @Path("/{id}")
     @ApiOperation(value = "Get a release", notes = "Returns the specifed release")
-    public Response getRelease(@PathParam("releaseName") String releaseName) {
-        ReleaseEntity result = releaseMgmtService.findByName(releaseName);
-        if (result == null) {
+    public Response getRelease(@PathParam("id") int id) {
+        ReleaseEntity result;
+        try {
+            result = releaseLocator.getReleaseById(id);
+        } catch(NoResultException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
