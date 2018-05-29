@@ -732,8 +732,8 @@ public class PermissionBoundary implements Serializable {
         }
 
         if (roleName != null) {
-            if (roleName.trim().isEmpty()) {
-                throw new AMWException("RoleName must not be empty.");
+            if (!isValidName(roleName)) {
+                throw new AMWException("RoleName must not contain leading or trailing spaces.");
             }
             RoleEntity role = permissionRepository.getRoleByName(roleName);
             if (role != null) {
@@ -744,8 +744,8 @@ public class PermissionBoundary implements Serializable {
         }
 
         if (userName != null) {
-            if (userName.trim().isEmpty()) {
-                throw new AMWException("UserName must not be empty.");
+            if (!isValidName(userName)) {
+                throw new AMWException("UserName must not contain leading or trailing spaces.");
             }
             UserRestrictionEntity userRestriction = permissionRepository.getUserRestrictionByName(userName);
             if (userRestriction != null) {
@@ -826,6 +826,15 @@ public class PermissionBoundary implements Serializable {
     @HasPermission(permission = Permission.RESOURCE, action = Action.DELETE, resourceSpecific = true)
     public void removeAllRestrictionsForResourceGroup(ResourceGroupEntity resourceGroup) {
         restrictionRepository.deleteAllWithResourceGroup(resourceGroup);
+    }
+
+    protected boolean isValidName(String rawString) {
+        if (rawString != null) {
+            int rawLength = rawString.length();
+            int trimmedLength = rawString.trim().length();
+            return rawLength == trimmedLength;
+        }
+        return false;
     }
 
 }
