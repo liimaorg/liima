@@ -46,8 +46,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
   // create new restrictions if true
   create: boolean = false;
 
-  errorMessage: string = '';
-  successMessage: string = '';
+  errorMessage: string = null;
+  successMessage: string = null;
   isLoading: boolean = false;
 
   constructor(private permissionService: PermissionService,
@@ -109,6 +109,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   removeRestriction(id: number) {
+    this.clearMessages();
     if (id) {
       this.permissionService.removeRestriction(id).subscribe(
         /* happy path */ (r) => '',
@@ -121,22 +122,23 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   cancel() {
     // reset restriction list, rollback to the last persisted state
+    this.clearMessages();
     this.resetPermissionList();
     this.restriction = null;
     this.backupRestriction = null;
-    this.errorMessage = null;
     this.create = false;
   }
 
   modifyRestriction(restriction: Restriction) {
     // reset restriction list, discard unsaved changes
+    this.clearMessages();
     this.resetPermissionList();
     this.backupRestriction = {...restriction};
     this.restriction = restriction;
   }
 
   persistRestriction() {
-    this.errorMessage = null;
+    this.clearMessages();
     this.isLoading = true;
     if (this.restriction.id != null) {
       this.permissionService.updateRestriction(this.restriction).subscribe(
@@ -147,7 +149,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
           this.updateNamesLists();
           this.restriction = null;
           this.backupRestriction = null;
-          this.isLoading = false; });
+          this.isLoading = false;
+          this.successMessage = 'Restriction updated successfully'; });
     } else {
       this.permissionService.createRestriction(this.restriction, this.delegationMode).subscribe(
         /* happy path */ (r) => this.restriction = r,
@@ -156,12 +159,13 @@ export class PermissionComponent implements OnInit, OnDestroy {
           this.updatePermissions(this.restriction);
           this.updateNamesLists();
           this.restriction = null;
-          this.isLoading = false; });
+          this.isLoading = false;
+          this.successMessage = 'Restriction created successfully'; });
     }
   }
 
   createRestrictions(restrictionsCreation: RestrictionsCreation) {
-    this.errorMessage = null;
+    this.clearMessages();
     this.isLoading = true;
     console.log('createRestrictions ' + JSON.stringify(restrictionsCreation));
     this.permissionService.createRestrictions(restrictionsCreation, this.delegationMode).subscribe(
@@ -171,10 +175,12 @@ export class PermissionComponent implements OnInit, OnDestroy {
         this.create = false;
         this.updateExistingNamesLists(restrictionsCreation);
         this.reloadAssignedRestrictions(restrictionsCreation);
-        this.isLoading = false; });
+        this.isLoading = false;
+        this.successMessage = 'Restriction(s) created successfully'; });
   }
 
   addRestriction() {
+    this.clearMessages();
     if (this.selectedRoleName || this.selectedUserNames.length > 0) {
       this.create = true;
     }
@@ -234,8 +240,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   private onChangeType(type: string) {
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.clearMessages();
     this.assignedRestrictions = [];
     this.restrictionType = (type === 'role' || type === 'user') ? type : 'role';
     if (this.restrictionType === 'user') {
@@ -254,8 +259,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   private onChangeActingUser(userName: string) {
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.clearMessages();
     this.assignedRestrictions = [];
     this.actingUserName = userName;
     this.appState.set('navItems', [ { title: this.actingUserName, target: '/permission/delegation/' + this.actingUserName } ]);
@@ -398,6 +402,11 @@ export class PermissionComponent implements OnInit, OnDestroy {
       this.groupedEnvironments[environment['parent']].push(environment);
     });
     this.isLoading = false;
+  }
+
+  private clearMessages() {
+    this.errorMessage = null;
+    this.successMessage = null;
   }
 
 }
