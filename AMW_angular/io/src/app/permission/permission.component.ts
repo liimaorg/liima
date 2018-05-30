@@ -294,7 +294,15 @@ export class PermissionComponent implements OnInit, OnDestroy {
       .getAllPermissionEnumValues().subscribe(
       /* happy path */ (r) => this.permissions = _.sortBy(r, function(s: Permission) { return s.name.replace(/[_]/, ''); }),
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.isLoading = false);
+      /* onComplete */ () => {
+        this.markGlobalPermissions(this.permissions);
+        this.isLoading = false; });
+  }
+
+  private markGlobalPermissions(permissions: Permission[]) {
+    permissions.forEach((permission) => {
+      permission.longName = permission.old ? permission.name + ' (GLOBAL)' : permission.name; }
+    );
   }
 
   private getAllEnvironments() {
@@ -323,6 +331,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
       /* error path */ (e) => this.errorMessage = e,
       /* onComplete */ () => {
         this.extractAllAssignablePermissions();
+        this.markGlobalPermissions(this.assignablePermissions);
         this.isLoading = false; });
   }
 

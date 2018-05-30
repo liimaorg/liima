@@ -5,7 +5,7 @@
     <div class="form-group" *ngIf="permissions.length > 0">
       <label for="selectPermissions" class="col-sm-3 control-label">Permission</label>
       <div class="col-sm-9">
-        <ng-select id="selectPermissions" [items]="permissions" bindLabel="name" bindValue="name" placeholder=""
+        <ng-select id="selectPermissions" [items]="permissions" bindLabel="longName" bindValue="name" placeholder=""
                    multiple="true" [disableVirtualScroll]="true" [(ngModel)]="selectedPermissionNames" (change)="defineAvailableOptions()">
         </ng-select>
       </div>
