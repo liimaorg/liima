@@ -41,6 +41,7 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
+import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import org.junit.Assert;
@@ -61,8 +62,11 @@ import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 
 import javax.ws.rs.core.Response;
 
+import static ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer.APPSERVERCONTAINER;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -469,6 +473,25 @@ public class ResourcesRestTest {
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void shouldFilterOutAppServerContainer() {
+        // given
+        ResourceGroupEntity wanted = new ResourceGroupEntity();
+        wanted.setId(7);
+        wanted.setName("wanted");
+        ResourceGroupEntity unWanted = new ResourceGroupEntity();
+        unWanted.setId(8);
+        unWanted.setName(APPSERVERCONTAINER.getDisplayName());
+        when(resourceGroupLocatorMock.getAllResourceGroupsByName()).thenReturn(Arrays.asList(wanted, unWanted));
+
+        // when
+        List<ResourceGroupDTO> filteredGroups = rest.getAllResourceGroups(false);
+
+        // then
+        assertThat(filteredGroups.size(), is(1));
+        assertThat(filteredGroups.get(0).getName(), is(wanted.getName()));
     }
 
 }
