@@ -64,7 +64,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 public class DeploymentTest {
@@ -102,9 +101,9 @@ public class DeploymentTest {
         MockitoAnnotations.initMocks(this);
 
         // Test data
-        entities = new HashSet<DeploymentEntity>();
+        entities = new HashSet<>();
         deploymentEntity = new DeploymentEntity();
-        LinkedList<DeploymentEntity.ApplicationWithVersion> appsWithVersion = new LinkedList<DeploymentEntity.ApplicationWithVersion>();
+        LinkedList<DeploymentEntity.ApplicationWithVersion> appsWithVersion = new LinkedList<>();
         appsWithVersion.add(new ApplicationWithVersion("test", 123, "1.2.3"));
         appsWithVersion.add(new ApplicationWithVersion("west", 124, "1.2.4"));
         deploymentEntity.setApplicationsWithVersion(appsWithVersion);
@@ -141,7 +140,7 @@ public class DeploymentTest {
 
         deploymentRequestDto = new DeploymentRequestDTO();
         deploymentRequestDto.setAppServerName(deploymentEntity.getResourceGroup().getName());
-        LinkedList<AppWithVersionDTO> apps = new LinkedList<AppWithVersionDTO>();
+        LinkedList<AppWithVersionDTO> apps = new LinkedList<>();
         apps.add(new AppWithVersionDTO(appsWithVersion.getFirst().getApplicationName(), appsWithVersion.getFirst().getApplicationId(), appsWithVersion.getFirst().getVersion()));
         deploymentRequestDto.setAppsWithVersion(apps);
         deploymentRequestDto.setDeploymentDate(deploymentEntity.getDeploymentDate());
@@ -153,7 +152,7 @@ public class DeploymentTest {
         deploymentRequestDto.setSimulate(deploymentEntity.isSimulating());
 
         //mock app
-        LinkedList<Application> applications = new LinkedList<Application>();
+        LinkedList<Application> applications = new LinkedList<>();
         Application application = mock(Application.class);
         when(application.getName()).thenReturn(appsWithVersion.getFirst().getApplicationName());
         applications.add(application);
@@ -182,7 +181,7 @@ public class DeploymentTest {
                                 Mockito.any(ReleaseEntity.class))).thenAnswer(new Answer<Set<ResourceEntity>>() {
             @Override public Set<ResourceEntity> answer(InvocationOnMock invocation) throws Throwable {
                ResourceEntity appServer = (ResourceEntity)invocation.getArguments()[0];
-               HashSet<ResourceEntity> set = new HashSet<ResourceEntity>();
+               HashSet<ResourceEntity> set = new HashSet<>();
                for(Application a : applicationServer.getAMWApplications()){
                   final String name = a.getName();
                   ResourceEntity resMock = Mockito.mock(ResourceEntity.class);
@@ -205,7 +204,7 @@ public class DeploymentTest {
 
         Response response = deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, null, null, false);
         ArrayList<DeploymentDTO> deploymentDtos = (ArrayList<DeploymentDTO>) response.getEntity();
-        LinkedList<Integer> metaList = new LinkedList<Integer>();
+        LinkedList<Integer> metaList = new LinkedList<>();
         metaList.add(0);
 
         assertEquals(200, response.getStatus());
@@ -291,7 +290,7 @@ public class DeploymentTest {
         DeploymentDTO responseDto = (DeploymentDTO) response.getEntity();
         assertEquals(responseDto.getId(), deploymentDto.getId());
 
-        LinkedList<String> metaList = new LinkedList<String>();
+        LinkedList<String> metaList = new LinkedList<>();
         metaList.add("/deployments/" + deploymentEntity.getId());
         assertEquals(metaList, response.getMetadata().get("Location"));
     }
@@ -372,7 +371,7 @@ public class DeploymentTest {
         DeploymentDTO responseDto = (DeploymentDTO) response.getEntity();
         assertEquals(responseDto.getId(), deploymentDto.getId());
 
-        LinkedList<String> metaList = new LinkedList<String>();
+        LinkedList<String> metaList = new LinkedList<>();
         metaList.add("/deployments/" + deploymentEntity.getId());
         assertEquals(metaList, response.getMetadata().get("Location"));
     }
@@ -466,7 +465,6 @@ public class DeploymentTest {
         assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
     }
 
-
     @Test
     public void shouldHandleCancelInUpdateState() {
         // given
@@ -495,10 +493,45 @@ public class DeploymentTest {
         assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
     }
 
+    @Test
+    public void shouldCreatePreservedDeploymentDTOIfCreateDeploymentDTOIsCalledWithADeploymentThatHasBeenPreserved() {
+        // given
+        String formerEnvironmentName = "EX";
+        deploymentEntity.setContext(null);
+        deploymentEntity.setExContextId(789);
+        when(deploymentBoundary.getDeletedContextName(deploymentEntity)).thenReturn(formerEnvironmentName);
+
+        // when
+        DeploymentDTO dto = deploymentRestService.createDeploymentDTO(deploymentEntity);
+
+        // then
+        assertThat(dto.getEnvironmentName(), is(formerEnvironmentName));
+    }
+
+    @Test
+    public void getDeploymentsShouldAlsoReturnPreservedOne() {
+        // given
+        String formerEnvironmentName = "EX";
+        deploymentEntity.setContext(null);
+        deploymentEntity.setExContextId(789);
+        when(deploymentBoundary.getDeletedContextName(deploymentEntity)).thenReturn(formerEnvironmentName);
+        Tuple<Set<DeploymentEntity>, Integer> resultTuple = new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<>(Collections.singletonList(deploymentEntity)), 1);
+        when(deploymentBoundary.getFilteredDeployments(null, null, new LinkedList<CustomFilter>(), null, null, null)).thenReturn(resultTuple);
+
+        // when
+        Response response = deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, null, null, false);
+        @SuppressWarnings("unchecked")
+        ArrayList<DeploymentDTO> deploymentDtos = (ArrayList<DeploymentDTO>) response.getEntity();
+
+        // then
+        assertEquals(200, response.getStatus());
+        assertEquals(1, deploymentDtos.size());
+    }
+
     private ReleaseEntity mockRelease(){
         ReleaseEntity mock = mock(ReleaseEntity.class);
         Calendar cal = new GregorianCalendar();
-        cal.set(2014, 05, 01);
+        cal.set(2014, Calendar.JUNE, 1);
         when(mock.getId()).thenReturn(2);
         when(mock.getName()).thenReturn("RL-13.04");
         when(mock.getInstallationInProductionAt()).thenReturn(cal.getTime());
