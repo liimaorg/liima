@@ -98,11 +98,9 @@ public class DeploymentsRest {
     @Inject
     private ContextLocator contextLocator;
 
-
-
     @GET
     @Path("/filter")
-    @ApiOperation(value = "returns all Deployments matching the list of json filters")
+    @ApiOperation(value = "returns all Deployments matching the list of json filters - used by Angular")
     public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters,
                                    @QueryParam("colToSort") String colToSort,
                                    @QueryParam("sortDirection") String sortDirection,
@@ -116,14 +114,39 @@ public class DeploymentsRest {
             String detail = "example: [{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"Latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
             return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto(msg, detail)).build();
         }
-        CommonFilterService.SortingDirectionType sortingDirectionType = null;
-        if (sortDirection != null) {
-            sortingDirectionType = CommonFilterService.SortingDirectionType.valueOf(sortDirection);
-        }
+        CommonFilterService.SortingDirectionType sortingDirectionType = getSortingDirectionType(sortDirection);
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
         Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, colToSort, sortingDirectionType, null);
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
         return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
+    }
+
+    @GET
+    @Path("/filterCsvExport")
+    @Produces({"text/comma-separated-values", "text/csv"})
+    @ApiOperation(value = "returns a csv containing all Deployments matching the list of json filters - used by Angular", nickname = "CSV export")
+    public List<DeploymentDTO> getDeploymentsAsCsv(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters,
+                                              @QueryParam("colToSort") String colToSort,
+                                              @QueryParam("sortDirection") String sortDirection) {
+        DeploymentFilterDTO[] filterDTOs;
+        try {
+            filterDTOs = new Gson().fromJson(jsonListOfFilters, DeploymentFilterDTO[].class);
+        } catch (JsonSyntaxException e) {
+            String msg = String.format("json is not a valid representation for an object of type %s", DeploymentFilterDTO.class.getSimpleName());
+            throw new IllegalArgumentException(msg);
+        }
+        CommonFilterService.SortingDirectionType sortingDirectionType = getSortingDirectionType(sortDirection);
+        LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
+        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(0, null, filters, colToSort, sortingDirectionType, null);
+        return createDeploymentDTOs(filteredDeployments);
+    }
+
+    private CommonFilterService.SortingDirectionType getSortingDirectionType(String sortDirection) {
+        CommonFilterService.SortingDirectionType sortingDirectionType = null;
+        if (sortDirection != null) {
+            sortingDirectionType = CommonFilterService.SortingDirectionType.valueOf(sortDirection);
+        }
+        return sortingDirectionType;
     }
 
     private LinkedList<CustomFilter> createCustomFilters(DeploymentFilterDTO[] filterDTOs) {
@@ -203,8 +226,11 @@ public class DeploymentsRest {
      * Query for deployments. All parameters are optional.
      * Date format: epoch timestamp (number of milliseconds since January 1st, 1970, UTC)
      *
+     * @deprecated use {@link #getDeployments(String, String, String, Integer, Integer)} instead
+     *
      * @return the deployments. The header X-Total-Count contains the total result count.
      **/
+    @Deprecated
     @GET
     @ApiOperation(value = "returns all Deployments matching the optional filter Query Params")
     public Response getDeployments(
@@ -678,13 +704,6 @@ public class DeploymentsRest {
     public Response isAngularDeploymentsGuiActive() {
         boolean isActive = ! ConfigurationService.getPropertyAsBoolean(FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI);
         return Response.ok(isActive).build();
-    }
-
-    @GET
-    @Path("/csvSeparator/")
-    @ApiOperation(value = "Returns the configured csv separator - used by Angular")
-    public Response getCsvSeparator() {
-        return Response.ok(ConfigurationService.getProperty(ConfigurationService.ConfigKey.CSV_SEPARATOR)).build();
     }
 
     /**

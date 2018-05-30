@@ -21,6 +21,7 @@
 package ch.mobi.itc.mobiliar.rest;
 
 import ch.mobi.itc.mobiliar.rest.auditview.AuditViewRest;
+import ch.mobi.itc.mobiliar.rest.deployments.DeploymentDtoCsvBodyWriter;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentsRest;
 import ch.mobi.itc.mobiliar.rest.environments.EnvironmentsRest;
 import ch.mobi.itc.mobiliar.rest.exceptions.IllegalArgumentExceptionMapper;
@@ -59,6 +60,7 @@ public class RESTApplication extends Application {
         resources.add(ResourceRelationTemplatesRest.class);
         resources.add(HostNamesRest.class);
         resources.add(DeploymentsRest.class);
+        resources.add(DeploymentDtoCsvBodyWriter.class);
         resources.add(EnvironmentsRest.class);
         resources.add(AuditViewRest.class);
         resources.add(RestrictionsRest.class);
