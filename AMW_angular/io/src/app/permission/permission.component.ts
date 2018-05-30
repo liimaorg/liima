@@ -89,6 +89,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   onChangeRole() {
+    this.selectedRoleName = this.selectedRoleName.trim();
     if (this.isExistingRole(this.selectedRoleName)) {
       this.getRoleWithRestrictions(this.selectedRoleName);
     } else {
@@ -98,10 +99,9 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   onChangeUser(users: any) {
-    if (users.length === 1 && users[0].label && this.isExistingUser(users[0].label)) {
-      this.getUserWithRestrictions(users[0].label);
-    } else if (users.length === 1 && !users[0].label && this.isExistingUser(users[0])) {
-      this.getUserWithRestrictions(users[0]);
+    this.convertToSelectedUserNames(users);
+    if (this.selectedUserNames.length === 1 && this.isExistingUser(this.selectedUserNames[0])) {
+      this.getUserWithRestrictions(this.selectedUserNames[0]);
     } else {
       this.assignedRestrictions = [];
     }
@@ -177,6 +177,17 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   getPermissions(): Permission[] {
     return this.delegationMode ? this.assignablePermissions : this.permissions;
+  }
+
+  private convertToSelectedUserNames(users: any) {
+    this.selectedUserNames = [];
+    users.forEach((user) => {
+      if (user.label) {
+        this.selectedUserNames.push(user.label.trim());
+      } else {
+        this.selectedUserNames.push(user.trim());
+      }
+    });
   }
 
   private reloadAssignedRestrictions(restrictionsCreation: RestrictionsCreation) {

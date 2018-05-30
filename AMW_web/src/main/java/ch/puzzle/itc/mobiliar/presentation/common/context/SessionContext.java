@@ -54,14 +54,15 @@ public class SessionContext implements Serializable {
     private CommonDomainService commonService;
 
     @Inject
-    Event<ContextEntity> contextEntityEvent;
+    private Event<ContextEntity> contextEntityEvent;
 
-    ContextEntity currentContext;
+    private ContextEntity currentContext;
 
-    ContextEntity globalContext;
+    private ContextEntity globalContext;
 
-    @Produces @Selected
-    public ContextEntity getCurrentContext(){
+    @Produces
+    @Selected
+    public ContextEntity getCurrentContext() {
         return currentContext;
     }
 
@@ -81,18 +82,17 @@ public class SessionContext implements Serializable {
     }
 
     private void initializeCurrentContext() {
-        if (currentContext == null){
+        if (currentContext == null) {
             currentContext = globalContext;
         }
     }
 
     private void loadContexts() {
-            contexts = Collections.unmodifiableList(contextLocator.getAllEnvironments());
+        contexts = Collections.unmodifiableList(contextLocator.getAllEnvironments());
     }
 
     private void loadTargetPlatforms() {
         targetPlatforms = Collections.unmodifiableList(commonService.getRuntimeResourceGroups());
-
     }
 
     public Integer getGlobalContextId() {
@@ -108,13 +108,12 @@ public class SessionContext implements Serializable {
     }
 
     public void setContextId(Integer contextId) {
-        if (!contextId.equals(this.contextId)) {
+        if (contextId != null && !contextId.equals(this.contextId)) {
             this.contextId = contextId;
             currentContext = findCurrentContext();
             contextEntityEvent.fire(currentContext);
         }
     }
-
 
     public List<ContextEntity> getChildrenForContext(Integer id) {
         if (id == null || id.equals(0)) {
@@ -143,8 +142,7 @@ public class SessionContext implements Serializable {
             for (ContextEntity c : contexts) {
                 if (c.getId().equals(contextId)) {
                     return c;
-                }
-                else if (c.getId().equals(getGlobalContextId())) {
+                } else if (c.getId().equals(getGlobalContextId())) {
                     global = c;
                 }
             }
@@ -153,8 +151,8 @@ public class SessionContext implements Serializable {
         return null;
     }
 
-    public boolean isEnvironment(){
-        return currentContext!=null && currentContext.isEnvironment();
+    public boolean isEnvironment() {
+        return currentContext != null && currentContext.isEnvironment();
     }
 
 }

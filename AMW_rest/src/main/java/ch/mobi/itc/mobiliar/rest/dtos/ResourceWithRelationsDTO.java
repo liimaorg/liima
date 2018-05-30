@@ -28,8 +28,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @XmlRootElement(name = "resource")
 @XmlAccessorType(XmlAccessType.FIELD)

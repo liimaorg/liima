@@ -218,6 +218,31 @@ public class PermissionBoundaryTest {
         permissionBoundary.createRestriction(null, " ", null, null, null, null, null, null, false);
     }
 
+    @Test(expected=AMWException.class)
+    public void shouldThrowAMWExceptionOnCreateIfUserNameHasLeadingSpaces() throws AMWException {
+        // given // when // then
+        permissionBoundary.createRestriction(null, " invalid", null, null, null, null, null, null, false);
+    }
+
+    @Test(expected=AMWException.class)
+    public void shouldThrowAMWExceptionOnCreateIfRoleNameHasTrailingSpaces() throws AMWException {
+        // given // when // then
+        permissionBoundary.createRestriction("invalid ", null, null, null, null, null, null, null, false);
+    }
+
+    @Test(expected=AMWException.class)
+    public void shouldThrowAMWExceptionOnCreateIfRoleNameHasLeadingSpaces() throws AMWException {
+        // given // when // then
+        permissionBoundary.createRestriction(" invalid", null, null, null, null, null, null, null, false);
+    }
+
+    @Test(expected=AMWException.class)
+    public void shouldThrowAMWExceptionOnCreateIfUserNameHasTrailingSpaces() throws AMWException {
+        // given // when // then
+        permissionBoundary.createRestriction(null, "invalid ", null, null, null, null, null, null, false);
+    }
+
+
     @Test
     public void shouldCreateRoleAndUserRestrictionOnCreateIfRoleCanNotBeFound() throws AMWException {
         // given

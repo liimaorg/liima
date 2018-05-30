@@ -20,26 +20,47 @@
 
 package ch.puzzle.itc.mobiliar.business.releasing.entity;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.database.control.Constants;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+
+import ch.puzzle.itc.mobiliar.business.database.control.Constants;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The releaseEntity defines a specific release unit and holds the relations to
  * the different resources which are explicitly defined for the release.
  * 
  */
+@XmlRootElement(name="release")
+@XmlAccessorType(XmlAccessType.FIELD)
+@JsonAutoDetect()
 @Entity
 @Audited
 @Table(name = "TAMW_release")
@@ -85,6 +106,8 @@ public class ReleaseEntity implements Serializable, Comparable<ReleaseEntity> {
 	@Setter
 	@Getter
 	@OneToMany(mappedBy = "release")
+	@XmlTransient
+	@JsonIgnore
 	private Set<ResourceEntity> resources;
 	
 
@@ -98,6 +121,8 @@ public class ReleaseEntity implements Serializable, Comparable<ReleaseEntity> {
 	@Setter
 	@OneToMany(mappedBy = "release")
 	@NotAudited
+	@XmlTransient
+	@JsonIgnore
 	private Set<DeploymentEntity> deployments;
 
 	/**
@@ -109,6 +134,8 @@ public class ReleaseEntity implements Serializable, Comparable<ReleaseEntity> {
 	@Getter
 	@Setter
 	@OneToMany(mappedBy = "outOfServiceRelease")
+	@XmlTransient
+	@JsonIgnore
 	private Set<ResourceGroupEntity> outOfServiceResourceGroups;
 
 	@Getter
@@ -116,11 +143,15 @@ public class ReleaseEntity implements Serializable, Comparable<ReleaseEntity> {
 	@Column(nullable = false, name = "MAINRELEASE")
 	private boolean mainRelease;
 
+	@XmlTransient
+	@JsonIgnore
 	private static final long serialVersionUID = 1L;
 
 	@Getter
 	@Setter
 	@Version
+	@XmlTransient
+	@JsonIgnore
 	private long v;
 
 	public ReleaseEntity() {
