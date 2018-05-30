@@ -327,6 +327,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private createDeploymentRequest(contextIds: number[]) {
+    this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
     const deploymentRequest: DeploymentRequest = {} as DeploymentRequest;
@@ -354,7 +355,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.deploymentService.createDeployment(deploymentRequest).subscribe(
       /* happy path */ (r) => this.deploymentResponse = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.composeSuccessMessage());
+      /* onComplete */ () => { this.isLoading = false;
+                                  this.composeSuccessMessage(); });
   }
 
   private composeSuccessMessage() {
