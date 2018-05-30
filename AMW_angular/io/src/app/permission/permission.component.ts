@@ -137,6 +137,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   persistRestriction() {
     this.errorMessage = null;
+    this.isLoading = true;
     if (this.restriction.id != null) {
       this.permissionService.updateRestriction(this.restriction).subscribe(
         /* happy path */ (r) => '',
@@ -145,7 +146,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
           this.updatePermissions(this.restriction);
           this.updateNamesLists();
           this.restriction = null;
-          this.backupRestriction = null; });
+          this.backupRestriction = null;
+          this.isLoading = false; });
     } else {
       this.permissionService.createRestriction(this.restriction, this.delegationMode).subscribe(
         /* happy path */ (r) => this.restriction = r,
@@ -153,12 +155,14 @@ export class PermissionComponent implements OnInit, OnDestroy {
         /* onComplete */ () => {
           this.updatePermissions(this.restriction);
           this.updateNamesLists();
-          this.restriction = null; });
+          this.restriction = null;
+          this.isLoading = false; });
     }
   }
 
   createRestrictions(restrictionsCreation: RestrictionsCreation) {
     this.errorMessage = null;
+    this.isLoading = true;
     console.log('createRestrictions ' + JSON.stringify(restrictionsCreation));
     this.permissionService.createRestrictions(restrictionsCreation, this.delegationMode).subscribe(
       /* happy path */ (r) => '',
@@ -166,7 +170,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
       /* onComplete */ () => {
         this.create = false;
         this.updateExistingNamesLists(restrictionsCreation);
-        this.reloadAssignedRestrictions(restrictionsCreation); });
+        this.reloadAssignedRestrictions(restrictionsCreation);
+        this.isLoading = false; });
   }
 
   addRestriction() {
