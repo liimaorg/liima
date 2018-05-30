@@ -12,7 +12,7 @@
 	<packaging>war</packaging>
 
 	<properties>
-		<version.swagger-ui>3.4.5</version.swagger-ui>
+		<version.swagger-ui>3.16.0</version.swagger-ui>
 	</properties>
 
 	<build>
