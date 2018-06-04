@@ -42,8 +42,6 @@ import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import org.junit.Before;
@@ -57,7 +55,6 @@ import org.mockito.stubbing.Answer;
 
 import javax.persistence.NoResultException;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -97,7 +94,7 @@ public class DeploymentTest {
     private ReleaseEntity release;
     
     @Before
-    public void configure() throws IOException, GeneralDBException, ResourceNotFoundException {
+    public void configure() {
         MockitoAnnotations.initMocks(this);
 
         // Test data
@@ -179,7 +176,7 @@ public class DeploymentTest {
                 .getConsumedRelatedResourcesByResourceType(Mockito.any(ResourceEntity.class),
                         Mockito.any(DefaultResourceTypeDefinition.class),
                                 Mockito.any(ReleaseEntity.class))).thenAnswer(new Answer<Set<ResourceEntity>>() {
-            @Override public Set<ResourceEntity> answer(InvocationOnMock invocation) throws Throwable {
+            @Override public Set<ResourceEntity> answer(InvocationOnMock invocation) {
                ResourceEntity appServer = (ResourceEntity)invocation.getArguments()[0];
                HashSet<ResourceEntity> set = new HashSet<>();
                for(Application a : applicationServer.getAMWApplications()){
@@ -268,7 +265,7 @@ public class DeploymentTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void addDeployment() throws GeneralDBException {
+    public void addDeployment() {
         ReleaseEntity release = mockRelease();
         when(
                 deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
@@ -297,7 +294,7 @@ public class DeploymentTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void addDeploymentWithoutAppsWithVersionShouldObtainAppsWithVersionFromBoundary() throws GeneralDBException {
+    public void addDeploymentWithoutAppsWithVersionShouldObtainAppsWithVersionFromBoundary() {
         // given
         ReleaseEntity release = mockRelease();
         when(deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
@@ -326,7 +323,7 @@ public class DeploymentTest {
     }
 
     @Test
-    public void addDeployment_no_active_node() throws GeneralDBException {
+    public void addDeployment_no_active_node() {
         ReleaseEntity release = mockRelease();
         when(
                 deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
@@ -344,12 +341,12 @@ public class DeploymentTest {
         
         Response response = deploymentRestService.addDeployment(deploymentRequestDto);
 
-        assertEquals(400, response.getStatus());
+        assertEquals(424, response.getStatus());
     }
     
     @SuppressWarnings("unchecked")
     @Test
-    public void addDeploymentWithOutRelease() throws GeneralDBException {
+    public void addDeploymentWithOutRelease() {
         ReleaseEntity release = mockRelease();
         when(
                 deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
@@ -378,7 +375,7 @@ public class DeploymentTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void addDeploymentWrongAppName() throws GeneralDBException {
+    public void addDeploymentWrongAppName() {
         DeploymentRequestDTO wrongdeploymentRequestDto = new DeploymentRequestDTO(deploymentRequestDto);
         ReleaseEntity release = mockRelease();
         wrongdeploymentRequestDto.getAppsWithVersion().get(0).setApplicationName("wrong");
@@ -403,7 +400,7 @@ public class DeploymentTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void addDeploymentNoAppInAs() throws GeneralDBException {
+    public void addDeploymentNoAppInAs() {
         ReleaseEntity release = mockRelease();
         when(
                 deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
@@ -427,7 +424,7 @@ public class DeploymentTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void addDeploymentNotAllAppsInRequest() throws GeneralDBException {
+    public void addDeploymentNotAllAppsInRequest() {
         
         //mock app
         List<Application> applications = applicationServer.getAMWApplications();
