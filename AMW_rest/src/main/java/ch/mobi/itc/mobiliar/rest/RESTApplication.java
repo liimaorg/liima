@@ -30,6 +30,7 @@ import ch.mobi.itc.mobiliar.rest.exceptions.NoResultExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.exceptions.NotAuthorizedExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
 import ch.mobi.itc.mobiliar.rest.resources.*;
+import ch.mobi.itc.mobiliar.rest.releases.ReleasesRest;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -52,6 +53,7 @@ public class RESTApplication extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(ReleasesRest.class);
         resources.add(ResourcesRest.class);
         resources.add(ResourcePropertiesRest.class);
         resources.add(ResourceTemplatesRest.class);
