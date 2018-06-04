@@ -123,7 +123,6 @@ public class DeploymentsRest {
 
     @GET
     @Path("/filterCsvExport")
-    @Produces({"text/comma-separated-values", "text/csv"})
     @ApiOperation(value = "returns a csv containing all Deployments matching the list of json filters - used by Angular", nickname = "CSV export")
     public List<DeploymentDTO> getDeploymentsAsCsv(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters,
                                               @QueryParam("colToSort") String colToSort,
