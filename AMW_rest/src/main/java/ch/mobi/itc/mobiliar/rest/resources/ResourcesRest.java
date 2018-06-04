@@ -114,9 +114,6 @@ public class ResourcesRest {
     ResourceTemplatesRest resourceTemplatesRest;
 
     @Inject
-    ResourceRelationTemplatesRest resourceRelationTemplatesRest;
-
-    @Inject
     private ServerView serverView;
 
     /**
@@ -207,11 +204,19 @@ public class ResourcesRest {
     @Path("/resourceGroups")
     @GET
     @ApiOperation(value = "Get all available ResourceGroups - used by Angular")
-    public List<ResourceGroupDTO> getAllResourceGroups(@QueryParam("onlyUserAssignable") boolean onlyUserAssignable) throws ValidationException {
-        List<ResourceGroupEntity> resourceGroups = onlyUserAssignable ? resourceGroupLocator.getAllResourceGroupsByName() : resourceGroupLocator.getAllResourceGroupsByName();
+    public List<ResourceGroupDTO> getAllResourceGroups(@QueryParam("includeAppServerContainer") boolean includeAppServerContainer) {
+        List<ResourceGroupEntity> resourceGroups = resourceGroupLocator.getAllResourceGroupsByName();
         List<ResourceGroupDTO> resourceDTOs = new ArrayList<>();
-        for (ResourceGroupEntity resourceGroup : resourceGroups) {
-            resourceDTOs.add(new ResourceGroupDTO(resourceGroup, null));
+        if (includeAppServerContainer) {
+            for (ResourceGroupEntity resourceGroup : resourceGroups) {
+                resourceDTOs.add(new ResourceGroupDTO(resourceGroup, null));
+            }
+        } else {
+            for (ResourceGroupEntity resourceGroup : resourceGroups) {
+                if (!resourceGroup.isAppServerContainer()) {
+                    resourceDTOs.add(new ResourceGroupDTO(resourceGroup, null));
+                }
+            }
         }
         return resourceDTOs;
     }
@@ -219,7 +224,7 @@ public class ResourcesRest {
     @Path("/exists/{resourceId}")
     @GET
     @ApiOperation(value = "Checks if a specific Resource still exists - used by Angular")
-    public Response getAllResourceGroups(@PathParam("resourceId") Integer resourceId) throws ValidationException {
+    public Response isExistingResourceGroup(@PathParam("resourceId") Integer resourceId) {
         ResourceEntity resource = resourceLocator.getResourceById(resourceId);
         if (resource == null) {
             return Response.ok(false).build();
@@ -231,7 +236,7 @@ public class ResourcesRest {
     @GET
     @ApiOperation(value = "Get resource in specific release - used by Angular")
     public ResourceDTO getResourceRelationListForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
-                                                        @PathParam("releaseId") Integer releaseId) throws ValidationException {
+                                                        @PathParam("releaseId") Integer releaseId) {
 
         ResourceEntity resource = resourceDependencyResolverService.getResourceEntityForRelease(resourceGroupId, releaseId);
         if (resource == null) {
@@ -253,7 +258,7 @@ public class ResourcesRest {
     @ApiOperation(value = "Get application with version for a specific resourceGroup, release and context(s) - used by Angular")
     public Response getApplicationsWithVersionForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
                                                           @PathParam("releaseId") Integer releaseId,
-                                                          @QueryParam("context") List<Integer> contextIds) throws ValidationException {
+                                                          @QueryParam("context") List<Integer> contextIds) {
 
         ResourceEntity appServer = resourceLocator.getExactOrClosestPastReleaseByGroupIdAndReleaseId(resourceGroupId, releaseId);
         if (appServer == null) {
@@ -272,7 +277,7 @@ public class ResourcesRest {
     @Path("/resourceGroups/{resourceGroupId}/releases/")
     @GET
     @ApiOperation(value = "Get deployable releases for a specific resourceGroup - used by Angular")
-    public Response getDeployableReleasesForResourceGroup(@PathParam("resourceGroupId") Integer resourceGroupId) throws ValidationException {
+    public Response getDeployableReleasesForResourceGroup(@PathParam("resourceGroupId") Integer resourceGroupId) {
 
         ResourceGroupEntity group = resourceGroupLocator.getResourceGroupById(resourceGroupId);
         if (group == null) {
@@ -315,7 +320,7 @@ public class ResourcesRest {
     @Path("/resourceGroups/{resourceGroupId}/canCreateShakedownTest")
     @GET
     @ApiOperation(value = "Checks is caller is allowed to create/execute ShakedownTests - used by Angular")
-    public Response canCreateShakedownTest(@PathParam("resourceGroupId") Integer resourceGroupId) throws ValidationException {
+    public Response canCreateShakedownTest(@PathParam("resourceGroupId") Integer resourceGroupId) {
         if (resourceGroupId == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
