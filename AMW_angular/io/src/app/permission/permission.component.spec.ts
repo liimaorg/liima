@@ -428,7 +428,8 @@ describe('PermissionComponent without any params (default: type Role)', () => {
           const userNames: string[] = [ 'someUserName', 'anotherUserName', 'testUser' ];
           const restrictions: Restriction[] = [{id: 1, action: 'CREATE', permission: {name: 'RESOURCE', old: false}} as Restriction,
             {id: 2, action: 'UPDATE', permission: {name: 'RESOURCE_TYPE', old: false}} as Restriction];
-          const permissions: Permission[] = [{name: 'RESOURCE', old: false} as Permission, {name: 'RESOURCE_TYPE', old: false} as Permission];
+          const permissions: Permission[] = [{name: 'RESOURCE', old: false, longName: 'RESOURCE'},
+            {name: 'RESOURCE_TYPE', old: false, longName: 'RESOURCE_TYPE'}];
           const environments: Environment[] = [{id: 1, name: 'U', parent: 'Dev'} as Environment,
             {id: 2, name: 'V', parent: 'Dev'} as Environment, {id: 3, name: 'T', parent: 'Test'} as Environment];
           spyOn(permissionService, 'getAllUserRestrictionNames').and.returnValue(Observable.of(userNames));
