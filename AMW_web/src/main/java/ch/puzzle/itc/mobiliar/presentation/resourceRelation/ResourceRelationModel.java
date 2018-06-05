@@ -379,15 +379,20 @@ public class ResourceRelationModel implements Serializable {
     }
 
     private List<ResourceEditRelation> replaceSelectedRelationForType(ResourceEditRelation selectedRelation, List<ResourceEditRelation> oldSelections) {
-        List<ResourceEditRelation> newSelections = new ArrayList<>();
+        List<ResourceEditRelation> updatedRelations = new ArrayList<>();
         for (ResourceEditRelation relation : oldSelections) {
-            if (relation.getIdentifier() != null ? relation.getIdentifier().equals(selectedRelation.getIdentifier()) : selectedRelation.getIdentifier() == null) {
-                newSelections.add(selectedRelation);
-            } else {
-                newSelections.add(relation);
+            updatedRelations.add(replaceRelation(selectedRelation, relation));
+        }
+        return updatedRelations;
+    }
+
+    protected ResourceEditRelation replaceRelation(ResourceEditRelation selectedRelation, ResourceEditRelation relation) {
+        if (relation.getIdentifier() != null ? relation.getIdentifier().equals(selectedRelation.getIdentifier()) : selectedRelation.getIdentifier() == null) {
+            if (relation.getSlaveId().equals(selectedRelation.getSlaveId())) {
+                return selectedRelation;
             }
         }
-        return newSelections;
+        return relation;
     }
 
     public void loadResourceRelation(ResourceEditRelation resourceRelation) {
