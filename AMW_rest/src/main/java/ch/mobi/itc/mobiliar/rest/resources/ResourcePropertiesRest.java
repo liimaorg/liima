@@ -71,8 +71,12 @@ public class ResourcePropertiesRest {
 
     @GET
     @ApiOperation(value = "Get all properties for a resource in a specific release")
-    public List<PropertyDTO> getResourceProperties(@DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
-        return getResourceProperties(resourceGroupName, releaseName, environment);
+    public Response getResourceProperties(@DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
+        List<PropertyDTO> resourceProperties = getResourceProperties(resourceGroupName, releaseName, environment);
+        if (resourceProperties.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(resourceProperties).build();
     }
 
     List<PropertyDTO> getResourceProperties(String resourceGroupName, String releaseName, String environment) throws ValidationException {
