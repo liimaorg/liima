@@ -17,11 +17,11 @@ public class ResourceRelationModelTest {
     }
 
     @Test
-    public void shouldReturnNewEditRelationIfBothHaveNoIdentifierAndSameSlaveId() {
+    public void shouldReturnNewEditRelationIfBothHaveNoIdentifierAndSameSlaveGroupId() {
         // given
-        ResourceEditRelation existingEditRelation = new ResourceEditRelation(null, 12, null, null, null, null, null, null,
+        ResourceEditRelation existingEditRelation = new ResourceEditRelation(null, null, null, null, null, null, null, null,
                 null, null, 1, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
-        ResourceEditRelation newEditRelation = new ResourceEditRelation(null, 12, null, null, null, null, null, null,
+        ResourceEditRelation newEditRelation = new ResourceEditRelation(null, null, null, null, null, null, null, null,
                 null, null, 1, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
         // when
         ResourceEditRelation replaced = relationModel.replaceRelation(newEditRelation, existingEditRelation);
@@ -31,11 +31,11 @@ public class ResourceRelationModelTest {
     }
 
     @Test
-    public void shouldReturnNewEditRelationIfBothHaveSameIdentifierAndSameSlaveId() {
+    public void shouldReturnNewEditRelationIfBothHaveSameIdentifierAndSameSlaveGroupId() {
         // given
-        ResourceEditRelation existingEditRelation = new ResourceEditRelation(null, 12, "Test", null, null, null, null, null,
+        ResourceEditRelation existingEditRelation = new ResourceEditRelation(null, null, "Test", null, null, null, null, null,
                 null, null, 1, null, null, null, null, null, null, null, null, null, null, "PROVIDED", null);
-        ResourceEditRelation newEditRelation = new ResourceEditRelation(null, 12, "Test", null, null, null, null, null,
+        ResourceEditRelation newEditRelation = new ResourceEditRelation(null, null, "Test", null, null, null, null, null,
                 null, null, 1, null, null, null, null, null, null, null, null, null, null, "PROVIDED", null);
         // when
         ResourceEditRelation replaced = relationModel.replaceRelation(newEditRelation, existingEditRelation);
@@ -45,12 +45,12 @@ public class ResourceRelationModelTest {
     }
 
     @Test
-    public void shouldReturnExistingEditRelationIfBothHaveNoIdentifierAndDifferentSlaveIds() {
+    public void shouldReturnExistingEditRelationIfBothHaveNoIdentifierAndDifferentSlaveGroupIds() {
         // given
-        ResourceEditRelation existingEditRelation = new ResourceEditRelation(null, 12, null, null, null, null, null, null,
+        ResourceEditRelation existingEditRelation = new ResourceEditRelation(null, null, null, null, null, null, null, null,
                 null, null, 1, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
-        ResourceEditRelation newEditRelation = new ResourceEditRelation(null, 13, null, null, null, null, null, null,
-                null, null, 1, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation newEditRelation = new ResourceEditRelation(null, null, null, null, null, null, null, null,
+                null, null, 2, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
         // when
         ResourceEditRelation replaced = relationModel.replaceRelation(newEditRelation, existingEditRelation);
 
@@ -59,12 +59,12 @@ public class ResourceRelationModelTest {
     }
 
     @Test
-    public void shouldReturnExistingEditRelationIfBothHaveSameIdentifierButDifferentSlaveIds() {
+    public void shouldReturnExistingEditRelationIfBothHaveSameIdentifierButDifferentSlaveGroupIds() {
         // given
-        ResourceEditRelation existingEditRelation = new ResourceEditRelation(null, 12, "Test", null, null, null, null, null,
+        ResourceEditRelation existingEditRelation = new ResourceEditRelation(null, null, "Test", null, null, null, null, null,
                 null, null, 1, null, null, null, null, null, null, null, null, null, null, "PROVIDED", null);
-        ResourceEditRelation newEditRelation = new ResourceEditRelation(null, 13, "Test", null, null, null, null, null,
-                null, null, 1, null, null, null, null, null, null, null, null, null, null, "PROVIDED", null);
+        ResourceEditRelation newEditRelation = new ResourceEditRelation(null, null, "Test", null, null, null, null, null,
+                null, null, 2, null, null, null, null, null, null, null, null, null, null, "PROVIDED", null);
         // when
         ResourceEditRelation replaced = relationModel.replaceRelation(newEditRelation, existingEditRelation);
 
@@ -76,9 +76,9 @@ public class ResourceRelationModelTest {
     public void shouldReturnExistingEditRelationIfTheyHaveDifferentIdentifiers() {
         // given
         ResourceEditRelation existingEditRelation = new ResourceEditRelation(null, null, "Test", null, null, null, null, null,
-                null, null, 1, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
         ResourceEditRelation newEditRelation = new ResourceEditRelation(null, null, "Another", null, null, null, null, null,
-                null, null, 1, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
         // when
         ResourceEditRelation replaced = relationModel.replaceRelation(newEditRelation, existingEditRelation);
 
