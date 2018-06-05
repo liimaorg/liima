@@ -39,7 +39,6 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
-import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
@@ -62,36 +61,33 @@ import java.util.*;
 
 /**
  * DataProvider to add and remove relations
- * 
+ *
  * @author cweber
  */
 @Named
 @ViewScoped
 public class RelationDataProvider implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	PermissionService permissionService;
+    @Inject
+    PermissionService permissionService;
 
-	private Identifiable resourceOrType;
+    private Identifiable resourceOrType;
 
-	@Inject
-	private CommonDomainService commonService;
+    @Inject
+    private RelationEditor relationEditor;
 
-	@Inject
-	private RelationEditor relationEditor;
+    @Inject
+    private ResourceRelationModel resourceRelationModel;
 
-	@Inject
-	private ResourceRelationModel resourceRelationModel;
+    @Inject
+    private ResourceTypeDataProvider resourceTypeDataProvider;
 
-	@Inject
-	private ResourceTypeDataProvider resourceTypeDataProvider;
+    @Inject
+    ResourceTypeDomainService resourceTypeDomainService;
 
-	@Inject
-	ResourceTypeDomainService resourceTypeDomainService;
-
-	@Inject
+    @Inject
     ResourceGroupLocator resourceGroupLocator;
 
     @Inject
@@ -100,160 +96,159 @@ public class RelationDataProvider implements Serializable {
     @Inject
     SoftlinkRelationBoundary softlinkRelationBoundary;
 
-	@Inject
-	ResourceRelationBoundary resourceRelationBoundary;
+    @Inject
+    ResourceRelationBoundary resourceRelationBoundary;
 
-	@Getter
-	@Setter
-	private boolean allowNodes = false;
+    @Getter
+    @Setter
+    private boolean allowNodes = false;
 
     private List<NamedIdentifiable> selectableItems;
 
-	private String identifier;
+    private String identifier;
 
     @Setter
     @Getter
     private String softlinkReferenceName;
 
-	@Getter
-	private List<ResourceType> resourceTypes;
+    @Getter
+    private List<ResourceType> resourceTypes;
 
-	private ResourceTypeEntity currentResourceType;
+    private ResourceTypeEntity currentResourceType;
 
-	public Integer getCurrentResourceTypeId() {
-		return currentResourceType != null ? currentResourceType.getId() : null;
-	}
+    public Integer getCurrentResourceTypeId() {
+        return currentResourceType != null ? currentResourceType.getId() : null;
+    }
 
-	protected DataProviderHelper helper = new DataProviderHelper();
+    protected DataProviderHelper helper = new DataProviderHelper();
 
-	@Getter
-	private boolean addApplicationToAppServerMode;
+    @Getter
+    private boolean addApplicationToAppServerMode;
 
-	@Getter
-	private boolean addRuntimeToAppServerMode;
+    @Getter
+    private boolean addRuntimeToAppServerMode;
 
-	private boolean canAddResourceRelation;
+    private boolean canAddResourceRelation;
 
-	@Getter
-	private boolean canAddResourceTypeRelation;
+    @Getter
+    private boolean canAddResourceTypeRelation;
 
-	public void onChangedResource(@Observes ResourceEntity resourceEntity) {
-		resourceOrType = resourceEntity;
-		canAddResourceRelation = permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
-	}
+    public void onChangedResource(@Observes ResourceEntity resourceEntity) {
+        resourceOrType = resourceEntity;
+        canAddResourceRelation = permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
+    }
 
-	public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
-		resourceOrType = resourceTypeEntity;
-		canAddResourceTypeRelation = permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceTypeEntity);
-	}
+    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
+        resourceOrType = resourceTypeEntity;
+        canAddResourceTypeRelation = permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceTypeEntity);
+    }
 
-	public boolean canAddAsConsumedRelation(NamedIdentifiable slaveResourceGroup) {
-		return canAddAsResourceRelation(slaveResourceGroup);
-	}
+    public boolean canAddAsConsumedRelation(NamedIdentifiable slaveResourceGroup) {
+        return canAddAsResourceRelation(slaveResourceGroup);
+    }
 
-	public boolean canAddAsProvidedRelation(NamedIdentifiable slaveResourceGroup) {
-		// Only applications are allowed to have provided resources
-		return canAddAsResourceRelation(slaveResourceGroup) && getResourceType().isApplicationResourceType();
-	}
+    public boolean canAddAsProvidedRelation(NamedIdentifiable slaveResourceGroup) {
+        // Only applications are allowed to have provided resources
+        return canAddAsResourceRelation(slaveResourceGroup) && getResourceType().isApplicationResourceType();
+    }
 
-	public boolean canAddAsResourceTypeRelation(NamedIdentifiable slaveResourceType) {
-		if (slaveResourceType instanceof ResourceTypeEntity) {
-			return  canAddResourceTypeRelation && permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.READ, null, (ResourceTypeEntity) slaveResourceType);
-		}
-		return false;
-	}
+    public boolean canAddAsResourceTypeRelation(NamedIdentifiable slaveResourceType) {
+        if (slaveResourceType instanceof ResourceTypeEntity) {
+            return canAddResourceTypeRelation && permissionService.hasPermission(Permission.RESOURCETYPE, null, Action.READ, null, (ResourceTypeEntity) slaveResourceType);
+        }
+        return false;
+    }
 
-	private boolean canAddAsResourceRelation(NamedIdentifiable slaveResourceGroup) {
-		if (slaveResourceGroup instanceof ResourceGroupEntity) {
-			return canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
-		}
-		return false;
-	}
+    private boolean canAddAsResourceRelation(NamedIdentifiable slaveResourceGroup) {
+        if (slaveResourceGroup instanceof ResourceGroupEntity) {
+            return canAddResourceRelation && permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null);
+        }
+        return false;
+    }
 
-	public List<Application> loadAllApplicationsWithoutServer() {
-		return resourceGroupPersistenceService.getAllApplicationsNotBelongingToAServer();
-	}
+    public List<Application> loadAllApplicationsWithoutServer() {
+        return resourceGroupPersistenceService.getAllApplicationsNotBelongingToAServer();
+    }
 
-	public void loadResourceGroupsForApplication() {
-		addApplicationToAppServerMode = true;
-		addRuntimeToAppServerMode = false;
-		ResourceType t = resourceTypeDataProvider.getByName(DefaultResourceTypeDefinition.APPLICATION
-				.name());
-		resourceTypes = Collections.emptyList();
-		currentResourceType = t!=null ? t.getEntity() : null;
-		// First, we load all applications without servers...
-		List<Application> applications = loadAllApplicationsWithoutServer();
-		selectableItems = new ArrayList<>();
+    public void loadResourceGroupsForApplication() {
+        addApplicationToAppServerMode = true;
+        addRuntimeToAppServerMode = false;
+        ResourceType t = resourceTypeDataProvider.getByName(DefaultResourceTypeDefinition.APPLICATION
+                .name());
+        resourceTypes = Collections.emptyList();
+        currentResourceType = t != null ? t.getEntity() : null;
+        // First, we load all applications without servers...
+        List<Application> applications = loadAllApplicationsWithoutServer();
+        selectableItems = new ArrayList<>();
 
-		for (Application a : applications) {
-			ResourceGroupEntity appGroup = a.getEntity().getResourceGroup();
-			if (!selectableItems.contains(appGroup)) {
-				selectableItems.add(appGroup);
-			}
-		}
-		Set<Integer> alreadyDefinedGroups = new HashSet<>();
-		if (resourceRelationModel.getConsumedApplications() != null) {
-			for (ResourceEditRelation rel : resourceRelationModel.getConsumedApplications()) {
-				alreadyDefinedGroups.add(rel.getSlaveGroupId());
-			}
-		}
-		Set<ResourceGroupEntity> applicationsFromOtherResourcesInGroup = relationEditor
-				.getApplicationsFromOtherResourcesInGroup(getResource());
-		for (ResourceGroupEntity a : applicationsFromOtherResourcesInGroup) {
-			if (!alreadyDefinedGroups.contains(a.getId()) && !selectableItems.contains(a)) {
-				selectableItems.add(a);
-			}
-		}
-	}
+        for (Application a : applications) {
+            ResourceGroupEntity appGroup = a.getEntity().getResourceGroup();
+            if (!selectableItems.contains(appGroup)) {
+                selectableItems.add(appGroup);
+            }
+        }
+        Set<Integer> alreadyDefinedGroups = new HashSet<>();
+        if (resourceRelationModel.getConsumedApplications() != null) {
+            for (ResourceEditRelation rel : resourceRelationModel.getConsumedApplications()) {
+                alreadyDefinedGroups.add(rel.getSlaveGroupId());
+            }
+        }
+        Set<ResourceGroupEntity> applicationsFromOtherResourcesInGroup = relationEditor
+                .getApplicationsFromOtherResourcesInGroup(getResource());
+        for (ResourceGroupEntity a : applicationsFromOtherResourcesInGroup) {
+            if (!alreadyDefinedGroups.contains(a.getId()) && !selectableItems.contains(a)) {
+                selectableItems.add(a);
+            }
+        }
+    }
 
-	public void loadResourceTypes() {
-		addApplicationToAppServerMode = false;
-		addRuntimeToAppServerMode = false;
-		List<ResourceTypeEntity> resourceTypes = resourceTypeDomainService.getResourceTypes();
-		selectableItems = new ArrayList<>();
-		for (ResourceTypeEntity resourceType : resourceTypes) {
-			selectableItems.add(resourceType);
-		}
-	}
+    public void loadResourceTypes() {
+        addApplicationToAppServerMode = false;
+        addRuntimeToAppServerMode = false;
+        List<ResourceTypeEntity> resourceTypes = resourceTypeDomainService.getResourceTypes();
+        selectableItems = new ArrayList<>();
+        for (ResourceTypeEntity resourceType : resourceTypes) {
+            selectableItems.add(resourceType);
+        }
+    }
 
-	/**
-	 * @param typeName
-	 */
-	public void loadResourceGroupsForType(String typeName, String identifier) {
-		addApplicationToAppServerMode = false;
-		addRuntimeToAppServerMode = false;
-		this.identifier = identifier;
-		ResourceType t = resourceTypeDataProvider.getByName(typeName);
-		if (getResourceType().isDefaultResourceType()) {
-			// Default types can add any resource type except runtime,
-			// runtime is added in a separate dialog only for as
-			resourceTypes = new ArrayList<>(resourceTypeDataProvider.getRootResourceTypes());
+    /**
+     * @param typeName
+     */
+    public void loadResourceGroupsForType(String typeName, String identifier) {
+        addApplicationToAppServerMode = false;
+        addRuntimeToAppServerMode = false;
+        this.identifier = identifier;
+        ResourceType t = resourceTypeDataProvider.getByName(typeName);
+        if (getResourceType().isDefaultResourceType()) {
+            // Default types can add any resource type except runtime,
+            // runtime is added in a separate dialog only for as
+            resourceTypes = new ArrayList<>(resourceTypeDataProvider.getRootResourceTypes());
             Collections.sort(resourceTypes);
 
-			if (getResourceType().isApplicationServerResourceType()
-					&& permissionService.hasPermission(Permission.RESOURCE, Action.UPDATE, getResourceType())) {
-				// The application server can additionally add nodes
-				resourceTypes = new ArrayList<>(resourceTypes);
-				resourceTypes.add(0, resourceTypeDataProvider.getByName(DefaultResourceTypeDefinition.NODE.name()));
-			}
-			// If the type is not chosen yet, the first one is selected by default
-			if (t == null && resourceTypes != null && !resourceTypes.isEmpty()) {
-				t = resourceTypes.get(0);
-			}
-			if (t != null) {
-				selectableItems = this.unwrapList(this.loadResourceGroupsByResourceTypeId(
-						t.getId(), new ArrayList<Integer>()));
-				currentResourceType = t.getEntity();
-			}
-		}
-		else {
-			// Non-default types can only define those relations which are defined as "unresolved"
-			selectableItems = (List<NamedIdentifiable>) relationEditor.loadResourceGroupsForType(typeName, resourceOrType.getId());
-			resourceTypes = Collections.singletonList(t);
+            if (getResourceType().isApplicationServerResourceType()
+                    && permissionService.hasPermission(Permission.RESOURCE, Action.UPDATE, getResourceType())) {
+                // The application server can additionally add nodes
+                resourceTypes = new ArrayList<>(resourceTypes);
+                resourceTypes.add(0, resourceTypeDataProvider.getByName(DefaultResourceTypeDefinition.NODE.name()));
+            }
+            // If the type is not chosen yet, the first one is selected by default
+            if (t == null && resourceTypes != null && !resourceTypes.isEmpty()) {
+                t = resourceTypes.get(0);
+            }
+            if (t != null) {
+                selectableItems = this.unwrapList(this.loadResourceGroupsByResourceTypeId(
+                        t.getId(), new ArrayList<Integer>()));
+                currentResourceType = t.getEntity();
+            }
+        } else {
+            // Non-default types can only define those relations which are defined as "unresolved"
+            selectableItems = (List<NamedIdentifiable>) relationEditor.loadResourceGroupsForType(typeName, resourceOrType.getId());
+            resourceTypes = Collections.singletonList(t);
             Collections.sort(resourceTypes);
-			currentResourceType = t.getEntity();
-		}
-	}
+            currentResourceType = t.getEntity();
+        }
+    }
 
     private List<ResourceGroup> loadResourceGroupsByResourceTypeId(Integer id, List<Integer> excludedResourceIds) {
         List<ResourceGroup> resourcesByResourceType = new ArrayList<>();
@@ -274,72 +269,72 @@ public class RelationDataProvider implements Serializable {
     }
 
     private List<NamedIdentifiable> unwrapList(List<ResourceGroup> groups) {
-		if (groups == null) {
-			return null;
-		}
-		List<NamedIdentifiable> result = new ArrayList<>();
-		for (ResourceGroup resource : groups) {
-			if (resource.getEntity() != null) {
-				result.add(resource.getEntity());
-			}
-		}
-		return result;
-	}
+        if (groups == null) {
+            return null;
+        }
+        List<NamedIdentifiable> result = new ArrayList<>();
+        for (ResourceGroup resource : groups) {
+            if (resource.getEntity() != null) {
+                result.add(resource.getEntity());
+            }
+        }
+        return result;
+    }
 
-	public void loadResourceGroupsForRuntime() {
-		addApplicationToAppServerMode = false;
-		addRuntimeToAppServerMode = true;
+    public void loadResourceGroupsForRuntime() {
+        addApplicationToAppServerMode = false;
+        addRuntimeToAppServerMode = true;
 
-		ResourceType t = resourceTypeDataProvider.getByName(ResourceTypeEntity.RUNTIME);
-		resourceTypes = Collections.emptyList();
-		currentResourceType = t!=null ? t.getEntity() : null;
+        ResourceType t = resourceTypeDataProvider.getByName(ResourceTypeEntity.RUNTIME);
+        resourceTypes = Collections.emptyList();
+        currentResourceType = t != null ? t.getEntity() : null;
 
-		selectableItems = loadAllRuntimeEnvironments();
-		if (resourceRelationModel.getRuntimeRelations() != null
-				&& !resourceRelationModel.getRuntimeRelations().isEmpty()) {
-			Iterator<NamedIdentifiable> resourceGroupsIterator = selectableItems.iterator();
-			while (resourceGroupsIterator.hasNext()) {
-				if (resourceGroupsIterator.next().getId()
-						.equals(resourceRelationModel.getRuntimeRelations().get(0).getSlaveGroupId())) {
-					resourceGroupsIterator.remove();
-				}
-			}
-		}
-	}
+        selectableItems = loadAllRuntimeEnvironments();
+        if (resourceRelationModel.getRuntimeRelations() != null
+                && !resourceRelationModel.getRuntimeRelations().isEmpty()) {
+            Iterator<NamedIdentifiable> resourceGroupsIterator = selectableItems.iterator();
+            while (resourceGroupsIterator.hasNext()) {
+                if (resourceGroupsIterator.next().getId()
+                        .equals(resourceRelationModel.getRuntimeRelations().get(0).getSlaveGroupId())) {
+                    resourceGroupsIterator.remove();
+                }
+            }
+        }
+    }
 
-	public List<NamedIdentifiable> loadAllRuntimeEnvironments() {
-		List<NamedIdentifiable> result = new ArrayList<>();
-			result.addAll(resourceGroupPersistenceService.loadGroupsForTypeName(
-					ResourceTypeEntity.RUNTIME, null));
-		Collections.sort(result, nameComparator);
+    public List<NamedIdentifiable> loadAllRuntimeEnvironments() {
+        List<NamedIdentifiable> result = new ArrayList<>();
+        result.addAll(resourceGroupPersistenceService.loadGroupsForTypeName(
+                ResourceTypeEntity.RUNTIME, null));
+        Collections.sort(result, nameComparator);
 
-		return result;
-	}
+        return result;
+    }
 
-	public void addResourceTypeRelation(Integer resourceTypeId) throws ResourceTypeNotFoundException {
-		relationEditor.addResourceTypeRelation(getResourceType(), resourceTypeId);
-		resourceRelationModel.reloadValues();
-	}
+    public void addResourceTypeRelation(Integer resourceTypeId) throws ResourceTypeNotFoundException {
+        relationEditor.addResourceTypeRelation(getResourceType(), resourceTypeId);
+        resourceRelationModel.reloadValues();
+    }
 
-	public boolean addConsumedResource(ResourceGroupEntity resourceGroupEntity) {
-		Integer slaveResourceGroupId = resourceGroupEntity.getId();
-		String prefix = resourceGroupEntity.getName();
-		if (getResourceType().isDefaultResourceType() && !addRuntimeToAppServerMode) {
-			// If it is a default resource type, we can add multiple relations to a resource separated by a identifier
-			List<ResourceEditRelation> relationsWithSameSlaveGroup = helper.relationsWithSameSlaveGroup(helper.flattenMap(
-					resourceRelationModel.getConsumedRelations()), slaveResourceGroupId);
-			if (!relationsWithSameSlaveGroup.isEmpty()) {
-				identifier = helper.nextFreeIdentifierForResourceEditRelations(relationsWithSameSlaveGroup, slaveResourceGroupId, prefix);
-			}
-		}
-		return addResourceRelation(slaveResourceGroupId, false, identifier, null);
-	}
+    public boolean addConsumedResource(ResourceGroupEntity resourceGroupEntity) {
+        Integer slaveResourceGroupId = resourceGroupEntity.getId();
+        String prefix = resourceGroupEntity.getName();
+        if (getResourceType().isDefaultResourceType() && !addRuntimeToAppServerMode) {
+            // If it is a default resource type, we can add multiple relations to a resource separated by a identifier
+            List<ResourceEditRelation> relationsWithSameSlaveGroup = helper.relationsWithSameSlaveGroup(helper.flattenMap(
+                    resourceRelationModel.getConsumedRelations()), slaveResourceGroupId);
+            if (!relationsWithSameSlaveGroup.isEmpty()) {
+                identifier = helper.nextFreeIdentifierForResourceEditRelations(relationsWithSameSlaveGroup, slaveResourceGroupId, prefix);
+            }
+        }
+        return addResourceRelation(slaveResourceGroupId, false, identifier, null);
+    }
 
-	public void createSoftlinkRelation() {
+    public void createSoftlinkRelation() {
         if (isEditResource()) {
 
             try {
-                if (softlinkReferenceName != null && !softlinkReferenceName.trim().isEmpty()){
+                if (softlinkReferenceName != null && !softlinkReferenceName.trim().isEmpty()) {
                     softlinkRelationBoundary.createSoftlinkRelation(ForeignableOwner.getSystemOwner(), resourceOrType.getId(), softlinkReferenceName);
                     resourceRelationModel.reloadResource();
                     GlobalMessageAppender.addSuccessMessage("Softlink relation for resource " + getResource().getName() + " to resource with softlinkId: " + softlinkReferenceName + " successfully created");
@@ -351,111 +346,101 @@ public class RelationDataProvider implements Serializable {
                 // TODO should other exceptions also be catched?
                 if (e.getCause() instanceof NotAuthorizedException) {
                     GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
-                }
-                else {
+                } else {
                     throw e;
                 }
             } catch (ForeignableOwnerViolationException e) {
-                GlobalMessageAppender.addErrorMessage("Owner "+e.getViolatingOwner()+" not allowed to modify existing softlink relation");
-            } catch (ValidationException e) {
-                GlobalMessageAppender.addErrorMessage("Error on reloading resource");
+                GlobalMessageAppender.addErrorMessage("Owner " + e.getViolatingOwner() + " not allowed to modify existing softlink relation");
             }
         } else {
             GlobalMessageAppender.addErrorMessage("Softlink relation creation not allowed for resource type");
         }
     }
 
-	private boolean isAlreadyProvided(ResourceGroupEntity resourceGroupEntity) {
-		// provided resources can only be added once
-		List<ResourceEditRelation> relations = helper.flattenMap(resourceRelationModel.getProvidedRelations());
-		Integer slaveResourceGroupId = resourceGroupEntity.getId();
-		String prefix = resourceGroupEntity.getName();
-		return !helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix);
-	}
+    private boolean isAlreadyProvided(ResourceGroupEntity resourceGroupEntity) {
+        // provided resources can only be added once
+        List<ResourceEditRelation> relations = helper.flattenMap(resourceRelationModel.getProvidedRelations());
+        Integer slaveResourceGroupId = resourceGroupEntity.getId();
+        String prefix = resourceGroupEntity.getName();
+        return !helper.nextFreeIdentifierForResourceEditRelations(relations, slaveResourceGroupId, prefix).equals(prefix);
+    }
 
-	public boolean canBeAddedAsProvidedResource(NamedIdentifiable slaveResourceGroup) {
-		if (slaveResourceGroup instanceof ResourceGroupEntity) {
-			if (isAlreadyProvided((ResourceGroupEntity) slaveResourceGroup)) {
-				String message = "A resource can only be provided once";
-				GlobalMessageAppender.addErrorMessage(message);
-				return false;
-			}
-			if (!canAddResourceRelation || !permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null)) {
-				String message = "You do not have the permission to add this relation";
-				GlobalMessageAppender.addErrorMessage(message);
-				return false;
-			}
-			if (!resourceRelationBoundary.isAddableAsProvidedResourceToResourceGroup((ResourceEntity) resourceOrType, slaveResourceGroup.getName())) {
-				String message = "This resource is already provided by another resource";
-				GlobalMessageAppender.addErrorMessage(message);
-				return false;
-			}
-			return true;
-		}
-		return false;
-	}
+    public boolean canBeAddedAsProvidedResource(NamedIdentifiable slaveResourceGroup) {
+        if (slaveResourceGroup instanceof ResourceGroupEntity) {
+            if (isAlreadyProvided((ResourceGroupEntity) slaveResourceGroup)) {
+                String message = "A resource can only be provided once";
+                GlobalMessageAppender.addErrorMessage(message);
+                return false;
+            }
+            if (!canAddResourceRelation || !permissionService.hasPermission(Permission.RESOURCE, null, Action.READ, (ResourceGroupEntity) slaveResourceGroup, null)) {
+                String message = "You do not have the permission to add this relation";
+                GlobalMessageAppender.addErrorMessage(message);
+                return false;
+            }
+            if (!resourceRelationBoundary.isAddableAsProvidedResourceToResourceGroup((ResourceEntity) resourceOrType, slaveResourceGroup.getName())) {
+                String message = "This resource is already provided by another resource";
+                GlobalMessageAppender.addErrorMessage(message);
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 
-	public boolean addProvidedResource(NamedIdentifiable slaveResourceGroup) {
-		if (canBeAddedAsProvidedResource(slaveResourceGroup)) {
-			return addResourceRelation(slaveResourceGroup.getId(), true, null, identifier);
-		} else {
-			return false;
-		}
-	}
+    public boolean addProvidedResource(NamedIdentifiable slaveResourceGroup) {
+        if (canBeAddedAsProvidedResource(slaveResourceGroup)) {
+            return addResourceRelation(slaveResourceGroup.getId(), true, null, identifier);
+        } else {
+            return false;
+        }
+    }
 
-	private boolean addResourceRelation(Integer slaveGroupId, boolean provided, String relationName, String typeIdentifier) {
-		boolean isSuccessful = false;
-		try {
-			if (resourceOrType == null) {
-				String message = "No resource selected.";
-				GlobalMessageAppender.addErrorMessage(message);
-			}
-			else if (slaveGroupId == null) {
-				String message = "No related resource selected.";
-				GlobalMessageAppender.addErrorMessage(message);
-			}
-			else {
-				try {
-					relationEditor.addRelation(resourceOrType.getId(), slaveGroupId, provided,
-							relationName, ForeignableOwner.getSystemOwner());
-					resourceRelationModel.reloadValues();
-					String message = "Resource successfully added.";
-					GlobalMessageAppender.addSuccessMessage(message);
-					isSuccessful = true;
-				}
-				catch (EJBException e) {
-					if (e.getCause() instanceof NotAuthorizedException) {
-						GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
-					}
-					else {
-						throw e;
-					}
-				}
-			}
-		}
-		catch (ResourceNotFoundException e) {
-			String message = "Could not find selected Resource.";
-			GlobalMessageAppender.addErrorMessage(message);
-		}
-		catch (ElementAlreadyExistsException e) {
-			String message = "Relation already exists.";
-			GlobalMessageAppender.addErrorMessage(message);
-		}
-		return isSuccessful;
-	}
-
+    private boolean addResourceRelation(Integer slaveGroupId, boolean provided, String relationName, String typeIdentifier) {
+        boolean isSuccessful = false;
+        try {
+            if (resourceOrType == null) {
+                String message = "No resource selected.";
+                GlobalMessageAppender.addErrorMessage(message);
+            } else if (slaveGroupId == null) {
+                String message = "No related resource selected.";
+                GlobalMessageAppender.addErrorMessage(message);
+            } else {
+                try {
+                    relationEditor.addRelation(resourceOrType.getId(), slaveGroupId, provided,
+                            relationName, ForeignableOwner.getSystemOwner());
+                    resourceRelationModel.reloadValues();
+                    String message = "Resource successfully added.";
+                    GlobalMessageAppender.addSuccessMessage(message);
+                    isSuccessful = true;
+                } catch (EJBException e) {
+                    if (e.getCause() instanceof NotAuthorizedException) {
+                        GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+        } catch (ResourceNotFoundException e) {
+            String message = "Could not find selected Resource.";
+            GlobalMessageAppender.addErrorMessage(message);
+        } catch (ElementAlreadyExistsException e) {
+            String message = "Relation already exists.";
+            GlobalMessageAppender.addErrorMessage(message);
+        }
+        return isSuccessful;
+    }
 
     public boolean removeResourceRelation() {
-		boolean isSuccessful = false;
+        boolean isSuccessful = false;
 
-		try {
+        try {
             if (isEditResource() && getResource() == null) {
                 String message = "No resource selected.";
                 GlobalMessageAppender.addErrorMessage(message);
             }
 
-            if (resourceRelationModel.isSoftlinkRelationSelected()){
-                if (resourceRelationModel.getSoftlinkRelation() == null){
+            if (resourceRelationModel.isSoftlinkRelationSelected()) {
+                if (resourceRelationModel.getSoftlinkRelation() == null) {
                     String message = "No relation selected.";
                     GlobalMessageAppender.addErrorMessage(message);
                 } else {
@@ -466,115 +451,99 @@ public class RelationDataProvider implements Serializable {
                     GlobalMessageAppender.addSuccessMessage(message);
                     isSuccessful = true;
                 }
+            } else if (!isEditResource() && getResourceType() == null) {
+                String message = "No resource type selected.";
+                GlobalMessageAppender.addErrorMessage(message);
+            } else if (resourceRelationModel.getRemoveResourceRelation() == null) {
+                String message = "No related resource selected.";
+                GlobalMessageAppender.addErrorMessage(message);
+            } else {
+                try {
+                    if (isEditResource()) {
+                        relationEditor.removeRelation(ForeignableOwner.getSystemOwner(), resourceRelationModel.getRemoveResourceRelation()
+                                .getResRelId());
+                    } else {
+                        relationEditor.removeResourceTypeRelation(resourceRelationModel
+                                .getRemoveResourceRelation().getResRelTypeId());
+                    }
+                    resourceRelationModel.reloadValues();
+                    String message = "Relation successfully removed.";
+                    GlobalMessageAppender.addSuccessMessage(message);
+                    isSuccessful = true;
+                } catch (EJBException e) {
+                    if (e.getCause() instanceof NotAuthorizedException) {
+                        GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
+                    } else {
+                        throw e;
+                    }
+                } catch (ElementAlreadyExistsException | ResourceTypeNotFoundException e) {
+                    GlobalMessageAppender.addErrorMessage(e.getMessage());
+                }
             }
-
-			else if (!isEditResource() && getResourceType() == null) {
-				String message = "No resource type selected.";
-				GlobalMessageAppender.addErrorMessage(message);
-			}
-			else if (resourceRelationModel.getRemoveResourceRelation() == null) {
-				String message = "No related resource selected.";
-				GlobalMessageAppender.addErrorMessage(message);
-			}
-			else {
-				try {
-					if (isEditResource()) {
-						relationEditor.removeRelation(ForeignableOwner.getSystemOwner(), resourceRelationModel.getRemoveResourceRelation()
-								.getResRelId());
-					}
-					else {
-						relationEditor.removeResourceTypeRelation(resourceRelationModel
-								.getRemoveResourceRelation().getResRelTypeId());
-					}
-					resourceRelationModel.reloadValues();
-					String message = "Relation successfully removed.";
-					GlobalMessageAppender.addSuccessMessage(message);
-					isSuccessful = true;
-				}
-				catch (EJBException e) {
-					if (e.getCause() instanceof NotAuthorizedException) {
-						GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
-					}
-					else {
-						throw e;
-					}
-				}
-				catch (ElementAlreadyExistsException | ResourceTypeNotFoundException e) {
-					GlobalMessageAppender.addErrorMessage(e.getMessage());
-				}
-			}
-		}
-		catch (ResourceNotFoundException e) {
-			String message = "The selected resource can not be found.";
-			GlobalMessageAppender.addErrorMessage(message);
-		} catch (ForeignableOwnerViolationException e) {
+        } catch (ResourceNotFoundException e) {
+            String message = "The selected resource can not be found.";
+            GlobalMessageAppender.addErrorMessage(message);
+        } catch (ForeignableOwnerViolationException e) {
             GlobalMessageAppender.addErrorMessage("Relation can not be deleted by owner " + e.getViolatingOwner());
-        } catch (ValidationException e) {
-            GlobalMessageAppender.addErrorMessage("Error on reloading resource");
         }
         return isSuccessful;
-	}
+    }
 
-	public boolean isCurrentType(Integer type) {
-		return type.equals(getCurrentResourceTypeId());
-	}
+    public boolean isCurrentType(Integer type) {
+        return type.equals(getCurrentResourceTypeId());
+    }
 
-	public boolean isChildCurrentType(Integer parentTypeId) {
-	     return currentResourceType!=null && currentResourceType.getParentResourceType()!=null && currentResourceType.getParentResourceType().getId().equals(parentTypeId);
-	}
+    public boolean isChildCurrentType(Integer parentTypeId) {
+        return currentResourceType != null && currentResourceType.getParentResourceType() != null && currentResourceType.getParentResourceType().getId().equals(parentTypeId);
+    }
 
-	private boolean isEditResource() {
-		return resourceOrType != null && resourceOrType instanceof ResourceEntity;
-	}
+    private boolean isEditResource() {
+        return resourceOrType != null && resourceOrType instanceof ResourceEntity;
+    }
 
-	private boolean isEditResourceType() {
-		return resourceOrType != null && resourceOrType instanceof ResourceTypeEntity;
-	}
+    private boolean isEditResourceType() {
+        return resourceOrType != null && resourceOrType instanceof ResourceTypeEntity;
+    }
 
-	private ResourceEntity getResource() {
-		if (isEditResource()){
-			return (ResourceEntity)resourceOrType;
-		}
-		return null;
-	}
+    private ResourceEntity getResource() {
+        if (isEditResource()) {
+            return (ResourceEntity) resourceOrType;
+        }
+        return null;
+    }
 
-	private ResourceTypeEntity getResourceType() {
-		if (isEditResource()) {
-			return ((ResourceEntity)resourceOrType).getResourceType();
-		} else if (isEditResourceType()) {
-			return ((ResourceTypeEntity)resourceOrType);
-		}
-		return null;
-	}
+    private ResourceTypeEntity getResourceType() {
+        if (isEditResource()) {
+            return ((ResourceEntity) resourceOrType).getResourceType();
+        } else if (isEditResourceType()) {
+            return ((ResourceTypeEntity) resourceOrType);
+        }
+        return null;
+    }
 
     public List<NamedIdentifiable> getSelectableItems() {
-        if (selectableItems == null){
+        if (selectableItems == null) {
             selectableItems = new ArrayList<>();
         }
         Collections.sort(selectableItems, nameComparator);
         return selectableItems;
     }
 
-	private final Comparator<NamedIdentifiable> nameComparator = new Comparator<NamedIdentifiable>() {
-		@Override
-		public int compare(NamedIdentifiable namedIdentifiable, NamedIdentifiable namedIdentifiable2) {
-			if (namedIdentifiable == null) {
-				return namedIdentifiable2 == null ? 0 : 1;
-			}
-			else if (namedIdentifiable2 == null) {
-				return -1;
-			}
-			else {
-				if (namedIdentifiable.getName() == null) {
-					return namedIdentifiable2.getName() == null ? 0 : 1;
-				}
-				else if (namedIdentifiable2.getName() == null) {
-					return -1;
-				}
-				else {
-					return namedIdentifiable.getName().compareToIgnoreCase(namedIdentifiable2.getName());
-				}
-			}
-		}
-	};
+    private final Comparator<NamedIdentifiable> nameComparator = new Comparator<NamedIdentifiable>() {
+        @Override
+        public int compare(NamedIdentifiable namedIdentifiable, NamedIdentifiable namedIdentifiable2) {
+            if (namedIdentifiable == null) {
+                return namedIdentifiable2 == null ? 0 : 1;
+            } else if (namedIdentifiable2 == null) {
+                return -1;
+            } else {
+                if (namedIdentifiable.getName() == null) {
+                    return namedIdentifiable2.getName() == null ? 0 : 1;
+                } else if (namedIdentifiable2.getName() == null) {
+                    return -1;
+                }
+                return namedIdentifiable.getName().compareToIgnoreCase(namedIdentifiable2.getName());
+            }
+        }
+    };
 }

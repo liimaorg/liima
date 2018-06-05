@@ -38,8 +38,6 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
-import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
@@ -176,7 +174,7 @@ public class ResourceRelationModel implements Serializable {
         allowedToJumpToRelatedResourceEditScreen = permissionBoundary.hasPermission(Permission.RESOURCE, Action.UPDATE);
     }
 
-    public void onChangedResource(@Observes ResourceEntity resourceEntity) throws GeneralDBException {
+    public void onChangedResource(@Observes ResourceEntity resourceEntity) {
         allowedToSelectRuntime = permissionBoundary.hasPermission(Permission.RESOURCE, sessionContext.getCurrentContext(), Action.UPDATE, resourceEntity, null);
         allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelation(resourceEntity, sessionContext.getCurrentContext());
         allowedToAddRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, sessionContext.getCurrentContext());
@@ -203,7 +201,7 @@ public class ResourceRelationModel implements Serializable {
         return null;
     }
 
-    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) throws GeneralDBException {
+    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
         allowedToListResourceTypeRelations = permissionBoundary.hasPermission(Permission.RESOURCETYPE, null, Action.READ, null, resourceTypeEntity);
         allowedToAddRelations = permissionBoundary.hasPermissionToAddRelatedResourceType(resourceTypeEntity);
         allowedToRemoveRelations = permissionBoundary.hasPermissionToDeleteRelationType(resourceTypeEntity);
@@ -344,8 +342,6 @@ public class ResourceRelationModel implements Serializable {
     /**
      * JSF is not able to handle objects within selectboxes - we therefore have to make a round trip over
      * the relations id...
-     *
-     * @return
      */
     public Integer getCurrentResourceRelationId() {
         return currentResourceRelation != null ? currentResourceRelation.getResRelId() : null;
@@ -420,10 +416,7 @@ public class ResourceRelationModel implements Serializable {
     public boolean isActiveRelation(ResourceEditRelation resourceRelation) {
         Integer current = currentResourceRelation != null ? currentResourceRelation.getUniqueIdentifier() : null;
         Integer other = resourceRelation != null ? resourceRelation.getUniqueIdentifier() : null;
-        if (current != null && current.equals(other)) {
-            return true;
-        }
-        return false;
+        return current != null && current.equals(other);
     }
 
     public boolean isCurrentRelation(ResourceEditRelation resourceRelation) {
@@ -448,14 +441,14 @@ public class ResourceRelationModel implements Serializable {
     }
 
     public List<String> getUnresolvedHeaders() {
-        return unresolvedRelations != null ? new ArrayList<String>(unresolvedRelations.keySet())
+        return unresolvedRelations != null ? new ArrayList<>(unresolvedRelations.keySet())
                 : new ArrayList<String>();
     }
 
     public List<String> getUnresolvedRelations(String header) {
         if (header != null && !header.isEmpty()) {
             SortedSet<String> sortedSet = unresolvedRelations.get(header);
-            return sortedSet != null ? new ArrayList<String>(sortedSet) : null;
+            return sortedSet != null ? new ArrayList<>(sortedSet) : null;
         }
         return null;
     }
@@ -507,7 +500,7 @@ public class ResourceRelationModel implements Serializable {
     }
 
     private void mapRelations(Mode mode) {
-        Map<Integer, Map<String, List<ResourceEditRelation>>> groupIdentifierMap = new HashMap<Integer, Map<String, List<ResourceEditRelation>>>();
+        Map<Integer, Map<String, List<ResourceEditRelation>>> groupIdentifierMap = new HashMap<>();
         SortedMap<String, SortedMap<String, List<ResourceEditRelation>>> mapForNavigation = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 
         if (resourceRelations.get(mode) != null) {
@@ -623,7 +616,7 @@ public class ResourceRelationModel implements Serializable {
             }
             if (selectedRelation != null) {
                 // if selected relation is within list return list with selected element otherwise leave the list as it is
-                allReleaseRelations = new ArrayList<>(Arrays.asList(selectedRelation));
+                allReleaseRelations = new ArrayList<>(Collections.singletonList(selectedRelation));
             }
         }
 
@@ -650,7 +643,7 @@ public class ResourceRelationModel implements Serializable {
             SortedMap<String, SortedSet<String>> unresolvedResRelMap = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 
             // prepare a map with all instance relations
-            Set<Integer> resolved = new HashSet<Integer>();
+            Set<Integer> resolved = new HashSet<>();
             List<ResourceEditRelation> consumedResourceRelations = resourceRelations.get(Mode.CONSUMED);
             if (consumedResourceRelations != null) {
                 for (ResourceEditRelation rel : consumedResourceRelations) {
@@ -748,7 +741,7 @@ public class ResourceRelationModel implements Serializable {
         return null;
     }
 
-    public void reloadResource() throws ValidationException {
+    public void reloadResource() {
         if (isResourceSelected()) {
             currentSelectedResourceOrType = resourceLocator.getResourceWithGroupAndRelatedResources(
                     currentSelectedResourceOrType.getId());
