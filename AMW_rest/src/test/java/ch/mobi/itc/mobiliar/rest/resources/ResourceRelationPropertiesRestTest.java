@@ -20,23 +20,18 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import javax.ws.rs.core.Response;
 
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
+import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-
-import java.util.Arrays;
 
 /**
  * This is a typical rest interface test: It checks, if the underlying business logic is called with
@@ -46,14 +41,26 @@ import java.util.Arrays;
 public class ResourceRelationPropertiesRestTest {
 
     @InjectMocks
-    ResourcesRest rest;
+    ResourceRelationPropertiesRest rest;
 
     @Mock
-    PropertyEditor propertyEditor;
+    ResourceRelationLocator resourceRelationLocator;
 
     @Before
     public void configure() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void shouldReturnNotFoundStatusIfNoRelationsHaveBeenFound() throws ValidationException {
+        // given
+        int notFound = Response.Status.NOT_FOUND.getStatusCode();
+
+        // when
+        Response response = rest.getResourceRelationProperties("Test");
+
+        // then
+        assertThat(response.getStatus(), is(notFound));
     }
 
     // TODO #9781 implement test - original tests were written in ResourceRestTest
