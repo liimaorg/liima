@@ -25,7 +25,6 @@ import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
@@ -164,7 +163,7 @@ public class DeploymentsRest {
         return deploymentDTOs;
     }
 
-    private DeploymentDTO createDeploymentDTO(DeploymentEntity deployment) {
+    protected DeploymentDTO createDeploymentDTO(DeploymentEntity deployment) {
         if (deployment.isPreserved()) {
             return createPreservedDeploymentDTO(deployment);
         } else {
@@ -290,15 +289,11 @@ public class DeploymentsRest {
         if (deploymentParameterValues != null) {
             createFiltersAndAddToList(DEPLOYMENT_PARAMETER, deploymentParameterValues, filters);
         }
-        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, null, null, null);
+        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, null, null, null);
 
-        List<DeploymentDTO> deploymentDTOs = new ArrayList<>();
+        List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
 
-        for (DeploymentEntity entity : result.getA()) {
-            deploymentDTOs.add(new DeploymentDTO(entity));
-        }
-
-        return Response.status(Status.OK).header("X-Total-Count", result.getB()).entity(deploymentDTOs).build();
+        return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
     }
 
     private void createFiltersAndAddToList(DeploymentFilterTypes deploymentFilterType, List<String> values, LinkedList<CustomFilter> filters) {
