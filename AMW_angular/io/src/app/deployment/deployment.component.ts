@@ -122,9 +122,14 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   initAppservers() {
     this.isLoading = true;
     this.resourceService.getByType('APPLICATIONSERVER').subscribe(
-      /* happy path */ (r) => this.appservers = r.sort(function(a, b){return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }); }),
+      /* happy path */ (r) => this.appservers = r.sort(function (a, b) {
+        return a.name.localeCompare(b.name, undefined, {sensitivity: 'base'});
+      }),
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.setPreselected());
+      /* onComplete */ () => {
+        this.setPreselected();
+        this.isLoading = false;
+      });
   }
 
   onChangeAppserver() {
@@ -183,7 +188,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private getDeployment() {
-    this.isLoading = true;
     return this.deploymentService.get(this.deploymentId).subscribe(
       /* happy path */ (r) => this.selectedDeployment = r,
       /* error path */ (e) => this.errorMessage = e,
@@ -227,7 +231,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private loadReleases(): Subscription {
-    this.isLoading = true;
     return this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe(
       /* happy path */ (r) => this.releases = r,
       /* error path */ (e) => this.errorMessage = e,
@@ -235,7 +238,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private getRelatedForRelease() {
-    this.isLoading = true;
     this.resourceService.getLatestForRelease(this.selectedAppserver.id, this.selectedRelease.id).subscribe(
       /* happy path */ (r) => this.bestForSelectedRelease = r,
       /* error path */ (e) => this.errorMessage = e,
@@ -250,11 +252,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private getAppVersions() {
-    this.isLoading = true;
     this.resourceService.getAppsWithVersions(this.selectedAppserver.id, this.selectedRelease.id, _.filter(this.environments, 'selected').map((val) => val.id)).subscribe(
       /* happy path */ (r) => this.isRedeployment ? this.appsWithVersionForRedeployment = r : this.appsWithVersion = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.isRedeployment ? this.verifyRedeployment() : this.isLoading = false);
+      /* onComplete */ () => this.isRedeployment ? this.verifyRedeployment() : '');
   }
 
   private resetVars() {
@@ -316,7 +317,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
           this.isDeploymentBlocked = true;
       }
     });
-    this.isLoading = false;
   }
 
   private prepareDeployment() {
@@ -327,6 +327,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private createDeploymentRequest(contextIds: number[]) {
+    this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
     const deploymentRequest: DeploymentRequest = {} as DeploymentRequest;
@@ -354,7 +355,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.deploymentService.createDeployment(deploymentRequest).subscribe(
       /* happy path */ (r) => this.deploymentResponse = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.composeSuccessMessage());
+      /* onComplete */ () => {
+        this.isLoading = false;
+        this.composeSuccessMessage();
+      });
   }
 
   private composeSuccessMessage() {
@@ -405,7 +409,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
           /* error path */ (e) => this.errorMessage = e,
           /* onComplete */ () => this.setRelease());
       }
-      this.isLoading = false;
     }
   }
 

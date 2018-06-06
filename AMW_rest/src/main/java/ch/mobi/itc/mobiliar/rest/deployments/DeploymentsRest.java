@@ -440,7 +440,7 @@ public class DeploymentsRest {
         if (environment != null) {
             boolean hasNode = generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(appServer, environment, request.getStateToDeploy());
             if (!hasNode) {
-                return Response.status(Status.BAD_REQUEST)
+                return Response.status(424)
                         .entity(new ExceptionDto("No active Node found on Environement " + request.getEnvironmentName()))
                         .build();
             }
