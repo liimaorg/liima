@@ -50,7 +50,7 @@ export class DeploymentService {
       headers: this.csvHeaders()
     });
     return this.http
-      .get(`${this.baseUrl}/deployments/filterCsvExport`, options)
+      .get(`${this.baseUrl}/deployments/filter`, options)
       .map((response: Response) => response.text())
       .catch(handleError);
   }
