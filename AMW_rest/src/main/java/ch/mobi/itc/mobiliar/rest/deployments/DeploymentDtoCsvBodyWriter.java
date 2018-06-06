@@ -15,7 +15,6 @@ import javax.ws.rs.ext.Provider;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,12 +31,9 @@ public class DeploymentDtoCsvBodyWriter implements MessageBodyWriter<List<Deploy
 
     @Override
     public boolean isWriteable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
-        // Ensure that we're handling only List<DeploymentDTO> objects.
         boolean isWritable = false;
-        if (List.class.isAssignableFrom(aClass) && type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-            Type[] actualTypeArgs = (parameterizedType.getActualTypeArguments());
-            isWritable = (actualTypeArgs.length == 1 && actualTypeArgs[0].equals(DeploymentDTO.class));
+        if (List.class.isAssignableFrom(aClass) && ((Class) type).getSimpleName().equals(aClass.getSimpleName())) {
+            isWritable = true;
         }
         return isWritable;
     }

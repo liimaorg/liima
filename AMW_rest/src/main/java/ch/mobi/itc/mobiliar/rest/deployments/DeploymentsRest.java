@@ -59,6 +59,7 @@ import io.swagger.annotations.ApiParam;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -113,30 +114,14 @@ public class DeploymentsRest {
             String detail = "example: [{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"Latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
             return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto(msg, detail)).build();
         }
+        if (filterDTOs == null) {
+            return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto("at least one filter must be set")).build();
+        }
         CommonFilterService.SortingDirectionType sortingDirectionType = getSortingDirectionType(sortDirection);
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
         Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, colToSort, sortingDirectionType, null);
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
         return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
-    }
-
-    @GET
-    @Path("/filterCsvExport")
-    @ApiOperation(value = "returns a csv containing all Deployments matching the list of json filters - used by Angular", nickname = "CSV export")
-    public List<DeploymentDTO> getDeploymentsAsCsv(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters,
-                                              @QueryParam("colToSort") String colToSort,
-                                              @QueryParam("sortDirection") String sortDirection) {
-        DeploymentFilterDTO[] filterDTOs;
-        try {
-            filterDTOs = new Gson().fromJson(jsonListOfFilters, DeploymentFilterDTO[].class);
-        } catch (JsonSyntaxException e) {
-            String msg = String.format("json is not a valid representation for an object of type %s", DeploymentFilterDTO.class.getSimpleName());
-            throw new IllegalArgumentException(msg);
-        }
-        CommonFilterService.SortingDirectionType sortingDirectionType = getSortingDirectionType(sortDirection);
-        LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
-        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(0, null, filters, colToSort, sortingDirectionType, null);
-        return createDeploymentDTOs(filteredDeployments);
     }
 
     private CommonFilterService.SortingDirectionType getSortingDirectionType(String sortDirection) {
