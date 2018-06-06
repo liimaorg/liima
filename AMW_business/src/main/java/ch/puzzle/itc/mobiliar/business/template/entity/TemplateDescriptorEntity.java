@@ -234,7 +234,7 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 	public Map<String, String> toHash() {
 		Map<String, String> hash = new HashMap<String, String>();
 		hash.put(GeneratedTemplate.RESERVED_PROPERTY_PATH, this.targetPath);
-		hash.put(GeneratedTemplate.RESERVED_PROPERTY_CONTENT, "");
+		hash.put(GeneratedTemplate.RESERVED_PROPERTY_CONTENT, this.fileContent);
 		hash.put(GeneratedTemplate.RESERVED_PROPERTY_NAME, this.name);
 		return hash;
 	}
