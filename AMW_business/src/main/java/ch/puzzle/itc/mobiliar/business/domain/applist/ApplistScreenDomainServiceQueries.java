@@ -118,7 +118,7 @@ public class ApplistScreenDomainServiceQueries {
 		
 		q.distinct(true);
 		
-		q.orderBy(cb.asc(appServer.get("deletable")), cb.asc(appServer.get("name")));
+		q.orderBy(cb.asc(appServer.get("deletable")), cb.asc(cb.lower(appServer.<String> get("name"))));
 		TypedQuery<ResourceEntity> query = entityManager.createQuery(q);
 		if(maxResult != null) {
 			query.setMaxResults(maxResult);
