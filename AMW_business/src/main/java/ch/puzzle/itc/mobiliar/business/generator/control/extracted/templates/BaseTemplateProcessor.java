@@ -23,11 +23,7 @@ package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,11 +32,9 @@ import ch.puzzle.itc.mobiliar.business.generator.control.*;
 import ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwTemplateModel;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.utils.LogFactory;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException.CAUSE;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import freemarker.cache.StringTemplateLoader;
@@ -112,7 +106,7 @@ public class BaseTemplateProcessor {
 
 		Configuration cfg = populateConfig(templates, globalFunctions, templateExceptionHandler);
 		GenerationUnitGenerationResult result = new GenerationUnitGenerationResult();
-		List<GeneratedTemplate> generatedTemplates = new ArrayList<GeneratedTemplate>();
+		List<GeneratedTemplate> generatedTemplates = new ArrayList<>();
 		for (TemplateDescriptorEntity template : templates) {
 			try {
 				GeneratedTemplate generatedTemplate = generateAmwTemplateModel(cfg, template, model);
@@ -124,15 +118,15 @@ public class BaseTemplateProcessor {
 			catch (TemplateException te) {
 				GeneratedTemplate errorTemplate = new GeneratedTemplate(template.getName(), template.getTargetPath(), "");
 				//logBeforeException(te, contextualizedMap);
-				errorTemplate.addAllErrorMessages(Arrays.asList(new TemplatePropertyException(
-                        "missing property value or propertydefinition in template. " + te.getMessage(),
-                        CAUSE.INVALID_PROPERTY, te)));
+				errorTemplate.addAllErrorMessages(Collections.singletonList(new TemplatePropertyException(
+						"missing property value or propertydefinition in template. " + te.getMessage(),
+						CAUSE.INVALID_PROPERTY, te)));
 				generatedTemplates.add(errorTemplate);
 			} catch (ParseException pe) {
 				// Validation failed! - was not able to parse the template!
 				GeneratedTemplate errorTemplate = new GeneratedTemplate(template.getName(), template.getTargetPath(), "");
 				logBeforeException(pe);
-				errorTemplate.addAllErrorMessages(Arrays.asList(new TemplatePropertyException(
+				errorTemplate.addAllErrorMessages(Collections.singletonList(new TemplatePropertyException(
 						"invalid template. " + pe.getMessage(),
 						CAUSE.PROCESSING_EXCEPTION, pe)));
 				generatedTemplates.add(errorTemplate);
@@ -261,10 +255,9 @@ public class BaseTemplateProcessor {
         String tempTemplate = "<#include \""+function.getName()+"\">${"+function.getName()+"()}";
 
         loader.putTemplate(tempTemplateName, tempTemplate);
-        
-        if(function!=null) {
-            loader.putTemplate(function.getName(), function.getDecoratedImplementation());
-        }
+
+        loader.putTemplate(function.getName(), function.getDecoratedImplementation());
+
         addGlobalFunctionTemplates(model.getGlobalFunctionTemplates(), loader);
         cfg.setTemplateLoader(loader);
 
@@ -291,9 +284,8 @@ public class BaseTemplateProcessor {
         StringTemplateLoader loader = new StringTemplateLoader();
 
         String tempTemplateName = "_propertyEvaluation_";
-        String tempTemplate = property;
 
-        loader.putTemplate(tempTemplateName, tempTemplate);
+		loader.putTemplate(tempTemplateName, property);
 
         addGlobalFunctionTemplates(model.getGlobalFunctionTemplates(), loader);
         
