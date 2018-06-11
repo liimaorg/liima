@@ -40,7 +40,6 @@ import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
@@ -70,9 +69,6 @@ public class ResourceRelationPropertiesRest {
     PropertyEditor propertyEditor;
 
     @Inject
-    ResourceLocator resourceLocator;
-
-    @Inject
     ContextLocator contextLocator;
 
     @Inject
@@ -80,8 +76,11 @@ public class ResourceRelationPropertiesRest {
 
     @GET
     @ApiOperation(value = "Get all properties of the relation between the two resource releases")
-    public List<PropertyDTO> getResourceRelationProperties(@DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
+    public Response getResourceRelationProperties(@DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
         List<ConsumedResourceRelationEntity> relations = resourceRelationLocator.getResourceRelationList(resourceGroupName, releaseName, relatedResourceGroupName, relatedReleaseName);
+        if (relations.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         ContextEntity context = contextLocator.getContextByName(environment);
         List<ResourceEditProperty> properties = new ArrayList<>();
         for (ConsumedResourceRelationEntity relation : relations) {
@@ -89,15 +88,16 @@ public class ResourceRelationPropertiesRest {
                     context.getId());
             properties.addAll(temp);
         }
-        List<PropertyDTO> result = new ArrayList<>();
+        List<PropertyDTO> propertyDTOS = new ArrayList<>();
         for (ResourceEditProperty property : properties) {
-            result.add(new PropertyDTO(property, context.getName()));
+            propertyDTOS.add(new PropertyDTO(property, context.getName()));
         }
-        return result;
+        return Response.ok(propertyDTOS).build();
     }
 
     /**
      * Für JavaBatch Monitor: liest alle Properties zu allen standardJobs einer Batch Applikation
+     *
      * @param environment
      * @return
      * @throws ValidationException
@@ -134,8 +134,10 @@ public class ResourceRelationPropertiesRest {
 
 
     //TODO Yves/Lorenz: Performance; ablösen durch mengenwertige neue Methode mit neuem Query
+
     /**
      * Für JavaBatch Monitor: liest ein einzelnes Property (Jobname) zu allen standardJobs einer Batch-Applikation
+     *
      * @param propertyName
      * @param environment
      * @return
