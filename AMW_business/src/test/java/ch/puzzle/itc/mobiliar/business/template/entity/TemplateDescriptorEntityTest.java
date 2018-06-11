@@ -176,7 +176,7 @@ public class TemplateDescriptorEntityTest {
         // then
         assertThat(hash.get(GeneratedTemplate.RESERVED_PROPERTY_PATH), is(targetPath));
         assertThat(hash.get(GeneratedTemplate.RESERVED_PROPERTY_CONTENT), is(fileContent));
-        assertThat(hash.get(GeneratedTemplate.RESERVED_PROPERTY_NAME), is(String.valueOf(name)));
+        assertThat(hash.get(GeneratedTemplate.RESERVED_PROPERTY_NAME), is(name));
         assertThat(hash.get(GeneratedTemplate.RESERVED_PROPERTY_IS_RELATION_TEMPLATE), is(String.valueOf(relationTemplate)));
     }
 
