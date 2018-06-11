@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -35,96 +34,56 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.JpaWildcardConverter;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 public class ApplistScreenDomainServiceQueries {
-	
-	@Inject
-	private EntityManager entityManager;
 
-	/**
-	 * alphabetic sorted
-	 * 
-	 * @param input
-	 * @return
-	 */
-	//unused code
-	Query applicationServersForSuggestBox(String input) {
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<String> q = cb.createQuery(String.class);
-		Root<ResourceEntity> r = q.from(ResourceEntity.class);
-		Join<ResourceEntity, ResourceTypeEntity> resType = r.join("resourceType");
-		Predicate appServerNamePred = cb.like(resType.<String> get("name"),
-				DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
-		input = input + "%";
-		q.where(cb.and(appServerNamePred, cb.like(r.<String> get("name"), input)));
-		q.select(r.<String> get("name"));
-		q.orderBy(cb.asc(r.get("name")));
+    @Inject
+    private EntityManager entityManager;
 
-		return entityManager.createQuery(q);
-	}
+    List<ResourceEntity> doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(String nameFilter, List<Integer> myAmwIds, Integer maxResult) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        Predicate p;
+        boolean nameFilterIsEmpty = nameFilter == null || nameFilter.trim().isEmpty();
 
-	Query doFetchRelatedElementsForSpecificAppServers(List<ResourceGroupEntity> appservers) {
-		return entityManager
-				.createQuery(
-						"from ResourceGroupEntity rg left join rg.resources r left join fetch r.consumedMasterRelations rel left join fetch rel.slaveResource consRes left join fetch consRes.resourceTags where rg in (:appservers)")
-				.setParameter("appservers", appservers);
-	}
+        CriteriaQuery<ResourceEntity> q = cb.createQuery(ResourceEntity.class);
+        Root<ResourceEntity> appServer = q.from(ResourceEntity.class);
 
-	/**
-	 * alphabetic sorted
-	 * 
-	 * @param nameFilter
-	 * @return
-	 */
-	
-	//fetch appServer(id, name, release, type, group), app(id, name, relation name, release, type, group)
-	//group by group -> as -> group -> app
-	//oder as -> app
-	List<ResourceEntity> doFetchApplicationServersWithApplications(String nameFilter, List<Integer> myAmwIds, Integer maxResult) {
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		Predicate p;
-		boolean nameFilterIsEmpty = nameFilter == null || nameFilter.trim().isEmpty();
+        Join<ResourceEntity, ResourceTypeEntity> appServerType = appServer.join("resourceType", JoinType.LEFT);
+        SetJoin<ResourceEntity, ConsumedResourceRelationEntity> relation = appServer.joinSet("consumedMasterRelations", JoinType.LEFT);
+        Join<ConsumedResourceRelationEntity, ResourceEntity> app = relation.join("slaveResource", JoinType.LEFT);
 
-		CriteriaQuery<ResourceEntity> q = cb.createQuery(ResourceEntity.class);
-		Root<ResourceEntity> appServer = q.from(ResourceEntity.class);
+        p = cb.and(cb.equal(appServerType.<String>get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name()));
 
-		Join<ResourceEntity, ResourceTypeEntity> appServerType = appServer.join("resourceType", JoinType.LEFT);
-		SetJoin<ResourceEntity, ConsumedResourceRelationEntity> relation = appServer.joinSet("consumedMasterRelations", JoinType.LEFT);
-		Join<ConsumedResourceRelationEntity, ResourceEntity> app = relation.join("slaveResource", JoinType.LEFT);
-		
-		p = cb.and(cb.equal(appServerType.<String> get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name()));
-		
-		if (!nameFilterIsEmpty) {
-			String nameFilterLower = JpaWildcardConverter.convertWildCards(nameFilter).toLowerCase();
-			p = cb.and(
-					p,
-					cb.or(
-							cb.like(cb.lower(appServer.<String> get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER),
-							cb.like(cb.lower(app.<String> get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER)));
-		}
-		if (myAmwIds != null) {
-			p = cb.and(p,
-			cb.or(
-					appServer.get("resourceGroup").get("id").in(myAmwIds),
-					app.get("resourceGroup").get("id").in(myAmwIds)));
-		}
-		
-		q.where(p);
-		
-		q.distinct(true);
-		
-		q.orderBy(cb.asc(appServer.get("deletable")), cb.asc(appServer.get("name")));
-		TypedQuery<ResourceEntity> query = entityManager.createQuery(q);
-		if(maxResult != null) {
-			query.setMaxResults(maxResult);
-		}
-		
-		return query.getResultList();
-	}
-	
+        if (!nameFilterIsEmpty) {
+            String nameFilterLower = JpaWildcardConverter.convertWildCards(nameFilter).toLowerCase();
+            p = cb.and(
+                    p,
+                    cb.or(
+                            cb.like(cb.lower(appServer.<String>get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER),
+                            cb.like(cb.lower(app.<String>get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER)));
+        }
+        if (myAmwIds != null) {
+            p = cb.and(p,
+                    cb.or(
+                            appServer.get("resourceGroup").get("id").in(myAmwIds),
+                            app.get("resourceGroup").get("id").in(myAmwIds)));
+        }
+
+        q.where(p);
+
+        q.distinct(true);
+
+        q.orderBy(cb.asc(appServer.get("deletable")), cb.asc(cb.lower(appServer.<String>get("name"))));
+        TypedQuery<ResourceEntity> query = entityManager.createQuery(q);
+        if (maxResult != null) {
+            query.setMaxResults(maxResult);
+        }
+
+        return query.getResultList();
+    }
+
 }
