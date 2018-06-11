@@ -24,7 +24,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
@@ -44,8 +44,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.*;
 
 @RequestScoped
 @Path("/resources/{resourceGroupName}/{releaseName}/relations")
@@ -60,9 +59,6 @@ public class ResourceRelationsRest {
 
     @QueryParam("type")
     String resourceType;
-
-    @Inject
-    PropertyEditor propertyEditor;
 
     @Inject
     ResourceLocator resourceLocator;
@@ -162,6 +158,36 @@ public class ResourceRelationsRest {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
         return Response.status(CREATED).build();
+    }
+
+    @Path("/{relationName}")
+    @DELETE
+    @ApiOperation(value = "Remove a Relation from a specific Release")
+    public Response removeRelation(@PathParam("relationName") String relationName) throws ValidationException {
+        if (StringUtils.isEmpty(relationName)) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Relation name must not be empty")).build();
+        }
+        ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithRelations(resourceGroupName, releaseName);
+        for (ConsumedResourceRelationEntity relation : resource.getConsumedMasterRelations()) {
+            if (resourceType != null && !relation.getResourceRelationType().getResourceTypeB().getName().equals(resourceType)) {
+                continue;
+            }
+            if (relationNameMatches(relation, relationName)) {
+                try {
+                    relationEditor.removeRelation(ForeignableOwner.getSystemOwner(), relation.getId());
+                    return Response.status(Response.Status.OK).build();
+                } catch (ForeignableOwnerViolationException fe) {
+                    return Response.status(UNAUTHORIZED).entity(new ExceptionDto(fe.getMessage())).build();
+                } catch (ResourceNotFoundException | ElementAlreadyExistsException e)  {
+                    return Response.status(NOT_FOUND).entity(new ExceptionDto(e.getMessage())).build();
+                }
+            }
+        }
+        return Response.status(NOT_FOUND).entity(new ExceptionDto("Relation with name '" + relationName + "' was not found")).build();
+    }
+
+    protected boolean relationNameMatches(ConsumedResourceRelationEntity relation, String relationName) {
+        return (relation.getIdentifier() != null && relation.getIdentifier().equals(relationName)) || relation.getSlaveResource().getName().equals(relationName);
     }
 
     private void addTemplates(ResourceRelationDTO resRel, List<TemplateDTO> templates) {
