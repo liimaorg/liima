@@ -47,152 +47,139 @@ import freemarker.template.TemplateException;
  */
 public class BaseTemplateProcessor {
 
-	protected Logger log = Logger.getLogger(BaseTemplateProcessor.class.getName());
+    protected Logger log = Logger.getLogger(BaseTemplateProcessor.class.getName());
 
-	protected static String FILEPATH_PLACEHOLDER = "_FILEPATH";
-
-
+    protected static String FILEPATH_PLACEHOLDER = "_FILEPATH";
 
     /**
      * Generates the templates for a specific resource
      *
-     * @param unit
-     * @param model
-     * @return GenerationUnitGenerationResult
      * @throws IOException
      */
     protected GenerationUnitGenerationResult generateResourceTemplates(GenerationUnit unit, AmwTemplateModel model) throws IOException {
-		GenerationUnitPreprocessResult generationUnitPreprocessResult = preProcessModel(model);
-		GenerationUnitGenerationResult generationUnitGenerationResult = generateTemplatesAmwTemplateModel(unit.getTemplates(), unit.getGlobalFunctionTemplates(), model);
+        GenerationUnitPreprocessResult generationUnitPreprocessResult = preProcessModel(model);
+        GenerationUnitGenerationResult generationUnitGenerationResult = generateTemplatesAmwTemplateModel(unit.getTemplates(), unit.getGlobalFunctionTemplates(), model);
 
-		generationUnitGenerationResult.setGenerationUnitPreprocessResult(generationUnitPreprocessResult);
+        generationUnitGenerationResult.setGenerationUnitPreprocessResult(generationUnitPreprocessResult);
 
-		return generationUnitGenerationResult;
-
-	}
+        return generationUnitGenerationResult;
+    }
 
     /**
      * Generates the RelationTemplates based on the given AmwTemplateModel
-     * @param unit
-     * @param model
-     * @return
+     *
      * @throws IOException
      */
     protected GenerationUnitGenerationResult generateResourceRelationTemplates(GenerationUnit unit, AmwTemplateModel model)
             throws IOException {
-		GenerationUnitPreprocessResult generationUnitPreprocessResult = preProcessModel(model);
-		GenerationUnitGenerationResult generationUnitGenerationResult = generateTemplatesAmwTemplateModel(unit.getRelationTemplates(), unit.getGlobalFunctionTemplates(), model);
+        GenerationUnitPreprocessResult generationUnitPreprocessResult = preProcessModel(model);
+        GenerationUnitGenerationResult generationUnitGenerationResult = generateTemplatesAmwTemplateModel(unit.getRelationTemplates(), unit.getGlobalFunctionTemplates(), model);
 
-		generationUnitGenerationResult.setGenerationUnitPreprocessResult(generationUnitPreprocessResult);
+        generationUnitGenerationResult.setGenerationUnitPreprocessResult(generationUnitPreprocessResult);
 
-		return generationUnitGenerationResult;
+        return generationUnitGenerationResult;
     }
 
     private GenerationUnitPreprocessResult preProcessModel(AmwTemplateModel model) {
-    	AmwModelPreprocessExceptionHandler exceptionHandler = new AmwModelPreprocessExceptionHandler();
-    	model.setAmwModelPreprocessExceptionHandler(exceptionHandler);
+        AmwModelPreprocessExceptionHandler exceptionHandler = new AmwModelPreprocessExceptionHandler();
+        model.setAmwModelPreprocessExceptionHandler(exceptionHandler);
         model.preProcess();
 
-		GenerationUnitPreprocessResult result = new GenerationUnitPreprocessResult();
-		result.setErrorMessages(exceptionHandler.getErrorMessages());
-		return result;
+        GenerationUnitPreprocessResult result = new GenerationUnitPreprocessResult();
+        result.setErrorMessages(exceptionHandler.getErrorMessages());
+        return result;
     }
 
     private GenerationUnitGenerationResult generateTemplatesAmwTemplateModel(Set<TemplateDescriptorEntity> templates, List<GlobalFunctionEntity> globalFunctions,
-			AmwTemplateModel model) throws IOException {
+                                                                             AmwTemplateModel model) throws IOException {
 
-		//logPropertiesForTemplates(templates, contextualizedMap);
-		AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
+        //logPropertiesForTemplates(templates, contextualizedMap);
+        AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
 
-		Configuration cfg = populateConfig(templates, globalFunctions, templateExceptionHandler);
-		GenerationUnitGenerationResult result = new GenerationUnitGenerationResult();
-		List<GeneratedTemplate> generatedTemplates = new ArrayList<>();
-		for (TemplateDescriptorEntity template : templates) {
-			try {
-				GeneratedTemplate generatedTemplate = generateAmwTemplateModel(cfg, template, model);
-				generatedTemplate.addAllErrorMessages(templateExceptionHandler.getErrorMessages());
-				generatedTemplates.add(generatedTemplate);
-				// reset handler
-				templateExceptionHandler.reset();
-			}
-			catch (TemplateException te) {
-				GeneratedTemplate errorTemplate = new GeneratedTemplate(template.getName(), template.getTargetPath(), "");
-				//logBeforeException(te, contextualizedMap);
-				errorTemplate.addAllErrorMessages(Collections.singletonList(new TemplatePropertyException(
-						"missing property value or propertydefinition in template. " + te.getMessage(),
-						CAUSE.INVALID_PROPERTY, te)));
-				generatedTemplates.add(errorTemplate);
-			} catch (ParseException pe) {
-				// Validation failed! - was not able to parse the template!
-				GeneratedTemplate errorTemplate = new GeneratedTemplate(template.getName(), template.getTargetPath(), "");
-				logBeforeException(pe);
-				errorTemplate.addAllErrorMessages(Collections.singletonList(new TemplatePropertyException(
-						"invalid template. " + pe.getMessage(),
-						CAUSE.PROCESSING_EXCEPTION, pe)));
-				generatedTemplates.add(errorTemplate);
-			}
-			catch (IOException ioe) {
-				log.log(Level.WARNING, ioe.getMessage());
-				throw ioe;
-			}
-		}
+        Configuration cfg = populateConfig(templates, globalFunctions, templateExceptionHandler);
+        GenerationUnitGenerationResult result = new GenerationUnitGenerationResult();
+        List<GeneratedTemplate> generatedTemplates = new ArrayList<>();
+        for (TemplateDescriptorEntity template : templates) {
+            try {
+                GeneratedTemplate generatedTemplate = generateAmwTemplateModel(cfg, template, model);
+                generatedTemplate.addAllErrorMessages(templateExceptionHandler.getErrorMessages());
+                generatedTemplates.add(generatedTemplate);
+                // reset handler
+                templateExceptionHandler.reset();
+            } catch (TemplateException te) {
+                GeneratedTemplate errorTemplate = new GeneratedTemplate(template.getName(), template.getTargetPath(), "");
+                //logBeforeException(te, contextualizedMap);
+                errorTemplate.addAllErrorMessages(Collections.singletonList(new TemplatePropertyException(
+                        "missing property value or propertydefinition in template. " + te.getMessage(),
+                        CAUSE.INVALID_PROPERTY, te)));
+                generatedTemplates.add(errorTemplate);
+            } catch (ParseException pe) {
+                // Validation failed! - was not able to parse the template!
+                GeneratedTemplate errorTemplate = new GeneratedTemplate(template.getName(), template.getTargetPath(), "");
+                logBeforeException(pe);
+                errorTemplate.addAllErrorMessages(Collections.singletonList(new TemplatePropertyException(
+                        "invalid template. " + pe.getMessage(),
+                        CAUSE.PROCESSING_EXCEPTION, pe)));
+                generatedTemplates.add(errorTemplate);
+            } catch (IOException ioe) {
+                log.log(Level.WARNING, ioe.getMessage());
+                throw ioe;
+            }
+        }
 
-		result.setGeneratedTemplates(generatedTemplates);
+        result.setGeneratedTemplates(generatedTemplates);
+        return result;
+    }
 
-		return result;
-	}
-
-	private Configuration populateConfig(Set<TemplateDescriptorEntity> templates, List<GlobalFunctionEntity> globalFunctionTemplates,
-			AMWTemplateExceptionHandler templateExceptionHandler) {
+    private Configuration populateConfig(Set<TemplateDescriptorEntity> templates, List<GlobalFunctionEntity> globalFunctionTemplates,
+                                         AMWTemplateExceptionHandler templateExceptionHandler) {
         Configuration cfg = getConfiguration(templateExceptionHandler);
-		StringTemplateLoader loader = new StringTemplateLoader();
+        StringTemplateLoader loader = new StringTemplateLoader();
 
-		for (TemplateDescriptorEntity template : templates) {
-			loader.putTemplate(template.getName(), template.getFileContent());
+        for (TemplateDescriptorEntity template : templates) {
+            loader.putTemplate(template.getName(), template.getFileContent());
 
-			if (template.getTargetPath() != null && !template.getTargetPath().isEmpty()) {
-				loader.putTemplate(template.getName() + BaseTemplateProcessor.FILEPATH_PLACEHOLDER,
-						template.getTargetPath());
-			}
-		}
-		addGlobalFunctionTemplates(globalFunctionTemplates, loader);
-		cfg.setTemplateLoader(loader);
-		return cfg;
-	}
+            if (template.getTargetPath() != null && !template.getTargetPath().isEmpty()) {
+                loader.putTemplate(template.getName() + BaseTemplateProcessor.FILEPATH_PLACEHOLDER,
+                        template.getTargetPath());
+            }
+        }
+        addGlobalFunctionTemplates(globalFunctionTemplates, loader);
+        cfg.setTemplateLoader(loader);
+        return cfg;
+    }
 
-	private void addGlobalFunctionTemplates(List<GlobalFunctionEntity> globalFunctionTemplates,
-			StringTemplateLoader loader) {
-		if(globalFunctionTemplates!=null) {
+    private void addGlobalFunctionTemplates(List<GlobalFunctionEntity> globalFunctionTemplates,
+                                            StringTemplateLoader loader) {
+        if (globalFunctionTemplates != null) {
             for (GlobalFunctionEntity template : globalFunctionTemplates) {
                 loader.putTemplate(template.getName(), template.getContent());
             }
         }
-	}
-	
-	/**
-	 * Generates the templates.
-	 * 
-	 * @param cfg
-	 *             - the template configuration
-	 * @param template
-	 *             - the template to be generated
-	 * @return the generated template
-	 * @throws TemplateException
-	 * @throws IOException
-	 */
-	private GeneratedTemplate generateAmwTemplateModel(Configuration cfg, TemplateDescriptorEntity template,
-			AmwTemplateModel model) throws TemplateException, IOException {
-		// If the template has a target path and is
-		// therefore not only a
-		// nested template pattern, generate it!
-		String targetPath = "";
-		String fileContent = "";
+    }
 
-		logStartTemplateGeneration(template);
-		if (template.getName() != null) {
-			if (template.getTargetPath() != null && !template.getTargetPath().isEmpty()) {
+    /**
+     * Generates the templates.
+     *
+     * @param cfg      - the template configuration
+     * @param template - the template to be generated
+     * @return the generated template
+     * @throws TemplateException
+     * @throws IOException
+     */
+    private GeneratedTemplate generateAmwTemplateModel(Configuration cfg, TemplateDescriptorEntity template,
+                                                       AmwTemplateModel model) throws TemplateException, IOException {
+        // If the template has a target path and is
+        // therefore not only a
+        // nested template pattern, generate it!
+        String targetPath = "";
+        String fileContent = "";
 
-				// Process targetPath the name can contain properties as well
+        logStartTemplateGeneration(template);
+        if (template.getName() != null) {
+            if (template.getTargetPath() != null && !template.getTargetPath().isEmpty()) {
+
+                // Process targetPath the name can contain properties as well
                 Writer targetPathWriter = new StringWriter();
 
                 freemarker.template.Template targetPathTemplate = cfg.getTemplate(template.getName()
@@ -203,30 +190,27 @@ public class BaseTemplateProcessor {
                 cfg.clearTemplateCache();
                 ((StringTemplateLoader) cfg.getTemplateLoader()).putTemplate(template.getName()
                         + FILEPATH_PLACEHOLDER, targetPath);
+            }
 
-			}
-
-			// Process file content
+            // Process file content
             Writer fileContentWriter = new StringWriter();
             freemarker.template.Template fileContentTemplate = cfg.getTemplate(template.getName());
             fileContentTemplate.process(model, fileContentWriter);
             fileContentWriter.flush();
             fileContent = fileContentWriter.toString();
             cfg.clearTemplateCache();
-            ((StringTemplateLoader) cfg.getTemplateLoader()).putTemplate(template.getName(),
-                    fileContent);
+            ((StringTemplateLoader) cfg.getTemplateLoader()).putTemplate(template.getName(), fileContent);
+        }
+        // replace "escaping annotations" with value
+        fileContent = fileContent.replace("@@{", "${");
+        logFinishedTemplateGeneration(template);
 
-		}
-		// replace "escaping annotations" with value
-		fileContent = fileContent.replace("@@{", "${");
-		logFinishedTemplateGeneration(template);
+        GeneratedTemplate generatedTemplate = new GeneratedTemplate(template.getName(), targetPath,
+                fileContent);
 
-		GeneratedTemplate generatedTemplate = new GeneratedTemplate(template.getName(), targetPath,
-				fileContent);
-
-		generatedTemplate.setTemplateEntity(template);
-		return generatedTemplate;
-	}
+        generatedTemplate.setTemplateEntity(template);
+        return generatedTemplate;
+    }
 
     public static Configuration getConfiguration(AMWTemplateExceptionHandler templateExceptionHandler) {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
@@ -235,14 +219,14 @@ public class BaseTemplateProcessor {
         cfg.setNumberFormat("0.######");
         return cfg;
     }
-   
+
 
     /**
      * Evaluates the given function and returns the result as String
-     * 
+     *
      * @param function
      * @param model
-     * @param amwModelPreprocessExceptionHandler 
+     * @param amwModelPreprocessExceptionHandler
      * @return
      * @throws IOException
      * @throws TemplateException
@@ -252,7 +236,7 @@ public class BaseTemplateProcessor {
         StringTemplateLoader loader = new StringTemplateLoader();
 
         String tempTemplateName = "_evaluateFunctionTemplate_";
-        String tempTemplate = "<#include \""+function.getName()+"\">${"+function.getName()+"()}";
+        String tempTemplate = "<#include \"" + function.getName() + "\">${" + function.getName() + "()}";
 
         loader.putTemplate(tempTemplateName, tempTemplate);
 
@@ -265,7 +249,7 @@ public class BaseTemplateProcessor {
         freemarker.template.Template fileContentTemplate = cfg.getTemplate(tempTemplateName);
         fileContentTemplate.process(model, fileContentWriter);
         fileContentWriter.flush();
-        String result =  fileContentWriter.toString();
+        String result = fileContentWriter.toString();
         cfg.clearTemplateCache();
 
         return result;
@@ -273,6 +257,7 @@ public class BaseTemplateProcessor {
 
     /**
      * Evaluates a Property Value as a Template sometimes property Values may contain Freemarker strings lik ${env} and so on
+     *
      * @param property
      * @param model
      * @return
@@ -285,39 +270,39 @@ public class BaseTemplateProcessor {
 
         String tempTemplateName = "_propertyEvaluation_";
 
-		loader.putTemplate(tempTemplateName, property);
+        loader.putTemplate(tempTemplateName, property);
 
         addGlobalFunctionTemplates(model.getGlobalFunctionTemplates(), loader);
-        
+
         cfg.setTemplateLoader(loader);
 
         Writer fileContentWriter = new StringWriter();
         freemarker.template.Template fileContentTemplate = cfg.getTemplate(tempTemplateName);
         fileContentTemplate.process(model, fileContentWriter);
         fileContentWriter.flush();
-        String result =  fileContentWriter.toString();
+        String result = fileContentWriter.toString();
         cfg.clearTemplateCache();
 
         return result;
     }
 
-	private void logFinishedTemplateGeneration(TemplateDescriptorEntity template) {
-		log.finest("finished: " + template.toString());
-	}
+    private void logFinishedTemplateGeneration(TemplateDescriptorEntity template) {
+        log.finest("finished: " + template.toString());
+    }
 
-	private void logStartTemplateGeneration(TemplateDescriptorEntity template) {
-		log.finest("started: " + template.toString());
-	}
+    private void logStartTemplateGeneration(TemplateDescriptorEntity template) {
+        log.finest("started: " + template.toString());
+    }
 
-	private void logBeforeException(TemplateException te, Map<String, Object> contextualizedMap) {
-		log.info("Template Fehler: ");
-		log.severe(te.getLocalizedMessage());
-		log.severe(new GsonBuilder().setPrettyPrinting().create().toJson(contextualizedMap));
-	}
-	
-	private void logBeforeException(ParseException pe) {
-		log.info("ParseException: ");
-		log.severe(pe.getLocalizedMessage());
-	}
+    private void logBeforeException(TemplateException te, Map<String, Object> contextualizedMap) {
+        log.info("Template Fehler: ");
+        log.severe(te.getLocalizedMessage());
+        log.severe(new GsonBuilder().setPrettyPrinting().create().toJson(contextualizedMap));
+    }
+
+    private void logBeforeException(ParseException pe) {
+        log.info("ParseException: ");
+        log.severe(pe.getLocalizedMessage());
+    }
 
 }
