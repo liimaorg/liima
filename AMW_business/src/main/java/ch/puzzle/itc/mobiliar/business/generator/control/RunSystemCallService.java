@@ -144,7 +144,7 @@ public class RunSystemCallService
 			String line;
 			while ((line = bufferedreader.readLine()) != null) {
 
-				log.info("" + line);
+				log.info("Command output: \"" + line + "\"");
 				if (line.startsWith("@{") && line.endsWith("}")) {
 					sb.append(line.substring(2,
 							line.length() - 1)).append(
