@@ -290,6 +290,7 @@ public class EditTemplateView implements Serializable {
         }
         if (success) {
             GlobalMessageAppender.addSuccessMessage("Template successfully saved.");
+            revisionInformations = Lists.reverse(templateEditor.getTemplateRevisions(template.getId()));
         }
     }
 
