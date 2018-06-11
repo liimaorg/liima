@@ -38,30 +38,30 @@ import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 @Stateless
 public class ApplistScreenDomainService {
 
-	@Inject
-	private ApplistScreenDomainServiceQueries queries;
+    @Inject
+    private ApplistScreenDomainServiceQueries queries;
 
     List<ResourceEntity> getApplicationServerResources(String filter, Integer maxResults, List<Integer> myAMW) {
-	   if(myAMW!=null && myAMW.isEmpty()){
-		  //there is a myAMW-filter, but it doesn't contain any values - so we don't have to ask the db - we know that there is an empty result
-		  return Collections.emptyList();
-	   }
-	   return queries.doFetchApplicationServersWithApplications(filter, myAMW, maxResults);
+        if (myAMW != null && myAMW.isEmpty()) {
+            //there is a myAMW-filter, but it doesn't contain any values - so we don't have to ask the db - we know that there is an empty result
+            return Collections.emptyList();
+        }
+        return queries.doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(filter, myAMW, maxResults);
     }
 
 
     public List<ResourceEntity> getAppServerResourcesWithApplications(String filter, Integer maxResults,
-		    List<Integer> myAmw, boolean withAppServerContainer) {
-	   List<ResourceEntity> appServerList  = getApplicationServerResources(filter, maxResults, myAmw);
-	   for (ResourceEntity as : appServerList) {
-		  if (as.getName().equals(ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName())) {
-			 if (!withAppServerContainer || as.getConsumedMasterRelations().size() == 0) {
-				appServerList.remove(as);
-				break;
-			 }
-		  }
-	   }
-	   return appServerList;
+                                                                      List<Integer> myAmw, boolean withAppServerContainer) {
+        List<ResourceEntity> appServerList = getApplicationServerResources(filter, maxResults, myAmw);
+        for (ResourceEntity as : appServerList) {
+            if (as.getName().equals(ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName())) {
+                if (!withAppServerContainer || as.getConsumedMasterRelations().size() == 0) {
+                    appServerList.remove(as);
+                    break;
+                }
+            }
+        }
+        return appServerList;
     }
-		
+
 }
