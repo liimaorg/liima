@@ -12,7 +12,7 @@ export class AuditviewService {
   }
 
   getAuditLogForResource(resourceId: number): Observable<Auditviewentrytype[]> {
-    let resource$ = this.http
+    const resource$ = this.http
       .get(`${this.baseUrl}/auditview/resource/${resourceId}`)
       .map((response: Response) => this.extractPayload(response))
       .catch(handleError);
@@ -24,7 +24,7 @@ export class AuditviewService {
   }
 
   private getHeaders() {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Accept', 'application/json');
     return headers;
   }

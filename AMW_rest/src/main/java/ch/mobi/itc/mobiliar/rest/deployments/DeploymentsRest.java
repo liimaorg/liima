@@ -59,6 +59,7 @@ import io.swagger.annotations.ApiParam;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -97,11 +98,9 @@ public class DeploymentsRest {
     @Inject
     private ContextLocator contextLocator;
 
-
-
     @GET
     @Path("/filter")
-    @ApiOperation(value = "returns all Deployments matching the list of json filters")
+    @ApiOperation(value = "returns all Deployments matching the list of json filters - used by Angular")
     public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters,
                                    @QueryParam("colToSort") String colToSort,
                                    @QueryParam("sortDirection") String sortDirection,
@@ -115,14 +114,22 @@ public class DeploymentsRest {
             String detail = "example: [{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"Latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
             return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto(msg, detail)).build();
         }
-        CommonFilterService.SortingDirectionType sortingDirectionType = null;
-        if (sortDirection != null) {
-            sortingDirectionType = CommonFilterService.SortingDirectionType.valueOf(sortDirection);
+        if (filterDTOs == null) {
+            return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto("at least one filter must be set")).build();
         }
+        CommonFilterService.SortingDirectionType sortingDirectionType = getSortingDirectionType(sortDirection);
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
         Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, colToSort, sortingDirectionType, null);
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
         return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
+    }
+
+    private CommonFilterService.SortingDirectionType getSortingDirectionType(String sortDirection) {
+        CommonFilterService.SortingDirectionType sortingDirectionType = null;
+        if (sortDirection != null) {
+            sortingDirectionType = CommonFilterService.SortingDirectionType.valueOf(sortDirection);
+        }
+        return sortingDirectionType;
     }
 
     private LinkedList<CustomFilter> createCustomFilters(DeploymentFilterDTO[] filterDTOs) {
@@ -202,8 +209,11 @@ public class DeploymentsRest {
      * Query for deployments. All parameters are optional.
      * Date format: epoch timestamp (number of milliseconds since January 1st, 1970, UTC)
      *
+     * @deprecated use {@link #getDeployments(String, String, String, Integer, Integer)} instead
+     *
      * @return the deployments. The header X-Total-Count contains the total result count.
      **/
+    @Deprecated
     @GET
     @ApiOperation(value = "returns all Deployments matching the optional filter Query Params")
     public Response getDeployments(
@@ -673,13 +683,6 @@ public class DeploymentsRest {
     public Response isAngularDeploymentsGuiActive() {
         boolean isActive = ! ConfigurationService.getPropertyAsBoolean(FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI);
         return Response.ok(isActive).build();
-    }
-
-    @GET
-    @Path("/csvSeparator/")
-    @ApiOperation(value = "Returns the configured csv separator - used by Angular")
-    public Response getCsvSeparator() {
-        return Response.ok(ConfigurationService.getProperty(ConfigurationService.ConfigKey.CSV_SEPARATOR)).build();
     }
 
     /**

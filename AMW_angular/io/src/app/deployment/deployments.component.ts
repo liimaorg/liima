@@ -61,9 +61,6 @@ export class DeploymentsComponent implements OnInit {
   deployments: Deployment[] = [];
 
   // csv export
-  deploymentsForExport: Deployment[] = [];
-  deploymentDetailMap: { [key: number]: DeploymentDetail } = {};
-  csvReadyObjects: { [key: number]: any[] } = {};
   csvDocument: string;
 
   // sorting with default values
@@ -119,7 +116,6 @@ export class DeploymentsComponent implements OnInit {
         }
         this.initTypeAndOptions();
         this.canRequestDeployments();
-        this.getCsvSeparator();
     });
   }
 
@@ -248,9 +244,8 @@ export class DeploymentsComponent implements OnInit {
 
   exportCSV() {
     this.isLoading = true;
-    this.csvReadyObjects = {};
     this.errorMessage = 'Generating your CSV.<br>Please hold on, depending on the requested data this may take a while';
-    this.getFilteredDeploymentsForExport(JSON.stringify(this.filtersForBackend));
+    this.getFilteredDeploymentsForCsvExport(JSON.stringify(this.filtersForBackend));
   }
 
   copyURL() {
@@ -313,128 +308,9 @@ export class DeploymentsComponent implements OnInit {
       _.findIndex(this.filters, {name: this.selectedFilterType.name}) === -1;
   }
 
-  private enhanceDeploymentsForExport() {
-    if (this.deploymentsForExport) {
-      this.deploymentsForExport.forEach((deployment) => {
-        this.getDeploymentDetailForCsvExport(deployment);
-      });
-    }
-  }
-
-  private populateCSVrows(deployment: Deployment) {
-    const detail: DeploymentDetail = this.deploymentDetailMap[deployment.id];
-    const csvReadyObject: any = {
-      id: deployment['id'],
-      trackingId: deployment['trackingId'],
-      state: deployment['state'],
-      buildSuccess: detail.buildSuccess,
-      executed: detail.executed,
-      appServerName: deployment['appServerName'],
-      appsWithVersion: deployment['appsWithVersion'],
-      releaseName: deployment['releaseName'],
-      environmentName: deployment['environmentName'],
-      runtimeName: deployment['runtimeName'],
-      deploymentParameters: deployment['deploymentParameters'],
-      deploymentJobCreationDate: deployment['deploymentJobCreationDate'],
-      requestUser: deployment['requestUser'],
-      deploymentDate: deployment['deploymentDate'],
-      stateToDeploy: detail.stateToDeploy,
-      deploymentConfirmed: 'Deployment confirmed',
-      deploymentConfirmationDate: deployment['deploymentConfirmationDate'],
-      confirmUser: deployment['confirmUser'],
-      deploymentCancelDate: deployment['deploymentCancelDate'],
-      cancelUser: deployment['cancelUser'],
-      stateMessage: detail.stateMessage
-    };
-    this.csvReadyObjects[deployment.id] = csvReadyObject;
-    if (Object.keys(this.csvReadyObjects).length === this.deploymentsForExport.length) {
-      this.csvDocument = this.createCSV();
-      const docName: string = 'deployments_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
-      this.pushDownload(docName);
-      this.errorMessage = '';
-    }
-  }
-
-  private createCSV(): string {
-    let content: string = this.createCSVTitles();
-    this.deploymentsForExport.forEach((entry) => {
-      const deployment: any = this.csvReadyObjects[entry.id];
-      let line: string = '';
-      for (const field of Object.keys(deployment)) {
-        switch (field) {
-          case 'id':
-          case 'trackingId':
-            line += deployment[field].toString() + this.csvSeparator;
-            break;
-          case 'deploymentDate':
-          case 'deploymentJobCreationDate':
-          case 'deploymentConfirmationDate':
-          case 'deploymentCancelDate':
-          case 'stateToDeploy':
-            line += deployment[field] ? '"' + moment(deployment[field]).format('YYYY-MM-DD HH:mm').toString() + '"' + this.csvSeparator : this.csvSeparator;
-            break;
-          case 'appsWithVersion':
-            if (deployment[field]) {
-              line += '"';
-            }
-            deployment[field].forEach((appsWithVersion) => {
-              line += appsWithVersion['applicationName'] + ' ' + appsWithVersion['version'] + '\n';
-            });
-            line = line.replace(/\n$/, "\"");
-            line += this.csvSeparator;
-            break;
-          case 'deploymentParameters':
-            if (deployment[field]) {
-              line += '"';
-            }
-            deployment[field].forEach((deploymentParameter) => {
-              line += deploymentParameter['key'] + ' ' + deploymentParameter['value'] + '\n';
-            });
-            line = line.replace(/\n$/, "\"");
-            line += this.csvSeparator;
-            break;
-          case 'stateMessage':
-            line += deployment[field] !== null ? '"' + deployment[field].replace(/"/g, "").replace(/\n$/, "") + '"' + this.csvSeparator : this.csvSeparator;
-            break;
-          default:
-            line += deployment[field] !== null ? '"' + deployment[field] + '"' + this.csvSeparator : this.csvSeparator;
-            break;
-        }
-      }
-      content += line.slice(0, -1) + '\n';
-    });
-    return content;
-  }
-
-  private createCSVTitles(): string {
-    const labelsArray: string[]  = [
-      'Id',
-      'Tracking Id',
-      'Deployment state',
-      'Build success',
-      'Deployment executed',
-      'App server',
-      'Applications',
-      'Deployment release',
-      'Environment',
-      'Target platform',
-      'Deployment parameters',
-      'Creation date',
-      'Request user',
-      'Deployment date',
-      'Configuration to deploy',
-      'Deployment confirmed',
-      'Confirmation date',
-      'Confirmation user',
-      'Cancel date',
-      'Cancel user',
-      'Status message'
-    ];
-    return labelsArray.join(this.csvSeparator) + '\n';
-  }
-
-  private pushDownload(docName: string) {
+  private pushDownload(prefix: string) {
     this.isLoading = false;
+    const docName: string = prefix + '_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
     const blob = new Blob([this.csvDocument], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     if (navigator.msSaveOrOpenBlob) {
@@ -449,20 +325,7 @@ export class DeploymentsComponent implements OnInit {
       document.body.removeChild(a);
     }
     window.URL.revokeObjectURL(url);
-  }
-
-  private getDeploymentDetailForCsvExport(deployment: Deployment) {
-    this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
-      /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
-      /* error path */ (e) => this.errorMessage = e,
-      /* on complete */ () => this.populateCSVrows(deployment)
-    );
-  }
-
-  private getCsvSeparator() {
-    this.deploymentService.getCsvSeparator().subscribe(
-      /* happy path */ (r) => this.csvSeparator = r,
-      /* error path */ (e) => this.errorMessage = e);
+    this.errorMessage = null;
   }
 
   private setDeploymentDate(deployment: Deployment, deploymentDate: number) {
@@ -564,12 +427,11 @@ export class DeploymentsComponent implements OnInit {
     );
   }
 
-  private getFilteredDeploymentsForExport(filterString: string) {
-    this.deploymentService.getFilteredDeployments(filterString, this.sortCol, this.sortDirection, 0, 0).subscribe(
-      /* happy path */ (r) => this.deploymentsForExport = r.deployments,
+  private getFilteredDeploymentsForCsvExport(filterString: string) {
+    this.deploymentService.getFilteredDeploymentsForCsvExport(filterString, this.sortCol, this.sortDirection).subscribe(
+      /* happy path */ (r) => this.csvDocument = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => { this.mapStates();
-                               this.enhanceDeploymentsForExport(); }
+      /* onComplete */ () => this.pushDownload("deployments")
     );
   }
 

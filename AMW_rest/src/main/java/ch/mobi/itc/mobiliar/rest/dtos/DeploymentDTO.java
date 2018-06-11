@@ -61,37 +61,17 @@ public class DeploymentDTO {
 	private String cancelUser;
 	private boolean deploymentDelayed;
 	private Set<NodeJobDTO> nodeJobs = new HashSet<>();
-
     private DeploymentActionsDTO actions;
+    // for csv export
+	private boolean buildSuccess;
+	private boolean deploymentExecuted;
+	private String targetPlatform;
+	private String statusMessage;
+	private Date stateToDeploy;
+	private boolean deploymentConfirmed;
 
 	public DeploymentDTO(DeploymentEntity entity) {
-		this.id = entity.getId();
-		this.trackingId = entity.getTrackingId();
-		this.state = entity.getDeploymentState();
-		this.appServerName = entity.getResourceGroup().getName();
-		this.appServerId = entity.getResourceGroup().getId();
-		this.resourceId = entity.getResource().getId();
-		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
-			this.appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
-		}
-		for (DeploymentParameter param : entity.getDeploymentParameters()) {
-			this.deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));
-		}
-		this.deploymentDate = entity.getDeploymentDate();
-		this.deploymentJobCreationDate = entity.getDeploymentJobCreationDate();
-		this.deploymentConfirmationDate = entity.getDeploymentConfirmationDate();
-		this.deploymentCancelDate = entity.getDeploymentCancelDate();
-		this.reason = entity.getReason();
-		this.environmentName = entity.getContext().getName();
-		this.releaseName = entity.getRelease().getName();
-		this.runtimeName = entity.getRuntime().getName();
-		this.requestUser = entity.getDeploymentRequestUser();
-		this.confirmUser = entity.getDeploymentConfirmationUser();
-		this.cancelUser = entity.getDeploymentCancelUser();
-		this.deploymentDelayed = entity.isDeploymentDelayed();
-		for (NodeJobEntity job : entity.getNodeJobs()) {
-			this.nodeJobs.add(new NodeJobDTO(job));
-		}
+		setPreservedValues(entity, new PreservedProperties());
 	}
 
 	public void setPreservedValues(DeploymentEntity entity, PreservedProperties properties) {
@@ -123,6 +103,13 @@ public class DeploymentDTO {
 		for (NodeJobEntity job : entity.getNodeJobs()) {
 			this.nodeJobs.add(new NodeJobDTO(job));
 		}
+
+		this.buildSuccess = entity.isBuildSuccess();
+		this.deploymentExecuted = entity.isExecuted();
+		this.targetPlatform = properties.getRuntimeName() != null ? properties.getRuntimeName() : entity.getRuntime().getName();
+		this.statusMessage = entity.getStateMessage();
+		this.stateToDeploy = entity.getStateToDeploy();
+		this.deploymentConfirmed = entity.getDeploymentConfirmed() != null ? entity.getDeploymentConfirmed() : false;
 	}
 
 	@Data
