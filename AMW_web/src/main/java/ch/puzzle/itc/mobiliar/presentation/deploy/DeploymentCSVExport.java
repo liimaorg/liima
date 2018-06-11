@@ -42,6 +42,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * A class with similar functionality exists in the AMW_rest package { @link: ch.mobi.itc.mobiliar.rest.deployments.DeploymentDtoCsvBodyWriter.class }
+ */
 @WebServlet("/deploymentCsvExport")
 public class DeploymentCSVExport extends HttpServlet{
 

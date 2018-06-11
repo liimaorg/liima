@@ -40,6 +40,21 @@ export class DeploymentService {
       .catch(handleError);
   }
 
+  getFilteredDeploymentsForCsvExport(filterString: string, sortCol: string, sortDir: string): Observable<string> {
+    const params = new URLSearchParams();
+    params.append('filters', filterString);
+    params.append('colToSort', sortCol);
+    params.append('sortDirection', sortDir);
+    const options = new RequestOptions({
+      search: params,
+      headers: this.csvHeaders()
+    });
+    return this.http
+      .get(`${this.baseUrl}/deployments/filter`, options)
+      .map((response: Response) => response.text())
+      .catch(handleError);
+  }
+
   get(deploymentId: number): Observable<Deployment> {
     return this.http
       .get(`${this.baseUrl}/deployments/${deploymentId}`, {headers: this.getHeaders()})
@@ -170,13 +185,6 @@ export class DeploymentService {
       .catch(handleError);
   }
 
-  getCsvSeparator(): Observable<string> {
-    return this.http
-      .get(`${this.baseUrl}/deployments/csvSeparator/`, {headers: this.getHeaders()})
-      .map((response: Response) => response.text())
-      .catch(handleError);
-  }
-
   private getHeaders() {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
@@ -187,6 +195,12 @@ export class DeploymentService {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Accept', 'application/json');
+    return headers;
+  }
+
+  private csvHeaders() {
+    const headers = new Headers();
+    headers.append('Accept', 'text/csv');
     return headers;
   }
 

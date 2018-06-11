@@ -12,7 +12,7 @@
 	<packaging>war</packaging>
 
 	<properties>
-		<version.swagger-ui>3.4.5</version.swagger-ui>
+		<version.swagger-ui>3.16.0</version.swagger-ui>
 	</properties>
 
 	<build>
@@ -96,14 +96,14 @@
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-core</artifactId>
-			<version>1.5.16</version>
+			<version>1.5.20</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-jaxrs</artifactId>
-			<version>1.5.16</version>
+			<version>1.5.20</version>
 			<scope>compile</scope>
 		</dependency>
 
