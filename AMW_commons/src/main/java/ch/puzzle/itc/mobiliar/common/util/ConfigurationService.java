@@ -39,6 +39,7 @@ public class ConfigurationService {
         GENERATOR_PATH_SIMULATION("amw.generatorPath.simulation", "AMW_GENERATORPATH_SIMULATION", false),
         /** Path where the generator writes the files for test modus */
         GENERATOR_PATH_TEST("amw.generatorPath.test", "AMW_GENERATORPATH_TEST", false),
+        LOG_RUNSCRIPT_OUTPUT_TO_SERVER_LOG("amw.logRunscriptOutputToServerLog", "AMW_LOG_RUNSCRIPT_OUTPUT_TO_SERVER_LOG", "false", false),
         MAIL_DOMAIN("amw.mailDomain", "AMW_MAILDOMAIN", false),
         DELIVER_MAIL("amw.deliverMail", "AMW_DELIVERMAIL", false),
         ENCRYPTION_KEY("amw.encryptionKey", "AMW_ENCRYPTIONKEY", true),

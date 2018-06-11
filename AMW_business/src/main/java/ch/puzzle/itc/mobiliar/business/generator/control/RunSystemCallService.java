@@ -143,8 +143,9 @@ public class RunSystemCallService
 			logOutput.write(lineSeparator);
 			String line;
 			while ((line = bufferedreader.readLine()) != null) {
-
-				log.info("Command output: \"" + line + "\"");
+				if(ConfigurationService.getPropertyAsBoolean(ConfigKey.LOG_RUNSCRIPT_OUTPUT_TO_SERVER_LOG)) {
+					log.info("Command output: " + line);
+				}
 				if (line.startsWith("@{") && line.endsWith("}")) {
 					sb.append(line.substring(2,
 							line.length() - 1)).append(
