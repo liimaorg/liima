@@ -35,10 +35,11 @@ public class ConfigurationService {
         LOGS_CLEANUP_SCHEDULER_DISABLED("amw.logsCleanupSchedulerDisabled", "AMW_LOGSCLEANUPSCHEDULERDISABLED", "false", false),
         /** Path where the generator writes the files */
         GENERATOR_PATH("amw.generatorPath", "AMW_GENERATORPATH", false),
-         /** Path where the generator writes the files for simulation modus */
+        /** Path where the generator writes the files for simulation modus */
         GENERATOR_PATH_SIMULATION("amw.generatorPath.simulation", "AMW_GENERATORPATH_SIMULATION", false),
         /** Path where the generator writes the files for test modus */
         GENERATOR_PATH_TEST("amw.generatorPath.test", "AMW_GENERATORPATH_TEST", false),
+        LOG_RUNSCRIPT_OUTPUT_TO_SERVER_LOG("amw.logRunscriptOutputToServerLog", "AMW_LOG_RUNSCRIPT_OUTPUT_TO_SERVER_LOG", "false", false),
         MAIL_DOMAIN("amw.mailDomain", "AMW_MAILDOMAIN", false),
         DELIVER_MAIL("amw.deliverMail", "AMW_DELIVERMAIL", false),
         ENCRYPTION_KEY("amw.encryptionKey", "AMW_ENCRYPTIONKEY", true),
@@ -63,17 +64,11 @@ public class ConfigurationService {
         CONSUMABLE_SOFTLINK_RESOURCE_TYPES("amw.consumableSoftlinkResourceTypes", "AMW_CONSUMABLESOFTLINKRESOURCETYPES", false),
         EXTERNAL_RESOURCE_BACKLINK_SCHEMA("amw.externalResourceBacklinkSchema", "AMW_EXTERNALRESOURCEBACKLINKSCHEMA", false),
         EXTERNAL_RESOURCE_BACKLINK_HOST("amw.externalResourceBacklinkHost", "AMW_EXTERNALRESOURCEBACKLINKHOST", false),
-        /**
-         * Database Change sets
-         */
+        /** Database Change sets */
         LOAD_INITIAL_SCHEMA_DATA("amw.loadInitialSchemaAndData", "AMW_LOADINITIALSCHEMAANDDATA", "false", false),
-        /**
-         * Create not Existent Directory Structure
-         */
+        /** Create not Existent Directory Structure */
         CREATE_NOT_EXISTING_DIRECTORIES_ON_STARTUP("amw.createNotExistingDirectoriesOnStartUp", "AMW_CREATENOTEXISTINGDIRECTORIESONSTARTUP", "false", false),
-
-
-        /*Feature toggles*/
+        /** Feature toggles */
         FEATURE_DISABLE_ANGULAR_GUI("amw.feature.disableAngularGui","AMW_FEATURE_DISABLEANGULARGUI","false", false),
         FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI("amw.feature.disableAngularDeploymentGui", "AMW_FEATURE_DISABLEANGULARDEPLOYMENTGUI", "false", false);
 
