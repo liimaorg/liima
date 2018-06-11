@@ -50,6 +50,7 @@ public class TemplateDescriptorEntityBuilder extends BaseEntityBuilder {
 	private AbstractContext ownerResource;
 	private Set<ResourceGroupEntity> targetPlatforms;
 	private boolean testing;
+	private boolean relationTemplate;
 	private Integer id;
 
 	public TemplateDescriptorEntityBuilder withFileContent(String fileContent) {
@@ -87,6 +88,11 @@ public class TemplateDescriptorEntityBuilder extends BaseEntityBuilder {
 		return this;
 	}
 
+	public TemplateDescriptorEntityBuilder withRelationTemplate(boolean relationTemplate) {
+		this.relationTemplate = relationTemplate;
+		return this;
+	}
+
 	/**
 	 * @return mocked TemplateDescriptorEntity
 	 */
@@ -99,6 +105,7 @@ public class TemplateDescriptorEntityBuilder extends BaseEntityBuilder {
 		when(mock.getOwnerResource()).thenReturn(ownerResource);
 		when(mock.getTargetPlatforms()).thenReturn(targetPlatforms);
 		when(mock.isTesting()).thenReturn(testing);
+		when(mock.isRelationTemplate()).thenReturn(relationTemplate);
 
 		return mock;
 	}
@@ -115,6 +122,7 @@ public class TemplateDescriptorEntityBuilder extends BaseEntityBuilder {
 		template.setOwnerResource(ownerResource);
 		template.setTargetPlatforms(targetPlatforms);
 		template.setTesting(testing);
+		template.setRelationTemplate(relationTemplate);
 
 		return template;
 	}

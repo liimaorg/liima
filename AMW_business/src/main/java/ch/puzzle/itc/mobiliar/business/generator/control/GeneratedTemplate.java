@@ -35,6 +35,7 @@ public class GeneratedTemplate {
 	public static String RESERVED_PROPERTY_NAME = "name";
 	public static String RESERVED_PROPERTY_PATH = "path";
 	public static String RESERVED_PROPERTY_CONTENT = "content";
+	public static String RESERVED_PROPERTY_IS_RELATION_TEMPLATE = "isRelationTemplate";
 	
 	@Getter
 	private String name;
@@ -42,7 +43,6 @@ public class GeneratedTemplate {
 	private String path;
 
 	private String content;
-	
 	@Getter
 	@Setter
 	private boolean omitted;
@@ -69,7 +69,7 @@ public class GeneratedTemplate {
 	}
 
 	public Map<String, String> toHash() {
-		Map<String, String> hash = new HashMap<String, String>();
+		Map<String, String> hash = new HashMap<>();
 		hash.put(RESERVED_PROPERTY_PATH, path);
 		hash.put(RESERVED_PROPERTY_CONTENT, content);
 		hash.put(RESERVED_PROPERTY_NAME, name);

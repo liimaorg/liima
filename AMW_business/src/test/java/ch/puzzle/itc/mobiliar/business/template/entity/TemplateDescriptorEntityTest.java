@@ -22,11 +22,9 @@ package ch.puzzle.itc.mobiliar.business.template.entity;
 
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
-import ch.puzzle.itc.mobiliar.builders.TargetPlatformEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.TemplateDescriptorEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
-import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntityBuilder;
+import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainServiceTestHelper;
@@ -42,8 +40,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests {@link TemplateDescriptorEntity}
@@ -63,7 +61,7 @@ public class TemplateDescriptorEntityTest {
         }
     }
 
-    private void shouldCopyTemplateDescriptor_emptyTarget(CopyResourceDomainService.CopyMode mode, ForeignableOwner actingOwner) throws AMWException{
+    private void shouldCopyTemplateDescriptor_emptyTarget(CopyResourceDomainService.CopyMode mode, ForeignableOwner actingOwner) throws AMWException {
         // given
         ResourceEntity originResource = CopyResourceDomainServiceTestHelper.mockOriginResource();
         ResourceEntity targetResource = new ResourceEntityBuilder().buildAppServerEntity("targetResource", null, null, true);
@@ -86,8 +84,12 @@ public class TemplateDescriptorEntityTest {
         Set<ResourceGroupEntity> targetPlatforms = new HashSet<>();
         targetPlatforms.add(targetPlatform1);
         targetPlatforms.add(targetPlatform3);
-        TemplateDescriptorEntity origin = new TemplateDescriptorEntityBuilder().withFileContent(fileContent).withTargetPath(targetPath).withName(name).withTargetPlatforms
-                (targetPlatforms).build();
+        TemplateDescriptorEntity origin = new TemplateDescriptorEntityBuilder()
+                .withFileContent(fileContent)
+                .withTargetPath(targetPath)
+                .withName(name)
+                .withTargetPlatforms(targetPlatforms)
+                .build();
 
         CopyUnit copyUnit = new CopyUnit(originResource, targetResource, mode, actingOwner);
 
@@ -119,8 +121,12 @@ public class TemplateDescriptorEntityTest {
         Set<ResourceGroupEntity> targetPlatforms_target = new HashSet<>();
         targetPlatforms_target.add(targetPlatform1);
         targetPlatforms_target.add(targetPlatform2);
-        TemplateDescriptorEntity target = new TemplateDescriptorEntityBuilder().withFileContent("a=b").withTargetPath("a/b").withName("abc").withTargetPlatforms
-                (targetPlatforms_target).build();
+        TemplateDescriptorEntity target = new TemplateDescriptorEntityBuilder()
+                .withFileContent("a=b")
+                .withTargetPath("a/b")
+                .withName("abc")
+                .withTargetPlatforms(targetPlatforms_target)
+                .build();
 
         String fileContent = "foo=bar";
         String targetPath = "foo/bar";
@@ -128,7 +134,12 @@ public class TemplateDescriptorEntityTest {
         Set<ResourceGroupEntity> targetPlatforms = new HashSet<>();
         targetPlatforms.add(targetPlatform1);
         targetPlatforms.add(targetPlatform3);
-        TemplateDescriptorEntity origin = new TemplateDescriptorEntityBuilder().withFileContent(fileContent).withTargetPath(targetPath).withName(name).withTargetPlatforms(targetPlatforms).build();
+        TemplateDescriptorEntity origin = new TemplateDescriptorEntityBuilder()
+                .withFileContent(fileContent)
+                .withTargetPath(targetPath)
+                .withName(name)
+                .withTargetPlatforms(targetPlatforms)
+                .build();
 
         CopyUnit copyUnit = new CopyUnit(originResource, targetResource, mode, actingOwner);
 
@@ -143,6 +154,30 @@ public class TemplateDescriptorEntityTest {
         assertEquals(3, copy.getTargetPlatforms().size());
         assertTrue(copy.getTargetPlatforms().containsAll(targetPlatforms));
         assertTrue(copy.getTargetPlatforms().containsAll(target.getTargetPlatforms()));
+    }
+
+    @Test
+    public void shouldCreateHashWithCorrectValues() {
+        // given
+        String fileContent = "foo=bar";
+        String targetPath = "foo/bar";
+        String name = "bar";
+        boolean relationTemplate = true;
+        TemplateDescriptorEntity templateDescriptor = new TemplateDescriptorEntityBuilder()
+                .withTargetPath(targetPath)
+                .withFileContent(fileContent)
+                .withName(name)
+                .withRelationTemplate(relationTemplate)
+                .build();
+
+        // when
+        Map<String, String> hash = templateDescriptor.toHash();
+
+        // then
+        assertThat(hash.get(GeneratedTemplate.RESERVED_PROPERTY_PATH), is(targetPath));
+        assertThat(hash.get(GeneratedTemplate.RESERVED_PROPERTY_CONTENT), is(fileContent));
+        assertThat(hash.get(GeneratedTemplate.RESERVED_PROPERTY_NAME), is(name));
+        assertThat(hash.get(GeneratedTemplate.RESERVED_PROPERTY_IS_RELATION_TEMPLATE), is(String.valueOf(relationTemplate)));
     }
 
 }
