@@ -110,12 +110,19 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
 		}else if(RESERVED_PROPERTY_PROVIDEDRES.equals(key)){
             return getAsSimpleHash(providedResTypes, beansWrapper);
 		}else if(RESERVED_PROPERTY_TEMPLATES.equals(key)){
-			
-			Map<String, Map<String, String>> allTemplates = new HashMap<>();
-			// first add all non generated
+
+            Map<String, Map<String, String>> allTemplates = new HashMap<>();
+            // first add all non generated
 			if(resourceTemplates != null){
 				allTemplates.putAll(AmwTemplateModelHelper.convertTemplateDescriptorToHash(resourceTemplates));
 			}
+			if (consumedResTypes != null) {
+                for (Map<String, AmwResourceTemplateModel> stringAmwResourceTemplateModelMap : consumedResTypes.values()) {
+                    for (AmwResourceTemplateModel amwResourceTemplateModel : stringAmwResourceTemplateModelMap.values()) {
+                        allTemplates.putAll(AmwTemplateModelHelper.convertTemplateDescriptorToHash(amwResourceTemplateModel.resourceTemplates));
+                    }
+                }
+            }
             if(resourceRelationTemplates != null){
                 allTemplates.putAll(AmwTemplateModelHelper.convertTemplateDescriptorToHash(resourceRelationTemplates));
             }
@@ -302,7 +309,6 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
             for (FreeMarkerProperty property : properties.values()){
                 collection.add(beansWrapper.wrap(property));
             }
-
         }
         if(appServerNodeViaResolver != null && !appServerNodeViaResolver.isEmpty()) {
             collection.add(appServerNodeViaResolver.values());
