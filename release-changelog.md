@@ -1,3 +1,29 @@
+# v1.17.1
+This is mostly a bug fix release.
+
+## New features
+* Angular create deploy: loader for new deployment [#357](https://github.com/liimaorg/liima/issues/357)
+* REST create deployment now returns a 424 instead of 400 if no node is active [#352](https://github.com/liimaorg/liima/issues/352)
+* REST get releases endpoint add, release JSON got additional fields [#354](https://github.com/liimaorg/liima/issues/354)
+* Update swagger-ui [#370](https://github.com/liimaorg/liima/issues/370)
+
+## Bug fixes
+* applist.xhtml is now sorted case insensitive [#334](https://github.com/liimaorg/liima/issues/334)
+* editResourceView: selecting release of relation causes display error [#335](https://github.com/liimaorg/liima/issues/335)
+* Deployment CSV export: columns shifted to the left if "Deployment parameters" empty bug [#344](https://github.com/liimaorg/liima/issues/344)
+* Feedback multi permission GUI: shows loader and success message now, Global permissions are marked as such again, `Applications without application server` is hidden [#333](https://github.com/liimaorg/liima/issues/333)
+* Angular permission GUI: users and roles with spaces in name can be added [#359](https://github.com/liimaorg/liima/issues/359)
+* Dash in YAML editor difficult to see [#358](https://github.com/liimaorg/liima/issues/358)
+* editTemplateView.xhtml: "Compare with history" not updated after save [#363](https://github.com/liimaorg/liima/issues/363)
+* editTemplateView.xhtml: compare doesn't work on Wildfly 12.0 [#362](https://github.com/liimaorg/liima/issues/362)
+* Login prompt appears twice [#349](https://github.com/liimaorg/liima/issues/349)
+* Templates: accessing not rendered relation templates now mostly works:
+ [#378](https://github.com/liimaorg/liima/issues/378) and [#231](https://github.com/liimaorg/liima/issues/231)
+ * Disable logging the run script output to the server log. Can be re-enabled via `LOG_RUNSCRIPT_OUTPUT_TO_SERVER_LOG` ConfigKey [#380](https://github.com/liimaorg/liima/issues/380)
+* REST: copyFromResource no longer needs the content-type header to be set [#351](https://github.com/liimaorg/liima/issues/351)
+* REST: get /deployments NullPointer with deleted AppServer/App [#328](https://github.com/liimaorg/liima/issues/328)
+* properties REST endpoint returns successfully for non-existing resources [#325](https://github.com/liimaorg/liima/issues/325)
+
 # v1.17.0
 This release contains two mayor features: the resource audit view and the multi permission GUI.
 
