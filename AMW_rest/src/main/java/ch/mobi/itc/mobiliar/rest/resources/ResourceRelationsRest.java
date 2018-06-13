@@ -94,7 +94,6 @@ public class ResourceRelationsRest {
         return resourceRelations;
     }
 
-
     @Path("/{relatedResourceGroupName}")
     @GET
     @ApiOperation(value = "Get all related releases of the given resource")
@@ -119,7 +118,7 @@ public class ResourceRelationsRest {
     @ApiOperation(value = "Get the list of relations between the two resource releases")
     public List<ResourceRelationDTO> getResourceRelation(@PathParam("relatedResourceGroupName") String relatedResourceGroupName,
                                                          @PathParam("relatedReleaseName") String relatedReleaseName) throws ValidationException {
-        List<ResourceRelationDTO> list = new ArrayList<ResourceRelationDTO>();
+        List<ResourceRelationDTO> list = new ArrayList<>();
         for (ConsumedResourceRelationEntity dto : resourceRelationLocator.getResourceRelationList(resourceGroupName, releaseName,
                 relatedResourceGroupName, relatedReleaseName)) {
             ResourceRelationDTO resRel = new ResourceRelationDTO(dto);
@@ -131,12 +130,8 @@ public class ResourceRelationsRest {
         return list;
     }
 
-
     /**
      * Creates a new ResourceRelation
-     *
-     * @param slaveGroupName
-     * @return
      */
     @Path("/{slaveResourceGroupName}")
     @POST
@@ -144,11 +139,9 @@ public class ResourceRelationsRest {
     public Response addRelation(@PathParam("slaveResourceGroupName") String slaveGroupName) {
         if (StringUtils.isEmpty(slaveGroupName)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Slave resource group name must not be empty")).build();
-        }
-        if (StringUtils.isEmpty(resourceType)) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must not be empty")).build();
-        }
-        if (!resourceType.toLowerCase().equals("provided") && !resourceType.toLowerCase().equals("consumed")) {
+        } else if (StringUtils.isEmpty(resourceType)) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must not be empty", "Valid values are 'consumed' or 'provided'")).build();
+        } else if (!resourceType.toLowerCase().equals("provided") && !resourceType.toLowerCase().equals("consumed")) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must either be 'consumed' or 'provided'")).build();
         }
         try {
@@ -160,6 +153,11 @@ public class ResourceRelationsRest {
         return Response.status(CREATED).build();
     }
 
+    /**
+     * Removes a new ResourceRelation
+     *
+     * @param relationName A String representing the identifier of a Relation or the name of the related Resource to be removed
+     */
     @Path("/{relationName}")
     @DELETE
     @ApiOperation(value = "Remove a Relation from a specific Release", notes = "RelationName may be the identifier of a Relation or the name of the related Resource")
@@ -167,7 +165,7 @@ public class ResourceRelationsRest {
         if (StringUtils.isEmpty(relationName)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Relation name must not be empty")).build();
         } else if (StringUtils.isEmpty(resourceType)) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must not be empty")).build();
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must not be empty", "Valid values are 'consumed' or 'provided'")).build();
         } else if (!resourceType.toLowerCase().equals("provided") && !resourceType.toLowerCase().equals("consumed")) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must either be 'consumed' or 'provided'")).build();
         }
@@ -208,17 +206,15 @@ public class ResourceRelationsRest {
     protected boolean isMatchingRelationName(AbstractResourceRelationEntity relation, String relationName) {
         if (relation.getIdentifier() != null && relation.getIdentifier().equals(relationName)) {
             return true;
-        } else if (relation.getIdentifier() == null && relation.getSlaveResource().getName().equals(relationName)) {
-            return true;
         }
-        return false;
+        return relation.getIdentifier() == null && relation.getSlaveResource().getName().equals(relationName);
     }
 
     private void addTemplates(ResourceRelationDTO resRel, List<TemplateDTO> templates) {
         List<TemplateDTO> templatesToAdd = new ArrayList<>();
         for (TemplateDTO temp : templates) {
-            String tempName = "";
-            if (temp.getRelatedResourceIdentifier()==null) {
+            String tempName;
+            if (temp.getRelatedResourceIdentifier() == null) {
                 //eg standardJob
                 tempName = resRel.getRelatedResourceName();
             } else {
