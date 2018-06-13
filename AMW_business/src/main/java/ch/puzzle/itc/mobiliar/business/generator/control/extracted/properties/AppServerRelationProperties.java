@@ -74,7 +74,7 @@ public class AppServerRelationProperties {
 	private BasePropertyCollector collector;
 	private String identifier;
 
-	private Map<String, FreeMarkerProperty> properties = Maps.newLinkedHashMap();
+	private Map<String, FreeMarkerProperty> properties;
 	@Setter
 	private List<AmwFunctionEntity> functions;
 	@Setter
@@ -113,8 +113,6 @@ public class AppServerRelationProperties {
 	
 	/**
 	 * Transforms Properties into HashMap as used by Generator.
-	 * 
-	 * @return
 	 */
 	public AmwResourceTemplateModel transformModel() {
 		AmwResourceTemplateModel model = new AmwResourceTemplateModel();
@@ -208,20 +206,19 @@ public class AppServerRelationProperties {
 		model.setParentResourceTemplateModel(parent);
 		model.setResourceTemplates(resourceTemplates);
 		model.setResourceRelationTemplates(resourceRelationTemplates);
-        setTemplates(model);
+		model.setTemplates(getGeneratedTemplates());
         return model;
 	}
 
-    private void setTemplates(AmwResourceTemplateModel model) {
+    private Map<String, GeneratedTemplate> getGeneratedTemplates() {
+		Map<String, GeneratedTemplate> templates = Maps.newLinkedHashMap();
         if (templatesCache != null && getOwner() != null) {
-            Map<String, GeneratedTemplate> templates = Maps.newLinkedHashMap();
             for (GeneratedTemplate template : templatesCache.get(getOwner())) {
                 templates.put(template.getName(), template);
             }
-            model.setTemplates(templates);
         }
+		return templates;
     }
-
 
     private Map<String, Map<String, AmwResourceTemplateModel>> transformRelated(List<AppServerRelationProperties> relations, AmwResourceTemplateModel parent) {
 		return transformRelatedInternal(relations, supportNesting, parent);
@@ -262,9 +259,9 @@ public class AppServerRelationProperties {
                         getGenerationSubPackages().size() - 1);
             	AmwResourceTemplateModel asModelPPI = asPackage.getPackageGenerationUnit().getPropertiesAsModel();
                 // find AmwResourceTemplateModel for the PPI
-				GenerationUnit generationUnitPPI = GenerationUnit.forResource(new HashSet<GenerationUnit>(asPackage.getSubGenerationUnitsAsList()), generationPackage.getPpiResourceEntity());
+				GenerationUnit generationUnitPPI = GenerationUnit.forResource(new HashSet<>(asPackage.getSubGenerationUnitsAsList()), generationPackage.getPpiResourceEntity());
                 // find AmwResourceTemplateModel for the Runtime of Provider side
-                GenerationUnit generationUnitRuntimePPI = GenerationUnit.getRuntimeGenerationUnit(new HashSet<GenerationUnit>(asPackage.getSubGenerationUnitsAsList()));
+                GenerationUnit generationUnitRuntimePPI = GenerationUnit.getRuntimeGenerationUnit(new HashSet<>(asPackage.getSubGenerationUnitsAsList()));
 
                 // set Softlinkref on cpi side (twice the same id so take the id from PPI Resource Entity)
                 relationModel.setSoftlinkRef(generationPackage.getPpiResourceEntity().getSoftlinkId());
@@ -294,9 +291,6 @@ public class AppServerRelationProperties {
 
 	/**
 	 * Adds properties of app, as and node to the map
-	 * 
-	 * @param model
-	 * @param resolver
 	 */
 	private void addAppServerNodeViaResolver(AmwAppServerNodeModel model, ApplicationResolver resolver) {
 		if (resolver != null) {
@@ -317,12 +311,6 @@ public class AppServerRelationProperties {
 	 * Adds and collects properties for related Resource
 	 *
 	 * constructor
-	 * 
-	 * @param identifier
-	 * @param resource
-	 * @param resourceRelation
-	 * @param list
-	 * @return
 	 */
 	private AppServerRelationProperties addRelation(String identifier, ResourceEntity resource, AbstractResourceRelationEntity resourceRelation,
 			List<AppServerRelationProperties> list) {
@@ -341,10 +329,6 @@ public class AppServerRelationProperties {
 	 * Collects resource Properties, populates typed with types of collected properties.
 	 * 
 	 * Populates properties
-	 * 
-	 * @param context
-	 * @param resource
-	 * @return properties of resource
 	 */
 	private Map<String, FreeMarkerProperty> collectResourceProperties(ContextEntity context, ResourceEntity resource) {
 		return collector.propertiesForResource(resource, context, templateExceptionHandler);
@@ -354,9 +338,7 @@ public class AppServerRelationProperties {
 	 * Collects relation Properties, populates typed with types of collected properties.
 	 * 
 	 * Populates properties
-	 * 
-	 * @param context
-	 * @param resource
+	 *
 	 * @return properties of resource
 	 */
 	private Map<String, FreeMarkerProperty> collectRelationProperties(ContextEntity context, ResourceEntity resource,
