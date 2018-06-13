@@ -149,17 +149,21 @@ public class ResourceLocator {
     }
 
 	/**
-	 * @param name
-	 * @param releaseName
-	 * @return
 	 * @throws ValidationException thrown if one of the arguments is either empty or null
 	 */
-	public ResourceEntity getResourceByNameAndReleaseWithRelations(String name, String releaseName)
+	public ResourceEntity getResourceByNameAndReleaseWithConsumedRelations(String name, String releaseName)
 			throws ValidationException {
 		ValidationHelper.validateNotNullOrEmptyChecked(name, releaseName);
 		ReleaseEntity release = releaseLocator.getReleaseByName(releaseName);
-		return resourceRepository.getResourceByNameAndReleaseWithRelations(name, release);
+		return resourceRepository.getResourceByNameAndReleaseWithConsumedRelations(name, release);
 	}
+
+    public ResourceEntity getResourceByNameAndReleaseWithProvidedRelations(String name, String releaseName)
+            throws ValidationException {
+        ValidationHelper.validateNotNullOrEmptyChecked(name, releaseName);
+        ReleaseEntity release = releaseLocator.getReleaseByName(releaseName);
+        return resourceRepository.getResourceByNameAndReleaseWithProvidedRelations(name, release);
+    }
 
 	public List<ResourceEntity> getResourcesByGroupNameWithRelations(String groupName)
 			throws ValidationException {
