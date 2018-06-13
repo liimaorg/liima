@@ -77,7 +77,7 @@ public class ResourceTemplatesRest {
                                                    @PathParam("releaseName") String releaseName,
                                                    @PathParam("templateName") String templateName) throws ValidationException {
 
-        ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithRelations(resourceGroupName,
+        ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithConsumedRelations(resourceGroupName,
                 releaseName);
 
         List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resource,
