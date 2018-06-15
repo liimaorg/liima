@@ -3,6 +3,7 @@ package ch.mobi.itc.mobiliar.rest.deployments;
 import ch.mobi.itc.mobiliar.rest.dtos.AppWithVersionDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentParameterDTO;
+import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
 import javax.ws.rs.Produces;
@@ -15,6 +16,7 @@ import javax.ws.rs.ext.Provider;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,12 +32,13 @@ public class DeploymentDtoCsvBodyWriter implements MessageBodyWriter<List<Deploy
     private static final String CSV_SEPARATOR = ConfigurationService.getProperty(ConfigurationService.ConfigKey.CSV_SEPARATOR);
 
     @Override
-    public boolean isWriteable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
-        boolean isWritable = false;
-        if (List.class.isAssignableFrom(aClass) && ((Class) type).getSimpleName().equals(aClass.getSimpleName())) {
-            isWritable = true;
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        if (List.class.isAssignableFrom(type) && genericType instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) genericType;
+            Type[] actualTypeArgs = (parameterizedType.getActualTypeArguments());
+            return (actualTypeArgs.length == 1 && actualTypeArgs[0].equals(DeploymentDTO.class));
         }
-        return isWritable;
+        return false;
     }
 
     @Override

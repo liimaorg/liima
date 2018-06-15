@@ -61,6 +61,7 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -121,7 +122,7 @@ public class DeploymentsRest {
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
         Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, colToSort, sortingDirectionType, null);
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
-        return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(deploymentDTOs).build();
+        return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(new GenericEntity<List<DeploymentDTO>>(deploymentDTOs) {}).build();
     }
 
     private CommonFilterService.SortingDirectionType getSortingDirectionType(String sortDirection) {

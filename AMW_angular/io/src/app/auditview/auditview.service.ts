@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
+import { Http, Response, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Auditviewentrytype } from './auditview-entry-type';
 
@@ -13,7 +13,7 @@ export class AuditviewService {
 
   getAuditLogForResource(resourceId: number): Observable<Auditviewentrytype[]> {
     const resource$ = this.http
-      .get(`${this.baseUrl}/auditview/resource/${resourceId}`)
+      .get(`${this.baseUrl}/auditview/resource/${resourceId}`, {headers: this.getHeaders()})
       .map((response: Response) => this.extractPayload(response))
       .catch(handleError);
     return resource$;
