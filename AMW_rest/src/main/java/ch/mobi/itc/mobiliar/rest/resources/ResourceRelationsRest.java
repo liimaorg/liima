@@ -139,14 +139,13 @@ public class ResourceRelationsRest {
     public Response addRelation(@PathParam("slaveResourceGroupName") String slaveGroupName) {
         if (StringUtils.isEmpty(slaveGroupName)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Slave resource group name must not be empty")).build();
-        } else if (StringUtils.isEmpty(resourceType)) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must not be empty", "Valid values are 'consumed' or 'provided'")).build();
-        } else if (!resourceType.toLowerCase().equals("provided") && !resourceType.toLowerCase().equals("consumed")) {
+        } else if (!relationEditor.isValidResourceRelationType(resourceType)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must either be 'consumed' or 'provided'")).build();
         }
+        boolean isProvidedRelation = RelationEditor.ResourceRelationType.valueOf(resourceType.toUpperCase()).equals(RelationEditor.ResourceRelationType.PROVIDED);
         try {
             relationEditor.addResourceRelationForSpecificRelease(resourceGroupName, slaveGroupName,
-                    resourceType.toLowerCase().equals("provided"), null, resourceType, releaseName, ForeignableOwner.getSystemOwner());
+                    isProvidedRelation, null, resourceType, releaseName, ForeignableOwner.getSystemOwner());
         } catch (ResourceNotFoundException | ElementAlreadyExistsException | ValidationException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
@@ -164,17 +163,20 @@ public class ResourceRelationsRest {
     public Response removeRelation(@PathParam("relationName") String relationName) throws ValidationException {
         if (StringUtils.isEmpty(relationName)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Relation name must not be empty")).build();
-        } else if (StringUtils.isEmpty(resourceType)) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must not be empty", "Valid values are 'consumed' or 'provided'")).build();
-        } else if (!resourceType.toLowerCase().equals("provided") && !resourceType.toLowerCase().equals("consumed")) {
+        } else if (!relationEditor.isValidResourceRelationType(resourceType)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must either be 'consumed' or 'provided'")).build();
         }
+        RelationEditor.ResourceRelationType resourceRelationType = RelationEditor.ResourceRelationType.valueOf(resourceType.toUpperCase());
 
-        Set<? extends AbstractResourceRelationEntity> relations = getRelations(resourceGroupName, releaseName);
+        Set<? extends AbstractResourceRelationEntity> relations = getRelations(resourceGroupName, releaseName, resourceRelationType);
 
         try {
-            removeMatchingRelation(relations, relationName);
-            return Response.status(Response.Status.OK).build();
+            if (relationEditor.removeMatchingRelation(relations, relationName)) {
+                return Response.status(Response.Status.OK).build();
+            } else {
+                return Response.status(NOT_FOUND).entity(new ExceptionDto("No matching relation found")).build();
+            }
+
         } catch (ForeignableOwnerViolationException fe) {
             return Response.status(UNAUTHORIZED).entity(new ExceptionDto(fe.getMessage())).build();
         } catch (ResourceNotFoundException | ElementAlreadyExistsException e) {
@@ -182,32 +184,16 @@ public class ResourceRelationsRest {
         }
     }
 
-    private Set<? extends AbstractResourceRelationEntity> getRelations(String resourceGroupName, String releaseName) throws ValidationException {
+    private Set<? extends AbstractResourceRelationEntity> getRelations(String resourceGroupName, String releaseName, RelationEditor.ResourceRelationType resourceRelationType) throws ValidationException {
         Set<? extends AbstractResourceRelationEntity> relations = new HashSet<>();
-        if (resourceType.toLowerCase().equals("consumed")) {
+        if (resourceRelationType.equals(RelationEditor.ResourceRelationType.CONSUMED)) {
             ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithConsumedRelations(resourceGroupName, releaseName);
             relations = resource.getConsumedMasterRelations();
-        } else if (resourceType.toLowerCase().equals("provided")) {
+        } else if (resourceRelationType.equals(RelationEditor.ResourceRelationType.PROVIDED)) {
             ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithProvidedRelations(resourceGroupName, releaseName);
             relations = resource.getProvidedMasterRelations();
         }
         return relations;
-    }
-
-    private void removeMatchingRelation(Collection<? extends AbstractResourceRelationEntity> relations, String relationName)
-            throws ForeignableOwnerViolationException, ResourceNotFoundException, ElementAlreadyExistsException {
-        for (AbstractResourceRelationEntity relation : relations) {
-            if (isMatchingRelationName(relation, relationName)) {
-                relationEditor.removeRelation(ForeignableOwner.getSystemOwner(), relation.getId());
-            }
-        }
-    }
-
-    protected boolean isMatchingRelationName(AbstractResourceRelationEntity relation, String relationName) {
-        if (relation.getIdentifier() != null && relation.getIdentifier().equals(relationName)) {
-            return true;
-        }
-        return relation.getIdentifier() == null && relation.getSlaveResource().getName().equals(relationName);
     }
 
     private void addTemplates(ResourceRelationDTO resRel, List<TemplateDTO> templates) {
