@@ -31,6 +31,7 @@ import ch.mobi.itc.mobiliar.rest.exceptions.NotAuthorizedExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
 import ch.mobi.itc.mobiliar.rest.resources.*;
 import ch.mobi.itc.mobiliar.rest.releases.ReleasesRest;
+import ch.mobi.itc.mobiliar.rest.settings.SettingsRest;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -71,5 +72,6 @@ public class RESTApplication extends Application {
         resources.add(NotAuthorizedExceptionMapper.class);
         resources.add(IllegalArgumentExceptionMapper.class);
         resources.add(ServerTupleCSVBodyWriter.class);
+        resources.add(SettingsRest.class);
     }
 }
