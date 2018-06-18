@@ -22,12 +22,9 @@ package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import org.junit.Before;
@@ -40,9 +37,8 @@ import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static junit.framework.TestCase.assertEquals;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
 public class ResourceRelationsRestTest {
@@ -52,6 +48,9 @@ public class ResourceRelationsRestTest {
 
     @Mock
     RelationEditor relationEditorMock;
+
+    @Mock
+    ResourceLocator resourceLocatorMock;
 
     @Before
     public void configure() {
@@ -107,6 +106,8 @@ public class ResourceRelationsRestTest {
         rest.resourceType = "consumed";
         String slaveResourceGroupName = "Slave";
 
+        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
+
         // when
         Response response = rest.addRelation(slaveResourceGroupName);
 
@@ -122,6 +123,8 @@ public class ResourceRelationsRestTest {
         rest.releaseName = "TestRelease";
         rest.resourceType = "PROVIDED";
         String slaveResourceGroupName = "Slave";
+
+        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
 
         // when
         Response response = rest.addRelation(slaveResourceGroupName);
@@ -139,6 +142,7 @@ public class ResourceRelationsRestTest {
         rest.resourceType = "PROVIDED";
         String slaveResourceGroupName = "Slave";
 
+        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
         doThrow(new ValidationException("Resource is already provided by another ResourceGroup")).when(relationEditorMock)
                 .addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, rest.resourceType, rest.releaseName, ForeignableOwner.getSystemOwner());
 
@@ -151,67 +155,39 @@ public class ResourceRelationsRestTest {
     }
 
     @Test
-    public void shouldReturnTrueIfIdentifierMatches() {
+    public void shouldNotAttemptToRemoveRelationWithInvalidResourceRelationType() throws ValidationException {
         // given
-        String identifier = "matchingIdentifier";
-        ProvidedResourceRelationEntity relation = new ProvidedResourceRelationEntity();
-        relation.setIdentifier(identifier);
+        rest.resourceGroupName = "Master";
+        rest.releaseName = "TestRelease";
+        rest.resourceType = "InValid";
+        String slaveResourceGroupName = "Slave";
 
-        // when // then
-        assertThat(rest.isMatchingRelationName(relation, identifier), is(true));
+        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(false);
+
+        // when
+        Response response = rest.removeRelation(slaveResourceGroupName);
+
+        // then
+        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void shouldReturnFalseIfIdentifierDoesNotMatch() {
+    public void shouldReturnNotFoundOnRemoveRelationWithNonMatchingRelationName() throws ValidationException {
         // given
-        String identifier = "identifier";
-        ConsumedResourceRelationEntity relation = new ConsumedResourceRelationEntity();
-        relation.setIdentifier("anotherIdentifier");
+        rest.resourceGroupName = "Master";
+        rest.releaseName = "TestRelease";
+        rest.resourceType = "CONSUMED";
+        String slaveResourceGroupName = "Slave";
+        ResourceEntity resourceWithoutRelations = new ResourceEntity();
 
-        // when // then
-        assertThat(rest.isMatchingRelationName(relation, identifier), is(false));
+        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
+        when(resourceLocatorMock.getResourceByNameAndReleaseWithConsumedRelations(anyString(), anyString())).thenReturn(resourceWithoutRelations);
+
+        // when
+        Response response = rest.removeRelation(slaveResourceGroupName);
+
+        // then
+        assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
-    @Test
-    public void shouldReturnTrueIfNameOfSlaveResourceMatches() {
-        // given
-        String name = "name";
-        ResourceEntity resource = new ResourceEntity();
-        resource.setResourceGroup(new ResourceGroupEntity());
-        resource.setName(name);
-        ProvidedResourceRelationEntity relation = new ProvidedResourceRelationEntity();
-        relation.setSlaveResource(resource);
-
-        // when // then
-        assertThat(rest.isMatchingRelationName(relation, name), is(true));
-    }
-
-    @Test
-    public void shouldReturnFalseIfNameOfSlaveResourceDoesNotMatch() {
-        // given
-        String name = "name";
-        ResourceEntity resource = new ResourceEntity();
-        resource.setResourceGroup(new ResourceGroupEntity());
-        resource.setName("anotherName");
-        ConsumedResourceRelationEntity relation = new ConsumedResourceRelationEntity();
-        relation.setSlaveResource(resource);
-
-        // when // then
-        assertThat(rest.isMatchingRelationName(relation, name), is(false));
-    }
-
-    @Test
-    public void shouldReturnFalseIfIdentifierDoesNotMatchEvenIfNameOfSlaveResourceMatches() {
-        // given
-        String name = "name";
-        ResourceEntity resource = new ResourceEntity();
-        resource.setResourceGroup(new ResourceGroupEntity());
-        resource.setName(name);
-        ProvidedResourceRelationEntity relation = new ProvidedResourceRelationEntity();
-        relation.setIdentifier("anotherIdentifier");
-        relation.setSlaveResource(resource);
-
-        // when // then
-        assertThat(rest.isMatchingRelationName(relation, name), is(false));
-    }
 }
