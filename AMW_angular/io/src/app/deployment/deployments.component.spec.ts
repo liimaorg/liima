@@ -132,7 +132,7 @@ describe('DeploymentsComponent (with query params)', () => {
     inject([DeploymentsComponent, DeploymentService], (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
       const deploymentFilters: DeploymentFilterType[] = [{name: 'Application', type: 'StringType'}, {name: 'Confirmed on', type: 'DateType'}];
-      spyOn(deploymentService, 'getFilteredDeploymentsForCsvExport').and.returnValue(Observable.of("c;s;v;"));
+      spyOn(deploymentService, 'getFilteredDeploymentsForCsvExport').and.returnValue(Observable.of('c;s;v;'));
 
       // when
       deploymentsComponent.exportCSV();
