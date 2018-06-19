@@ -1,10 +1,11 @@
-import {Headers, Http, Response} from "@angular/http";
-import {Injectable} from "@angular/core";
-import {Observable} from "rxjs/Rx";
-import * as _ from "lodash";
+import { Headers, Response } from '@angular/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Rx';
+import * as _ from 'lodash';
 
 @Injectable()
 export class BaseService {
+
   private baseUrl: string = '/AMW_rest/resources';
 
   public getBaseUrl(): string {
