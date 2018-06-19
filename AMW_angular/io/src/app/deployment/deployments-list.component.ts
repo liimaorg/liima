@@ -31,8 +31,6 @@ export class DeploymentsListComponent {
 
   deploymentDate: number;
 
-  //deploymentDetail: DeploymentDetail;
-
   hasPermissionShakedownTest: boolean = null;
 
   errorMessage: string = '';
@@ -50,9 +48,7 @@ export class DeploymentsListComponent {
   }
 
   showDetails(deploymentId: number) {
-    //delete this.deploymentDetail;
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    //this.getDeploymentDetail(deploymentId);
     $('#deploymentDetails').modal('show');
   }
 
@@ -65,7 +61,6 @@ export class DeploymentsListComponent {
   }
 
   showConfirm(deploymentId: number) {
-    //delete this.deploymentDetail;
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.resourceService.canCreateShakedownTest(this.deployment.appServerId).subscribe(
       /* happy path */ (r) => this.hasPermissionShakedownTest = r,
