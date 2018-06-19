@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, URLSearchParams, RequestOptions } from '@angular/http';
+import { Http, Response, URLSearchParams, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Environment } from './environment';
 import { BaseService } from '../base/base.service';
