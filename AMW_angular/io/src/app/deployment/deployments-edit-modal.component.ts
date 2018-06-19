@@ -1,7 +1,5 @@
 import { Component, Input, Output, EventEmitter, NgZone } from '@angular/core';
 import { Deployment } from './deployment';
-import { DeploymentDetail } from './deployment-detail';
-import { DeploymentService } from './deployment.service';
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as moment from 'moment';
 
@@ -19,20 +17,17 @@ export class DeploymentsEditModalComponent {
   @Input() hasPermissionShakedownTest: boolean;
 
   @Output() errorMessage: EventEmitter<string> = new EventEmitter<string>();
-  @Output() doConfirmDeployment: EventEmitter<DeploymentDetail> = new EventEmitter<DeploymentDetail>();
+  @Output() doConfirmDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doEditDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
 
-  confirmationAttributes: DeploymentDetail;
+  confirmationAttributes: Deployment;
   deploymentDate: string; // for deployment date change in during confirmation (format 'DD.MM.YYYY HH:mm')
   selectedEditAction: string;
-  deploymentDetailMap: { [key: number]: DeploymentDetail };
 
-  constructor(private ngZone: NgZone,
-              private deploymentService: DeploymentService) {
-    this.confirmationAttributes = {} as DeploymentDetail;
-    this.deploymentDetailMap = {};
+  constructor(private ngZone: NgZone) {
+    this.confirmationAttributes = {} as Deployment;
   }
 
   changeEditAction() {
@@ -70,28 +65,19 @@ export class DeploymentsEditModalComponent {
   }
 
   private clear() {
-    this.confirmationAttributes = {} as DeploymentDetail;
+    this.confirmationAttributes = {} as Deployment;
     this.selectedEditAction = '';
     this.deploymentDate = '';
-  }
-
-  private applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deploymentId: number) {
-    const deploymentDetail = this.deploymentDetailMap[deploymentId];
-    deploymentDetail.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
-    deploymentDetail.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
-    deploymentDetail.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
-    deploymentDetail.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
-    this.doConfirmDeployment.emit(deploymentDetail);
   }
 
   private confirmSelectedDeployments() {
     this.editDeploymentDate();
     for (const deployment of this.deployments) {
-      this.deploymentService.getDeploymentDetail(deployment.id).subscribe(
-        /* happy path */ (r) => this.deploymentDetailMap[deployment.id] = r,
-        /* error path */ (e) => e,
-        /* on complete */ () => this.applyConfirmationAttributesIntoDeploymentDetailAndDoConfirm(deployment.id)
-      );
+      deployment.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
+      deployment.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
+      deployment.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
+      deployment.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
+      this.doConfirmDeployment.emit(deployment);
     }
   }
 

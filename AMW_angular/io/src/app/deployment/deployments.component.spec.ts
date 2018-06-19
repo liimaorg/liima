@@ -11,7 +11,6 @@ import { AppState } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
 import { DeploymentsComponent } from './deployments.component';
 import { Deployment } from './deployment';
-import { DeploymentDetail } from './deployment-detail';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
@@ -464,17 +463,16 @@ describe('DeploymentsComponent (without query params)', () => {
     inject([DeploymentsComponent, DeploymentService],
       (deploymentsComponent: DeploymentsComponent, deploymentService: DeploymentService) => {
       // given
-      const detail: DeploymentDetail = {deploymentId: 1}  as DeploymentDetail;
       const deployment: Deployment = {id: 1} as Deployment;
       spyOn(deploymentService, 'confirmDeployment').and.returnValue(Observable.of());
       spyOn(deploymentService, 'getWithActions').and.returnValue(Observable.of(deployment));
 
       // when
-      deploymentsComponent.confirmDeployment(detail);
+      deploymentsComponent.confirmDeployment(deployment);
 
       // then
-      expect(deploymentService.confirmDeployment).toHaveBeenCalledWith(detail);
-      expect(deploymentService.getWithActions).toHaveBeenCalledWith(detail.deploymentId);
+      expect(deploymentService.confirmDeployment).toHaveBeenCalledWith(deployment);
+      expect(deploymentService.getWithActions).toHaveBeenCalledWith(deployment.id);
   }));
 
   it('should reject a deployment and reload it',
