@@ -13,7 +13,7 @@ export class AuditviewService extends BaseService {
 
   getAuditLogForResource(resourceId: number): Observable<Auditviewentrytype[]> {
     const resource$ = this.http
-      .get(`${this.getbaseUrl()}/auditview/resource/${resourceId}`,{headers: this.getHeaders()})
+      .get(`${this.getBaseUrl()}/auditview/resource/${resourceId}`,{headers: this.getHeaders()})
       .map((response: Response) => this.extractPayload(response))
       .catch(this.handleError);
     return resource$;

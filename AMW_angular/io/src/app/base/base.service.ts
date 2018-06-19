@@ -7,7 +7,7 @@ import * as _ from "lodash";
 export class BaseService {
   private baseUrl: string = '/AMW_rest/resources';
 
-  public getbaseUrl(): string {
+  public getBaseUrl(): string {
     return this.baseUrl;
   }
 

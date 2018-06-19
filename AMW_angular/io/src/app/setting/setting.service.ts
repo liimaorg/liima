@@ -13,7 +13,7 @@ export class SettingService extends BaseService {
 
   getAllAppSettings(): Observable<AppConfiguration[]> {
     const resource$ = this.http
-      .get(`${this.getbaseUrl()}/settings`, {headers: this.getHeaders()})
+      .get(`${this.getBaseUrl()}/settings`, {headers: this.getHeaders()})
       .map((response: Response) => this.extractPayload(response))
       .catch(this.handleError);
     return resource$;
