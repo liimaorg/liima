@@ -250,14 +250,14 @@ export class DeploymentsComponent implements OnInit {
 
   copyURL() {
     const url: string = decodeURIComponent(window.location.href);
-    $("body").append($('<input type="text" name="fname" class="textToCopyInput" style="opacity:0"/>')
-      .val(url)).find(".textToCopyInput").select();
+    $('body').append($('<input type="text" name="fname" class="textToCopyInput" style="opacity:0"/>')
+      .val(url)).find('.textToCopyInput').select();
     try {
       document.execCommand('copy');
     } catch (e) {
-      window.prompt("Press Ctrl + C, then Enter to copy to clipboard", url);
+      window.prompt('Press Ctrl + C, then Enter to copy to clipboard', url);
     }
-    $(".textToCopyInput").remove();
+    $('.textToCopyInput').remove();
   }
 
   sortDeploymentsBy(col: string) {
@@ -431,7 +431,7 @@ export class DeploymentsComponent implements OnInit {
     this.deploymentService.getFilteredDeploymentsForCsvExport(filterString, this.sortCol, this.sortDirection).subscribe(
       /* happy path */ (r) => this.csvDocument = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.pushDownload("deployments")
+      /* onComplete */ () => this.pushDownload('deployments')
     );
   }
 

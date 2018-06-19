@@ -28,6 +28,7 @@ import ch.mobi.itc.mobiliar.rest.exceptions.IllegalArgumentExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.exceptions.IllegalStateExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.exceptions.NoResultExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.exceptions.NotAuthorizedExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.health.HealthCheck;
 import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
 import ch.mobi.itc.mobiliar.rest.resources.*;
 import ch.mobi.itc.mobiliar.rest.releases.ReleasesRest;
@@ -72,6 +73,7 @@ public class RESTApplication extends Application {
         resources.add(NotAuthorizedExceptionMapper.class);
         resources.add(IllegalArgumentExceptionMapper.class);
         resources.add(ServerTupleCSVBodyWriter.class);
+        resources.add(HealthCheck.class);
         resources.add(SettingsRest.class);
     }
 }
