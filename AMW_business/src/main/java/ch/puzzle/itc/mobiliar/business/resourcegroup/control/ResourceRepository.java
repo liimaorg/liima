@@ -65,10 +65,18 @@ public class ResourceRepository {
                 .setParameter("release", release).getSingleResult();
     }
 
-    public ResourceEntity getResourceByNameAndReleaseWithRelations(String name, ReleaseEntity release) {
+    public ResourceEntity getResourceByNameAndReleaseWithConsumedRelations(String name, ReleaseEntity release) {
         return entityManager
                 .createQuery(
                         "select r from ResourceEntity r left join fetch r.consumedMasterRelations rel left join fetch rel.slaveResource where LOWER(r.name)=:name and r.release=:release",
+                        ResourceEntity.class)
+                .setParameter("name", name.toLowerCase()).setParameter("release", release).getSingleResult();
+    }
+
+    public ResourceEntity getResourceByNameAndReleaseWithProvidedRelations(String name, ReleaseEntity release) {
+        return entityManager
+                .createQuery(
+                        "select r from ResourceEntity r left join fetch r.providedMasterRelations rel left join fetch rel.slaveResource where LOWER(r.name)=:name and r.release=:release",
                         ResourceEntity.class)
                 .setParameter("name", name.toLowerCase()).setParameter("release", release).getSingleResult();
     }

@@ -50,6 +50,8 @@ import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+import com.google.common.base.Enums;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * A boundary for relation editing
@@ -86,6 +88,11 @@ public class RelationEditor {
 
 	@Inject
 	private ResourceGroupPersistenceService resourceGroupService;
+
+	public enum ResourceRelationType {
+		CONSUMED,
+		PROVIDED
+	}
 
 	/**
 	 * Load all resourceGroups for the given type
@@ -168,6 +175,34 @@ public class RelationEditor {
 	}
 
 	/**
+	 * Removes a consumed or provided ResourceRelationEntity, identified either by its relation name (aka relation identifier) or by the name of the slave resouce (group)
+	 *
+	 * @param relations a Collection containing consumed or provided ResourceRelationEntities (the haystack)
+	 * @param relationName the relation "name" or the name of the slave resource (group)
+	 * @return boolean true if it has been removed, false if it could not be found
+	 * @throws ForeignableOwnerViolationException
+	 * @throws ResourceNotFoundException
+	 * @throws ElementAlreadyExistsException
+	 */
+	public boolean removeMatchingRelation(Collection<? extends AbstractResourceRelationEntity> relations, String relationName)
+			throws ForeignableOwnerViolationException, ResourceNotFoundException, ElementAlreadyExistsException {
+		for (AbstractResourceRelationEntity relation : relations) {
+			if (isMatchingRelationName(relation, relationName)) {
+				removeRelation(ForeignableOwner.getSystemOwner(), relation.getId());
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected boolean isMatchingRelationName(AbstractResourceRelationEntity relation, String relationName) {
+		if (relation.getIdentifier() != null && relation.getIdentifier().equals(relationName)) {
+			return true;
+		}
+		return relation.getIdentifier() == null && relation.getSlaveResource().getName().equals(relationName);
+	}
+
+	/**
 	 * @param relationId
 	 * @throws ResourceNotFoundException
 	 * @throws ElementAlreadyExistsException
@@ -220,6 +255,13 @@ public class RelationEditor {
 		catch (NoResultException e) {
 			return null;
 		}
+	}
+
+	public boolean isValidResourceRelationType(String resourceRelationTypeString) {
+		if (StringUtils.isEmpty(resourceRelationTypeString)) {
+			return false;
+		}
+		return (Enums.getIfPresent(ResourceRelationType.class, resourceRelationTypeString.toUpperCase()).isPresent());
 	}
 
 }
