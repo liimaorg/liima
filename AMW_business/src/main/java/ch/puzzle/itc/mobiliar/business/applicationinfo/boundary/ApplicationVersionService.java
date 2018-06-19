@@ -34,7 +34,9 @@ import javax.ejb.Startup;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
@@ -47,6 +49,7 @@ import java.util.logging.Logger;
 @Singleton
 public class ApplicationVersionService {
 
+	final static String OBFUSCATED = "***************";
 
 	@Inject
 	private Logger log;
@@ -64,6 +67,15 @@ public class ApplicationVersionService {
 		applicationConfigurationInfo = readApplicationConfigurationInfo();
 	}
 
+	public List<ConfigurationKeyValuePair> getObfuscatedApplicationConfigurationKeyValuePairs() {
+		List<ConfigurationKeyValuePair> obfuscatedConfigurationKeyValuePairs = new ArrayList<>(applicationConfigurationInfo.getConfigurationKeyValuePairs());
+		for (ConfigurationKeyValuePair obfuscated : obfuscatedConfigurationKeyValuePairs) {
+			if (obfuscated.getKey().isSecretValue()) {
+				obfuscated.setValue(OBFUSCATED);
+			}
+		}
+		return obfuscatedConfigurationKeyValuePairs;
+	}
 
 	private ApplicationBuildInfo readApplicationBuildInfo(){
 		
