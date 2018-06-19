@@ -16,7 +16,6 @@ export class DeploymentsEditModalComponent {
 
   @Input() deployments: Deployment[] = [];
   @Input() editActions: string[];
-  @Input() deploymentDetailMap: { [key: number]: DeploymentDetail };
   @Input() hasPermissionShakedownTest: boolean;
 
   @Output() errorMessage: EventEmitter<string> = new EventEmitter<string>();
@@ -28,10 +27,12 @@ export class DeploymentsEditModalComponent {
   confirmationAttributes: DeploymentDetail;
   deploymentDate: string; // for deployment date change in during confirmation (format 'DD.MM.YYYY HH:mm')
   selectedEditAction: string;
+  deploymentDetailMap: { [key: number]: DeploymentDetail };
 
   constructor(private ngZone: NgZone,
               private deploymentService: DeploymentService) {
     this.confirmationAttributes = {} as DeploymentDetail;
+    this.deploymentDetailMap = {};
   }
 
   changeEditAction() {
