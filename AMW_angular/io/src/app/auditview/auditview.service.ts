@@ -1,46 +1,22 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers } from '@angular/http';
+import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Auditviewentrytype } from './auditview-entry-type';
+import { BaseService } from "../base/base.service";
 
 @Injectable()
-export class AuditviewService {
-  private baseUrl: string = '/AMW_rest/resources';
+export class AuditviewService extends BaseService {
 
   constructor(private http: Http) {
-
+    super();
   }
 
   getAuditLogForResource(resourceId: number): Observable<Auditviewentrytype[]> {
     const resource$ = this.http
-      .get(`${this.baseUrl}/auditview/resource/${resourceId}`, {headers: this.getHeaders()})
+      .get(`${this.getbaseUrl()}/auditview/resource/${resourceId}`,{headers: this.getHeaders()})
       .map((response: Response) => this.extractPayload(response))
-      .catch(handleError);
+      .catch(this.handleError);
     return resource$;
   }
 
-  private extractPayload(res: Response) {
-    return res.text() ? res.json() : {};
-  }
-
-  private getHeaders() {
-    const headers = new Headers();
-    headers.append('Accept', 'application/json');
-    return headers;
-  }
-
-}
-
-function handleError(error: any) {
-  let errorMsg = 'Error retrieving your data';
-  if (error._body) {
-    try {
-      errorMsg = JSON.parse(error._body).message;
-    } catch (e) {
-      console.log(e);
-    }
-  }
-  console.error(errorMsg);
-  // throw an application level error
-  return Observable.throw(errorMsg);
 }
