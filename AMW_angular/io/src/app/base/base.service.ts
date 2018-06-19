@@ -11,12 +11,20 @@ export class BaseService {
     return this.baseUrl;
   }
 
+  // to json without throwing an error if response is empty
   public extractPayload(res: Response) {
     return res.text() ? res.json() : {};
   }
 
   public getHeaders() {
     const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    return headers;
+  }
+
+  public postHeaders() {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
     headers.append('Accept', 'application/json');
     return headers;
   }
