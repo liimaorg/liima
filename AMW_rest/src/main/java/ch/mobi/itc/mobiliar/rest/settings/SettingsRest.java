@@ -25,14 +25,17 @@ public class SettingsRest {
 
     @GET
     @ApiOperation(value = "Get Liima configuration information")
-    public List<ConfigurationDTO> getAppInfo() {
+    public List<ConfigurationKeyValuePair>  getAppConfig() {
+        return applicationVersionService.getObfuscatedApplicationConfigurationKeyValuePairs();
+    }
+/*    public List<ConfigurationDTO> getAppInfo() {
         List<ConfigurationKeyValuePair> configurationKeyValuePairs = applicationVersionService.getApplicationConfigurationInfo().getConfigurationKeyValuePairs();
         List<ConfigurationDTO> configurations = new ArrayList<>();
         for (ConfigurationKeyValuePair keyValuePair : configurationKeyValuePairs) {
             configurations.add(createConfigurationDTO(keyValuePair));
         }
         return configurations;
-    }
+    }*/
 
     protected ConfigurationDTO createConfigurationDTO(ConfigurationKeyValuePair keyValuePair) {
         ConfigurationDTO configurationDTO = new ConfigurationDTO();
