@@ -20,11 +20,18 @@
 
 package ch.puzzle.itc.mobiliar.common.util;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+
+import javax.xml.bind.annotation.*;
 
 /**
  * Class that manages all the System Properties of AMW
  */
+@XmlRootElement(name="configKey")
+@XmlAccessorType(XmlAccessType.FIELD)
+@JsonAutoDetect()
 public class ConfigurationService {
     public enum ConfigKey {
 
@@ -78,6 +85,8 @@ public class ConfigurationService {
         private String envName;
         @Getter
         private String defaultValue;
+        @XmlTransient
+        @JsonIgnore
         @Getter
         private boolean secretValue;
 
