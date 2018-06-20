@@ -59,7 +59,6 @@ import io.swagger.annotations.ApiParam;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -69,7 +68,7 @@ import javax.xml.bind.ValidationException;
 import java.util.*;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
-import static ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI;
+import static ch.puzzle.itc.mobiliar.common.util.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI;
 
 @Stateless
 @Path("/deployments")

@@ -40,7 +40,7 @@ import javax.ws.rs.ext.Provider;
 
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
 @Provider
 @Produces({"text/comma-separated-values", "text/csv"})
