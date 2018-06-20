@@ -41,6 +41,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.control.SoftlinkRelationService;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.maiafederationservice.boundary.MaiaAmwFederationServiceApplicationBean;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
@@ -147,7 +148,7 @@ public abstract class BaseIntegrationTest {
 			entityManager.getTransaction().commit();
 			entityManager.getTransaction().begin();
 
-			System.getProperties().put(ConfigurationService.ConfigKey.LOGS_PATH.getValue(),
+			System.getProperties().put(ConfigKey.LOGS_PATH.getValue(),
 					"/tmp/integration-test/log");
 
 			new CustomLogging().setLevel(Level.WARNING);
@@ -157,7 +158,7 @@ public abstract class BaseIntegrationTest {
 			entityManager.getTransaction().rollback();
 
 			// remove the systemproperties to not have any sideeffect on other tests
-			System.getProperties().remove(ConfigurationService.ConfigKey.LOGS_PATH.getValue());
+			System.getProperties().remove(ConfigKey.LOGS_PATH.getValue());
 		}
 
 		protected UpdateRequest getUpdateRequestFor(String xmlFileName) {
