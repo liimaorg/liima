@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI;
+import static ch.puzzle.itc.mobiliar.common.util.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI;
 
 @ViewBackingBean
 public class LogView implements Serializable {

@@ -20,10 +20,18 @@
 
 package ch.puzzle.itc.mobiliar.business.applicationinfo.entity;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.Data;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Data
+@XmlRootElement(name="configurationKeyValuePair")
+@XmlAccessorType(XmlAccessType.FIELD)
+@JsonAutoDetect()
 public class ConfigurationKeyValuePair {
     private ConfigKey key;
     private String value;

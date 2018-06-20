@@ -40,7 +40,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
 public class NotificationServiceTest {
 

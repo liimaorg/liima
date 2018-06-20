@@ -33,7 +33,7 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

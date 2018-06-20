@@ -56,7 +56,7 @@ import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;

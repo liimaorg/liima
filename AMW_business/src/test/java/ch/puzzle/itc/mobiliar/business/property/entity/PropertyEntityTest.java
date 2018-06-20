@@ -31,7 +31,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntit
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -122,7 +122,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   initAppservers() {
     this.isLoading = true;
     this.resourceService.getByType('APPLICATIONSERVER').subscribe(
-      /* happy path */ (r) => this.appservers = r.sort(function (a, b) {
+      /* happy path */ (r) => this.appservers = r.sort(function(a, b) {
         return a.name.localeCompare(b.name, undefined, {sensitivity: 'base'});
       }),
       /* error path */ (e) => this.errorMessage = e,

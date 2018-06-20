@@ -35,7 +35,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.TemplateUtils;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
 public class BasePropertyCollectorTest {
 	

@@ -31,7 +31,7 @@ import javax.inject.Inject;
 import ch.puzzle.itc.mobiliar.common.exception.ScriptExecutionException;
 import ch.puzzle.itc.mobiliar.common.exception.ScriptExecutionException.REASON;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.SystemCallTemplate;
 
 /**

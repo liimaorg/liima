@@ -29,7 +29,7 @@ import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.utils.notification.NotificationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
