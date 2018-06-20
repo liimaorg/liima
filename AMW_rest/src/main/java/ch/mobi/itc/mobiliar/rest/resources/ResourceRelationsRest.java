@@ -31,6 +31,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
@@ -73,25 +74,38 @@ public class ResourceRelationsRest {
     ResourceRelationTemplatesRest resourceRelationTemplatesRest;
 
     @GET
-    @ApiOperation(value = "Get all relations of the current resource")
+    @ApiOperation(value = "Get all relations of a resource in a specific release, optionally filtered by a resource type")
     public List<ResourceRelationDTO> getResourceRelations() throws ValidationException {
         return getResourceRelations(resourceGroupName, releaseName, resourceType);
     }
 
     List<ResourceRelationDTO> getResourceRelations(String resourceGroupName, String releaseName, String resourceType) throws ValidationException {
-        ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithConsumedRelations(resourceGroupName, releaseName);
+        ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithAllRelations(resourceGroupName, releaseName);
         List<ResourceRelationDTO> resourceRelations = new ArrayList<>();
         for (ConsumedResourceRelationEntity relation : resource.getConsumedMasterRelations()) {
-            if (resourceType != null && !relation.getResourceRelationType().getResourceTypeB().getName().equals(resourceType)) {
-                continue;
+            ResourceRelationDTO resRel = createResourceRelationDTO(resourceGroupName, releaseName, resourceType, relation);
+            if (resRel != null) {
+                resourceRelations.add(resRel);
             }
-            ResourceRelationDTO resRel = new ResourceRelationDTO(relation);
-            List<TemplateDTO> templates = resourceRelationTemplatesRest.getResourceRelationTemplates(resourceGroupName, releaseName,
-                    relation.getSlaveResource().getName(), relation.getSlaveResource().getRelease().getName(), "");
-            addTemplates(resRel, templates);
-            resourceRelations.add(resRel);
+        }
+        for (ProvidedResourceRelationEntity relation : resource.getProvidedMasterRelations()) {
+            ResourceRelationDTO resRel = createResourceRelationDTO(resourceGroupName, releaseName, resourceType, relation);
+            if (resRel != null) {
+                resourceRelations.add(resRel);
+            }
         }
         return resourceRelations;
+    }
+
+    private ResourceRelationDTO createResourceRelationDTO(String resourceGroupName, String releaseName, String resourceType, AbstractResourceRelationEntity relation) throws ValidationException {
+        if (resourceType != null && !relation.getResourceRelationType().getResourceTypeB().getName().equals(resourceType)) {
+            return null;
+        }
+        ResourceRelationDTO resRel = new ResourceRelationDTO(relation);
+        List<TemplateDTO> templates = resourceRelationTemplatesRest.getResourceRelationTemplates(resourceGroupName, releaseName,
+                relation.getSlaveResource().getName(), relation.getSlaveResource().getRelease().getName(), "");
+        addTemplates(resRel, templates);
+        return resRel;
     }
 
     @Path("/{relatedResourceGroupName}")
