@@ -81,6 +81,14 @@ public class ResourceRepository {
                 .setParameter("name", name.toLowerCase()).setParameter("release", release).getSingleResult();
     }
 
+    public ResourceEntity getResourceByNameAndReleaseWithAllRelations(String name, ReleaseEntity release) {
+        return entityManager
+                .createQuery(
+                        "select r from ResourceEntity r left join fetch r.providedMasterRelations rel left join fetch r.consumedMasterRelations rel left join fetch rel.slaveResource where LOWER(r.name)=:name and r.release=:release",
+                        ResourceEntity.class)
+                .setParameter("name", name.toLowerCase()).setParameter("release", release).getSingleResult();
+    }
+
     public ResourceEntity getResourceByIdWithRelations(int resourceId) {
         String qlString = "SELECT r FROM ResourceEntity r " +
                           "LEFT JOIN FETCH r.consumedMasterRelations rel " +
