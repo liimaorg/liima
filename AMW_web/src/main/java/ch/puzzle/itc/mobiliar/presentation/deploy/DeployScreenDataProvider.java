@@ -32,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import ch.puzzle.itc.mobiliar.presentation.common.ContextDataProvider;
@@ -147,8 +148,8 @@ public class DeployScreenDataProvider implements Serializable {
     private SortingDirectionType sortingDirection = SortingDirectionType.DESC;
     private deployscreenColDescriptor sortingColumn = deployscreenColDescriptor.DEPLOY_TIME;
 
-    private static final boolean useAngular = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_GUI));
-    private static final boolean useAngularDeployment = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI));
+    private static final boolean useAngular = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigKey.FEATURE_DISABLE_ANGULAR_GUI));
+    private static final boolean useAngularDeployment = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI));
 
     @Getter
     @Setter
