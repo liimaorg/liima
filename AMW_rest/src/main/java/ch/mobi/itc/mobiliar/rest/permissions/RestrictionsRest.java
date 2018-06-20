@@ -24,13 +24,13 @@ import ch.mobi.itc.mobiliar.rest.dtos.PermissionDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.RestrictionsCreationDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
-import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -54,8 +54,6 @@ public class RestrictionsRest {
 
     @Inject
     PermissionBoundary permissionBoundary;
-    @Inject
-    ContextLocator contextLocator;
 
     /**
      * Creates a new restriction and returns the newly created restriction.
@@ -77,6 +75,8 @@ public class RestrictionsRest {
         try {
             id = permissionBoundary.createRestriction(request.getRoleName(), request.getUserName(), request.getPermission().getName(), request.getResourceGroupId(),
                     request.getResourceTypeName(), request.getResourceTypePermission(), request.getContextName(), request.getAction(), delegation);
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
@@ -104,6 +104,8 @@ public class RestrictionsRest {
         try {
             count = permissionBoundary.createMultipleRestrictions(request.getRoleName(), request.getUserNames(), request.getPermissionNames(), request.getResourceGroupIds(),
                     request.getResourceTypeNames(), request.getResourceTypePermission(), request.getContextNames(), request.getActions(), delegation);
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
@@ -121,7 +123,12 @@ public class RestrictionsRest {
     // support digit only
     @ApiOperation(value = "Get Restriction by id")
     public Response getRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id) {
-        RestrictionEntity restriction = permissionBoundary.findRestriction(id);
+        final RestrictionEntity restriction;
+        try {
+            restriction = permissionBoundary.findRestriction(id);
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
+        }
         if (restriction == null) {
             return Response.status(NOT_FOUND).build();
         }
@@ -137,11 +144,17 @@ public class RestrictionsRest {
     @Path("/")
     @ApiOperation(value = "Get all Restrictions")
     public Response getAllRestriction() {
-        List<RestrictionDTO> restrictions = new ArrayList<>();
-        for (RestrictionEntity restrictionEntity : permissionBoundary.findAllRestrictions()) {
-            restrictions.add(new RestrictionDTO(restrictionEntity));
+        final List<RestrictionEntity> restrictions;
+        try {
+            restrictions = permissionBoundary.findAllRestrictions();
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
         }
-        return Response.status(OK).entity(restrictions).build();
+        List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
+        for (RestrictionEntity restriction : restrictions) {
+            restrictionList.add(new RestrictionDTO(restriction));
+        }
+        return Response.status(OK).entity(restrictionList).build();
     }
 
     /**
@@ -159,6 +172,8 @@ public class RestrictionsRest {
             succcess = permissionBoundary.updateRestriction(id, request.getRoleName(), request.getUserName(), request.getPermission().getName(),
                     request.getResourceGroupId(), request.getResourceTypeName(), request.getResourceTypePermission(),
                     request.getContextName(), request.getAction());
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
@@ -179,6 +194,8 @@ public class RestrictionsRest {
     public Response deleteRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id) {
         try {
             permissionBoundary.removeRestriction(id);
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
         } catch (AMWException e) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto(e.getMessage())).build();
         }
@@ -194,8 +211,13 @@ public class RestrictionsRest {
     @Path("/roles/")
     @ApiOperation(value = "Get all Roles with restrictions")
     public Response getAllRoles() {
-        Map<String, List<RestrictionDTO>> rolesMap = new HashMap<>();
-        final Map<String, List<ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO>> allRoles = permissionBoundary.getAllPermissions();
+        final Map<String, List<ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO>> allRoles;
+        try {
+            allRoles = permissionBoundary.getAllPermissions();
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
+        }
+        Map<String, List<RestrictionDTO>> rolesMap = new HashMap<>(allRoles.size());
         // converting business RestrictionDTOs to rest RestrictionDTOs
         for (Map.Entry<String, List<ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO>> roleRestrictionList : allRoles.entrySet()) {
             String roleName = roleRestrictionList.getKey();
@@ -218,8 +240,13 @@ public class RestrictionsRest {
     @Path("/roles/{roleName}")
     @ApiOperation(value = "Get all Restrictions assigned to a specific Role")
     public Response getRoleRestriction(@ApiParam("UserName") @PathParam("roleName") String roleName) {
-        List<RestrictionDTO> restrictionList = new ArrayList<>();
-        final List<RestrictionEntity> restrictions = permissionBoundary.getRestrictionsByRoleName(roleName);
+        final List<RestrictionEntity> restrictions;
+        try {
+            restrictions = permissionBoundary.getRestrictionsByRoleName(roleName);
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
+        }
+        List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
         for (RestrictionEntity restriction : restrictions) {
             restrictionList.add(new RestrictionDTO(restriction));
         }
@@ -235,8 +262,13 @@ public class RestrictionsRest {
     @Path("/roleNames/")
     @ApiOperation(value = "Get all available RoleNames")
     public Response getRoleNames() {
-        List<String> roleNameList = new ArrayList<>();
-        final List<RoleEntity> roles = permissionBoundary.getAllRoles();
+        final List<RoleEntity> roles;
+        try {
+            roles = permissionBoundary.getAllRoles();
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
+        }
+        List<String> roleNameList = new ArrayList<>(roles.size());
         for (RoleEntity role : roles) {
             roleNameList.add(role.getName());
         }
@@ -252,7 +284,13 @@ public class RestrictionsRest {
     @Path("/userRestrictionNames/")
     @ApiOperation(value = "Get all available userRestrictionNames")
     public Response getUserNames() {
-        return Response.status(OK).entity(permissionBoundary.getAllUserRestrictionNames()).build();
+        final List<String> allUserRestrictionNames;
+        try {
+            allUserRestrictionNames = permissionBoundary.getAllUserRestrictionNames();
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
+        }
+        return Response.status(OK).entity(allUserRestrictionNames).build();
     }
 
     /**
@@ -264,8 +302,13 @@ public class RestrictionsRest {
     @Path("/permissionEnumValues/")
     @ApiOperation(value = "Get all available PermissionEnum values")
     public Response getPermissionEnumValues() {
-        List<PermissionDTO> permissionNameList = new ArrayList<>();
-        final List<PermissionEntity> permissions = permissionBoundary.getAllAvailablePermissions();
+        final List<PermissionEntity> permissions;
+        try {
+            permissions = permissionBoundary.getAllAvailablePermissions();
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
+        }
+        List<PermissionDTO> permissionNameList = new ArrayList<>(permissions.size());
         for (PermissionEntity permission : permissions) {
             permissionNameList.add(new PermissionDTO(Permission.valueOf(permission.getValue())));
         }
@@ -281,8 +324,13 @@ public class RestrictionsRest {
     @Path("/users/")
     @ApiOperation(value = "Get all UserRestriction with their Restrictions")
     public Response getAllUsers() {
-        Map<String, List<RestrictionDTO>> usersMap = new HashMap<>();
-        final List<RestrictionEntity> allUserRestrictions = permissionBoundary.getAllUserRestriction();
+        final List<RestrictionEntity> allUserRestrictions;
+        try {
+            allUserRestrictions = permissionBoundary.getAllUserRestriction();
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
+        }
+        Map<String, List<RestrictionDTO>> usersMap = new HashMap<>(allUserRestrictions.size());
         for (RestrictionEntity restriction : allUserRestrictions) {
             String userName = restriction.getUser().getName();
             if (!usersMap.containsKey(userName)) {
@@ -303,8 +351,14 @@ public class RestrictionsRest {
     @Path("/users/{userName}")
     @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
     public Response getUserRestriction(@ApiParam("UserName") @PathParam("userName") String userName) {
-        List<RestrictionDTO> restrictionList = new ArrayList<>();
-        for (RestrictionEntity restriction : permissionBoundary.getRestrictionsByUserName(userName)) {
+        final List<RestrictionEntity> restrictions;
+        try {
+            restrictions = permissionBoundary.getRestrictionsByUserName(userName);
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
+        }
+        List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
+        for (RestrictionEntity restriction : restrictions) {
             restrictionList.add(new RestrictionDTO(restriction));
         }
         return Response.status(OK).entity(restrictionList).build();
@@ -319,8 +373,14 @@ public class RestrictionsRest {
     @Path("/ownRestrictions/")
     @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
     public Response getCallerRestrictions() {
-        List<RestrictionDTO> restrictionList = new ArrayList<>();
-        for (RestrictionEntity restriction : permissionBoundary.getAllCallerRestrictions()) {
+        final List<RestrictionEntity> restrictions;
+        try {
+            restrictions = permissionBoundary.getAllCallerRestrictions();
+        } catch (NotAuthorizedException ne) {
+            return Response.status(FORBIDDEN).build();
+        }
+        List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
+        for (RestrictionEntity restriction : restrictions) {
             restrictionList.add(new RestrictionDTO(restriction));
         }
         return Response.status(OK).entity(restrictionList).build();
