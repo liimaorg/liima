@@ -1,6 +1,5 @@
 export interface AppConfiguration {
-  key: string;
-  env: string;
+  key: { value: string, env: string }
   value: string;
   defaultValue: string;
 }

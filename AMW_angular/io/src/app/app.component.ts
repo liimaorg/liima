@@ -58,7 +58,7 @@ export class AppComponent implements OnInit, AfterViewInit, AfterViewChecked {
   }
 
   private setLogoutUrl(settings: AppConfiguration[]) {
-    const logoutUrl: AppConfiguration = _.find(settings,{key: this.logoutUrlKey});
+    const logoutUrl: AppConfiguration = _.find(settings, ['key.value', this.logoutUrlKey]);
     this.appState.set('logoutUrl', logoutUrl ? logoutUrl.value : '');
   }
 

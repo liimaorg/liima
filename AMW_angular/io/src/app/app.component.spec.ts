@@ -50,10 +50,12 @@ describe('App', () => {
   it('should set logoutUrl on ngOnInit',
     inject( [AppComponent, AppState, SettingService ], (app: AppComponent, appState: AppState, settingService: SettingService) => {
       // given
-      const configKey: string = 'amw.logoutUrl';
       const expectedKey: string = 'logoutUrl';
       const expectedValue: string = 'testUrl';
-      spyOn(settingService, 'getAllAppSettings').and.returnValues(Observable.of([ {key: configKey, value: expectedValue} as AppConfiguration ]));
+      const configKeyVal: string = 'amw.logoutUrl';
+      const configKeyEnv: string = 'AMW_LOGOUTURL';
+      const appConf: AppConfiguration = {key: { value: configKeyVal, env: configKeyEnv }, value: expectedValue } as AppConfiguration;
+      spyOn(settingService, 'getAllAppSettings').and.returnValues(Observable.of([ appConf ]));
       spyOn(appState, 'set').and.callThrough();
       // when
       app.ngOnInit();
@@ -66,7 +68,8 @@ describe('App', () => {
       // given
       const expectedKey: string = 'logoutUrl';
       const expectedValue: string = '';
-      spyOn(settingService, 'getAllAppSettings').and.returnValues(Observable.of([ {key: 'test', value: 'test'} as AppConfiguration ]));
+      const appConf: AppConfiguration =  {key: { value: 'test', env: 'TEST'}} as AppConfiguration;
+      spyOn(settingService, 'getAllAppSettings').and.returnValues(Observable.of([ appConf ]));
       spyOn(appState, 'set').and.callThrough();
       // when
       app.ngOnInit();
