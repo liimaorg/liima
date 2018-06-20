@@ -26,6 +26,7 @@ import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentPara
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import lombok.Getter;
 import lombok.Setter;
@@ -94,7 +95,7 @@ public class DeploymentProperties {
     }
 
     private String getTargetPrefix(){
-        return ConfigurationService.getProperty(ConfigurationService.ConfigKey.LOGS_PATH)
+        return ConfigurationService.getProperty(ConfigKey.LOGS_PATH)
                 + File.separator + deployment.getId() + '_';
     }
 

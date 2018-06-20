@@ -32,7 +32,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestExecuterService;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Before;

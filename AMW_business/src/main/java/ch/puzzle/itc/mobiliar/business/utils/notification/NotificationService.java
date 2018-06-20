@@ -21,7 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.utils.notification;
 
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;

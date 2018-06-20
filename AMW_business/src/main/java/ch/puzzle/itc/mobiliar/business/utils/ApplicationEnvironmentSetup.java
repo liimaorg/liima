@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.utils;
 
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
 import javax.annotation.PostConstruct;
@@ -54,24 +55,24 @@ public class ApplicationEnvironmentSetup {
      */
     private void checkFilesystemPrerequisites(){
         // genrator directory
-        if(!directoryExists(ConfigurationService.getProperty(ConfigurationService.ConfigKey.GENERATOR_PATH))){
-            createDirectory(ConfigurationService.getProperty(ConfigurationService.ConfigKey.GENERATOR_PATH));
+        if(!directoryExists(ConfigurationService.getProperty(ConfigKey.GENERATOR_PATH))){
+            createDirectory(ConfigurationService.getProperty(ConfigKey.GENERATOR_PATH));
         }
         // simulation directory
-        if(!directoryExists(ConfigurationService.getProperty(ConfigurationService.ConfigKey.GENERATOR_PATH_SIMULATION))){
-            createDirectory(ConfigurationService.getProperty(ConfigurationService.ConfigKey.GENERATOR_PATH_SIMULATION));
+        if(!directoryExists(ConfigurationService.getProperty(ConfigKey.GENERATOR_PATH_SIMULATION))){
+            createDirectory(ConfigurationService.getProperty(ConfigKey.GENERATOR_PATH_SIMULATION));
         }
         // generator Test directory
-        if(!directoryExists(ConfigurationService.getProperty(ConfigurationService.ConfigKey.GENERATOR_PATH_TEST))){
-            createDirectory(ConfigurationService.getProperty(ConfigurationService.ConfigKey.GENERATOR_PATH_TEST));
+        if(!directoryExists(ConfigurationService.getProperty(ConfigKey.GENERATOR_PATH_TEST))){
+            createDirectory(ConfigurationService.getProperty(ConfigKey.GENERATOR_PATH_TEST));
         }
         // test Results directory
-        if(!directoryExists(ConfigurationService.getProperty(ConfigurationService.ConfigKey.TEST_RESULT_PATH))){
-            createDirectory(ConfigurationService.getProperty(ConfigurationService.ConfigKey.TEST_RESULT_PATH));
+        if(!directoryExists(ConfigurationService.getProperty(ConfigKey.TEST_RESULT_PATH))){
+            createDirectory(ConfigurationService.getProperty(ConfigKey.TEST_RESULT_PATH));
         }
         // logs directory
-        if(!directoryExists(ConfigurationService.getProperty(ConfigurationService.ConfigKey.LOGS_PATH))){
-            createDirectory(ConfigurationService.getProperty(ConfigurationService.ConfigKey.LOGS_PATH));
+        if(!directoryExists(ConfigurationService.getProperty(ConfigKey.LOGS_PATH))){
+            createDirectory(ConfigurationService.getProperty(ConfigKey.LOGS_PATH));
         }
     }
 
@@ -84,7 +85,7 @@ public class ApplicationEnvironmentSetup {
     }
 
     private boolean createDirectory(String pathStr){
-        if(ConfigurationService.getPropertyAsBoolean(ConfigurationService.ConfigKey.CREATE_NOT_EXISTING_DIRECTORIES_ON_STARTUP)){
+        if(ConfigurationService.getPropertyAsBoolean(ConfigKey.CREATE_NOT_EXISTING_DIRECTORIES_ON_STARTUP)){
             File f = new File(pathStr);
             return f.mkdirs();
         }

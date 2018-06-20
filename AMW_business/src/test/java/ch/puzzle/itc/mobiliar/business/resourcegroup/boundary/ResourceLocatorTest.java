@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,9 +86,9 @@ public class ResourceLocatorTest {
         MockitoAnnotations.initMocks(this);
 
         Properties props = System.getProperties();
-        props.setProperty(ConfigurationService.ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES.getValue(),
+        props.setProperty(ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES.getValue(),
                 PROVIDABLE_SOFTLINK_TYPE_SYSTEM_PROPERTY_1 + "," + PROVIDABLE_SOFTLINK_TYPE_SYSTEM_PROPERTY_2);
-        props.setProperty(ConfigurationService.ConfigKey.CONSUMABLE_SOFTLINK_RESOURCE_TYPES.getValue(),
+        props.setProperty(ConfigKey.CONSUMABLE_SOFTLINK_RESOURCE_TYPES.getValue(),
                 CONSUMABLE_SOFTLINK_TYPE_SYSTEM_PROPERTY_1 + "," + CONSUMABLE_SOFTLINK_TYPE_SYSTEM_PROPERTY_2);
         System.setProperties(props);
     }
@@ -95,8 +96,8 @@ public class ResourceLocatorTest {
     @After
     public void tearDown() {
         Properties props = System.getProperties();
-        props.remove(ConfigurationService.ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES.getValue());
-        props.remove(ConfigurationService.ConfigKey.CONSUMABLE_SOFTLINK_RESOURCE_TYPES.getValue());
+        props.remove(ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES.getValue());
+        props.remove(ConfigKey.CONSUMABLE_SOFTLINK_RESOURCE_TYPES.getValue());
         System.setProperties(props);
     }
 
@@ -158,11 +159,11 @@ public class ResourceLocatorTest {
     public void extractProvidableSoftlinkResourceTypesWhenNoSystemPropertyIsSetShouldReturnEmptyList() {
         // given
         tearDown(); // remove systemProperty
-        assertNull(ConfigurationService.getProperty(ConfigurationService.ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES));
+        assertNull(ConfigurationService.getProperty(ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES));
 
         // when
         List<String> extractedResourceTypes = resourceLocator.extractResourceTypeSystemProperties(
-                ConfigurationService.ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES, null);
+                ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES, null);
 
         // then
         assertTrue(extractedResourceTypes.isEmpty());
@@ -174,11 +175,11 @@ public class ResourceLocatorTest {
         String defaultPropertyValue = "defaultPropertyValue";
 
         tearDown(); // remove systemProperty
-        assertNull(ConfigurationService.getProperty(ConfigurationService.ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES));
+        assertNull(ConfigurationService.getProperty(ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES));
 
         // when
         List<String> extractedResourceTypes = resourceLocator.extractResourceTypeSystemProperties(
-                ConfigurationService.ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES, defaultPropertyValue);
+                ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES, defaultPropertyValue);
 
         // then
         assertEquals(defaultPropertyValue.toLowerCase(), extractedResourceTypes.get(0));

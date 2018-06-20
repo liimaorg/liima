@@ -25,7 +25,7 @@ import ch.puzzle.itc.mobiliar.business.applicationinfo.entity.ApplicationBuildIn
 import ch.puzzle.itc.mobiliar.business.applicationinfo.entity.ApplicationConfigurationInfo;
 import ch.puzzle.itc.mobiliar.business.applicationinfo.entity.ConfigurationKeyValuePair;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import lombok.Getter;
 
 import javax.annotation.PostConstruct;
@@ -68,11 +68,18 @@ public class ApplicationVersionService {
 	}
 
 	public List<ConfigurationKeyValuePair> getObfuscatedApplicationConfigurationKeyValuePairs() {
-		List<ConfigurationKeyValuePair> obfuscatedConfigurationKeyValuePairs = new ArrayList<>(applicationConfigurationInfo.getConfigurationKeyValuePairs());
-		for (ConfigurationKeyValuePair obfuscated : obfuscatedConfigurationKeyValuePairs) {
-			if (obfuscated.getKey().isSecretValue()) {
-				obfuscated.setValue(OBFUSCATED);
+		List<ConfigurationKeyValuePair> obfuscatedConfigurationKeyValuePairs = new ArrayList<>(applicationConfigurationInfo.getConfigurationKeyValuePairs().size());
+		for (ConfigurationKeyValuePair pair : applicationConfigurationInfo.getConfigurationKeyValuePairs()) {
+			ConfigurationKeyValuePair newPair = new ConfigurationKeyValuePair();
+			newPair.setKey(pair.getKey());
+			if (pair.getKey().isSecretValue()) {
+				newPair.setValue(OBFUSCATED);
+				newPair.setDefaultValue(OBFUSCATED);
+			} else {
+				newPair.setValue(pair.getValue());
+				newPair.setDefaultValue(pair.getDefaultValue());
 			}
+			obfuscatedConfigurationKeyValuePairs.add(newPair);
 		}
 		return obfuscatedConfigurationKeyValuePairs;
 	}

@@ -31,7 +31,7 @@ import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
 import javax.ejb.*;
 import javax.enterprise.event.Observes;
