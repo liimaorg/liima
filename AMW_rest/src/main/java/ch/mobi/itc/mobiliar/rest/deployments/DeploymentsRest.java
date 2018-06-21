@@ -511,13 +511,13 @@ public class DeploymentsRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Confirm a deployment")
     public Response confirmDeployment(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId,
-                                      @ApiParam("New status") DeploymentDetailDTO deploymentDetailDTO) {
+                                      @ApiParam("New status") DeploymentDTO deploymentDTO) {
         try{
             deploymentBoundary.confirmDeployment(deploymentId,
-                    deploymentDetailDTO.isSendEmailWhenDeployed(),
-                    deploymentDetailDTO.isShakedownTestsWhenDeployed(),
-                    deploymentDetailDTO.isNeighbourhoodTest(),
-                    deploymentDetailDTO.isSimulateBeforeDeployment());
+                    deploymentDTO.isSendEmailWhenDeployed(),
+                    deploymentDTO.isShakedownTestsWhenDeployed(),
+                    deploymentDTO.isNeighbourhoodTest(),
+                    deploymentDTO.isSimulateBeforeDeployment());
             return Response.status(Response.Status.OK).build();
         } catch (RuntimeException e) {
             return catchDeploymentStateException(e);
@@ -597,20 +597,6 @@ public class DeploymentsRest {
         } catch (RuntimeException e) {
             return catchDeploymentStateException(e);
         }
-    }
-
-    @GET
-    @Path("/{id : \\d+}/detail")
-    @ApiOperation(value = "Get detail information of a Deployment - used by Angular")
-    public Response getDeploymentDetail(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId) {
-        DeploymentEntity deployment;
-        try {
-            deployment = deploymentBoundary.getDeploymentById(deploymentId);
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto("Deployment with id "
-                    + deploymentId + "not found" )).build();
-        }
-        return Response.status(Response.Status.OK).entity(new DeploymentDetailDTO(deployment)).build();
     }
 
     @GET

@@ -70,6 +70,12 @@ public class DeploymentDTO {
 	private Date stateToDeploy;
 	private boolean deploymentConfirmed;
 
+	private boolean executed;
+	private boolean sendEmailWhenDeployed;
+	private boolean simulateBeforeDeployment;
+	private boolean shakedownTestsWhenDeployed;
+	private boolean neighbourhoodTest;
+
 	public DeploymentDTO(DeploymentEntity entity) {
 		setPreservedValues(entity, new PreservedProperties());
 	}
@@ -110,6 +116,12 @@ public class DeploymentDTO {
 		this.statusMessage = entity.getStateMessage();
 		this.stateToDeploy = entity.getStateToDeploy();
 		this.deploymentConfirmed = entity.getDeploymentConfirmed() != null ? entity.getDeploymentConfirmed() : false;
+
+		this.setExecuted(entity.isExecuted());
+		this.setSendEmailWhenDeployed(entity.isSendEmail());
+		this.setSimulateBeforeDeployment(entity.isSimulating());
+		this.setShakedownTestsWhenDeployed(entity.isCreateTestAfterDeployment());
+		this.setNeighbourhoodTest(entity.isCreateTestForNeighborhoodAfterDeployment());
 	}
 
 	@Data

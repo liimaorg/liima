@@ -128,7 +128,7 @@ describe('RestrictionAddComponent', () => {
     inject([RestrictionAddComponent], (restrictionComponent: RestrictionAddComponent) => {
       // given
       expect(restrictionComponent.hasSelectedActions()).toBeFalsy();
-      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') {action.selected = true;} });
+      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') { action.selected = true; } });
       // when // then
       expect(restrictionComponent.hasSelectedActions()).toBeTruthy();
   }));
@@ -141,7 +141,7 @@ describe('RestrictionAddComponent', () => {
       restrictionComponent.selectedPermissionNames = ['NEO'];
       restrictionComponent.selectedContextNames = ['T', 'S'];
       restrictionComponent.selectedResourceTypePermission = 'ANY';
-      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') {action.selected = true;} });
+      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') { action.selected = true; } });
       restrictionComponent.similarRestrictions = [{action: 'ALL', contextName: 'T', resourceGroupId: null,
         resourceTypeName: 'FOO', resourceTypePermission: 'ANY', permission: {name: 'NEO'} as Permission} as Restriction,
         {action: 'READ', contextName: 'S', resourceGroupId: null,
@@ -162,7 +162,7 @@ describe('RestrictionAddComponent', () => {
       restrictionComponent.selectedContextNames = ['T'];
       restrictionComponent.selectedResourceTypePermission = 'ANY';
       restrictionComponent.selectedResourceTypeNames = ['APP'];
-      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') {action.selected = true;} });
+      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') { action.selected = true; } });
       restrictionComponent.similarRestrictions = [{action: 'CREATE', contextName: 'X', resourceGroupId: null,
         resourceTypeName: 'FOO', resourceTypePermission: 'ANY', permission: {name: 'NEO'} as Permission} as Restriction,
         {action: 'CREATE', contextName: 'S', resourceGroupId: null,
@@ -182,7 +182,7 @@ describe('RestrictionAddComponent', () => {
       restrictionComponent.selectedContextNames = ['T'];
       restrictionComponent.selectedResourceTypePermission = 'ANY';
       restrictionComponent.selectedResourceTypeNames = ['APP'];
-      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') {action.selected = true;} });
+      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') { action.selected = true; } });
       restrictionComponent.similarRestrictions = [{action: 'CREATE', contextName: 'T', resourceGroupId: null,
         resourceTypeName: null, resourceTypePermission: 'ANY', permission: {name: 'NEO'} as Permission} as Restriction,
         {action: 'CREATE', contextName: 'S', resourceGroupId: null, resourceTypeName: 'AS',
@@ -197,7 +197,7 @@ describe('RestrictionAddComponent', () => {
     inject([RestrictionAddComponent], (restrictionComponent: RestrictionAddComponent) => {
       // given
       restrictionComponent.selectedResourceTypePermission = 'ANY';
-      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') {action.selected = true;} });
+      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') { action.selected = true; } });
       // when
       const possible: boolean = restrictionComponent.isResourceTypeAssignable();
       // then
@@ -294,7 +294,7 @@ describe('RestrictionAddComponent', () => {
       restrictionComponent.selectedPermissionNames = ['NEO'];
       restrictionComponent.selectedContextNames = ['T', 'S'];
       restrictionComponent.selectedResourceTypePermission = 'ANY';
-      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') {action.selected = true;} });
+      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') { action.selected = true; } });
       // when
       restrictionComponent.persistRestriction();
       // then
@@ -316,7 +316,7 @@ describe('RestrictionAddComponent', () => {
       restrictionComponent.selectedPermissionNames = ['NEO'];
       restrictionComponent.selectedContextNames = ['B', 'C'];
       restrictionComponent.selectedResourceTypePermission = 'ANY';
-      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') {action.selected = true;} });
+      restrictionComponent.actions.forEach((action) => { if (action.name === 'CREATE') { action.selected = true; } });
       restrictionComponent.similarRestrictions = [{action: 'CREATE', contextName: 'B', resourceGroupId: null,
         resourceTypeName: 'FOO', resourceTypePermission: 'ANY', permission: {name: 'NEO'} as Permission} as Restriction,
         {action: 'READ', contextName: 'C', resourceGroupId: null,
