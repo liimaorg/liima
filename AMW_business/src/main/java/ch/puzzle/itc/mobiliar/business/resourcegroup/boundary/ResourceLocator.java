@@ -165,6 +165,13 @@ public class ResourceLocator {
         return resourceRepository.getResourceByNameAndReleaseWithProvidedRelations(name, release);
     }
 
+    public ResourceEntity getResourceByNameAndReleaseWithAllRelations(String name, String releaseName)
+            throws ValidationException {
+        ValidationHelper.validateNotNullOrEmptyChecked(name, releaseName);
+        ReleaseEntity release = releaseLocator.getReleaseByName(releaseName);
+        return resourceRepository.getResourceByNameAndReleaseWithAllRelations(name, release);
+    }
+
 	public List<ResourceEntity> getResourcesByGroupNameWithRelations(String groupName)
 			throws ValidationException {
 		ValidationHelper.validateNotNullOrEmptyChecked(groupName);
