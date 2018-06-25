@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -108,6 +109,7 @@ public class ReleaseEntity implements Serializable, Comparable<ReleaseEntity> {
 	@OneToMany(mappedBy = "release")
 	@XmlTransient
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Set<ResourceEntity> resources;
 	
 
