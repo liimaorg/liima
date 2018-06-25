@@ -84,7 +84,7 @@ export class DeploymentService extends BaseService {
 
   confirmDeployment(deployment: Deployment) {
     return this.http
-      .put(`${this.baseUrl}/deployments/${deployment.id}/confirm`, deployment, {headers: this.getHeaders()})
+      .put(`${this.getBaseUrl()}/deployments/${deployment.id}/confirm`, deployment, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(this.handleError);
   }
