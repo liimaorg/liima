@@ -56,118 +56,117 @@ import lombok.Setter;
 /**
  * The releaseEntity defines a specific release unit and holds the relations to
  * the different resources which are explicitly defined for the release.
- * 
  */
-@XmlRootElement(name="release")
+@XmlRootElement(name = "release")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 @Audited
 @Table(name = "TAMW_release")
-@EqualsAndHashCode(exclude={"resources", "deployments", "outOfServiceResourceGroups"})
-@JsonIgnoreProperties(value= {"resources", "deployments", "outOfServiceResourceGroups"})
+@EqualsAndHashCode(exclude = {"resources", "deployments", "outOfServiceResourceGroups"})
+@JsonIgnoreProperties(value = {"resources", "deployments", "outOfServiceResourceGroups"})
 public class ReleaseEntity implements Serializable, Comparable<ReleaseEntity> {
 
-	@Getter
-	@Setter
-	@TableGenerator(name = "releaseIdGen", table = Constants.GENERATORTABLE, pkColumnName = Constants.GENERATORPKCOLUMNNAME, valueColumnName = Constants.GENERATORVALUECOLUMNNAME, pkColumnValue = "releaseId")
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "releaseIdGen")
-	@Id
-	@Column(unique = true, nullable = false)
-	private Integer id;
+    @Getter
+    @Setter
+    @TableGenerator(name = "releaseIdGen", table = Constants.GENERATORTABLE, pkColumnName = Constants.GENERATORPKCOLUMNNAME, valueColumnName = Constants.GENERATORVALUECOLUMNNAME, pkColumnValue = "releaseId")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "releaseIdGen")
+    @Id
+    @Column(unique = true, nullable = false)
+    private Integer id;
 
-	/**
-	 * The name of the release
-	 */
-	@Getter
-	@Setter
-	private String name;
-	/**
-	 * Additional information about the description for better readability -
-	 * e.g. "Oktober Release 2013"
-	 */
-	@Getter
-	@Setter
-	private String description;
+    /**
+     * The name of the release
+     */
+    @Getter
+    @Setter
+    private String name;
+    /**
+     * Additional information about the description for better readability -
+     * e.g. "Oktober Release 2013"
+     */
+    @Getter
+    @Setter
+    private String description;
 
-	/**
-	 * Defines the date when this release is applied in production environment.
-	 * This value is used for the comparison / definition of the order of
-	 * releases.
-	 */
-	@Getter
-	@Setter
-	@Column(name = "INSTALLATIONINPRODUCTION")
-	@Temporal(TemporalType.DATE)
-	private Date installationInProductionAt;
+    /**
+     * Defines the date when this release is applied in production environment.
+     * This value is used for the comparison / definition of the order of
+     * releases.
+     */
+    @Getter
+    @Setter
+    @Column(name = "INSTALLATIONINPRODUCTION")
+    @Temporal(TemporalType.DATE)
+    private Date installationInProductionAt;
 
-	/**
-	 * The resource entities which are defined for this release.
-	 */
-	@Setter
-	@Getter
-	@OneToMany(mappedBy = "release")
-	@XmlTransient
-	@JsonIgnore
-	private Set<ResourceEntity> resources;
-	
+    /**
+     * The resource entities which are defined for this release.
+     */
+    @Setter
+    @Getter
+    @OneToMany(mappedBy = "release")
+    @XmlTransient
+    @JsonIgnore
+    private Set<ResourceEntity> resources;
 
-	/**
-	 * The deployments defined for this release - please note, that this
-	 * reference only exists to control cascading and for completeness - there
-	 * is no use case (yet) in which this direction of the relation might be
-	 * useful
-	 */
-	@Getter
-	@Setter
-	@OneToMany(mappedBy = "release")
-	@NotAudited
-	@XmlTransient
-	@JsonIgnore
-	private Set<DeploymentEntity> deployments;
 
-	/**
-	 * The resource groups which are "out of service" with this release. Please
-	 * note that this reference only exists to control cascading and for
-	 * completeness - there is no use case (yet) in which this direction of the
-	 * relation might be useful
-	 */
-	@Getter
-	@Setter
-	@OneToMany(mappedBy = "outOfServiceRelease")
-	@XmlTransient
-	@JsonIgnore
-	private Set<ResourceGroupEntity> outOfServiceResourceGroups;
+    /**
+     * The deployments defined for this release - please note, that this
+     * reference only exists to control cascading and for completeness - there
+     * is no use case (yet) in which this direction of the relation might be
+     * useful
+     */
+    @Getter
+    @Setter
+    @OneToMany(mappedBy = "release")
+    @NotAudited
+    @XmlTransient
+    @JsonIgnore
+    private Set<DeploymentEntity> deployments;
 
-	@Getter
-	@Setter
-	@Column(nullable = false, name = "MAINRELEASE")
-	private boolean mainRelease;
+    /**
+     * The resource groups which are "out of service" with this release. Please
+     * note that this reference only exists to control cascading and for
+     * completeness - there is no use case (yet) in which this direction of the
+     * relation might be useful
+     */
+    @Getter
+    @Setter
+    @OneToMany(mappedBy = "outOfServiceRelease")
+    @XmlTransient
+    @JsonIgnore
+    private Set<ResourceGroupEntity> outOfServiceResourceGroups;
 
-	@XmlTransient
-	@JsonIgnore
-	private static final long serialVersionUID = 1L;
+    @Getter
+    @Setter
+    @Column(nullable = false, name = "MAINRELEASE")
+    private boolean mainRelease;
 
-	@Getter
-	@Setter
-	@Version
-	@XmlTransient
-	@JsonIgnore
-	private long v;
+    @XmlTransient
+    @JsonIgnore
+    private static final long serialVersionUID = 1L;
 
-	public ReleaseEntity() {
-		super();
-	}
+    @Getter
+    @Setter
+    @Version
+    @XmlTransient
+    @JsonIgnore
+    private long v;
 
-	@Override
-	public String toString() {
-		return getName();
-	}
+    public ReleaseEntity() {
+        super();
+    }
 
-	@Override
-	public int compareTo(ReleaseEntity o) {
-		if (o == null || o.getInstallationInProductionAt() == null) {
-			return this.getInstallationInProductionAt() == null ? 0 : -1;
-		}
-		return this.getInstallationInProductionAt() == null ? 1 : this.getInstallationInProductionAt().compareTo(o.getInstallationInProductionAt());
-	}
+    @Override
+    public String toString() {
+        return getName();
+    }
+
+    @Override
+    public int compareTo(ReleaseEntity o) {
+        if (o == null || o.getInstallationInProductionAt() == null) {
+            return this.getInstallationInProductionAt() == null ? 0 : -1;
+        }
+        return this.getInstallationInProductionAt() == null ? 1 : this.getInstallationInProductionAt().compareTo(o.getInstallationInProductionAt());
+    }
 }
