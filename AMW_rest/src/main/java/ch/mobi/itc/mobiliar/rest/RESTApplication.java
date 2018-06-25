@@ -24,10 +24,7 @@ import ch.mobi.itc.mobiliar.rest.auditview.AuditViewRest;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentDtoCsvBodyWriter;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentsRest;
 import ch.mobi.itc.mobiliar.rest.environments.EnvironmentsRest;
-import ch.mobi.itc.mobiliar.rest.exceptions.IllegalArgumentExceptionMapper;
-import ch.mobi.itc.mobiliar.rest.exceptions.IllegalStateExceptionMapper;
-import ch.mobi.itc.mobiliar.rest.exceptions.NoResultExceptionMapper;
-import ch.mobi.itc.mobiliar.rest.exceptions.NotAuthorizedExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.*;
 import ch.mobi.itc.mobiliar.rest.health.HealthCheck;
 import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
 import ch.mobi.itc.mobiliar.rest.resources.*;
@@ -47,12 +44,7 @@ public class RESTApplication extends Application {
         addRestResourceClasses(resources);
         return resources;
     }
-    /**
-     * Do not modify addRestResourceClasses() method.
-     * It is automatically populated with
-     * all resources defined in the project.
-     * If required, comment out calling this method in getClasses().
-     */
+
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(ReleasesRest.class);
         resources.add(ResourcesRest.class);
@@ -67,10 +59,12 @@ public class RESTApplication extends Application {
         resources.add(EnvironmentsRest.class);
         resources.add(AuditViewRest.class);
         resources.add(RestrictionsRest.class);
-        resources.add(NoResultExceptionMapper.class);
+        resources.add(EJBExceptionMapper.class);
         resources.add(IllegalStateExceptionMapper.class);
-        resources.add(NotAuthorizedExceptionMapper.class);
         resources.add(IllegalArgumentExceptionMapper.class);
+        resources.add(NoResultExceptionMapper.class);
+        resources.add(NotAuthorizedExceptionMapper.class);
+        resources.add(ValidationExceptionMapper.class);
         resources.add(ServerTupleCSVBodyWriter.class);
         resources.add(HealthCheck.class);
     }
