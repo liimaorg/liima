@@ -52,7 +52,7 @@ import ch.puzzle.itc.mobiliar.business.shakedown.xmlmodel.TestSet.OverallStatus;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownStpEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ShakedownTestException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
 @Stateless
 public class ShakedownTestRunner {

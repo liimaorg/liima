@@ -43,7 +43,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationMod
 import ch.puzzle.itc.mobiliar.common.exception.GeneratorException;
 import ch.puzzle.itc.mobiliar.common.exception.GeneratorException.MISSING;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
 public class GeneratorFileWriter {
 

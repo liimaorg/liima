@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import org.junit.Before;
 import org.junit.Test;
@@ -151,8 +152,8 @@ public class ResourceImportServiceTest {
     public void shouldReturnCorrectBackLinkURL_Configured(){
         // when
 
-        System.getProperties().setProperty(ConfigurationService.ConfigKey.EXTERNAL_RESOURCE_BACKLINK_SCHEMA.getValue(), "https");
-        System.getProperties().setProperty(ConfigurationService.ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST.getValue(), "hostwithoutPort.ch");
+        System.getProperties().setProperty(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_SCHEMA.getValue(), "https");
+        System.getProperties().setProperty(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST.getValue(), "hostwithoutPort.ch");
 
         String backlinkUrl = resourceImportService.getImportedResourceBacklink();
 
@@ -160,8 +161,8 @@ public class ResourceImportServiceTest {
         assertEquals("https://hostwithoutPort.ch/AMW_web/pages/editResourceView.xhtml?ctx=1&id=", backlinkUrl);
 
         // remove System Properties to avoid Sideeffects
-        System.getProperties().remove(ConfigurationService.ConfigKey.EXTERNAL_RESOURCE_BACKLINK_SCHEMA.getValue());
-        System.getProperties().remove(ConfigurationService.ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST.getValue());
+        System.getProperties().remove(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_SCHEMA.getValue());
+        System.getProperties().remove(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST.getValue());
     }
 
     private void verifyReleaseResourcesInResult(List<ResourceEntity> result, ResourceEntity ... containedResourcesToVerify){

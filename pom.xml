@@ -312,10 +312,9 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.16.16</version>
+                <version>1.18.0</version>
                 <scope>provided</scope>
             </dependency>
-
 
             <!-- JBoss distributes a complete set of Java EE 6 APIs including a Bill
                 of Materials (BOM). A BOM specifies the versions of a "stack" (or a collection)

@@ -26,6 +26,7 @@ import ch.puzzle.itc.mobiliar.business.property.control.PropertyDescriptorServic
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyValueService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
 import javax.inject.Inject;
@@ -103,9 +104,9 @@ public class ResourceImportService {
 
     public String getImportedResourceBacklink(){
         StringBuilder sb = new StringBuilder();
-        sb.append(ConfigurationService.getProperty(ConfigurationService.ConfigKey.EXTERNAL_RESOURCE_BACKLINK_SCHEMA, "http"));
+        sb.append(ConfigurationService.getProperty(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_SCHEMA, "http"));
         sb.append("://");
-        sb.append(ConfigurationService.getProperty(ConfigurationService.ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST, "localhost:8080"));
+        sb.append(ConfigurationService.getProperty(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST, "localhost:8080"));
         sb.append(BACKLINK_URL);
         return sb.toString();
     }

@@ -37,6 +37,7 @@ import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
@@ -129,7 +130,7 @@ public class EditResourceView implements Serializable {
     @Getter
     private boolean canDelegatePermissions;
 
-    private final boolean useAngularDeploymentLink = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigurationService.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI));
+    private final boolean useAngularDeploymentLink = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI));
 
     public void setContextIdViewParam(Integer contextIdViewParam) {
         this.contextIdViewParam = contextIdViewParam;

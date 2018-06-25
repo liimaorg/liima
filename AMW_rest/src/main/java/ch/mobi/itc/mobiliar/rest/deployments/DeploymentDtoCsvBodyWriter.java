@@ -3,7 +3,7 @@ package ch.mobi.itc.mobiliar.rest.deployments;
 import ch.mobi.itc.mobiliar.rest.dtos.AppWithVersionDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentParameterDTO;
-import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
 import javax.ws.rs.Produces;
@@ -29,7 +29,7 @@ import java.util.List;
 @Produces({"text/comma-separated-values", "text/csv"})
 public class DeploymentDtoCsvBodyWriter implements MessageBodyWriter<List<DeploymentDTO>>{
 
-    private static final String CSV_SEPARATOR = ConfigurationService.getProperty(ConfigurationService.ConfigKey.CSV_SEPARATOR);
+    private static final String CSV_SEPARATOR = ConfigurationService.getProperty(ConfigKey.CSV_SEPARATOR);
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
