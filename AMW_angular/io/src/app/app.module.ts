@@ -11,7 +11,8 @@ import { ResourceModule } from './resource/resource.module';
 import { DeploymentModule } from './deployment/deployment.module';
 import { PermissionModule } from './permission/permission.module';
 import { AuditviewModule } from './auditview/auditview.module';
-
+import { SettingModule } from './setting/setting.module';
+import { BaseModule } from './base/base.module';
 /*
  * Platform and Environment providers/directives/pipes
  */
@@ -22,8 +23,6 @@ import { AppComponent } from './app.component';
 import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
 import { PageNotFoundComponent } from './not-found.component';
-
-
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -55,7 +54,9 @@ type StoreType = {
     ResourceModule,
     DeploymentModule,
     AuditviewModule,
-    PermissionModule
+    PermissionModule,
+    SettingModule,
+    BaseModule
   ],
   providers: [ // expose our Services and Providers into Angular's dependency injection
     ENV_PROVIDERS,

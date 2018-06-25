@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, URLSearchParams, RequestOptions } from '@angular/http';
+import { Http, Response, URLSearchParams, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Environment } from './environment';
-import * as _ from 'lodash';
+import { BaseService } from '../base/base.service';
 
 @Injectable()
-export class EnvironmentService {
-  private baseUrl: string = '/AMW_rest/resources';
+export class EnvironmentService extends BaseService {
 
   constructor(private http: Http) {
+    super();
   }
 
   getAll(): Observable<Environment[]> {
@@ -29,29 +29,9 @@ export class EnvironmentService {
       headers: this.getHeaders()
     });
     return this.http
-      .get(`${this.baseUrl}/environments`, options)
+      .get(`${this.getBaseUrl()}/environments`, options)
       .map((response: Response) => response.json())
-      .catch(handleError);
+      .catch(this.handleError);
   }
 
-  private getHeaders() {
-    const headers = new Headers();
-    headers.append('Accept', 'application/json');
-    return headers;
-  }
-}
-
-// this could also be a private method of the component class
-function handleError(error: any) {
-  let errorMsg = 'Error retrieving your data';
-  if (error._body) {
-    try {
-      errorMsg = _.escape(JSON.parse(error._body).message);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-  console.error(errorMsg);
-  // throw an application level error
-  return Observable.throw(errorMsg);
 }
