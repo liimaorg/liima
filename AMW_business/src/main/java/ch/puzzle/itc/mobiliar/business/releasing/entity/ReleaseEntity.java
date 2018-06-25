@@ -59,7 +59,7 @@ import lombok.Setter;
  * 
  */
 @XmlRootElement(name="release")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
 @JsonAutoDetect()
 @Entity
 @Audited
