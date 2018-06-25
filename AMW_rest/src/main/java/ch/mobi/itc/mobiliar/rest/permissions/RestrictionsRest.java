@@ -24,7 +24,6 @@ import ch.mobi.itc.mobiliar.rest.dtos.PermissionDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.RestrictionDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.RestrictionsCreationDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
-import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
@@ -54,8 +53,6 @@ public class RestrictionsRest {
 
     @Inject
     PermissionBoundary permissionBoundary;
-    @Inject
-    ContextLocator contextLocator;
 
     /**
      * Creates a new restriction and returns the newly created restriction.
@@ -121,7 +118,7 @@ public class RestrictionsRest {
     // support digit only
     @ApiOperation(value = "Get Restriction by id")
     public Response getRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id) {
-        RestrictionEntity restriction = permissionBoundary.findRestriction(id);
+        final RestrictionEntity restriction = permissionBoundary.findRestriction(id);
         if (restriction == null) {
             return Response.status(NOT_FOUND).build();
         }
@@ -137,11 +134,12 @@ public class RestrictionsRest {
     @Path("/")
     @ApiOperation(value = "Get all Restrictions")
     public Response getAllRestriction() {
-        List<RestrictionDTO> restrictions = new ArrayList<>();
-        for (RestrictionEntity restrictionEntity : permissionBoundary.findAllRestrictions()) {
-            restrictions.add(new RestrictionDTO(restrictionEntity));
+        final List<RestrictionEntity> restrictions = permissionBoundary.findAllRestrictions();
+        List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
+        for (RestrictionEntity restriction : restrictions) {
+            restrictionList.add(new RestrictionDTO(restriction));
         }
-        return Response.status(OK).entity(restrictions).build();
+        return Response.status(OK).entity(restrictionList).build();
     }
 
     /**
@@ -194,8 +192,8 @@ public class RestrictionsRest {
     @Path("/roles/")
     @ApiOperation(value = "Get all Roles with restrictions")
     public Response getAllRoles() {
-        Map<String, List<RestrictionDTO>> rolesMap = new HashMap<>();
         final Map<String, List<ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO>> allRoles = permissionBoundary.getAllPermissions();
+        Map<String, List<RestrictionDTO>> rolesMap = new HashMap<>(allRoles.size());
         // converting business RestrictionDTOs to rest RestrictionDTOs
         for (Map.Entry<String, List<ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO>> roleRestrictionList : allRoles.entrySet()) {
             String roleName = roleRestrictionList.getKey();
@@ -218,8 +216,8 @@ public class RestrictionsRest {
     @Path("/roles/{roleName}")
     @ApiOperation(value = "Get all Restrictions assigned to a specific Role")
     public Response getRoleRestriction(@ApiParam("UserName") @PathParam("roleName") String roleName) {
-        List<RestrictionDTO> restrictionList = new ArrayList<>();
         final List<RestrictionEntity> restrictions = permissionBoundary.getRestrictionsByRoleName(roleName);
+        List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
         for (RestrictionEntity restriction : restrictions) {
             restrictionList.add(new RestrictionDTO(restriction));
         }
@@ -235,8 +233,8 @@ public class RestrictionsRest {
     @Path("/roleNames/")
     @ApiOperation(value = "Get all available RoleNames")
     public Response getRoleNames() {
-        List<String> roleNameList = new ArrayList<>();
         final List<RoleEntity> roles = permissionBoundary.getAllRoles();
+        List<String> roleNameList = new ArrayList<>(roles.size());
         for (RoleEntity role : roles) {
             roleNameList.add(role.getName());
         }
@@ -264,8 +262,8 @@ public class RestrictionsRest {
     @Path("/permissionEnumValues/")
     @ApiOperation(value = "Get all available PermissionEnum values")
     public Response getPermissionEnumValues() {
-        List<PermissionDTO> permissionNameList = new ArrayList<>();
         final List<PermissionEntity> permissions = permissionBoundary.getAllAvailablePermissions();
+        List<PermissionDTO> permissionNameList = new ArrayList<>(permissions.size());
         for (PermissionEntity permission : permissions) {
             permissionNameList.add(new PermissionDTO(Permission.valueOf(permission.getValue())));
         }
@@ -281,8 +279,8 @@ public class RestrictionsRest {
     @Path("/users/")
     @ApiOperation(value = "Get all UserRestriction with their Restrictions")
     public Response getAllUsers() {
-        Map<String, List<RestrictionDTO>> usersMap = new HashMap<>();
         final List<RestrictionEntity> allUserRestrictions = permissionBoundary.getAllUserRestriction();
+        Map<String, List<RestrictionDTO>> usersMap = new HashMap<>(allUserRestrictions.size());
         for (RestrictionEntity restriction : allUserRestrictions) {
             String userName = restriction.getUser().getName();
             if (!usersMap.containsKey(userName)) {
@@ -303,8 +301,9 @@ public class RestrictionsRest {
     @Path("/users/{userName}")
     @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
     public Response getUserRestriction(@ApiParam("UserName") @PathParam("userName") String userName) {
-        List<RestrictionDTO> restrictionList = new ArrayList<>();
-        for (RestrictionEntity restriction : permissionBoundary.getRestrictionsByUserName(userName)) {
+        final List<RestrictionEntity> restrictions = permissionBoundary.getRestrictionsByUserName(userName);
+        List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
+        for (RestrictionEntity restriction : restrictions) {
             restrictionList.add(new RestrictionDTO(restriction));
         }
         return Response.status(OK).entity(restrictionList).build();
@@ -319,8 +318,9 @@ public class RestrictionsRest {
     @Path("/ownRestrictions/")
     @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
     public Response getCallerRestrictions() {
-        List<RestrictionDTO> restrictionList = new ArrayList<>();
-        for (RestrictionEntity restriction : permissionBoundary.getAllCallerRestrictions()) {
+        final List<RestrictionEntity> restrictions = permissionBoundary.getAllCallerRestrictions();
+        List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
+        for (RestrictionEntity restriction : restrictions) {
             restrictionList.add(new RestrictionDTO(restriction));
         }
         return Response.status(OK).entity(restrictionList).build();
