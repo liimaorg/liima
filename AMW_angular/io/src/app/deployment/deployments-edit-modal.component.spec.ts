@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppState } from '../app.service';
 import { Deployment } from './deployment';
-import { DeploymentDetail } from './deployment-detail';
 import { DeploymentService } from './deployment.service';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import * as moment from 'moment';
@@ -99,7 +98,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
       deploymentsEditModalComponent.doEdit();
 
       // then
-      expect(deploymentsEditModalComponent.confirmationAttributes).toEqual({} as DeploymentDetail);
+      expect(deploymentsEditModalComponent.confirmationAttributes).toEqual({} as Deployment);
       expect(deploymentsEditModalComponent.selectedEditAction).toEqual('');
       expect(deploymentsEditModalComponent.deploymentDate).toEqual('');
   }));

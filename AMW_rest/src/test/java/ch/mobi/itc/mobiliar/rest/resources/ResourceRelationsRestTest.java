@@ -22,6 +22,8 @@ package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -35,6 +37,7 @@ import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -45,6 +48,9 @@ public class ResourceRelationsRestTest {
 
     @Mock
     RelationEditor relationEditorMock;
+
+    @Mock
+    ResourceLocator resourceLocatorMock;
 
     @Before
     public void configure() {
@@ -100,6 +106,8 @@ public class ResourceRelationsRestTest {
         rest.resourceType = "consumed";
         String slaveResourceGroupName = "Slave";
 
+        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
+
         // when
         Response response = rest.addRelation(slaveResourceGroupName);
 
@@ -115,6 +123,8 @@ public class ResourceRelationsRestTest {
         rest.releaseName = "TestRelease";
         rest.resourceType = "PROVIDED";
         String slaveResourceGroupName = "Slave";
+
+        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
 
         // when
         Response response = rest.addRelation(slaveResourceGroupName);
@@ -132,6 +142,7 @@ public class ResourceRelationsRestTest {
         rest.resourceType = "PROVIDED";
         String slaveResourceGroupName = "Slave";
 
+        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
         doThrow(new ValidationException("Resource is already provided by another ResourceGroup")).when(relationEditorMock)
                 .addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, rest.resourceType, rest.releaseName, ForeignableOwner.getSystemOwner());
 
@@ -141,6 +152,42 @@ public class ResourceRelationsRestTest {
         // then
         verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, rest.resourceType, rest.releaseName, ForeignableOwner.getSystemOwner());
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void shouldNotAttemptToRemoveRelationWithInvalidResourceRelationType() throws ValidationException {
+        // given
+        rest.resourceGroupName = "Master";
+        rest.releaseName = "TestRelease";
+        rest.resourceType = "InValid";
+        String slaveResourceGroupName = "Slave";
+
+        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(false);
+
+        // when
+        Response response = rest.removeRelation(slaveResourceGroupName);
+
+        // then
+        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void shouldReturnNotFoundOnRemoveRelationWithNonMatchingRelationName() throws ValidationException {
+        // given
+        rest.resourceGroupName = "Master";
+        rest.releaseName = "TestRelease";
+        rest.resourceType = "CONSUMED";
+        String slaveResourceGroupName = "Slave";
+        ResourceEntity resourceWithoutRelations = new ResourceEntity();
+
+        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
+        when(resourceLocatorMock.getResourceByNameAndReleaseWithConsumedRelations(anyString(), anyString())).thenReturn(resourceWithoutRelations);
+
+        // when
+        Response response = rest.removeRelation(slaveResourceGroupName);
+
+        // then
+        assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
 }

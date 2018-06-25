@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter, NgZone } from '@angular/core';
 import { ResourceService } from '../resource/resource.service';
 import { Deployment } from './deployment';
-import { DeploymentDetail } from './deployment-detail';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentService } from './deployment.service';
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
@@ -25,14 +24,12 @@ export class DeploymentsListComponent {
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
-  @Output() doConfirmDeployment: EventEmitter<DeploymentDetail> = new EventEmitter<DeploymentDetail>();
+  @Output() doConfirmDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doSort: EventEmitter<string> = new EventEmitter<string>();
 
   deployment: Deployment;
 
   deploymentDate: number;
-
-  deploymentDetail: DeploymentDetail;
 
   hasPermissionShakedownTest: boolean = null;
 
@@ -51,9 +48,7 @@ export class DeploymentsListComponent {
   }
 
   showDetails(deploymentId: number) {
-    delete this.deploymentDetail;
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    this.getDeploymentDetail(deploymentId);
     $('#deploymentDetails').modal('show');
   }
 
@@ -66,12 +61,11 @@ export class DeploymentsListComponent {
   }
 
   showConfirm(deploymentId: number) {
-    delete this.deploymentDetail;
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.resourceService.canCreateShakedownTest(this.deployment.appServerId).subscribe(
       /* happy path */ (r) => this.hasPermissionShakedownTest = r,
       /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */  () => this.getDeploymentDetailsAndShowConfirmationModal(deploymentId));
+      /* onComplete */  () => $('#deploymentConfirmation').modal('show'));
   }
 
   showReject(deploymentId: number) {
@@ -117,11 +111,10 @@ export class DeploymentsListComponent {
   }
 
   doConfirm() {
-    if (this.deployment && this.deploymentDetail) {
-      this.doConfirmDeployment.emit(this.deploymentDetail);
+    if (this.deployment) {
+      this.doConfirmDeployment.emit(this.deployment);
       $('#deploymentConfirmation').modal('hide');
       delete this.deployment;
-      delete this.deploymentDetail;
     }
   }
 
@@ -148,19 +141,6 @@ export class DeploymentsListComponent {
 
   logViewerLink(deploymentId: number) {
     window.location.href = '/AMW_web/pages/logView.xhtml?deploymentId=' + deploymentId + '&filters=' + encodeURI(JSON.stringify(this.filtersForParam));
-  }
-
-  private getDeploymentDetail(deploymentId: number) {
-    this.deploymentService.getDeploymentDetail(deploymentId).subscribe(
-      /* happy path */ (r) => this.deploymentDetail = r,
-      /* error path */ (e) => this.errorMessage = e);
-  }
-
-  private getDeploymentDetailsAndShowConfirmationModal(deploymentId: number) {
-    this.deploymentService.getDeploymentDetail(deploymentId).subscribe(
-      /* happy path */ (r) => this.deploymentDetail = r,
-      /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */  () => $('#deploymentConfirmation').modal('show'));
   }
 
 }

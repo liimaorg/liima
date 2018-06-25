@@ -26,4 +26,13 @@ export interface Deployment {
   deploymentDelayed: boolean;
   selected: boolean;
   actions: DeploymentAction;
+  statusMessage: string; //stateMessage: string;
+  buildSuccess: boolean;
+  executed: boolean;
+  deploymentConfirmed: boolean;
+  stateToDeploy: number;
+  sendEmailWhenDeployed: boolean;
+  simulateBeforeDeployment: boolean;
+  shakedownTestsWhenDeployed: boolean;
+  neighbourhoodTest: boolean;
 }

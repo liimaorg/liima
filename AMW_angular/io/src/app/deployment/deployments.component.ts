@@ -7,7 +7,6 @@ import { AnonymousSubscription } from 'rxjs/Subscription';
 import { AppState } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
 import { Deployment } from './deployment';
-import { DeploymentDetail } from './deployment-detail';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
@@ -212,12 +211,14 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
-  confirmDeployment(deploymentDetail: DeploymentDetail) {
-    if (deploymentDetail) {
-      this.deploymentService.confirmDeployment(deploymentDetail).subscribe(
+  confirmDeployment(deployment: Deployment) {
+    if (deployment) {
+      delete deployment.selected;
+      deployment.state = this.reMapState(deployment.state);
+      this.deploymentService.confirmDeployment(deployment).subscribe(
         /* happy path */ (r) => r,
         /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
-        /* onComplete */ () => this.reloadDeployment(deploymentDetail.deploymentId)
+        /* onComplete */ () => this.reloadDeployment(deployment.id)
       );
     }
   }
@@ -385,6 +386,17 @@ export class DeploymentsComponent implements OnInit {
             break;
         }
       });
+    }
+  }
+
+  private reMapState(state: string) {
+    switch (state) {
+      case 'pre_deploy':
+        return 'PRE_DEPLOYMENT';
+      case 'ready_for_deploy':
+        return 'READY_FOR_DEPLOYMENT';
+      default:
+        return state;
     }
   }
 

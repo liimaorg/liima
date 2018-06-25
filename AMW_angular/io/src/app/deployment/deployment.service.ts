@@ -6,7 +6,6 @@ import { Deployment } from './deployment';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentRequest } from './deployment-request';
 import { DeploymentParameter } from './deployment-parameter';
-import { DeploymentDetail } from './deployment-detail';
 import { BaseService } from '../base/base.service';
 
 @Injectable()
@@ -83,9 +82,9 @@ export class DeploymentService extends BaseService {
       .catch(this.handleError);
   }
 
-  confirmDeployment(deploymentDetail: DeploymentDetail) {
+  confirmDeployment(deployment: Deployment) {
     return this.http
-      .put(`${this.getBaseUrl()}/deployments/${deploymentDetail.deploymentId}/confirm`, deploymentDetail, {headers: this.getHeaders()})
+      .put(`${this.baseUrl}/deployments/${deployment.id}/confirm`, deployment, {headers: this.getHeaders()})
       .map(this.extractPayload)
       .catch(this.handleError);
   }
@@ -160,13 +159,6 @@ export class DeploymentService extends BaseService {
     });
     return this.http
       .get(`${this.getBaseUrl()}/deployments/filterOptionValues/`, options)
-      .map((response: Response) => response.json())
-      .catch(this.handleError);
-  }
-
-  getDeploymentDetail(deploymentId: number): Observable<DeploymentDetail> {
-    return this.http
-      .get(`${this.getBaseUrl()}/deployments/${deploymentId}/detail`, {headers: this.getHeaders()})
       .map((response: Response) => response.json())
       .catch(this.handleError);
   }
