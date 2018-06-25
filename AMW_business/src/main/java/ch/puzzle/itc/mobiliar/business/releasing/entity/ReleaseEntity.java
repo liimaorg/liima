@@ -40,9 +40,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -61,11 +60,11 @@ import lombok.Setter;
  */
 @XmlRootElement(name="release")
 @XmlAccessorType(XmlAccessType.FIELD)
-@JsonAutoDetect()
 @Entity
 @Audited
 @Table(name = "TAMW_release")
 @EqualsAndHashCode(exclude={"resources", "deployments", "outOfServiceResourceGroups"})
+@JsonIgnoreProperties(value= {"resources", "deployments", "outOfServiceResourceGroups"})
 public class ReleaseEntity implements Serializable, Comparable<ReleaseEntity> {
 
 	@Getter
@@ -109,7 +108,6 @@ public class ReleaseEntity implements Serializable, Comparable<ReleaseEntity> {
 	@OneToMany(mappedBy = "release")
 	@XmlTransient
 	@JsonIgnore
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Set<ResourceEntity> resources;
 	
 
