@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -56,13 +55,11 @@ public class ReleasesRest {
     @Path("/{id}")
     @ApiOperation(value = "Get a release", notes = "Returns the specifed release")
     public Response getRelease(@PathParam("id") int id) {
-        ReleaseEntity result;
-        try {
-            result = releaseLocator.getReleaseById(id);
-        } catch(NoResultException e) {
+        ReleaseEntity release = releaseLocator.getReleaseById(id);
+        if(release == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        return Response.ok(result).build();
+        return Response.ok(release).build();
     }
 }
