@@ -20,18 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.applist;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.SetJoin;
+import javax.persistence.criteria.*;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
@@ -77,13 +72,31 @@ public class ApplistScreenDomainServiceQueries {
 
         q.distinct(true);
 
-        q.orderBy(cb.asc(appServer.get("deletable")), cb.asc(cb.lower(appServer.<String>get("name"))));
+        Expression<String> name = appServer.get("name");
+        // workaround for H2 incompatibility, see https://github.com/h2database/h2database/issues/408
+        if (!isH2()) {
+            name = cb.lower(name);
+        }
+
+        q.orderBy(cb.asc(appServer.get("deletable")), cb.asc(name));
         TypedQuery<ResourceEntity> query = entityManager.createQuery(q);
         if (maxResult != null) {
             query.setMaxResults(maxResult);
         }
 
         return query.getResultList();
+    }
+
+    private boolean isH2() {
+        org.hibernate.engine.spi.SessionImplementor sessionImp =
+                (org.hibernate.engine.spi.SessionImplementor) entityManager.getDelegate();
+        String databaseProductName = null;
+        try {
+            databaseProductName = sessionImp.connection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return databaseProductName.equalsIgnoreCase("H2");
     }
 
 }

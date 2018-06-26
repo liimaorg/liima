@@ -22,7 +22,7 @@
 		<version.jboss.spec.javaee.6.0>1.0.7.Final</version.jboss.spec.javaee.6.0>
 
 		<!-- dependency versions -->
-		<version.h2>1.4.181</version.h2>
+		<version.h2>1.4.197</version.h2>
 		<version.pg>9.4-1200-jdbc41</version.pg>
 		<version.ora>11.2.0.3</version.ora>
 		
