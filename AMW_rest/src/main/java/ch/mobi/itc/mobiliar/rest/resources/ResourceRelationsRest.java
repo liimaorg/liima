@@ -37,6 +37,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 
 import javax.enterprise.context.RequestScoped;
@@ -58,9 +59,6 @@ public class ResourceRelationsRest {
     @PathParam("releaseName")
     String releaseName;
 
-    @QueryParam("type")
-    String resourceType;
-
     @Inject
     ResourceLocator resourceLocator;
 
@@ -74,8 +72,9 @@ public class ResourceRelationsRest {
     ResourceRelationTemplatesRest resourceRelationTemplatesRest;
 
     @GET
-    @ApiOperation(value = "Get all relations of a resource in a specific release, optionally filtered by a resource type")
-    public List<ResourceRelationDTO> getResourceRelations() throws ValidationException {
+    @ApiOperation(value = "Get all relations of a resource in a specific release, optionally filtered by a slave resource type")
+    public List<ResourceRelationDTO> getResourceRelations(@ApiParam(value = "A String representing the type of the slave Resource")
+                                                          @QueryParam("type") String resourceType) throws ValidationException {
         return getResourceRelations(resourceGroupName, releaseName, resourceType);
     }
 
@@ -146,20 +145,25 @@ public class ResourceRelationsRest {
 
     /**
      * Creates a new ResourceRelation
+     *
+     * @param slaveGroupName A String representing the name of an existing ResourceGroup which will be added as slave resource of the new ResourceRelation
+     * @param relationType   A String representing the type of the Relation to be added
      */
     @Path("/{slaveResourceGroupName}")
     @POST
-    @ApiOperation(value = "Add a Relation")
-    public Response addRelation(@PathParam("slaveResourceGroupName") String slaveGroupName) {
+    @ApiOperation(value = "Add a consumed or provided Relation")
+    public Response addRelation(@PathParam("slaveResourceGroupName") String slaveGroupName,
+                                @ApiParam(value = "A String representing the type of the Relation", required = true)
+                                @QueryParam("type") String relationType) {
         if (StringUtils.isEmpty(slaveGroupName)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Slave resource group name must not be empty")).build();
-        } else if (!relationEditor.isValidResourceRelationType(resourceType)) {
+        } else if (!relationEditor.isValidResourceRelationType(relationType)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must either be 'consumed' or 'provided'")).build();
         }
-        boolean isProvidedRelation = RelationEditor.ResourceRelationType.valueOf(resourceType.toUpperCase()).equals(RelationEditor.ResourceRelationType.PROVIDED);
+        boolean isProvidedRelation = RelationEditor.ResourceRelationType.valueOf(relationType.toUpperCase()).equals(RelationEditor.ResourceRelationType.PROVIDED);
         try {
             relationEditor.addResourceRelationForSpecificRelease(resourceGroupName, slaveGroupName,
-                    isProvidedRelation, null, resourceType, releaseName, ForeignableOwner.getSystemOwner());
+                    isProvidedRelation, null, relationType, releaseName, ForeignableOwner.getSystemOwner());
         } catch (ResourceNotFoundException | ElementAlreadyExistsException | ValidationException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
@@ -170,17 +174,20 @@ public class ResourceRelationsRest {
      * Removes a new ResourceRelation
      *
      * @param relationName A String representing the identifier of a Relation or the name of the related Resource to be removed
+     * @param relationType A String representing the type of the Relation to be removed
      */
     @Path("/{relationName}")
     @DELETE
-    @ApiOperation(value = "Remove a Relation from a specific Release", notes = "RelationName may be the identifier of a Relation or the name of the related Resource")
-    public Response removeRelation(@PathParam("relationName") String relationName) throws ValidationException {
+    @ApiOperation(value = "Remove a consumed or provided Relation from a specific Release", notes = "RelationName may be the identifier of a Relation or the name of the related Resource")
+    public Response removeRelation(@PathParam("relationName") String relationName,
+                                   @ApiParam(value = "A String representing the type of the Relation", required = true)
+                                   @QueryParam("type") String relationType) throws ValidationException {
         if (StringUtils.isEmpty(relationName)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Relation name must not be empty")).build();
-        } else if (!relationEditor.isValidResourceRelationType(resourceType)) {
+        } else if (!relationEditor.isValidResourceRelationType(relationType)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Type must either be 'consumed' or 'provided'")).build();
         }
-        RelationEditor.ResourceRelationType resourceRelationType = RelationEditor.ResourceRelationType.valueOf(resourceType.toUpperCase());
+        RelationEditor.ResourceRelationType resourceRelationType = RelationEditor.ResourceRelationType.valueOf(relationType.toUpperCase());
 
         Set<? extends AbstractResourceRelationEntity> relations = getRelations(resourceGroupName, releaseName, resourceRelationType);
 
