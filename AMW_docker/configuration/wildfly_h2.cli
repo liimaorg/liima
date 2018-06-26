@@ -1,6 +1,6 @@
 embed-server --std-out=echo
 
-#Oracle
+# H2
 data-source add --name=amwDS --driver-name="h2" --jndi-name=java:jboss/datasources/amwDS --user-name="${env.DB_USER:sa}" --use-java-context=true --connection-url="jdbc:h2:standalone/data/amw/amwFileDbIntegrationEmpty;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;"
 data-source add --name=amwLiquibaseDS --driver-name="h2" --jndi-name=java:jboss/datasources/amwLiquibaseDS --user-name="${env.DB_USER:sa}" --use-java-context=true --connection-url="jdbc:h2:standalone/data/amw/amwFileDbIntegrationEmpty;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;"
 
