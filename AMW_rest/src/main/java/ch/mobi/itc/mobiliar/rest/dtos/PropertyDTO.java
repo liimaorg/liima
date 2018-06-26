@@ -48,7 +48,7 @@ public class PropertyDTO {
 
     public PropertyDTO(ResourceEditProperty property, String context){
         this.name = property.getTechnicalKey();
-        this.value = property.getDecryptedPropertyValue();
+        this.value = property.getDecryptedPropertyValue() != null ? property.getDecryptedPropertyValue() : property.getDefaultValue();
         this.replacedValue = property.getReplacedValue();
         this.generalComment = property.getPropertyComment();
         this.context = context;

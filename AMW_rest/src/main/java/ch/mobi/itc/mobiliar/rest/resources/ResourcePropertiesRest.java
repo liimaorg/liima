@@ -47,7 +47,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 
 @RequestScoped
 @Path("/resources/{resourceGroupName}/{releaseName}/properties")
@@ -123,7 +122,7 @@ public class ResourcePropertiesRest {
     @Path("/{propertyName}")
     @DELETE
     @ApiOperation(value = "Reset the value of the given property in the specified context to null")
-    public Response resetResourceProperty(@PathParam("propertyName") String propertyName,  @DefaultValue("Global")  @QueryParam("env")  String environment) throws AMWException, ValidationException {
+    public Response resetResourceProperty(@PathParam("propertyName") String propertyName,  @DefaultValue("Global")  @QueryParam("env")  String environment) throws ValidationException {
         propertyEditor.resetPropertyValueOnResourceForContext(resourceGroupName, releaseName, environment, propertyName);
         return Response.status(Response.Status.OK).build();
     }
