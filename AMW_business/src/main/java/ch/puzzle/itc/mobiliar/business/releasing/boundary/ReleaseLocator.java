@@ -27,7 +27,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseRepository;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -48,46 +47,16 @@ public class ReleaseLocator {
     @Inject
     ReleaseRepository releaseRepository;
 
-    public ReleaseEntity getReleaseByName(String name) throws NoResultException{
-        try {
-            return releaseRepository.getReleaseByName(name);
-        }
-        catch (NoResultException e) {
-            log.warning("Error occurred in query: " + e.getMessage());
-            throw e;
-        }
-        catch (Exception e) {
-            log.warning("Error occurred on database access: " + e.getMessage());
-            throw new RuntimeException("Boundary exception", e);
-        }
+    public ReleaseEntity getReleaseByName(String name) {
+        return releaseRepository.getReleaseByName(name);
     }
 
-    public ReleaseEntity getReleaseById(Integer id) throws NoResultException{
-        try {
-            return releaseRepository.find(id);
-        }
-        catch (NoResultException e) {
-            log.warning("Error occurred in query: " + e.getMessage());
-            throw e;
-        }
-        catch (Exception e) {
-            log.warning("Error occurred on database access: " + e.getMessage());
-            throw new RuntimeException("Boundary exception", e);
-        }
+    public ReleaseEntity getReleaseById(Integer id) {
+        return releaseRepository.find(id);
     }
 
-    public List<ReleaseEntity> getReleasesForResourceGroup(ResourceGroupEntity resourceGroup) throws NoResultException{
-        try {
-            return releaseRepository.getReleasesForResourceGroup(resourceGroup);
-        }
-        catch (NoResultException e) {
-            log.warning("Error occurred in query: " + e.getMessage());
-            throw e;
-        }
-        catch (Exception e) {
-            log.warning("Error occurred on database access: " + e.getMessage());
-            throw new RuntimeException("Boundary exception", e);
-        }
+    public List<ReleaseEntity> getReleasesForResourceGroup(ResourceGroupEntity resourceGroup) {
+        return releaseRepository.getReleasesForResourceGroup(resourceGroup);
     }
 
     @HasPermission(permission = Permission.RELEASE, action = DELETE)
