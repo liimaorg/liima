@@ -33,7 +33,7 @@ import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;;
+import io.swagger.annotations.ApiOperation;
 
 @RequestScoped
 @Path("/releases")

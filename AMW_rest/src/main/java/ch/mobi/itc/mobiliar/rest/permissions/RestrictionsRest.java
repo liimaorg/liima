@@ -134,12 +134,7 @@ public class RestrictionsRest {
     @Path("/")
     @ApiOperation(value = "Get all Restrictions")
     public Response getAllRestriction() {
-        final List<RestrictionEntity> restrictions = permissionBoundary.findAllRestrictions();
-        List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
-        for (RestrictionEntity restriction : restrictions) {
-            restrictionList.add(new RestrictionDTO(restriction));
-        }
-        return Response.status(OK).entity(restrictionList).build();
+        return restrictionsToResponse(permissionBoundary.findAllRestrictions());
     }
 
     /**
@@ -152,15 +147,15 @@ public class RestrictionsRest {
     @Produces("application/json")
     @ApiOperation(value = "Update a Restriction")
     public Response updateRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id, RestrictionDTO request) {
-        boolean succcess;
+        boolean success;
         try {
-            succcess = permissionBoundary.updateRestriction(id, request.getRoleName(), request.getUserName(), request.getPermission().getName(),
+            success = permissionBoundary.updateRestriction(id, request.getRoleName(), request.getUserName(), request.getPermission().getName(),
                     request.getResourceGroupId(), request.getResourceTypeName(), request.getResourceTypePermission(),
                     request.getContextName(), request.getAction());
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
-        if (!succcess) {
+        if (!success) {
             return Response.status(PRECONDITION_FAILED).entity(new ExceptionDto("A similar permission already exists")).build();
         }
         return Response.status(OK).build();
@@ -216,12 +211,7 @@ public class RestrictionsRest {
     @Path("/roles/{roleName}")
     @ApiOperation(value = "Get all Restrictions assigned to a specific Role")
     public Response getRoleRestriction(@ApiParam("UserName") @PathParam("roleName") String roleName) {
-        final List<RestrictionEntity> restrictions = permissionBoundary.getRestrictionsByRoleName(roleName);
-        List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
-        for (RestrictionEntity restriction : restrictions) {
-            restrictionList.add(new RestrictionDTO(restriction));
-        }
-        return Response.status(OK).entity(restrictionList).build();
+        return restrictionsToResponse(permissionBoundary.getRestrictionsByRoleName(roleName));
     }
 
     /**
@@ -301,12 +291,7 @@ public class RestrictionsRest {
     @Path("/users/{userName}")
     @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
     public Response getUserRestriction(@ApiParam("UserName") @PathParam("userName") String userName) {
-        final List<RestrictionEntity> restrictions = permissionBoundary.getRestrictionsByUserName(userName);
-        List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
-        for (RestrictionEntity restriction : restrictions) {
-            restrictionList.add(new RestrictionDTO(restriction));
-        }
-        return Response.status(OK).entity(restrictionList).build();
+        return restrictionsToResponse(permissionBoundary.getRestrictionsByUserName(userName));
     }
 
     /**
@@ -318,7 +303,10 @@ public class RestrictionsRest {
     @Path("/ownRestrictions/")
     @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
     public Response getCallerRestrictions() {
-        final List<RestrictionEntity> restrictions = permissionBoundary.getAllCallerRestrictions();
+        return restrictionsToResponse(permissionBoundary.getAllCallerRestrictions());
+    }
+
+    private Response restrictionsToResponse(List<RestrictionEntity> restrictions) {
         List<RestrictionDTO> restrictionList = new ArrayList<>(restrictions.size());
         for (RestrictionEntity restriction : restrictions) {
             restrictionList.add(new RestrictionDTO(restriction));
