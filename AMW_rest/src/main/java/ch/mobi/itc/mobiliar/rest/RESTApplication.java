@@ -60,7 +60,9 @@ public class RESTApplication extends Application {
         resources.add(EnvironmentsRest.class);
         resources.add(AuditViewRest.class);
         resources.add(RestrictionsRest.class);
+        resources.add(ClientErrorExceptionMapper.class);
         resources.add(EJBExceptionMapper.class);
+        resources.add(ExceptionDtoBodyWriter.class);
         resources.add(IllegalStateExceptionMapper.class);
         resources.add(IllegalArgumentExceptionMapper.class);
         resources.add(NoResultExceptionMapper.class);

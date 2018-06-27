@@ -20,30 +20,25 @@
 
 package ch.mobi.itc.mobiliar.rest.exceptions;
 
-import lombok.Data;
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-@Data
-public class ExceptionDto {
-	
-	private String message;
-	private String detail;
-	
-	public ExceptionDto(String message) {
-		this(message, "");
-	}
-	
-	public ExceptionDto(String message, String detail) {
-		this.message = message;
-		this.detail = detail;
-	}
-	
-	public ExceptionDto(Throwable throwable) {		
-		this.message = throwable.getMessage();
-	}
-	
-	public ExceptionDto(Throwable throwable, String detail) {		
-		this.message = throwable.getMessage();
-		this.detail = detail;
-	}
+@Provider
+@Produces({"application/json"})
+public class ClientErrorExceptionMapper implements ExceptionMapper<ClientErrorException> {
 
+    @Override
+    public Response toResponse(ClientErrorException exception) {
+        Response response = exception.getResponse();
+        int statusCode = response.getStatus();
+        String message = response.getStatusInfo().getReasonPhrase();
+        String detail = exception.getMessage();
+        ExceptionDto dto = new ExceptionDto(message, detail);
+        return Response.status(statusCode)
+                .entity(dto)
+                .build();
+    }
 }

@@ -30,6 +30,6 @@ import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 public class ValidationExceptionMapper implements ExceptionMapper<ValidationException> {
     @Override
     public Response toResponse(ValidationException exception) {
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto(exception)).build();
     }
 }
