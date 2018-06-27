@@ -26,6 +26,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,166 +65,159 @@ public class FunctionsBoundaryTest {
 
     private static final Set<String> MIKS = new HashSet<>();
 
-	@Mock
-	ResourceRepository resourceRepositoryMock;
+    @Mock
+    ResourceRepository resourceRepositoryMock;
 
-	@Mock
-	ResourceTypeRepository resourceTypeRepositoryMock;
+    @Mock
+    ResourceTypeRepository resourceTypeRepositoryMock;
 
-	@Mock
+    @Mock
     PermissionBoundary permissionBoundaryMock;
 
-	@Mock
-	FunctionService functionServiceMock;
+    @Mock
+    FunctionService functionServiceMock;
 
-	@Mock
-	FunctionRepository functionRepositoryMock;
+    @Mock
+    FunctionRepository functionRepositoryMock;
 
     @Mock
     FreemarkerSyntaxValidator freemarkerValidatorMock;
 
-	@InjectMocks
-	private FunctionsBoundary functionsBoundary;
+    @InjectMocks
+    private FunctionsBoundary functionsBoundary;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         when(resourceRepositoryMock.find(resource.getId())).thenReturn(resource);
         when(resourceTypeRepositoryMock.find(resourceType.getId())).thenReturn(resourceType);
     }
 
+    @Test
+    public void getInstanceFunctionsForResourceShouldDelegateResultFromRepository() {
+        // given
+        ResourceEntity resource = createResource("resourceName", 1, functionA_ID_3);
+        when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
 
-	@Test
-	public void getInstanceFunctionsForResourceShouldDelegateResultFromRepository() {
-		// given
-		ResourceEntity resource = createResource("resourceName", 1, functionA_ID_3);
-		when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
+        // when
+        List<AmwFunctionEntity> resourceFunctions = functionsBoundary.getInstanceFunctions(resource);
 
-		// when
-		List<AmwFunctionEntity> resourceFunctions = functionsBoundary.getInstanceFunctions(resource);
+        // then
+        assertTrue(resourceFunctions.contains(functionA_ID_3));
+    }
 
-		// then
-		assertTrue(resourceFunctions.contains(functionA_ID_3));
-	}
+    @Test(expected = NullPointerException.class)
+    public void getInstanceFunctionsForResourceNullShouldThrowException() {
+        // given
+        ResourceEntity resource = null;
 
-	@Test(expected = NullPointerException.class)
-	public void getInstanceFunctionsForResourceNullShouldThrowException() {
-		// given
-		ResourceEntity resource = null;
+        // when
+        functionsBoundary.getInstanceFunctions(resource);
+    }
 
-		// when
-		functionsBoundary.getInstanceFunctions(resource);
-	}
+    @Test(expected = NullPointerException.class)
+    public void getInstanceFunctionsForResourceTypeNullShouldThrowException() {
+        // given
+        ResourceTypeEntity resource = null;
 
+        // when
+        functionsBoundary.getInstanceFunctions(resource);
+    }
 
-	@Test(expected = NullPointerException.class)
-	public void getInstanceFunctionsForResourceTypeNullShouldThrowException() {
-		// given
-		ResourceTypeEntity resource = null;
+    @Test
+    public void getInstanceFunctionsForResourceTypeShouldDelegateResultFromRepository() throws NullPointerException {
+        // given
+        ResourceTypeEntity resourceType = createResourceType("ResourceType", 1, functionA_ID_3);
+        when(resourceTypeRepositoryMock.loadWithFunctionsAndMiksForId(resourceType.getId())).thenReturn(resourceType);
 
-		// when
-		functionsBoundary.getInstanceFunctions(resource);
-	}
+        // when
+        List<AmwFunctionEntity> instanceFunctions = functionsBoundary.getInstanceFunctions(resourceType);
 
-	@Test
-	public void getInstanceFunctionsForResourceTypeShouldDelegateResultFromRepository() throws NullPointerException {
-		// given
-		ResourceTypeEntity resourceType = createResourceType("ResourceType", 1, functionA_ID_3);
-		when(resourceTypeRepositoryMock.loadWithFunctionsAndMiksForId(resourceType.getId())).thenReturn(resourceType);
+        // then
+        assertTrue(instanceFunctions.contains(functionA_ID_3));
+    }
 
-		// when
-		List<AmwFunctionEntity> instanceFunctions = functionsBoundary.getInstanceFunctions(resourceType);
+    @Test
+    public void getAllOverwritableSupertypeFunctionsForResourceShouldDelegateToService() {
+        // given
+        ResourceEntity resource = createResource("resourceName", 1);
+        when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
 
-		// then
-		assertTrue(instanceFunctions.contains(functionA_ID_3));
-	}
+        // when
+        functionsBoundary.getAllOverwritableSupertypeFunctions(resource);
 
+        // then
+        verify(functionServiceMock).getAllOverwritableSupertypeFunctions(resource);
 
-	@Test
-	public void getAllOverwritableSupertypeFunctionsForResourceShouldDelegateToService() {
-		// given
-		ResourceEntity resource = createResource("resourceName", 1);
-		when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
+    }
 
-		// when
-		functionsBoundary.getAllOverwritableSupertypeFunctions(resource);
+    @Test(expected = NullPointerException.class)
+    public void getAllOverwritableSupertypeFunctionsForResourceNullShouldThrowException() {
+        // given
+        ResourceEntity resource = null;
 
-		// then
-		verify(functionServiceMock).getAllOverwritableSupertypeFunctions(resource);
+        // when
+        functionsBoundary.getAllOverwritableSupertypeFunctions(resource);
+    }
 
-	}
+    @Test
+    public void getAllOverwritableSupertypeFunctionsForResourceTypeShouldDelegateToService() {
+        // given
+        ResourceTypeEntity rootResourceType = createResourceType("ResourceType", 1);
+        when(resourceTypeRepositoryMock.loadWithFunctionsAndMiksForId(rootResourceType.getId())).thenReturn(rootResourceType);
 
+        // when
+        functionsBoundary.getAllOverwritableSupertypeFunctions(rootResourceType);
 
-	@Test(expected = NullPointerException.class)
-	public void getAllOverwritableSupertypeFunctionsForResourceNullShouldThrowException() {
-		// given
-		ResourceEntity resource = null;
+        // then
+        verify(functionServiceMock).getAllOverwritableSupertypeFunctions(rootResourceType);
 
-		// when
-		functionsBoundary.getAllOverwritableSupertypeFunctions(resource);
-	}
-
-	@Test
-	public void getAllOverwritableSupertypeFunctionsForResourceTypeShouldDelegateToService() {
-		// given
-		ResourceTypeEntity rootResourceType = createResourceType("ResourceType", 1);
-		when(resourceTypeRepositoryMock.loadWithFunctionsAndMiksForId(rootResourceType.getId())).thenReturn(rootResourceType);
-
-		// when
-		functionsBoundary.getAllOverwritableSupertypeFunctions(rootResourceType);
-
-		// then
-		verify(functionServiceMock).getAllOverwritableSupertypeFunctions(rootResourceType);
-
-	}
+    }
 
 
-	@Test(expected = NullPointerException.class)
-	public void getAllOverwritableSupertypeFunctionsForResourceTypeNullShouldThrowException() {
-		// given
-		ResourceTypeEntity resourceType = null;
+    @Test(expected = NullPointerException.class)
+    public void getAllOverwritableSupertypeFunctionsForResourceTypeNullShouldThrowException() {
+        // given
+        ResourceTypeEntity resourceType = null;
 
-		// when
-		functionsBoundary.getAllOverwritableSupertypeFunctions(resourceType);
-	}
+        // when
+        functionsBoundary.getAllOverwritableSupertypeFunctions(resourceType);
+    }
 
+    @Test(expected = NullPointerException.class)
+    public void removeWhenIdIsNullShouldThrowException() throws ValidationException, NotFoundException {
 
-	@Test(expected = NullPointerException.class)
-	public void removeWhenIdIsNullShouldThrowException() throws ValidationException {
+        // given
+        Integer selectedFunctionIdToBeRemoved = null;
 
-		// given
-		Integer selectedFunctionIdToBeRemoved = null;
+        // when
+        functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
 
-		// when
-		functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
+    }
 
-	}
+    @Test(expected = NotFoundException.class)
+    public void removeWhenFunctionForIdIsNullShouldThrowException() throws ValidationException, NotFoundException {
 
-	@Test(expected = RuntimeException.class)
-	public void removeWhenFunctionForIdIsNullShouldThrowException() throws ValidationException {
+        // given
+        Integer selectedFunctionIdToBeRemoved = 1;
+        when(functionRepositoryMock.find(selectedFunctionIdToBeRemoved)).thenReturn(null);
 
-		// given
-		Integer selectedFunctionIdToBeRemoved = 1;
-		when(functionRepositoryMock.find(selectedFunctionIdToBeRemoved)).thenReturn(null);
+        // when
+        functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
 
-		// when
-		functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
+    }
 
-	}
+    @Test(expected = NullPointerException.class)
+    public void deleteFunctionWhenArgumentNullShouldThrowException() throws ValidationException, NotFoundException {
 
+        // given
+        Integer selectedFunctionIdToBeRemoved = null;
 
+        // when
+        functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
+    }
 
-	@Test(expected = NullPointerException.class)
-	public void deleteFunctionWhenArgumentNullShouldThrowException() throws ValidationException {
-
-		// given
-		Integer selectedFunctionIdToBeRemoved = null;
-
-		// when
-		functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
-	}
-
-    @Test(expected = RuntimeException.class)
-    public void deleteFunctionWhenNoEntityFoundForIdShouldThrowException() throws ValidationException {
+    @Test(expected = NotFoundException.class)
+    public void deleteFunctionWhenNoEntityFoundForIdShouldThrowException() throws ValidationException, NotFoundException {
 
         // given
         Integer selectedFunctionIdToBeRemoved = 1;
@@ -235,7 +229,7 @@ public class FunctionsBoundaryTest {
     }
 
     @Test
-    public void deleteFunctionWhenOverwrittenByFunctionShouldNotDeleteFunction() throws ValidationException {
+    public void deleteFunctionWhenOverwrittenByFunctionShouldNotDeleteFunction() throws NotFoundException {
 
         // given
         functionA_ID_4.overwrite(functionA_ID_3);
@@ -249,13 +243,13 @@ public class FunctionsBoundaryTest {
 
             // then
             verify(functionServiceMock, never()).deleteFunction(functionA_ID_3);
-        } catch (ValidationException e){
-            assertTrue("should throw exception",true);
+        } catch (ValidationException e) {
+            assertTrue("should throw exception", true);
         }
     }
 
     @Test(expected = ValidationException.class)
-    public void deleteFunctionWhenOverwrittenByFunctionShouldThrowException() throws ValidationException {
+    public void deleteFunctionWhenOverwrittenByFunctionShouldThrowException() throws ValidationException, NotFoundException {
 
         // given
         functionA_ID_4.overwrite(functionA_ID_3);
@@ -268,7 +262,7 @@ public class FunctionsBoundaryTest {
     }
 
     @Test
-    public void deleteFunctionWhenOverwrittenByFunctionShouldAddOverwritingFunctionToException() throws ValidationException {
+    public void deleteFunctionWhenOverwrittenByFunctionShouldAddOverwritingFunctionToException() throws NotFoundException {
 
         // given
         functionA_ID_4.overwrite(functionA_ID_3);
@@ -279,14 +273,14 @@ public class FunctionsBoundaryTest {
         // when
         try {
             functionsBoundary.deleteFunction(functionA_ID_3.getId());
-        } catch (ValidationException e){
+        } catch (ValidationException e) {
             assertTrue(e.hasCausingObject());
             assertEquals(functionA_ID_4, e.getCausingObject());
         }
     }
 
     @Test
-    public void deleteFunctionWhenNotOverwrittenShouldDelegateDelete() throws ValidationException {
+    public void deleteFunctionWhenNotOverwrittenShouldDelegateDelete() throws ValidationException, NotFoundException {
 
         // given
         AmwFunctionEntity resourceTypeFunction = new AmwFunctionEntityBuilder("resourceTypeFunction", 8).forResourceType(resourceType).build();
@@ -301,7 +295,7 @@ public class FunctionsBoundaryTest {
     }
 
     @Test
-    public void deleteFunctionWhenNotOverwrittenShouldReturnTrue() throws ValidationException {
+    public void deleteFunctionWhenNotOverwrittenShouldReturnTrue() throws ValidationException, NotFoundException {
 
         // given
         AmwFunctionEntity resourceFunction = new AmwFunctionEntityBuilder("resourceFunction", 9).forResource(resource).build();
@@ -316,40 +310,42 @@ public class FunctionsBoundaryTest {
     }
 
 
-	@Test
-	public void createNewResourceFunctionShouldLoadResourceAndDelegateToService() throws ValidationException, AMWException {
+    @Test
+    public void createNewResourceFunctionShouldLoadResourceAndDelegateToService() throws ValidationException, AMWException {
 
-		// when
-		functionsBoundary.createNewResourceFunction(functionA_ID_3, resource.getId(), MIKS);
+        // when
+        functionsBoundary.createNewResourceFunction(functionA_ID_3, resource.getId(), MIKS);
 
-		// then
-		verify(functionServiceMock).findFunctionsByNameInNamespace(resource, functionA_ID_3.getName());
-	}
+        // then
+        verify(functionServiceMock).findFunctionsByNameInNamespace(resource, functionA_ID_3.getName());
+    }
 
-	@Test
-	public void createNewResourceFunctionWhenNameIsNotYetUsedShouldDelegateSave() throws ValidationException, AMWException {
+    @Test
+    public void createNewResourceFunctionWhenNameIsNotYetUsedShouldDelegateSave() throws ValidationException, AMWException {
 
-		// given
+        // given
         List<AmwFunctionEntity> functionsWithSameName = new ArrayList<>();
-		when(functionServiceMock.findFunctionsByNameInNamespace(resource, functionA_ID_3.getName())).thenReturn(functionsWithSameName);
-
-		// when
-		functionsBoundary.createNewResourceFunction(functionA_ID_3, resource.getId(), MIKS);
-
-		// then
-		verify(functionServiceMock).saveFunctionWithMiks(functionA_ID_3, MIKS);
-	}
-
-	@Test(expected = ValidationException.class)
-	public void createNewResourceFunctionWhenNameIsAlreadyUsedShouldThrowException() throws ValidationException, AMWException {
-
-		// given
-        List<AmwFunctionEntity> functionsWithSameName = new ArrayList<AmwFunctionEntity>() {{add(functionA_ID_3);}};
         when(functionServiceMock.findFunctionsByNameInNamespace(resource, functionA_ID_3.getName())).thenReturn(functionsWithSameName);
 
-		// when
-		functionsBoundary.createNewResourceFunction(functionA_ID_3, resource.getId(), MIKS);
-	}
+        // when
+        functionsBoundary.createNewResourceFunction(functionA_ID_3, resource.getId(), MIKS);
+
+        // then
+        verify(functionServiceMock).saveFunctionWithMiks(functionA_ID_3, MIKS);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void createNewResourceFunctionWhenNameIsAlreadyUsedShouldThrowException() throws ValidationException, AMWException {
+
+        // given
+        List<AmwFunctionEntity> functionsWithSameName = new ArrayList<AmwFunctionEntity>() {{
+            add(functionA_ID_3);
+        }};
+        when(functionServiceMock.findFunctionsByNameInNamespace(resource, functionA_ID_3.getName())).thenReturn(functionsWithSameName);
+
+        // when
+        functionsBoundary.createNewResourceFunction(functionA_ID_3, resource.getId(), MIKS);
+    }
 
     @Test
     public void createNewResourceFunctionShouldDelegateVerificationToService() throws ValidationException, AMWException {
@@ -377,15 +373,15 @@ public class FunctionsBoundaryTest {
         functionsBoundary.createNewResourceTypeFunction(function, resource.getId(), MIKS);
     }
 
-	@Test
-	public void createNewResourceTypeFunctionShouldLoadResourceTypeAndDelegateToService() throws ValidationException, AMWException {
+    @Test
+    public void createNewResourceTypeFunctionShouldLoadResourceTypeAndDelegateToService() throws ValidationException, AMWException {
 
-		// when
-		functionsBoundary.createNewResourceTypeFunction(functionA_ID_3, resourceType.getId(), MIKS);
+        // when
+        functionsBoundary.createNewResourceTypeFunction(functionA_ID_3, resourceType.getId(), MIKS);
 
-		// then
-		verify(functionServiceMock).findFunctionsByNameInNamespace(resourceType, functionA_ID_3.getName());
-	}
+        // then
+        verify(functionServiceMock).findFunctionsByNameInNamespace(resourceType, functionA_ID_3.getName());
+    }
 
     @Test
     public void createNewResourceTypeFunctionShouldDelegateVerificationToService() throws ValidationException, AMWException {
@@ -413,30 +409,32 @@ public class FunctionsBoundaryTest {
         functionsBoundary.createNewResourceTypeFunction(function, resourceType.getId(), MIKS);
     }
 
-	@Test
-	public void createNewResourceTypeFunctionWhenNameIsNotYetUsedShouldDelegateSave() throws ValidationException, AMWException {
+    @Test
+    public void createNewResourceTypeFunctionWhenNameIsNotYetUsedShouldDelegateSave() throws ValidationException, AMWException {
 
-		// given
+        // given
         List<AmwFunctionEntity> functionsWithSameName = new ArrayList<>();
         when(functionServiceMock.findFunctionsByNameInNamespace(resourceType, functionA_ID_3.getName())).thenReturn(functionsWithSameName);
 
-		// when
-		functionsBoundary.createNewResourceTypeFunction(functionA_ID_3, resourceType.getId(), MIKS);
+        // when
+        functionsBoundary.createNewResourceTypeFunction(functionA_ID_3, resourceType.getId(), MIKS);
 
-		// then
-		verify(functionServiceMock).saveFunctionWithMiks(functionA_ID_3, MIKS);
-	}
+        // then
+        verify(functionServiceMock).saveFunctionWithMiks(functionA_ID_3, MIKS);
+    }
 
-	@Test(expected = ValidationException.class)
-	public void createNewResourceTypeFunctionWhenNameIsAlreadyUsedShouldThrowException() throws ValidationException, AMWException {
+    @Test(expected = ValidationException.class)
+    public void createNewResourceTypeFunctionWhenNameIsAlreadyUsedShouldThrowException() throws ValidationException, AMWException {
 
         // given
-        List<AmwFunctionEntity> functionsWithSameName = new ArrayList<AmwFunctionEntity>() {{add(functionA_ID_3);}};
+        List<AmwFunctionEntity> functionsWithSameName = new ArrayList<AmwFunctionEntity>() {{
+            add(functionA_ID_3);
+        }};
         when(functionServiceMock.findFunctionsByNameInNamespace(resourceType, functionA_ID_3.getName())).thenReturn(functionsWithSameName);
 
-		// when
-		functionsBoundary.createNewResourceTypeFunction(functionA_ID_3, resourceType.getId(), MIKS);
-	}
+        // when
+        functionsBoundary.createNewResourceTypeFunction(functionA_ID_3, resourceType.getId(), MIKS);
+    }
 
 
     @Test
@@ -480,8 +478,7 @@ public class FunctionsBoundaryTest {
         functionsBoundary.saveFunction(function);
     }
 
-
-    @Test(expected = RuntimeException.class)
+    @Test(expected = NotFoundException.class)
     public void overwriteResourceFunctionWhenFunctionForIdNotFoundShouldThrowException() throws ValidationException, AMWException {
 
         // given
@@ -491,8 +488,8 @@ public class FunctionsBoundaryTest {
         functionsBoundary.overwriteResourceFunction("functionBody", resourceType.getId(), functionA_ID_3.getId());
     }
 
-    @Test(expected = RuntimeException.class)
-    public void overwriteResourceFunctionWhenResourceForIdNotFoundShouldThrowException() throws ValidationException, AMWException {
+    @Test(expected = NotFoundException.class)
+    public void overwriteResourceFunctionWhenResourceForIdNotFoundShouldThrowException() throws AMWException {
 
         // given
         when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
@@ -503,7 +500,7 @@ public class FunctionsBoundaryTest {
     }
 
     @Test(expected = AMWException.class)
-    public void overwriteResourceFunctionWhenInvalidContentShouldThrowException() throws ValidationException, AMWException {
+    public void overwriteResourceFunctionWhenInvalidContentShouldThrowException() throws AMWException {
 
         // given
         when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
@@ -513,7 +510,6 @@ public class FunctionsBoundaryTest {
         // when
         functionsBoundary.overwriteResourceFunction("functionBody", resource.getId(), functionA_ID_3.getId());
     }
-
 
     @Test
     public void overwriteResourceFunctionForShouldDelegateOverwriteAndVerification() throws ValidationException, AMWException {
@@ -530,9 +526,8 @@ public class FunctionsBoundaryTest {
         verify(freemarkerValidatorMock).validateFreemarkerSyntax(overwrittenFunction.getDecoratedImplementation());
     }
 
-
-    @Test(expected = RuntimeException.class)
-    public void overwriteResourceTypeFunctionWhenFunctionForIdNotFoundShouldThrowException() throws ValidationException, AMWException {
+    @Test(expected = NotFoundException.class)
+    public void overwriteResourceTypeFunctionWhenFunctionForIdNotFoundShouldThrowException() throws AMWException {
 
         // given
         when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(null);
@@ -542,7 +537,7 @@ public class FunctionsBoundaryTest {
     }
 
     @Test(expected = AMWException.class)
-    public void overwriteResourceTypeFunctionWhenInvalidContentShouldThrowException() throws ValidationException, AMWException {
+    public void overwriteResourceTypeFunctionWhenInvalidContentShouldThrowException() throws AMWException {
 
         // given
         when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
@@ -553,9 +548,8 @@ public class FunctionsBoundaryTest {
         functionsBoundary.overwriteResourceTypeFunction("functionBody", resourceType.getId(), functionA_ID_3.getId());
     }
 
-
-    @Test(expected = RuntimeException.class)
-    public void overwriteResourceTypeFunctionWhenResourceTypeForIdNotFoundShouldThrowException() throws ValidationException, AMWException {
+    @Test(expected = NotFoundException.class)
+    public void overwriteResourceTypeFunctionWhenResourceTypeForIdNotFoundShouldThrowException() throws AMWException {
 
         // given
         when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
@@ -566,7 +560,7 @@ public class FunctionsBoundaryTest {
     }
 
     @Test
-    public void overwriteResourceTypeFunctionForShouldDelegateOverwritingAndVerification() throws ValidationException, AMWException {
+    public void overwriteResourceTypeFunctionForShouldDelegateOverwritingAndVerification() throws AMWException {
 
         // given
         AmwFunctionEntity overwrittenFunction = createFunction(FUNCTION_NAME, 55);
@@ -581,34 +575,33 @@ public class FunctionsBoundaryTest {
     }
 
 
+    private AmwFunctionEntity createFunction(String name, Integer id) {
+        return new AmwFunctionEntityBuilder(name, id).build();
+    }
 
-	private AmwFunctionEntity createFunction(String name, Integer id) {
-		return new AmwFunctionEntityBuilder(name, id).build();
-	}
+    private ResourceEntity createResource(String name, int id, AmwFunctionEntity... functions) {
+        ResourceEntity resource = new ResourceEntityBuilder().withName(name).withId(id).withFunctions(new HashSet<>(Arrays.asList(functions))).build();
+        for (AmwFunctionEntity function : functions) {
+            function.setResource(resource);
+        }
+        return resource;
+    }
 
-	private ResourceEntity createResource(String name, int id, AmwFunctionEntity... functions) {
-		ResourceEntity resource = new ResourceEntityBuilder().withName(name).withId(id).withFunctions(new HashSet<>(Arrays.asList(functions))).build();
-		for (AmwFunctionEntity function : functions) {
-			function.setResource(resource);
-		}
-		return resource;
-	}
+    private ResourceTypeEntity createResourceType(String name, int id, AmwFunctionEntity... functions) {
+        ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().buildResourceTypeEntity(name, new HashSet<ResourceEntity>(), false);
+        resourceType.setId(id);
 
-	private ResourceTypeEntity createResourceType(String name, int id, AmwFunctionEntity... functions) {
-		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().buildResourceTypeEntity(name, new HashSet<ResourceEntity>(), false);
-		resourceType.setId(id);
+        resourceType.setFunctions(new HashSet<>(Arrays.asList(functions)));
 
-		resourceType.setFunctions(new HashSet<>(Arrays.asList(functions)));
+        for (AmwFunctionEntity function : functions) {
+            function.setResourceType(resourceType);
+        }
 
-		for (AmwFunctionEntity function : functions) {
-			function.setResourceType(resourceType);
-		}
-
-		return resourceType;
-	}
+        return resourceType;
+    }
 
     @Test
-    public void verifyCreateFunctionTestMethod(){
+    public void verifyCreateFunctionTestMethod() {
         // given
         String name = "name";
         Integer id = 1;
@@ -622,7 +615,7 @@ public class FunctionsBoundaryTest {
     }
 
     @Test
-    public void verifyCreateResourceWithoutFunctionTestMethod(){
+    public void verifyCreateResourceWithoutFunctionTestMethod() {
         // given
         String name = "name";
         Integer id = 1;
@@ -637,7 +630,7 @@ public class FunctionsBoundaryTest {
     }
 
     @Test
-    public void verifyCreateResourceWithFunctionTestMethod(){
+    public void verifyCreateResourceWithFunctionTestMethod() {
         // given
         String name = "name";
         Integer id = 1;
@@ -650,13 +643,13 @@ public class FunctionsBoundaryTest {
         // then
         assertTrue(resource.getFunctions().contains(function1));
         assertTrue(resource.getFunctions().contains(function2));
-        for(AmwFunctionEntity function : resource.getFunctions()){
+        for (AmwFunctionEntity function : resource.getFunctions()) {
             assertEquals(resource, function.getResource());
         }
     }
 
     @Test
-    public void verifyCreateResourceTypeWithoutFunctionTestMethod(){
+    public void verifyCreateResourceTypeWithoutFunctionTestMethod() {
         // given
         String name = "name";
         Integer id = 1;
@@ -671,7 +664,7 @@ public class FunctionsBoundaryTest {
     }
 
     @Test
-    public void verifyCreateResourceTypeWithFunctionTestMethod(){
+    public void verifyCreateResourceTypeWithFunctionTestMethod() {
         // given
         String name = "name";
         Integer id = 1;
@@ -684,7 +677,7 @@ public class FunctionsBoundaryTest {
         // then
         assertTrue(resourceType.getFunctions().contains(function1));
         assertTrue(resourceType.getFunctions().contains(function2));
-        for(AmwFunctionEntity function : resourceType.getFunctions()){
+        for (AmwFunctionEntity function : resourceType.getFunctions()) {
             assertEquals(resourceType, function.getResourceType());
         }
     }

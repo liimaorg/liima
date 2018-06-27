@@ -31,6 +31,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import lombok.Getter;
 import lombok.Setter;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -287,6 +288,8 @@ public class EditFunction implements Serializable {
 
                 GlobalMessageAppender.addSuccessMessage("Successfully deleted function");
 
+            } catch (NotFoundException e) {
+                GlobalMessageAppender.addErrorMessage(e.getMessage());
             } catch (ValidationException e) {
                 GlobalMessageAppender.addErrorMessage(buildExceptionMessage(e));
             }

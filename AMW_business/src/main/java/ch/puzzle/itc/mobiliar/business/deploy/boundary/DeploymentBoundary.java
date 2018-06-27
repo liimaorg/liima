@@ -645,12 +645,12 @@ public class DeploymentBoundary {
      * @param nodeJobId
      * @param nodeJobStatus
      */
-    public void updateNodeJobStatus(Integer deploymentId, Integer nodeJobId, NodeJobStatus nodeJobStatus) throws NotFoundExcption, DeploymentStateException {
+    public void updateNodeJobStatus(Integer deploymentId, Integer nodeJobId, NodeJobStatus nodeJobStatus) throws NotFoundException, DeploymentStateException {
         DeploymentEntity deployment = getDeploymentById(deploymentId);
         NodeJobEntity nodeJobEntity = deployment.findNodeJobEntity(nodeJobId);
 
         if (nodeJobEntity == null) {
-            throw new NotFoundExcption("NodeJob " + nodeJobId + " of deployment " + deploymentId + " not found!");
+            throw new NotFoundException("NodeJob " + nodeJobId + " of deployment " + deploymentId + " not found!");
         }
 
         nodeJobEntity.setStatus(nodeJobStatus);
