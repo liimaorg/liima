@@ -1,3 +1,27 @@
+# v1.17.2
+This is mostly a bug fix and enhancement release of the REST interface.
+
+## New features
+* Added `/{resourceGroupName}/{releaseName}/dependencies/` REST endpoint to get dependencies of a resource [#208](https://github.com/liimaorg/liima/issues/208)
+* Added `/configuration` REST endpoint to get the application configuration [#373](https://github.com/liimaorg/liima/pull/373)
+* Added readiness and liveness endpoint [#346](https://github.com/liimaorg/liima/pull/346)
+* Added `DELETE` REST method to delete resource relations [#361](https://github.com/liimaorg/liima/pull/361)
+* Removed the `/resources/deployments/{deploymentId}/detail` endpoint, deployment details are now included deployment entity directly [#392](https://github.com/liimaorg/liima/pull/392)
+* Update docker image to Wildfly 13 [#400](https://github.com/liimaorg/liima/pull/400)
+
+## Bug fixes
+* Angular: confirm of multiple deployments doesn't work [#386](https://github.com/liimaorg/liima/issues/386)
+* Angular: auditview no longer works [#383](https://github.com/liimaorg/liima/issues/383)
+* The model now also contains all unrendered relation templates [#231](https://github.com/liimaorg/liima/issues/231)
+* Angular Logout tab points to applist.xhtml instead of logout url [#237](https://github.com/liimaorg/liima/issues/237)
+* `REST GET /resources/{resourceGroupName}/{releaseName}/relations` only returns consumed relations [#387]
+* REST error response body isn't JSON encoded [#343](https://github.com/liimaorg/liima/issues/343)
+* Get property REST endpoints don't return default values [#347](https://github.com/liimaorg/liima/issues/347)
+* REST restrictions endpoints returns 500 instead of 403 if user has no rights [#348](https://github.com/liimaorg/liima/issues/348)
+* Clean up Swagger definition of `/resources/{resourceGroupName}/{releaseName}/relations` [#388](https://github.com/liimaorg/liima/issues/388)
+* JSF applist doesn't work with h2 anymore [#397](https://github.com/liimaorg/liima/issues/397)
+(https://github.com/liimaorg/liima/issues/387)
+
 # v1.17.1
 This is mostly a bug fix release.
 
