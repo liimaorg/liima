@@ -61,6 +61,7 @@ import java.util.*;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 @RequestScoped
 @Path("/resources")
@@ -263,7 +264,7 @@ public class ResourcesRest {
 
         ResourceEntity appServer = resourceLocator.getExactOrClosestPastReleaseByGroupIdAndReleaseId(resourceGroupId, releaseId);
         if (appServer == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(NOT_FOUND).build();
         }
         ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
         List<AppWithVersionDTO> apps = new ArrayList<>();
@@ -282,7 +283,7 @@ public class ResourcesRest {
 
         ResourceGroupEntity group = resourceGroupLocator.getResourceGroupById(resourceGroupId);
         if (group == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(NOT_FOUND).build();
         }
         List<ResourceDTO> releases = new ArrayList<>();
         List<ReleaseEntity> deployableReleases = releaseMgmtService.getDeployableReleasesForResourceGroup(group);
@@ -299,7 +300,7 @@ public class ResourcesRest {
     public Response getMostRelevantReleaseForResourceGroup(@PathParam("resourceGroupId") Integer resourceGroupId) {
         ResourceGroupEntity group = resourceGroupLocator.getResourceGroupById(resourceGroupId);
         if (group == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(NOT_FOUND).build();
         }
         SortedSet<ReleaseEntity> deployableReleases = new TreeSet(releaseMgmtService.getDeployableReleasesForResourceGroup(group));
         ResourceDTO mostRelevant = new ResourceDTO(resourceDependencyResolverService.findMostRelevantRelease(deployableReleases, null));
@@ -624,11 +625,11 @@ public class ResourcesRest {
                                      @ApiParam(value = "The origin ReleaseName (from)") @QueryParam("originReleaseName") String originReleaseName) throws ValidationException {
         ResourceEntity targetResource = resourceLocator.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName);
         if (targetResource == null) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Target Resource not found")).build();
+            return Response.status(NOT_FOUND).entity(new ExceptionDto("Target Resource not found")).build();
         }
         ResourceEntity originResource = resourceLocator.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName);
         if (originResource == null) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Origin Resource not found")).build();
+            return Response.status(NOT_FOUND).entity(new ExceptionDto("Origin Resource not found")).build();
         }
         if ((!originResource.getResourceType().isApplicationResourceType() && !originResource.getResourceType().isApplicationServerResourceType())
                 || (!targetResource.getResourceType().isApplicationResourceType() && !targetResource.getResourceType().isApplicationServerResourceType())) {
@@ -655,7 +656,7 @@ public class ResourcesRest {
                                             @PathParam("releaseName") String releaseName) throws ValidationException {
         ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
         if (resource == null) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Resource not found")).build();
+            return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
         }
         List<ConsumedResourceRelationEntity> consumedSlaveRelations = resourceRelationService.getConsumedSlaveRelations(resource);
         List<ProvidedResourceRelationEntity> providedSlaveRelations = resourceRelationService.getProvidedSlaveRelations(resource);
