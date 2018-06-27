@@ -21,6 +21,7 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -29,9 +30,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "resourceReleaseCopy")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@NoArgsConstructor
 public class ResourceReleaseCopyDTO {
 
     private String releaseName;
-
     private String sourceReleaseName;
 }

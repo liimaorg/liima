@@ -20,9 +20,12 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class DeploymentActionsDTO {
+
     private boolean confirmPossible;
     private boolean rejectPossible;
     private boolean cancelPossible;

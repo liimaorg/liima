@@ -30,23 +30,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @XmlRootElement(name = "template")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@NoArgsConstructor
 public class TemplateDTO {
 
     private String relatedResourceIdentifier;
-
     private String name;
-
     private String targetPath;
-
     private Set<String> targetPlatforms;
-
     private String fileContent;
-
-    TemplateDTO(){}
 
     public TemplateDTO(TemplateDescriptorEntity template){
         this.relatedResourceIdentifier = template.getRelatedResourceIdentifier();
@@ -56,7 +52,6 @@ public class TemplateDTO {
         for (ResourceGroupEntity pf : template.getTargetPlatforms()) {
             targetPlatforms.add(pf.getName());
         }
-
         this.fileContent = template.getFileContent();
     }
 }

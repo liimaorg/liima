@@ -21,28 +21,23 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
 @XmlRootElement(name = "permission")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PermissionDTO {
 
     private String name;
-
     private boolean old;
-
-    PermissionDTO(){}
-
-    public PermissionDTO(String name, boolean old) {
-        this.name = name;
-        this.old = old;
-    }
 
     public PermissionDTO(Permission permission) {
         this.name = permission.name();

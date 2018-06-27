@@ -23,6 +23,7 @@ package ch.mobi.itc.mobiliar.rest.dtos;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -32,6 +33,7 @@ import java.util.List;
 @XmlRootElement(name = "relations")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@NoArgsConstructor
 public class ResourceRelationDTO {
 
     private final static String CONSUMED = "consumed";
@@ -44,9 +46,6 @@ public class ResourceRelationDTO {
     private String relationName;
     private String relationType;
     private List<TemplateDTO> templates;
-
-    ResourceRelationDTO() {
-    }
 
     public ResourceRelationDTO(AbstractResourceRelationEntity relation) {
         relatedResourceName = relation.getSlaveResource().getName();

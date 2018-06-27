@@ -20,19 +20,16 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class DeploymentFilterTypeDTO {
 
 	private String name;
 	private String type;
-
-	public DeploymentFilterTypeDTO() {}
-
-	public DeploymentFilterTypeDTO(String name, String type) {
-		this.name = name;
-		this.type = type;
-	}
 	
 }

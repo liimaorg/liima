@@ -22,6 +22,7 @@ package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -30,13 +31,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "resourceType")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@NoArgsConstructor
 public class ResourceTypeDTO {
 
     private Integer id;
-
     private String name;
-
-    ResourceTypeDTO(){}
 
     public ResourceTypeDTO(ResourceTypeEntity resourceType){
         this.id = resourceType.getId();

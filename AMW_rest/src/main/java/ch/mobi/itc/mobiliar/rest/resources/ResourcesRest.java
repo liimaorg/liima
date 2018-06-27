@@ -40,6 +40,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
@@ -60,6 +61,7 @@ import java.util.*;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 @RequestScoped
 @Path("/resources")
@@ -99,12 +101,9 @@ public class ResourcesRest {
     ResourceTypeLocator resourceTypeLocator;
 
     @Inject
-    ResourceRelationPropertiesRest resourceRelationProperties;
-
-    @Inject
     ResourcePropertiesRest resourceProperties;
 
-	@Inject
+    @Inject
     ResourceDependencyResolverService resourceDependencyResolverService;
 
     @Inject
@@ -112,6 +111,9 @@ public class ResourcesRest {
 
     @Inject
     ResourceTemplatesRest resourceTemplatesRest;
+
+    @Inject
+    ResourceRelationService resourceRelationService;
 
     @Inject
     private ServerView serverView;
@@ -179,9 +181,9 @@ public class ResourcesRest {
     @GET
     @ApiOperation(value = "Get resource in specific release")
     public ResourceDTO getResource(@PathParam("resourceGroupName") String resourceGroupName,
-                                  @PathParam("releaseName") String releaseName,
-                                  @QueryParam("env") @DefaultValue("Global") String environment,
-                                  @QueryParam("type") String resourceType) throws ValidationException {
+                                   @PathParam("releaseName") String releaseName,
+                                   @QueryParam("env") @DefaultValue("Global") String environment,
+                                   @QueryParam("type") String resourceType) throws ValidationException {
         ResourceEntity resourceByRelease = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
         return new ResourceDTO(resourceByRelease, resourceRelations.getResourceRelations(resourceGroupName,
                 releaseName, resourceType), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
@@ -192,9 +194,9 @@ public class ResourcesRest {
     @GET
     @ApiOperation(value = "Get exact or closest past resource release")
     public ResourceDTO getExactOrClosestPastRelease(@PathParam("resourceGroupName") String resourceGroupName,
-                                  @PathParam("releaseName") String releaseName,
-                                  @QueryParam("env") @DefaultValue("Global") String environment,
-                                  @QueryParam("type") String resourceType) throws ValidationException {
+                                                    @PathParam("releaseName") String releaseName,
+                                                    @QueryParam("env") @DefaultValue("Global") String environment,
+                                                    @QueryParam("type") String resourceType) throws ValidationException {
         ReleaseEntity release = resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName);
         return new ResourceDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
                 release.getName(), resourceType), resourceProperties.getResourceProperties(resourceGroupName, release.getName(),
@@ -236,7 +238,7 @@ public class ResourcesRest {
     @GET
     @ApiOperation(value = "Get resource in specific release - used by Angular")
     public ResourceDTO getResourceRelationListForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
-                                                        @PathParam("releaseId") Integer releaseId) {
+                                                         @PathParam("releaseId") Integer releaseId) {
 
         ResourceEntity resource = resourceDependencyResolverService.getResourceEntityForRelease(resourceGroupId, releaseId);
         if (resource == null) {
@@ -257,12 +259,12 @@ public class ResourcesRest {
     @GET
     @ApiOperation(value = "Get application with version for a specific resourceGroup, release and context(s) - used by Angular")
     public Response getApplicationsWithVersionForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
-                                                          @PathParam("releaseId") Integer releaseId,
-                                                          @QueryParam("context") List<Integer> contextIds) {
+                                                         @PathParam("releaseId") Integer releaseId,
+                                                         @QueryParam("context") List<Integer> contextIds) {
 
         ResourceEntity appServer = resourceLocator.getExactOrClosestPastReleaseByGroupIdAndReleaseId(resourceGroupId, releaseId);
         if (appServer == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(NOT_FOUND).build();
         }
         ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
         List<AppWithVersionDTO> apps = new ArrayList<>();
@@ -281,7 +283,7 @@ public class ResourcesRest {
 
         ResourceGroupEntity group = resourceGroupLocator.getResourceGroupById(resourceGroupId);
         if (group == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(NOT_FOUND).build();
         }
         List<ResourceDTO> releases = new ArrayList<>();
         List<ReleaseEntity> deployableReleases = releaseMgmtService.getDeployableReleasesForResourceGroup(group);
@@ -298,7 +300,7 @@ public class ResourcesRest {
     public Response getMostRelevantReleaseForResourceGroup(@PathParam("resourceGroupId") Integer resourceGroupId) {
         ResourceGroupEntity group = resourceGroupLocator.getResourceGroupById(resourceGroupId);
         if (group == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(NOT_FOUND).build();
         }
         SortedSet<ReleaseEntity> deployableReleases = new TreeSet(releaseMgmtService.getDeployableReleasesForResourceGroup(group));
         ResourceDTO mostRelevant = new ResourceDTO(resourceDependencyResolverService.findMostRelevantRelease(deployableReleases, null));
@@ -336,8 +338,6 @@ public class ResourcesRest {
      * Job name<br>
      * Server<br>
      * consumed resources (short)
-     *
-     * @throws ValidationException
      */
     @Path("/batchjobResources/{app}")
     @Produces("application/json")
@@ -401,26 +401,19 @@ public class ResourcesRest {
      * Server<br>
      * consumed resources (short)
      */
-    @Path("/resource/{env}/{resource : \\d+}")
+    @Path("/resource/{env}/{resourceType : \\d+}")
     @Produces("application/json")
     @GET
     @ApiOperation(value = "Get batch job inventory", notes = "Returns the available e.g. batch applications and their related resources (only db2, oracle, ws, rest and file)")
     public BatchJobInventoryDTO getBatchJobInventar(
             @ApiParam(value = "return batch job inventory") @PathParam("env") String env,
-            @ApiParam(value = "resource type (int)") @PathParam("resource") Integer resource,
+            @ApiParam(value = "resource type (int)") @PathParam("resourceType") int resourceType,
             @ApiParam(value = "Filter by Applicationname or -part") @QueryParam("app") String appFilter,
             @ApiParam(value = "Filter by Resource or -part") @QueryParam("job") String jobFilter,
             @ApiParam(value = "Filter by Release") @QueryParam("rel") String relFilter,
             @ApiParam(value = "Filter by consumed DB type") @QueryParam("db") String dbFilter,
-            @ApiParam(value = "Filter by consumed WS name or part") @QueryParam("ws") String wsFilter)
-            throws ValidationException {
+            @ApiParam(value = "Filter by consumed WS name or part") @QueryParam("ws") String wsFilter) {
         BatchJobInventoryDTO inventory = new BatchJobInventoryDTO();
-        int resourceType = 0;
-        try {
-            resourceType = Integer.valueOf(resource);
-        } catch (Exception e) {
-            throw new ValidationException("Der Parameter 'resource' muss numerisch sein");
-        }
 
         // Applications und ihre Resourcen lesen
         List<ResourceEntity> reList = resourceLocator.getAllApplicationsWithResource(resourceType);
@@ -571,7 +564,6 @@ public class ResourcesRest {
      * Creates a new resource and returns its location.
      *
      * @param request containing a ResourceReleaseDTO
-     * @return
      */
     @POST
     @ApiOperation(value = "Add a Resource")
@@ -596,8 +588,6 @@ public class ResourcesRest {
      * Creates a new resource release of an existing resource and returns its location.
      *
      * @param request containing a ResourceReleaseCopyDTO
-     * @param resourceGroupName
-     * @return
      */
     @POST
     @Path("/{resourceGroupName}")
@@ -625,28 +615,21 @@ public class ResourcesRest {
 
     /**
      * Copies the properties of a Resource into another
-     *
-     * @param targetResourceGroupName
-     * @param targetReleaseName
-     * @param originResourceGroupName
-     * @param originReleaseName
-     * @return
-     * @throws ValidationException
      */
     @Path("/{resourceGroupName}/{releaseName}/copyFrom")
     @PUT
     @ApiOperation(value = "Copy the properties of a Resource into another")
     public Response copyFromResource(@ApiParam(value = "The target ResourceGroup (to)") @PathParam("resourceGroupName") String targetResourceGroupName,
-                                @ApiParam(value = "The target ReleaseName (to)") @PathParam("releaseName") String targetReleaseName,
-                                @ApiParam(value = "The origin ResourceGroup (from)") @QueryParam("originResourceGroupName") String originResourceGroupName,
-                                @ApiParam(value = "The origin ReleaseName (from)") @QueryParam("originReleaseName") String originReleaseName) throws ValidationException {
+                                     @ApiParam(value = "The target ReleaseName (to)") @PathParam("releaseName") String targetReleaseName,
+                                     @ApiParam(value = "The origin ResourceGroup (from)") @QueryParam("originResourceGroupName") String originResourceGroupName,
+                                     @ApiParam(value = "The origin ReleaseName (from)") @QueryParam("originReleaseName") String originReleaseName) throws ValidationException {
         ResourceEntity targetResource = resourceLocator.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName);
         if (targetResource == null) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Target Resource not found")).build();
+            return Response.status(NOT_FOUND).entity(new ExceptionDto("Target Resource not found")).build();
         }
         ResourceEntity originResource = resourceLocator.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName);
         if (originResource == null) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Origin Resource not found")).build();
+            return Response.status(NOT_FOUND).entity(new ExceptionDto("Origin Resource not found")).build();
         }
         if ((!originResource.getResourceType().isApplicationResourceType() && !originResource.getResourceType().isApplicationServerResourceType())
                 || (!targetResource.getResourceType().isApplicationResourceType() && !targetResource.getResourceType().isApplicationServerResourceType())) {
@@ -659,11 +642,32 @@ public class ResourcesRest {
         } catch (ForeignableOwnerViolationException | AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
-        
+
         if (!copyResourceResult.isSuccess()) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from "  + originResource.getName() + " failed")).build();
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from " + originResource.getName() + " failed")).build();
         }
         return Response.ok().build();
+    }
+
+    @Path("/{resourceGroupName}/{releaseName}/dependencies/")
+    @GET
+    @ApiOperation(value = "Get dependencies of a resource in a specific release")
+    public Response getResourceDependencies(@PathParam("resourceGroupName") String resourceGroupName,
+                                            @PathParam("releaseName") String releaseName) throws ValidationException {
+        ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
+        if (resource == null) {
+            return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
+        }
+        List<ConsumedResourceRelationEntity> consumedSlaveRelations = resourceRelationService.getConsumedSlaveRelations(resource);
+        List<ProvidedResourceRelationEntity> providedSlaveRelations = resourceRelationService.getProvidedSlaveRelations(resource);
+        List<DependencyDTO> resourceRelationDTOs = new ArrayList<>(consumedSlaveRelations.size() + providedSlaveRelations.size());
+        for (ConsumedResourceRelationEntity consumedResourceRelationEntity : consumedSlaveRelations) {
+            resourceRelationDTOs.add(new DependencyDTO(consumedResourceRelationEntity));
+        }
+        for (ProvidedResourceRelationEntity providedResourceRelationEntity : providedSlaveRelations) {
+            resourceRelationDTOs.add(new DependencyDTO(providedResourceRelationEntity));
+        }
+        return Response.status(Response.Status.OK).entity(resourceRelationDTOs).build();
     }
 
 }

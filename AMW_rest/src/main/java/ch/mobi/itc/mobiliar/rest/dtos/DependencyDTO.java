@@ -20,33 +20,33 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
-import java.util.List;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@XmlRootElement(name = "resource")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "dependency")
+@XmlAccessorType(XmlAccessType.PROPERTY)
 @Data
 @NoArgsConstructor
-public class ResourceWithRelationsDTO {
+public class DependencyDTO {
 
-    private String name;
-    private String type;
+    private final static String CONSUMER = "consumer";
+    private final static String PROVIDER = "provider";
+
+    private String resourceName;
+    private String resourceType;
     private String release;
-    private List<ResourceRelationDTO> relations;
+    private String type;
 
-    public ResourceWithRelationsDTO(ResourceGroupEntity resourceGroup, String release, List<ResourceRelationDTO> relations){
-        this.name = resourceGroup.getName();
-        this.type = resourceGroup.getResourceType() != null ? resourceGroup.getResourceType().getName(): null;
-        this.release = release;
-        if(relations!=null && !relations.isEmpty()){
-            this.relations = relations;
-        }
+    public DependencyDTO(AbstractResourceRelationEntity relation) {
+        resourceName = relation.getMasterResource().getName();
+        resourceType = relation.getResourceRelationType().getResourceTypeA().getName();
+        release = relation.getMasterResource().getRelease().getName();
+        type = relation instanceof ConsumedResourceRelationEntity ? CONSUMER : PROVIDER;
     }
 }
