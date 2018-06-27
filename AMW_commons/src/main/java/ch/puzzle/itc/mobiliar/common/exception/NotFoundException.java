@@ -20,16 +20,16 @@
 
 package ch.puzzle.itc.mobiliar.common.exception;
 
-public class NotFoundExcption extends AMWException {
+public class NotFoundException extends AMWException {
 
 	private static final long serialVersionUID = 1L;
 
 
-	public NotFoundExcption(String message, Throwable cause) {
+	public NotFoundException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public NotFoundExcption(String message) {
+	public NotFoundException(String message) {
 		super(message);
 	}
 

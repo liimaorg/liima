@@ -46,7 +46,7 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
-import ch.puzzle.itc.mobiliar.common.exception.NotFoundExcption;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
@@ -541,7 +541,7 @@ public class DeploymentsRest {
 
         try {
             deploymentBoundary.updateNodeJobStatus(deploymentId, nodeJobId, status);
-        } catch (NotFoundExcption e) {
+        } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ExceptionDto(e)).build();
         } catch (RuntimeException e) {
             return catchDeploymentStateException(e);
