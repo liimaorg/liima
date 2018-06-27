@@ -193,27 +193,6 @@ public class ResourcesRestTest {
     }
 
     @Test
-    public void getBatchJobInventoryError() {
-        // given
-        String env = null;
-        Integer resource = null;
-        String appFilter = null;
-        String jobFilter = null;
-        String relFilter = null;
-        String dbFilter = null;
-        String wsFilter = null;
-        // when
-        try {
-            // BatchJobInventoryDTO dto =
-            rest.getBatchJobInventar(env, resource, appFilter, jobFilter, relFilter, dbFilter, wsFilter);
-            Assert.fail("Muss Exception werfen.");
-        } catch (ValidationException e) {
-            // then expect this
-            assertTrue(e.getMessage().equals("Der Parameter 'resource' muss numerisch sein"));
-        }
-    }
-
-    @Test
     public void getBatchJobResources() throws ValidationException {
         // given
         BatchResourceDTO d = Mockito.mock(BatchResourceDTO.class);
@@ -230,7 +209,7 @@ public class ResourcesRestTest {
     }
 
     @Test
-    public void getBatchJobInventoryEmpty() throws ValidationException {
+    public void getBatchJobInventoryEmpty() {
         // given
         String env = "V";
         Integer type = 2305;
@@ -381,7 +360,7 @@ public class ResourcesRestTest {
     }
   
     @Test
-    public void shouldInvokeBoundaryWithRightArgumentsOnGetApplicationsWithVersionForRelease() throws ValidationException {
+    public void shouldInvokeBoundaryWithRightArgumentsOnGetApplicationsWithVersionForRelease() {
         // given
         Integer resourceGroupId = 8;
         Integer releaseId = 9;
