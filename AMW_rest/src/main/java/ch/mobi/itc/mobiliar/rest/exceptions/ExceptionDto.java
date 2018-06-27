@@ -20,10 +20,9 @@
 
 package ch.mobi.itc.mobiliar.rest.exceptions;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter @Setter
+@Data
 public class ExceptionDto {
 	
 	private String message;
