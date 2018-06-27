@@ -21,7 +21,6 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
@@ -44,13 +43,13 @@ import static org.mockito.Mockito.*;
 public class ResourceRelationsRestTest {
 
     @InjectMocks
-    ResourceRelationsRest rest;
+    private ResourceRelationsRest rest;
 
     @Mock
-    RelationEditor relationEditorMock;
+    private RelationEditor relationEditorMock;
 
     @Mock
-    ResourceLocator resourceLocatorMock;
+    private ResourceLocator resourceLocatorMock;
 
     @Before
     public void configure() {
@@ -58,99 +57,99 @@ public class ResourceRelationsRestTest {
     }
 
     @Test
-    public void shouldReturnBadRequestIfSlaveResourceGroupNameIsNull() throws AMWException, ForeignableOwnerViolationException {
+    public void shouldReturnBadRequestIfSlaveResourceGroupNameIsNull() {
         // given
         rest.resourceGroupName = "Master";
         rest.releaseName = "TestRelease";
+        String relationType = "consumed";
 
         // when
-        Response response = rest.addRelation(null);
+        Response response = rest.addRelation(null,relationType);
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void shouldReturnBadRequestIfResourceTypeIsNull() throws AMWException, ForeignableOwnerViolationException {
+    public void shouldReturnBadRequestIfResourceTypeIsNull() {
         // given
         rest.resourceGroupName = "Master";
         rest.releaseName = "TestRelease";
-        rest.resourceType = null;
 
         // when
-        Response response = rest.addRelation("Slave");
+        Response response = rest.addRelation("Slave", null);
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void shouldReturnBadRequestIfResourceTypeIsInvalid() throws AMWException, ForeignableOwnerViolationException {
+    public void shouldReturnBadRequestIfResourceTypeIsInvalid() {
         // given
         rest.resourceGroupName = "Master";
         rest.releaseName = "TestRelease";
-        rest.resourceType = "Test";
+        String relationType = "Test";
 
         // when
-        Response response = rest.addRelation("Slave");
+        Response response = rest.addRelation("Slave", relationType);
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void shouldInvokeRelationEditorWithRightArgumentsForConsumedRelations() throws AMWException, ForeignableOwnerViolationException, ValidationException {
+    public void shouldInvokeRelationEditorWithRightArgumentsForConsumedRelations() throws AMWException, ValidationException {
         // given
         rest.resourceGroupName = "Master";
         rest.releaseName = "TestRelease";
-        rest.resourceType = "consumed";
+        String relationType = "consumed";
         String slaveResourceGroupName = "Slave";
 
-        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
+        when(relationEditorMock.isValidResourceRelationType(relationType)).thenReturn(true);
 
         // when
-        Response response = rest.addRelation(slaveResourceGroupName);
+        Response response = rest.addRelation(slaveResourceGroupName, relationType);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, false, null, rest.resourceType, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, false, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
         assertEquals(CREATED.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void shouldInvokeResourceRelationBoundaryAndRelationEditorWithRightArgumentsForProvidedRelations() throws AMWException, ForeignableOwnerViolationException, ValidationException {
+    public void shouldInvokeResourceRelationBoundaryAndRelationEditorWithRightArgumentsForProvidedRelations() throws AMWException, ValidationException {
         // given
         rest.resourceGroupName = "Master";
         rest.releaseName = "TestRelease";
-        rest.resourceType = "PROVIDED";
+        String relationType =  "PROVIDED";
         String slaveResourceGroupName = "Slave";
 
-        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
+        when(relationEditorMock.isValidResourceRelationType(relationType)).thenReturn(true);
 
         // when
-        Response response = rest.addRelation(slaveResourceGroupName);
+        Response response = rest.addRelation(slaveResourceGroupName, relationType);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, rest.resourceType, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
         assertEquals(CREATED.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void shouldInvokeResourceRelationBoundaryAndRelationEditorWithRightArgumentsForProvidedRelationsAndFail() throws AMWException, ForeignableOwnerViolationException, ValidationException {
+    public void shouldInvokeResourceRelationBoundaryAndRelationEditorWithRightArgumentsForProvidedRelationsAndFail() throws AMWException, ValidationException {
         // given
         rest.resourceGroupName = "Master";
         rest.releaseName = "TestRelease";
-        rest.resourceType = "PROVIDED";
+        String relationType =  "PROVIDED";
         String slaveResourceGroupName = "Slave";
 
-        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
+        when(relationEditorMock.isValidResourceRelationType(relationType)).thenReturn(true);
         doThrow(new ValidationException("Resource is already provided by another ResourceGroup")).when(relationEditorMock)
-                .addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, rest.resourceType, rest.releaseName, ForeignableOwner.getSystemOwner());
+                .addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
 
         // when
-        Response response = rest.addRelation(slaveResourceGroupName);
+        Response response = rest.addRelation(slaveResourceGroupName, relationType);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, rest.resourceType, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
@@ -159,13 +158,13 @@ public class ResourceRelationsRestTest {
         // given
         rest.resourceGroupName = "Master";
         rest.releaseName = "TestRelease";
-        rest.resourceType = "InValid";
+        String relationType = "InValid";
         String slaveResourceGroupName = "Slave";
 
-        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(false);
+        when(relationEditorMock.isValidResourceRelationType(relationType)).thenReturn(false);
 
         // when
-        Response response = rest.removeRelation(slaveResourceGroupName);
+        Response response = rest.removeRelation(slaveResourceGroupName, relationType);
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
@@ -176,15 +175,15 @@ public class ResourceRelationsRestTest {
         // given
         rest.resourceGroupName = "Master";
         rest.releaseName = "TestRelease";
-        rest.resourceType = "CONSUMED";
+        String relationType = "CONSUMED";
         String slaveResourceGroupName = "Slave";
         ResourceEntity resourceWithoutRelations = new ResourceEntity();
 
-        when(relationEditorMock.isValidResourceRelationType(rest.resourceType)).thenReturn(true);
+        when(relationEditorMock.isValidResourceRelationType(relationType)).thenReturn(true);
         when(resourceLocatorMock.getResourceByNameAndReleaseWithConsumedRelations(anyString(), anyString())).thenReturn(resourceWithoutRelations);
 
         // when
-        Response response = rest.removeRelation(slaveResourceGroupName);
+        Response response = rest.removeRelation(slaveResourceGroupName, relationType);
 
         // then
         assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
