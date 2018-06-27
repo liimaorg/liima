@@ -28,21 +28,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @XmlRootElement(name = "resource")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@NoArgsConstructor
 public class ResourceWithRelationsDTO {
 
     private String name;
-
     private String type;
-
     private String release;
-
     private List<ResourceRelationDTO> relations;
-    
-    ResourceWithRelationsDTO(){}
 
     public ResourceWithRelationsDTO(ResourceGroupEntity resourceGroup, String release, List<ResourceRelationDTO> relations){
         this.name = resourceGroup.getName();

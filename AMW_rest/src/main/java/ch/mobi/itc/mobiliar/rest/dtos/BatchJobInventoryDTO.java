@@ -20,6 +20,8 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
+import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,21 +36,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "batchJobInventory")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NoArgsConstructor
 public class BatchJobInventoryDTO {
 
     private List<ResourceGroupDTO> resources = new ArrayList<ResourceGroupDTO>();
-
     private List<BatchResourceRelationDTO> batchRelations = new ArrayList<BatchResourceRelationDTO>();
-
     private List<String> warnings = new ArrayList<>();
-       
-    public BatchJobInventoryDTO(){}
 
     public BatchJobInventoryDTO(List<ResourceGroupDTO> resources, List<BatchResourceRelationDTO> relations){
         if(resources!=null && !resources.isEmpty()){
             this.resources = resources;
         }
-        
         if(relations!=null && !relations.isEmpty()){
             this.batchRelations = relations;
         }

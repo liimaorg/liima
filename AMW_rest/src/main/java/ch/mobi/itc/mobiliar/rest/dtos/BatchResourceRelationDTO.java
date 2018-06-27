@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import lombok.NoArgsConstructor;
 
 /**
  * DTO für JavaBatch Monitor: ein Job im Job-Inventar
@@ -37,6 +38,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
  */
 @XmlRootElement(name = "batchRelations")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NoArgsConstructor
 public class BatchResourceRelationDTO {
 
     private String batchApp; //z.B. ch_mobi_fofa_fofa_selection
@@ -56,8 +58,6 @@ public class BatchResourceRelationDTO {
     private boolean ws = false;
     private boolean file = false;
     private List<String> wsList = new ArrayList<>(); //store List of consumed ws for filtering
-
-    BatchResourceRelationDTO(){}
 
     public BatchResourceRelationDTO(ConsumedResourceRelationEntity relation){
         batchApp = relation.getMasterResourceName(); 

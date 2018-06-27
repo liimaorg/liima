@@ -20,19 +20,16 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ComparatorFilterOptionDTO {
 
 	private String name;
 	private String displayName;
 
-	public ComparatorFilterOptionDTO() {}
-
-	public ComparatorFilterOptionDTO(String name, String displayName) {
-		this.name = name;
-		this.displayName = displayName;
-	}
-	
 }

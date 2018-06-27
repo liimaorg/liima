@@ -23,19 +23,17 @@ package ch.mobi.itc.mobiliar.rest.dtos;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
+@NoArgsConstructor
 public class ResourceTagDTO {
 
     private Integer id;
-
     private String label;
-
     private Date tagDate;
-
-    ResourceTagDTO(){}
 
     public ResourceTagDTO(ResourceTagEntity resourceTag){
         this.id = resourceTag.getId();

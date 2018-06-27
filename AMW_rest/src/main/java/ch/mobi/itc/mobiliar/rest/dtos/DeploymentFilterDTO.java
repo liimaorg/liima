@@ -22,8 +22,10 @@ package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class DeploymentFilterDTO {
     
     private String name;

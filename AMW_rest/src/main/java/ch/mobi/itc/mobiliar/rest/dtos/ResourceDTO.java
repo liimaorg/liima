@@ -31,10 +31,12 @@ import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @XmlRootElement(name = "release")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@NoArgsConstructor
 public class ResourceDTO {
 
     private Integer id;
@@ -43,8 +45,6 @@ public class ResourceDTO {
     private List<PropertyDTO> properties;
     private List<ResourceTagDTO> resourceTags;
     private List<TemplateDTO> templates;
-
-    ResourceDTO(){}
 
     public ResourceDTO(ResourceEntity resource, List<ResourceRelationDTO> relations, List<PropertyDTO> properties, List<TemplateDTO> templates){
         this.id = resource.getRelease().getId();

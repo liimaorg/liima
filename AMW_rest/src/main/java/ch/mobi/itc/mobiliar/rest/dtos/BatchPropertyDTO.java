@@ -26,7 +26,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * DTO für JavaBatch Monitor: Job Properties
@@ -36,20 +38,12 @@ import lombok.Data;
 @XmlRootElement(name = "property")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BatchPropertyDTO{
 
-    private String batchApp;   
-
+    private String batchApp;
     private String jobId;
-
     private List<PropertyDTO> properties;
 
-    BatchPropertyDTO(){}
-
-    public BatchPropertyDTO(String batchApp, String jobId, List<PropertyDTO> properties){
-        this.batchApp=batchApp;
-        this.jobId=jobId;
-        this.properties=properties;
-
-    }
 }

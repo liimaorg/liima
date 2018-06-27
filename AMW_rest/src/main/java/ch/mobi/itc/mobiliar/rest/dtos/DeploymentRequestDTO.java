@@ -21,6 +21,7 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -32,6 +33,7 @@ import java.util.List;
 @XmlRootElement(name = "deploymentRequest")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @Data
+@NoArgsConstructor
 public class DeploymentRequestDTO {
 	
 	private String appServerName;
@@ -47,9 +49,6 @@ public class DeploymentRequestDTO {
 	private String releaseName; // optional
 	private List<DeploymentParameterDTO> deploymentParameters; // optional
 	private List<Integer> contextIds; // optional
-
-	public DeploymentRequestDTO() {	
-	}
 	
 	//copy constructor
 	public DeploymentRequestDTO(DeploymentRequestDTO deploymentRequestDto) {
@@ -88,6 +87,5 @@ public class DeploymentRequestDTO {
 		}
 		deploymentParameters.add(new DeploymentParameterDTO(keyName, value));
 	}
-	
 	
 }
