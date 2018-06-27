@@ -29,6 +29,6 @@ import javax.ws.rs.ext.Provider;
 public class NoResultExceptionMapper implements ExceptionMapper<NoResultException> {
     @Override
     public Response toResponse(NoResultException exception) {
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.status(Response.Status.NOT_FOUND).entity(new ExceptionDto(exception)).build();
     }
 }
