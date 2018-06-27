@@ -1,5 +1,5 @@
 # Liima
-[![Build Status](https://travis-ci.org/liimaorg/liima.svg?branch=master)](https://travis-ci.org/liimaorg/liima)
+[![Build Status](https://travis-ci.org/mobiliar/kube-oidc.svg?branch=master)](https://travis-ci.org/mobiliar/kube-oidc)
 
 Liima - (AMW) Automated Middleware allows you to manage the configurations of
 your Java EE applications on an unlimited number of different environments
