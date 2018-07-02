@@ -40,7 +40,6 @@ import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelatio
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.Selected;
@@ -159,7 +158,7 @@ public class PropertyEditDataProvider implements Serializable {
         return currentContext.isGlobal();
     }
 
-    public void onContextChanged(@Observes ContextEntity contextEntity) throws GeneralDBException {
+    public void onContextChanged(@Observes ContextEntity contextEntity) {
         if (isCurrentFocusOnResource()) {
             onChangedResource((ResourceEntity) resourceOrResourceType);
         } else if (isCurrentFocusOnResourceType()) {
@@ -168,11 +167,11 @@ public class PropertyEditDataProvider implements Serializable {
         this.currentContext = contextEntity;
     }
 
-    public void onChangedResource(@Observes ResourceEntity resourceEntity) throws GeneralDBException {
+    public void onChangedResource(@Observes ResourceEntity resourceEntity) {
         reloadResourceEditProperties(resourceEntity);
     }
 
-    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) throws GeneralDBException {
+    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
         reloadResourceTypeEditProperties(resourceTypeEntity);
     }
 
