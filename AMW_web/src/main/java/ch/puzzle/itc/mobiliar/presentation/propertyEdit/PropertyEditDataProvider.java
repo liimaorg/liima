@@ -327,12 +327,12 @@ public class PropertyEditDataProvider implements Serializable {
 
     private void preventDuplicateIdentifiers() throws AMWException {
         Collection<List<ResourceEditRelation>> resourceEditRelations = resourceRelation.getConsumedRelations().values();
-        for (List<ResourceEditRelation> consumedRelations: resourceEditRelations) {
+        for (List<ResourceEditRelation> consumedRelations : resourceEditRelations) {
             for (ResourceEditRelation consumedRelation : consumedRelations) {
                 if (consumedRelation.getSlaveName().equals(relationIdentifier)) {
                     throw new AMWException("RelationName '" + relationIdentifier + "' is not allowed");
                 }
-                if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier) && ! consumedRelation.equals(resourceRelation.getResourceRelation())) {
+                if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier) && !consumedRelation.equals(resourceRelation.getResourceRelation())) {
                     throw new AMWException("RelationName '" + relationIdentifier + "' is already taken");
                 }
             }
@@ -420,7 +420,6 @@ public class PropertyEditDataProvider implements Serializable {
             reloadResourceTypeEditProperties(resourceView.getResourceType());
         }
     }
-
 
     private List<ResourceEditProperty> reloadResourceEditProperties(ResourceEntity resourceEntity) {
         filteredResourceProperties = new ArrayList<>();
