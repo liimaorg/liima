@@ -45,7 +45,6 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.Selected;
 import ch.puzzle.itc.mobiliar.presentation.common.ContextDataProvider;
-import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationModel;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.DataProviderHelper;
@@ -81,9 +80,6 @@ public class PropertyEditDataProvider implements Serializable {
 
     @Inject
     EditResourceView resourceView;
-
-    @Inject
-    SessionContext sessionContext;
 
     @Inject
     ContextDataProvider contextDataProvider;
