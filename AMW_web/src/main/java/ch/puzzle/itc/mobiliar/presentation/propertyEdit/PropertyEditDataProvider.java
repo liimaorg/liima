@@ -236,14 +236,19 @@ public class PropertyEditDataProvider implements Serializable {
                 relationIdentifier = currentRelation.getIdentifier();
             }
         } else {
-            currentRelationProperties = Collections.emptyList();
+            currentRelationProperties = new ArrayList<>();
         }
+        filterHostNameAndActiveFromNode();
     }
 
     private void filterHostNameAndActiveFromNode() {
-        if (isNode() && !currentContext.isEnvironment() && resourceEditProperties != null) {
+        if (isNodeOrNodeType() && !currentContext.isEnvironment() && resourceEditProperties != null) {
             filterHostNameAndActive(resourceEditProperties);
         }
+    }
+
+    private boolean isNodeOrNodeType() {
+        return isNode() || isNodeType();
     }
 
     private void filterHostNameAndActiveFromRelatedNode(ResourceEditRelation relation) {
@@ -356,6 +361,11 @@ public class PropertyEditDataProvider implements Serializable {
     public boolean isNode() {
         return isCurrentFocusOnResource()
                 && ((ResourceEntity) resourceOrResourceType).getResourceType().isNodeResourceType();
+    }
+
+    public boolean isNodeType() {
+        return isCurrentFocusOnResourceType()
+                && ((ResourceTypeEntity) resourceOrResourceType).isNodeResourceType();
     }
 
     /**
