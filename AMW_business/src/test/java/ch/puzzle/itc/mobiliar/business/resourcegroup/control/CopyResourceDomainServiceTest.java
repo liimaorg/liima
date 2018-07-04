@@ -29,13 +29,10 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -54,7 +51,7 @@ public class CopyResourceDomainServiceTest {
     ContextEntity globalContextMock;
 
     @Before
-    public void setUp(){
+    public void setUp() {
 
         globalContextMock = contextEntityBuilder.mockContextEntity("GLOBAL", null, null);
 
@@ -91,7 +88,7 @@ public class CopyResourceDomainServiceTest {
         PropertyDescriptorEntity amwPropertyDesc = new PropertyDescriptorEntityBuilder().withId(1).withPropertyName("propertyName").build();
 
         addPropertyDescriptor(originResource, amwPropertyDesc);
-        addPropertyValue(originResource, amwPropertyDesc,  "propertyValue");
+        addPropertyValue(originResource, amwPropertyDesc, "propertyValue");
 
         CopyUnit copyUnit = new CopyUnit(originResource, targetResource, CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR, ForeignableOwner.MAIA);
 
@@ -130,7 +127,7 @@ public class CopyResourceDomainServiceTest {
     }
 
     @Test
-    public void copyConsumedMasterRelations_shouldOnlyCopyAmwOwnedReleations() throws ForeignableOwnerViolationException, AMWException{
+    public void copyConsumedMasterRelations_shouldOnlyCopyAmwOwnedReleations() throws ForeignableOwnerViolationException, AMWException {
         // given
 
         ResourceEntity slave = new ResourceEntityBuilder().buildApplicationEntity("database", null, null, true);
@@ -154,7 +151,7 @@ public class CopyResourceDomainServiceTest {
     }
 
     @Test
-    public void copyProvidedMasterRelations_shouldOnlyCopyAmwOwnedReleations() throws ForeignableOwnerViolationException, AMWException{
+    public void copyProvidedMasterRelations_shouldOnlyCopyAmwOwnedReleations() throws ForeignableOwnerViolationException, AMWException {
         // given
 
         ResourceEntity provider = new ResourceEntityBuilder().buildApplicationEntity("amwws", null, null, true);
@@ -178,13 +175,13 @@ public class CopyResourceDomainServiceTest {
     }
 
     // TODO add also values on relations (AMW owned)
-    
-    private void addPropertyDescriptor(ResourceEntity resource, PropertyDescriptorEntity propertyDescriptor){
+
+    private void addPropertyDescriptor(ResourceEntity resource, PropertyDescriptorEntity propertyDescriptor) {
         ResourceContextEntity context = resource.getOrCreateContext(globalContextMock);
         context.addPropertyDescriptor(propertyDescriptor);
     }
 
-    private void addPropertyValue(ResourceEntity resource, PropertyDescriptorEntity propertyDescriptor, String value){
+    private void addPropertyValue(ResourceEntity resource, PropertyDescriptorEntity propertyDescriptor, String value) {
         ResourceContextEntity context = resource.getOrCreateContext(globalContextMock);
         PropertyEntity propertyEntity = new PropertyEntityBuilder().buildPropertyEntity(value, propertyDescriptor);
         context.addProperty(propertyEntity);
