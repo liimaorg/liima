@@ -32,7 +32,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourcesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
@@ -84,9 +83,6 @@ public abstract class BaseUseCaseIntegrationTest extends BaseIntegrationTest {
 
     @Inject
     private ResourceRelationService resourceRelationService;
-
-    @Inject
-    private ResourcesScreenDomainService resourcesScreenDomainService;
 
     @Inject
     private ResourceBoundary resourceBoundary;

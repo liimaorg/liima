@@ -20,15 +20,10 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
@@ -44,9 +39,7 @@ import org.mockito.Spy;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 
@@ -60,9 +53,6 @@ public class ResourceGroupPersistenceServiceTest {
 	@PersistenceContext
 	EntityManager entityManager;
 
-	@Mock
-	Logger log;
-
 	@InjectMocks
 	ResourceGroupPersistenceService service;
 
@@ -71,12 +61,6 @@ public class ResourceGroupPersistenceServiceTest {
 
 	@Mock
 	ResourceTypeRepository resourceTypeRepository;
-
-	@Mock
-	CommonDomainService commonService;
-
-	@InjectMocks
-	ResourcesScreenDomainService resourceService;
 
 	ResourceTypeEntity type1;
 	ResourceTypeEntity type2;
@@ -122,8 +106,7 @@ public class ResourceGroupPersistenceServiceTest {
 
 
 	@Test
-	public void test_loadGroupsForTypeName_myAmw() throws GeneralDBException, ElementAlreadyExistsException,
-	ResourceNotFoundException, ResourceTypeNotFoundException {
+	public void test_loadGroupsForTypeName_myAmw() {
 		// given
 		init();
 
@@ -152,8 +135,7 @@ public class ResourceGroupPersistenceServiceTest {
 	}
 
 	@Test
-	public void test_loadGroupsForTypeName() throws GeneralDBException, ElementAlreadyExistsException,
-	ResourceNotFoundException, ResourceTypeNotFoundException {
+	public void test_loadGroupsForTypeName() {
 		// given
 		init();
 
@@ -172,7 +154,7 @@ public class ResourceGroupPersistenceServiceTest {
 	}
 	
 	@Test
-	public void testNameUpdateWithLazyLoading() throws GeneralDBException{
+	public void testNameUpdateWithLazyLoading() {
 		init();	
 		entityManager.flush();
 		entityManager.clear();

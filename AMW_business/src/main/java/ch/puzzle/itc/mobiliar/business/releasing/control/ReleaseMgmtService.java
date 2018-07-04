@@ -23,8 +23,6 @@ package ch.puzzle.itc.mobiliar.business.releasing.control;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -48,149 +46,131 @@ import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
 @Interceptors(HasPermissionInterceptor.class)
 public class ReleaseMgmtService {
 
-	@Inject
-	ReleaseMgmtPersistenceService persistenceService;
-	
-	@Inject
-	ResourceDependencyResolverService resourceDependencyResolver;
-	
-	@Inject
-	EntityManager em;
+    @Inject
+    ReleaseMgmtPersistenceService persistenceService;
 
-	@Inject
-	Logger log;
-	
-	@Inject
-	PropertyEditor propertyEditor;
+    @Inject
+    EntityManager em;
 
-	/**
-	 * Load all releases
-	 * 
-	 * @param sortDesc
-	 * @return
-	 */
-	public List<ReleaseEntity> loadAllReleases(boolean sortDesc) {
-		return persistenceService.loadAllReleaseEntities(sortDesc);
-	}
+    @Inject
+    Logger log;
 
-	/**
-	 * @param name
-	 * @return the release entity with given name
-	 */
-	public ReleaseEntity findByName(String name) {
-		return persistenceService.findByName(name);
-	}
+    /**
+     * Load all releases
+     */
+    public List<ReleaseEntity> loadAllReleases(boolean sortDesc) {
+        return persistenceService.loadAllReleaseEntities(sortDesc);
+    }
 
-	/**
-	 * Returns a list of releases for management operations. This means, we
-	 * don't care about relations to resources or deployments but only want to
-	 * create, edit or delete plain release-instances
-	 * 
-	 * @return
-	 */
-	@HasPermission(permission = Permission.RELEASE, action = READ)
-	public List<ReleaseEntity> loadReleasesForMgmt(int startIndex, int length, boolean sortDesc) {
-		return persistenceService.loadReleaseEntities(startIndex, length, sortDesc);
-	}
+    /**
+     * @return the release entity with given name
+     */
+    public ReleaseEntity findByName(String name) {
+        return persistenceService.findByName(name);
+    }
 
-	/**
-	 * @return a list with releaseEntities, excluding the one we want to copy from
-	 */
-	public Map<Integer, ReleaseEntity> loadReleasesForCreatingNewRelease(Set<ReleaseEntity> existingReleases) {
-		Map<Integer, ReleaseEntity> releases = new HashMap<>();
-		List<ReleaseEntity> allReleases = persistenceService.loadAllReleaseEntities(false);
-		for (ReleaseEntity rel : allReleases) {
-			if (!existingReleases.contains(rel)) {
-				releases.put(rel.getId(), rel);
-			}
-		}
-		return releases;
-	}
+    /**
+     * Returns a list of releases for management operations. This means, we
+     * don't care about relations to resources or deployments but only want to
+     * create, edit or delete plain release-instances
+     */
+    @HasPermission(permission = Permission.RELEASE, action = READ)
+    public List<ReleaseEntity> loadReleasesForMgmt(int startIndex, int length, boolean sortDesc) {
+        return persistenceService.loadReleaseEntities(startIndex, length, sortDesc);
+    }
 
-	/**
-	 * @return the number of existing releases
-	 */
-	@HasPermission(permission = Permission.RELEASE, action = READ)
-	public int countReleases(){
-		return persistenceService.count();
-	}
+    /**
+     * @return a list with releaseEntities, excluding the one we want to copy from
+     */
+    public Map<Integer, ReleaseEntity> loadReleasesForCreatingNewRelease(Set<ReleaseEntity> existingReleases) {
+        Map<Integer, ReleaseEntity> releases = new HashMap<>();
+        List<ReleaseEntity> allReleases = persistenceService.loadAllReleaseEntities(false);
+        for (ReleaseEntity rel : allReleases) {
+            if (!existingReleases.contains(rel)) {
+                releases.put(rel.getId(), rel);
+            }
+        }
+        return releases;
+    }
 
-	/**
-	 * Persists the given new release.
-	 * 
-	 * @param release
-	 */
-	@HasPermission(permission = Permission.RELEASE, action = CREATE)
-	public boolean create(ReleaseEntity release) throws GeneralDBException {
-		return persistenceService.saveReleaseEntity(release);
-	}
+    /**
+     * @return the number of existing releases
+     */
+    @HasPermission(permission = Permission.RELEASE, action = READ)
+    public int countReleases() {
+        return persistenceService.count();
+    }
 
-	/**
-	 * Persists the given release - the already existing instance will be updated.
-	 *
-	 * @param release
-	 */
-	@HasPermission(permission = Permission.RELEASE, action = UPDATE)
-	public boolean update(ReleaseEntity release) throws GeneralDBException {
-		return persistenceService.saveReleaseEntity(release);
-	}
+    /**
+     * Persists the given new release.
+     */
+    @HasPermission(permission = Permission.RELEASE, action = CREATE)
+    public boolean create(ReleaseEntity release) throws GeneralDBException {
+        return persistenceService.saveReleaseEntity(release);
+    }
 
-	public ReleaseEntity getDefaultRelease(){
-		return persistenceService.getDefaultRelease();
-	}
+    /**
+     * Persists the given release - the already existing instance will be updated.
+     */
+    @HasPermission(permission = Permission.RELEASE, action = UPDATE)
+    public boolean update(ReleaseEntity release) throws GeneralDBException {
+        return persistenceService.saveReleaseEntity(release);
+    }
 
-	public List<ResourceEntity> getResourcesForRelease(Integer releaseId) {
-		return persistenceService.getResourcesForRelease(releaseId);
-	}
+    public ReleaseEntity getDefaultRelease() {
+        return persistenceService.getDefaultRelease();
+    }
 
-	
-	public Map<ReleaseEntity, Date> getDeployableReleasesForResourceGroupWithLatestDeploymentDate(ResourceGroupEntity resourceGroup, ContextEntity context){
-		Map<ReleaseEntity, Date> result = new LinkedHashMap<>();
-		List<ReleaseEntity> releases = getDeployableReleasesForResourceGroup(resourceGroup);
-		for(ReleaseEntity rel : releases){
-			DeploymentEntity deployment = getLastSuccessfulDeploymentForResourceGroup(resourceGroup, rel, context);
-			Date lastSuccessfulDeployment = null;
-			if(deployment!=null){
-				lastSuccessfulDeployment = deployment.getDeploymentDate();
-			}
-			result.put(rel, lastSuccessfulDeployment);
-		}		
-		return result;		
-	}
-	
-	private DeploymentEntity getLastSuccessfulDeploymentForResourceGroup(ResourceGroupEntity resourceGroup, ReleaseEntity release, ContextEntity context){
-		TypedQuery<DeploymentEntity> query = em.createNamedQuery(DeploymentEntity.LAST_SUCCESSFUL_DEPLOYMENT, DeploymentEntity.class);
-		query.setParameter("context", context).setParameter("release", release).setParameter("resourceGroup", resourceGroup).setParameter("deploymentState", DeploymentState.success);
-		List<DeploymentEntity> queryResult = query.getResultList();
-		if(queryResult.size()==0){
-			return null;
-		}
-		else {
-			if(queryResult.size()>1){
-				log.warning("Multiple last deployments for resource group "+resourceGroup.getId()+" in release "+release.getId()+" and in context "+context.getId()+" found...");
-			}
-			return queryResult.get(0);			
-		}		
-	}
-	
-	
-	public List<ReleaseEntity> getDeployableReleasesForResourceGroup(ResourceGroupEntity rg) {
+    public List<ResourceEntity> getResourcesForRelease(Integer releaseId) {
+        return persistenceService.getResourcesForRelease(releaseId);
+    }
 
-		TreeSet<ReleaseEntity> releases = new TreeSet<>(loadAllReleases(false));
-		if(!em.contains(rg)){
-			rg = em.merge(rg);
-		}		
-		
-		if (rg != null) {
-			SortedSet<ReleaseEntity> groupReleases = rg.getReleases();
-			return new ArrayList<>(releases.tailSet(groupReleases.first()));
-		}
-		return Collections.<ReleaseEntity> emptyList();
 
-	}
+    public Map<ReleaseEntity, Date> getDeployableReleasesForResourceGroupWithLatestDeploymentDate(ResourceGroupEntity resourceGroup, ContextEntity context) {
+        Map<ReleaseEntity, Date> result = new LinkedHashMap<>();
+        List<ReleaseEntity> releases = getDeployableReleasesForResourceGroup(resourceGroup);
+        for (ReleaseEntity rel : releases) {
+            DeploymentEntity deployment = getLastSuccessfulDeploymentForResourceGroup(resourceGroup, rel, context);
+            Date lastSuccessfulDeployment = null;
+            if (deployment != null) {
+                lastSuccessfulDeployment = deployment.getDeploymentDate();
+            }
+            result.put(rel, lastSuccessfulDeployment);
+        }
+        return result;
+    }
 
-	public void changeReleaseOfResource(ResourceEntity resource, ReleaseEntity release) throws ResourceNotFoundException {
-		persistenceService.changeReleaseOfResource(resource.getId(), release.getId());
-	}
+    private DeploymentEntity getLastSuccessfulDeploymentForResourceGroup(ResourceGroupEntity resourceGroup, ReleaseEntity release, ContextEntity context) {
+        TypedQuery<DeploymentEntity> query = em.createNamedQuery(DeploymentEntity.LAST_SUCCESSFUL_DEPLOYMENT, DeploymentEntity.class);
+        query.setParameter("context", context).setParameter("release", release).setParameter("resourceGroup", resourceGroup).setParameter("deploymentState", DeploymentState.success);
+        List<DeploymentEntity> queryResult = query.getResultList();
+        if (queryResult.size() == 0) {
+            return null;
+        } else {
+            if (queryResult.size() > 1) {
+                log.warning("Multiple last deployments for resource group " + resourceGroup.getId() + " in release " + release.getId() + " and in context " + context.getId() + " found...");
+            }
+            return queryResult.get(0);
+        }
+    }
+
+    public List<ReleaseEntity> getDeployableReleasesForResourceGroup(ResourceGroupEntity rg) {
+
+        TreeSet<ReleaseEntity> releases = new TreeSet<>(loadAllReleases(false));
+        if (!em.contains(rg)) {
+            rg = em.merge(rg);
+        }
+
+        if (rg != null) {
+            SortedSet<ReleaseEntity> groupReleases = rg.getReleases();
+            return new ArrayList<>(releases.tailSet(groupReleases.first()));
+        }
+        return Collections.<ReleaseEntity>emptyList();
+
+    }
+
+    public void changeReleaseOfResource(ResourceEntity resource, ReleaseEntity release) throws ResourceNotFoundException {
+        persistenceService.changeReleaseOfResource(resource.getId(), release.getId());
+    }
 
 }
