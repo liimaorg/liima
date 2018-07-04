@@ -21,7 +21,6 @@
 package ch.puzzle.itc.mobiliar.business.environment.control;
 
 import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
-import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.security.control.SecurityScreenDomainService;
@@ -50,19 +49,16 @@ public class EnvironmentsScreenDomainService {
 
 	@Inject
 	private Logger log;
-	
+
 	@Inject
 	private EntityManager entityManager;
-	
-	@Inject
-	private CommonDomainService commonService;
-	
+
 	@Inject
 	private ContextDomainService contextDomainService;
-	
+
 	@Inject
 	protected ResourceTypeProvider resourceTypeProvider;
-	
+
 	@Inject
 	private SecurityScreenDomainService securityService;
 
@@ -72,7 +68,7 @@ public class EnvironmentsScreenDomainService {
 	 * @throws SavePropertyException
 	 */
 	@HasPermission(permission = Permission.SAVE_SETTINGS_ENV)
-	public void saveEnvironment(Integer contextId, String newContextName) throws ResourceNotFoundException, SavePropertyException {
+	public void saveEnvironment(Integer contextId, String newContextName) throws ResourceNotFoundException {
 		try {
 			ContextEntity context = QueryUtils.singleResult(loadContextEntityWithPropertyDescriptors(contextId));
 			String oldContextName = context.getName();
@@ -93,19 +89,19 @@ public class EnvironmentsScreenDomainService {
 	}
 
 	/**
-	 * @throws ElementAlreadyExistsException 
+	 * @throws ElementAlreadyExistsException
 	 * Erstellt einen neuen Context anhand den Name und den superContext. Der Kontext ist an einen Benutzer zugewisen
 	 * @param newName
 	 * @param superContextId
 	 * @throws ResourceNotFoundException
-	 * @throws ElementAlreadyExistsException 
-	 * @throws  
+	 * @throws ElementAlreadyExistsException
+	 * @throws
 	 */
 	@HasPermission(permission = Permission.ADD_NEW_ENV_OR_DOM)
 	public ContextEntity createContextByName(String newName, Integer superContextId) throws ResourceNotFoundException, ElementAlreadyExistsException{
 		try{
 			if(getContextByName(newName)!=null){
-				String message = "Der Kontext mit dem Namen " + newName + " ist bereits vorhanden und kann nicht erstellen werden"; 
+				String message = "Der Kontext mit dem Namen " + newName + " ist bereits vorhanden und kann nicht erstellen werden";
 				throw new ElementAlreadyExistsException(message,ContextEntity.class,newName);
 			}
 		}catch (NoResultException e) {
@@ -116,7 +112,7 @@ public class EnvironmentsScreenDomainService {
 		ContextEntity entity = new ContextEntity();
 		String contextName;
 		if(superContext!=null){
-			ContextNames childContext = ContextNames.valueOf(superContext.getContextType().getName()).getChildContext();			
+			ContextNames childContext = ContextNames.valueOf(superContext.getContextType().getName()).getChildContext();
 			if(childContext==null) {
 				throw new ResourceNotFoundException("Es existiert kein Unterkontext - die Erstellung ist nicht möglich!");
 			}
@@ -159,7 +155,7 @@ public class EnvironmentsScreenDomainService {
 		ContextEntity contextEntity = null;
 		contextEntity =  (ContextEntity) entityManager.createQuery("from ContextEntity c where c.name=:contextName").setParameter("contextName", contextName).getSingleResult();
 		if(contextEntity == null){
-			String message = "Der Context mit dem Namen: " + contextName + " existiert nicht auf der DB"; 
+			String message = "Der Context mit dem Namen: " + contextName + " existiert nicht auf der DB";
 			log.info(message);
 			throw new NoResultException(message);
 		}
