@@ -71,5 +71,6 @@ public class RESTApplication extends Application {
         resources.add(ServerTupleCSVBodyWriter.class);
         resources.add(HealthCheck.class);
         resources.add(SettingsRest.class);
+        resources.add(ObjectMapperConfig.class);
     }
 }
