@@ -183,11 +183,11 @@ public class AuditService {
         }
     }
 
-    public void setResourceTypeIdInThreadLocal(int resourceTypeId) {
+    public void setResourceTypeIdInThreadLocal(Integer resourceTypeId) {
         ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_TYPE_ID, resourceTypeId);
     }
 
-    public void setResourceIdInThreadLocal(int resourceId) {
+    public void setResourceIdInThreadLocal(Integer resourceId) {
         ThreadLocalUtil.setThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID, resourceId);
     }
 
