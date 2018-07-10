@@ -42,7 +42,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceImportService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourcesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -94,9 +93,6 @@ public class MaiaAmwFederationServiceImportHandlerTest {
     }
 
     @Mock
-    private ResourcesScreenDomainService resourcesServiceMock;
-
-    @Mock
     private ResourceBoundary resourceBoundaryMock;
 
     @Mock
@@ -104,7 +100,6 @@ public class MaiaAmwFederationServiceImportHandlerTest {
 
     @Mock
     private ResourceTypeDomainService resourceTypeServiceMock;
-
 
     @Mock
     private PropertyImportService propertyImportServiceMock;
@@ -310,13 +305,13 @@ public class MaiaAmwFederationServiceImportHandlerTest {
 
         Resource resourceMock = mock(Resource.class);
         when(resourceMock.getEntity()).thenReturn(cpiResource);
-        when(resourcesServiceMock.getOrCreateNewResourceByName(ForeignableOwner.MAIA, consumedPortDisplayName, cpiTypeId, RELEASE_ALPHA.getId())).thenReturn(resourceMock);
+        when(resourceBoundaryMock.getOrCreateNewResourceByName(ForeignableOwner.MAIA, consumedPortDisplayName, cpiTypeId, RELEASE_ALPHA.getId())).thenReturn(resourceMock);
 
         // when
         serviceImportHandler.handleUpdateApplicationRelease(app1, appBinding, RELEASE_ALPHA);
 
         // then
-        verify(resourcesServiceMock).getOrCreateNewResourceByName(ForeignableOwner.MAIA, cpiResource.getName(), cpiTypeId, RELEASE_ALPHA.getId());
+        verify(resourceBoundaryMock).getOrCreateNewResourceByName(ForeignableOwner.MAIA, cpiResource.getName(), cpiTypeId, RELEASE_ALPHA.getId());
     }
 
     @Test
@@ -339,7 +334,7 @@ public class MaiaAmwFederationServiceImportHandlerTest {
 
         Resource resourceMock = mock(Resource.class);
         when(resourceMock.getEntity()).thenReturn(cpiResource);
-        when(resourcesServiceMock.getOrCreateNewResourceByName(ForeignableOwner.MAIA, consumedPortDisplayName, cpiTypeId, RELEASE_ALPHA.getId())).thenReturn(resourceMock);
+        when(resourceBoundaryMock.getOrCreateNewResourceByName(ForeignableOwner.MAIA, consumedPortDisplayName, cpiTypeId, RELEASE_ALPHA.getId())).thenReturn(resourceMock);
 
         // when
         serviceImportHandler.handleUpdateApplicationRelease(app1, appBinding, RELEASE_ALPHA);
@@ -424,13 +419,13 @@ public class MaiaAmwFederationServiceImportHandlerTest {
 
         Resource resourceMock = mock(Resource.class);
         when(resourceMock.getEntity()).thenReturn(ppiResource);
-        when(resourcesServiceMock.getOrCreateNewResourceByName(ForeignableOwner.MAIA, providedPortDisplayName, ppiTypeId, RELEASE_ALPHA.getId())).thenReturn(resourceMock);
+        when(resourceBoundaryMock.getOrCreateNewResourceByName(ForeignableOwner.MAIA, providedPortDisplayName, ppiTypeId, RELEASE_ALPHA.getId())).thenReturn(resourceMock);
 
         // when
         serviceImportHandler.handleUpdateApplicationRelease(app1, appBinding, RELEASE_ALPHA);
 
         // then
-        verify(resourcesServiceMock).getOrCreateNewResourceByName(ForeignableOwner.MAIA, ppiResource.getName(), ppiTypeId, RELEASE_ALPHA.getId());
+        verify(resourceBoundaryMock).getOrCreateNewResourceByName(ForeignableOwner.MAIA, ppiResource.getName(), ppiTypeId, RELEASE_ALPHA.getId());
     }
 
     @Test
@@ -455,7 +450,7 @@ public class MaiaAmwFederationServiceImportHandlerTest {
 
         Resource resourceMock = mock(Resource.class);
         when(resourceMock.getEntity()).thenReturn(ppiResource);
-        when(resourcesServiceMock.getOrCreateNewResourceByName(ForeignableOwner.MAIA, providedPortDisplayName, ppiTypeId, RELEASE_ALPHA.getId())).thenReturn(resourceMock);
+        when(resourceBoundaryMock.getOrCreateNewResourceByName(ForeignableOwner.MAIA, providedPortDisplayName, ppiTypeId, RELEASE_ALPHA.getId())).thenReturn(resourceMock);
 
         // when
         serviceImportHandler.handleUpdateApplicationRelease(app1, appBinding, RELEASE_ALPHA);
