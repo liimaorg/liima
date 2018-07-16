@@ -316,4 +316,15 @@ public class RestrictionsRest {
         return Response.status(OK).entity(restrictionList).build();
     }
 
+    /**
+     * Reload the permission cache
+     */
+    @POST
+    @Path("/reload")
+    @ApiOperation(value = "Reload the permission cache")
+    public Response reloadCache() {
+        permissionBoundary.reloadCache();
+        return Response.status(OK).build();
+    }
+
 }

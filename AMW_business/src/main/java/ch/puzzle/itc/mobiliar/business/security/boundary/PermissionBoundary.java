@@ -431,7 +431,7 @@ public class PermissionBoundary implements Serializable {
             createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
             createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
             createAutoAssignedRestriction(getUserName(), Permission.DEPLOYMENT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
-            permissionRepository.forceReloadingOfLists();
+            reloadCache();
         }
     }
 
@@ -455,7 +455,7 @@ public class PermissionBoundary implements Serializable {
         if (!delegated || canDelegateThisPermission(permissionName, resourceGroupId, resourceTypeName, contextName, action)) {
             RestrictionEntity restriction = new RestrictionEntity();
             if (reload) {
-                permissionRepository.forceReloadingOfLists();
+                reloadCache();
             }
             return createRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
                     contextName, action, restriction);
@@ -527,7 +527,7 @@ public class PermissionBoundary implements Serializable {
             }
         }
         if (reload) {
-            permissionRepository.forceReloadingOfLists();
+            reloadCache();
         }
         return count;
     }
@@ -611,7 +611,7 @@ public class PermissionBoundary implements Serializable {
         }
         restrictionRepository.merge(restriction);
         if (reload) {
-            permissionRepository.forceReloadingOfLists();
+            reloadCache();
         }
         return true;
     }
@@ -623,7 +623,7 @@ public class PermissionBoundary implements Serializable {
         }
         restrictionRepository.deleteRestrictionById(id);
         if (reload) {
-            permissionRepository.forceReloadingOfLists();
+            reloadCache();
         }
     }
 
@@ -845,4 +845,8 @@ public class PermissionBoundary implements Serializable {
         return false;
     }
 
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
+    public void reloadCache() {
+        permissionRepository.forceReloadingOfLists();
+    }
 }
