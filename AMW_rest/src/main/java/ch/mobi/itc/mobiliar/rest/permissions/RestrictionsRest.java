@@ -63,7 +63,7 @@ public class RestrictionsRest {
     @POST
     @ApiOperation(value = "Add a Restriction")
     public Response addRestriction(@ApiParam("Add a Restriction, either a role- or a userName must be set") RestrictionDTO request,
-                                   @QueryParam("delegation") boolean delegation) {
+                                   @QueryParam("delegation") boolean delegation, @DefaultValue("true") @QueryParam("reload") boolean reload) {
         Integer id;
         if (request.getId() != null) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
@@ -73,7 +73,7 @@ public class RestrictionsRest {
         }
         try {
             id = permissionBoundary.createRestriction(request.getRoleName(), request.getUserName(), request.getPermission().getName(), request.getResourceGroupId(),
-                    request.getResourceTypeName(), request.getResourceTypePermission(), request.getContextName(), request.getAction(), delegation);
+                    request.getResourceTypeName(), request.getResourceTypePermission(), request.getContextName(), request.getAction(), delegation, reload);
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
@@ -93,14 +93,14 @@ public class RestrictionsRest {
     @Path("/multi/")
     @ApiOperation(value = "Add a multiple Restrictions")
     public Response addRestriction(@ApiParam("Add multiple Restrictions, either a role- or one or more userNames must be set") RestrictionsCreationDTO request,
-                                   @QueryParam("delegation") boolean delegation) {
+                                   @QueryParam("delegation") boolean delegation, @DefaultValue("true") @QueryParam("reload") boolean reload) {
         if (request.getPermissionNames().isEmpty()) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("At least one Permission is required")).build();
         }
         int count;
         try {
             count = permissionBoundary.createMultipleRestrictions(request.getRoleName(), request.getUserNames(), request.getPermissionNames(), request.getResourceGroupIds(),
-                    request.getResourceTypeNames(), request.getResourceTypePermission(), request.getContextNames(), request.getActions(), delegation);
+                    request.getResourceTypeNames(), request.getResourceTypePermission(), request.getContextNames(), request.getActions(), delegation, reload);
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
@@ -146,12 +146,13 @@ public class RestrictionsRest {
     // support digit only
     @Produces("application/json")
     @ApiOperation(value = "Update a Restriction")
-    public Response updateRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id, RestrictionDTO request) {
+    public Response updateRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id, RestrictionDTO request,
+                                      @DefaultValue("true") @QueryParam("reload") boolean reload) {
         boolean success;
         try {
             success = permissionBoundary.updateRestriction(id, request.getRoleName(), request.getUserName(), request.getPermission().getName(),
                     request.getResourceGroupId(), request.getResourceTypeName(), request.getResourceTypePermission(),
-                    request.getContextName(), request.getAction());
+                    request.getContextName(), request.getAction(), reload);
         } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
@@ -169,9 +170,10 @@ public class RestrictionsRest {
     @Path("/{id : \\d+}")
     // support digit only
     @ApiOperation(value = "Remove a Restriction")
-    public Response deleteRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id) {
+    public Response deleteRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id,
+                                      @DefaultValue("true") @QueryParam("reload") boolean reload) {
         try {
-            permissionBoundary.removeRestriction(id);
+            permissionBoundary.removeRestriction(id, reload);
         } catch (AMWException e) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto(e.getMessage())).build();
         }
