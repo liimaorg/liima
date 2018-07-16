@@ -428,9 +428,11 @@ public class PermissionBoundary implements Serializable {
             createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_PROPERTY_DECRYPT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
             createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEMPLATE.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
             createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(getUserName(), Permission.DEPLOYMENT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            if (resource.getResourceType().isApplicationServerResourceType()) {
+                createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+                createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+                createAutoAssignedRestriction(getUserName(), Permission.DEPLOYMENT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            }
             reloadCache();
         }
     }

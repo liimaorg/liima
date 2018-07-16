@@ -854,7 +854,7 @@ public class PermissionBoundaryTest {
 
         // then
         verify(permissionService).hasPermission(Permission.ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE);
-        verify(restrictionRepository, times(8)).create(any(RestrictionEntity.class));
+        verify(restrictionRepository, times(5)).create(any(RestrictionEntity.class));
     }
 
     @Test
