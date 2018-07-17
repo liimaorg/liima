@@ -874,6 +874,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(2));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test
@@ -893,6 +894,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(4));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test
@@ -914,6 +916,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(6));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test
@@ -932,6 +935,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(12));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test
@@ -952,6 +956,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(24));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test
@@ -972,6 +977,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(48));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test
@@ -994,6 +1000,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(48));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test
@@ -1014,6 +1021,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(24));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test
@@ -1033,6 +1041,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(24));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+        verify(permissionRepository, times(1)).forceReloadingOfLists();
     }
 
     @Test
@@ -1045,11 +1054,12 @@ public class PermissionBoundaryTest {
         when(permissionRepository.getPermissionByName(resourceTypePermission.getValue())).thenReturn(resourceTypePermission);
 
         // when
-        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, null, ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE), false, true);
+        int total = permissionBoundary.createMultipleRestrictions(roleName1, Arrays.asList(userName1, userName2), Arrays.asList(resourcePermission.getValue(), resourceTypePermission.getValue()), null, null, ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE), false, false);
 
         // then
         assertThat(total, is(12));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
+        verify(permissionRepository, times(0)).forceReloadingOfLists();
     }
 
     @Test(expected=AMWException.class)
@@ -1062,6 +1072,7 @@ public class PermissionBoundaryTest {
 
         // when // then
         permissionBoundary.createMultipleRestrictions(roleName1, null, Arrays.asList(resourcePermission.getValue()), Arrays.asList(1), Arrays.asList(resourceTypeName1), ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE), false, true);
+        verify(permissionRepository, times(0)).forceReloadingOfLists();
     }
 
 }

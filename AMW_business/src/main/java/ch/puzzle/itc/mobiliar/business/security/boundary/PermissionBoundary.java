@@ -456,11 +456,12 @@ public class PermissionBoundary implements Serializable {
             throws AMWException {
         if (!delegated || canDelegateThisPermission(permissionName, resourceGroupId, resourceTypeName, contextName, action)) {
             RestrictionEntity restriction = new RestrictionEntity();
+            Integer id = createRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName,
+                    resourceTypePermission, contextName, action, restriction);
             if (reload) {
                 reloadCache();
             }
-            return createRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
-                    contextName, action, restriction);
+            return id;
         }
         throw new AMWException("No permission to create this permission");
     }
@@ -487,16 +488,16 @@ public class PermissionBoundary implements Serializable {
             throw new AMWException("Only ResourceGroupId(s) OR ResourceTypeName(s) must be set");
         }
         if (userNames == null) {
-            userNames = new ArrayList();
+            userNames = new ArrayList<>();
         }
         if (resourceGroupIds == null) {
-            resourceGroupIds = new ArrayList();
+            resourceGroupIds = new ArrayList<>();
         }
         if (resourceTypeNames == null) {
-            resourceTypeNames = new ArrayList();
+            resourceTypeNames = new ArrayList<>();
         }
         if (contextNames == null || contextNames.isEmpty()) {
-            contextNames = new ArrayList();
+            contextNames = new ArrayList<>();
             contextNames.add(null);
         }
 
