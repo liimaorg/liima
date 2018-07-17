@@ -212,8 +212,20 @@ public class RestrictionsRest {
     @GET
     @Path("/roles/{roleName}")
     @ApiOperation(value = "Get all Restrictions assigned to a specific Role")
-    public Response getRoleRestriction(@ApiParam("UserName") @PathParam("roleName") String roleName) {
+    public Response getRoleRestriction(@ApiParam("RoleName") @PathParam("roleName") String roleName) {
         return restrictionsToResponse(permissionBoundary.getRestrictionsByRoleName(roleName));
+    }
+
+    /**
+     * Removes a role with all it's permissions
+     * @param id
+     */
+    @DELETE
+    @Path("/roles/{roleName}")
+    @ApiOperation(value = "Removes a role with all it's permissions")
+    public Response deleteRole(@ApiParam("RoleName") @PathParam("roleName") String roleName, @DefaultValue("true") @QueryParam("reload") boolean reload) {
+        permissionBoundary.deleteRole(roleName, reload);
+        return Response.status(OK).build();
     }
 
     /**

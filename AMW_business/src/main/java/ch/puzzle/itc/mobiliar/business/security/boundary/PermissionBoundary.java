@@ -702,6 +702,19 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
+     * Removes a role with all it's permissions
+     *
+     * @return List<RoleEntity>
+     */
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
+    public void deleteRole(String roleName, boolean reload) {
+        permissionRepository.deleteRole(roleName);
+        if (reload) {
+            reloadCache();
+        }
+    }
+
+    /**
      * Returns a list of all PermissionEntities (used by REST)
      *
      * @return List<PermissionEntity>

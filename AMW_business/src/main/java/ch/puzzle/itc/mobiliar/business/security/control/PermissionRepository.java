@@ -124,6 +124,18 @@ public class PermissionRepository {
 		return roleEntity;
 	}
 
+	public void deleteRole(String roleName) {
+		RoleEntity role = getRoleByName(roleName);
+		if (role == null) {
+			throw new IllegalArgumentException("Role " + roleName + " doesn't exist!");
+		}
+		if (!role.isDeletable()) {
+			throw new IllegalArgumentException("Role " + roleName + " is not deletable!");
+		}
+		// leads to a cascade delete of the restrictions
+		entityManager.remove(role);
+	}
+
 	public boolean isReloadDeployableRoleList() {
 		return reloadDeployableRoleList;
 	}
