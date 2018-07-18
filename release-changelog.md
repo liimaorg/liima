@@ -1,3 +1,20 @@
+# v1.17.3
+This is mostly a bug fix and enhancement release of the REST interface.
+
+## New features
+* Show Runtime of AS in Apps overview [#198](https://github.com/liimaorg/liima/issues/198)
+* REST permission endpoints enhancements
+  * Add method for deleting roles [#416](https://github.com/liimaorg/liima/pull/416)
+  * Default exception mapper added that converts unexpected errors to json [#416](https://github.com/liimaorg/liima/pull/416)
+  * Reloading of permissions is now optional [#415](https://github.com/liimaorg/liima/issues/415)
+  * ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE permission: only add DEPLOYMENT permissions if resource is an appServer [#414](https://github.com/liimaorg/liima/issues/414)
+* REST API: accept unknown properties for forward compatibility [#8](https://github.com/liimaorg/liima/issues/8)
+* Update fronte libs [#412](https://github.com/liimaorg/liima/pull/412)
+
+## Bug fixes
+* Changes from copy from are not shown in audit view: [#338](https://github.com/liimaorg/liima/issues/338)
+* editResourceView: Node properties disappear after save bug [#366](https://github.com/liimaorg/liima/issues/366)
+
 # v1.17.2
 This is mostly a bug fix and enhancement release of the REST interface.
 
