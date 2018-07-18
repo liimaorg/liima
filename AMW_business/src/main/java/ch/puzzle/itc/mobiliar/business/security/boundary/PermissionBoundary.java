@@ -428,9 +428,12 @@ public class PermissionBoundary implements Serializable {
             createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_PROPERTY_DECRYPT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
             createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEMPLATE.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
             createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
-            createAutoAssignedRestriction(getUserName(), Permission.DEPLOYMENT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            if (resource.getResourceType().isApplicationServerResourceType()) {
+                createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+                createAutoAssignedRestriction(getUserName(), Permission.RESOURCE_TEST_GENERATION_RESULT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+                createAutoAssignedRestriction(getUserName(), Permission.DEPLOYMENT.name(), resourceGroupId, Action.ALL, new RestrictionEntity());
+            }
+            reloadCache();
         }
     }
 
@@ -449,12 +452,16 @@ public class PermissionBoundary implements Serializable {
      */
     @HasPermission(oneOfPermission = { Permission.ASSIGN_REMOVE_PERMISSION, Permission.PERMISSION_DELEGATION }, action = Action.CREATE)
     public Integer createRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
-                                     ResourceTypePermission resourceTypePermission, String contextName, Action action, boolean delegated)
+                                     ResourceTypePermission resourceTypePermission, String contextName, Action action, boolean delegated, boolean reload)
             throws AMWException {
         if (!delegated || canDelegateThisPermission(permissionName, resourceGroupId, resourceTypeName, contextName, action)) {
             RestrictionEntity restriction = new RestrictionEntity();
-            return createRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName, resourceTypePermission,
-                    contextName, action, restriction);
+            Integer id = createRestriction(roleName, userName, permissionName, resourceGroupId, resourceTypeName,
+                    resourceTypePermission, contextName, action, restriction);
+            if (reload) {
+                reloadCache();
+            }
+            return id;
         }
         throw new AMWException("No permission to create this permission");
     }
@@ -475,22 +482,22 @@ public class PermissionBoundary implements Serializable {
      */
     @HasPermission(oneOfPermission = { Permission.ASSIGN_REMOVE_PERMISSION, Permission.PERMISSION_DELEGATION }, action = Action.CREATE)
     public int createMultipleRestrictions(String roleName, List<String> userNames, List<String> permissionNames, List<Integer> resourceGroupIds, List<String> resourceTypeNames,
-                                              ResourceTypePermission resourceTypePermission, List<String> contextNames, List<Action> actions, boolean delegated) throws AMWException {
+                                              ResourceTypePermission resourceTypePermission, List<String> contextNames, List<Action> actions, boolean delegated, boolean reload) throws AMWException {
         int count = 0;
         if (resourceGroupIds != null && !resourceGroupIds.isEmpty() && resourceTypeNames != null && !resourceTypeNames.isEmpty()) {
             throw new AMWException("Only ResourceGroupId(s) OR ResourceTypeName(s) must be set");
         }
         if (userNames == null) {
-            userNames = new ArrayList();
+            userNames = new ArrayList<>();
         }
         if (resourceGroupIds == null) {
-            resourceGroupIds = new ArrayList();
+            resourceGroupIds = new ArrayList<>();
         }
         if (resourceTypeNames == null) {
-            resourceTypeNames = new ArrayList();
+            resourceTypeNames = new ArrayList<>();
         }
         if (contextNames == null || contextNames.isEmpty()) {
-            contextNames = new ArrayList();
+            contextNames = new ArrayList<>();
             contextNames.add(null);
         }
 
@@ -521,6 +528,9 @@ public class PermissionBoundary implements Serializable {
                     }
                 }
             }
+        }
+        if (reload) {
+            reloadCache();
         }
         return count;
     }
@@ -562,9 +572,7 @@ public class PermissionBoundary implements Serializable {
         if (permissionService.identicalOrMoreGeneralRestrictionExists(restriction)) {
             return null;
         }
-        final Integer id = restrictionRepository.create(restriction);
-        permissionRepository.forceReloadingOfLists();
-        return id;
+        return restrictionRepository.create(restriction);
     }
 
     private Integer createAutoAssignedRestriction(String userName, String permissionName, Integer resourceGroupId, Action action, RestrictionEntity restriction)
@@ -574,7 +582,6 @@ public class PermissionBoundary implements Serializable {
             return null;
         }
         final Integer id = restrictionRepository.create(restriction);
-        permissionRepository.forceReloadingOfLists();
         return id;
     }
 
@@ -592,7 +599,7 @@ public class PermissionBoundary implements Serializable {
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.UPDATE)
     public boolean updateRestriction(Integer id, String roleName, String userName, String permissionName, Integer resourceId,
                                   String resourceTypeName, ResourceTypePermission resourceTypePermission,
-                                  String contextName, Action action) throws AMWException {
+                                  String contextName, Action action, boolean reload) throws AMWException {
         if (id == null) {
             throw new AMWException("Id must not be null");
         }
@@ -606,17 +613,21 @@ public class PermissionBoundary implements Serializable {
             return false;
         }
         restrictionRepository.merge(restriction);
-        permissionRepository.forceReloadingOfLists();
+        if (reload) {
+            reloadCache();
+        }
         return true;
     }
 
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION, action = Action.DELETE)
-    public void removeRestriction(Integer id) throws AMWException {
+    public void removeRestriction(Integer id, boolean reload) throws AMWException {
         if (restrictionRepository.find(id) == null) {
             throw new AMWException("Restriction not found");
         }
         restrictionRepository.deleteRestrictionById(id);
-        permissionRepository.forceReloadingOfLists();
+        if (reload) {
+            reloadCache();
+        }
     }
 
     /**
@@ -688,6 +699,19 @@ public class PermissionBoundary implements Serializable {
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public List<RoleEntity> getAllRoles() {
         return permissionRepository.getAllRoles();
+    }
+
+    /**
+     * Removes a role with all it's permissions
+     *
+     * @return List<RoleEntity>
+     */
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
+    public void deleteRole(String roleName, boolean reload) {
+        permissionRepository.deleteRole(roleName);
+        if (reload) {
+            reloadCache();
+        }
     }
 
     /**
@@ -837,4 +861,8 @@ public class PermissionBoundary implements Serializable {
         return false;
     }
 
+    @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
+    public void reloadCache() {
+        permissionRepository.forceReloadingOfLists();
+    }
 }
