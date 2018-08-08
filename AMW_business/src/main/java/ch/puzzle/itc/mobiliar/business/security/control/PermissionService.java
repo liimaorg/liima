@@ -302,29 +302,21 @@ public class PermissionService implements Serializable {
         throw new NotAuthorizedException(errorMessage);
     }
 
-    public boolean hasPermissionForDeployment(DeploymentEntity deployment) {
-        return deployment != null && hasPermissionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup());
-    }
-
     public boolean hasPermissionForDeploymentUpdate(DeploymentEntity deployment) {
-        return deployment != null && hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.UPDATE);
+        return hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.UPDATE);
     }
 
     public boolean hasPermissionForDeploymentCreation(DeploymentEntity deployment) {
-        return deployment != null && (hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.CREATE)
-                || hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.UPDATE));
+        return hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.CREATE);
     }
 
     public boolean hasPermissionForDeploymentReject(DeploymentEntity deployment) {
-        return deployment != null && (hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.DELETE)
-                || hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.DELETE));
+        return hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.DELETE);
     }
 
     public boolean hasPermissionForCancelDeployment(DeploymentEntity deployment) {
-        if (getCurrentUserName().equals(deployment.getDeploymentRequestUser()) && deployment.getDeploymentState() == DeploymentState.requested) {
-            return true;
-        }
-        return hasPermissionForDeployment(deployment) && deployment.getDeploymentState() != DeploymentState.requested;
+        // cancel is only for requester
+        return getCurrentUserName().equals(deployment.getDeploymentRequestUser());
     }
 
     /**
