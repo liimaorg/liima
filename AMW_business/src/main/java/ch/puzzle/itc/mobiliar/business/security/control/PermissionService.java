@@ -320,32 +320,6 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * Checks if the caller is allowed to deploy a specific ResourceGroup on the specific Environment
-     * Note: Both, Permission/Restriction by Group and by User are checked
-     *
-     * @param context
-     */
-    public boolean hasPermissionForDeploymentOnContext(ContextEntity context, ResourceGroupEntity resourceGroup) {
-        if (context != null && sessionContext != null) {
-            List<String> allowedRoles = new ArrayList<>();
-            String permissionName = Permission.DEPLOYMENT.name();
-            if (deployableRolesWithRestrictions == null) {
-                getDeployableRoles();
-            }
-            for (Map.Entry<String, List<RestrictionDTO>> entry : deployableRolesWithRestrictions.entrySet()) {
-                matchPermissionsAndContext(permissionName, null, context, resourceGroup, resourceGroup.getResourceType(), allowedRoles, entry);
-            }
-            for (String roleName : allowedRoles) {
-                if (sessionContext.isCallerInRole(roleName)) {
-                    return true;
-                }
-            }
-            return hasUserRestriction(permissionName, context, null, resourceGroup, null);
-        }
-        return false;
-    }
-
-    /**
      * Checks if the caller is allowed to perform the requested action for specific ResourceGroup on the specific Environment
      * Note: Both, Permission/Restriction by Group and by User are checked
      *
