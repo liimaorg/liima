@@ -1,3 +1,6 @@
+# v1.17.4
+Fixes a deployment confirmation bug [#420](https://github.com/liimaorg/liima/pull/420)
+
 # v1.17.3
 This is mostly a bug fix and enhancement release of the REST interface.
 
