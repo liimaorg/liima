@@ -101,7 +101,7 @@ public class DeploymentBoundaryPersistenceTest
 		d = new DeploymentEntity();
 
 		// disable security
-		when(permissionService.hasPermissionForDeployment(any(DeploymentEntity.class))).thenReturn(true);
+		when(permissionService.hasPermissionForDeploymentUpdate(any(DeploymentEntity.class))).thenReturn(true);
 		when(permissionService.hasPermissionForCancelDeployment(any(DeploymentEntity.class))).thenReturn(true);
 	}
 

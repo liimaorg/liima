@@ -302,55 +302,21 @@ public class PermissionService implements Serializable {
         throw new NotAuthorizedException(errorMessage);
     }
 
-    public boolean hasPermissionForDeployment(DeploymentEntity deployment) {
-        return deployment != null && hasPermissionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup());
-    }
-
     public boolean hasPermissionForDeploymentUpdate(DeploymentEntity deployment) {
-        return deployment != null && hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.UPDATE);
+        return hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.UPDATE);
     }
 
     public boolean hasPermissionForDeploymentCreation(DeploymentEntity deployment) {
-        return deployment != null && (hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.CREATE)
-                || hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.UPDATE));
+        return hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.CREATE);
     }
 
     public boolean hasPermissionForDeploymentReject(DeploymentEntity deployment) {
-        return deployment != null && (hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.DELETE)
-                || hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.DELETE));
+        return hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.DELETE);
     }
 
     public boolean hasPermissionForCancelDeployment(DeploymentEntity deployment) {
-        if (getCurrentUserName().equals(deployment.getDeploymentRequestUser()) && deployment.getDeploymentState() == DeploymentState.requested) {
-            return true;
-        }
-        return hasPermissionForDeployment(deployment) && deployment.getDeploymentState() != DeploymentState.requested;
-    }
-
-    /**
-     * Checks if the caller is allowed to deploy a specific ResourceGroup on the specific Environment
-     * Note: Both, Permission/Restriction by Group and by User are checked
-     *
-     * @param context
-     */
-    public boolean hasPermissionForDeploymentOnContext(ContextEntity context, ResourceGroupEntity resourceGroup) {
-        if (context != null && sessionContext != null) {
-            List<String> allowedRoles = new ArrayList<>();
-            String permissionName = Permission.DEPLOYMENT.name();
-            if (deployableRolesWithRestrictions == null) {
-                getDeployableRoles();
-            }
-            for (Map.Entry<String, List<RestrictionDTO>> entry : deployableRolesWithRestrictions.entrySet()) {
-                matchPermissionsAndContext(permissionName, null, context, resourceGroup, resourceGroup.getResourceType(), allowedRoles, entry);
-            }
-            for (String roleName : allowedRoles) {
-                if (sessionContext.isCallerInRole(roleName)) {
-                    return true;
-                }
-            }
-            return hasUserRestriction(permissionName, context, null, resourceGroup, null);
-        }
-        return false;
+        // cancel is only for requester
+        return getCurrentUserName().equals(deployment.getDeploymentRequestUser());
     }
 
     /**
