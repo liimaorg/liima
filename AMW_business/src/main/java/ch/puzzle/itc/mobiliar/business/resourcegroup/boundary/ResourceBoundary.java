@@ -96,7 +96,7 @@ public class ResourceBoundary {
             throws ResourceNotFoundException, ResourceTypeNotFoundException, ElementAlreadyExistsException {
         ResourceTypeEntity resourceTypeEntity = resourceTypeRepository.getByName(resourceTypeName);
         if (resourceTypeEntity == null) {
-            String message = "ResourceType '" + resourceTypeName + "' existiert nicht";
+            String message = "ResourceType '" + resourceTypeName + "' doesn't exist";
             log.info(message);
             throw new ResourceNotFoundException(message);
         }
@@ -104,7 +104,7 @@ public class ResourceBoundary {
         try {
             release = releaseLocator.getReleaseByName(releaseName);
         } catch (Exception e)  {
-            String message = "Release '" + releaseName + "' existiert nicht";
+            String message = "Release '" + releaseName + "' doesn't exist";
             log.info(message);
             throw new ResourceNotFoundException(message);
         }
@@ -131,7 +131,7 @@ public class ResourceBoundary {
         Resource resource = Resource.createByResource(creatingOwner, resourceEntity, resourceTypeEntity, contextDomainService.getGlobalResourceContextEntity());
         entityManager.persist(resource.getEntity());
         entityManager.flush();
-        log.info("Neue Resource " + newResourceName + "in DB persistiert");
+        log.info("New resource " + newResourceName + " persisted");
         return resource;
     }
 
@@ -163,7 +163,7 @@ public class ResourceBoundary {
             if (anotherGroup == null) {
                 // if group does not exists a new resource with a new group can be created
                 resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
-                log.info("Neue Resource " + newResourceName + "inkl. Gruppe erstellt für Release " + release.getName());
+                log.info("Created new Resource " + newResourceName + " and group in Release " + release.getName());
             } else {
                 String message = "A " + anotherGroup.getResourceType().getName()+" with the same name: " + newResourceName + " already exists.";
                 log.info(message);
@@ -180,8 +180,7 @@ public class ResourceBoundary {
             if (resourceEntity == null) {
                 // if resource is null, a new resource for the existing group can be created
                 resourceEntity = ResourceFactory.createNewResourceForOwner(group, creatingOwner);
-                log.info("Neue Resource " + newResourceName
-                        + "für existierende Gruppe erstellt für Release " + release.getName());
+                log.info("Created new Resource " + newResourceName + " for existing group in Release " + release.getName());
             } else {
                 // if resource with given name, type and release already exists throw an exeption
                 String message = "The "+type.getName()+" with name: " + newResourceName + " already exists in release "+release.getName();
@@ -239,7 +238,7 @@ public class ResourceBoundary {
         as.addApplication(app, creatingOwner);
         entityManager.persist(as.getEntity());
         entityManager.flush();
-        log.info("Application " + applicationName + " für ApplicationServer " + asResource.getName() + " in DB persistiert");
+        log.info("Application " + applicationName + " for ApplicationServer " + asResource.getName() + " persisted");
         return app;
     }
 
@@ -386,7 +385,7 @@ public class ResourceBoundary {
         if (group == null) {
             // if group does not exists a new resource with a new group can be created
             resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
-            log.info("Neue Resource " + newResourceName + "inkl. Gruppe erstellt für Release " + release.getName());
+            log.info("Create new Resource " + newResourceName + "  and group in Release " + release.getName());
         }
         else {
             // check if group contains resource for this release
@@ -399,7 +398,7 @@ public class ResourceBoundary {
             if (resourceEntity == null) {
                 // if resource is null, a new resource for this release can be created in the existing group
                 resourceEntity = ResourceFactory.createNewResourceForOwner(group, creatingOwner);
-                log.info("Neue Resource " + newResourceName + "für existierende Gruppe erstellt für Release " + release.getName());
+                log.info("Create new Resource " + newResourceName + " for existing group in Release " + release.getName());
             }
         }
         resourceEntity.setRelease(release);
