@@ -607,21 +607,25 @@ public class PermissionBoundaryTest {
     @Test
     public void shouldInvokePermissionServiceWithCorrectParametersOnCanCopyFromSpecificResourceSuccess() {
         // given
-        ResourceEntity resource = new ResourceEntityBuilder().build();
-        ResourceGroupEntity rg = new ResourceGroupEntity();
-        resource.setResourceGroup(rg);
-        ResourceTypeEntity type = new ResourceTypeEntity();
-        resource.setResourceType(type);
+        ResourceTypeEntity resType = new ResourceTypeEntity();
+        ResourceEntity targetResource = new ResourceEntityBuilder().build();
+        ResourceGroupEntity targetGroup = new ResourceGroupEntity();
+        targetResource.setResourceGroup(targetGroup);
+        targetResource.setResourceType(resType);
+
         ResourceEntity originResource = new ResourceEntityBuilder().build();
-        ResourceGroupEntity org = new ResourceGroupEntity();
-        originResource.setResourceGroup(org);
-        originResource.setResourceType(type);
-        when(permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type)).thenReturn(true);
-        when(permissionService.hasPermission(Permission.RESOURCE, null, READ, org, type)).thenReturn(true);
+        ResourceGroupEntity originGroup = new ResourceGroupEntity();
+        originResource.setResourceGroup(originGroup);
+        originResource.setResourceType(resType);
+        when(permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, targetGroup, resType)).thenReturn(true);
+        when(permissionService.hasPermission(Permission.RESOURCE, null, READ, originGroup, resType)).thenReturn(true);
+        when(permissionService.hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.READ, originGroup, resType)).thenReturn(true);
+        when(permissionService.hasPermission(Permission.RESOURCE_AMWFUNCTION, null, Action.READ, originGroup, resType)).thenReturn(true);
+        when(permissionService.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, Action.ALL, originGroup, resType)).thenReturn(true);
+
         // when
-        boolean can = permissionBoundary.canCopyFromSpecificResource(resource, org);
-        verify(permissionService).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, ALL, rg, type);
-        verify(permissionService).hasPermission(Permission.RESOURCE, null, READ, org, type);
+        boolean can = permissionBoundary.canCopyFromSpecificResource(targetResource, originGroup);
+
         assertTrue(can);
     }
 
