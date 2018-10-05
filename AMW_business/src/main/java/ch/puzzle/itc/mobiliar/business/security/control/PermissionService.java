@@ -315,8 +315,10 @@ public class PermissionService implements Serializable {
     }
 
     public boolean hasPermissionForCancelDeployment(DeploymentEntity deployment) {
-        // cancel is only for requester
-        return getCurrentUserName().equals(deployment.getDeploymentRequestUser());
+        return getCurrentUserName().equals(deployment.getDeploymentRequestUser())
+                || (deployment.getDeploymentConfirmed() != null && deployment.getDeploymentConfirmed()
+                        && hasPermissionAndActionForDeploymentOnContext(deployment.getContext(),
+                                deployment.getResource().getResourceGroup(), Action.UPDATE));
     }
 
     /**
