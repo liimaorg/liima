@@ -1,3 +1,21 @@
+# v1.17.5
+Only small fixes in this release.  
+__Action Required__: with [#428](https://github.com/liimaorg/liima/pull/428) a user must now have to following permissions to copy form a resource:
+* On the target: RESOURCE_RELEASE_COPY_FROM_RESOURCE action ALL
+* On the source: RESOURCE, RESOURCE_TEMPLATE, RESOURCE_AMWFUNCTION action READ and RESOURCE_PROPERTY_DECRYPT action ALL
+
+The config_admin role has this permissions already, custom roles might need to be updated.
+
+## New features
+* Disable tip im Freemarker error [#423](https://github.com/liimaorg/liima/issues/423)
+* Update Docker image to WildFly 14.0.1 [#426](https://github.com/liimaorg/liima/pull/426)
+
+## Bug fixes
+* Fix a permission bug in copy from resource [#428](https://github.com/liimaorg/liima/pull/428)
+* After a deployment is confirmed it can only be canceled by the requestor [#424](https://github.com/liimaorg/liima/issues/424)
+* REST AMW_rest/resources/resources/{resource}/lte/{RL} returns http 500 instead of 404 [#421](https://github.com/liimaorg/liima/issues/421)
+* Update Lodash version [#422](https://github.com/liimaorg/liima/issues/422)
+
 # v1.17.4
 Fixes a deployment confirmation bug [#420](https://github.com/liimaorg/liima/pull/420)
 
