@@ -20,24 +20,24 @@
 
 package ch.mobi.itc.mobiliar.rest.exceptions;
 
-import javax.ejb.EJBException;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class EJBExceptionMapper implements ExceptionMapper<EJBException>{
+public class EJBTransactionRolledbackExceptionMapper implements ExceptionMapper<EJBTransactionRolledbackException> {
 
     @Context
     javax.ws.rs.ext.Providers providers;
 
     @Override
-    public Response toResponse(EJBException exception) {
+    public Response toResponse(EJBTransactionRolledbackException exception) {
         Exception causedByException = exception.getCausedByException();
         ExceptionMapper<Exception> exceptionMapper = (ExceptionMapper<Exception>) providers
-                  .getExceptionMapper(causedByException.getClass());
-        if(exceptionMapper!=null){
+                .getExceptionMapper(causedByException.getClass());
+        if (exceptionMapper != null) {
             return exceptionMapper.toResponse(causedByException);
         }
         return Response.serverError().entity(causedByException).build();
