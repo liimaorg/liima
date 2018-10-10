@@ -1,3 +1,6 @@
+# v1.17.6
+Fixes some JSF issues on Wildfly 14 [#435](https://github.com/liimaorg/liima/pull/435)
+
 # v1.17.5
 Only small fixes in this release.  
 __Action Required__: with [#428](https://github.com/liimaorg/liima/pull/428) a user must now have to following permissions to copy form a resource:
