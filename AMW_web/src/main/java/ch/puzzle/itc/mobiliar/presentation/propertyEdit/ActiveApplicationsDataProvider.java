@@ -69,7 +69,7 @@ public class ActiveApplicationsDataProvider implements Serializable {
 
 	@Getter
 	@Setter
-	private List<String> activeApplications;
+	private List<Integer> activeApplications;
 
 	@PostConstruct
 	public void init() {
@@ -88,11 +88,10 @@ public class ActiveApplicationsDataProvider implements Serializable {
 
 	public void save() {
 		if (this.activeApplications != null) {
-			List<Integer> activeApplications = transformStringList(this.activeApplications);
 			List<Integer> inactiveApplications = getApplicationIds();
 			inactiveApplications.removeAll(activeApplications);
 			resourceActivationService.activateDeactivateResources(model.getCurrentResourceRelationId(),
-					currentContext.getId(), inactiveApplications, activeApplications);
+					currentContext.getId(), inactiveApplications, this.activeApplications);
 		}
 	}
 
@@ -132,23 +131,7 @@ public class ActiveApplicationsDataProvider implements Serializable {
 		}
 		List<Integer> numericActiveApplications = new ArrayList<>(getApplicationIds());
 		numericActiveApplications.removeAll(inactiveIds);
-		activeApplications = transformIntegerList(numericActiveApplications);
-	}
-
-	List<String> transformIntegerList(List<Integer> list) {
-		List<String> stringList = new ArrayList<>();
-		for (Integer el : list) {
-			stringList.add(String.valueOf(el));
-		}
-		return stringList;
-	}
-
-	List<Integer> transformStringList(List<String> list) {
-		List<Integer> intList = new ArrayList<>();
-		for (String el : list) {
-			intList.add(Integer.parseInt(el));
-		}
-		return intList;
+		activeApplications = numericActiveApplications;
 	}
 
 	/**
