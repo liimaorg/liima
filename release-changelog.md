@@ -1,3 +1,6 @@
+# v1.17.7
+Revert back to Wildfly 13 because of JSF issues, fix a JSF init bug, update RichFace [#437](https://github.com/liimaorg/liima/pull/437)
+
 # v1.17.6
 Fixes some JSF issues on Wildfly 14 [#435](https://github.com/liimaorg/liima/pull/435)
 
