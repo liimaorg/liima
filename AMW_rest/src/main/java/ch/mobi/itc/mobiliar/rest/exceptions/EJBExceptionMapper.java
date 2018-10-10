@@ -27,7 +27,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class EJBExceptionMapper implements ExceptionMapper<EJBException>{
+public class EJBExceptionMapper implements ExceptionMapper<EJBException> {
 
     @Context
     javax.ws.rs.ext.Providers providers;
@@ -36,8 +36,8 @@ public class EJBExceptionMapper implements ExceptionMapper<EJBException>{
     public Response toResponse(EJBException exception) {
         Exception causedByException = exception.getCausedByException();
         ExceptionMapper<Exception> exceptionMapper = (ExceptionMapper<Exception>) providers
-                  .getExceptionMapper(causedByException.getClass());
-        if(exceptionMapper!=null){
+                .getExceptionMapper(causedByException.getClass());
+        if (exceptionMapper != null) {
             return exceptionMapper.toResponse(causedByException);
         }
         return Response.serverError().entity(causedByException).build();
