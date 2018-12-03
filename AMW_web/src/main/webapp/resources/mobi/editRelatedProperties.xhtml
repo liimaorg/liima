@@ -36,23 +36,20 @@
                             rendered="#{resourceRelationModel.runtimeRelations ne null and !resourceRelationModel.runtimeRelations.isEmpty()}">
                         <li><h3>Runtime</h3>
                             <ul>
-                                <ui:repeat
-                                        value="#{resourceRelationModel.runtimeRelations}"
-                                        var="runtime">
-                                    <li
-                                            class="#{resourceRelationModel.isActiveRelation(runtime) ? 'active' : ''}">
+                                <ui:repeat value="#{amw:mapToList(resourceRelationModel.runtimeRelations)}" var="entry">
+                                    <ui:repeat value="#{entry.value}" var="item">
+                                        <li class="#{resourceRelationModel.isActiveRelation(item) ? 'active' : ''}">
+                                            <h:link outcome="editResourceView" includeViewParams="true"
+                                                    styleClass="ellipsisLeft resourcename-link"
+                                                    value="${item.slaveName}" title="${item.slaveName}">
 
-                                        <h:link outcome="editResourceView" includeViewParams="true"
-                                                styleClass="ellipsisLeft resourcename-link"
-                                                value="${runtime.displayName}" title="${runtime.displayName}">
-
-                                            <f:param name="rel" value="#{runtime.resRelId}"/>
-                                        </h:link>
-
-                                        <a4j:outputPanel ajaxRendered="true">
-                                            <mobi:foreignableOwnerTooltip foreignableAttributes="#{runtime.relationForeignableAttributes}"/>
-                                        </a4j:outputPanel>
-                                    </li>
+                                                <f:param name="rel" value="#{item.resRelId}"/>
+                                            </h:link>
+                                            <a4j:outputPanel ajaxRendered="true">
+                                                <mobi:foreignableOwnerTooltip foreignableAttributes="#{item.relationForeignableAttributes}"/>
+                                            </a4j:outputPanel>
+                                        </li>
+                                    </ui:repeat>
                                 </ui:repeat>
                             </ul>
                         </li>
