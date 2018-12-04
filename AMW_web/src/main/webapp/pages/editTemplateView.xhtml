@@ -211,6 +211,7 @@
 						<div class="CodeMirror-merge-pane">
 							<h:selectManyCheckbox layout="lineDirection"
 								styleClass="checkboxList changeAware"
+								converter="javax.faces.Integer"
 								value="#{editTemplateView.selectedTargetPlatforms}" disabled="#{!editTemplateView.canModifyTemplates()}">
 								<f:selectItems value="${editTemplateView.sessionContext.targetPlatforms}"
 									var="platform" itemLabel="${platform.name}"

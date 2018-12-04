@@ -201,8 +201,6 @@ public class CreateResourceController {
                 GlobalMessageAppender.addErrorMessage(handleEJBException(appName, e));
             } catch (ResourceTypeNotFoundException e) {
                 GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
-            } catch (ResourceNotFoundException e) {
-                GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
             }
         }
         return isSuccessful;

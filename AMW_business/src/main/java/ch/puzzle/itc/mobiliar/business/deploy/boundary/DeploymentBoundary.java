@@ -1192,7 +1192,7 @@ public class DeploymentBoundary {
     }
 
     public DeploymentOperationValidation isConfirmPossible(DeploymentEntity deployment) {
-        if (!permissionService.hasPermissionForDeployment(deployment)) {
+        if (!permissionService.hasPermissionForDeploymentUpdate(deployment)) {
             return DeploymentOperationValidation.MISSING_PERMISSION;
         } else if (!deployment.getDeploymentState().isTransitionAllowed(DeploymentState.scheduled)) {
             return DeploymentOperationValidation.WRONG_STATE;
@@ -1281,7 +1281,7 @@ public class DeploymentBoundary {
     }
 
     public DeploymentOperationValidation isChangeDeploymentDatePossible(DeploymentEntity deployment) {
-        if (!permissionService.hasPermissionForDeployment(deployment)) {
+        if (!permissionService.hasPermissionForDeploymentUpdate(deployment)) {
             return DeploymentOperationValidation.MISSING_PERMISSION;
         } else if (!deployment.isMutable()) {
             return DeploymentOperationValidation.WRONG_STATE;

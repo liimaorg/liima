@@ -236,10 +236,10 @@ public class EditTemplateView implements Serializable {
 
     }
 
-    public void setSelectedTargetPlatforms(List<String> ids) {
+    public void setSelectedTargetPlatforms(List<Integer> ids) {
         Set<ResourceGroupEntity> platforms = new HashSet<>();
         for (ResourceGroupEntity p : sessionContext.getTargetPlatforms()) {
-            if (ids.contains(String.valueOf(p.getId()))) {
+            if (ids.contains(p.getId())) {
                 platforms.add(p);
             }
         }

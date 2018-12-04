@@ -40,12 +40,10 @@ import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelatio
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.Selected;
 import ch.puzzle.itc.mobiliar.presentation.common.ContextDataProvider;
-import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationModel;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.DataProviderHelper;
@@ -81,9 +79,6 @@ public class PropertyEditDataProvider implements Serializable {
 
     @Inject
     EditResourceView resourceView;
-
-    @Inject
-    SessionContext sessionContext;
 
     @Inject
     ContextDataProvider contextDataProvider;
@@ -163,7 +158,7 @@ public class PropertyEditDataProvider implements Serializable {
         return currentContext.isGlobal();
     }
 
-    public void onContextChanged(@Observes ContextEntity contextEntity) throws GeneralDBException {
+    public void onContextChanged(@Observes ContextEntity contextEntity) {
         if (isCurrentFocusOnResource()) {
             onChangedResource((ResourceEntity) resourceOrResourceType);
         } else if (isCurrentFocusOnResourceType()) {
@@ -172,11 +167,11 @@ public class PropertyEditDataProvider implements Serializable {
         this.currentContext = contextEntity;
     }
 
-    public void onChangedResource(@Observes ResourceEntity resourceEntity) throws GeneralDBException {
+    public void onChangedResource(@Observes ResourceEntity resourceEntity) {
         reloadResourceEditProperties(resourceEntity);
     }
 
-    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) throws GeneralDBException {
+    public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
         reloadResourceTypeEditProperties(resourceTypeEntity);
     }
 
@@ -240,14 +235,19 @@ public class PropertyEditDataProvider implements Serializable {
                 relationIdentifier = currentRelation.getIdentifier();
             }
         } else {
-            currentRelationProperties = Collections.emptyList();
+            currentRelationProperties = new ArrayList<>();
         }
+        filterHostNameAndActiveFromNode();
     }
 
     private void filterHostNameAndActiveFromNode() {
-        if (isNode() && !currentContext.isEnvironment() && resourceEditProperties != null) {
+        if (isNodeOrNodeType() && !currentContext.isEnvironment() && resourceEditProperties != null) {
             filterHostNameAndActive(resourceEditProperties);
         }
+    }
+
+    private boolean isNodeOrNodeType() {
+        return isNode() || isNodeType();
     }
 
     private void filterHostNameAndActiveFromRelatedNode(ResourceEditRelation relation) {
@@ -327,12 +327,12 @@ public class PropertyEditDataProvider implements Serializable {
 
     private void preventDuplicateIdentifiers() throws AMWException {
         Collection<List<ResourceEditRelation>> resourceEditRelations = resourceRelation.getConsumedRelations().values();
-        for (List<ResourceEditRelation> consumedRelations: resourceEditRelations) {
+        for (List<ResourceEditRelation> consumedRelations : resourceEditRelations) {
             for (ResourceEditRelation consumedRelation : consumedRelations) {
                 if (consumedRelation.getSlaveName().equals(relationIdentifier)) {
                     throw new AMWException("RelationName '" + relationIdentifier + "' is not allowed");
                 }
-                if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier) && ! consumedRelation.equals(resourceRelation.getResourceRelation())) {
+                if (consumedRelation.getIdentifier() != null && consumedRelation.getIdentifier().equals(relationIdentifier) && !consumedRelation.equals(resourceRelation.getResourceRelation())) {
                     throw new AMWException("RelationName '" + relationIdentifier + "' is already taken");
                 }
             }
@@ -360,6 +360,11 @@ public class PropertyEditDataProvider implements Serializable {
     public boolean isNode() {
         return isCurrentFocusOnResource()
                 && ((ResourceEntity) resourceOrResourceType).getResourceType().isNodeResourceType();
+    }
+
+    public boolean isNodeType() {
+        return isCurrentFocusOnResourceType()
+                && ((ResourceTypeEntity) resourceOrResourceType).isNodeResourceType();
     }
 
     /**
@@ -420,7 +425,6 @@ public class PropertyEditDataProvider implements Serializable {
             reloadResourceTypeEditProperties(resourceView.getResourceType());
         }
     }
-
 
     private List<ResourceEditProperty> reloadResourceEditProperties(ResourceEntity resourceEntity) {
         filteredResourceProperties = new ArrayList<>();

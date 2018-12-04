@@ -48,6 +48,7 @@
 		<class>ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity</class>
 		<class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter</class>
 		<class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key</class>
+		<class>ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry</class>
 
         <properties>
            <property name="hibernate.connection.url" value="jdbc:h2:mem:test" />
@@ -103,6 +104,7 @@
 		<class>ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity</class>
 		<class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter</class>
 		<class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key</class>
+		<class>ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry</class>
         <properties>
            <property name="hibernate.connection.url" value="jdbc:h2:file:../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning;user=sa;password=" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"></property>

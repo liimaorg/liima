@@ -1,3 +1,47 @@
+# v1.17.7
+Revert back to Wildfly 13 because of JSF issues, fix a JSF init bug, update RichFace [#437](https://github.com/liimaorg/liima/pull/437)
+
+# v1.17.6
+Fixes some JSF issues on Wildfly 14 [#435](https://github.com/liimaorg/liima/pull/435)
+
+# v1.17.5
+Only small fixes in this release.  
+__Action Required__: with [#428](https://github.com/liimaorg/liima/pull/428) a user must now have to following permissions to copy form a resource:
+* On the target: RESOURCE_RELEASE_COPY_FROM_RESOURCE action ALL
+* On the source: RESOURCE, RESOURCE_TEMPLATE, RESOURCE_AMWFUNCTION action READ and RESOURCE_PROPERTY_DECRYPT action ALL
+
+The config_admin role has this permissions already, custom roles might need to be updated.
+
+## New features
+* Disable tip im Freemarker error [#423](https://github.com/liimaorg/liima/issues/423)
+* Update Docker image to WildFly 14.0.1 [#426](https://github.com/liimaorg/liima/pull/426)
+
+## Bug fixes
+* Fix a permission bug in copy from resource [#428](https://github.com/liimaorg/liima/pull/428)
+* After a deployment is confirmed it can only be canceled by the requestor [#424](https://github.com/liimaorg/liima/issues/424)
+* REST AMW_rest/resources/resources/{resource}/lte/{RL} returns http 500 instead of 404 [#421](https://github.com/liimaorg/liima/issues/421)
+* Update Lodash version [#422](https://github.com/liimaorg/liima/issues/422)
+
+# v1.17.4
+Fixes a deployment confirmation bug [#420](https://github.com/liimaorg/liima/pull/420)
+
+# v1.17.3
+This is mostly a bug fix and enhancement release of the REST interface.
+
+## New features
+* Show Runtime of AS in Apps overview [#198](https://github.com/liimaorg/liima/issues/198)
+* REST permission endpoints enhancements
+  * Add method for deleting roles [#416](https://github.com/liimaorg/liima/pull/416)
+  * Default exception mapper added that converts unexpected errors to json [#416](https://github.com/liimaorg/liima/pull/416)
+  * Reloading of permissions is now optional [#415](https://github.com/liimaorg/liima/issues/415)
+  * ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE permission: only add DEPLOYMENT permissions if resource is an appServer [#414](https://github.com/liimaorg/liima/issues/414)
+* REST API: accept unknown properties for forward compatibility [#8](https://github.com/liimaorg/liima/issues/8)
+* Update fronte libs [#412](https://github.com/liimaorg/liima/pull/412)
+
+## Bug fixes
+* Changes from copy from are not shown in audit view: [#338](https://github.com/liimaorg/liima/issues/338)
+* editResourceView: Node properties disappear after save bug [#366](https://github.com/liimaorg/liima/issues/366)
+
 # v1.17.2
 This is mostly a bug fix and enhancement release of the REST interface.
 

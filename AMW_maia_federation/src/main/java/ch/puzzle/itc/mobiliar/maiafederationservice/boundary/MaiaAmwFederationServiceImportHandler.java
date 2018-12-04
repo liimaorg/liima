@@ -75,17 +75,10 @@ public class MaiaAmwFederationServiceImportHandler {
     public static final String MAIA_PROPERTY_TYPE = "MAIAPropertyType";
 
     @Inject
-    private ResourcesScreenDomainService resourcesService;
-
-    @Inject
     private ResourceBoundary resourceBoundary;
 
     @Inject
     private ReleaseMgmtPersistenceService releaseService;
-
-    @Inject
-    private PropertyDescriptorService descriptorService;
-
 
     @Inject
     private ContextDomainService contextDomainService;
@@ -695,7 +688,7 @@ public class MaiaAmwFederationServiceImportHandler {
             Integer resourceTypeId = obtainResourceTypeId(consumedPort.getResourceType());
 
             // create a basic resource (entity)
-            ResourceEntity resourceEntity = resourcesService.getOrCreateNewResourceByName(owner, consumedPort.getDisplayName(), resourceTypeId, releaseId).getEntity();
+            ResourceEntity resourceEntity = resourceBoundary.getOrCreateNewResourceByName(owner, consumedPort.getDisplayName(), resourceTypeId, releaseId).getEntity();
 
             // additional attribute(s)
             resourceEntity.setExternalKey(consumedPort.getFcKey());
@@ -719,7 +712,7 @@ public class MaiaAmwFederationServiceImportHandler {
             Integer resourceTypeId = obtainResourceTypeId(providedPort.getResourceType());
 
             // create a basic resource (entity)
-            ResourceEntity resourceEntity = resourcesService.getOrCreateNewResourceByName(owner, providedPort.getDisplayName(), resourceTypeId, releaseId).getEntity();
+            ResourceEntity resourceEntity = resourceBoundary.getOrCreateNewResourceByName(owner, providedPort.getDisplayName(), resourceTypeId, releaseId).getEntity();
 
             // additional attribute(s)
             resourceEntity.setExternalKey(providedPort.getFcKey());

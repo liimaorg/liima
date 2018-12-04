@@ -3,7 +3,7 @@
     <groupId>ch.puzzle.itc.mobiliar</groupId>
     <artifactId>AMW_parent</artifactId>
     <name>AMW_parent</name>
-    <version>1.17.3-SNAPSHOT</version>
+    <version>1.17.8-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -80,7 +80,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.1</version>
+                    <version>2.5.3</version>
                     <configuration>
                         <preparationGoals>clean install</preparationGoals>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -264,14 +264,14 @@
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_business</artifactId>
-                <version>1.17.3-SNAPSHOT</version>
+                <version>1.17.8-SNAPSHOT</version>
                 <type>ejb</type>
             </dependency>
 
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_commons</artifactId>
-                <version>1.17.3-SNAPSHOT</version>
+                <version>1.17.8-SNAPSHOT</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -279,7 +279,7 @@
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_web</artifactId>
-                <version>1.17.3-SNAPSHOT</version>
+                <version>1.17.8-SNAPSHOT</version>
                 <type>war</type>
                 <scope>compile</scope>
             </dependency>
@@ -287,7 +287,7 @@
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_angular</artifactId>
-                <version>1.17.3-SNAPSHOT</version>
+                <version>1.17.8-SNAPSHOT</version>
                 <type>war</type>
                 <scope>compile</scope>
             </dependency>
@@ -296,7 +296,7 @@
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_rest</artifactId>
-                <version>1.17.3-SNAPSHOT</version>
+                <version>1.17.8-SNAPSHOT</version>
                 <type>war</type>
                 <scope>compile</scope>
             </dependency>
@@ -304,7 +304,7 @@
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_maia_federation</artifactId>
-                <version>1.17.3-SNAPSHOT</version>
+                <version>1.17.8-SNAPSHOT</version>
                 <type>war</type>
                 <scope>compile</scope>
             </dependency>
