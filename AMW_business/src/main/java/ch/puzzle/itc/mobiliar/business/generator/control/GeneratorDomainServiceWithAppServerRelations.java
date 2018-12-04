@@ -78,8 +78,8 @@ public class GeneratorDomainServiceWithAppServerRelations {
 
     @Inject
     private GenerationUnitFactory generationUnitFactory;
-    
-    @Inject 
+
+    @Inject
     private GlobalFunctionService globalFunctionService;
 
     @Inject
@@ -98,13 +98,10 @@ public class GeneratorDomainServiceWithAppServerRelations {
     private GeneratorUtils generatorUtils;
 
     /**
-     * @param generationContext
      * @return a NodeGenerationResult
-     * @throws IOException
-     * @throws GeneratorException
      */
     public NodeGenerationResult generateApplicationServerConfigPerNode(GenerationContext generationContext)
-              throws IOException, GeneratorException {
+            throws IOException, GeneratorException {
         // TODO Find a nicer solution for the properties ExceptionHandling
         AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
         GenerationPackage work = initialize(generationContext, templateExceptionHandler);
@@ -122,35 +119,32 @@ public class GeneratorDomainServiceWithAppServerRelations {
         return result;
     }
 
-    private GenerationPackage initialize(GenerationContext context,
-              AMWTemplateExceptionHandler templateExceptionHandler) {
+    private GenerationPackage initialize(GenerationContext context, AMWTemplateExceptionHandler templateExceptionHandler) {
         GenerationOptions options = new GenerationOptions(context);
-        return generationUnitFactory.createWorkForAppServer(options,
-                  context.getApplicationServer(), templateExceptionHandler);
+        return generationUnitFactory.createWorkForAppServer(options, context.getApplicationServer(), templateExceptionHandler);
     }
 
     private List<GenerationUnitGenerationResult> generateGeneralAppServerConfig(GenerationPackage work,
-              AppServerRelationsTemplateProcessor appServerRelationsTemplateProcessor, String basePath,
-              GenerationContext context) throws IOException {
+                                                                                AppServerRelationsTemplateProcessor appServerRelationsTemplateProcessor,
+                                                                                String basePath,
+                                                                                GenerationContext context) throws IOException {
         // get appserver and this node
         //Set<GenerationUnit> unitOfWork = GenerationUnit.forAppServer(work.getAsSet(), context.getNode());
         Set<GenerationUnit> unitOfWork = work.getAsWithGivenNode(context.getNode());
         List<GenerationUnitGenerationResult> generationResult = appServerRelationsTemplateProcessor
-                  .generateAppServer(unitOfWork, context.getNode());
+                .generateAppServer(unitOfWork, context.getNode());
         writer.generateFileStructure(generationResult, basePath, null);
         return generationResult;
     }
 
     private ApplicationGenerationResult generateApplicationConfig(GenerationPackage work,
-              AppServerRelationsTemplateProcessor appServerRelationsTemplateProcessor, String basePath,
-              ResourceEntity application)
-              throws IOException {
+                                                                  AppServerRelationsTemplateProcessor appServerRelationsTemplateProcessor,
+                                                                  String basePath,
+                                                                  ResourceEntity application) throws IOException {
 
         Map<ResourceEntity, Set<GenerationUnit>> appBatches = work.getAppGenerationBatches();
         Set<GenerationUnit> unitsOfWork = GenerationUnit.batchFor(appBatches, application);
-        List<GenerationUnitGenerationResult> generationResults = appServerRelationsTemplateProcessor
-                  .generateApp(
-                            unitsOfWork, application);
+        List<GenerationUnitGenerationResult> generationResults = appServerRelationsTemplateProcessor.generateApp(unitsOfWork, application);
         writer.generateFileStructure(generationResults, basePath, application.getName());
 
         ApplicationGenerationResult appResult = new ApplicationGenerationResult();
@@ -180,8 +174,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
     public List<ContextEntity> getAllEnvironments(final ContextEntity e) {
         if (e.getChildren() == null || e.getChildren().isEmpty()) {
             return Collections.singletonList(e);
-        }
-        else {
+        } else {
             final List<ContextEntity> result = new ArrayList<>();
             for (final ContextEntity c : e.getChildren()) {
                 result.addAll(getAllEnvironments(c));
@@ -194,29 +187,25 @@ public class GeneratorDomainServiceWithAppServerRelations {
      * This method generates the application server configuration for a deployment and also prepares the
      * command for the actual execution of the deployment returned as a {@link GenerationResult}
      *
-     * @param deployment the deployment to be generated
+     * @param deployment      the deployment to be generated
      * @param generationModus - flag to toggle between simulation and production mode. The value of this flag is
-     *                   provided in the template. It is the duty of the deployment-script to handle the flag
-     *                   appropriately (e.g. by having if clauses which ensure that the actual deployment command
-     *                   is only executed if this flag is set to true).
+     *                        provided in the template. It is the duty of the deployment-script to handle the flag
+     *                        appropriately (e.g. by having if clauses which ensure that the actual deployment command
+     *                        is only executed if this flag is set to true).
      * @return - a GenerationResult ready to be invoked for the actual deployment, null if the lock on this
      * deployment was not obtained (e.g. another server has picked it up already)
      */
-    public GenerationResult generateConfigurationForDeployment(DeploymentEntity deployment,
-              GenerationModus generationModus) {
+    public GenerationResult generateConfigurationForDeployment(DeploymentEntity deployment, GenerationModus generationModus) {
 
         log.info("Start writing configuration for all nodes of deployment " + deployment.getId());
-
         GenerationResult generationResult = null;
-
         try {
             generationResult = generateConfigurationAndGetFoldersToExecute(deployment, generationModus);
 
             if (generationResult.hasErrors()) {
                 handleExceptions(generationModus, generationResult, deployment);
             }
-        }
-        catch (final GeneratorException | IOException e) {
+        } catch (final GeneratorException | IOException e) {
             handleException(generationModus, e, deployment);
         }
         return generationResult;
@@ -226,24 +215,18 @@ public class GeneratorDomainServiceWithAppServerRelations {
      * Generates the Configuration for the given deployment and returns the generated folders to execute them
      * within the Deployment Script
      *
-     * @param deployment
      * @return GenerationResult
-     * @throws GeneratorException
-     * @throws IOException
      */
-    public GenerationResult generateConfigurationAndGetFoldersToExecute(DeploymentEntity deployment,
-              GenerationModus generationModus)
-              throws GeneratorException, IOException {
-
+    public GenerationResult generateConfigurationAndGetFoldersToExecute(DeploymentEntity deployment, GenerationModus generationModus)
+            throws GeneratorException, IOException {
         // look up resource entity for the chosen release
-        final ResourceEntity applicationServer = resourceDependencyResolver
-                  .getResourceEntityForRelease(deployment.getResourceGroup(),
-                            deployment.getRelease());
+        final ResourceEntity applicationServer = resourceDependencyResolver.getResourceEntityForRelease(deployment.getResourceGroup(),
+                deployment.getRelease());
 
         if (applicationServer == null) {
             final String message = "ApplicationServer " + deployment.getResourceGroup().getName()
-                      + " does not exist in release "
-                      + deployment.getRelease().getName();
+                    + " does not exist in release "
+                    + deployment.getRelease().getName();
             log.info(message);
             throw new GeneratorException(message, MISSING.APPSERVER);
         }
@@ -254,14 +237,13 @@ public class GeneratorDomainServiceWithAppServerRelations {
         // Get the current application server information at the given
         // stateDate
         final ResourceEntity applicationServerFromHistory = amwAuditReader
-                  .getByDate(ResourceEntity.class, stateDate, applicationServer.getId());
+                .getByDate(ResourceEntity.class, stateDate, applicationServer.getId());
 
         // Context
         Integer contextId;
         if (deployment.getContext() != null && deployment.getContext().getId() != null) {
             contextId = deployment.getContext().getId();
-        }
-        else {
+        } else {
             contextId = contextDomainService.getGlobalResourceContextEntity().getId();
         }
 
@@ -274,9 +256,9 @@ public class GeneratorDomainServiceWithAppServerRelations {
             log.log(Level.WARNING, message);
             throw new GeneratorException(message, MISSING.CONTEXT);
         }
-        
+
         List<GlobalFunctionEntity> globalFunctions = globalFunctionService.getAllGlobalFunctionsAtDate(stateDate);
-        
+
         // do the deployment right now
         Date deploymentDate = new Date();
 
@@ -285,13 +267,12 @@ public class GeneratorDomainServiceWithAppServerRelations {
         GenerationResult result = new GenerationResult();
 
         for (final ContextEntity c : getAllEnvironments(context)) {
-            GenerationContext generationContext = new GenerationContext(c, applicationServerFromHistory,
-                      deployment, deploymentDate, generationModus, resourceDependencyResolver);
+            GenerationContext generationContext = new GenerationContext(c, applicationServerFromHistory, deployment,
+                    deploymentDate, generationModus, resourceDependencyResolver);
             generationContext.setTesting(false);
-            
-			generationContext.setGlobalFunctions(globalFunctions);
-            result.addEnvironmentGenerationResult(
-                      generateApplicationServerConfigurationForEnvironment(generationContext));
+
+            generationContext.setGlobalFunctions(globalFunctions);
+            result.addEnvironmentGenerationResult(generateApplicationServerConfigurationForEnvironment(generationContext));
         }
         result.setDeployment(deployment);
         // Now all configurations are written...
@@ -300,102 +281,88 @@ public class GeneratorDomainServiceWithAppServerRelations {
     }
 
     /**
-     * @param contextId
-     * @param appServerId
-     * @param releaseId
      * @return an EnvironmentGenerationResult
-     * @throws IOException
-     * @throws AMWException
      */
-    public EnvironmentGenerationResult generateApplicationServerForTest(Integer contextId,
-              Integer appServerId, Integer releaseId, Date stateDate)
-              throws IOException, AMWException {
-
+    public EnvironmentGenerationResult generateApplicationServerForTest(Integer contextId, Integer appServerId, Integer releaseId, Date stateDate)
+            throws IOException, AMWException {
         ContextEntity context;
         try {
             context = contextDomainService.getContextEntityById(contextId);
-        }
-        catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             return null;
         }
 
-        ResourceEntity appServer;
-        //If the state date is not set, we load the appserver from the live database (which is a lot faster than from the history)
-        if (stateDate == null) {
-            appServer = entityManager.find(ResourceEntity.class, appServerId);
-        }
-        //Otherwise, we have to look up the audited version of the appserver
-        else {
-            appServer = amwAuditReader.getByDate(ResourceEntity.class, stateDate, appServerId);
-            if (appServer == null) {
-                throw new AMWException("No resource found for the given date!");
-            }
-        }
+        ResourceEntity appServer = getAppServer(appServerId, stateDate);
 
         ReleaseEntity release;
         if (releaseId == null) {
             release = appServer.getRelease();
-        }
-        else {
+        } else {
             release = releaseMgmtPersistenceService.getById(releaseId);
         }
+
         if (stateDate == null) {
             stateDate = new Date();
         }
 
-        appServer = resourceDependencyResolver
-                  .getResourceEntityForRelease(appServer.getResourceGroup(), release);
+        appServer = resourceDependencyResolver.getResourceEntityForRelease(appServer.getResourceGroup(), release);
 
         if (appServer.getRuntime() == null) {
             throw new AMWException("No runtime found for the given applicationserver!");
         }
-        ResourceEntity runtime = resourceDependencyResolver
-                  .getResourceEntityForRelease(appServer.getRuntime(), release);
+        ResourceEntity runtime = resourceDependencyResolver.getResourceEntityForRelease(appServer.getRuntime(), release);
 
-        DeploymentEntity fakeDeplyoment = createFakeDeployment(-1, release, runtime,
-                  stateDate);
-        
+        DeploymentEntity fakeDeplyoment = createFakeDeployment(-1, release, runtime, stateDate);
+
         List<GlobalFunctionEntity> globalFunctions = globalFunctionService.getAllGlobalFunctionsAtDate(stateDate);
 
         GenerationContext generationContext = new GenerationContext(context, appServer, fakeDeplyoment,
-                  stateDate, GenerationModus.TEST, resourceDependencyResolver);
+                stateDate, GenerationModus.TEST, resourceDependencyResolver);
         generationContext.setGlobalFunctions(globalFunctions);
-        EnvironmentGenerationResult result;
 
+        EnvironmentGenerationResult result;
         try {
             result = generateApplicationServerConfigurationForEnvironment(generationContext);
             //If we're in test mode and the user doesn't have the permission to see this template, we omit the content of the template to prevent the giveaway of sensitive information.
             // TODO review: is appServer the correct ResourceEntity?
             omitTemplateForLackingPermissions(context, appServer, result);
-        }
-        catch (GeneratorException e) {
+        } catch (GeneratorException e) {
             result = createFailureEnvironmentGenerationResult(e);
         }
 
         return result;
     }
 
+    private ResourceEntity getAppServer(Integer appServerId, Date stateDate) throws AMWException {
+        ResourceEntity appServer;
+        if (stateDate == null) {
+            //If the state date is not set, we load the appserver from the live database (which is a lot faster than from the history)
+            appServer = entityManager.find(ResourceEntity.class, appServerId);
+        } else {
+            //Otherwise, we have to look up the audited version of the appserver
+            appServer = amwAuditReader.getByDate(ResourceEntity.class, stateDate, appServerId);
+            if (appServer == null) {
+                throw new AMWException("No resource found for the given date!");
+            }
+        }
+        return appServer;
+    }
 
     void omitTemplateForLackingPermissions(ContextEntity context, ResourceEntity resource, EnvironmentGenerationResult result) {
         boolean omitTemplateContent = !permissionService.hasPermission(Permission.RESOURCE_TEST_GENERATION_RESULT, context,
                 Action.READ, resource.getResourceGroup(), null);
-        if(omitTemplateContent) {
+        if (omitTemplateContent) {
             result.omitAllTemplates();
         }
     }
 
     /**
-     * @param id
-     * @param release
-     * @param runtime
-     * @param stateToDeploy
      * @return a faked deploymentEntity for testing and shakedownTests
      */
-    public DeploymentEntity createFakeDeployment(Integer id, ReleaseEntity release, ResourceEntity runtime,
-              Date stateToDeploy) {
+    public DeploymentEntity createFakeDeployment(Integer id, ReleaseEntity release, ResourceEntity runtime, Date stateToDeploy) {
         DeploymentEntity fakeDeplyoment = new DeploymentEntity();
         fakeDeplyoment
-                  .setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
+                .setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
         fakeDeplyoment.setRelease(release);
         fakeDeplyoment.setRuntime(runtime);
         fakeDeplyoment.setId(id);
@@ -413,17 +380,14 @@ public class GeneratorDomainServiceWithAppServerRelations {
     /**
      * Handles the applicationserver configuration generation for a specific environment.
      *
-     * @param generationContext
      * @return EnvironmentGenerationResult
-     * @throws GeneratorException
-     * @throws IOException
      */
     public EnvironmentGenerationResult generateApplicationServerConfigurationForEnvironment(
-              GenerationContext generationContext) throws GeneratorException,
-              IOException {
+            GenerationContext generationContext) throws GeneratorException,
+            IOException {
 
         final List<ResourceEntity> allNodes = generationContext.getApplicationServer()
-                  .getConsumedRelatedResourcesByResourceType(DefaultResourceTypeDefinition.NODE);
+                .getConsumedRelatedResourcesByResourceType(DefaultResourceTypeDefinition.NODE);
         List<ResourceEntity> nodes = new ArrayList<>();
         // filter out all Nodes which are not existing in the Release (or in an earlier) of the current Deployment
         if (allNodes != null) {
@@ -447,8 +411,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
 
         for (final ResourceEntity node : nodes) {
             generationContext.setNode(node);
-            environmentResult
-                      .addNodeGenerationResult(generateApplicationServerConfigPerNode(generationContext));
+            environmentResult.addNodeGenerationResult(generateApplicationServerConfigPerNode(generationContext));
         }
         return environmentResult;
     }
@@ -461,15 +424,15 @@ public class GeneratorDomainServiceWithAppServerRelations {
      * @param deployment      - the deployment order which has failed
      */
     private void handleException(GenerationModus generationModus, final Exception e,
-              final DeploymentEntity deployment) {
+                                 final DeploymentEntity deployment) {
         log.log(Level.WARNING, "Deployment fehlgeschlagen", e);
         String message = generationModus.getAction() + " failure at " + new Date() + ". Reason: " + e
-                  .getMessage() + "\n";
+                .getMessage() + "\n";
         DeploymentFailureReason reason = (e instanceof GeneratorException && ((GeneratorException) e).getMissingObject().equals(MISSING.NODE)) ?
                 DeploymentFailureReason.NODE_MISSING : null;
         deploymentBoundary.updateDeploymentInfo(generationModus, deployment.getId(), message,
-                  deployment.getResource() != null ? deployment.getResource()
-                            .getId() : null, null, reason);
+                deployment.getResource() != null ? deployment.getResource()
+                        .getId() : null, null, reason);
         if (generationModus.isSendNotificationOnErrorGenerationModus()) {
             deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
         }
@@ -477,16 +440,11 @@ public class GeneratorDomainServiceWithAppServerRelations {
 
     /**
      * Handle exceptions in the preparation of the deployment.
-     *
-     * @param generationModus
-     * @param generationResult
-     * @param deployment
      */
     private void handleExceptions(GenerationModus generationModus, GenerationResult generationResult,
-              final DeploymentEntity deployment) {
+                                  final DeploymentEntity deployment) {
 
-        StringBuilder message = new StringBuilder(
-        		generationModus.getAction() + " failure at " + new Date() + ". Reasons: ");
+        StringBuilder message = new StringBuilder(generationModus.getAction() + " failure at " + new Date() + ". Reasons: ");
         if (generationResult.hasErrors()) {
             message.append(generationResult.getErrorMessage());
         }
@@ -501,8 +459,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
 
         log.log(Level.WARNING, "Deployment fehlgeschlagen \n" + message.toString());
         deploymentBoundary.updateDeploymentInfo(generationModus, deployment.getId(), message.toString(),
-                  deployment.getResource() != null ? deployment
-                            .getResource().getId() : null, generationResult, reason);
+                deployment.getResource() != null ? deployment.getResource().getId() : null, generationResult, reason);
         if (generationModus.isSendNotificationOnErrorGenerationModus()) {
             deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
         }
@@ -512,20 +469,15 @@ public class GeneratorDomainServiceWithAppServerRelations {
      * Generates the configuration for a whole application server on a specific node - this method more or
      * less defines the whole configuration process
      *
-     * @param work
-     * @param context
      * @return NodeGenerationResult
-     * @throws IOException
-     * @throws GeneratorException
      */
     private NodeGenerationResult generateApplicationServerConfig(GenerationPackage work,
-              GenerationContext context) throws IOException, GeneratorException {
+                                                                 GenerationContext context) throws IOException, GeneratorException {
         log.info("Start generating configuration for AppServer: " + context.getContext().getName());
 
         // Find the applications of the application server
-        final Set<ResourceEntity> applications = resourceDependencyResolver
-                  .getConsumedRelatedResourcesByResourceType(
-                            context.getApplicationServer(), DefaultResourceTypeDefinition.APPLICATION, context.getTargetRelease());
+        final Set<ResourceEntity> applications = resourceDependencyResolver.getConsumedRelatedResourcesByResourceType(
+                        context.getApplicationServer(), DefaultResourceTypeDefinition.APPLICATION, context.getTargetRelease());
 
         if (applications == null || applications.isEmpty()) {
             final String msg = "Applicationserver contains no Application";
@@ -539,21 +491,19 @@ public class GeneratorDomainServiceWithAppServerRelations {
 
         context.setGenerationDir(folderForConfiguration);
 
-        AppServerRelationsTemplateProcessor appServerRelationsTemplateProcessor = new AppServerRelationsTemplateProcessor(
-                  log, context);
+        AppServerRelationsTemplateProcessor appServerRelationsTemplateProcessor = new AppServerRelationsTemplateProcessor(log, context);
         appServerRelationsTemplateProcessor.setGlobals(work);
         appServerRelationsTemplateProcessor.setNodeProperties(work.getAsSet(), context.getNode());
-
 
         NodeGenerationResult result = new NodeGenerationResult();
 
         // set node active and test hostname when Test generation Modus
         if (GenerationModus.TEST.equals(context.getGenerationModus())) {
-            if(!appServerRelationsTemplateProcessor.isNodeEnabled()) {
+            if (!appServerRelationsTemplateProcessor.isNodeEnabled()) {
                 appServerRelationsTemplateProcessor.setNodeEnabledForTestGeneration();
                 result.setNodeEnabledForTestGeneration(true);
             }
-            if(StringUtils.isNotEmpty(appServerRelationsTemplateProcessor.getHostname())){
+            if (StringUtils.isNotEmpty(appServerRelationsTemplateProcessor.getHostname())) {
                 appServerRelationsTemplateProcessor.setTestNodeHostname();
             }
         }
@@ -565,9 +515,9 @@ public class GeneratorDomainServiceWithAppServerRelations {
 
         // checks if the node is enabled
         if (appServerRelationsTemplateProcessor.isNodeEnabled()) {
-        	
-        	createNodeJob(context);
-            
+
+            createNodeJob(context);
+
             result.setNodeEnabled(true);
             List<ApplicationGenerationResult> appResults = new ArrayList<>();
 
@@ -575,17 +525,16 @@ public class GeneratorDomainServiceWithAppServerRelations {
             for (final ResourceEntity app : applications) {
                 // Now we generate the configuration for the application.
                 appResults.add(generateApplicationConfig(work, appServerRelationsTemplateProcessor,
-                          folderForConfiguration, app));
+                        folderForConfiguration, app));
             }
             // finally, we generate the configurations for the
             // application-independent server (e.g. server.xml)
             List<GenerationUnitGenerationResult> asResults = generateGeneralAppServerConfig(work,
-                      appServerRelationsTemplateProcessor, folderForConfiguration, context);
+                    appServerRelationsTemplateProcessor, folderForConfiguration, context);
 
             result.setApplicationResults(appResults);
             result.setApplicationServerResults(asResults);
-        }
-        else {
+        } else {
             result.setNodeEnabled(false);
         }
 
@@ -593,45 +542,40 @@ public class GeneratorDomainServiceWithAppServerRelations {
 
         return result;
     }
-    
-    private void createNodeJob(GenerationContext context){
-    	NodeJobEntity nodeJobEntity;
-    	if(GenerationModus.DEPLOY.equals(context.getGenerationModus()) 
-    			|| GenerationModus.PREDEPLOY.equals(context.getGenerationModus())
-    			|| GenerationModus.SIMULATE.equals(context.getGenerationModus())){
-	    	// create NodeJob for this Node and Add to Deployment in Deploy and Predeploy mode
-	        nodeJobEntity = deploymentBoundary.createAndPersistNodeJobEntity(context.getDeployment());
-	        
-    	}else{
-    		// create Test NodeJob Entity
-    		nodeJobEntity = new NodeJobEntity();
-    		nodeJobEntity.setId(1);
-    	}
-    	context.setNodeJobEntity(nodeJobEntity);
+
+    private void createNodeJob(GenerationContext context) {
+        NodeJobEntity nodeJobEntity;
+        if (GenerationModus.DEPLOY.equals(context.getGenerationModus())
+                || GenerationModus.PREDEPLOY.equals(context.getGenerationModus())
+                || GenerationModus.SIMULATE.equals(context.getGenerationModus())) {
+            // create NodeJob for this Node and Add to Deployment in Deploy and Predeploy mode
+            nodeJobEntity = deploymentBoundary.createAndPersistNodeJobEntity(context.getDeployment());
+
+        } else {
+            // create Test NodeJob Entity
+            nodeJobEntity = new NodeJobEntity();
+            nodeJobEntity.setId(1);
+        }
+        context.setNodeJobEntity(nodeJobEntity);
     }
 
 
     /**
      * returns true if a Node for the application server is active at the given moment
-     *
-     * @param appServer
-     * @param environment
-     * @param stateToDeployDate
-     * @return
      */
     public boolean hasActiveNodeToDeployOnAtDate(ResourceEntity appServer, ContextEntity environment, Date stateToDeployDate) {
         ContextEntity context = entityManager.find(ContextEntity.class, environment.getId());
         // if not set take actual version
-        if(stateToDeployDate == null){
+        if (stateToDeployDate == null) {
             stateToDeployDate = new Date();
         }
         ResourceEntity appServerAtDate = amwAuditReader.getByDate(ResourceEntity.class, stateToDeployDate, appServer.getId());
         for (ConsumedResourceRelationEntity resourceRelation : appServerAtDate.getConsumedMasterRelations()) {
-            if(resourceRelation.getResourceRelationType().getResourceTypeB().isNodeResourceType()){
+            if (resourceRelation.getResourceRelationType().getResourceTypeB().isNodeResourceType()) {
                 FreeMarkerProperty property = generatorUtils.findPropertyValueByName(context, resourceRelation, AppServerRelationsTemplateProcessor.NODE_ACTIVE);
-                if(property!=null 
-                		&& StringUtils.isNotBlank(property.getCurrentValue())
-                		&& Boolean.parseBoolean((property.getCurrentValue()))){
+                if (property != null
+                        && StringUtils.isNotBlank(property.getCurrentValue())
+                        && Boolean.parseBoolean((property.getCurrentValue()))) {
                     return true;
                 }
             }

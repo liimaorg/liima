@@ -478,13 +478,6 @@ div.templateDiff, div.templateDiff .descriptionGap {
     min-height: 320px;
 }
 
-.topBorder {
-    border-left: 0px;
-    border-bottom: 0px;
-    border-right: 0px;
-    border-top: 1px solid;
-}
-
 .left {
     float: left;
 }

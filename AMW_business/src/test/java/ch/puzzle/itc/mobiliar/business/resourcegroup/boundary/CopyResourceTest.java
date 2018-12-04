@@ -96,25 +96,25 @@ public class CopyResourceTest {
         ResourceEntity targetResource = ResourceEntityBuilder.createResourceEntity(targetResourceName, targetResourceId);
         ResourceTypeEntity asType = ResourceTypeEntityBuilder.APPLICATION_SERVER_TYPE;
         targetResource.setResourceType(asType);
+        Set<ResourceEntity> set = new HashSet<>();
+        set.add(targetResource);
+        ResourceGroupEntity targetGroup = new ResourceGroupEntityBuilder().buildResourceGroupEntity(targetResourceName, set, false);
+        targetResource.setResourceGroup(targetGroup);
 
         String originResourceName = "origin";
         Integer originResourceId = 1;
         ResourceEntity originResource = ResourceEntityBuilder.createResourceEntity(originResourceName, originResourceId);
         originResource.setResourceType(asType);
-        Set<ResourceEntity> set = new HashSet<>();
-        set.add(originResource);
-        ResourceGroupEntity originGroup = new ResourceGroupEntityBuilder().buildResourceGroupEntity(originResourceName, set, false);
-        originResource.setResourceGroup(originGroup);
 
         when(commonDomainService.getResourceEntityById(targetResourceId)).thenReturn(targetResource);
         when(commonDomainService.getResourceEntityById(originResourceId)).thenReturn(originResource);
-        when(permissionBoundary.canCopyFromSpecificResource(originResource, originGroup)).thenReturn(true);
+        when(permissionBoundary.canCopyFromSpecificResource(originResource, targetGroup)).thenReturn(true);
 
         // when
         copyResource.doCopyResource(targetResourceId, originResourceId, ForeignableOwner.getSystemOwner());
 
         // then
-        verify(permissionBoundary, times(1)).canCopyFromSpecificResource(originResource, originGroup);
+        verify(permissionBoundary, times(1)).canCopyFromSpecificResource(originResource, targetGroup);
         verify(copyResourceDomainService, times(1)).copyFromOriginToTargetResource(originResource, targetResource, ForeignableOwner.getSystemOwner());
     }
 

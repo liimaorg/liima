@@ -181,12 +181,12 @@ public class DeploymentsRest {
 
     private DeploymentActionsDTO createDeploymentActionsDTO(DeploymentEntity deployment) {
         DeploymentActionsDTO actionsDTO = new DeploymentActionsDTO();
-        actionsDTO.setConfirmPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment));
-        actionsDTO.setRejectPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentReject(deployment));
+        actionsDTO.setConfirmPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible());
+        actionsDTO.setRejectPossible(deploymentBoundary.isConfirmPossible(deployment).isPossible());
         actionsDTO.setCancelPossible(deploymentBoundary.isCancelPossible(deployment).isPossible());
         actionsDTO.setRedeployPossible(permissionService.hasPermissionForDeploymentCreation(deployment));
         actionsDTO.setHasLogFiles(deploymentBoundary.getLogFileNames(deployment.getId()).length > 0);
-        actionsDTO.setEditPossible((deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible() && permissionService.hasPermissionForDeploymentUpdate(deployment))
+        actionsDTO.setEditPossible(deploymentBoundary.isChangeDeploymentDatePossible(deployment).isPossible()
                 && (permissionService.hasPermissionToCreateDeployment() || permissionService.hasPermissionToEditDeployment()));
         return actionsDTO;
     }

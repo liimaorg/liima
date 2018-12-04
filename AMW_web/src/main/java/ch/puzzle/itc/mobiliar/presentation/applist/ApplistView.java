@@ -273,9 +273,6 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 					}
 				}
 			}
-		} catch (ResourceNotDeletableException e) {
-			String errorMessage = "The selected application server can not be deleted.";
-			GlobalMessageAppender.addErrorMessage(errorMessage);
 		} catch (ResourceNotFoundException e) {
 			String errorMessage = "Could not load selected server for deletion.";
 			GlobalMessageAppender.addErrorMessage(errorMessage);

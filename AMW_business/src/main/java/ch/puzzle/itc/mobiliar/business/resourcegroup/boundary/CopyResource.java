@@ -121,7 +121,7 @@ public class CopyResource {
 			throw new AMWException("Target and origin Resource are not of the same ResourceType");
 		}
 
-		if(!permissionBoundary.canCopyFromSpecificResource(originResource, originResource.getResourceGroup())){
+		if(!permissionBoundary.canCopyFromSpecificResource(originResource, targetResource.getResourceGroup())){
 			throw new NotAuthorizedException("Permission Denied");
 		}
 

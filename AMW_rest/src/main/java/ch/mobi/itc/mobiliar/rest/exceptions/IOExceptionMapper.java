@@ -23,11 +23,12 @@ package ch.mobi.itc.mobiliar.rest.exceptions;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.io.IOException;
 
 @Provider
-public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalArgumentException> {
+public class IOExceptionMapper implements ExceptionMapper<IOException> {
     @Override
-    public Response toResponse(IllegalArgumentException exception) {
-        return Response.status(Response.Status.BAD_REQUEST).entity(new ExceptionDto(exception)).build();
+    public Response toResponse(IOException exception) {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ExceptionDto(exception)).build();
     }
 }

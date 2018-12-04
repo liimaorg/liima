@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.logging.Logger;
@@ -28,6 +29,7 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,6 +72,9 @@ public class CopyResourceDomainServicePersistenceTest {
     @Mock
     ResourceRepository resourceRepositoryMock;
 
+    @Mock
+	AuditService auditService;
+
 	@InjectMocks
 	CopyResourceDomainService service;
 
@@ -93,7 +98,7 @@ public class CopyResourceDomainServicePersistenceTest {
 	 * @throws GeneralDBException
 	 */
 	@Test
-	public void test_propertyOverwrittenInContext() throws ResourceNotFoundException, GeneralDBException, ForeignableOwnerViolationException, AMWException {
+	public void test_propertyOverwrittenInContext() throws ForeignableOwnerViolationException, AMWException {
 		// given
 		ResourceTypeEntity appType = new ResourceTypeEntity();
 		appType.setName(DefaultResourceTypeDefinition.APPLICATION.name());
@@ -159,5 +164,6 @@ public class CopyResourceDomainServicePersistenceTest {
 			}
 		}
 		assertNotNull(context);
+		verify(auditService).storeIdInThreadLocalForAuditLog(target);
 	}
 }

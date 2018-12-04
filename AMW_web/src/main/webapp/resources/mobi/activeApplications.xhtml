@@ -13,6 +13,7 @@
 	<h:panelGroup>
 		<h:selectManyCheckbox
 			value="#{activeApplicationsDataProvider.activeApplications}"
+			converter="javax.faces.Integer"
 			disabled="#{!activeApplicationsDataProvider.canExcludeApps}"
 			styleClass="checkboxList subChangeAware" layout="pageDirection" >
 			<f:selectItems value="#{resourceRelationModel.consumedApplications}"

@@ -20,7 +20,6 @@
 
 package ch.mobi.itc.mobiliar.rest.exceptions;
 
-import javax.persistence.NoResultException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
