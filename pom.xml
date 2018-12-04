@@ -232,14 +232,17 @@
                         </execution>
                     </executions>
                 </plugin>
-		<plugin>
-		    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-surefire-plugin</artifactId>
-            <version>${version.maven.surefire.plugin}</version>
-		    <configuration>
-            <useSystemClassLoader>false</useSystemClassLoader>
-		    </configuration>
-		</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${version.maven.surefire.plugin}</version>
+                    <configuration>
+                        <forkCount>1</forkCount>
+                        <reuseForks>true</reuseForks>
+                        <argLine>-Xmx2048m -XX:MaxPermSize=256m</argLine>
+                        <useSystemClassLoader>false</useSystemClassLoader>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
