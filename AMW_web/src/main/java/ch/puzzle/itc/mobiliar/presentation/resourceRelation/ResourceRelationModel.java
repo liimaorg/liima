@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.resourceRelation;
 
-import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesDTO;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -71,9 +70,6 @@ public class ResourceRelationModel implements Serializable {
     ResourceRelationBoundary resourceRelationBoundary;
 
     @Inject
-    CommonDomainService commonDomainService;
-
-    @Inject
     ResourceRelationService resourceRelationService;
 
     @Inject
@@ -97,7 +93,7 @@ public class ResourceRelationModel implements Serializable {
     private Map<String, SortedSet<String>> unresolvedRelations;
 
     @Getter
-    private List<ResourceEditRelation> runtimeRelations;
+    private SortedMap<String, List<ResourceEditRelation>> runtimeRelations;
 
     @Getter
     private SortedMap<String, List<ResourceEditRelation>> consumedRelations;
@@ -276,7 +272,7 @@ public class ResourceRelationModel implements Serializable {
         if (hasConsumedRelations()) {
 
             if (hasRuntimeRealtions()) {
-                return runtimeRelations.iterator().next();
+                return runtimeRelations.get(runtimeRelations.keySet().iterator().next()).iterator().next();
             }
 
             return consumedRelations.get(consumedRelations.keySet().iterator().next()).iterator().next();
@@ -332,7 +328,7 @@ public class ResourceRelationModel implements Serializable {
     }
 
     private boolean isResourceSelected() {
-        return currentSelectedResourceOrType != null && currentSelectedResourceOrType instanceof ResourceEntity;
+        return currentSelectedResourceOrType instanceof ResourceEntity;
     }
 
     private boolean isResourceTypeSelected() {
@@ -352,20 +348,21 @@ public class ResourceRelationModel implements Serializable {
     }
 
     public void setCurrentResourceRelationId(Integer id) {
-        // In the context this method is used, only available release relations
-        // are possible...
+        // In the context this method is used, only available release relations are possible...
         for (ResourceEditRelation relation : getAvailableReleaseRelations()) {
             if (id != null && id.equals(relation.getResRelId())) {
                 if (consumedRelations.containsKey(relation.getSlaveTypeName())) {
                     // replace selected value in map
                     List<ResourceEditRelation> oldSelections = consumedRelations.remove(relation.getSlaveTypeName());
                     consumedRelations.put(relation.getSlaveTypeName(), replaceSelectedRelationForType(relation, oldSelections));
-                }
-
-                if (providedRelations.containsKey(relation.getSlaveTypeName())) {
+                } else if (providedRelations.containsKey(relation.getSlaveTypeName())) {
                     // replace selected value in map
                     List<ResourceEditRelation> oldSelections = providedRelations.remove(relation.getSlaveTypeName());
                     providedRelations.put(relation.getSlaveTypeName(), replaceSelectedRelationForType(relation, oldSelections));
+                } else if (runtimeRelations.containsKey(relation.getSlaveTypeName())) {
+                    // replace selected value in map
+                    List<ResourceEditRelation> oldSelections = runtimeRelations.remove(relation.getSlaveTypeName());
+                    runtimeRelations.put(relation.getSlaveTypeName(), replaceSelectedRelationForType(relation, oldSelections));
                 }
 
                 loadResourceRelation(relation);
@@ -536,11 +533,11 @@ public class ResourceRelationModel implements Serializable {
             }
 
             setBestMatchingOrSelectedRelationsToViewMaps(mode, groupIdentifierMap, mapForNavigation);
-            setApplicationsAndRuntimes(mapForNavigation);
+            setApplicationsAndRuntime(mapForNavigation);
         }
     }
 
-    private void setApplicationsAndRuntimes(SortedMap<String, SortedMap<String, List<ResourceEditRelation>>> mapForNavigation) {
+    private void setApplicationsAndRuntime(SortedMap<String, SortedMap<String, List<ResourceEditRelation>>> mapForNavigation) {
         ResourceTypeEntity resourceTypeOfSelectedResource = getCurrentSelectedResource().getResourceType();
         if (resourceTypeOfSelectedResource.isApplicationServerResourceType()) {
 
@@ -552,10 +549,11 @@ public class ResourceRelationModel implements Serializable {
                         }
                         consumedApplications.add(resourceRelationService.getBestMatchingRelationRelease(applications, (ResourceEntity) currentSelectedResourceOrType));
                     }
-                }
-
-                if (key.equals(ResourceTypeEntity.RUNTIME)) {
-                    runtimeRelations = unmapToList(mapForNavigation.get(key).values());
+                } else if (key.equals(ResourceTypeEntity.RUNTIME)) {
+                    if (runtimeRelations == null) {
+                        runtimeRelations = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+                    }
+                    runtimeRelations.put(key, findBestMatchingOrSelectedReleaseRelationsForType(mapForNavigation.get(key).values()));
                 }
             }
         }
@@ -719,12 +717,11 @@ public class ResourceRelationModel implements Serializable {
     }
 
     public boolean canDeleteRelation() {
-        boolean result = sessionContext.getIsGlobal()
-                && (currentSelectedResourceOrType != null ? allowedToRemoveRelations : false)
+        return sessionContext.getIsGlobal()
+                && (currentSelectedResourceOrType != null && allowedToRemoveRelations)
                 && getCurrentRelationUniqueIdentifier() != null
                 && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(),
                 currentResourceRelation.getRelationForeignableAttributes());
-        return result;
     }
 
     private boolean hasConsumableSoftlinkSuperType(ResourceEntity resourceEntity) {

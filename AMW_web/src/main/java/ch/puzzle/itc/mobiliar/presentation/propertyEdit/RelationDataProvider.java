@@ -24,7 +24,6 @@
  */
 package ch.puzzle.itc.mobiliar.presentation.propertyEdit;
 
-import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
@@ -207,9 +206,7 @@ public class RelationDataProvider implements Serializable {
         addRuntimeToAppServerMode = false;
         List<ResourceTypeEntity> resourceTypes = resourceTypeDomainService.getResourceTypes();
         selectableItems = new ArrayList<>();
-        for (ResourceTypeEntity resourceType : resourceTypes) {
-            selectableItems.add(resourceType);
-        }
+        selectableItems.addAll(resourceTypes);
     }
 
     /**
@@ -295,7 +292,7 @@ public class RelationDataProvider implements Serializable {
             Iterator<NamedIdentifiable> resourceGroupsIterator = selectableItems.iterator();
             while (resourceGroupsIterator.hasNext()) {
                 if (resourceGroupsIterator.next().getId()
-                        .equals(resourceRelationModel.getRuntimeRelations().get(0).getSlaveGroupId())) {
+                        .equals(resourceRelationModel.getRuntimeRelations().values().iterator().next().get(0).getSlaveGroupId())) {
                     resourceGroupsIterator.remove();
                 }
             }
@@ -498,11 +495,11 @@ public class RelationDataProvider implements Serializable {
     }
 
     private boolean isEditResource() {
-        return resourceOrType != null && resourceOrType instanceof ResourceEntity;
+        return resourceOrType instanceof ResourceEntity;
     }
 
     private boolean isEditResourceType() {
-        return resourceOrType != null && resourceOrType instanceof ResourceTypeEntity;
+        return resourceOrType instanceof ResourceTypeEntity;
     }
 
     private ResourceEntity getResource() {
