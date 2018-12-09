@@ -191,7 +191,8 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.4.197</version>
+			<!-- downgraded from 1.4.197 see https://github.com/h2database/h2database/issues/1073 -->
+			<version>1.4.196</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- Needed for TestSetTest on Java 8 -->

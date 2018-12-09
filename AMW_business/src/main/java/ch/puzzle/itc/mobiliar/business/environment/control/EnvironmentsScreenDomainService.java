@@ -66,7 +66,7 @@ public class EnvironmentsScreenDomainService {
      * Speichert die Änderungen auf einen Kontext.
      */
     @HasPermission(permission = Permission.SAVE_SETTINGS_ENV)
-    public void saveEnvironment(Integer contextId, String newContextName) throws ResourceNotFoundException {
+    public void saveEnvironment(Integer contextId, String newContextName, String contextNameAlias) throws ResourceNotFoundException {
         try {
             ContextEntity context = QueryUtils.singleResult(loadContextEntityWithPropertyDescriptors(contextId));
             String oldContextName = context.getName();
@@ -77,6 +77,7 @@ public class EnvironmentsScreenDomainService {
                     securityService.renamePermissionByName(oldContextName, newContextName);
                 }
             }
+            context.setNameAlias(contextNameAlias);
             entityManager.persist(context);
         } catch (NoResultException nre) {
             String message = "Es konnte keine Kontextresource für mit der Id: " + contextId + " gefunden werden.";

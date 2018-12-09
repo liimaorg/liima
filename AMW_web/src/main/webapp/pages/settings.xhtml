@@ -140,6 +140,17 @@
                                                         disabled="${contextDataProvider.isGlobal or securityDataProvider.hasPermission('EDIT_ENV_OR_DOM_NAME')==false}"
                                                         value="#{contextDataProvider.contextDisplayName}" />
                                                 </div>
+
+                                                <h:panelGroup rendered="${!contextDataProvider.isGlobal}">
+                                                <label class="control-label">
+                                                    <h:outputText value="#{environmentsDataProvider.contextTypeName} alias" />
+                                                </label>
+                                                <div class="controls">
+                                                    <h:inputText id="envOrDomainNameAliasInput"
+                                                         disabled="${contextDataProvider.isGlobal or securityDataProvider.hasPermission('EDIT_ENV_OR_DOM_NAME')==false}"
+                                                         value="#{contextDataProvider.contextNameAlias}" />
+                                                </div>
+                                                </h:panelGroup>
                                             </div>
                                         </h:panelGroup></td>
                                 </tr>

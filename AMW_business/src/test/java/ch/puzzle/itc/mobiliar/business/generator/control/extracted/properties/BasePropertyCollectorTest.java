@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -228,6 +229,24 @@ public class BasePropertyCollectorTest {
 		assertEquals("release", result.get("release").getCurrentValue());
 		assertEquals("outofServiceRel", result.get("outOfServiceRelease").getCurrentValue());
 		
+	}
+
+	@Test
+	public void propertiesForContext_shouldAddAdditionalProperties() {
+		// when
+		ContextEntity context = new ContextEntity();
+		context.setParent(new ContextEntity());
+		context.setName("B");
+		context.setNameAlias("Test");
+		Map<String, FreeMarkerProperty> props = c.propertiesForContext(context);
+
+		// then
+		assertNotNull(props);
+		assertEquals(3, props.keySet().size());
+		assertEquals(null, props.get("domain").getCurrentValue());
+		assertEquals(context.getName(), props.get("name").getCurrentValue());
+		assertEquals(context.getNameAlias(), props.get("nameAlias").getCurrentValue());
+
 	}
 
 }

@@ -35,6 +35,7 @@ import java.util.*;
 @Stateless
 public class BasePropertyCollector {
 	private static final String RESERVED_PROPERTY_NAME = "name";
+	private static final String RESERVED_PROPERTY_NAME_ALIAS = "nameAlias";
 	private static final String RESERVED_PROPERTY_DOMAIN = "domain";
 	private static final String RESERVED_PROPERTY_ID = "id";
 	private static final String RESERVED_PROPERTY_RELEASE = "release";
@@ -98,6 +99,7 @@ public class BasePropertyCollector {
 	    Map<String, FreeMarkerProperty> result = translatePropertyList(utils().getPropertyValues(context),
 			    context.getName(), context.getId(), null, null, null);
 	    result.put(RESERVED_PROPERTY_DOMAIN, new FreeMarkerProperty(getDomainName(context), RESERVED_PROPERTY_DOMAIN));
+		result.put(RESERVED_PROPERTY_NAME_ALIAS, new FreeMarkerProperty(context.getNameAlias(), RESERVED_PROPERTY_NAME_ALIAS));
 	    return result;
 	}
 

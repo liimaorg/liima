@@ -58,6 +58,7 @@ public class ContextDataProvider implements Serializable {
      * Initial so soll der Globale Context selektiert werden!
      */
     private String contextDisplayName = ContextNames.GLOBAL.getDisplayName();
+    private String contextNameAlias;
     private Integer contextId;
     private List<ContextEntity> contexts = null;
     private Integer globalContextId;
@@ -146,6 +147,7 @@ public class ContextDataProvider implements Serializable {
             this.contextId = contextId;
             ContextEntity current = getCurrentContext();
             this.contextDisplayName = current.getName();
+            this.contextNameAlias = current.getNameAlias();
         }
 
     }
@@ -154,8 +156,16 @@ public class ContextDataProvider implements Serializable {
         return this.contextDisplayName;
     }
 
+    public String getContextNameAlias() {
+        return this.contextNameAlias;
+    }
+
     public void setContextDisplayName(String contextName) {
         this.contextDisplayName = contextName;
+    }
+
+    public void setContextNameAlias(String contextNameAlias) {
+        this.contextNameAlias = contextNameAlias;
     }
 
     public void loadContexts() {

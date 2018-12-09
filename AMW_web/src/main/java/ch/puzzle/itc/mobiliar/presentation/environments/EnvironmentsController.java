@@ -65,7 +65,7 @@ public class EnvironmentsController implements Serializable {
         return result;
     }
 
-    public boolean doSave(Integer contextId, String contextName) {
+    public boolean doSave(Integer contextId, String contextName, String contextNameAlias) {
         try {
             if (contextId == null) {
                 String message = "No context selected.";
@@ -77,7 +77,7 @@ public class EnvironmentsController implements Serializable {
                 GlobalMessageAppender.addErrorMessage(NameChecker.getErrorText("environment", contextName));
             } else {
                 try {
-                    envScreenService.saveEnvironment(contextId, contextName);
+                    envScreenService.saveEnvironment(contextId, contextName, contextNameAlias);
                     String message = "Changes successfully saved.";
                     GlobalMessageAppender.addSuccessMessage(message);
                     return true;
