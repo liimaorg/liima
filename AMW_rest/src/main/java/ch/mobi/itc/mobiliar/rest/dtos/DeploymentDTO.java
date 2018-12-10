@@ -101,7 +101,7 @@ public class DeploymentDTO {
 		this.deploymentCancelDate = entity.getDeploymentCancelDate();
 		this.reason = entity.getReason();
 		this.environmentName = properties.getEnvironmentName() != null ? properties.getEnvironmentName() : entity.getContext().getName();
-		this.environmentNameAlias = properties.getEnvironmentNameAlias() != null ? properties.getEnvironmentNameAlias() : entity.getContext().getNameAlias();
+		this.environmentNameAlias = properties.getEnvironmentNameAlias() != null ? properties.getEnvironmentNameAlias() : entity.getContext() != null ? entity.getContext().getNameAlias() : null;
 		this.releaseName = properties.getReleaseName() != null ? properties.getReleaseName() : entity.getRelease().getName();
 		this.runtimeName = properties.getRuntimeName() != null ? properties.getRuntimeName() : entity.getRuntime().getName();
 		this.requestUser = entity.getDeploymentRequestUser();
