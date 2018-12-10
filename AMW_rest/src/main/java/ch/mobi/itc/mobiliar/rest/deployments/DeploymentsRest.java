@@ -170,6 +170,7 @@ public class DeploymentsRest {
         }
         if (deployment.getExContextId() != null) {
             properties.setEnvironmentName(deploymentBoundary.getDeletedContextName(deployment));
+            properties.setEnvironmentNameAlias(deploymentBoundary.getDeletedContextNameAlias(deployment));
         }
         if (deployment.getExReleaseId() != null) {
             properties.setReleaseName(deploymentBoundary.getDeletedReleaseName(deployment));
