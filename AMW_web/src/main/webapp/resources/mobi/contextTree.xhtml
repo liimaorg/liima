@@ -31,7 +31,10 @@
 					value="${sessionContext.getChildrenForContext(context.id)}">
 					<li
 						class="${sessionContext.isCurrentContext(context2.id) eq true ? 'current' : ''} level3" id="${context2.id}_link">
-						<h:link value="${context2.name}" onclick="confirmLeave(event);" includeViewParams="true" >
+						<h:link value="${context2.name}" onclick="confirmLeave(event);" includeViewParams="true" rendered="${context2.nameAlias == null}">
+							<f:param name="ctx" value="${context2.id}" />
+						</h:link>
+						<h:link value="${context2.name} (${context2.nameAlias})" onclick="confirmLeave(event);" includeViewParams="true" rendered="${context2.nameAlias != null}">
 							<f:param name="ctx" value="${context2.id}" />
 						</h:link>
 					</li>
