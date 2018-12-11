@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>ch.puzzle.itc.mobiliar</groupId>
 		<artifactId>AMW_parent</artifactId>
-		<version>1.17.8</version>
+		<version>1.17.9-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
