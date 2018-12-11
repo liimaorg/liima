@@ -147,4 +147,8 @@
     <!--1.17-->
     <include file="changesets/model/auditView/trackEntitiesChangedInRevisionTable.xml" relativeToChangelogFile="true"/>
 
+    <!--1.17.8-->
+    <include file="changesets/model/contextEntity/extendContextEntity.xml" relativeToChangelogFile="true"/>
+
+
 </databaseChangeLog>

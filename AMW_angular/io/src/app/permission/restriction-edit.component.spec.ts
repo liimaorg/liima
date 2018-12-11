@@ -18,9 +18,9 @@ describe('RestrictionEditComponent', () => {
   it('should preSelect the right Environment on ngOnChanges',
     inject([RestrictionEditComponent], (restrictionComponent: RestrictionEditComponent) => {
       // given
-      const emptyEnvironment: Environment[] = [{id: null, name: null, parent: 'All', selected: false, disabled: false}];
-      const devEnvironments: Environment[] = [{id: 1, name: 'B', parent: 'Dev', selected: false, disabled: false},
-        {id: 2, name: 'C', parent: 'Dev', selected: false, disabled: false}];
+      const emptyEnvironment: Environment[] = [{id: null, name: null, nameAlias: null, parent: 'All', selected: false, disabled: false}];
+      const devEnvironments: Environment[] = [{id: 1, name: 'B', nameAlias: 'Test', parent: 'Dev', selected: false, disabled: false},
+        {id: 2, name: 'C', nameAlias: null, parent: 'Dev', selected: false, disabled: false}];
       restrictionComponent.groupedEnvironments =  {All: emptyEnvironment, Dev: devEnvironments};
       restrictionComponent.restriction = {contextName: 'C'} as Restriction;
       // when

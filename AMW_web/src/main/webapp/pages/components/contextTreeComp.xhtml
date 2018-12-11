@@ -24,7 +24,11 @@
                         </li>
                         <ui:repeat var="context2" value="${contextDataProvider.getChildrenForContext(context.id)}">
                             <li class="${contextDataProvider.isCurrentContext(context2.id) eq true ? 'current' : ''} level3">
-                                <h:link value="${context2.name}">
+                                <h:link value="${context2.name}" rendered="${context2.nameAlias == null}">
+                                    <f:param name="id" value="${resourceId}"/>
+                                    <f:param name="ctx" value="${context2.id}"/>
+                                </h:link>
+                                <h:link value="${context2.name} (${context2.nameAlias})" rendered="${context2.nameAlias != null}">
                                     <f:param name="id" value="${resourceId}"/>
                                     <f:param name="ctx" value="${context2.id}"/>
                                 </h:link>

@@ -53,7 +53,11 @@
           </ul>
         </td>
         <td>{{deployment.releaseName}}</td>
-        <td><strong>{{deployment.environmentName}}</strong></td>
+        <td>
+          <strong>{{deployment.environmentName}}
+            <ng-container *ngIf="deployment.environmentNameAlias">({{deployment.environmentNameAlias}})</ng-container>
+          </strong>
+        </td>
         <td>
           <ng-container *ngIf="deployment.actions.editPossible">
             <span [attr.class]="deployment.deploymentDelayed ? 'glyphicon glyphicon-hourglass pointer' : pointer" (click)="showDateChange(deployment.id)" title="change the deployment date">

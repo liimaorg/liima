@@ -119,6 +119,10 @@ public class ContextEntity extends AbstractContext implements Serializable {
     @Column(unique = true)
     private String name;
 
+    @Getter
+    @Setter
+    private String nameAlias;
+
     public ContextEntity() {
         super();
     }

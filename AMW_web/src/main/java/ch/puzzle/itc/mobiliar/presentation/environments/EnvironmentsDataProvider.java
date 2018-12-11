@@ -98,7 +98,7 @@ public class EnvironmentsDataProvider implements Serializable {
 	}
 
 	public void save() {
-		if (controller.doSave(context.getContextId(), context.getContextDisplayName())) {
+		if (controller.doSave(context.getContextId(), context.getContextDisplayName(), context.getContextNameAlias())) {
 			context.loadContexts();
 		}
 	}

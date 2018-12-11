@@ -18,6 +18,7 @@ export interface Deployment {
   appsWithVersion: AppWithVersion[];
   deploymentParameters: DeploymentParameter[];
   environmentName: string;
+  environmentNameAlias: string;
   releaseName: string;
   runtimeName: string;
   requestUser: string;

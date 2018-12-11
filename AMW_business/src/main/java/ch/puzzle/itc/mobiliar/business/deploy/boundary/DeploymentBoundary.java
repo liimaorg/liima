@@ -263,6 +263,14 @@ public class DeploymentBoundary {
         return deployment.getContext().getName();
     }
 
+    public String getDeletedContextNameAlias(DeploymentEntity deployment) {
+        if (deployment.getContext() == null) {
+            ContextEntity context = (ContextEntity) auditService.getDeletedEntity(new ContextEntity(), deployment.getExContextId());
+            return context.getNameAlias();
+        }
+        return deployment.getContext().getNameAlias();
+    }
+
     public String getDeletedResourceName(DeploymentEntity deployment) {
         if (deployment.getResource() == null) {
             ResourceEntity res = (ResourceEntity) auditService.getDeletedEntity(new ResourceEntity(), deployment.getExResourceId());

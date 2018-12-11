@@ -54,6 +54,7 @@ public class DeploymentDTO {
 	private List<AppWithVersionDTO> appsWithVersion = new LinkedList<>();
 	private List<DeploymentParameterDTO> deploymentParameters = new LinkedList<>();
 	private String environmentName;
+	private String environmentNameAlias;
 	private String releaseName;
 	private String runtimeName;
 	private String requestUser;
@@ -100,6 +101,7 @@ public class DeploymentDTO {
 		this.deploymentCancelDate = entity.getDeploymentCancelDate();
 		this.reason = entity.getReason();
 		this.environmentName = properties.getEnvironmentName() != null ? properties.getEnvironmentName() : entity.getContext().getName();
+		this.environmentNameAlias = properties.getEnvironmentNameAlias() != null ? properties.getEnvironmentNameAlias() : entity.getContext() != null ? entity.getContext().getNameAlias() : null;
 		this.releaseName = properties.getReleaseName() != null ? properties.getReleaseName() : entity.getRelease().getName();
 		this.runtimeName = properties.getRuntimeName() != null ? properties.getRuntimeName() : entity.getRuntime().getName();
 		this.requestUser = entity.getDeploymentRequestUser();
@@ -132,6 +134,7 @@ public class DeploymentDTO {
 		private Integer appServerId;
 		private Integer resourceId;
 		private String environmentName;
+		private String environmentNameAlias;
 		private String releaseName;
 		private String runtimeName;
 	}

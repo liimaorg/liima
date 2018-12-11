@@ -48,7 +48,9 @@
             <ng-container *ngFor="let group of getEnvironmentGroups()">
               <h5 class="environments-title">{{group}}: </h5>
               <ng-container *ngFor="let env of groupedEnvironments[group]">
-                <label class="checkbox-inline"><input type="checkbox" (change)="onChangeEnvironment($event)" [(ngModel)]="env.selected">{{env.name}}</label>
+                <label class="checkbox-inline"><input type="checkbox" (change)="onChangeEnvironment($event)" [(ngModel)]="env.selected">{{env.name}}
+                  <ng-container *ngIf="env.nameAlias">({{env.nameAlias}})</ng-container>
+                </label>
               </ng-container>
             </ng-container>
           </div>

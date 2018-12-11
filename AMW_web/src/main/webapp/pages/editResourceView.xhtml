@@ -16,7 +16,7 @@
     </f:metadata>
     <ui:param name="screen" value="newEditRes"/>
     <ui:define
-            name="title">Edit #{editResourceView.displayName} #{editResourceView.currentContext.name.toUpperCase()}</ui:define>
+            name="title">Edit #{editResourceView.displayName} #{editResourceView.currentContext.name.toUpperCase()} (#{editResourceView.currentContext.nameAlias})</ui:define>
 
     <ui:define name="pagetitle">
         <span>Edit </span><h:outputText class="ellipsisLeft editResourceTitleName"
