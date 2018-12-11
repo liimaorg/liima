@@ -4,11 +4,11 @@
 
 ## New features
 * REST: add 'Test Generation' endpoint [#360](https://github.com/liimaorg/liima/issues/360)
- * Returns the rendered templates of an AppServer and any errors.
- * Endpoint: `AMW_Rest/resources/analyze/testGeneration/{resourceGroupName}/{releaseName}/{env}`
+  * Returns the rendered templates of an AppServer and any errors.
+  * Endpoint: `AMW_Rest/resources/analyze/testGeneration/{resourceGroupName}/{releaseName}/{env}`
 * Alias name for environment [#441](https://github.com/liimaorg/liima/issues/441)
- * The alias name is shown in the editResourceView and deployment view
- * In templates it can be accessed via `${env.nameAlias}`, default value is empty.
+  * The alias name is shown in the editResourceView and deployment view
+  * In templates it can be accessed via `${env.nameAlias}`, default value is empty.
 
 # v1.17.7
 Revert back to Wildfly 13 because of JSF issues, fix a JSF init bug, update RichFace [#437](https://github.com/liimaorg/liima/pull/437)
