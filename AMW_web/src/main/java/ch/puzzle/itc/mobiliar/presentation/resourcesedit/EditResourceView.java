@@ -180,13 +180,14 @@ public class EditResourceView implements Serializable {
             resource = resourceLocator.getResourceWithGroupAndRelatedResources(resourceIdFromParam);
             if (resource.getResourceType().isApplicationResourceType()) {
                 relativeApplicationServer = resourceLocator.getApplicationServerForApplication(resource);
+                this.canGenerateTestConfiguration = permissionBoundary.hasPermission(Permission.RESOURCE_TEST_GENERATION, sessionContext.getCurrentContext(), Action.READ, relativeApplicationServer, null);
             } else {
                 relativeApplicationServer = null;
+                this.canGenerateTestConfiguration = permissionBoundary.hasPermission(Permission.RESOURCE_TEST_GENERATION, sessionContext.getCurrentContext(), Action.READ, resource, null);
             }
             resourceType = null;
 
             this.canEditResourceType = permissionBoundary.hasPermission(Permission.RESOURCETYPE, Action.READ);
-            this.canGenerateTestConfiguration = permissionBoundary.hasPermission(Permission.RESOURCE_TEST_GENERATION, sessionContext.getCurrentContext(), Action.READ, resource, null);
             this.canDelegatePermissions = permissionBoundary.canDelegatePermissionsForThisResource(resource, sessionContext.getCurrentContext());
 
             canEditSoftlinkId = isSoftlinkEditable(resource, sessionContext.getCurrentContext());

@@ -27,12 +27,7 @@ import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class TestGenerationRestTest {
 
@@ -61,6 +56,9 @@ public class TestGenerationRestTest {
     ResourceEntity resourceEntity;
 
     @Mock
+    ResourceEntity appServer;
+
+    @Mock
     ResourceTypeEntity resourceTypeEntity;
 
     private String resourceGroupName;
@@ -87,7 +85,7 @@ public class TestGenerationRestTest {
     }
 
     @Test
-    public void shouldCheckPermissionOnTestGeneration() throws IOException, ValidationException, AMWException {
+    public void shouldCheckPermissionForAppServerOnTestGeneration() throws IOException, ValidationException, AMWException {
         // given => setup
         ReleaseEntity release = new ReleaseEntity();
         release.setName(releaseName);
@@ -95,21 +93,27 @@ public class TestGenerationRestTest {
         ContextEntity context = new ContextEntity();
         context.setName(env);
         context.setId(12);
-        ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
 
-        when(resourceEntity.getId()).thenReturn(13);
-        when(resourceEntity.getResourceType()).thenReturn(resourceTypeEntity);
-        when(resourceEntity.getResourceGroup()).thenReturn(resourceGroup);
+        ResourceGroupEntity appServerResourceGroup = mock(ResourceGroupEntity.class);
+        when(appServer.getResourceGroup()).thenReturn(appServerResourceGroup);
+        ResourceTypeEntity app = mock(ResourceTypeEntity.class);
+        when(app.isApplicationResourceType()).thenReturn(true);
+
         when(resourceLocator.getResourceByGroupNameAndRelease(anyString(), anyString())).thenReturn(resourceEntity);
+        when(resourceEntity.getResourceType()).thenReturn(resourceTypeEntity);
+        when(resourceEntity.getResourceType()).thenReturn(app);
+
+        when(resourceLocator.getApplicationServerForApplication(any(ResourceEntity.class))).thenReturn(appServer);
         when(releaseLocator.getReleaseByName(releaseName)).thenReturn(release);
         when(contextLocator.getContextByName(env)).thenReturn(context);
+
         when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), any(Date.class))).thenThrow(AMWException.class);
 
         // when
         rest.testGeneration(resourceGroupName, releaseName, env);
 
         // then
-        verify(permissionService).checkPermissionAndFireException(Permission.RESOURCE_TEST_GENERATION, context, Action.READ, resourceGroup, null, "test generate");
+        verify(permissionService).checkPermissionAndFireException(Permission.RESOURCE_TEST_GENERATION, context, Action.READ, appServerResourceGroup, null, "test generate");
     }
 
     @Test

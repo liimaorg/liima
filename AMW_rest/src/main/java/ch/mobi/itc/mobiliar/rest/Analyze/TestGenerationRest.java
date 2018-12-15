@@ -54,13 +54,13 @@ public class TestGenerationRest {
         if (resource == null) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
         }
-        Integer appServerId = resource.getResourceType().isApplicationResourceType() ? resourceLocator.getApplicationServerForApplication(resource).getId() : resource.getId();
+        ResourceEntity appServer = resource.getResourceType().isApplicationResourceType() ? resourceLocator.getApplicationServerForApplication(resource) : resource;
         Integer releaseId = releaseLocator.getReleaseByName(releaseName).getId();
         ContextEntity context = contextLocator.getContextByName(env);
-        permissionService.checkPermissionAndFireException(Permission.RESOURCE_TEST_GENERATION, context, Action.READ, resource.getResourceGroup(), null, "test generate");
+        permissionService.checkPermissionAndFireException(Permission.RESOURCE_TEST_GENERATION, context, Action.READ, appServer.getResourceGroup(), null, "test generate");
         EnvironmentGenerationResult environmentGenerationResult;
         try {
-            environmentGenerationResult = generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(context.getId(), appServerId, releaseId, null);
+            environmentGenerationResult = generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(context.getId(), appServer.getId(), releaseId, null);
         } catch (AMWException e) {
             return Response.status(INTERNAL_SERVER_ERROR).entity(new ExceptionDto(e.getMessage())).build();
         }
