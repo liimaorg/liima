@@ -854,17 +854,17 @@ aside nav > ul > li ul li a {
 
 /* line 91, ../sass/_nav.scss */
 .level2 a {
-  padding-left: 5em;
+  padding-left: 4em;
 }
 
 /* line 92, ../sass/_nav.scss */
 .level3 a {
-  padding-left: 7em;
+  padding-left: 6em;
 }
 
 /* line 93, ../sass/_nav.scss */
 .level4 a {
-  padding-left: 9em;
+  padding-left: 8em;
 }
 
 /* line 104, ../sass/_nav.scss */
