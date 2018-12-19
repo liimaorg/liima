@@ -350,7 +350,7 @@
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>
-                <version>4.2.14.Final</version>
+                <version>4.3.11.Final</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>dom4j</artifactId>
@@ -363,7 +363,7 @@
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-envers</artifactId>
-                <version>4.2.14.Final</version>
+                <version>4.3.11.Final</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>dom4j</artifactId>
