@@ -39,6 +39,7 @@ import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
+import ch.puzzle.itc.mobiliar.presentation.security.SecurityDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.util.NavigationUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,7 +57,8 @@ public class ServerListView implements Serializable {
 	private ResourceGroupLocator resourceGroupLocator;
 	@Inject
 	private CommonDomainService commonServcie;
-
+	@Inject
+	private SecurityDataProvider securityDataProvider;
 	
 	@Inject
 	@Getter
@@ -75,8 +77,16 @@ public class ServerListView implements Serializable {
 	@Getter
 	private String vmUrlParam = ConfigurationService.getProperty(ConfigKey.VM_URL_PARAM);
 
+	@Getter
+	private boolean appServerReadPermission;
+	@Getter
+	private boolean resourceReadPermission;
+
 	// called by preRenderView event
 	public void init() throws GeneralDBException {
+		//cache permissions in view
+		this.appServerReadPermission = securityDataProvider.hasPermissionForResourceType("RESOURCE", "READ", "APPLICATIONSERVER");
+		this.resourceReadPermission = securityDataProvider.hasPermission("RESOURCE", "READ");
 		if(!FacesContext.getCurrentInstance().isPostback()) {
 			if(!serverListFilter.isEmpty() || serverListFilter.isEmptySearch()) {
 				servers = serverView.getServers(serverListFilter.getHost(), serverListFilter.getAppServer(), serverListFilter.getRuntime(),
