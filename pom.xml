@@ -13,7 +13,7 @@
             BOM -->
         <javaee7.web.spec.version>1.1.1.Final</javaee7.web.spec.version>
         <!-- JBoss AS Version (used for arquillion) -->
-        <jboss-as-version>7.1.1.Final</jboss-as-version>
+        <jboss-as-version>7.9.Final</jboss-as-version>
 
         <sonar.language>java</sonar.language>
 
