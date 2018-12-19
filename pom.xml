@@ -24,15 +24,18 @@
         <!-- **************** -->
         <!-- Plugins versions -->
         <!-- **************** -->
-        <version.ear.plugin>2.9.1</version.ear.plugin>
-        <version.ejb.plugin>2.3</version.ejb.plugin>
-        <version.jar.plugin>2.5</version.jar.plugin>
-        <version.war.plugin>2.4</version.war.plugin>
+        <version.compiler.plugin>3.8.0</version.compiler.plugin>
+        <version.ear.plugin>3.0.1</version.ear.plugin>
+        <version.ejb.plugin>3.0.1</version.ejb.plugin>
+        <version.jar.plugin>3.1.1</version.jar.plugin>
+        <version.war.plugin>3.2.0</version.war.plugin>
         <version.jacoco.maven.plugin>0.8.2</version.jacoco.maven.plugin>
-        <version.deploy.maven.plugin>2.8.2</version.deploy.maven.plugin>
-        <version.source.maven.plugin>2.4</version.source.maven.plugin>
-        <version.javadoc.maven.plugin>2.10.1</version.javadoc.maven.plugin>
-        <version.maven.surefire.plugin>2.22.1</version.maven.surefire.plugin>
+        <version.deploy.maven.plugin>3.0.0-M1</version.deploy.maven.plugin>
+        <version.source.maven.plugin>3.0.1</version.source.maven.plugin>
+        <version.javadoc.maven.plugin>3.0.1</version.javadoc.maven.plugin>
+        <version.maven.surefire.plugin>3.0.0-M2</version.maven.surefire.plugin>
+        <version.maven.site.plugin>3.7.1</version.maven.site.plugin>
+        <version.maven.release.plugin>2.5.3</version.maven.release.plugin>
 
         <version.liquibase>3.5.3</version.liquibase>
         <version.liquibase-slf4j>1.2.1</version.liquibase-slf4j>
@@ -70,15 +73,16 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.1</version>
+                    <version>${version.maven.site.plugin}</version>
                     <configuration>
                         <skip>true</skip>
                         <skipDeploy>true</skipDeploy>
                     </configuration>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>${version.maven.release.plugin}</version>
                     <configuration>
                         <preparationGoals>clean install</preparationGoals>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -88,7 +92,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.2</version>
+                    <version>${version.compiler.plugin}</version>
                     <configuration>
                         <source>${version.java}</source>
                         <target>${version.java}</target>
@@ -272,7 +276,6 @@
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_commons</artifactId>
                 <version>1.17.9-SNAPSHOT</version>
-                <type>jar</type>
                 <scope>compile</scope>
             </dependency>
 
@@ -374,8 +377,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.11</version>
-                <type>jar</type>
+                <version>4.12</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -383,7 +385,6 @@
                 <artifactId>mockito-all</artifactId>
                 <version>1.9.5</version>
                 <scope>test</scope>
-                <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
