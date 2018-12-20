@@ -33,9 +33,9 @@
         <version.deploy.maven.plugin>3.0.0-M1</version.deploy.maven.plugin>
         <version.source.maven.plugin>3.0.1</version.source.maven.plugin>
         <version.javadoc.maven.plugin>3.0.1</version.javadoc.maven.plugin>
-        <version.maven.surefire.plugin>3.0.0-M2</version.maven.surefire.plugin>
-        <version.maven.site.plugin>3.7.1</version.maven.site.plugin>
-        <version.maven.release.plugin>2.5.3</version.maven.release.plugin>
+        <version.surefire.maven.plugin>3.0.0-M2</version.surefire.maven.plugin>
+        <version.site.maven.plugin>3.7.1</version.site.maven.plugin>
+        <version.release.maven.plugin>2.5.3</version.release.maven.plugin>
 
         <version.liquibase>3.5.3</version.liquibase>
         <version.liquibase-slf4j>1.2.1</version.liquibase-slf4j>
@@ -73,7 +73,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>${version.maven.site.plugin}</version>
+                    <version>${version.site.maven.plugin}</version>
                     <configuration>
                         <skip>true</skip>
                         <skipDeploy>true</skipDeploy>
@@ -82,7 +82,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>${version.maven.release.plugin}</version>
+                    <version>${version.release.maven.plugin}</version>
                     <configuration>
                         <preparationGoals>clean install</preparationGoals>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -236,7 +236,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${version.maven.surefire.plugin}</version>
+                    <version>${version.surefire.maven.plugin}</version>
                     <configuration>
                         <useSystemClassLoader>false</useSystemClassLoader>
                         <forkCount>1</forkCount>
