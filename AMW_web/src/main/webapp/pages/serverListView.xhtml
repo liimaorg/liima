@@ -139,12 +139,12 @@
 								<h:outputText style="white-space: nowrap" value="AppServer" />
 							</f:facet>
 							<h:link value="#{server.appServer}" outcome="editResourceView"
-								rendered="${securityDataProvider.hasPermissionForResourceType('RESOURCE', 'READ', 'APPLICATIONSERVER')}">
+								rendered="${serverListView.appServerReadPermission}">
 								<f:param name="id" value="#{server.appServerId}" />
 								<f:param name="ctx" value="#{server.environmentId}" />
 							</h:link>
 							<h:outputText
-								rendered="${!securityDataProvider.hasPermissionForResourceType('RESOURCE', 'READ', 'APPLICATIONSERVER')}"
+								rendered="${!serverListView.appServerReadPermission}"
 								value="#{server.appServer}" />
 						</h:column>
 
@@ -168,12 +168,12 @@
 								<h:outputText style="white-space: nowrap" value="Node" />
 							</f:facet>
 							<h:link value="#{server.node}" outcome="editResourceView"
-								rendered="${securityDataProvider.hasPermission('RESOURCE', 'READ')}">
+								rendered="${serverListView.resourceReadPermission}">
 								<f:param name="id" value="#{server.nodeId}" />
 								<f:param name="ctx" value="#{server.environmentId}" />
 							</h:link>
 							<h:outputText
-								rendered="${!securityDataProvider.hasPermission('RESOURCE', 'READ')}"
+								rendered="${!serverListView.resourceReadPermission}"
 								value="#{server.node}" />
 						</h:column>
 
