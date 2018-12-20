@@ -37,6 +37,9 @@
         <version.site.maven.plugin>3.7.1</version.site.maven.plugin>
         <version.release.maven.plugin>2.5.3</version.release.maven.plugin>
 
+        <version.mockito.all>1.10.8</version.mockito.all>
+        <version.junit>4.12</version.junit>
+
         <version.liquibase>3.5.3</version.liquibase>
         <version.liquibase-slf4j>1.2.1</version.liquibase-slf4j>
         <version.assertj-core>2.4.1</version.assertj-core>
@@ -295,7 +298,6 @@
                 <scope>compile</scope>
             </dependency>
 
-
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_rest</artifactId>
@@ -377,13 +379,13 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>${version.junit}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-all</artifactId>
-                <version>1.9.5</version>
+                <version>${version.mockito.all}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

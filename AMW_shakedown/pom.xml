@@ -19,6 +19,8 @@
         <version.deploy.maven.plugin>3.0.0-M1</version.deploy.maven.plugin>
         <version.source.maven.plugin>3.0.1</version.source.maven.plugin>
         <version.javadoc.maven.plugin>3.0.1</version.javadoc.maven.plugin>
+        <version.mockito.all>1.10.8</version.mockito.all>
+        <version.junit>4.12</version.junit>
     </properties>
     <modules>
         <module>AMW_stm</module>
@@ -141,16 +143,14 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
-                <type>jar</type>
+                <version>${version.junit}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-all</artifactId>
-                <version>1.9.5</version>
+                <version>${version.mockito.all}</version>
                 <scope>test</scope>
-                <type>jar</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
