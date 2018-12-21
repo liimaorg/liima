@@ -7,20 +7,18 @@
     <relativePath>..</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>ch.puzzle.itc.mobiliar</groupId>
   <artifactId>AMW_stp_archetype</artifactId>
+  <name>AMW_stp_archetype</name>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
-
-  <name>AMW_stp_archetype</name>
 
   <build>
     <extensions>
       <extension>
         <groupId>org.apache.maven.archetype</groupId>
         <artifactId>archetype-packaging</artifactId>
-        <version>2.3-SNAPSHOT</version>
+        <version>3.0.1</version>
       </extension>
     </extensions>
 
@@ -28,7 +26,7 @@
       <plugins>
         <plugin>
           <artifactId>maven-archetype-plugin</artifactId>
-          <version>2.3-SNAPSHOT</version>
+          <version>3.0.1</version>
         </plugin>
       </plugins>
     </pluginManagement>

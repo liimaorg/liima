@@ -8,15 +8,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Define the version of JBoss' Java EE 6 APIs we want to import. Any
+        <!-- Define the version of JBoss' Java EE 7 APIs we want to import. Any
             dependencies from org.jboss.spec will have their version defined by this
             BOM -->
-        <javaee6.web.spec.version>2.0.0.Final</javaee6.web.spec.version>
-        <!-- Alternatively, you can use version 3.0.0.Beta1-redhat-1 which is a
-            release certified to work with JBoss EAP 6. It requires you have access to
-            the JBoss EAP 6 maven repository. <javaee6.web.spec.version>3.0.0.Beta1-redhat-1</javaee6.web.spec.version> -->
+        <javaee7.web.spec.version>1.1.1.Final</javaee7.web.spec.version>
         <!-- JBoss AS Version (used for arquillion) -->
-        <jboss-as-version>7.1.1.Final</jboss-as-version>
+        <jboss-as-version>7.9.Final</jboss-as-version>
 
         <sonar.language>java</sonar.language>
 
@@ -27,15 +24,21 @@
         <!-- **************** -->
         <!-- Plugins versions -->
         <!-- **************** -->
-        <version.ear.plugin>2.9.1</version.ear.plugin>
-        <version.ejb.plugin>2.3</version.ejb.plugin>
-        <version.jar.plugin>2.5</version.jar.plugin>
-        <version.war.plugin>2.4</version.war.plugin>
+        <version.compiler.plugin>3.8.0</version.compiler.plugin>
+        <version.ear.plugin>3.0.1</version.ear.plugin>
+        <version.ejb.plugin>3.0.1</version.ejb.plugin>
+        <version.jar.plugin>3.1.1</version.jar.plugin>
+        <version.war.plugin>3.2.0</version.war.plugin>
         <version.jacoco.maven.plugin>0.8.2</version.jacoco.maven.plugin>
-        <version.deploy.maven.plugin>2.8.2</version.deploy.maven.plugin>
-        <version.source.maven.plugin>2.4</version.source.maven.plugin>
-        <version.javadoc.maven.plugin>2.10.1</version.javadoc.maven.plugin>
-        <version.maven.surefire.plugin>2.22.1</version.maven.surefire.plugin>
+        <version.deploy.maven.plugin>3.0.0-M1</version.deploy.maven.plugin>
+        <version.source.maven.plugin>3.0.1</version.source.maven.plugin>
+        <version.javadoc.maven.plugin>3.0.1</version.javadoc.maven.plugin>
+        <version.surefire.maven.plugin>3.0.0-M2</version.surefire.maven.plugin>
+        <version.site.maven.plugin>3.7.1</version.site.maven.plugin>
+        <version.release.maven.plugin>2.5.3</version.release.maven.plugin>
+
+        <version.mockito.all>1.10.8</version.mockito.all>
+        <version.junit>4.12</version.junit>
 
         <version.liquibase>3.5.3</version.liquibase>
         <version.liquibase-slf4j>1.2.1</version.liquibase-slf4j>
@@ -73,15 +76,16 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.1</version>
+                    <version>${version.site.maven.plugin}</version>
                     <configuration>
                         <skip>true</skip>
                         <skipDeploy>true</skipDeploy>
                     </configuration>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>${version.release.maven.plugin}</version>
                     <configuration>
                         <preparationGoals>clean install</preparationGoals>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -91,7 +95,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.2</version>
+                    <version>${version.compiler.plugin}</version>
                     <configuration>
                         <source>${version.java}</source>
                         <target>${version.java}</target>
@@ -141,8 +145,8 @@
                     <artifactId>maven-ejb-plugin</artifactId>
                     <version>${version.ejb.plugin}</version>
                     <configuration>
-                        <!-- Tell Maven we are using EJB 3.1 -->
-                        <ejbVersion>3.1</ejbVersion>
+                        <!-- Tell Maven we are using EJB 3.2 -->
+                        <ejbVersion>3.2</ejbVersion>
                         <archive>
                             <index>true</index>
                             <manifest>
@@ -235,7 +239,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${version.maven.surefire.plugin}</version>
+                    <version>${version.surefire.maven.plugin}</version>
                     <configuration>
                         <useSystemClassLoader>false</useSystemClassLoader>
                         <forkCount>1</forkCount>
@@ -275,7 +279,6 @@
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_commons</artifactId>
                 <version>1.17.9-SNAPSHOT</version>
-                <type>jar</type>
                 <scope>compile</scope>
             </dependency>
 
@@ -294,7 +297,6 @@
                 <type>war</type>
                 <scope>compile</scope>
             </dependency>
-
 
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
@@ -326,8 +328,8 @@
                 as the JBoss stack of the Java EE Web Profile 6 APIs) -->
             <dependency>
                 <groupId>org.jboss.spec</groupId>
-                <artifactId>jboss-javaee-web-6.0</artifactId>
-                <version>${javaee6.web.spec.version}</version>
+                <artifactId>jboss-javaee-web-7.0</artifactId>
+                <version>${javaee7.web.spec.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -350,7 +352,7 @@
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>
-                <version>4.2.14.Final</version>
+                <version>4.3.11.Final</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>dom4j</artifactId>
@@ -363,7 +365,7 @@
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-envers</artifactId>
-                <version>4.2.14.Final</version>
+                <version>4.3.11.Final</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>dom4j</artifactId>
@@ -377,16 +379,14 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.11</version>
-                <type>jar</type>
+                <version>${version.junit}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-all</artifactId>
-                <version>1.9.5</version>
+                <version>${version.mockito.all}</version>
                 <scope>test</scope>
-                <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
