@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.environment.boundary;
 
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextRepository;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionRepository;
@@ -33,6 +34,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
@@ -48,6 +50,9 @@ public class ContextLocator {
 	@Inject
 	RestrictionRepository restrictionRepository;
 
+	@Inject
+	AuditService auditService;
+
 	public ContextEntity getContextByName(String name) {
 		return contextRepository.getContextByName(name);
 	}
@@ -58,6 +63,15 @@ public class ContextLocator {
 
 	public List<ContextEntity> getAllEnvironments() {
 		return contextRepository.getEnvironments();
+	}
+
+	public List<ContextEntity> getAllDeletedEnvironments() {
+		List<Object> results = auditService.getAllDeletedEntities(ContextEntity.class);
+		List<ContextEntity> deletedContexts = new ArrayList<>();
+		for (Object deletedContext : results) {
+			deletedContexts.add((ContextEntity) deletedContext);
+		}
+		return deletedContexts;
 	}
 
 	@HasPermission(permission = Permission.REMOVE_ENV_OR_DOM)

@@ -25,11 +25,9 @@ import ch.puzzle.itc.mobiliar.builders.ResourceGroupEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
-import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -66,12 +64,7 @@ public class DeploymentBoundaryPersistenceTest
     DeploymentBoundary deploymentBoundary;
 
 	@Mock
-	ResourceEditService resourceEditService;
-	@Mock
 	CommonFilterService commonFilterService;
-
-	@Mock
-	ContextDomainService contextDomainService;
 
 	@Mock
 	PermissionService permissionService;
@@ -88,7 +81,7 @@ public class DeploymentBoundaryPersistenceTest
 	private DeploymentEntity d;
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 
 		MockitoAnnotations.initMocks(this);
 		deploymentBoundary.setEntityManager(entityManager);
@@ -793,7 +786,7 @@ public class DeploymentBoundaryPersistenceTest
 
 		// when sorting by release ascending (releaseA - releaseC - releaseB)
 		String colToSort =	DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(0, 10, null, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(0, 10, Collections.EMPTY_LIST, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
 		assertNotNull(result1);
@@ -805,7 +798,7 @@ public class DeploymentBoundaryPersistenceTest
 		
 		// when sorting by release descending (releaseB - releaseC - releaseC)
 		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(0,
-				10, null, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
+				10, Collections.EMPTY_LIST, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
 
 		// then
 		assertNotNull(result2);
@@ -929,6 +922,42 @@ public class DeploymentBoundaryPersistenceTest
 
 		// then
 		assertEquals(failed.getContext().getId(), latest.get(0)[0]);
+		assertEquals(failed.getResourceGroup(), latest.get(0)[1]);
+	}
+
+	@Test
+	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatestForDeletedContext() throws AMWException {
+		// given
+		ResourceEntity resource = ResourceFactory.createNewResource();
+		resource.setName("fooAS");
+		entityManager.persist(resource);
+
+		ContextEntity context = new ContextEntity();
+		context.setName("gone");
+		entityManager.persist(context);
+		Integer exContextId = context.getId();
+		entityManager.remove(context);
+		entityManager.flush();
+
+		DeploymentEntity successful = new DeploymentEntity();
+		successful.setResourceGroup(resource.getResourceGroup());
+		successful.setExContextId(exContextId);
+		successful.setDeploymentDate(new Date());
+		successful.setDeploymentState(DeploymentState.success);
+		persistDeploymentEntityForTest(successful);
+
+		DeploymentEntity failed = new DeploymentEntity();
+		failed.setResourceGroup(resource.getResourceGroup());
+		successful.setExContextId(exContextId);
+		failed.setDeploymentDate(new Date());
+		failed.setDeploymentState(DeploymentState.failed);
+		persistDeploymentEntityForTest(failed);
+
+		// when
+		List<Object[]> latest = deploymentBoundary.getEssentialListOfLastDeploymentsForAppServerAndContext(false);
+
+		// then
+		assertEquals(failed.getExContextId(), latest.get(0)[0]);
 		assertEquals(failed.getResourceGroup(), latest.get(0)[1]);
 	}
 
