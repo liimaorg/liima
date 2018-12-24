@@ -84,6 +84,29 @@ public class AuditService {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Object> getAllDeletedEntities(Class clazz) {
+        Objects.requireNonNull(clazz, "Clazz can not be null");
+
+        AuditReader reader = AuditReaderFactory.get(entityManager);
+
+        if (reader.isEntityClassAudited(clazz)) {
+            AuditQuery query = reader.createQuery()
+                    .forRevisionsOfEntity(clazz, false, true)
+                    .add(AuditEntity.revisionType().eq(DEL));
+
+            List<Object[]> resultList = query.getResultList();
+            if (!resultList.isEmpty()) {
+                List<Object> deleted = new ArrayList<>();
+                for (Object[] objects : resultList) {
+                    deleted.add(objects[0]);
+                }
+                return deleted;
+            }
+        }
+        return Collections.EMPTY_LIST;
+    }
+
     public List<AuditViewEntry> getAuditViewEntriesForResource(Integer resourceId) {
         // Map<Hashcode, AuditViewEntry>
         Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>();

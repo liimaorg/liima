@@ -36,7 +36,6 @@ import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
-import ch.puzzle.itc.mobiliar.business.generator.control.LockingService;
 import ch.puzzle.itc.mobiliar.business.generator.control.TemplateUtils;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
@@ -91,8 +90,7 @@ public class DeploymentBoundary {
     private static final String DEPLOYMENT_ENTITY_NAME = "DeploymentEntity";
     private static final String PROPERTY_DESCRIPTOR_ENTITY_QL = "propDescEnt";
 
-    public static final String DIFF_VERSIONS = "diff versions";
-    public static final String NO_VERSION = "no version";
+    private static final String DIFF_VERSIONS = "diff versions";
 
     public enum DeploymentOperationValidation {
 
@@ -141,9 +139,6 @@ public class DeploymentBoundary {
     private Event<DeploymentEvent> deploymentEvent;
 
     @Inject
-    private LockingService lockingService;
-
-    @Inject
     private ResourceGroupLocator resourceGroupLocator;
 
     @Inject
@@ -157,8 +152,20 @@ public class DeploymentBoundary {
 
     private PropertyDescriptorEntity mavenVersionProperty = null;
 
-    public DeploymentFilterTypes[]  getDeploymentFilterTypes() {
-        return DeploymentFilterTypes.values();
+    private Map<String, List<Integer>> deletedContextNameIdMap;
+
+    private List<DeploymentFilterTypes> selectableDeploymentFilterTypes;
+
+    public List<DeploymentFilterTypes> getDeploymentFilterTypes() {
+        if (selectableDeploymentFilterTypes == null) {
+            selectableDeploymentFilterTypes = new ArrayList<>();
+            for (DeploymentFilterTypes deploymentFilterType : DeploymentFilterTypes.values()) {
+                if (deploymentFilterType.isSelectable()) {
+                    selectableDeploymentFilterTypes.add(deploymentFilterType);
+                }
+            }
+        }
+        return selectableDeploymentFilterTypes;
     }
 
     public ComparatorFilterOption[]  getComparatorFilterOptions() {
@@ -168,14 +175,14 @@ public class DeploymentBoundary {
     /**
      * @param startIndex
      * @param maxResults when maxResults > 0 it is expected to get the deployments for pagination. In this case an additional count() query will be executed.
-     * @param filter
+     * @param filters
      * @param colToSort
      * @param sortingDirection
      * @param myAmw
      * @return a Tuple containing the filter deployments and the total deployments for that filter if doPagingCalculation is true
      */
     public Tuple<Set<DeploymentEntity>, Integer> getFilteredDeployments(Integer startIndex,
-            Integer maxResults, List<CustomFilter> filter, String colToSort,
+            Integer maxResults, List<CustomFilter> filters, String colToSort,
             CommonFilterService.SortingDirectionType sortingDirection, List<Integer> myAmw) {
         Integer totalItemsForCurrentFilter;
         boolean doPaging = maxResults == null ? false : (maxResults > 0 ? true : false);
@@ -183,13 +190,15 @@ public class DeploymentBoundary {
         StringBuilder stringQuery = new StringBuilder();
 
         DeploymentState lastDeploymentState = null;
-        boolean hasLastDeploymentForAsEnvFilterSet = isLastDeploymentForAsEnvFilterSet(filter);
+        boolean hasLastDeploymentForAsEnvFilterSet = isLastDeploymentForAsEnvFilterSet(filters);
         Integer from = 0;
         Integer to = 0;
 
+        filters.addAll(addFiltersForDeletedEnvironments(filters));
+
         if (hasLastDeploymentForAsEnvFilterSet) {
-            for (CustomFilter customFilter : filter) {
-                if (customFilter.getFilterDisplayName().equals("State")) {
+            for (CustomFilter customFilter : filters) {
+                if (customFilter.getFilterDisplayName().equals(DeploymentFilterTypes.DEPLOYMENT_STATE.getFilterDisplayName())) {
                     lastDeploymentState = DeploymentState.getByString(customFilter.getValue());
                     from = startIndex != null ? startIndex : 0;
                     to = maxResults != null ? from+maxResults : from+200;
@@ -218,7 +227,7 @@ public class DeploymentBoundary {
 
         boolean lowerSortCol = DeploymentFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, hasLastDeploymentForAsEnvFilterSet, false);
+        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, hasLastDeploymentForAsEnvFilterSet, false);
 
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
 
@@ -240,7 +249,7 @@ public class DeploymentBoundary {
         if (doPaging) {
             String countQueryString = baseQuery.replace("select " + DEPLOYMENT_QL_ALIAS, "select count(" + DEPLOYMENT_QL_ALIAS + ".id)");
             // last param needs to be true if we are dealing with a combination of "State" and "Latest deployment job for App Server and Env"
-            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, hasLastDeploymentForAsEnvFilterSet, lastDeploymentState != null);
+            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filters, null, null, null, lowerSortCol, hasLastDeploymentForAsEnvFilterSet, lastDeploymentState != null);
 
             commonFilterService.setParameterToQuery(null, null, myAmw, countQuery);
             totalItemsForCurrentFilter = (lastDeploymentState == null) ? ((Long) countQuery.getSingleResult()).intValue() : countQuery.getResultList().size();
@@ -253,6 +262,25 @@ public class DeploymentBoundary {
         }
 
         return new Tuple<>(deployments, totalItemsForCurrentFilter);
+    }
+
+    private List<CustomFilter> addFiltersForDeletedEnvironments(List<CustomFilter> filters) {
+        List<CustomFilter> additionalFilters = new ArrayList<>();
+        for (CustomFilter customFilter : filters) {
+            if (customFilter.getFilterDisplayName().equals(DeploymentFilterTypes.ENVIRONMENT_NAME.getFilterDisplayName())) {
+                if (deletedContextNameIdMap == null) {
+                    populateDeletedContextMap();
+                }
+                if (deletedContextNameIdMap.containsKey(customFilter.getValue())) {
+                    for (Integer id : deletedContextNameIdMap.get(customFilter.getValue())) {
+                        CustomFilter cf = CustomFilter.builder(DeploymentFilterTypes.ENVIRONMENT_EX).build();
+                        cf.setValueFromRest(Integer.toString(id));
+                        additionalFilters.add(cf);
+                    }
+                }
+            }
+        }
+        return additionalFilters;
     }
 
     public String getDeletedContextName(DeploymentEntity deployment) {
@@ -293,6 +321,16 @@ public class DeploymentBoundary {
             return rel.getName();
         }
         return deployment.getRelease().getName();
+    }
+
+    private void populateDeletedContextMap() {
+        deletedContextNameIdMap = new HashMap<>();
+        List<ContextEntity> allDeletedEnvironments = contextLocator.getAllDeletedEnvironments();
+        for (ContextEntity deletedEnvironment : allDeletedEnvironments) {
+            List<Integer> ids = deletedContextNameIdMap.containsKey(deletedEnvironment.getName()) ? deletedContextNameIdMap.get(deletedEnvironment.getName()) : new ArrayList<Integer>();
+            ids.add(deletedEnvironment.getId());
+            deletedContextNameIdMap.put(deletedEnvironment.getName(), ids);
+        }
     }
 
     private List<DeploymentEntity> latestPerContextAndGroup(List<DeploymentEntity> resultList) {
@@ -432,7 +470,7 @@ public class DeploymentBoundary {
 
         return "select " + DEPLOYMENT_QL_ALIAS + " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentDate = "
                 + "(select max(t.deploymentDate) from DeploymentEntity t "
-                + "where " + DEPLOYMENT_QL_ALIAS + ".resourceGroup = t.resourceGroup and " + DEPLOYMENT_QL_ALIAS + ".context = t.context) " + successStateCheck;
+                + "where " + DEPLOYMENT_QL_ALIAS + ".resourceGroup = t.resourceGroup and (" + DEPLOYMENT_QL_ALIAS + ".context = t.context or " + DEPLOYMENT_QL_ALIAS + ".exContextId = t.exContextId)) " + successStateCheck;
     }
 
     private String getEssentialListOfLastDeploymentsForAppServerAndContextQuery(boolean onlySuccessful) {
@@ -446,7 +484,7 @@ public class DeploymentBoundary {
 
         return "select " + DEPLOYMENT_QL_ALIAS + ".context.id, "  + DEPLOYMENT_QL_ALIAS + ".resourceGroup from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentDate = "
                 + "(select max(t.deploymentDate) from DeploymentEntity t "
-                + "where " + DEPLOYMENT_QL_ALIAS + ".resourceGroup = t.resourceGroup and " + DEPLOYMENT_QL_ALIAS + ".context = t.context) " + successStateCheck;
+                + "where " + DEPLOYMENT_QL_ALIAS + ".resourceGroup = t.resourceGroup and (" + DEPLOYMENT_QL_ALIAS + ".context = t.context or " + DEPLOYMENT_QL_ALIAS + ".exContextId = t.exContextId)) " + successStateCheck;
     }
 
     /**
@@ -774,7 +812,7 @@ public class DeploymentBoundary {
                 }
             };
             String[] fileNames = dir.list(filter);
-            Arrays.sort(fileNames);
+            Arrays.sort(Objects.requireNonNull(fileNames));
             return fileNames;
 
         } else {

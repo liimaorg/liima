@@ -29,9 +29,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Stateless
@@ -136,19 +134,18 @@ public class CommonFilterService {
 				q.setParameter(parameter, f.getIntegerValue());
 				log.fine("name: " + parameter + " value: " + f.getIntegerValue());
 			} else if (f.isStringType()) {
-				if(DeploymentFilterTypes.APPLICATION_NAME.getFilterDisplayName().equals(f.getFilterDisplayName())) {
+				if (DeploymentFilterTypes.APPLICATION_NAME.getFilterDisplayName().equals(f.getFilterDisplayName())) {
 					//all app names are in a json structure so we have to search with %
 					if (f.getStringValue().equals("*")) {
 						q.setParameter(parameter, "%%");
-					}else {
+					} else {
 						q.setParameter(parameter, "%" + f.getStringValue() + "%");
 					}
-				}
-				else {
+				} else {
 					q.setParameter(parameter, JpaWildcardConverter.convertWildCards(f.getStringValue()));
 				}
 				log.fine("name: " + parameter + " value: " + f.getStringValue());
-			}else if(f.isEnumType()){
+			} else if (f.isEnumType()){
                 q.setParameter(parameter, f.getEnumValue());
                 log.fine("name: "+parameter +" value:"+ f.getValue());
             }
@@ -184,15 +181,15 @@ public class CommonFilterService {
 	}
 
 	private String extractJoiningtableForFilter(List<CustomFilter> filters) {
-		String uniqueJoiningString = "";
+		StringBuilder uniqueJoiningString = new StringBuilder();
 		for(CustomFilter filter : filters){
 			String joiningTableQuery = filter.getJoiningTableQuery();
-			if (!joiningTableQuery.isEmpty() && !uniqueJoiningString.contains(joiningTableQuery)){
-				uniqueJoiningString += joiningTableQuery + SPACE_STRING;
+			if (!joiningTableQuery.isEmpty() && !uniqueJoiningString.toString().contains(joiningTableQuery)){
+				uniqueJoiningString.append(joiningTableQuery).append(SPACE_STRING);
 			}
 		}
 
-		return uniqueJoiningString.isEmpty() ? "" : (SPACE_STRING + uniqueJoiningString);
+		return (uniqueJoiningString.length() == 0) ? "" : (SPACE_STRING + uniqueJoiningString);
 	}
 
 	private void setzeWhereUndAndStatementsZuQuery(StringBuilder stringQuery) {
@@ -222,11 +219,28 @@ public class CommonFilterService {
 					StringBuilder builder = new StringBuilder();
 					groupedQueries.put(deploymentFilter.getFilterDisplayName(), builder);
 				}
-				
+
 				appendFilterToQuery(groupedQueries.get(deploymentFilter.getFilterDisplayName()), deploymentFilter, parameterMap, index);
 			}
 		}
-		
+
+		// Treat environments and exEnvironments as if they were grouped
+		final String Env = DeploymentFilterTypes.ENVIRONMENT_NAME.getFilterDisplayName();
+		final String ExEnv = DeploymentFilterTypes.ENVIRONMENT_EX.getFilterDisplayName();
+		final Set<String> filterNames = groupedQueries.keySet();
+		if (filterNames.containsAll(Arrays.asList(Env, ExEnv))) {
+			for (Map.Entry<String, StringBuilder> entry : groupedQueries.entrySet()) {
+				if (entry.getKey().equals(Env) || entry.getKey().equals(ExEnv)) {
+					if (query.length() > 0) {
+						query.append(" or ");
+					}
+					query.append('(').append(entry.getValue()).append(')');
+				}
+			}
+			groupedQueries.remove(Env);
+			groupedQueries.remove(ExEnv);
+		}
+
 		for (StringBuilder partialQuery : groupedQueries.values()) {
 			if (query.length() > 0){
 				query.append(" and ");
