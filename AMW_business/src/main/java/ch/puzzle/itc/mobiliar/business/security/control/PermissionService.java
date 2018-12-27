@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.security.control;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -59,8 +60,6 @@ public class PermissionService implements Serializable {
     static Map<String, List<RestrictionDTO>> rolesWithRestrictions;
     // map containing UserRestrictions with Restrictions (non legacy)
     static Map<String, List<RestrictionEntity>> userRestrictions;
-    // User role cache for the current call
-    private HashSet<String> userRoles = null;
 
     Map<String, List<RestrictionDTO>> getDeployableRoles() {
         boolean isReload = permissionRepository.isReloadDeployableRoleList();
@@ -82,7 +81,7 @@ public class PermissionService implements Serializable {
      */
     public boolean hasPermissionToSeeDeployment() {
         for (Map.Entry<String, List<RestrictionDTO>> entry : getDeployableRoles().entrySet()) {
-            if (isCallerInRole(entry.getKey())) {
+            if (sessionContext.isCallerInRole(entry.getKey())) {
                 return true;
             }
         }
@@ -94,7 +93,7 @@ public class PermissionService implements Serializable {
      */
     public boolean hasPermissionToCreateDeployment() {
         for (Map.Entry<String, List<RestrictionDTO>> entry : getDeployableRoles().entrySet()) {
-            if (isCallerInRole(entry.getKey())) {
+            if (sessionContext.isCallerInRole(entry.getKey())) {
                 for (RestrictionDTO restrictionDTO : entry.getValue()) {
                     if (restrictionDTO.getRestriction().getAction().equals(Action.CREATE)
                             || restrictionDTO.getRestriction().getAction().equals(Action.ALL)) {
@@ -111,7 +110,7 @@ public class PermissionService implements Serializable {
      */
     public boolean hasPermissionToEditDeployment() {
         for (Map.Entry<String, List<RestrictionDTO>> entry : getDeployableRoles().entrySet()) {
-            if (isCallerInRole(entry.getKey())) {
+            if (sessionContext.isCallerInRole(entry.getKey())) {
                 for (RestrictionDTO restrictionDTO : entry.getValue()) {
                     if (restrictionDTO.getRestriction().getAction().equals(Action.UPDATE)
                             || restrictionDTO.getRestriction().getAction().equals(Action.ALL)) {
@@ -340,8 +339,10 @@ public class PermissionService implements Serializable {
             for (Map.Entry<String, List<RestrictionDTO>> entry : deployableRolesWithRestrictions.entrySet()) {
                 matchPermissionsAndContext(permissionName, action, context, resourceGroup, resourceGroup.getResourceType(), allowedRoles, entry);
             }
-            if (hasAllowedRole(allowedRoles)) {
-                return true;
+            for (String roleName : allowedRoles) {
+                if (sessionContext.isCallerInRole(roleName)) {
+                    return true;
+                }
             }
             return hasUserRestriction(permissionName, context, action, resourceGroup, null);
         }
@@ -365,37 +366,10 @@ public class PermissionService implements Serializable {
                     matchPermissionsAndContext(permissionName, action, context, resourceGroup, resourceType, allowedRoles, entry);
                 }
             }
-            return hasAllowedRole(allowedRoles);
-        }
-        return false;
-    }
-
-    /**
-     * Cache the user roles in bean so we don't have to call sessionContext.isCallerInRole so often.
-     * sessionContext.isCallerInRole causes a stack trace to be created JBoss internally which takes time.
-     */
-    private HashSet<String> getUserRoles() {
-        if(this.userRoles != null) {
-            return this.userRoles;
-        }
-        HashSet<String> userRoles = new HashSet<>();
-        for(String role : getPermissions().keySet()) {
-            if (sessionContext.isCallerInRole(role)) {
-                userRoles.add(role);
-            }
-        }
-        this.userRoles = userRoles;
-        return userRoles;
-    }
-
-    private boolean isCallerInRole(String roleName) {
-        return getUserRoles().contains(roleName);
-    }
-
-    private boolean hasAllowedRole(List<String> allowedRoles) {
-        for(String role : allowedRoles) {
-            if(isCallerInRole(role)) {
-                return true;
+            for (String roleName : allowedRoles) {
+                if (sessionContext.isCallerInRole(roleName)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -413,7 +387,11 @@ public class PermissionService implements Serializable {
             for (Map.Entry<String, List<RestrictionDTO>> entry : entries) {
                 matchPermissionsAndContext(permissionName, action, null, resourceGroup, resourceType, allowedRoles, entry);
             }
-            return hasAllowedRole(allowedRoles);
+            for (String roleName : allowedRoles) {
+                if (sessionContext.isCallerInRole(roleName)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -784,7 +762,7 @@ public class PermissionService implements Serializable {
         List<RestrictionEntity> restrictions = new ArrayList<>();
         Map<String, List<RestrictionDTO>> roleWithRestrictions = getPermissions();
         for (String roleName : roleWithRestrictions.keySet()) {
-            if (isCallerInRole(roleName)) {
+            if (sessionContext.isCallerInRole(roleName)) {
                 for (RestrictionDTO restrictionDTO : roleWithRestrictions.get(roleName)) {
                     restrictions.add(restrictionDTO.getRestriction());
                 }
