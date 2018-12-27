@@ -1,3 +1,6 @@
+# v1.17.10
+Revert "Cache roles a user hase to reduce calls to sessionContext.isCallerInRole" [#458](https://github.com/liimaorg/liima/pull/458)
+
 # v1.17.9
 Bug fixes and speed improvements in this release.
 
