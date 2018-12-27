@@ -1,3 +1,15 @@
+# v1.17.9
+Bug fixes and speed improvements in this release.
+
+## Bug fixes
+* Corrected padding of environments navigation [#449](https://github.com/liimaorg/liima/pull/449)
+* editResourceView: Test Generation button on App checks for permission on App instead of AppServer [#448](https://github.com/liimaorg/liima/issues/448)
+* After deleting an env the env filter no long finds any deployments [#452](https://github.com/liimaorg/liima/issues/452)
+* Update Maven dependencies [#433](https://github.com/liimaorg/liima/issues/433)
+* serverView: cache user permissions in view. Speeds up the view considrably [#453](https://github.com/liimaorg/liima/pull/453)
+* REST: put properties call very slow [#446](https://github.com/liimaorg/liima/issues/446)
+* Cache roles a user has to reduce calls to sessionContext.isCallerInRole [#455](https://github.com/liimaorg/liima/pull/455)
+
 # v1.17.8
 ## Bug fixes
 * Multiple releases of Runtime displayed wrong on Appserver [#442](https://github.com/liimaorg/liima/issues/442)
