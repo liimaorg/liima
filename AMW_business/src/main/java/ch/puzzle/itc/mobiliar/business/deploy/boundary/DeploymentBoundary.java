@@ -75,6 +75,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -227,7 +228,11 @@ public class DeploymentBoundary {
 
         boolean lowerSortCol = DeploymentFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-        em.createNativeQuery("ALTER SESSION SET optimizer_mode = FIRST_ROWS").executeUpdate();
+        boolean isOracle = !isH2();
+
+        if (isOracle) {
+            em.createNativeQuery("ALTER SESSION SET optimizer_mode = FIRST_ROWS").executeUpdate();
+        }
 
         Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, hasLastDeploymentForAsEnvFilterSet, false);
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
@@ -237,7 +242,9 @@ public class DeploymentBoundary {
         List<DeploymentEntity> resultList = query.getResultList();
         final int allResults = resultList.size();
 
-        em.createNativeQuery("ALTER SESSION SET optimizer_mode = ALL_ROWS").executeUpdate();
+        if (isOracle) {
+            em.createNativeQuery("ALTER SESSION SET optimizer_mode = ALL_ROWS").executeUpdate();
+        }
 
         if (!hasLastDeploymentForAsEnvFilterSet) {
             deployments.addAll(resultList);
@@ -265,6 +272,18 @@ public class DeploymentBoundary {
         }
 
         return new Tuple<>(deployments, totalItemsForCurrentFilter);
+    }
+
+    private boolean isH2() {
+        org.hibernate.engine.spi.SessionImplementor sessionImp =
+                (org.hibernate.engine.spi.SessionImplementor) em.getDelegate();
+        String databaseProductName = null;
+        try {
+            databaseProductName = sessionImp.connection().getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return databaseProductName.equalsIgnoreCase("H2");
     }
 
     private List<CustomFilter> addFiltersForDeletedEnvironments(List<CustomFilter> filters) {
