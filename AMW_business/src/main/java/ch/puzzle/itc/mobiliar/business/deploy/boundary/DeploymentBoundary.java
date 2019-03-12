@@ -227,14 +227,17 @@ public class DeploymentBoundary {
 
         boolean lowerSortCol = DeploymentFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, hasLastDeploymentForAsEnvFilterSet, false);
+        em.createNativeQuery("ALTER SESSION SET optimizer_mode = FIRST_ROWS").executeUpdate();
 
+        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, hasLastDeploymentForAsEnvFilterSet, false);
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
 
         Set<DeploymentEntity> deployments = new LinkedHashSet<>();
         // some stuff may be lazy loaded
         List<DeploymentEntity> resultList = query.getResultList();
         final int allResults = resultList.size();
+
+        em.createNativeQuery("ALTER SESSION SET optimizer_mode = ALL_ROWS").executeUpdate();
 
         if (!hasLastDeploymentForAsEnvFilterSet) {
             deployments.addAll(resultList);
