@@ -284,36 +284,29 @@ public class PropertyEditDataProvider implements Serializable {
         activeApplications.save();
 
         if (isCurrentFocusOnResource()) {
-
-            // save softlinkrelation
-            SoftlinkRelationEntity softlinkRelation = ((ResourceEntity) resourceOrResourceType).getSoftlinkRelation();
-            if (softlinkRelation != null) {
-                softlinkRelationBoundary.editSoftlinkRelation(ForeignableOwner.getSystemOwner(), softlinkRelation);
-            } else {
-                // there can be several consumed relations with identical slave resourceType
-                if (currentRelation != null && currentRelation.getMode().equals(ResourceEditRelation.Mode.CONSUMED)) {
-                    // get next available identifier if the actual identifier is empty and has not been empty before
-                    if (StringUtils.isEmpty(relationIdentifier)
-                            && StringUtils.isNotEmpty(currentRelation.getIdentifier())
-                            && resourceRelation.isDefaultResourceType()) {
-                        List<ResourceEditRelation> relationsWithSameSlaveGroup = helper.relationsWithSameSlaveGroup(
-                                helper.flattenMap(resourceRelation.getConsumedRelations()), currentRelation.getSlaveGroupId());
-                        // first relation shall can have an empty identifier
-                        if (relationsWithSameSlaveGroup.size() > 1) {
-                            relationIdentifier = helper.nextFreeIdentifierForResourceEditRelations(
-                                    relationsWithSameSlaveGroup, currentRelation.getSlaveGroupId(), currentRelation.getSlaveName());
-                        }
-                    } else {
-                        preventDuplicateIdentifiers();
+            // there can be several consumed relations with identical slave resourceType
+            if (currentRelation != null && currentRelation.getMode().equals(ResourceEditRelation.Mode.CONSUMED)) {
+                // get next available identifier if the actual identifier is empty and has not been empty before
+                if (StringUtils.isEmpty(relationIdentifier)
+                        && StringUtils.isNotEmpty(currentRelation.getIdentifier())
+                        && resourceRelation.isDefaultResourceType()) {
+                    List<ResourceEditRelation> relationsWithSameSlaveGroup = helper.relationsWithSameSlaveGroup(
+                            helper.flattenMap(resourceRelation.getConsumedRelations()), currentRelation.getSlaveGroupId());
+                    // first relation shall can have an empty identifier
+                    if (relationsWithSameSlaveGroup.size() > 1) {
+                        relationIdentifier = helper.nextFreeIdentifierForResourceEditRelations(
+                                relationsWithSameSlaveGroup, currentRelation.getSlaveGroupId(), currentRelation.getSlaveName());
                     }
                 } else {
-                    relationIdentifier = null;
+                    preventDuplicateIdentifiers();
                 }
+            } else {
+                relationIdentifier = null;
             }
 
             editor.save(ForeignableOwner.getSystemOwner(), getContextId(), getResourceId(), resourceEditProperties,
                     resourceRelation.getCurrentResourceRelation(), relationPropertiesToSave,
-                    getNameOfResourceOrResourceType(), getSoftlinkIdIfResource(), relationIdentifier);
+                    getNameOfResourceOrResourceType(), relationIdentifier);
 
         } else {
             editor.savePropertiesForResourceType(getContextId(), getResourceTypeId(),

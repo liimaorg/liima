@@ -125,9 +125,6 @@ public class PropertyEditor {
     ContextLocator contextLocator;
 
     @Inject
-    ResourceGroupRepository resourceGroupRepository;
-
-    @Inject
     PropertyTagEditingService propertyTagEditingService;
 
     @Inject
@@ -309,16 +306,15 @@ public class PropertyEditor {
      * @param relation
      * @param relationProperties
      * @param resourceName
-     * @param softlinkId
      * @throws AMWException
      * @throws ValidationException
      * @throws ForeignableOwnerViolationException
      */
     public void save(ForeignableOwner changingOwner, Integer contextId, Integer resourceId, List<ResourceEditProperty> resourceProperties,
-            ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String softlinkId, String relationIdentifier) throws AMWException, ValidationException, ForeignableOwnerViolationException {
+            ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String relationIdentifier) throws AMWException, ValidationException, ForeignableOwnerViolationException {
 
         ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-        ResourceEntity editedResource = verifyAndSaveResource(resourceId, changingOwner, resourceName, softlinkId, context);
+        ResourceEntity editedResource = verifyAndSaveResource(resourceId, changingOwner, resourceName, context);
 
         if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, editedResource, editedResource.getResourceType())) {
             propertyValueService.saveProperties(context, editedResource, resourceProperties);
@@ -362,14 +358,13 @@ public class PropertyEditor {
         }
     }
 
-    private ResourceEntity verifyAndSaveResource(Integer resourceId, ForeignableOwner changingOwner, String resourceName, String softlinkId, ContextEntity context) throws ForeignableOwnerViolationException, AMWException {
+    private ResourceEntity verifyAndSaveResource(Integer resourceId, ForeignableOwner changingOwner, String resourceName, ContextEntity context) throws ForeignableOwnerViolationException, AMWException {
         ResourceEntity resource = resourceRepository.find(resourceId);
         int beforeChangeForeignableHashCode = resource.foreignableFieldHashCode();
 
         // do permission check
         if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
             verifyAndSetResourceName(resourceName, resource);
-            verifyAndSetSoftlinkId(softlinkId, resource);
         }
 
         // check if owner can modify resource
@@ -382,11 +377,6 @@ public class PropertyEditor {
             resourceValidationService.validateResourceName(resourceName);
             resource.setName(resourceName);
         }
-    }
-
-    private void verifyAndSetSoftlinkId(String softlinkId, ResourceEntity resource) throws AMWException {
-        resourceValidationService.validateSoftlinkId(softlinkId, resource.getResourceGroup().getId());
-        resource.setSoftlinkId(softlinkId);
     }
 
     /**
