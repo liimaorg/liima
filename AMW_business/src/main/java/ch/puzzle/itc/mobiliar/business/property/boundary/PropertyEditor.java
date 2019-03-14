@@ -677,15 +677,17 @@ public class PropertyEditor {
         PropertyDescriptorEntity propertyDescriptor = getMatchingPropertyDescriptorEntity(propertyName, resourceRelationContext);
 
         if (propertyDescriptor == null) {
-            throw new IllegalArgumentException("Property with name '" + propertyName + "' was not found");
+            throw new IllegalArgumentException("Property value for property with name '" + propertyName + "' was not found on env " + context.getName());
         }
         resetSingleProperty(resourceRelation, context, propertyDescriptor.getId());
     }
 
     private PropertyDescriptorEntity getMatchingPropertyDescriptorEntity(String propertyName, ResourceRelationContextEntity resourceRelationContext) {
-        for (PropertyEntity property : resourceRelationContext.getProperties()) {
-            if (property.getDescriptor().getPropertyName().equals(propertyName)) {
-                return property.getDescriptor();
+        if (resourceRelationContext != null && resourceRelationContext.getProperties() != null) {
+            for (PropertyEntity property : resourceRelationContext.getProperties()) {
+                if (property.getDescriptor().getPropertyName().equals(propertyName)) {
+                    return property.getDescriptor();
+                }
             }
         }
         return null;
