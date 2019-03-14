@@ -32,17 +32,18 @@ import java.util.List;
 
 public class ResourceRelationContextRepository {
 
-    @Inject EntityManager entityManager;
+    @Inject
+    EntityManager entityManager;
 
-    public List<ResourceRelationContextEntity> getResourceRelationContextEntitiesByContextIds(ConsumedResourceRelationEntity consumedResourceRelationEntity, List<Integer> contextIds){
+    public List<ResourceRelationContextEntity> getResourceRelationContextEntitiesByContextIds(ConsumedResourceRelationEntity consumedResourceRelationEntity, List<Integer> contextIds) {
         return entityManager
-                  .createQuery("select c from ResourceRelationContextEntity c left join fetch c.resourceActivationEntities "
-                            + "where c.consumedResourceRelation.id=:resRelId and c.context.id in(:contextIds)", ResourceRelationContextEntity.class)
-                  .setParameter("contextIds", contextIds)
-                  .setParameter("resRelId", consumedResourceRelationEntity.getId()).getResultList();
+                .createQuery("select c from ResourceRelationContextEntity c left join fetch c.resourceActivationEntities "
+                        + "where c.consumedResourceRelation.id=:resRelId and c.context.id in(:contextIds)", ResourceRelationContextEntity.class)
+                .setParameter("contextIds", contextIds)
+                .setParameter("resRelId", consumedResourceRelationEntity.getId()).getResultList();
     }
 
-    public ResourceRelationContextEntity createResourceRelationContext(AbstractResourceRelationEntity consumedResourceRelationEntity, ContextEntity context){
+    public ResourceRelationContextEntity createResourceRelationContext(AbstractResourceRelationEntity consumedResourceRelationEntity, ContextEntity context) {
         ResourceRelationContextEntity resourceRelationContextEntity = new ResourceRelationContextEntity();
         resourceRelationContextEntity.setContextualizedObject(consumedResourceRelationEntity);
         resourceRelationContextEntity.setContext(context);
@@ -50,24 +51,29 @@ public class ResourceRelationContextRepository {
         return resourceRelationContextEntity;
     }
 
-    public ResourceRelationContextEntity getResourceRelationContextWithResourceActivations(ConsumedResourceRelationEntity consumedResourceRelationEntity, ContextEntity context){
+    public ResourceRelationContextEntity getResourceRelationContextWithResourceActivations(ConsumedResourceRelationEntity consumedResourceRelationEntity, ContextEntity context) {
         String query = "select distinct c from ResourceRelationContextEntity c left join fetch c.resourceActivationEntities "
-                  + "where c.consumedResourceRelation.id=:resRelId and c.context.id=:contextId";
+                + "where c.consumedResourceRelation.id=:resRelId and c.context.id=:contextId";
         return getResourceRelationContext(consumedResourceRelationEntity, context, query);
     }
 
-    private ResourceRelationContextEntity getResourceRelationContext(ConsumedResourceRelationEntity consumedResourceRelationEntity, ContextEntity context, String query){
+    public ResourceRelationContextEntity getResourceRelationContext(ConsumedResourceRelationEntity consumedResourceRelationEntity, ContextEntity context) {
+        String query = "select distinct c from ResourceRelationContextEntity c where c.consumedResourceRelation.id=:resRelId and c.context.id=:contextId";
+        return getResourceRelationContext(consumedResourceRelationEntity, context, query);
+    }
+
+    private ResourceRelationContextEntity getResourceRelationContext(ConsumedResourceRelationEntity consumedResourceRelationEntity, ContextEntity context, String query) {
         List<ResourceRelationContextEntity> rel = entityManager
-                  .createQuery(query, ResourceRelationContextEntity.class)
-                  .setParameter("contextId", context.getId())
-                  .setParameter("resRelId", consumedResourceRelationEntity.getId()).getResultList();
-        switch(rel.size()){
-        case 0:
-            return null;
-        case 1:
-            return rel.get(0);
-        default:
-            throw new AMWRuntimeException("The resource relation context for relation "+consumedResourceRelationEntity.getId()+" and context "+context.getId()+" is defined "+rel.size()+" times - this is a data incosistency!");
+                .createQuery(query, ResourceRelationContextEntity.class)
+                .setParameter("contextId", context.getId())
+                .setParameter("resRelId", consumedResourceRelationEntity.getId()).getResultList();
+        switch (rel.size()) {
+            case 0:
+                return null;
+            case 1:
+                return rel.get(0);
+            default:
+                throw new AMWRuntimeException("The resource relation context for relation " + consumedResourceRelationEntity.getId() + " and context " + context.getId() + " is defined " + rel.size() + " times - this is a data incosistency!");
         }
     }
 

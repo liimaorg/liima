@@ -26,7 +26,6 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 
@@ -43,9 +42,6 @@ public class PropertyValueService {
 
     @Inject
     EntityManager entityManager;
-
-    @Inject
-    PermissionService permissions;
 
     @Inject
     PropertyValidationService propertyValidationService;

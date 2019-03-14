@@ -25,6 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
@@ -63,6 +64,15 @@ public class ResourceRelationRepository {
      */
     public ConsumedResourceRelationEntity getResourceRelation(ResourceEntity masterResource,
             ResourceEntity slaveResource) {
+        return entityManager
+                .createQuery(
+                        "select rel from ConsumedResourceRelationEntity rel where rel.masterResource=:master and rel.slaveResource=:slave",
+                        ConsumedResourceRelationEntity.class)
+                .setParameter("master", masterResource).setParameter("slave", slaveResource).getSingleResult();
+    }
+
+    public ConsumedResourceRelationEntity getResourceRelation(ResourceEntity masterResource,
+                                                              ResourceEntity slaveResource, ReleaseEntity release) {
         return entityManager
                 .createQuery(
                         "select rel from ConsumedResourceRelationEntity rel where rel.masterResource=:master and rel.slaveResource=:slave",

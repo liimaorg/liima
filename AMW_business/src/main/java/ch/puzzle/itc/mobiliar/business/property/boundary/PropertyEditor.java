@@ -30,13 +30,9 @@ import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.property.control.*;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
+import ch.puzzle.itc.mobiliar.business.property.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceValidationService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
@@ -44,8 +40,10 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationContextRepository;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
@@ -64,10 +62,7 @@ import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -125,10 +120,10 @@ public class PropertyEditor {
     ContextLocator contextLocator;
 
     @Inject
-    ResourceGroupRepository resourceGroupRepository;
+    PropertyTagEditingService propertyTagEditingService;
 
     @Inject
-    PropertyTagEditingService propertyTagEditingService;
+    ResourceRelationContextRepository resourceRelationContextRepository;
 
     @Inject
     protected Logger log;
@@ -678,9 +673,22 @@ public class PropertyEditor {
         ConsumedResourceRelationEntity resourceRelation = resourceRelationLocator.getResourceRelation(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName);
         ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL.getDisplayName() : contextName);
 
-        ResourceEditProperty property = getPropertyForRelationAndContext(propertyName, context, resourceRelation);
-        resetSingleProperty(resourceRelation, context, property.getDescriptorId());
+        ResourceRelationContextEntity resourceRelationContext = resourceRelationContextRepository.getResourceRelationContext(resourceRelation, context);
+        PropertyDescriptorEntity propertyDescriptor = getMatchingPropertyDescriptorEntity(propertyName, resourceRelationContext);
 
+        if (propertyDescriptor == null) {
+            throw new IllegalArgumentException("Property with name '" + propertyName + "' was not found");
+        }
+        resetSingleProperty(resourceRelation, context, propertyDescriptor.getId());
+    }
+
+    private PropertyDescriptorEntity getMatchingPropertyDescriptorEntity(String propertyName, ResourceRelationContextEntity resourceRelationContext) {
+        for (PropertyEntity property : resourceRelationContext.getProperties()) {
+            if (property.getDescriptor().getPropertyName().equals(propertyName)) {
+                return property.getDescriptor();
+            }
+        }
+        return null;
     }
 
     /**

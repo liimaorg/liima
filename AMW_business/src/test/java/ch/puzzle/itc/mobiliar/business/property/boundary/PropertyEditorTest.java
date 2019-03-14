@@ -22,14 +22,16 @@ package ch.puzzle.itc.mobiliar.business.property.boundary;
 
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
+import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
+import ch.puzzle.itc.mobiliar.business.property.entity.*;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationContextRepository;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import org.junit.Assert;
@@ -38,13 +40,13 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEditPropertyBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceRelationEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
-import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
@@ -53,9 +55,6 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.property.control.*;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
@@ -68,29 +67,35 @@ import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 @RunWith(MockitoJUnitRunner.class)
 public class PropertyEditorTest {
 
-   @Mock
-	EntityManager entityManagerMock;
+    @Mock
+    EntityManager entityManagerMock;
 
-	@Mock
-	PropertyEditingService propertyEditingServiceMock;
+    @Mock
+    PropertyEditingService propertyEditingServiceMock;
 
-	@Mock
-	PropertyValueService propertyValueServiceMock;
+    @Mock
+    PropertyValueService propertyValueServiceMock;
 
-	@Mock
+    @Mock
     PermissionBoundary permissionBoundaryMock;
 
-	@Mock
-	ResourceLocator resourceLocatorMock;
+    @Mock
+    ResourceLocator resourceLocatorMock;
 
     @Mock
     ResourceRelationLocator resourceRelationLocatorMock;
 
-	@Mock
-	ContextLocator contextLocatorMock;
+    @Mock
+    ContextLocator contextLocatorMock;
 
     @Mock
     ContextDomainService contextServiceMock;
+
+    @Mock
+    ResourceRelationContextRepository resourceRelationContextRepositoryMock;
+
+    @Mock
+    ResourceRelationContextEntity resourceRelationContextEntityMock;
 
     @Mock
     PropertyValidationService propertyValidationServiceMock;
@@ -104,15 +109,15 @@ public class PropertyEditorTest {
     @Mock
     ForeignableService foreignableServiceMock;
 
-	@Mock
-	Logger log;
+    @Mock
+    Logger log;
 
-	@InjectMocks
-	PropertyEditor editor;
+    @InjectMocks
+    PropertyEditor editor;
 
 
-	@Test(expected = ValidationException.class)
-	public void setPropertyValueOnResourceForContextOnInvalidArgumentShouldThrowValidationException() throws Exception {
+    @Test(expected = ValidationException.class)
+    public void setPropertyValueOnResourceForContextOnInvalidArgumentShouldThrowValidationException() throws Exception {
         // given
         String resourceGroupName = "";
         String releaseName = null;
@@ -122,7 +127,7 @@ public class PropertyEditorTest {
 
         // when
         editor.setPropertyValueOnResourceForContext(resourceGroupName, releaseName, contextName, propertyName, propertyValue);
-	}
+    }
 
     @Test(expected = NoResultException.class)
     public void setPropertyValueOnResourceForContextShouldThrowExceptionWhenPropertyNotFound() throws Exception {
@@ -148,9 +153,9 @@ public class PropertyEditorTest {
         editor.setPropertyValueOnResourceForContext(resourceGroupName, releaseName, contextName, propertyName, propertyValue);
     }
 
-    private ResourceEntity createWithIdNameAndTypeName(int id, String name, String typeName){
+    private ResourceEntity createWithIdNameAndTypeName(int id, String name, String typeName) {
         ResourceEntity resource = ResourceFactory.createNewResource(name);
-        ResourceTypeEntity type =  new ResourceTypeEntityBuilder().name(typeName).build();
+        ResourceTypeEntity type = new ResourceTypeEntityBuilder().name(typeName).build();
         resource.setResourceType(type);
         resource.setId(id);
 
@@ -217,7 +222,7 @@ public class PropertyEditorTest {
 
     }
 
-    private void setupMocksForSinglePropertiesModificationsFor(HasContexts<?> hasContexts){
+    private void setupMocksForSinglePropertiesModificationsFor(HasContexts<?> hasContexts) {
         HasContexts hasContextMergedMock = mock(HasContexts.class);
         when(entityManagerMock.merge(hasContexts)).thenReturn(hasContextMergedMock);
 
@@ -355,17 +360,16 @@ public class PropertyEditorTest {
     }
 
 
-
     @Test(expected = ValidationException.class)
     public void setPropertyValueOnResourceRelationForContextOnInvalidArgumentShouldThrowValidationException() throws Exception {
         // given
         String resourceGroupName = "";
         String releaseName = null;
         String relatedResourceGroupName = "";
-        String relatedResourceReleaseName ="";
+        String relatedResourceReleaseName = "";
         String contextName = "";
         String propertyName = "";
-        String propertyValue ="";
+        String propertyValue = "";
 
         // when
         editor.setPropertyValueOnResourceRelationForContext(resourceGroupName, releaseName, relatedResourceGroupName, relatedResourceReleaseName, contextName, propertyName, propertyValue);
@@ -377,7 +381,7 @@ public class PropertyEditorTest {
         String resourceGroupName = "resourceGroupName";
         String releaseName = "releaseName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
@@ -398,14 +402,13 @@ public class PropertyEditorTest {
     }
 
 
-
     @Test(expected = NotAuthorizedException.class)
     public void setPropertyValueOnResourceRelationForContextShouldThrowExceptionWhenWhenResourceUpdatePermissionIsMissing() throws Exception {
         // given
         String resourceGroupName = "resourceGroupName";
         String releaseName = "releaseName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
@@ -438,7 +441,7 @@ public class PropertyEditorTest {
         String resourceGroupName = "resourceGroupName";
         String releaseName = "releaseName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
@@ -467,7 +470,7 @@ public class PropertyEditorTest {
     }
 
 
-    private ConsumedResourceRelationEntity createWithMasterAndSlave(String masterResourceName, String slaveResourceName){
+    private ConsumedResourceRelationEntity createWithMasterAndSlave(String masterResourceName, String slaveResourceName) {
         ConsumedResourceRelationEntity resource = new ResourceRelationEntityBuilder().buildConsumedResRelEntity(createWithIdNameAndTypeName(1, masterResourceName, "masterResourceType"), createWithIdNameAndTypeName(2, slaveResourceName, "slaveResourceType"), "identifier", null);
 
         return resource;
@@ -480,7 +483,7 @@ public class PropertyEditorTest {
         String resourceGroupName = "";
         String releaseName = null;
         String relatedResourceGroupName = "";
-        String relatedResourceReleaseName ="";
+        String relatedResourceReleaseName = "";
         String contextName = "";
         String propertyName = "";
 
@@ -488,17 +491,15 @@ public class PropertyEditorTest {
         editor.resetPropertyValueOnResourceRelationForContext(resourceGroupName, releaseName, relatedResourceGroupName, relatedResourceReleaseName, contextName, propertyName);
     }
 
-    @Test(expected = NoResultException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void resetPropertyValueOnResourceRelationForContextShouldThrowExceptionWhenPropertyNotFound() throws Exception {
         // given
         String resourceGroupName = "resourceGroupName";
         String releaseName = "releaseName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
-
-        List<ResourceEditProperty> properties = new ArrayList<>();
 
         ContextEntity contextMock = mock(ContextEntity.class);
 
@@ -506,14 +507,12 @@ public class PropertyEditorTest {
         when(contextLocatorMock.getContextByName(contextName)).thenReturn(contextMock);
         when(entityManagerMock.find(ResourceEntity.class, 1)).thenReturn(mock(ResourceEntity.class));
         when(entityManagerMock.find(ResourceEntity.class, 2)).thenReturn(mock(ResourceEntity.class));
-        when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
+        when(resourceRelationContextRepositoryMock.getResourceRelationContext(any(ConsumedResourceRelationEntity.class), any(ContextEntity.class))).thenReturn(resourceRelationContextEntityMock);
+        when(resourceRelationContextEntityMock.getProperties()).thenReturn(Collections.EMPTY_SET);
 
         // when
-        Assert.assertTrue(properties.isEmpty());
         editor.resetPropertyValueOnResourceRelationForContext(resourceGroupName, releaseName, relatedResourceGroupName, relatedResourceReleaseName, contextName, propertyName);
     }
-
-
 
     @Test(expected = NotAuthorizedException.class)
     public void resetPropertyValueOnResourceRelationForContextShouldThrowExceptionWhenWhenResourceUpdatePermissionIsMissing() throws Exception {
@@ -521,15 +520,17 @@ public class PropertyEditorTest {
         String resourceGroupName = "resourceGroupName";
         String releaseName = "releaseName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
-        String propertyValue = "propertyValue";
+
+        PropertyDescriptorEntity propertyDescriptorMock = Mockito.mock(PropertyDescriptorEntity.class);
+        PropertyEntity property = new PropertyEntity();
+        property.setDescriptor(propertyDescriptorMock);
+        Set<PropertyEntity> properties = new HashSet<>();
+        properties.add(property);
 
         ConsumedResourceRelationEntity relationWithMasterAndSlave = createWithMasterAndSlave(resourceGroupName, relatedResourceGroupName);
-
-        List<ResourceEditProperty> properties = new ArrayList<>();
-        properties.add(new ResourceEditPropertyBuilder().withDisplayAndTechKeyName(propertyName).withValue(propertyValue).build());
 
         ContextEntity contextMock = mock(ContextEntity.class);
 
@@ -537,8 +538,9 @@ public class PropertyEditorTest {
         when(contextLocatorMock.getContextByName(contextName)).thenReturn(contextMock);
         when(entityManagerMock.find(ResourceEntity.class, 1)).thenReturn(mock(ResourceEntity.class));
         when(entityManagerMock.find(ResourceEntity.class, 2)).thenReturn(mock(ResourceEntity.class));
-        when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-        when(propertyEditingServiceMock.loadPropertiesForEditRelation(any(ResourceEditRelation.Mode.class), anyInt(), anyInt(), any(ResourceTypeEntity.class), any(ResourceTypeEntity.class), any(ContextEntity.class))).thenReturn(properties);
+        when(resourceRelationContextRepositoryMock.getResourceRelationContext(any(ConsumedResourceRelationEntity.class), any(ContextEntity.class))).thenReturn(resourceRelationContextEntityMock);
+        when(resourceRelationContextEntityMock.getProperties()).thenReturn(properties);
+        when(propertyDescriptorMock.getPropertyName()).thenReturn(propertyName);
         when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, relationWithMasterAndSlave.getMasterResource(), null)).thenReturn(false);
         when(permissionBoundaryMock.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, contextMock, Action.ALL, relationWithMasterAndSlave.getMasterResource(), null)).thenReturn(true);
 
@@ -554,13 +556,15 @@ public class PropertyEditorTest {
         String resourceGroupName = "resourceGroupName";
         String releaseName = "releaseName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
-        String propertyValue = "propertyValue";
 
-        List<ResourceEditProperty> properties = new ArrayList<>();
-        properties.add(new ResourceEditPropertyBuilder().withDisplayAndTechKeyName(propertyName).withValue(propertyValue).build());
+        PropertyDescriptorEntity propertyDescriptorMock = Mockito.mock(PropertyDescriptorEntity.class);
+        PropertyEntity property = new PropertyEntity();
+        property.setDescriptor(propertyDescriptorMock);
+        Set<PropertyEntity> properties = new HashSet<>();
+        properties.add(property);
 
         ContextEntity contextMock = mock(ContextEntity.class);
 
@@ -569,10 +573,11 @@ public class PropertyEditorTest {
         when(contextLocatorMock.getContextByName(contextName)).thenReturn(contextMock);
         when(entityManagerMock.find(ResourceEntity.class, 1)).thenReturn(mock(ResourceEntity.class));
         when(entityManagerMock.find(ResourceEntity.class, 2)).thenReturn(mock(ResourceEntity.class));
-        when(propertyValueServiceMock.decryptProperties(anyList())).thenReturn(properties);
-        when(propertyEditingServiceMock.loadPropertiesForEditRelation(any(ResourceEditRelation.Mode.class), anyInt(), anyInt(), any(ResourceTypeEntity.class), any(ResourceTypeEntity.class), any(ContextEntity.class))).thenReturn(properties);
         when(permissionBoundaryMock.hasPermission(Permission.RESOURCE, contextMock, Action.UPDATE, relation.getMasterResource(), null)).thenReturn(true);
         when(permissionBoundaryMock.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, contextMock, Action.ALL, relation.getMasterResource(), null)).thenReturn(true);
+        when(resourceRelationContextRepositoryMock.getResourceRelationContext(any(ConsumedResourceRelationEntity.class), any(ContextEntity.class))).thenReturn(resourceRelationContextEntityMock);
+        when(resourceRelationContextEntityMock.getProperties()).thenReturn(properties);
+        when(propertyDescriptorMock.getPropertyName()).thenReturn(propertyName);
         setupMocksForSinglePropertiesModificationsFor(relation);
 
         // when
@@ -589,10 +594,10 @@ public class PropertyEditorTest {
         // given
         String resourceGroupName = "";
         String relatedResourceGroupName = "";
-        String relatedResourceReleaseName ="";
+        String relatedResourceReleaseName = "";
         String contextName = "";
         String propertyName = "";
-        String propertyValue ="";
+        String propertyValue = "";
 
         // when
         editor.setPropertyValueOnAllResourceRelationsForContextWhereNotYetSet(resourceGroupName, relatedResourceGroupName, relatedResourceReleaseName, contextName, propertyName, propertyValue);
@@ -603,7 +608,7 @@ public class PropertyEditorTest {
         // given
         String resourceGroupName = "resourceGroupName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
@@ -625,7 +630,7 @@ public class PropertyEditorTest {
         // given
         String resourceGroupName = "resourceGroupName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
@@ -646,7 +651,7 @@ public class PropertyEditorTest {
         // given
         String resourceGroupName = "resourceGroupName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
@@ -681,7 +686,7 @@ public class PropertyEditorTest {
         // given
         String resourceGroupName = "resourceGroupName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
@@ -717,13 +722,12 @@ public class PropertyEditorTest {
     }
 
 
-
     @Test
     public void setPropertyValueOnAllResourceRelationsForContextWhereNotYetSetShouldSetNoPropertyValueWhenValueAlreadySet() throws Exception {
         // given
         String resourceGroupName = "resourceGroupName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
@@ -765,7 +769,7 @@ public class PropertyEditorTest {
         // given
         String resourceGroupName = "resourceGroupName";
         String relatedResourceGroupName = "relatedResourceGroupName";
-        String relatedResourceReleaseName ="relatedResourceReleaseName";
+        String relatedResourceReleaseName = "relatedResourceReleaseName";
         String contextName = "contextName";
         String propertyName = "propertyName";
         String propertyValue = "propertyValue";
@@ -935,7 +939,7 @@ public class PropertyEditorTest {
         editor.savePropertyDescriptorForResource(changingOwner, resourceId, descriptor, descriptor.foreignableFieldHashCode(), propertyTagsString);
 
         // then
-        verify(foreignableServiceMock).verifyEditableByOwner(changingOwner, descriptor.foreignableFieldHashCode(),descriptor);
+        verify(foreignableServiceMock).verifyEditableByOwner(changingOwner, descriptor.foreignableFieldHashCode(), descriptor);
 
     }
 
@@ -965,7 +969,7 @@ public class PropertyEditorTest {
         when(propertyTagEditingServiceMock.convertToTags(propertyTagsString)).thenReturn(propertyTags);
 
         // when
-        editor.saveTestingPropertyDescriptorForResource(resourceId, descriptor,descriptor.foreignableFieldHashCode(), propertyTagsString);
+        editor.saveTestingPropertyDescriptorForResource(resourceId, descriptor, descriptor.foreignableFieldHashCode(), propertyTagsString);
 
         // then
         verify(propertyDescriptorServiceMock).savePropertyDescriptorForOwner(ForeignableOwner.getSystemOwner(), resourceContextEntityMock, descriptor, propertyTags, resourceEntityMock);
@@ -1024,7 +1028,7 @@ public class PropertyEditorTest {
         when(propertyTagEditingServiceMock.convertToTags(propertyTagsString)).thenReturn(propertyTags);
 
         // when
-        editor.savePropertyDescriptorForResourceType(changingOwner, resourceTypeId, descriptor,descriptor.foreignableFieldHashCode(), propertyTagsString);
+        editor.savePropertyDescriptorForResourceType(changingOwner, resourceTypeId, descriptor, descriptor.foreignableFieldHashCode(), propertyTagsString);
 
         // then
         verify(propertyDescriptorServiceMock).savePropertyDescriptorForOwner(changingOwner, resourceTypeContextEntityMock, descriptor, propertyTags, resourceTypeEntityMock);
@@ -1050,10 +1054,10 @@ public class PropertyEditorTest {
         when(propertyTagEditingServiceMock.convertToTags(propertyTagsString)).thenReturn(propertyTags);
 
         // when
-        editor.savePropertyDescriptorForResourceType(changingOwner, resourceTypeId, descriptor,descriptor.foreignableFieldHashCode(), propertyTagsString);
+        editor.savePropertyDescriptorForResourceType(changingOwner, resourceTypeId, descriptor, descriptor.foreignableFieldHashCode(), propertyTagsString);
 
         // then
-        verify(foreignableServiceMock).verifyEditableByOwner(changingOwner, descriptor.foreignableFieldHashCode(), descriptor );
+        verify(foreignableServiceMock).verifyEditableByOwner(changingOwner, descriptor.foreignableFieldHashCode(), descriptor);
     }
 
 
@@ -1077,7 +1081,7 @@ public class PropertyEditorTest {
         when(propertyTagEditingServiceMock.convertToTags(propertyTagsString)).thenReturn(propertyTags);
 
         // when
-        editor.saveTestingPropertyDescriptorForResourceType(resourceTypeId, descriptor,descriptor.foreignableFieldHashCode(), propertyTagsString);
+        editor.saveTestingPropertyDescriptorForResourceType(resourceTypeId, descriptor, descriptor.foreignableFieldHashCode(), propertyTagsString);
 
         // then
         verify(propertyDescriptorServiceMock).savePropertyDescriptorForOwner(ForeignableOwner.getSystemOwner(), resourceTypeContextEntityMock, descriptor, propertyTags, resourceTypeEntityMock);
@@ -1103,10 +1107,10 @@ public class PropertyEditorTest {
         when(propertyTagEditingServiceMock.convertToTags(propertyTagsString)).thenReturn(propertyTags);
 
         // when
-        editor.saveTestingPropertyDescriptorForResourceType(resourceTypeId, descriptor,descriptor.foreignableFieldHashCode(), propertyTagsString);
+        editor.saveTestingPropertyDescriptorForResourceType(resourceTypeId, descriptor, descriptor.foreignableFieldHashCode(), propertyTagsString);
 
         // then
-        verify(foreignableServiceMock).verifyEditableByOwner(ForeignableOwner.getSystemOwner(), descriptor.foreignableFieldHashCode(), descriptor );
+        verify(foreignableServiceMock).verifyEditableByOwner(ForeignableOwner.getSystemOwner(), descriptor.foreignableFieldHashCode(), descriptor);
     }
 
     @Test
