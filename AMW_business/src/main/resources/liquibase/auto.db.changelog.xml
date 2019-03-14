@@ -150,5 +150,8 @@
     <!--1.17.8-->
     <include file="changesets/model/contextEntity/extendContextEntity.xml" relativeToChangelogFile="true"/>
 
+    <!--1.17.12-->
+    <include file="changesets/model/addIndexes/addResourceIndexes.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/addIndexes/addDeploymentIndex.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
