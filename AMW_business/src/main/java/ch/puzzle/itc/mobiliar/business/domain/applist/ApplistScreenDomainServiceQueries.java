@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.applist;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,12 +31,16 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.JpaWildcardConverter;
+import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 public class ApplistScreenDomainServiceQueries {
 
     @Inject
     private EntityManager entityManager;
+
+    @Inject
+    private DatabaseUtil dbUtil;
 
     List<ResourceEntity> doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(String nameFilter, List<Integer> myAmwIds, Integer maxResult) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -74,7 +77,7 @@ public class ApplistScreenDomainServiceQueries {
 
         Expression<String> name = appServer.get("name");
         // workaround for H2 incompatibility, see https://github.com/h2database/h2database/issues/408
-        if (!isH2()) {
+        if (!dbUtil.isH2()) {
             name = cb.lower(name);
         }
 
@@ -85,18 +88,6 @@ public class ApplistScreenDomainServiceQueries {
         }
 
         return query.getResultList();
-    }
-
-    private boolean isH2() {
-        org.hibernate.engine.spi.SessionImplementor sessionImp =
-                (org.hibernate.engine.spi.SessionImplementor) entityManager.getDelegate();
-        String databaseProductName = null;
-        try {
-            databaseProductName = sessionImp.connection().getMetaData().getDatabaseProductName();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return databaseProductName.equalsIgnoreCase("H2");
     }
 
 }

@@ -53,6 +53,7 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
+import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
@@ -151,6 +152,9 @@ public class DeploymentBoundary {
     @Inject
     ReleaseMgmtService releaseMgmtService;
 
+    @Inject
+    DatabaseUtil dbUtil;
+
     private PropertyDescriptorEntity mavenVersionProperty = null;
 
     private Map<String, List<Integer>> deletedContextNameIdMap;
@@ -228,7 +232,7 @@ public class DeploymentBoundary {
 
         boolean lowerSortCol = DeploymentFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-        boolean isOracle = !isH2();
+        boolean isOracle = dbUtil.isOracle();
 
         if (isOracle) {
             em.createNativeQuery("ALTER SESSION SET optimizer_mode = FIRST_ROWS").executeUpdate();
@@ -272,18 +276,6 @@ public class DeploymentBoundary {
         }
 
         return new Tuple<>(deployments, totalItemsForCurrentFilter);
-    }
-
-    private boolean isH2() {
-        org.hibernate.engine.spi.SessionImplementor sessionImp =
-                (org.hibernate.engine.spi.SessionImplementor) em.getDelegate();
-        String databaseProductName = null;
-        try {
-            databaseProductName = sessionImp.connection().getMetaData().getDatabaseProductName();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return databaseProductName.equalsIgnoreCase("H2");
     }
 
     private List<CustomFilter> addFiltersForDeletedEnvironments(List<CustomFilter> filters) {
