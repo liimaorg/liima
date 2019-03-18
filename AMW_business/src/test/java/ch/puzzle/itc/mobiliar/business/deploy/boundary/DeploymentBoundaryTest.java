@@ -50,6 +50,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -143,13 +145,13 @@ public class DeploymentBoundaryTest
 	}
 
     @Test
-    public void testConfirmDeployment() {
+    public void testConfirmDeployment() throws ParseException {
         // given
         Integer deploymentId = 1;
         boolean sendEmailWhenDeployed = true;
         boolean simulateBeforeDeployment = true;
         boolean shakedownTestsWhenDeployed = true;
-        boolean neighbourhoodTest = true;
+        boolean neighbourhoodTest = true;;
 
         Integer trackingId = 2;
         Date releaseDate = new Date();
@@ -172,8 +174,11 @@ public class DeploymentBoundaryTest
         Mockito.doReturn(deployment).when(deploymentBoundary).saveDeployment(deployment);
         Mockito.doReturn("Tom").when(permissionService).getCurrentUserName();
 
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date deploymentDate = format.parse ( "2020-10-20 12:12:12" );
+
         // when
-        DeploymentEntity deploymentEntity = deploymentBoundary.confirmDeployment(deploymentId, sendEmailWhenDeployed, shakedownTestsWhenDeployed, neighbourhoodTest, simulateBeforeDeployment);
+        DeploymentEntity deploymentEntity = deploymentBoundary.confirmDeployment(deploymentId, sendEmailWhenDeployed, shakedownTestsWhenDeployed, neighbourhoodTest, simulateBeforeDeployment, deploymentDate);
 
         // then
         assertThat(deploymentEntity.getDeploymentState(), is(DeploymentState.scheduled));
@@ -184,6 +189,7 @@ public class DeploymentBoundaryTest
         assertThat(deploymentEntity.isSimulating(), is(simulateBeforeDeployment));
         assertThat(deploymentEntity.isCreateTestAfterDeployment(), is(shakedownTestsWhenDeployed));
         assertThat(deploymentEntity.isCreateTestForNeighborhoodAfterDeployment(), is(neighbourhoodTest));
+        assertThat(deploymentEntity.getDeploymentDate(), is(deploymentDate));
     }
 
 

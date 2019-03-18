@@ -168,13 +168,13 @@ public class DeploymentBoundary {
         return selectableDeploymentFilterTypes;
     }
 
-    public ComparatorFilterOption[]  getComparatorFilterOptions() {
+    public ComparatorFilterOption[] getComparatorFilterOptions() {
         return ComparatorFilterOption.values();
     }
 
     /**
      * @param startIndex
-     * @param maxResults when maxResults > 0 it is expected to get the deployments for pagination. In this case an additional count() query will be executed.
+     * @param maxResults       when maxResults > 0 it is expected to get the deployments for pagination. In this case an additional count() query will be executed.
      * @param filters
      * @param colToSort
      * @param sortingDirection
@@ -182,10 +182,10 @@ public class DeploymentBoundary {
      * @return a Tuple containing the filter deployments and the total deployments for that filter if doPagingCalculation is true
      */
     public Tuple<Set<DeploymentEntity>, Integer> getFilteredDeployments(Integer startIndex,
-            Integer maxResults, List<CustomFilter> filters, String colToSort,
-            CommonFilterService.SortingDirectionType sortingDirection, List<Integer> myAmw) {
+                                                                        Integer maxResults, List<CustomFilter> filters, String colToSort,
+                                                                        CommonFilterService.SortingDirectionType sortingDirection, List<Integer> myAmw) {
         Integer totalItemsForCurrentFilter;
-        boolean doPaging = maxResults == null ? false : (maxResults > 0 ? true : false);
+        boolean doPaging = maxResults != null && (maxResults > 0);
 
         StringBuilder stringQuery = new StringBuilder();
 
@@ -201,7 +201,7 @@ public class DeploymentBoundary {
                 if (customFilter.getFilterDisplayName().equals(DeploymentFilterTypes.DEPLOYMENT_STATE.getFilterDisplayName())) {
                     lastDeploymentState = DeploymentState.getByString(customFilter.getValue());
                     from = startIndex != null ? startIndex : 0;
-                    to = maxResults != null ? from+maxResults : from+200;
+                    to = maxResults != null ? from + maxResults : from + 200;
                     // sever side pagination is done after fetching from db for this combination
                     startIndex = null;
                     maxResults = null;
@@ -223,7 +223,7 @@ public class DeploymentBoundary {
         String baseQuery = stringQuery.toString();
         // left join required in order that order by works as expected on deployments having null references..
         String nullFix = stringQuery.toString().replace(" from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " ", " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " left join fetch " + DEPLOYMENT_QL_ALIAS + ".release left join fetch " + DEPLOYMENT_QL_ALIAS + ".context ");
-        stringQuery = stringQuery.replace(0, nullFix.length()-1, nullFix);
+        stringQuery = stringQuery.replace(0, nullFix.length() - 1, nullFix);
 
         boolean lowerSortCol = DeploymentFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
@@ -334,22 +334,22 @@ public class DeploymentBoundary {
     }
 
     private List<DeploymentEntity> latestPerContextAndGroup(List<DeploymentEntity> resultList) {
-        HashMap<ContextEntity, HashMap<ResourceGroupEntity,  DeploymentEntity>> latestByContext = new HashMap<>();
+        HashMap<ContextEntity, HashMap<ResourceGroupEntity, DeploymentEntity>> latestByContext = new HashMap<>();
         for (DeploymentEntity deployment : resultList) {
             if (!latestByContext.containsKey(deployment.getContext())) {
-                HashMap<ResourceGroupEntity,  DeploymentEntity> latestByResourceGrp = new HashMap<>();
+                HashMap<ResourceGroupEntity, DeploymentEntity> latestByResourceGrp = new HashMap<>();
                 latestByResourceGrp.put(deployment.getResourceGroup(), deployment);
                 latestByContext.put(deployment.getContext(), latestByResourceGrp);
             } else {
                 HashMap<ResourceGroupEntity, DeploymentEntity> innerMap = latestByContext.get(deployment.getContext());
-                if (!innerMap.containsKey(deployment.getResourceGroup()) ) {
+                if (!innerMap.containsKey(deployment.getResourceGroup())) {
                     innerMap.put(deployment.getResourceGroup(), deployment);
                 } else {
                     DeploymentEntity latestSoFar = innerMap.get(deployment.getResourceGroup());
-                    if (deployment.getDeploymentDate().after(latestSoFar.getDeploymentDate()))  {
+                    if (deployment.getDeploymentDate().after(latestSoFar.getDeploymentDate())) {
                         innerMap.put(deployment.getResourceGroup(), deployment);
                     } else if (deployment.getDeploymentDate().equals(latestSoFar.getDeploymentDate())
-                            &&  deployment.getId() > latestSoFar.getId()) {
+                            && deployment.getId() > latestSoFar.getId()) {
                         innerMap.put(deployment.getResourceGroup(), deployment);
                     }
                 }
@@ -482,7 +482,7 @@ public class DeploymentBoundary {
                     + DeploymentState.success + "'";
         }
 
-        return "select " + DEPLOYMENT_QL_ALIAS + ".context.id, "  + DEPLOYMENT_QL_ALIAS + ".resourceGroup from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentDate = "
+        return "select " + DEPLOYMENT_QL_ALIAS + ".context.id, " + DEPLOYMENT_QL_ALIAS + ".resourceGroup from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentDate = "
                 + "(select max(t.deploymentDate) from DeploymentEntity t "
                 + "where " + DEPLOYMENT_QL_ALIAS + ".resourceGroup = t.resourceGroup and (" + DEPLOYMENT_QL_ALIAS + ".context = t.context or " + DEPLOYMENT_QL_ALIAS + ".exContextId = t.exContextId)) " + successStateCheck;
     }
@@ -584,7 +584,7 @@ public class DeploymentBoundary {
      */
     private boolean createDeploymentForAppserver(Integer appServerGroupId, Integer releaseId, Date deploymentDate, Date stateToDeploy, List<Integer> contextIds, List<ApplicationWithVersion>
             applicationWithVersion, List<DeploymentParameter> deployParams, boolean sendEmail, boolean requestOnly, boolean doSimulate, boolean isExecuteShakedownTest, boolean
-            isNeighbourhoodTest, Integer trackingId) {
+                                                         isNeighbourhoodTest, Integer trackingId) {
         ResourceGroupEntity group = em.find(ResourceGroupEntity.class, appServerGroupId);
         ReleaseEntity release = em.find(ReleaseEntity.class, releaseId);
         ResourceEntity resource = dependencyResolver.getResourceEntityForRelease(group, release);
@@ -652,13 +652,12 @@ public class DeploymentBoundary {
     }
 
     private void createAndAddDeploymentParameterForDeployment(DeploymentEntity deployment, List<DeploymentParameter> deployParams) {
-        for(DeploymentParameter parameter : deployParams){
+        for (DeploymentParameter parameter : deployParams) {
             DeploymentParameter persistDeploymentParameter = createPersistDeploymentParameter(parameter.getKey(), parameter.getValue());
             persistDeploymentParameter.setDeployment(deployment);
             deployment.addDeploymentParameter(persistDeploymentParameter);
         }
     }
-
 
 
     public DeploymentParameter createPersistDeploymentParameter(String key, String value) {
@@ -725,8 +724,7 @@ public class DeploymentBoundary {
                 // If it fails the deployment will be retried by the scheduler
                 return;
             }
-        }
-        else {
+        } else {
             updateDeploymentInfoAndSendNotification(GenerationModus.PREDEPLOY, deploymentId, "Deployment (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing at " + new Date(), deployment.getResource().getId(), null, DeploymentFailureReason.PRE_DEPLOYMENT_SCRIPT);
             log.info("Deployment " + deployment.getId() + " (previous state : " + deployment.getDeploymentState() + ") failed due to NodeJob failing");
         }
@@ -972,7 +970,7 @@ public class DeploymentBoundary {
      */
     public List<DeploymentEntity> getFinishedPreDeployments() {
         TypedQuery<DeploymentEntity> query = em.createQuery(
-                "select "+ DEPLOYMENT_QL_ALIAS +" from "+ DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS
+                "select " + DEPLOYMENT_QL_ALIAS + " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS
                         + " where " + DEPLOYMENT_QL_ALIAS + ".deploymentState = :deploymentState"
                         + " and exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where deploymentState = :deploymentState)"
                         + " and not exists (select 1 from " + DEPLOYMENT_QL_ALIAS + ".nodeJobs where status = :running and deploymentState = :deploymentState)",
@@ -1057,13 +1055,13 @@ public class DeploymentBoundary {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public DeploymentEntity updateDeploymentInfo(GenerationModus generationModus, final Integer deploymentId, final String errorMessage, final Integer resourceId,
                                                  final GenerationResult generationResult, DeploymentFailureReason reason) {
-		// don't lock a deployment for predeployment as there is no need to update the deployment.
-		if (GenerationModus.PREDEPLOY.equals(generationModus) && errorMessage == null) {
-			log.fine("Predeploy script finished at " + new Date());
-			return em.find(DeploymentEntity.class, deploymentId);
-		}
-		DeploymentEntity deployment = em.find(DeploymentEntity.class, deploymentId,
-				LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+        // don't lock a deployment for predeployment as there is no need to update the deployment.
+        if (GenerationModus.PREDEPLOY.equals(generationModus) && errorMessage == null) {
+            log.fine("Predeploy script finished at " + new Date());
+            return em.find(DeploymentEntity.class, deploymentId);
+        }
+        DeploymentEntity deployment = em.find(DeploymentEntity.class, deploymentId,
+                LockModeType.PESSIMISTIC_FORCE_INCREMENT);
 
         // set as used for deployment
         if (resourceId != null) {
@@ -1127,7 +1125,7 @@ public class DeploymentBoundary {
      * @param resourceId       - the ApplicationServer resource used for deployment
      * @param generationResult
      */
-    public void updateDeploymentInfoAndSendNotification(GenerationModus generationModus, final Integer deploymentId, final String errorMessage, final Integer resourceId, final GenerationResult generationResult, DeploymentFailureReason  reason) {
+    public void updateDeploymentInfoAndSendNotification(GenerationModus generationModus, final Integer deploymentId, final String errorMessage, final Integer resourceId, final GenerationResult generationResult, DeploymentFailureReason reason) {
         DeploymentEntity deployment = updateDeploymentInfo(generationModus, deploymentId, errorMessage, resourceId, generationResult, reason);
         if (generationModus != null && generationModus.isSendNotificationOnErrorGenerationModus()) {
             sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
@@ -1208,8 +1206,7 @@ public class DeploymentBoundary {
         return query.getResultList();
     }
 
-    public DeploymentEntity confirmDeployment(Integer deploymentId) throws DeploymentStateException {
-        DeploymentEntity deployment = getDeploymentById(deploymentId);
+    public DeploymentEntity confirmDeployment(DeploymentEntity deployment) throws DeploymentStateException {
         Date now = new Date();
 
         checkValidation(isConfirmPossible(deployment), deployment);
@@ -1225,16 +1222,16 @@ public class DeploymentBoundary {
     }
 
     public DeploymentEntity confirmDeployment(Integer deploymentId, boolean sendEmail,
-                                              boolean executeShakedownTest, boolean neighbourhoodTest, boolean simulateGeneration) throws DeploymentStateException {
-
-        DeploymentEntity deployment = confirmDeployment(deploymentId);
-
+                                              boolean executeShakedownTest, boolean neighbourhoodTest,
+                                              boolean simulateGeneration, Date deploymentDate) throws DeploymentStateException {
+        DeploymentEntity deployment = getDeploymentById(deploymentId);
         deployment.setSendEmailConfirmation(sendEmail);
         deployment.setCreateTestAfterDeployment(executeShakedownTest);
         deployment.setCreateTestForNeighborhoodAfterDeployment(neighbourhoodTest);
         deployment.setSimulating(simulateGeneration);
+        deployment.setDeploymentDate(deploymentDate);
 
-        return saveDeployment(deployment);
+        return confirmDeployment(deployment);
     }
 
     public DeploymentOperationValidation isConfirmPossible(DeploymentEntity deployment) {
@@ -1298,7 +1295,7 @@ public class DeploymentBoundary {
         Date now = new Date();
         checkValidation(isChangeDeploymentDatePossible(deployment), deployment);
 
-        if(newDate == null || newDate.before(now)) {
+        if (newDate == null || newDate.before(now)) {
             newDate = now;
         }
 
@@ -1324,6 +1321,11 @@ public class DeploymentBoundary {
                 throw new DeploymentStateException("Deployment " + deploymentId + " can not be changed");
         }
 
+    }
+
+    private DeploymentEntity confirmDeployment(Integer deploymentId) throws DeploymentStateException {
+        DeploymentEntity deployment = getDeploymentById(deploymentId);
+        return confirmDeployment(deployment);
     }
 
     public DeploymentOperationValidation isChangeDeploymentDatePossible(DeploymentEntity deployment) {
@@ -1433,8 +1435,8 @@ public class DeploymentBoundary {
 
     public List<ContextEntity> getEnvironments() {
         List<ContextEntity> env = new ArrayList<>();
-        for(ContextEntity c : contextLocator.getAllEnvironments()){
-            if(c.getContextType().getName().equals(ContextNames.ENV.name())){
+        for (ContextEntity c : contextLocator.getAllEnvironments()) {
+            if (c.getContextType().getName().equals(ContextNames.ENV.name())) {
                 env.add(c);
             }
         }

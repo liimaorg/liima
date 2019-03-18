@@ -517,7 +517,8 @@ public class DeploymentsRest {
                     deploymentDTO.isSendEmailWhenDeployed(),
                     deploymentDTO.isShakedownTestsWhenDeployed(),
                     deploymentDTO.isNeighbourhoodTest(),
-                    deploymentDTO.isSimulateBeforeDeployment());
+                    deploymentDTO.isSimulateBeforeDeployment(),
+                    deploymentDTO.getDeploymentDate());
             return Response.status(Response.Status.OK).build();
         } catch (RuntimeException e) {
             return catchDeploymentStateException(e);
