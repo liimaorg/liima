@@ -42,7 +42,7 @@ export class DeploymentsEditModalComponent {
     switch (this.selectedEditAction) {
       // date
       case this.editActions[0]:
-        this.editDeploymentDate();
+        this.editDeploymentDate(true);
         break;
       // confirm
       case this.editActions[1]:
@@ -71,7 +71,7 @@ export class DeploymentsEditModalComponent {
   }
 
   private confirmSelectedDeployments() {
-    this.editDeploymentDate();
+    this.editDeploymentDate(false);
     for (const deployment of this.deployments) {
       deployment.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
       deployment.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
@@ -93,14 +93,16 @@ export class DeploymentsEditModalComponent {
     }
   }
 
-  private editDeploymentDate() {
+  private editDeploymentDate(emit: boolean) {
     const dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
     if (!dateTime || !dateTime.isValid()) {
       this.errorMessage.emit('Invalid date');
     } else {
       for (const deployment of this.deployments) {
         deployment.deploymentDate = dateTime.valueOf();
-        this.doEditDeploymentDate.emit(deployment);
+        if (emit) {
+          this.doEditDeploymentDate.emit(deployment);
+        }
       }
     }
   }
