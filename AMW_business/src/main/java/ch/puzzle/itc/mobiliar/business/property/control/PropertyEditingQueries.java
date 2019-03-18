@@ -24,6 +24,7 @@ import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty.Origin;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -32,7 +33,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,6 +45,9 @@ public class PropertyEditingQueries {
 
     @Inject
     EntityManager entityManager;
+
+    @Inject
+    DatabaseUtil dbUtil;
 
     private static final String CONSUMEDRESRELTABLE = QueryUtils.getTable(ConsumedResourceRelationEntity.class);
     private static final String CONSUMEDRESRELFK = "CONSUMEDRESOURCERELATION_ID";
@@ -226,7 +229,7 @@ public class PropertyEditingQueries {
     }
 
     private String loadPropertyDescriptorQuery() {
-        String template = !isH2() ? loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE_OPTIMIZED) : loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE);
+        String template = dbUtil.isOracle() ? loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE_OPTIMIZED) : loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE);
         //We use consumed rel table as a default (for this case, no relation ids will be provided, therefore property descriptors on relations are not considered)
         template = String.format(template, CONSUMEDRESRELTABLE, CONSUMEDRESRELFK, loadPropertyValueQuery());
         return template;
@@ -234,7 +237,7 @@ public class PropertyEditingQueries {
 
 
     private String loadRelationPropertyDescriptorQuery(String resourceRelationTableName, String resourceRelationFKName) {
-        String template = !isH2() ? loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE_OPTIMIZED) : loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE);
+        String template = dbUtil.isOracle() ? loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE_OPTIMIZED) : loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE);
         template = String.format(template, resourceRelationTableName, resourceRelationFKName, loadPropertyValuesForRelation(resourceRelationTableName, resourceRelationFKName));
         return template;
     }
@@ -275,15 +278,4 @@ public class PropertyEditingQueries {
         }
     }
 
-    private boolean isH2() {
-        org.hibernate.engine.spi.SessionImplementor sessionImp =
-                (org.hibernate.engine.spi.SessionImplementor) entityManager.getDelegate();
-        String databaseProductName = null;
-        try {
-            databaseProductName = sessionImp.connection().getMetaData().getDatabaseProductName();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return databaseProductName.equalsIgnoreCase("H2");
-    }
 }
