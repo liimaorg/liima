@@ -21,7 +21,6 @@
 package ch.puzzle.itc.mobiliar.business.utils.database;
 
 import java.sql.SQLException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.Produces;
@@ -38,6 +37,7 @@ import liquibase.integration.cdi.annotations.LiquibaseType;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 
+
 public class LiquibaseProducer {
 	
 	@Inject
@@ -52,13 +52,13 @@ public class LiquibaseProducer {
 	 * @return 
 	 */
 	private DataSource getDataSource(){
-		
 		DataSource ds = null;
+		String jndi = ConfigurationService.getProperty(ConfigKey.LIQUIBASE_DATASOURCE_JNDI);
 		try {
 			Context initCtx = new InitialContext();
-			ds = (DataSource) initCtx.lookup("java:jboss/datasources/amwLiquibaseDS");
+			ds = (DataSource) initCtx.lookup(jndi);
 		} catch (NamingException e) {
-			log.log(Level.WARNING,"liquibaseDatasource was not configured under java:jboss/datasources/amwLiquibaseDS");
+			log.warning(jndi);
 		}
 		return ds;
 	}
