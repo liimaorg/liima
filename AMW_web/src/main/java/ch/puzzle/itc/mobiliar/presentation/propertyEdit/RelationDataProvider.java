@@ -36,7 +36,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelatio
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelationBoundary;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
@@ -91,9 +90,6 @@ public class RelationDataProvider implements Serializable {
 
     @Inject
     ResourceGroupPersistenceService resourceGroupPersistenceService;
-
-    @Inject
-    SoftlinkRelationBoundary softlinkRelationBoundary;
 
     @Inject
     ResourceRelationBoundary resourceRelationBoundary;
@@ -242,7 +238,6 @@ public class RelationDataProvider implements Serializable {
             // Non-default types can only define those relations which are defined as "unresolved"
             selectableItems = (List<NamedIdentifiable>) relationEditor.loadResourceGroupsForType(typeName, resourceOrType.getId());
             resourceTypes = Collections.singletonList(t);
-            Collections.sort(resourceTypes);
             currentResourceType = t.getEntity();
         }
     }
@@ -327,33 +322,6 @@ public class RelationDataProvider implements Serializable {
         return addResourceRelation(slaveResourceGroupId, false, identifier, null);
     }
 
-    public void createSoftlinkRelation() {
-        if (isEditResource()) {
-
-            try {
-                if (softlinkReferenceName != null && !softlinkReferenceName.trim().isEmpty()) {
-                    softlinkRelationBoundary.createSoftlinkRelation(ForeignableOwner.getSystemOwner(), resourceOrType.getId(), softlinkReferenceName);
-                    resourceRelationModel.reloadResource();
-                    GlobalMessageAppender.addSuccessMessage("Softlink relation for resource " + getResource().getName() + " to resource with softlinkId: " + softlinkReferenceName + " successfully created");
-                } else {
-                    GlobalMessageAppender.addErrorMessage("Softlink id reference must not be empty");
-                }
-
-            } catch (EJBException e) {
-                // TODO should other exceptions also be catched?
-                if (e.getCause() instanceof NotAuthorizedException) {
-                    GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
-                } else {
-                    throw e;
-                }
-            } catch (ForeignableOwnerViolationException e) {
-                GlobalMessageAppender.addErrorMessage("Owner " + e.getViolatingOwner() + " not allowed to modify existing softlink relation");
-            }
-        } else {
-            GlobalMessageAppender.addErrorMessage("Softlink relation creation not allowed for resource type");
-        }
-    }
-
     private boolean isAlreadyProvided(ResourceGroupEntity resourceGroupEntity) {
         // provided resources can only be added once
         List<ResourceEditRelation> relations = helper.flattenMap(resourceRelationModel.getProvidedRelations());
@@ -436,19 +404,7 @@ public class RelationDataProvider implements Serializable {
                 GlobalMessageAppender.addErrorMessage(message);
             }
 
-            if (resourceRelationModel.isSoftlinkRelationSelected()) {
-                if (resourceRelationModel.getSoftlinkRelation() == null) {
-                    String message = "No relation selected.";
-                    GlobalMessageAppender.addErrorMessage(message);
-                } else {
-                    softlinkRelationBoundary.removeRelationForResource(ForeignableOwner.getSystemOwner(), getResource().getId());
-
-                    resourceRelationModel.reloadResource();
-                    String message = "Relation successfully removed.";
-                    GlobalMessageAppender.addSuccessMessage(message);
-                    isSuccessful = true;
-                }
-            } else if (!isEditResource() && getResourceType() == null) {
+            if (!isEditResource() && getResourceType() == null) {
                 String message = "No resource type selected.";
                 GlobalMessageAppender.addErrorMessage(message);
             } else if (resourceRelationModel.getRemoveResourceRelation() == null) {

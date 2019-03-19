@@ -32,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
@@ -75,6 +76,9 @@ public class DeploymentBoundaryPersistenceTest
 	@Mock
 	Logger log;
 
+	@Mock
+	DatabaseUtil dbUtil;
+
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -96,6 +100,8 @@ public class DeploymentBoundaryPersistenceTest
 		// disable security
 		when(permissionService.hasPermissionForDeploymentUpdate(any(DeploymentEntity.class))).thenReturn(true);
 		when(permissionService.hasPermissionForCancelDeployment(any(DeploymentEntity.class))).thenReturn(true);
+
+		when(dbUtil.isOracle()).thenReturn(false);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

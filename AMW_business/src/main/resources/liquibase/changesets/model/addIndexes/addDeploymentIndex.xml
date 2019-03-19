@@ -1,0 +1,19 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/addIndexes/addDeploymentIndex.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="rgalante" id="addDeploymentIndex">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="oracle"/>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM V$VERSION where BANNER like 'Oracle%Express Edition%'</sqlCheck>
+        </preConditions>
+        <createIndex indexName="he_TAMW_DEPLOYMENT_i2" tableName="TAMW_DEPLOYMENT">
+            <column name="deploymentdate desc"/>
+            <column name="id desc"/>
+            <column name="release_id"/>
+        </createIndex>
+        <modifySql >
+            <append value=" ONLINE"/>
+        </modifySql>
+    </changeSet>
+</databaseChangeLog>

@@ -130,8 +130,7 @@ public class ResourceRepository {
     public ResourceEntity loadWithResourceGroupAndRelatedResourcesForId(Integer id) {
         List<ResourceEntity> entity = entityManager
                 .createQuery("select r from ResourceEntity r " + "left join fetch r.resourceGroup g "
-                        + "left join fetch g.resources " + "left join fetch r.softlinkRelations sl "
-                        + "where r.id=:resId", ResourceEntity.class)
+                        + "left join fetch g.resources " + "where r.id=:resId", ResourceEntity.class)
                 .setParameter("resId", id).setMaxResults(1).getResultList();
         return entity.isEmpty() ? null : entity.get(0);
     }

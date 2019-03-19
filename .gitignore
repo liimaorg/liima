@@ -20,3 +20,5 @@ response*.GET.html
 AMW_openshift_deploy/deployments
 AMW_angular/io/node/node
 AMW_docker/tmp
+.factorypath
+*.exe

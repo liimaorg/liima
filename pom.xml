@@ -40,7 +40,7 @@
         <version.mockito.all>1.10.8</version.mockito.all>
         <version.junit>4.12</version.junit>
 
-        <version.liquibase>3.5.3</version.liquibase>
+        <version.liquibase>3.5.5</version.liquibase>
         <version.liquibase-slf4j>1.2.1</version.liquibase-slf4j>
         <version.assertj-core>2.4.1</version.assertj-core>
         <version.java>1.7</version.java>

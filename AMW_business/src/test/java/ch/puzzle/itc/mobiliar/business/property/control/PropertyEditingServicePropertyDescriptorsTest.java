@@ -30,12 +30,14 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.*;
+import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
@@ -45,6 +47,8 @@ import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.mockito.Mockito.when;
 
 /**
  * @author oschmid
@@ -61,6 +65,9 @@ public class PropertyEditingServicePropertyDescriptorsTest {
 
     @InjectMocks
     PropertyEditingService service;
+
+    @Mock
+    DatabaseUtil dbUtil;
 
     ContextHierarchy contextHierarchy = new ContextHierarchy();
     private ProvidedResourceRelationEntity providedResourceRelationEntity;
@@ -123,6 +130,7 @@ public class PropertyEditingServicePropertyDescriptorsTest {
         entityManager.persist(slave);
         entityManager.persist(provided);
         entityManager.flush();
+        when(dbUtil.isOracle()).thenReturn(false);
     }
 
     @After

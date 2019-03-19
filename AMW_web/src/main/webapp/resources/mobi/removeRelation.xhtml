@@ -27,11 +27,8 @@
         <h:panelGrid rendered="#{cc.attrs.application}"
                      style="margin-bottom:10px;">Are you sure you want to delete the relation to application #{resourceRelationModel.removeResourceRelation.displayName}?<br/></h:panelGrid>
 
-        <h:panelGrid rendered="#{!cc.attrs.application and !resourceRelationModel.softlinkRelationSelected}"
+        <h:panelGrid rendered="#{!cc.attrs.application}"
                      style="margin-bottom:10px;">Are you sure you want to delete the resource relation #{resourceRelationModel.removeResourceRelation.displayName}?<br/><br/>If you continue, all defined property values for the relation will be lost.</h:panelGrid>
-        <h:panelGrid rendered="#{!cc.attrs.application and resourceRelationModel.softlinkRelationSelected}"
-                     style="margin-bottom:10px;">Are you sure you want to delete the resource relation #{resourceRelationModel.softlinkRelation.softlinkRelationEntity.softlinkRef}?</h:panelGrid>
-
 
         <h:commandLink value="Delete" styleClass="btn primary right" type="button"
                        action="#{relationDataProvider.removeResourceRelation()}"
