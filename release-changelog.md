@@ -1,5 +1,18 @@
+# v1.17.11
+This release contains manly performance enhancements and bug fixes.
+
+## Bug fixes
+* The editResourceView should be faster: opening the view, switching environments, saving. [#462](https://github.com/liimaorg/liima/pull/462)
+* The deployments view should now load faster [#461](https://github.com/liimaorg/liima/pull/461)
+* Confirming and changing the date of a deployment gives error [#459](https://github.com/liimaorg/liima/issues/459)
+* REST: delete relation properties call very slow [#460](https://github.com/liimaorg/liima/issues/460)
+* Update libs to prevent potential security issues [#466](https://github.com/liimaorg/liima/pull/466)
+
+## New features
+* Make liquibase data source jndi configurable [#467](https://github.com/liimaorg/liima/pull/467)
+
 # v1.17.10
-Revert "Cache roles a user hase to reduce calls to sessionContext.isCallerInRole" [#458](https://github.com/liimaorg/liima/pull/458)
+Revert "Cache roles a user hase to reduce calls to sessionContext.isCallerInRole" [#458](https://github.com/liimaorg/liima/issues/459)
 
 # v1.17.9
 Bug fixes and speed improvements in this release.
