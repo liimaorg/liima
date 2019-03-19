@@ -482,7 +482,7 @@ public class DeployScreenDataProvider implements Serializable {
     public DeploymentEntity doConfirmAction(DeploymentEntity deployment, boolean reload) {
         try {
             deployment = deploymentBoundary.confirmDeployment(deployment.getId(), deployment.isSendEmailConfirmation(), deployment.isCreateTestAfterDeployment(),
-                    deployment.isCreateTestForNeighborhoodAfterDeployment(), deployment.isSimulating());
+                    deployment.isCreateTestForNeighborhoodAfterDeployment(), deployment.isSimulating(), deployment.getDeploymentDate());
             GlobalMessageAppender.addSuccessMessage("Deployment " + deployment.getId() + " confirmed");
 
             if (reload) {
