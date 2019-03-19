@@ -34,8 +34,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelation
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelationBoundary;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
@@ -52,16 +50,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.*;
-import java.util.logging.Logger;
 
 @Named
 @ViewScoped
 public class ResourceRelationModel implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    @Inject
-    Logger log;
 
     @Inject
     PropertyEditor editor;
@@ -83,9 +77,6 @@ public class ResourceRelationModel implements Serializable {
 
     @Inject
     ResourceLocator resourceLocator;
-
-    @Inject
-    SoftlinkRelationBoundary softlinkRelationBoundary;
 
     private Map<Mode, List<ResourceEditRelation>> resourceRelations;
 
@@ -141,26 +132,11 @@ public class ResourceRelationModel implements Serializable {
     private boolean allowedToListResourceTypeRelations = false;
 
     @Getter
-    private boolean canShowSoftlinkRelations = false;
-
-    @Getter
-    private boolean canEditSoftlinkRelation = false;
-
-    @Getter
-    private boolean canShowAddSoftlinkRelationButton = false;
-
-    @Getter
     private boolean allowedToJumpToRelatedResourceEditScreen = false;
 
     private Integer currentRelationId;
 
     private Identifiable currentSelectedResourceOrType;
-
-    @Getter
-    private SoftlinkRelationModel softlinkRelation;
-
-    @Getter
-    private boolean isSoftlinkRelationSelected = false;
 
     @Inject
     Event<ChangeSelectedRelationEvent> changeSelectedRelationEvent;
@@ -176,25 +152,7 @@ public class ResourceRelationModel implements Serializable {
         allowedToAddRelations = permissionBoundary.hasPermissionToAddRelation(resourceEntity, sessionContext.getCurrentContext());
         allowedToListRelations = permissionBoundary.hasPermission(Permission.RESOURCE, sessionContext.getCurrentContext(), Action.READ, resourceEntity, null);
         currentSelectedResourceOrType = resourceEntity;
-
-        canShowSoftlinkRelations = sessionContext.getIsGlobal()
-                && hasConsumableSoftlinkSuperType(resourceEntity)
-                && getResourceSoftlinkRelation() != null;
-
-        canShowAddSoftlinkRelationButton = canShowSoftlinkRelations
-                && permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity, null);
-
-        canEditSoftlinkRelation = canShowAddSoftlinkRelationButton
-                && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), createForeignableDto(getResourceSoftlinkRelation()));
-
         reloadValues();
-    }
-
-    private ForeignableAttributesDTO createForeignableDto(SoftlinkRelationEntity resourceSoftlinkRelation) {
-        if (resourceSoftlinkRelation != null) {
-            return new ForeignableAttributesDTO(resourceSoftlinkRelation.getOwner(), resourceSoftlinkRelation.getExternalKey(), resourceSoftlinkRelation.getExternalLink());
-        }
-        return null;
     }
 
     public void onChangedResourceType(@Observes ResourceTypeEntity resourceTypeEntity) {
@@ -204,9 +162,6 @@ public class ResourceRelationModel implements Serializable {
         allowedToSelectRuntime = false;
         allowedToAddRelations = false;
         currentSelectedResourceOrType = resourceTypeEntity;
-        canShowSoftlinkRelations = false;
-        canShowAddSoftlinkRelationButton = false;
-        canEditSoftlinkRelation = false;
         reloadValues();
     }
 
@@ -217,12 +172,10 @@ public class ResourceRelationModel implements Serializable {
 
     public void reloadValues() {
         consumedApplications = null;
-        softlinkRelation = null;
 
         if (isResourceSelected()) {
             setResourceRelations(editor.getRelationsForResource(currentSelectedResourceOrType.getId()));
             mapUnresolvedRelations();
-            resolveSoftlinkRelation();
         }
 
         if (isResourceTypeSelected()) {
@@ -232,22 +185,10 @@ public class ResourceRelationModel implements Serializable {
         findAndLoadSelectedRelation();
     }
 
-    private void resolveSoftlinkRelation() {
-        SoftlinkRelationEntity currentResourceSoftlinkRelation = getResourceSoftlinkRelation();
-        if (currentResourceSoftlinkRelation != null) {
-            softlinkRelation = new SoftlinkRelationModel(currentResourceSoftlinkRelation);
-            softlinkRelation.setSoftlinkResolvingSlaveResource(softlinkRelationBoundary.getSoftlinkResolvableSlaveResource(currentResourceSoftlinkRelation,
-                    currentResourceSoftlinkRelation.getCpiResource().getRelease()));
-        }
-    }
-
-
     private void findAndLoadSelectedRelation() {
         ResourceEditRelation selectedRel = findSelectedOrBestmatchingRelation();
 
-        if (selectedRel == null && canShowSoftlinkRelations) {
-            selectSoftlinkResourceRelation();
-        } else {
+        if (selectedRel != null) {
             loadResourceRelation(selectedRel);
         }
     }
@@ -332,7 +273,7 @@ public class ResourceRelationModel implements Serializable {
     }
 
     private boolean isResourceTypeSelected() {
-        return currentSelectedResourceOrType != null && currentSelectedResourceOrType instanceof ResourceTypeEntity;
+        return currentSelectedResourceOrType instanceof ResourceTypeEntity;
     }
 
     /**
@@ -389,8 +330,6 @@ public class ResourceRelationModel implements Serializable {
     }
 
     public void loadResourceRelation(ResourceEditRelation resourceRelation) {
-        isSoftlinkRelationSelected = false;
-
         boolean switchedRelation = !isCurrentRelation(resourceRelation);
         if (resourceRelation == null) {
             this.currentResourceRelation = null;
@@ -400,13 +339,6 @@ public class ResourceRelationModel implements Serializable {
 
         if (switchedRelation) {
             changeSelectedRelationEvent.fire(new ChangeSelectedRelationEvent(resourceRelation));
-        }
-    }
-
-    public void selectSoftlinkResourceRelation() {
-        if (!isSoftlinkRelationSelected) {
-            this.currentResourceRelation = null;
-            isSoftlinkRelationSelected = true;
         }
     }
 
@@ -724,35 +656,10 @@ public class ResourceRelationModel implements Serializable {
                 currentResourceRelation.getRelationForeignableAttributes());
     }
 
-    private boolean hasConsumableSoftlinkSuperType(ResourceEntity resourceEntity) {
-        return resourceLocator.hasResourceConsumableSoftlinkType(resourceEntity.getId());
-    }
-
-    public SoftlinkRelationEntity getResourceSoftlinkRelation() {
-
-        ResourceEntity currentSelectedResource = getCurrentSelectedResource();
-        if (currentSelectedResource != null) {
-            return currentSelectedResource.getSoftlinkRelation();
-        }
-
-        return null;
-    }
-
     public void reloadResource() {
         if (isResourceSelected()) {
             currentSelectedResourceOrType = resourceLocator.getResourceWithGroupAndRelatedResources(
                     currentSelectedResourceOrType.getId());
-
-            canShowSoftlinkRelations = sessionContext.getIsGlobal()
-                    && hasConsumableSoftlinkSuperType(getCurrentSelectedResource())
-                    && getResourceSoftlinkRelation() != null;
-
-            canShowAddSoftlinkRelationButton = canShowSoftlinkRelations
-                    && permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.UPDATE, getCurrentSelectedResource(), null);
-
-            canEditSoftlinkRelation = canShowAddSoftlinkRelationButton
-                    && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), createForeignableDto(getResourceSoftlinkRelation()));
-
             reloadValues();
 
         }

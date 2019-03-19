@@ -47,16 +47,6 @@
                   listener="#{relationDataProvider.loadResourceGroupsForRuntime()}"></a4j:ajax>
     </h:commandLink>
 
-    <h:commandLink styleClass="btn light right"
-                   rendered="#{resourceRelationModel.canShowAddSoftlinkRelationButton}">
-        <i class="icon icon-add"/> Add Softlink Relation
-        <a4j:ajax execute="@this" render="addSoftlinkRelationPopup"
-                  event="click"
-                  onbegin="showLoader();"
-                  oncomplete="if(confirmAddRelation()){#{rich:component('addSoftlinkRelationPopup')}.show();} hideLoader();"
-                />
-    </h:commandLink>
-
     <rich:popupPanel id="addRelationPopup" moveable="true"
                      style="min-width:70vw; " autosized="true"
                      domElementAttachment="form">
@@ -124,14 +114,14 @@
                         columnClasses=" ,last" styleClass="well"
                         rowClasses="odd-row,even-row">
                     <h:column
-                            style="border-left:0px; border-bottom:0px; border-right:0px; border-top:1px solid; width:300px;">
+                            style="border-left:0; border-bottom:0; border-right:0; border-top:1px solid; width:300px;">
                         <f:facet name="header">
                             <h:outputText value="Name"/>
                         </f:facet>
                         <h:outputText value="#{selectableItem.name}"/>
                     </h:column>
                     <h:column
-                            style="border-left:0px; border-bottom:0px; border-right:0px; border-top:1px solid; width:400px;">
+                            style="border-left:0; border-bottom:0; border-right:0; border-top:1px solid; width:400px;">
                         <f:facet name="header">
                             <h:outputText value="Action"/>
                         </f:facet>
@@ -170,52 +160,6 @@
             </h:panelGroup>
         </div>
     </rich:popupPanel>
-
-    <!-- Softlink relation popup -->
-    <rich:popupPanel id="addSoftlinkRelationPopup" moveable="true" autosized="true" domElementAttachment="form">
-        <div>
-            <f:facet name="header">
-                <h2>
-                    <h:outputText value="Create Softlink Relation"/>
-                </h2>
-            </f:facet>
-            <f:facet name="controls">
-                <h:outputLink value="#"
-                              styleClass="close icon icon-close icon-replace"
-                              onclick="#{rich:component('addSoftlinkRelationPopup')}.hide(); return false;">
-                    x
-                </h:outputLink>
-            </f:facet>
-
-
-            <!-- Popup content -->
-
-            <h:panelGroup id="addSoftlinkRelationPopupContent">
-                <h:panelGrid columns="2" styleClass="formGrid">
-                    <h:outputLabel value="Softlink Reference Name"/>
-                    <h:inputText id="softlinkIdRef"
-                                 value="#{relationDataProvider.softlinkReferenceName}">
-                        <a4j:ajax/>
-                    </h:inputText>
-                </h:panelGrid>
-
-
-                <h:commandLink
-                        styleClass="btn primary right"
-                        value="Create softlink relation"
-                        onclick="if(confirmLeave(event)){${rich:component('addSoftlinkRelationPopup')}.hide();showLoader();}else{return false;}">
-                    <a4j:ajax
-                            listener="#{relationDataProvider.createSoftlinkRelation()}"
-                            render="relatedResourcesGroup" execute="@this"
-                            oncomplete="updateElements();hideLoader();refreshChanges();refreshSubChanges()"/>
-                </h:commandLink>
-            </h:panelGroup>
-
-
-        </div>
-
-    </rich:popupPanel>
-
 
 </composite:implementation>
 

@@ -22,9 +22,6 @@ package ch.puzzle.itc.mobiliar.presentation.resourcesedit;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesDTO;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
@@ -88,9 +85,6 @@ public class EditResourceView implements Serializable {
     @Inject
     SessionContext sessionContext;
 
-    @Inject
-    private ForeignableBoundary foreignableBoundary;
-
     @Getter
     private Integer resourceIdFromParam;
 
@@ -117,12 +111,6 @@ public class EditResourceView implements Serializable {
 
     @Getter
     private Integer contextIdViewParam;
-
-    @Getter
-    private boolean canEditSoftlinkId = false;
-
-    @Getter
-    private boolean canShowSoftlinkField = false;
 
     @Getter
     private boolean canShowDeploymentLink;
@@ -190,8 +178,6 @@ public class EditResourceView implements Serializable {
             this.canEditResourceType = permissionBoundary.hasPermission(Permission.RESOURCETYPE, Action.READ);
             this.canDelegatePermissions = permissionBoundary.canDelegatePermissionsForThisResource(resource, sessionContext.getCurrentContext());
 
-            canEditSoftlinkId = isSoftlinkEditable(resource, sessionContext.getCurrentContext());
-            canShowSoftlinkField = sessionContext.getIsGlobal() && hasProvidableSoftlinkSuperType(resource);
             canShowDeploymentLink = isResourceOrTypeDeployable(resource.getResourceType());
 
             resourceEvent.fire(resource);
@@ -216,8 +202,6 @@ public class EditResourceView implements Serializable {
             this.canGenerateTestConfiguration = false;
             this.canDelegatePermissions = false;
 
-            canEditSoftlinkId = false;
-            canShowSoftlinkField = false;
             canShowDeploymentLink = isResourceOrTypeDeployable(resourceType);
 
             resourceTypeEvent.fire(resourceType);
@@ -290,14 +274,6 @@ public class EditResourceView implements Serializable {
         return resource != null ? resource.getName() : getResourceType().getName();
     }
 
-    public ForeignableAttributesDTO getForeignableToEdit() {
-        if (isEditResource()) {
-            return new ForeignableAttributesDTO(resource.getOwner(), resource.getExternalKey(),
-                    resource.getExternalLink());
-        }
-        return new ForeignableAttributesDTO();
-    }
-
     public Integer getRelativeApplicationServerId() {
         return relativeApplicationServer != null && !ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName().equals(relativeApplicationServer.getName()) ? relativeApplicationServer.getId() : null;
     }
@@ -357,24 +333,10 @@ public class EditResourceView implements Serializable {
         return sessionContext.getIsGlobal();
     }
 
-    private boolean isSoftlinkEditable(ResourceEntity resourceEntity, ContextEntity context) {
-        return isEditResource() && (foreignableBoundary
-                .isModifiableByOwner(ForeignableOwner.getSystemOwner(), resourceEntity)
-                && permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resourceEntity, null));
-    }
-
     private boolean isResourceOrTypeDeployable(ResourceTypeEntity resourceTypeEntity) {
         return permissionBoundary.hasPermissionToDeploy() &&
                 (resourceTypeEntity.isApplicationResourceType() ||
                         resourceTypeEntity.isApplicationServerResourceType());
-    }
-
-    private boolean hasProvidableSoftlinkSuperType(ResourceEntity resourceEntity) {
-        return resourceLocator.hasResourceProvidableSoftlinkType(resourceEntity.getId());
-    }
-
-    private boolean hasConsumableSoftlinkSuperType(ResourceEntity resourceEntity) {
-        return resourceLocator.hasResourceConsumableSoftlinkType(resourceEntity.getId());
     }
 
     public void onChangedRelation(@Observes ChangeSelectedRelationEvent relationEvent) {

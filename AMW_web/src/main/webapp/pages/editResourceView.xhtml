@@ -30,7 +30,6 @@
                 <f:selectItems
                         value="${propertyEditDataProvider.group.releaseToResourceMap}"/>
             </h:selectOneMenu>
-            <mobi:foreignableOwnerTooltip foreignableAttributes="#{editResourceView.foreignableToEdit}"/>
             <script type="application/javascript">
                 function loadPage(id, ctx) {
                     var url = window.location.href;
@@ -309,22 +308,6 @@
                                                         <h:inputText styleClass="propertyInputField changeAware"
                                                                      disabled="#{true}"
                                                                      value="#{editResourceView.resource.resourceGroup.outOfServiceRelease.name}"/>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </h:panelGroup>
-                                    <h:panelGroup rendered="#{editResourceView.canShowSoftlinkField}">
-                                        <tr>
-                                            <td>
-                                                <div class="control-group">
-                                                    <label class="control-label"><h:outputText
-                                                            value="Softlink Id"/></label>
-
-                                                    <div class="controls">
-                                                        <h:inputText styleClass="propertyInputField changeAware"
-                                                                     disabled="#{!editResourceView.canEditSoftlinkId}"
-                                                                     value="#{editResourceView.resource.softlinkId}"/>
                                                     </div>
                                                 </div>
                                             </td>

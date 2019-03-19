@@ -176,35 +176,10 @@
                             </ui:repeat>
                         </ui:repeat>
                     </h:panelGroup>
-
-                    <!-- Softlink Relations -->
-                    <h:panelGroup rendered="#{resourceRelationModel.canShowSoftlinkRelations}">
-                        <li><h3>Softlink Relation</h3></li>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{resourceRelationModel.canShowSoftlinkRelations}">
-                        <li class="active">
-                            <ul>
-                                <h:commandLink value="#{resourceRelationModel.getSoftlinkRelation().softlinkRelationEntity.softlinkRef}"
-                                               title="#{resourceRelationModel.getSoftlinkRelation().softlinkRelationEntity.softlinkRef}"
-                                               styleClass="ellipsisLeft resourcename-link"
-                                               onclick="storeScrollPositions();showLoader();return confirmSubChangeLeave(event);">
-                                    <a4j:ajax render="relatedResourcesGroup" execute="@form"
-                                              listener="#{resourceRelationModel.selectSoftlinkResourceRelation()}"
-                                              oncomplete="updateElements(); hideLoader(); refreshSubChanges();"/>
-                                </h:commandLink>
-                                <a4j:outputPanel ajaxRendered="true">
-                                    <mobi:foreignableOwnerTooltip foreignableAttributes="#{resourceRelationModel.getSoftlinkRelation().foreignableAttributes}"/>
-                                </a4j:outputPanel>
-                            </ul>
-                        </li>
-                    </h:panelGroup>
-
-
                 </ul>
 
                 <section id="relatedPropertiesSection" class="tab-content max_70vh ajaxScroll">
-                    <h:panelGroup rendered="#{!resourceRelationModel.isSoftlinkRelationSelected()}">
+                    <h:panelGroup>
                         <h:panelGroup>
                             <h2 class="maxWidth45">
                                 <h:outputText value="${resourceRelationModel.currentResourceRelation.slaveTypeName}"
@@ -295,71 +270,6 @@
                         <article class="forty omega"><mobi:editTemplate isRelation="true"/>
                         </article>
                     </h:panelGroup>
-
-                    <h:panelGroup rendered="#{resourceRelationModel.isSoftlinkRelationSelected()}">
-
-                        <h:panelGroup rendered="#{resourceRelationModel.softlinkRelation.hasResolvedSoftlinkRelation()}">
-                            <h2 class="maxWidth45">
-
-                                <h:link
-                                        rendered="#{resourceRelationModel.allowedToJumpToRelatedResourceEditScreen}"
-                                        value="#{resourceRelationModel.softlinkRelation.softlinkResolvingSlaveResource.name}"
-                                        title="#{resourceRelationModel.softlinkRelation.softlinkResolvingSlaveResource.name}"
-                                        outcome="editResourceView" styleClass="ellipsisLeft resourcename-link"
-                                        onclick="showLoader();">
-                                    <f:param name="id"
-                                             value="#{resourceRelationModel.softlinkRelation.softlinkResolvingSlaveResource.id}"/>
-                                    <f:param name="ctx"
-                                             value="#{contextDataProvider.globalContextId}"/>
-                                </h:link>
-                                <h:outputText
-                                        rendered="#{!resourceRelationModel.allowedToJumpToRelatedResourceEditScreen}"
-                                        value="#{resourceRelationModel.softlinkRelation.softlinkResolvingSlaveResource.name}"
-                                        title="#{resourceRelationModel.softlinkRelation.softlinkResolvingSlaveResource.name}"/>
-                            </h2>
-
-                        </h:panelGroup>
-
-                        <h:panelGroup rendered="#{!resourceRelationModel.softlinkRelation.hasResolvedSoftlinkRelation()}">
-                            <h2 class="maxWidth45">
-                                <h:outputText value="Softlink not resolved!"/>
-                            </h2>
-                        </h:panelGroup>
-
-                        <a4j:outputPanel ajaxRendered="true">
-                            <mobi:foreignableOwnerTooltip foreignableAttributes="#{resourceRelationModel.softlinkRelation.foreignableAttributes}"/>
-                        </a4j:outputPanel>
-
-                        <h:commandLink
-                                rendered="#{resourceRelationModel.canEditSoftlinkRelation}"
-                                styleClass="btn light right" type="button"
-                                style="margin-bottom: 12px;">
-                            <i class="icon icon-delete"/>Remove Softlink Relation
-                            <a4j:ajax
-                                    listener="#{resourceRelationModel.setResourceRelationForRemoval(resourceRelationModel.currentResourceRelation)}"
-                                    oncomplete="#{rich:component('removeRelationPopup')}.show();"
-                                    render="removeRelationPopup"/>
-                        </h:commandLink>
-                        <br class="clear"/>
-
-                        <article class="tab-pane sixty" style="display:block;">
-                            <h:panelGroup layout="block">
-                                <label class="control-label">Softlink Id Reference</label>
-
-                                <div class="controls">
-                                    <h:inputText
-                                            disabled="#{!resourceRelationModel.canEditSoftlinkRelation}"
-                                            value="#{resourceRelationModel.softlinkRelation.softlinkRelationEntity.softlinkRef}"
-                                            alt="relationIdentifier" styleClass="propertyInputField ">
-                                    </h:inputText>
-                                </div>
-                                <br/>
-                            </h:panelGroup>
-
-                        </article>
-
-                    </h:panelGroup>
-
 
                 </section>
             </h:panelGroup>

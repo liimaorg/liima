@@ -1,3 +1,4 @@
+-- this ist the old, not performance optimized version of loadPropertyDescriptorsForResource.sql ,compatible with H2
 SELECT
 --the technicalKey of the property
 descr.PROPERTYNAME propertyName,
