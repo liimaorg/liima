@@ -53,6 +53,7 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
+import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
@@ -75,6 +76,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -149,6 +151,9 @@ public class DeploymentBoundary {
 
     @Inject
     ReleaseMgmtService releaseMgmtService;
+
+    @Inject
+    DatabaseUtil dbUtil;
 
     private PropertyDescriptorEntity mavenVersionProperty = null;
 
@@ -227,14 +232,23 @@ public class DeploymentBoundary {
 
         boolean lowerSortCol = DeploymentFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, hasLastDeploymentForAsEnvFilterSet, false);
+        boolean isOracle = dbUtil.isOracle();
 
+        if (isOracle) {
+            em.createNativeQuery("ALTER SESSION SET optimizer_mode = FIRST_ROWS").executeUpdate();
+        }
+
+        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, hasLastDeploymentForAsEnvFilterSet, false);
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
 
         Set<DeploymentEntity> deployments = new LinkedHashSet<>();
         // some stuff may be lazy loaded
         List<DeploymentEntity> resultList = query.getResultList();
         final int allResults = resultList.size();
+
+        if (isOracle) {
+            em.createNativeQuery("ALTER SESSION SET optimizer_mode = ALL_ROWS").executeUpdate();
+        }
 
         if (!hasLastDeploymentForAsEnvFilterSet) {
             deployments.addAll(resultList);
