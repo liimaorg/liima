@@ -3,57 +3,29 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <changeSet author="rgalante" id="addResourceContextIndex">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="oracle"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM V$VERSION where BANNER like 'Oracle%Express Edition%'</sqlCheck>
-        </preConditions>
         <createIndex indexName="he_TAMW_RESOURCECONTEXT_i1" tableName="TAMW_RESOURCECONTEXT">
             <column name="id"/>
             <column name="resource_id"/>
             <column name="context_id"/>
         </createIndex>
-        <modifySql>
-            <append value=" ONLINE"/>
-        </modifySql>
     </changeSet>
     <changeSet author="rgalante" id="addResourceTypeContextIndex">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="oracle"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM V$VERSION where BANNER like 'Oracle%Express Edition%'</sqlCheck>
-        </preConditions>
         <createIndex indexName="he_TAMW_RESOURCETYPECONTEXT_i1" tableName="TAMW_RESOURCETYPECONTEXT">
             <column name="id"/>
             <column name="resourcetypeentity_id"/>
         </createIndex>
-        <modifySql>
-            <append value=" ONLINE"/>
-        </modifySql>
     </changeSet>
     <changeSet author="rgalante" id="addResourceRelationTypeIndex">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="oracle"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM V$VERSION where BANNER like 'Oracle%Express Edition%'</sqlCheck>
-        </preConditions>
         <createIndex indexName="he_TAMW_RESOURCERELATIONTYPE_i1" tableName="TAMW_RESOURCERELATIONTYPE">
             <column name="id"/>
             <column name="resourcetypea_id"/>
             <column name="resourcetypeb_id"/>
         </createIndex>
-        <modifySql>
-            <append value=" ONLINE"/>
-        </modifySql>
     </changeSet>
     <changeSet author="rgalante" id="addPropertyTypeIndex">
-        <preConditions onFail="MARK_RAN">
-            <dbms type="oracle"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM V$VERSION where BANNER like 'Oracle%Express Edition%'</sqlCheck>
-        </preConditions>
         <createIndex indexName="he_TAMW_PROPERTYTYPE_i1" tableName="TAMW_PROPERTYTYPE">
             <column name="id"/>
             <column name="validationregex"/>
         </createIndex>
-        <modifySql>
-            <append value=" ONLINE"/>
-        </modifySql>
     </changeSet>
 </databaseChangeLog>

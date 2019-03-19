@@ -41,13 +41,6 @@
 			<version>${version.liquibase}</version>
 		</dependency>
 
-		<dependency>
-			<!-- logging adapter to prevent liquibase from logging to stderr -->
-			<groupId>com.mattbertolini</groupId>
-			<artifactId>liquibase-slf4j</artifactId>
-			<version>${version.liquibase-slf4j}</version>
-		</dependency>
-
 	</dependencies>
 
 	<profiles>
