@@ -53,10 +53,10 @@ public class PermissionServiceTest {
 	private static final String VIEWER = "viewer";
 	private static final String SERVER_ADMIN = "server_admin";
 	private static final String SHAKEDOWN_ADMIN = "shakedown_admin";
-	private static final String TEST_DEPLOYER = "test_deployer";
 	private static final String ROLE_NOT_DEPLOY = "role_not_deploy";
 	
 	private PermissionService permissionService;
+	private RoleCache roleCache;
 	private SessionContext sessionContext;
 	private PermissionRepository permissionRepository;
 	private Map<String, List<RestrictionDTO>> myRoles;
@@ -74,8 +74,11 @@ public class PermissionServiceTest {
     @Before
 	public void setUp(){
 		permissionService = new PermissionService();
+		roleCache = new RoleCache();
 		sessionContext = Mockito.mock(SessionContext.class);
 		permissionService.sessionContext = sessionContext;
+		roleCache.sessionContext = sessionContext;
+		permissionService.roleCache = roleCache;
 		permissionRepository = Mockito.mock(PermissionRepository.class);
 		permissionService.permissionRepository = permissionRepository;
 		// reset the static caches to avoid side effects
