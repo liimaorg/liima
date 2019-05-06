@@ -1,7 +1,0 @@
-ID,OUTOFSERVICERELEASE_ID,NAME,V,RESOURCETYPE_ID,FCEXTERNALLINK,FCEXTERNALKEY
-1000,null,db2Host,2,1001,null,null
-1001,null,adExtern,0,1004,null,null
-1002,null,adIntern,0,1004,null,null
-1003,null,amw,0,2,null,null
-1004,null,ch_puzzle_itc_moby_amw,0,1,null,null
-1005,null,JBoss7,0,2200,null,null

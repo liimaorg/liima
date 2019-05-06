@@ -57,11 +57,6 @@
 									<artifactId>AMW_rest</artifactId>
 									<bundleFileName>AMW_rest.war</bundleFileName>
 								</webModule>
-								<webModule>
-									<groupId>ch.puzzle.itc.mobiliar</groupId>
-									<artifactId>AMW_maia_federation</artifactId>
-									<bundleFileName>AMW_maia_federation.war</bundleFileName>
-								</webModule>
 							</modules>
 						</configuration>
 					</plugin>
@@ -92,11 +87,6 @@
 				<dependency>
 					<groupId>ch.puzzle.itc.mobiliar</groupId>
 					<artifactId>AMW_rest</artifactId>
-					<type>war</type>
-				</dependency>
-				<dependency>
-					<groupId>ch.puzzle.itc.mobiliar</groupId>
-					<artifactId>AMW_maia_federation</artifactId>
 					<type>war</type>
 				</dependency>
 			</dependencies>
