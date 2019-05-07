@@ -21,6 +21,8 @@ import * as moment from 'moment';
 
 declare var $: any;
 
+$.fn.datetimepicker = require('eonasdan-bootstrap-datetimepicker');
+
 @Component({
   selector: 'amw-deployment',
   templateUrl: './deployment.component.html'
