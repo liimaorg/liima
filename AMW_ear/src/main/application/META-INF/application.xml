@@ -22,12 +22,6 @@
         </web>
     </module>
     <module>
-        <web>
-            <web-uri>AMW_maia_federation.war</web-uri>
-            <context-root>AMW_maia_federation</context-root>
-        </web>
-    </module>
-    <module>
         <ejb>AMW_business.jar</ejb>
     </module>
     <library-directory>lib</library-directory>
