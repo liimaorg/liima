@@ -1,5 +1,11 @@
+# v1.17.12
+## Bug fixes
+* Remove the maia SOAP webservice and web module [#478](https://github.com/liimaorg/liima/pull/478)
+* Cache isCallerInRole result in request [#475](https://github.com/liimaorg/liima/pull/475)
+* Update jquery to 3.4.1 [#482](https://github.com/liimaorg/liima/issues/482)
+
 # v1.17.11
-This release contains manly performance enhancements and bug fixes.
+This release contains mainly performance enhancements and bug fixes.
 
 ## Bug fixes
 * The editResourceView should be faster: opening the view, switching environments, saving. [#462](https://github.com/liimaorg/liima/pull/462)
