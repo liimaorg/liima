@@ -196,6 +196,7 @@ public class DeploymentBoundary {
 
         DeploymentState lastDeploymentState = null;
         boolean hasLastDeploymentForAsEnvFilterSet = isLastDeploymentForAsEnvFilterSet(filters);
+        boolean setOptimizer = doPaging && !hasLastDeploymentForAsEnvFilterSet && dbUtil.isOracle();
         Integer from = 0;
         Integer to = 0;
 
@@ -232,9 +233,7 @@ public class DeploymentBoundary {
 
         boolean lowerSortCol = DeploymentFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-        boolean isOracle = dbUtil.isOracle();
-
-        if (isOracle) {
+        if (setOptimizer) {
             em.createNativeQuery("ALTER SESSION SET optimizer_mode = FIRST_ROWS").executeUpdate();
         }
 
@@ -246,7 +245,7 @@ public class DeploymentBoundary {
         List<DeploymentEntity> resultList = query.getResultList();
         final int allResults = resultList.size();
 
-        if (isOracle) {
+        if (setOptimizer) {
             em.createNativeQuery("ALTER SESSION SET optimizer_mode = ALL_ROWS").executeUpdate();
         }
 
