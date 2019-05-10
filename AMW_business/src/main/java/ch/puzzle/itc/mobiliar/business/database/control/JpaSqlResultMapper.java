@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -96,6 +97,9 @@ public class JpaSqlResultMapper {
 			result.add(obj);
 		}
 		catch (Exception e) {
+			System.out.println("Constructor: " + ctor);
+			System.out.println("args: " + Arrays.toString(normalizeArgs(args, ctor.getParameterTypes())));
+			System.out.println("result: " + Arrays.toString(result.toArray()));
 			throw new RuntimeException(e);
 		}
 	}
