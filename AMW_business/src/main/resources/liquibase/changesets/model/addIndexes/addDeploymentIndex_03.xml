@@ -1,0 +1,13 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/addIndexes/addDeploymentIndex_03.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="yvespp" id="addDeploymentIndexOnlyLatest">
+        <createIndex indexName="I_TAMW_DEPLOYMENT_03" tableName="TAMW_DEPLOYMENT">
+            <column name="resourcegroup_id"/>
+            <column name="context_id"/>
+            <column name="ex_context_id"/>
+            <column name="deploymentdate"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
