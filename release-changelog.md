@@ -1,3 +1,10 @@
+# v1.17.13
+## Bug fixes
+* IllegalArgumentException after new release of relation [#484](https://github.com/liimaorg/liima/issues/484)
+* Add shakedown test works again but is still very slow [#474](https://github.com/liimaorg/liima/issues/474)
+* Speed up "only latest" deployment queries [#488](https://github.com/liimaorg/liima/pull/488)
+* Speed up deployment queries that are not paged [#485](https://github.com/liimaorg/liima/pull/485)
+
 # v1.17.12
 ## Bug fixes
 * Remove the maia SOAP webservice and web module [#478](https://github.com/liimaorg/liima/pull/478)
