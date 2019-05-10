@@ -561,6 +561,9 @@ public class ShakedownTestScreenDataProvider implements Serializable {
 		List<DeploymentEntity> deployments = controller.getAllLastSucessfullDeployments();
 
 		for (DeploymentEntity deploymentEntity : deployments) {
+			if (deploymentEntity.isPreserved()) {
+				continue;
+			}
 			Integer contextId = deploymentEntity.getContext().getId();
 			ResourceGroupEntity group = deploymentEntity.getResourceGroup();
 			if (contextIdMapWithSuccessfullLastDeployedAppServer.containsKey(contextId)) {
