@@ -31,6 +31,7 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import org.apache.commons.lang.StringUtils;
 
 import javax.ejb.SessionContext;
+import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -63,19 +64,26 @@ public class PermissionService implements Serializable {
     // map containing UserRestrictions with Restrictions (non legacy)
     static Map<String, List<RestrictionEntity>> userRestrictions;
 
+    @Schedule(hour = "*", minute = "*/20", persistent = false)
+    public void reloadCache() {
+        reloadDeployableRoles();
+        reloadPermissions();
+        reloadUserRestrictions();
+    }
+
     Map<String, List<RestrictionDTO>> getDeployableRoles() {
-        boolean isReload = permissionRepository.isReloadDeployableRoleList();
-        if (deployableRolesWithRestrictions == null || isReload) {
-            Map<String, List<RestrictionDTO>> tmpDeployableRolesWithRestrictions = new HashMap<>();
-            for (RoleEntity role : permissionRepository.getDeployableRoles()) {
-                addPermission(tmpDeployableRolesWithRestrictions, role);
-            }
-            deployableRolesWithRestrictions = Collections.unmodifiableMap(tmpDeployableRolesWithRestrictions);
-            if (isReload) {
-                permissionRepository.setReloadDeployableRoleList(false);
-            }
+        if (deployableRolesWithRestrictions == null) {
+            reloadDeployableRoles();
         }
         return deployableRolesWithRestrictions;
+    }
+
+    private void reloadDeployableRoles() {
+        Map<String, List<RestrictionDTO>> tmpDeployableRolesWithRestrictions = new HashMap<>();
+        for (RoleEntity role : permissionRepository.getDeployableRoles()) {
+            addPermission(tmpDeployableRolesWithRestrictions, role);
+        }
+        deployableRolesWithRestrictions = Collections.unmodifiableMap(tmpDeployableRolesWithRestrictions);
     }
 
     /**
@@ -131,27 +139,24 @@ public class PermissionService implements Serializable {
      * @return Map key=Role.name, value=RestrictionDTOs
      */
     public Map<String, List<RestrictionDTO>> getPermissions() {
-        boolean isReload = permissionRepository.isReloadRolesAndPermissionsList();
-        if (rolesWithRestrictions == null || isReload) {
-            Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions = new HashMap<>();
-            // add new permissions with restriction
-            if (permissionRepository.getRolesWithRestrictions() != null) {
-                for (RoleEntity role : permissionRepository.getRolesWithRestrictions()) {
-                    addPermission(tmpRolesWithRestrictions, role);
-                }
-            }
-            //make immutable
-            for (String roleName : tmpRolesWithRestrictions.keySet()) {
-                List<RestrictionDTO> restrictions = tmpRolesWithRestrictions.get(roleName);
-                tmpRolesWithRestrictions.put(roleName, Collections.unmodifiableList(restrictions));
-            }
-            rolesWithRestrictions = Collections.unmodifiableMap(tmpRolesWithRestrictions);
-
-            if (isReload) {
-                permissionRepository.setReloadRolesAndPermissionsList(false);
-            }
+        if (rolesWithRestrictions == null) {
+            reloadPermissions();
         }
         return rolesWithRestrictions;
+    }
+
+    private void reloadPermissions() {
+        Map<String, List<RestrictionDTO>> tmpRolesWithRestrictions = new HashMap<>();
+        // add new permissions with restriction
+        for (RoleEntity role : permissionRepository.getRolesWithRestrictions()) {
+            addPermission(tmpRolesWithRestrictions, role);
+        }
+        //make immutable
+        for (String roleName : tmpRolesWithRestrictions.keySet()) {
+            List<RestrictionDTO> restrictions = tmpRolesWithRestrictions.get(roleName);
+            tmpRolesWithRestrictions.put(roleName, Collections.unmodifiableList(restrictions));
+        }
+        rolesWithRestrictions = Collections.unmodifiableMap(tmpRolesWithRestrictions);
     }
 
     public List<RestrictionEntity> getUserRestrictionsForLoggedInUser() {
@@ -164,16 +169,20 @@ public class PermissionService implements Serializable {
      * @param userName
      */
     public List<RestrictionEntity> getUserRestrictions(String userName) {
-        if (permissionRepository.isReloadUserRestrictionsList() || userRestrictions == null) {
-            userRestrictions = new ConcurrentHashMap<>();
+        if (userRestrictions == null) {
+            reloadUserRestrictions();
         }
         if (!userRestrictions.containsKey(userName)) {
             userRestrictions.put(userName, Collections.unmodifiableList(permissionRepository.getUserWithRestrictions(userName)));
-            if (permissionRepository.isReloadUserRestrictionsList()) {
-                permissionRepository.setReloadUserRestrictionsList(false);
-            }
         }
         return userRestrictions.get(userName);
+    }
+
+    /**
+     * Resets the user restriction cache. Restrictions are loaded and cached on demand and not ahead of time.
+     */
+    private void reloadUserRestrictions() {
+        userRestrictions = new ConcurrentHashMap<>();
     }
 
     /**
