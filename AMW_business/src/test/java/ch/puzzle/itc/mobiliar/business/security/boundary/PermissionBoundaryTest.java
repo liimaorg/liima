@@ -197,7 +197,7 @@ public class PermissionBoundaryTest {
         permissionBoundary.updateRestriction(1, "existing", null, "good", null, null, null, null, null, true);
         // then
         verify(restrictionRepository).merge(any(RestrictionEntity.class));
-        verify(permissionRepository).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test(expected=AMWException.class)
@@ -299,7 +299,7 @@ public class PermissionBoundaryTest {
         permissionBoundary.createRestriction("existing", null, "good", null, null, null, null, null, false, true);
         // then
         verify(restrictionRepository).create(any(RestrictionEntity.class));
-        verify(permissionRepository).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test
@@ -415,7 +415,7 @@ public class PermissionBoundaryTest {
         permissionBoundary.removeRestriction(42, true);
         // then
         verify(restrictionRepository).deleteRestrictionById(42);
-        verify(permissionRepository).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test
@@ -878,7 +878,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(2));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test
@@ -898,7 +898,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(4));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test
@@ -920,7 +920,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(6));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test
@@ -939,7 +939,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(12));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test
@@ -960,7 +960,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(24));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test
@@ -981,7 +981,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(48));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test
@@ -1004,7 +1004,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(48));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test
@@ -1025,7 +1025,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(24));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test
@@ -1045,7 +1045,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(24));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(1)).forceReloadingOfLists();
+        verify(permissionService).reloadCache();
     }
 
     @Test
@@ -1063,7 +1063,7 @@ public class PermissionBoundaryTest {
         // then
         assertThat(total, is(12));
         verify(restrictionRepository, times(total)).create(any(RestrictionEntity.class));
-        verify(permissionRepository, times(0)).forceReloadingOfLists();
+        verify(permissionService, times(0)).reloadCache();
     }
 
     @Test(expected=AMWException.class)
@@ -1076,7 +1076,7 @@ public class PermissionBoundaryTest {
 
         // when // then
         permissionBoundary.createMultipleRestrictions(roleName1, null, Arrays.asList(resourcePermission.getValue()), Arrays.asList(1), Arrays.asList(resourceTypeName1), ResourceTypePermission.ANY, null, Arrays.asList(Action.CREATE, Action.UPDATE), false, true);
-        verify(permissionRepository, times(0)).forceReloadingOfLists();
+        verify(permissionService, times(0)).reloadCache();
     }
 
 }

@@ -899,7 +899,6 @@ public class PermissionServiceTest {
 	@Test
 	public void shouldOnlyReloadWhenNeeded() {
 		// given
-		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(false);
 		permissionService.rolesWithRestrictions = new HashMap<>();
 
 		// when
@@ -912,8 +911,7 @@ public class PermissionServiceTest {
 	@Test
 	public void shouldObtainRolesWithRestrictions() {
 		// given
-		when(permissionService.permissionRepository.isReloadRolesAndPermissionsList()).thenReturn(true);
-		when(permissionService.permissionRepository.getRolesWithRestrictions()).thenReturn(null);
+		when(permissionService.permissionRepository.getRolesWithRestrictions()).thenReturn(EMPTY_LIST);
 
 		// when
 		permissionService.getPermissions();
@@ -925,7 +923,6 @@ public class PermissionServiceTest {
 	@Test
 	public void shouldObtainDeployableRolesOnGetDeployableRolesWhenNeeded() {
 		// given
-		when(permissionService.permissionRepository.isReloadDeployableRoleList()).thenReturn(true);
 		when(permissionService.permissionRepository.getDeployableRoles()).thenReturn(EMPTY_LIST);
 
 		// when

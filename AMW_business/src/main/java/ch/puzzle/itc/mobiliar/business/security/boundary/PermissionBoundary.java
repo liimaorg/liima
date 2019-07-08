@@ -866,6 +866,6 @@ public class PermissionBoundary implements Serializable {
 
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public void reloadCache() {
-        permissionRepository.forceReloadingOfLists();
+        permissionService.reloadCache();
     }
 }
