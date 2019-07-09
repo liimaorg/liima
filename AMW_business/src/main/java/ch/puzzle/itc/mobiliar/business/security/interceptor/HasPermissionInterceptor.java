@@ -34,7 +34,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Interceptor
 @HasPermission
@@ -43,79 +42,60 @@ public class HasPermissionInterceptor implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	Logger log;
-
-	@Inject
 	PermissionService permissionService;
 
-	private static List<Permission> getRequiredPermission(InvocationContext context) {
-		HasPermission permissionMethodAnnotation = getMethodPermissionAnnotation(context);
-
+	private static List<Permission> getRequiredPermission(InvocationContext context, HasPermission permissionMethodAnnotation) {
 		List<Permission> permissions = new ArrayList<>();
-		if (permissionMethodAnnotation != null) {
-			if (!permissionMethodAnnotation.permission().equals(Permission.DEFAULT)) {
-				permissions.add(permissionMethodAnnotation.permission());
-			}
-			if (permissionMethodAnnotation.oneOfPermission().length > 0) {
-				Collections.addAll(permissions, permissionMethodAnnotation.oneOfPermission());
-			}
+		if (!permissionMethodAnnotation.permission().equals(Permission.DEFAULT)) {
+			permissions.add(permissionMethodAnnotation.permission());
+		}
+		if (permissionMethodAnnotation.oneOfPermission().length > 0) {
+			Collections.addAll(permissions, permissionMethodAnnotation.oneOfPermission());
 		}
 		return permissions;
 	}
 
-	private static List<Action> getRequiredAction(InvocationContext context) {
-		HasPermission permissionMethodAnnotation = getMethodPermissionAnnotation(context);
-
+	private static List<Action> getRequiredAction(InvocationContext context, HasPermission permissionMethodAnnotation) {
 		List<Action> actions = new ArrayList<>();
-		if (permissionMethodAnnotation != null) {
-			if (!permissionMethodAnnotation.action().equals(Action.NULL)) {
-				actions.add(permissionMethodAnnotation.action());
-			}
-			if (permissionMethodAnnotation.oneOfAction().length > 0) {
-				Collections.addAll(actions, permissionMethodAnnotation.oneOfAction());
-			}
+		if (!permissionMethodAnnotation.action().equals(Action.NULL)) {
+			actions.add(permissionMethodAnnotation.action());
+		}
+		if (permissionMethodAnnotation.oneOfAction().length > 0) {
+			Collections.addAll(actions, permissionMethodAnnotation.oneOfAction());
 		}
 		return actions;
 	}
 
-	private static boolean hasResourceSpecific(InvocationContext context) {
-		HasPermission permissionMethodAnnotation = getMethodPermissionAnnotation(context);
-		return permissionMethodAnnotation != null && permissionMethodAnnotation.resourceSpecific();
-	}
-
-	private static HasPermission getMethodPermissionAnnotation(InvocationContext context) {
-		return context.getMethod().getAnnotation(HasPermission.class);
+	private static boolean hasResourceSpecific(InvocationContext context, HasPermission permissionMethodAnnotation) {
+		return permissionMethodAnnotation.resourceSpecific();
 	}
 
 	@AroundInvoke
-	public Object roleCall(InvocationContext context) throws Exception {
-		List<Permission> permissions = getRequiredPermission(context);
-		List<Action> actions = getRequiredAction(context);
-		boolean resourceSpecific = hasResourceSpecific(context);
+	protected Object roleCall(InvocationContext context) throws Exception {
+		HasPermission permissionMethodAnnotation = context.getMethod().getAnnotation(HasPermission.class);
+		List<Permission> permissions = getRequiredPermission(context, permissionMethodAnnotation);
+		List<Action> actions = getRequiredAction(context, permissionMethodAnnotation);
+		boolean resourceSpecific = hasResourceSpecific(context, permissionMethodAnnotation);
 		ResourceGroupEntity resourceGroup = null;
 
-		if (permissions.isEmpty()) {
-			return context.proceed();
-		} else {
-			if (resourceSpecific && context.getParameters().length > 0) {
-				for (Object o : context.getParameters()) {
-					if (o instanceof ResourceEntity) {
-						ResourceEntity resource = (ResourceEntity) o;
-						resourceGroup = resource.getResourceGroup();
-						break;
-					}
+		if (resourceSpecific && context.getParameters().length > 0) {
+			for (Object o : context.getParameters()) {
+				if (o instanceof ResourceEntity) {
+					ResourceEntity resource = (ResourceEntity) o;
+					resourceGroup = resource.getResourceGroup();
+					break;
 				}
 			}
-			for (Permission permission : permissions) {
-				if (actions.isEmpty()) {
-					if (permissionService.hasPermission(permission, null, null, resourceGroup, null)) {
+		}
+		for (Permission permission : permissions) {
+			if (actions.isEmpty()) {
+				if (permissionService.hasPermission(permission, null, null, resourceGroup, null)) {
+					return context.proceed();
+				}
+			} else {
+				for (Action action : actions) {
+					if (permissionService.hasPermission(permission, null, action, resourceGroup, null)) {
 						return context.proceed();
-					}
-				} else {
-					for (Action action : actions) {
-						if (permissionService.hasPermission(permission, null, action, resourceGroup, null)) {
-							return context.proceed();
-						}
 					}
 				}
 			}

@@ -25,21 +25,18 @@ import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 
 /**
  * @author aromano
  * 
  */
-@Interceptors(HasPermissionInterceptor.class)
 @Stateless
 public class SecurityScreenDomainService {
 

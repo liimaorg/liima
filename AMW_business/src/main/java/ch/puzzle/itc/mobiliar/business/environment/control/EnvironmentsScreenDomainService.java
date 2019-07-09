@@ -26,13 +26,11 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvide
 import ch.puzzle.itc.mobiliar.business.security.control.SecurityScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -42,7 +40,6 @@ import java.util.logging.Logger;
 /**
  * Use {@link ContextRepository} - move all functionality to the control to fulfill the cec pattern
  */
-@Interceptors(HasPermissionInterceptor.class)
 @Stateless
 @Deprecated
 public class EnvironmentsScreenDomainService {

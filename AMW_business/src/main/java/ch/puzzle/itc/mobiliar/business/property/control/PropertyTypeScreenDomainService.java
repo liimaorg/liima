@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -36,7 +35,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 
 /**
@@ -44,7 +42,6 @@ import ch.puzzle.itc.mobiliar.common.exception.*;
  *
  */
 // TODO: transfer to PropertyTypeService
-@Interceptors(HasPermissionInterceptor.class)
 @Stateless
 public class PropertyTypeScreenDomainService {
 

@@ -25,16 +25,13 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 
 /**
  * The ScreenDomainService for Applist Screens
  */
-@Interceptors(HasPermissionInterceptor.class)
 @Stateless
 public class ApplistScreenDomainService {
 

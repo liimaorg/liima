@@ -49,7 +49,6 @@ import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -59,7 +58,6 @@ import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.util.*;
@@ -69,7 +67,6 @@ import java.util.logging.Logger;
  * ALL boundary for property editing
  */
 @Stateless
-@Interceptors(HasPermissionInterceptor.class)
 public class PropertyEditor {
 
     // TODO Move methods to the proper boundary

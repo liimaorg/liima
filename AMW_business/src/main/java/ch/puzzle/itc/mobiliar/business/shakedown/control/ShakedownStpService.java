@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -39,7 +38,6 @@ import javax.persistence.criteria.Root;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.ShakedownTestGeneratorDomainService;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownStpEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
@@ -52,7 +50,6 @@ import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.DELETE;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
 
-@Interceptors(HasPermissionInterceptor.class)
 @Stateless
 public class ShakedownStpService {
 
