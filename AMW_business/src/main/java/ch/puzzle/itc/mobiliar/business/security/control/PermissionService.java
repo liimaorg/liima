@@ -188,8 +188,10 @@ public class PermissionService implements Serializable {
         tmpRolesWithRestrictions.put(role.getName(), Collections.unmodifiableList(resList));
         for (RestrictionEntity res : role.getRestrictions()) {
             // add restriction
-            if(onlyDeployable && Permission.DEPLOYMENT.name().equalsIgnoreCase(res.getPermission().getValue())) {
-                resList.add(new RestrictionDTO(res));
+            if (onlyDeployable) {
+                if (Permission.DEPLOYMENT.name().equalsIgnoreCase(res.getPermission().getValue())) {
+                    resList.add(new RestrictionDTO(res));
+                }
             }
             else {
                 resList.add(new RestrictionDTO(res));
