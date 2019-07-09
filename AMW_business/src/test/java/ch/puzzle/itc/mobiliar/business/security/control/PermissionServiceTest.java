@@ -923,13 +923,62 @@ public class PermissionServiceTest {
 	@Test
 	public void shouldObtainDeployableRolesOnGetDeployableRolesWhenNeeded() {
 		// given
-		when(permissionService.permissionRepository.getDeployableRoles()).thenReturn(EMPTY_LIST);
+		when(permissionService.permissionRepository.getRolesWithRestrictions()).thenReturn(EMPTY_LIST);
 
 		// when
 		permissionService.getDeployableRoles();
 
 		// then
-		verify(permissionService.permissionRepository, times(1)).getDeployableRoles();
+		verify(permissionService.permissionRepository, times(1)).getRolesWithRestrictions();
+	}
+
+	@Test
+	public void testPermissionCache() {
+		List<RoleEntity> roles = new ArrayList<>();
+		RoleEntity role = new RoleEntity();
+		roles.add(role);
+		role.setName(VIEWER);
+		// first restriction
+		PermissionEntity permission = new PermissionEntity();
+		permission.setValue(Permission.RESOURCE.name());
+		RestrictionEntity res = new RestrictionEntity();
+		res.setAction(Action.READ);
+		res.setResourceTypePermission(ResourceTypePermission.ANY);
+		res.setPermission(permission);
+		role.getRestrictions().add(res);
+		// second restriction
+		permission = new PermissionEntity();
+		permission.setValue(Permission.VIEW_GLOBAL_FUNCTIONS.name());
+		res = new RestrictionEntity();
+		res.setAction(Action.ALL);
+		res.setResourceTypePermission(ResourceTypePermission.ANY);
+		res.setPermission(permission);
+		role.getRestrictions().add(res);
+		// third restriction
+		permission = new PermissionEntity();
+		permission.setValue(Permission.DEPLOYMENT.name());
+		res = new RestrictionEntity();
+		res.setAction(Action.READ);
+		res.setResourceTypePermission(ResourceTypePermission.ANY);
+		res.setPermission(permission);
+		role.getRestrictions().add(res);
+
+		// given
+		when(permissionService.permissionRepository.getRolesWithRestrictions()).thenReturn(roles);
+
+		// when
+		Map<String, List<RestrictionDTO>> permissions = permissionService.getPermissions();
+		Map<String, List<RestrictionDTO>> deployablePermissions = permissionService.getDeployableRoles();
+
+		// then
+		verify(permissionService.permissionRepository, times(1)).getRolesWithRestrictions();
+		Assert.assertEquals(1, permissions.size());
+		Assert.assertNotNull(permissions.get(VIEWER));
+		Assert.assertEquals(3, permissions.get(VIEWER).size());
+
+		Assert.assertEquals(1, deployablePermissions.size());
+		Assert.assertNotNull(deployablePermissions.get(VIEWER));
+		Assert.assertEquals(1, deployablePermissions.get(VIEWER).size());
 	}
 
 	@Test
