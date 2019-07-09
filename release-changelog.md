@@ -1,3 +1,8 @@
+# v1.17.14
+## Bug fixes
+* Update js modules and jackson-databind [#494](https://github.com/liimaorg/liima/issues/494)
+* Reload permission caches explicitly [#492](https://github.com/liimaorg/liima/issues/492)
+
 # v1.17.13
 ## Bug fixes
 * IllegalArgumentException after new release of relation [#484](https://github.com/liimaorg/liima/issues/484)
