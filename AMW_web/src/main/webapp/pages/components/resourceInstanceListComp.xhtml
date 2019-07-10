@@ -10,7 +10,7 @@
 	<h:panelGroup id="resourceInstanceListWrapper">
 		<h:dataTable id="resourceInstanceListComp" styleClass="well" var="group"
 			value="${resourceInstanceListImpl.resourceGroupsForSelectedResourceType}"
-			columnClasses=" ,last,last,last,last,last" rowClasses="odd-row,even-row">
+			columnClasses=" ,release,last,last,last" rowClasses="odd-row,even-row">
 			<f:facet name="caption">
 				<nav class="actionbar">
 				<ul>
@@ -56,17 +56,13 @@
 					<h:outputText value="Resource Name" />
 				</f:facet>
 				<mobi:editResourceLink resId="#{group.selectedResourceId}" linkLabel="#{group.name}" editPermission="RESOURCE" resourceType="#{resourceInstanceListImpl.selectedResourceType.name}"/>
-                <mobi:foreignableOwnerTooltip foreignableAttributes="#{resourceInstanceListImpl.getForeignableAttribute(group,group.selectedReleaseId)}"/>
+				<mobi:foreignableOwnerTooltip foreignableAttributes="#{resourceInstanceListImpl.getForeignableAttribute(group,group.selectedReleaseId)}"/>
 			</h:column>
 			<h:column rendered="#{securityDataProvider.hasPermission('RESOURCE_LIST')}">
 				<f:facet name="header">
 					<h:outputText value="Release" />
 				</f:facet>
-				<h:selectOneMenu styleClass="switchRelease" style="width:auto;" id="switchReleaseSelectBox"
-						value="#{group.selectedReleaseId}">
-						<f:selectItems value="${group.releases}" var="release" itemLabel="${release.name}" itemValue="${release.id}" />
-						<a4j:ajax render="editLink, viewLink, deleteLink, resourceInstanceListWrapper" onbegin="showLoaderImmediate();" oncomplete="hideLoader();" />
-				</h:selectOneMenu>
+				<h:outputText value="#{group.selectedResource.release.name}" />
 			</h:column>
 			<h:column>
 				<f:facet name="header">
