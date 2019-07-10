@@ -12,16 +12,6 @@
         content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
 
     <h:outputScript name="jsf.js" library="javax.faces" />
-    <h:outputScript name="js/jquery-1.11.2.min.js" target="head" />
-    <h:outputScript name="js/jquery-ui.min.js" target="head" />
-    <h:outputScript name="js/bootstrap.min.js" target="head" />
-    <h:outputScript name="js/bootstrap-tokenfield.min.js" target="head" />
-    <h:outputScript name="js/scrollspy.js" target="head" />
-    <h:outputScript name="js/tags.js" target="head" />
-    <h:outputScript target="head">
-        // Put jQuery into noConflict mode.
-        $jql = (jQuery.noConflict(true));
-    </h:outputScript>
 
     <link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css"
           media="screen, projection" rel="stylesheet" type="text/css" />
@@ -43,6 +33,10 @@
     <link href="../${buildNumber}/stylesheets/customized-screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
     <link href="../${buildNumber}/stylesheets/fixed.css" media="screen, projection" rel="stylesheet" type="text/css" />
 
+    <h:outputScript name="js/bootstrap.min.js" target="head" />
+    <h:outputScript name="js/bootstrap-tokenfield.min.js" target="head" />
+    <h:outputScript name="js/scrollspy.js" target="head" />
+    <h:outputScript name="js/tags.js" target="head" />
     <h:outputScript name="js/app.js" target="head" />
     <h:outputScript name="js/trimmed-tooltips.js" target="head" />
     <h:outputScript name="js/property-tooltips.js" target="head" />
