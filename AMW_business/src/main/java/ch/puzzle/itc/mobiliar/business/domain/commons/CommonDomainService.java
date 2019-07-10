@@ -29,7 +29,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersis
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
@@ -38,7 +37,6 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -59,7 +57,6 @@ import java.util.logging.Logger;
  *
  */
 @Stateless
-@Interceptors(HasPermissionInterceptor.class)
 public class CommonDomainService {
     @Inject
     private EntityManager entityManager;

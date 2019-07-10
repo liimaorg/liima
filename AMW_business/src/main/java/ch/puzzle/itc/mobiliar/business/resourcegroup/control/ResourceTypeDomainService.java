@@ -34,7 +34,6 @@ import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
@@ -43,7 +42,6 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -54,7 +52,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Interceptors(HasPermissionInterceptor.class)
 @Stateless
 public class ResourceTypeDomainService {
 

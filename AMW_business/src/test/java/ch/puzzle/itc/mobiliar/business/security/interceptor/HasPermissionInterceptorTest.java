@@ -58,7 +58,7 @@ public class HasPermissionInterceptorTest {
         when(context.getTarget()).thenReturn(new TestBoundary());
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldNotCallPermissionService() throws Exception {
         //given
         when(context.getMethod()).thenReturn(TestBoundary.class.getMethod("noPermissionNeeded"));

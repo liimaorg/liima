@@ -37,7 +37,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.ApplicationsFromApplicationServer;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
@@ -53,7 +52,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -67,7 +65,6 @@ import java.util.logging.Logger;
 
 import static ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes.QLConstants.*;
 
-@Interceptors(HasPermissionInterceptor.class)
 @Stateless
 public class ShakedownTestService{
 

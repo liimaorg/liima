@@ -35,7 +35,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
@@ -51,7 +50,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermissionInterceptor;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
@@ -62,7 +60,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
  * @author cweber
  */
 @Stateless
-@Interceptors(HasPermissionInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class CopyResource {
 
