@@ -208,10 +208,11 @@ public class CopyResourceDomainService {
 
         // do save
         if (copyUnit.getResult().isSuccess()) {
+            auditService.storeIdInThreadLocalForAuditLog(copyUnit.getTargetResource());
+            // persist before permission check to avoid TransientPropertyValueException when JPA tries to auto flush
+            entityManager.persist(copyUnit.getTargetResource());
             // check if only decorable fields on resource changed when changing owner is different from resource owner
             foreignableService.verifyEditableByOwner(copyUnit.getActingOwner(), targetHashCodeBeforeChange, copyUnit.getTargetResource());
-            auditService.storeIdInThreadLocalForAuditLog(copyUnit.getTargetResource());
-            entityManager.persist(copyUnit.getTargetResource());
         }
         copyUnit.getResult().setTargetResource(copyUnit.getTargetResource());
         return copyUnit.getResult();
