@@ -1,8 +1,12 @@
-# v1.17.14
+#v1.17.15
 ## Bug fixes
-* Remove release list dropdown in resource list view [#496](https://github.com/liimaorg/liima/issues/496)
-* Update js modules and jackson-databind [#494](https://github.com/liimaorg/liima/issues/494)
-* Reload permission caches explicitly [#492](https://github.com/liimaorg/liima/issues/492)
+* copyFrom TransientPropertyValueException [#480](https://github.com/liimaorg/liima/issues/480)
+
+#v1.17.14
+## Bug fixes
+* Remove release list dropdown in resource list view [#496](https://github.com/liimaorg/liima/pull/496)
+* Update js modules and jackson-databind [#494](https://github.com/liimaorg/liima/pull/494)
+* Reload permission caches explicitly [#492](https://github.com/liimaorg/liima/pull/492)
 
 # v1.17.13
 ## Bug fixes
