@@ -18,8 +18,11 @@ import { Subscription } from 'rxjs';
 import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-
+import * as jQuery from 'jquery'
 declare var $: any;
+
+$ = jQuery;
+
 
 $.fn.datetimepicker = require('eonasdan-bootstrap-datetimepicker');
 

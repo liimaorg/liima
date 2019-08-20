@@ -141,6 +141,14 @@ module.exports = function (options) {
           exclude: [helpers.root('src/index.html')]
         },
 
+        /* Expose window.$ and window.jQuery
+         */
+        {
+          test: /jquery\.js/,
+          use: ['expose-loader?$',
+            'expose-loader?jQuery']
+        },
+
         /**
          * Instruments JS files with Istanbul for subsequent code coverage reporting.
          * Instrument only testing sources.

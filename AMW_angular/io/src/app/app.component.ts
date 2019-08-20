@@ -8,7 +8,7 @@ import { SettingService } from './setting/setting.service';
 import { AppConfiguration } from './setting/app-configuration';
 import * as _ from 'lodash';
 
-declare var $: any;
+declare var $: JQueryStatic;
 
 /*
  * App Component
@@ -43,7 +43,7 @@ export class AppComponent implements OnInit, AfterViewInit, AfterViewChecked {
   }
 
   ngAfterViewInit() {
-    $('.navbar-lower').affix({offset: {top: 50}});
+   // $('.navbar-lower').affix({offset: {top: 50}});
   }
 
   navigateTo(item: any) {
