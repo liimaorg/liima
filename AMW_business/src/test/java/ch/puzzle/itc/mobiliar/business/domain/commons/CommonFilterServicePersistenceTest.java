@@ -89,7 +89,6 @@ public class CommonFilterServicePersistenceTest {
         assertThat(query.getParameters().iterator().next().getName(), is("State0"));
     }
 
-
     @Test
     public void test_addMultipleFiltersAndCreateQuery(){
         // given
@@ -166,10 +165,8 @@ public class CommonFilterServicePersistenceTest {
         filter.setValue(envSearchString);
         filters.add(filter);
 
-
         String colToSort = "d.deploymentDate";
         String uniqueCol ="d.id";
-
 
         //when
         Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, true, false);
@@ -182,7 +179,6 @@ public class CommonFilterServicePersistenceTest {
     @Test
     public void test_environmentCaseInsensitiveSearchLower(){
         //Given
-
         ContextEntity uppercaseContext = new ContextEntity();
         uppercaseContext.setName("X");
         entityManager.persist(uppercaseContext);
@@ -198,10 +194,8 @@ public class CommonFilterServicePersistenceTest {
         filter.setValue(envSearchString);
         filters.add(filter);
 
-
         String colToSort = "d.deploymentDate";
         String uniqueCol ="d.id";
-
 
         //when
         Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, true, false);
