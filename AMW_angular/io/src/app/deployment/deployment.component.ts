@@ -15,14 +15,9 @@ import { Environment } from './environment';
 import { DeploymentRequest } from './deployment-request';
 import { AppWithVersion } from './app-with-version';
 import { Subscription } from 'rxjs';
-import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import * as jQuery from 'jquery'
-declare var $: any;
-
-$ = jQuery;
-
+import * as $ from 'jquery';
 
 $.fn.datetimepicker = require('eonasdan-bootstrap-datetimepicker');
 
@@ -90,6 +85,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+
     this.appState.set('navShow', false);
     this.appState.set('navTitle', 'Deployments');
 

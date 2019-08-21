@@ -121,3 +121,10 @@ interface ErrorConstructor extends ErrorStackTraceLimit {}
 interface NodeRequireFunction extends Es6PromiseLoader  {}
 interface NodeModule extends WebpackModule {}
 interface Global extends GlobalEnvironment  {}
+
+
+// Custom jQuery Typings
+interface JQuery {
+  modal(...any): any;
+  datetimepicker(...any): any; 
+}
