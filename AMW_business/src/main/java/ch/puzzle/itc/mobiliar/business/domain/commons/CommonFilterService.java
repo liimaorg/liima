@@ -44,7 +44,7 @@ public class CommonFilterService {
 
 	@Inject
 	private Logger log;
-	
+
 	public void setEm(EntityManager em) {
 		this.em = em;
 	}
@@ -67,7 +67,7 @@ public class CommonFilterService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param stringQuery
 	 * @param filter
 	 * @param colToSort
@@ -100,7 +100,7 @@ public class CommonFilterService {
 				stringQuery.append('(').append(filterQuery).append(')');
 			}
 		}
-		
+
 		if (lowerSortColumn) {
 			colToSort = "LOWER("+colToSort+")";
 		}
@@ -115,7 +115,7 @@ public class CommonFilterService {
 		if (groupByContext) {
 			stringQuery.append(" group by d.context");
 		}
-		
+
 		log.fine("Query: " + stringQuery);
 		Query q = em.createQuery(stringQuery.toString());
 
@@ -201,7 +201,7 @@ public class CommonFilterService {
 			stringQuery.append("and ");
 		}
 	}
-	
+
 	private void appendWhereIfNotAlreadyExists(StringBuilder stringQuery) {
 		if (!stringQuery.toString().contains(WHERE)) {
 			stringQuery.append(WHERE + SPACE_STRING);
@@ -212,9 +212,9 @@ public class CommonFilterService {
 	private String buildFilterQuery(List<CustomFilter> deploymentFilterList, Map<String, CustomFilter> parameterMap, int[] index) {
 		HashMap<String, StringBuilder> groupedQueries = new HashMap<>();
 		StringBuilder query = new StringBuilder();
-		
+
 		for (CustomFilter deploymentFilter : deploymentFilterList) {
-			if (deploymentFilter.isValidForSqlQuery()) {			
+			if (deploymentFilter.isValidForSqlQuery()) {
 				if (!groupedQueries.containsKey(deploymentFilter.getFilterDisplayName())) {
 					StringBuilder builder = new StringBuilder();
 					groupedQueries.put(deploymentFilter.getFilterDisplayName(), builder);
@@ -247,12 +247,12 @@ public class CommonFilterService {
 			}
 			query.append('(').append(partialQuery).append(')');
 		}
-		
+
 		return query.toString();
 	}
-	
+
 	private void appendFilterToQuery (StringBuilder query, CustomFilter deploymentFilter, Map<String, CustomFilter> parameterMap, int[] index) {
-		
+
 		if (query.length() > 0) {
 			if (deploymentFilter.isDateType()){
 				query.append(" and ");
@@ -261,18 +261,24 @@ public class CommonFilterService {
 				query.append(" or ");
 			}
 		}
-		
+
 		if (deploymentFilter.isBooleanType()) {
 			createQueryForBooleanTypeWithoutAddingParameterToParameterMap(query, deploymentFilter);
-		} 
+		}
 		else {
 			if (deploymentFilter.hasValidNullValue()) {
 				query.append(deploymentFilter.getDeploymentTableColumnName()).append(" is null");
 				log.info(deploymentFilter.getFilterDisplayName() + " append value null");
-			} 
+			}
 			else {
 				String paramName = deploymentFilter.getParameterName() + index[0];
-				query.append(deploymentFilter.getDeploymentTableColumnName()).append(deploymentFilter.getSqlComperator()).append(":").append(paramName).append(SPACE_STRING);
+				if(deploymentFilter.getFilterDisplayName().equals(DeploymentFilterTypes.ENVIRONMENT_NAME.getFilterDisplayName())){
+					query.append("upper(").append(deploymentFilter.getDeploymentTableColumnName()).append(") ").append(deploymentFilter.getSqlComperator()).append("upper(:").append(paramName+") ").append(SPACE_STRING);
+				}
+				else{
+					query.append(deploymentFilter.getDeploymentTableColumnName()).append(deploymentFilter.getSqlComperator()).append(":").append(paramName).append(SPACE_STRING);
+				}
+
 				if(deploymentFilter.getSqlComperator().toLowerCase().contains("like") ) {
 					query.append("ESCAPE \'").append(JpaWildcardConverter.ESCAPE_CHARACTER).append("' ");
 				}

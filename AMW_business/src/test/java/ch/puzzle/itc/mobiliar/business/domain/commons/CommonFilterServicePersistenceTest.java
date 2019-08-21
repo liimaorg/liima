@@ -21,8 +21,14 @@
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextTypeEntity;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +41,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -81,6 +88,7 @@ public class CommonFilterServicePersistenceTest {
         assertThat(query.getParameters().size(), is(1));
         assertThat(query.getParameters().iterator().next().getName(), is("State0"));
     }
+
 
     @Test
     public void test_addMultipleFiltersAndCreateQuery(){
@@ -137,6 +145,69 @@ public class CommonFilterServicePersistenceTest {
 
         // then
         assertThat(query.getParameters().iterator().next().getName(), is("Deploymentparameter0"));
+    }
+
+
+    @Test
+    public void test_environmentCaseInsensitiveSearchUpper(){
+        //Given
+        ContextEntity lowercaseContext = new ContextEntity();
+        lowercaseContext.setName("i");
+        entityManager.persist(lowercaseContext);
+        DeploymentEntity lowercaseDeployment = new DeploymentEntity();
+        lowercaseDeployment.setContext(lowercaseContext);
+        entityManager.persist(lowercaseDeployment);
+
+        String envSearchString = "I";
+        StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ");
+        List<CustomFilter> filters = new ArrayList<>();
+        CustomFilter filter = CustomFilter.builder(ENVIRONMENT_NAME).isSelected(true)
+                .build();
+        filter.setValue(envSearchString);
+        filters.add(filter);
+
+
+        String colToSort = "d.deploymentDate";
+        String uniqueCol ="d.id";
+
+
+        //when
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, true, false);
+
+        //then
+        assertThat(query.getResultList().size(), is(1));
+    }
+
+
+    @Test
+    public void test_environmentCaseInsensitiveSearchLower(){
+        //Given
+
+        ContextEntity uppercaseContext = new ContextEntity();
+        uppercaseContext.setName("X");
+        entityManager.persist(uppercaseContext);
+        DeploymentEntity uppercaseDeployment = new DeploymentEntity();
+        uppercaseDeployment.setContext(uppercaseContext);
+        entityManager.persist(uppercaseDeployment);
+
+        String envSearchString = "x";
+        StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ");
+        List<CustomFilter> filters = new ArrayList<>();
+        CustomFilter filter = CustomFilter.builder(ENVIRONMENT_NAME).isSelected(true)
+                .build();
+        filter.setValue(envSearchString);
+        filters.add(filter);
+
+
+        String colToSort = "d.deploymentDate";
+        String uniqueCol ="d.id";
+
+
+        //when
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, true, false);
+
+        //then
+        assertThat(query.getResultList().size(), is(1));
     }
 
 }
