@@ -31,6 +31,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @XmlRootElement(name="server")
 @XmlAccessorType(XmlAccessType.FIELD)
 //JAXB Annotations are ignored by Jackson of JBoss
@@ -79,7 +81,33 @@ public class ServerTuple {
 		this.host = host;
 		this.definedOnNode = definedOnNode;
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ServerTuple)) return false;
+		ServerTuple that = (ServerTuple) o;
+		return definedOnNode == that.definedOnNode &&
+				Objects.equals(host, that.host) &&
+				Objects.equals(appServer, that.appServer) &&
+				Objects.equals(appServerRelease, that.appServerRelease) &&
+				Objects.equals(runtime, that.runtime) &&
+				Objects.equals(node, that.node) &&
+				Objects.equals(nodeRelease, that.nodeRelease) &&
+				Objects.equals(environment, that.environment) &&
+				Objects.equals(appServerId, that.appServerId) &&
+				Objects.equals(nodeId, that.nodeId) &&
+				Objects.equals(environmentId, that.environmentId) &&
+				Objects.equals(domain, that.domain) &&
+				Objects.equals(domainId, that.domainId);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(host, appServer, appServerRelease, runtime, node, nodeRelease, environment, appServerId, nodeId, environmentId, domain, domainId, definedOnNode);
+	}
+
 	//workaround for cb.literal(true) throwing a null pointer exception
 	public ServerTuple(String host, String appServer, Integer appServerId, String appServerRelease, String runtime, String node,
 			Integer nodeId, String nodeRelease, String domain, Integer domainId, String environment, Integer environmentId, int definedOnNode) {

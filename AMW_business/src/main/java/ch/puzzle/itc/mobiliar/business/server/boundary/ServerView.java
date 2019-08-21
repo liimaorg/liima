@@ -20,11 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.server.boundary;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -75,11 +71,11 @@ public class ServerView {
 		
 		List<ServerTuple> nodeServers = this.getNodeServers(hostFilter, appServerFilter, runtimeFilter, nodeFilter, contextFilter);
 		List<ServerTuple> asServers = this.getAppServers(hostFilter, appServerFilter, runtimeFilter, nodeFilter, contextFilter);
-		nodeServers.addAll(asServers);
+		nodeServers.addAll(new HashSet<>(asServers));
 
 		result = nodeServers;
 		if(merge) {
-			result = new LinkedList<ServerTuple>(merge(result).values());
+			result = new LinkedList<>(merge(result).values());
 		}
 		
 		//sort
