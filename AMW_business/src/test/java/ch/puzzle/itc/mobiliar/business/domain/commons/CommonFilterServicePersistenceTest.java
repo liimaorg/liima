@@ -180,12 +180,12 @@ public class CommonFilterServicePersistenceTest {
     }
 
     private void persistTestEnvironment(String envName){
-        ContextEntity uppercaseContext = new ContextEntity();
-        uppercaseContext.setName(envName);
-        entityManager.persist(uppercaseContext);
-        DeploymentEntity uppercaseDeployment = new DeploymentEntity();
-        uppercaseDeployment.setContext(uppercaseContext);
-        entityManager.persist(uppercaseDeployment);
+        ContextEntity context = new ContextEntity();
+        context.setName(envName);
+        entityManager.persist(context);
+        DeploymentEntity deployment = new DeploymentEntity();
+        deployment.setContext(context);
+        entityManager.persist(deployment);
     }
 
     private List<CustomFilter> createEnvFilters(String filterString) {
