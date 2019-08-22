@@ -150,21 +150,9 @@ public class CommonFilterServicePersistenceTest {
     @Test
     public void test_environmentCaseInsensitiveSearchUpper(){
         //Given
-        ContextEntity lowercaseContext = new ContextEntity();
-        lowercaseContext.setName("i");
-        entityManager.persist(lowercaseContext);
-        DeploymentEntity lowercaseDeployment = new DeploymentEntity();
-        lowercaseDeployment.setContext(lowercaseContext);
-        entityManager.persist(lowercaseDeployment);
-
-        String envSearchString = "I";
+        persistTestEnvironment("i");
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ");
-        List<CustomFilter> filters = new ArrayList<>();
-        CustomFilter filter = CustomFilter.builder(ENVIRONMENT_NAME).isSelected(true)
-                .build();
-        filter.setValue(envSearchString);
-        filters.add(filter);
-
+        List<CustomFilter> filters = createEnvFilters("I");
         String colToSort = "d.deploymentDate";
         String uniqueCol ="d.id";
 
@@ -175,25 +163,12 @@ public class CommonFilterServicePersistenceTest {
         assertThat(query.getResultList().size(), is(1));
     }
 
-
     @Test
     public void test_environmentCaseInsensitiveSearchLower(){
         //Given
-        ContextEntity uppercaseContext = new ContextEntity();
-        uppercaseContext.setName("X");
-        entityManager.persist(uppercaseContext);
-        DeploymentEntity uppercaseDeployment = new DeploymentEntity();
-        uppercaseDeployment.setContext(uppercaseContext);
-        entityManager.persist(uppercaseDeployment);
-
-        String envSearchString = "x";
+        persistTestEnvironment("X");
         StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ");
-        List<CustomFilter> filters = new ArrayList<>();
-        CustomFilter filter = CustomFilter.builder(ENVIRONMENT_NAME).isSelected(true)
-                .build();
-        filter.setValue(envSearchString);
-        filters.add(filter);
-
+        List<CustomFilter> filters = createEnvFilters("x");
         String colToSort = "d.deploymentDate";
         String uniqueCol ="d.id";
 
@@ -202,6 +177,24 @@ public class CommonFilterServicePersistenceTest {
 
         //then
         assertThat(query.getResultList().size(), is(1));
+    }
+
+    private void persistTestEnvironment(String envName){
+        ContextEntity uppercaseContext = new ContextEntity();
+        uppercaseContext.setName(envName);
+        entityManager.persist(uppercaseContext);
+        DeploymentEntity uppercaseDeployment = new DeploymentEntity();
+        uppercaseDeployment.setContext(uppercaseContext);
+        entityManager.persist(uppercaseDeployment);
+    }
+
+    private List<CustomFilter> createEnvFilters(String filterString) {
+        List<CustomFilter> filters = new ArrayList<>();
+        CustomFilter filter = CustomFilter.builder(ENVIRONMENT_NAME).isSelected(true)
+                .build();
+        filter.setValue(filterString);
+        filters.add(filter);
+        return filters;
     }
 
 }
