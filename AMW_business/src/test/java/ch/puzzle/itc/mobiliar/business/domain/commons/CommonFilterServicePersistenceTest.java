@@ -21,8 +21,14 @@
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextTypeEntity;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +41,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -137,6 +144,57 @@ public class CommonFilterServicePersistenceTest {
 
         // then
         assertThat(query.getParameters().iterator().next().getName(), is("Deploymentparameter0"));
+    }
+
+
+    @Test
+    public void test_environmentCaseInsensitiveSearchUpper(){
+        //Given
+        persistTestEnvironment("i");
+        StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ");
+        List<CustomFilter> filters = createEnvFilters("I");
+        String colToSort = "d.deploymentDate";
+        String uniqueCol ="d.id";
+
+        //when
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, true, false);
+
+        //then
+        assertThat(query.getResultList().size(), is(1));
+    }
+
+    @Test
+    public void test_environmentCaseInsensitiveSearchLower(){
+        //Given
+        persistTestEnvironment("X");
+        StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ");
+        List<CustomFilter> filters = createEnvFilters("x");
+        String colToSort = "d.deploymentDate";
+        String uniqueCol ="d.id";
+
+        //when
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, true, false);
+
+        //then
+        assertThat(query.getResultList().size(), is(1));
+    }
+
+    private void persistTestEnvironment(String envName){
+        ContextEntity context = new ContextEntity();
+        context.setName(envName);
+        entityManager.persist(context);
+        DeploymentEntity deployment = new DeploymentEntity();
+        deployment.setContext(context);
+        entityManager.persist(deployment);
+    }
+
+    private List<CustomFilter> createEnvFilters(String filterString) {
+        List<CustomFilter> filters = new ArrayList<>();
+        CustomFilter filter = CustomFilter.builder(ENVIRONMENT_NAME).isSelected(true)
+                .build();
+        filter.setValue(filterString);
+        filters.add(filter);
+        return filters;
     }
 
 }
