@@ -20,11 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.server.boundary;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -75,11 +71,11 @@ public class ServerView {
 		
 		List<ServerTuple> nodeServers = this.getNodeServers(hostFilter, appServerFilter, runtimeFilter, nodeFilter, contextFilter);
 		List<ServerTuple> asServers = this.getAppServers(hostFilter, appServerFilter, runtimeFilter, nodeFilter, contextFilter);
-		nodeServers.addAll(asServers);
+		nodeServers.addAll(new HashSet<>(asServers));
 
 		result = nodeServers;
 		if(merge) {
-			result = new LinkedList<ServerTuple>(merge(result).values());
+			result = new LinkedList<>(merge(result).values());
 		}
 		
 		//sort
@@ -96,19 +92,19 @@ public class ServerView {
 
 	// filter duplicates and merge releases, runtime with same hostname
 	private HashMap<String, ServerTuple> merge(List<ServerTuple> servers) {
-        HashMap<String, ServerTuple> releaseFilteredServer = new HashMap<String, ServerTuple>();
+        HashMap<String, ServerTuple> releaseFilteredServer = new HashMap<>();
         for(ServerTuple server : servers) {
             String code = server.getHost()+server.getAppServer()+server.getEnvironment()+server.getNode();
             if(releaseFilteredServer.containsKey(code)) {
                 ServerTuple oldServer = releaseFilteredServer.get(code);
                 
-                if(oldServer.getAppServerRelease() != server.getAppServerRelease()) {
+                if(!oldServer.getAppServerRelease().equals(server.getAppServerRelease())) {
                     server.setAppServerRelease(MULTI_MARKER);
                 }
-                if(oldServer.getNodeRelease() != server.getNodeRelease()) {
+                if(!oldServer.getNodeRelease().equals(server.getNodeRelease())) {
                     server.setNodeRelease(MULTI_MARKER);
                 }
-                if(oldServer.getRuntime() != server.getRuntime()) {
+                if(!oldServer.getRuntime().equals(server.getRuntime())) {
                     server.setRuntime(MULTI_MARKER);
                 }
             }
