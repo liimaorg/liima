@@ -92,19 +92,19 @@ public class ServerView {
 
 	// filter duplicates and merge releases, runtime with same hostname
 	private HashMap<String, ServerTuple> merge(List<ServerTuple> servers) {
-        HashMap<String, ServerTuple> releaseFilteredServer = new HashMap<String, ServerTuple>();
+        HashMap<String, ServerTuple> releaseFilteredServer = new HashMap<>();
         for(ServerTuple server : servers) {
             String code = server.getHost()+server.getAppServer()+server.getEnvironment()+server.getNode();
             if(releaseFilteredServer.containsKey(code)) {
                 ServerTuple oldServer = releaseFilteredServer.get(code);
                 
-                if(oldServer.getAppServerRelease() != server.getAppServerRelease()) {
+                if(!oldServer.getAppServerRelease().equals(server.getAppServerRelease())) {
                     server.setAppServerRelease(MULTI_MARKER);
                 }
-                if(oldServer.getNodeRelease() != server.getNodeRelease()) {
+                if(!oldServer.getNodeRelease().equals(server.getNodeRelease())) {
                     server.setNodeRelease(MULTI_MARKER);
                 }
-                if(oldServer.getRuntime() != server.getRuntime()) {
+                if(!oldServer.getRuntime().equals(server.getRuntime())) {
                     server.setRuntime(MULTI_MARKER);
                 }
             }
