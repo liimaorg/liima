@@ -141,6 +141,7 @@ module.exports = function (options) {
           exclude: [helpers.root('src/index.html')]
         },
 
+
         /**
          * Instruments JS files with Istanbul for subsequent code coverage reporting.
          * Instrument only testing sources.

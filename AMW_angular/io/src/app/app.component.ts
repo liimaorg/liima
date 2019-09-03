@@ -1,14 +1,12 @@
 /*
  * Angular 4 decorators and services
  */
-import { Component, ViewEncapsulation, OnInit, AfterViewInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppState } from './app.service';
 import { SettingService } from './setting/setting.service';
 import { AppConfiguration } from './setting/app-configuration';
 import * as _ from 'lodash';
-
-declare var $: any;
 
 /*
  * App Component
@@ -22,7 +20,7 @@ declare var $: any;
   ],
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class AppComponent implements OnInit, AfterViewChecked {
   name = 'Angular 4';
 
   private logoutUrlKey: string = 'amw.logoutUrl';
@@ -40,10 +38,6 @@ export class AppComponent implements OnInit, AfterViewInit, AfterViewChecked {
   ngAfterViewChecked() {
     // explicit change detection to avoid "expression-has-changed-after-it-was-checked-error"
     this.cdRef.detectChanges();
-  }
-
-  ngAfterViewInit() {
-    $('.navbar-lower').affix({offset: {top: 50}});
   }
 
   navigateTo(item: any) {

@@ -1,9 +1,7 @@
 import { Component, Input, Output, EventEmitter, NgZone } from '@angular/core';
 import { Deployment } from './deployment';
-import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as moment from 'moment';
 
-declare var $: any;
 
 @Component({
   selector: 'amw-deployments-edit-modal',

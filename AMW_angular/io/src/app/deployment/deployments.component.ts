@@ -15,8 +15,6 @@ import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
-declare var $: any;
-
 @Component({
   selector: 'amw-deployments',
   templateUrl: './deployments.component.html'
