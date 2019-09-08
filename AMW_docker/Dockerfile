@@ -1,4 +1,4 @@
-FROM jboss/wildfly:13.0.0.Final
+FROM jboss/wildfly:17.0.1.Final
 MAINTAINER liimaorg <amw-dev@puzzle.ch>
 
 # adds datasource, mail and security-domain
