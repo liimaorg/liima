@@ -1,6 +1,6 @@
-import { Headers, Response } from '@angular/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -12,19 +12,14 @@ export class BaseService {
     return this.baseUrl;
   }
 
-  // to json without throwing an error if response is empty
-  public extractPayload(res: Response) {
-    return res.text() ? res.json() : {};
-  }
-
   public getHeaders() {
-    const headers = new Headers();
+    const headers = new HttpHeaders();
     headers.append('Accept', 'application/json');
     return headers;
   }
 
   public postHeaders() {
-    const headers = new Headers();
+    const headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json');
     headers.append('Accept', 'application/json');
     return headers;

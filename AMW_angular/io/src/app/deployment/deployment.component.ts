@@ -18,7 +18,8 @@ import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as $ from 'jquery';
-
+// fix for: Cannot find name 'require'
+declare var require: any;
 $.fn.datetimepicker = require('eonasdan-bootstrap-datetimepicker');
 
 @Component({

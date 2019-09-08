@@ -106,7 +106,7 @@ export class DeploymentsEditModalComponent {
   }
 
   private addDatePicker() {
-    this.ngZone.onMicrotaskEmpty.first().subscribe(() => {
+    this.ngZone.onMicrotaskEmpty.subscribe(() => {
       $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
     });
   }

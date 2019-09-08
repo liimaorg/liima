@@ -55,7 +55,7 @@ export class DeploymentsListComponent {
   showDateChange(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     $('#deploymentDateChange').modal('show');
-    this.ngZone.onMicrotaskEmpty.first().subscribe(() => {
+    this.ngZone.onMicrotaskEmpty.subscribe(() => {
       $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
     });
   }

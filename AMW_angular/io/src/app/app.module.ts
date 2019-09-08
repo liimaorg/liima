@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { NgSelectModule } from '@ng-select/ng-select';
 /*
  * Feature Modules
@@ -16,13 +16,13 @@ import { BaseModule } from './base/base.module';
 /*
  * Platform and Environment providers/directives/pipes
  */
-import { ENV_PROVIDERS } from './environment';
 import { AppRoutingModule } from './app-routing.module';
 // App is our top level component
 import { AppComponent } from './app.component';
-import { APP_RESOLVER_PROVIDERS } from './app.resolver';
-import { AppState, InternalStateType } from './app.service';
 import { PageNotFoundComponent } from './not-found.component';
+import { AppState, InternalStateType } from './app.service';
+import { APP_RESOLVER_PROVIDERS } from './app.resolver';
+
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -49,7 +49,7 @@ type StoreType = {
     BrowserAnimationsModule,
     NgSelectModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     AppRoutingModule,
     ResourceModule,
     DeploymentModule,
@@ -59,9 +59,10 @@ type StoreType = {
     BaseModule
   ],
   providers: [ // expose our Services and Providers into Angular's dependency injection
-    ENV_PROVIDERS,
     APP_PROVIDERS
-  ],
-  bootstrap: [AppComponent]
+  ],  bootstrap: [AppComponent]
 })
 export class AppModule {}
+
+
+

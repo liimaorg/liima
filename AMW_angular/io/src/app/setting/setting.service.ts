@@ -1,22 +1,21 @@
-import { Http, Response } from '@angular/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { AppConfiguration } from './app-configuration';
 import { BaseService } from '../base/base.service';
 
 @Injectable()
 export class SettingService extends BaseService {
 
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
     super();
   }
 
   getAllAppSettings(): Observable<AppConfiguration[]> {
-    const resource$ = this.http
-      .get(`${this.getBaseUrl()}/settings`, {headers: this.getHeaders()})
-      .map((response: Response) => this.extractPayload(response))
-      .catch(this.handleError);
-    return resource$;
+    return this.http
+      .get<AppConfiguration[]>(`${this.getBaseUrl()}/settings`, {headers: this.getHeaders()})
+      .pipe(catchError(this.handleError));
   }
 
 }

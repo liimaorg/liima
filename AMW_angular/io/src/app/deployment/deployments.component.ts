@@ -2,8 +2,8 @@ import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { AnonymousSubscription } from 'rxjs/Subscription';
+import { Observable, Subscription } from 'rxjs';
+import { timer } from 'rxjs';
 import { AppState } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
 import { Deployment } from './deployment';
@@ -74,13 +74,13 @@ export class DeploymentsComponent implements OnInit {
   // auto refresh
   refreshIntervals: number[] = [0, 5, 10, 30, 60, 120];
   refreshInterval: number = 0;
-  timerSubscription: AnonymousSubscription;
+  timerSubscription: Subscription;
 
   errorMessage: string = '';
   successMessage: string = '';
   isLoading: boolean = true;
 
-  @ViewChild('selectModel')
+  @ViewChild('selectModel', {static: false})
   selectModel: NgModel;
 
   constructor(private activatedRoute: ActivatedRoute,
@@ -295,7 +295,7 @@ export class DeploymentsComponent implements OnInit {
 
   autoRefresh() {
     if (this.refreshInterval > 0 && !this.timerSubscription) {
-      this.timerSubscription = Observable.timer(this.refreshInterval * 1000).first().subscribe(() => {
+      this.timerSubscription = timer(this.refreshInterval * 1000).subscribe(() => {
         this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
         this.timerSubscription = null;
       });
@@ -346,7 +346,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private addDatePicker() {
-    this.ngZone.onMicrotaskEmpty.first().subscribe(() => {
+    this.ngZone.onMicrotaskEmpty.subscribe(() => {
       $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
     });
   }

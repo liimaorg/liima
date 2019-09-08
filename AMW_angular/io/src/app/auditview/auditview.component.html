@@ -46,10 +46,6 @@
         <div class="table-responsive">
           <table id="auditview-list"
                  class="table table-sm"
-                 [mfData]="auditLogEntries | auditviewFilter : filterQuery"
-                 #mf="mfDataTable"
-                 mfSortOrder="desc"
-                 mfSortBy="timestamp"
                  *ngIf="(auditLogEntries.length > 0)">
             <tr>
               <th colspan="9">
@@ -60,18 +56,18 @@
             </tr>
 
             <tr>
-              <th><mfDefaultSorter by="timestamp">Timestamp</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="relation">Relation</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="type">Type</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="name">Name (Property Descriptor etc.)</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="editContextName">Context</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="mode">Mode</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="oldValue">Old Value</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="value">New Value</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="username">Username</mfDefaultSorter></th>
+              <th>Timestamp</th>
+              <th>Relation</th>
+              <th>Type</th>
+              <th>Name (Property Descriptor etc.)</th>
+              <th>Context</th>
+              <th>Mode</th>
+              <th>Old Value</th>
+              <th>New Value</th>
+              <th>Username</th>
             </tr>
 
-            <tr *ngFor="let entry of mf.data">
+            <tr *ngFor="let entry of auditLogEntries">
               <td>{{entry.timestamp | date:'dd.MM.y HH:mm:ss'}}</td>
               <td>{{entry.relation}}</td>
               <td>{{entry.type}}</td>

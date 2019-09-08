@@ -31,11 +31,13 @@ import 'zone.js/dist/zone';
 
 // Typescript emit helpers polyfill
 import 'ts-helpers';
+declare var require: any
 
 if ('production' === ENV) {
   // Production
 } else {
   // Development
   Error.stackTraceLimit = Infinity;
+  // fix for: Cannot find name 'require'
   require('zone.js/dist/long-stack-trace-zone');
 }

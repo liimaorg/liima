@@ -3,7 +3,7 @@ import { inject, TestBed } from '@angular/core/testing';
 import { ConnectionBackend, Http, HttpModule } from '@angular/http';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 
 // Load the implementations that should be tested
 import { AppComponent } from './app.component';
