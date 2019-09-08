@@ -3,7 +3,7 @@ import { inject, TestBed } from '@angular/core/testing';
 import { ConnectionBackend, Http, HttpModule } from '@angular/http';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable } from 'rxjs';
+import { of } from 'rxjs';
 
 // Load the implementations that should be tested
 import { AppComponent } from './app.component';
@@ -55,7 +55,7 @@ describe('App', () => {
       const configKeyVal: string = 'amw.logoutUrl';
       const configKeyEnv: string = 'AMW_LOGOUTURL';
       const appConf: AppConfiguration = {key: { value: configKeyVal, env: configKeyEnv }, value: expectedValue } as AppConfiguration;
-      spyOn(settingService, 'getAllAppSettings').and.returnValues(Observable.of([ appConf ]));
+      spyOn(settingService, 'getAllAppSettings').and.returnValues(of([ appConf ]));
       spyOn(appState, 'set').and.callThrough();
       // when
       app.ngOnInit();
@@ -69,7 +69,7 @@ describe('App', () => {
       const expectedKey: string = 'logoutUrl';
       const expectedValue: string = '';
       const appConf: AppConfiguration =  {key: { value: 'test', env: 'TEST'}} as AppConfiguration;
-      spyOn(settingService, 'getAllAppSettings').and.returnValues(Observable.of([ appConf ]));
+      spyOn(settingService, 'getAllAppSettings').and.returnValues(of([ appConf ]));
       spyOn(appState, 'set').and.callThrough();
       // when
       app.ngOnInit();

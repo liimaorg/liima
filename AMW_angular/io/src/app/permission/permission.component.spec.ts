@@ -12,7 +12,7 @@ import { ResourceService } from '../resource/resource.service';
 import { Environment } from '../deployment/environment';
 import { AppState } from '../app.service';
 import { Restriction } from './restriction';
-import { Observable } from 'rxjs';
+import { of } from 'rxjs';
 import { Permission } from './permission';
 import { Tag } from './tag';
 
@@ -70,8 +70,8 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     const permissions: Permission[] = [{name: 'RESOURCE', old: false} as Permission, {name: 'RESOURCE_TYPE', old: false} as Permission];
     const environments: Environment[] = [{id: 1, name: 'U', parent: 'Dev'} as Environment,
       {id: 2, name: 'V', parent: 'Dev'} as Environment, {id: 3, name: 'T', parent: 'Test'} as Environment];
-    spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(Observable.of(permissions));
-    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(Observable.of(environments));
+    spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(of(permissions));
+    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
     spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
     spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
     // when
@@ -100,7 +100,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       {id: 23, action: 'CREATE', permission: {name: 'RESOURCE'} as Permission} as Restriction] ;
     permissionComponent.selectedRoleName = 'TESTER';
     permissionComponent.roleNames = ['tester', 'role'];
-    spyOn(permissionService, 'getRoleWithRestrictions').and.returnValue(Observable.of(restrictions));
+    spyOn(permissionService, 'getRoleWithRestrictions').and.returnValue(of(restrictions));
     // when
     permissionComponent.onChangeRole();
     // then
@@ -156,7 +156,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         {id: 42, action: 'CREATE', permission: {name: 'SAME'} as Permission} as Restriction];
       permissionComponent.selectedUserNames = ['Tester'];
       permissionComponent.userNames = ['tester', 'user'];
-      spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(Observable.of(restrictions));
+      spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(of(restrictions));
       // when
       permissionComponent.onChangeUser(['Tester']);
       // then
@@ -174,7 +174,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         {id: 42, action: 'CREATE', permission: {name: 'SAME'} as Permission} as Restriction];
       permissionComponent.selectedUserNames = ['Tester'];
       permissionComponent.userNames = ['tester', 'user'];
-      spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(Observable.of(restrictions));
+      spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(of(restrictions));
       // when
       permissionComponent.onChangeUser([{label: 'Tester'} as Tag]);
       // then
@@ -335,7 +335,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         BaseRequestOptions, {
           provide: ActivatedRoute,
           useValue: {
-            params: Observable.of({restrictionType: 'user'})
+            params: of({restrictionType: 'user'})
           },
         },
         MockBackend,
@@ -363,8 +363,8 @@ describe('PermissionComponent without any params (default: type Role)', () => {
           const permissions: Permission[] = [{name: 'RESOURCE', old: false} as Permission, {name: 'RESOURCE_TYPE', old: false} as Permission];
           const environments: Environment[] = [{id: 1, name: 'U', parent: 'Dev'} as Environment,
             {id: 2, name: 'V', parent: 'Dev'} as Environment, {id: 3, name: 'T', parent: 'Test'} as Environment];
-          spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(Observable.of(permissions));
-          spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(Observable.of(environments));
+          spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(of(permissions));
+          spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
           spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
           spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
           spyOn(permissionService, 'getAllUserRestrictionNames').and.callThrough();
@@ -400,7 +400,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         BaseRequestOptions, {
           provide: ActivatedRoute,
           useValue: {
-            params: Observable.of({actingUser: 'testUser'})
+            params: of({actingUser: 'testUser'})
           },
         },
         MockBackend,
@@ -432,9 +432,9 @@ describe('PermissionComponent without any params (default: type Role)', () => {
             {name: 'RESOURCE_TYPE', old: false, longName: 'RESOURCE_TYPE'}];
           const environments: Environment[] = [{id: 1, name: 'U', parent: 'Dev'} as Environment,
             {id: 2, name: 'V', parent: 'Dev'} as Environment, {id: 3, name: 'T', parent: 'Test'} as Environment];
-          spyOn(permissionService, 'getAllUserRestrictionNames').and.returnValue(Observable.of(userNames));
-          spyOn(permissionService, 'getOwnUserAndRoleRestrictions').and.returnValue(Observable.of(restrictions));
-          spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(Observable.of(environments));
+          spyOn(permissionService, 'getAllUserRestrictionNames').and.returnValue(of(userNames));
+          spyOn(permissionService, 'getOwnUserAndRoleRestrictions').and.returnValue(of(restrictions));
+          spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
           spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
           spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
           // when
