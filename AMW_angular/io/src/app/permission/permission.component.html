@@ -19,7 +19,7 @@
         <div class="form-group" *ngIf="restrictionType == 'role'">
           <label for="selectRole" class="col-sm-1 control-label">Role</label>
           <div class="col-sm-11 col-md-5">
-            <input id="selectRole" class="form-control input-sm" list="roleList" type="text" [(ngModel)]="selectedRoleName" (ngModelChange)="onChangeRole($event)">
+            <input id="selectRole" class="form-control input-sm" list="roleList" type="text" [(ngModel)]="selectedRoleName" (ngModelChange)="onChangeRole()">
             <datalist id="roleList">
               <ng-container *ngIf="roleNames.length > 0">
                 <option [ngValue]="roleName" *ngFor="let roleName of roleNames">{{roleName}}</option>

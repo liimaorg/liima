@@ -20,7 +20,7 @@
         <div class="form-group" *ngIf="appservers.length > 0">
           <label for="selectApplicationserver" class="col-sm-2 control-label">Applicationserver</label>
           <div class="col-sm-10 col-md-5">
-            <select id="selectApplicationserver" class="form-control input-sm" [(ngModel)]="selectedAppserver" (ngModelChange)="onChangeAppserver($event)">
+            <select id="selectApplicationserver" class="form-control input-sm" [(ngModel)]="selectedAppserver" (ngModelChange)="onChangeAppserver()">
               <option [ngValue]="server" *ngFor="let server of appservers">{{server.name}}</option>
             </select>
           </div>
@@ -36,7 +36,7 @@
         <div class="form-group" *ngIf="!isRedeployment">
           <label for="selectRelease" class="col-sm-2 control-label">Release</label>
           <div class="col-sm-10 col-md-5">
-            <select *ngIf="selectedAppserver" id="selectRelease" class="form-control input-sm" [(ngModel)]="selectedRelease" (ngModelChange)="onChangeRelease($event)">
+            <select *ngIf="selectedAppserver" id="selectRelease" class="form-control input-sm" [(ngModel)]="selectedRelease" (ngModelChange)="onChangeRelease()">
               <option [ngValue]="release" *ngFor="let release of releases">{{release.release}}</option>
             </select>
           </div>
@@ -48,7 +48,7 @@
             <ng-container *ngFor="let group of getEnvironmentGroups()">
               <h5 class="environments-title">{{group}}: </h5>
               <ng-container *ngFor="let env of groupedEnvironments[group]">
-                <label class="checkbox-inline"><input type="checkbox" (change)="onChangeEnvironment($event)" [(ngModel)]="env.selected">{{env.name}}
+                <label class="checkbox-inline"><input type="checkbox" (change)="onChangeEnvironment()" [(ngModel)]="env.selected">{{env.name}}
                   <ng-container *ngIf="env.nameAlias">({{env.nameAlias}})</ng-container>
                 </label>
               </ng-container>
@@ -107,7 +107,7 @@
             <input class="form-control" type="text" [(ngModel)]="transDeploymentParameter.value">
           </div>
           <div class="col-sm-2">
-            <button type="button" class="btn btn-default" *ngIf="(transDeploymentParameter.key && transDeploymentParameter.value)" (click)="onAddParam($event)">
+            <button type="button" class="btn btn-default" *ngIf="(transDeploymentParameter.key && transDeploymentParameter.value)" (click)="onAddParam()">
               <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
             </button>
           </div>

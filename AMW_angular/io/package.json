@@ -8,7 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "mavenbuild": "node node_modules/.bin/ng build --outputPath=dist"
+    "mavenbuild": "node node_modules/.bin/ng build --prod --outputPath=dist"
   },
   "private": true,
   "dependencies": {

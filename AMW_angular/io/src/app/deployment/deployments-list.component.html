@@ -60,7 +60,7 @@
         </td>
         <td>
           <ng-container *ngIf="deployment.actions.editPossible">
-            <span [attr.class]="deployment.deploymentDelayed ? 'glyphicon glyphicon-hourglass pointer' : pointer" (click)="showDateChange(deployment.id)" title="change the deployment date">
+            <span [attr.class]="deployment.deploymentDelayed ? 'glyphicon glyphicon-hourglass pointer' : 'pointer'" (click)="showDateChange(deployment.id)" title="change the deployment date">
               <span [attr.class]="deployment.deploymentDelayed ? 'delayed' : 'action'">{{deployment.deploymentDate | date:'dd.MM.y HH:mm'}}</span>
             </span>
           </ng-container>
