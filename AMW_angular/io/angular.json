@@ -42,7 +42,7 @@
               ],
               "optimization": true,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": true,
               "extractCss": true,
               "namedChunks": false,
               "aot": true,
@@ -67,7 +67,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "liima:build"
+            "browserTarget": "liima:build",
+            "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {
