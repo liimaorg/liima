@@ -1,6 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { throwError } from 'rxjs';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -36,6 +36,6 @@ export class BaseService {
     }
     console.error(errorMsg);
     // throw an application level error
-    return Observable.throw(errorMsg);
+    return throwError(errorMsg);
   }
 }
