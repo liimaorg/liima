@@ -23,12 +23,14 @@ export class DeploymentService extends BaseService {
   }
 
   getFilteredDeployments(filterString: string, sortCol: string, sortDir: string, offset: number, maxResults: number): Observable<{ deployments: Deployment[], total: number }> {
-    const params = new HttpParams();
-    params.append('filters', filterString);
-    params.append('colToSort', sortCol);
-    params.append('sortDirection', sortDir);
-    params.append('offset', String(offset));
-    params.append('maxResults', String(maxResults));
+    let paramObj = {
+    'filters': filterString,
+    'colToSort': sortCol,
+    'sortDirection': sortDir,
+    'offset': String(offset),
+    'maxResults': String(maxResults)
+    }
+    let params = new HttpParams({fromObject:paramObj});
 
     return this.http
       .get<Deployment[]>(`${this.getBaseUrl()}/deployments/filter`,
