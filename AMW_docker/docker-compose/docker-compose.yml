@@ -1,0 +1,21 @@
+version: "3.7"
+
+networks:
+  amw-docker-net:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+services:
+  amw:
+    container_name: amw
+    image: liimaorg/liima:snapshot
+    networks:
+      amw-docker-net:
+        ipv4_address: 172.20.0.10
+    restart: "no"
+    ports:
+      - 8080:8080
+      - 9990:9990
+      - 8787:8787
+    command: bin/standalone.sh -b=0.0.0.0 -bmanagement=0.0.0.0 --debug *:8787

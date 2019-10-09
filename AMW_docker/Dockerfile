@@ -20,4 +20,4 @@ RUN $JBOSS_HOME/bin/jboss-cli.sh --file=$JBOSS_HOME/standalone/configuration/${c
     cp /tmp/amwFileDbIntegrationEmpty.h2.db $JBOSS_HOME/standalone/data/amw
 
 
-CMD ["bin/standalone.sh", "-P", "standalone/configuration/props/amw-system.properties", "-b=0.0.0.0", "-bmanagement=0.0.0.0"]
+CMD ["bin/standalone.sh", "-P", "standalone/configuration/props/amw-system.properties", "-b=0.0.0.0", "-bmanagement=0.0.0.0", "--debug", "*:8787"]

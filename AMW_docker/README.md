@@ -1,14 +1,45 @@
 # Liima Docker image
 
-The images includes the h2 test database with sample data. The ear file has to be built beforehand.  
-User/PW is found in configuration/props/application-users.properties  
-This images is meant for demo and testing purposes and is not production ready, data is stored in the embedded h2 database in the container and will be lost if the container is removed.
+This image is meant to run liima code quickly on widlfly server provided on docker. 
+Data is stored in the embedded h2 database in the container and it will be lost if the container is removed.
 
-## Building
+To run latest code on docker, build the latest ear package:
+```
+mvn clean install
+```  
 
-    AMW_docker/build.sh
+## Building docker image
 
-## Start the container
+Create docker image:
+```
+AMW_docker/build.sh
+```
 
-    AMW_docker/run.sh
-    
+## Start the application
+
+Start the container:
+```
+docker-compose -f ./AMW_docker/docker-compose/docker-compose.yml up -d
+```
+Follow application logs:
+```
+docker-compose -f AMW_docker/docker-compose/docker-compose.yml logs -f
+```
+Access web application on: http://localhost:8080/AMW_web/
+
+and swagger UI on: http://localhost:8080/AMW_rest/
+
+User/PW for app login can be found in:
+```
+configuration/props/application-users.properties
+```
+
+## Debug the application
+
+From *Run/Debug configurations* in IntelliJ select ```Debug application remotely on docker``` and click on debug (Shift+F9) in order to debug application from IDE.
+If debug is successfully started, following command will appear in Debug Console: 
+```
+Connected to the target VM, address: 'localhost:8787', transport: 'socket'
+```
+
+
