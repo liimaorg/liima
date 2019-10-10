@@ -9,6 +9,14 @@ with various versions, including the automated deployment of those apps.
 
 Liima Docs are available under https://github.com/liimaorg/docs
 
+## Run Liima locally on docker
+
+Preconditions:
+- install docker 
+- install docker-compose
+
+Follow [ReadMe file](./AMW_docker/README.md) in order to run Liima locally on docker.
+
 ## Build and create Release 
 Build the Liima ear
 

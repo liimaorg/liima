@@ -18,4 +18,3 @@ services:
       - 8080:8080
       - 9990:9990
       - 8787:8787
-    command: bin/standalone.sh -b=0.0.0.0 -bmanagement=0.0.0.0 --debug *:8787
