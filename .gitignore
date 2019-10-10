@@ -23,4 +23,5 @@ AMW_docker/tmp
 .factorypath
 *.exe
 
-!.idea
+.idea/*
+!/.idea/runConfigurations
