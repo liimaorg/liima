@@ -22,3 +22,6 @@ AMW_angular/io/node/node
 AMW_docker/tmp
 .factorypath
 *.exe
+
+.idea/*
+!/.idea/runConfigurations
