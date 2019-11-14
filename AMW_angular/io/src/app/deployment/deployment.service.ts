@@ -31,12 +31,13 @@ export class DeploymentService extends BaseService {
     'maxResults': String(maxResults)
     }
     let params = new HttpParams({fromObject:paramObj});
-
     return this.http
       .get<Deployment[]>(`${this.getBaseUrl()}/deployments/filter`,
         {
+          headers: new HttpHeaders({
+            'Accept': 'application/json',
+          }),
           params: params,
-          headers: this.getHeaders(),
           observe: 'response'
         })
       .pipe(
@@ -174,12 +175,12 @@ export class DeploymentService extends BaseService {
     return headers;
   }
 
-  private extractDeploymentsAndTotalCount(res: HttpResponse<Deployment[]>) {
+  private extractDeploymentsAndTotalCount(res: HttpResponse<any>) {
+    debugger;
     const headerField: string = 'X-Total-Count';
     const ob: { deployments: Deployment[], total: number } = { deployments: [], total: 0 };
     ob.deployments = res.body;
     ob.total = res.headers.get(headerField) ? parseInt(res.headers.get(headerField), 10) : 0;
     return ob;
   }
-
 }
