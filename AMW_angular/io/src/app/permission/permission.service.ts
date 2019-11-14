@@ -72,10 +72,9 @@ export class PermissionService extends BaseService {
       })
       .pipe(
         flatMap((res: HttpResponse<Restriction>) => {
-          return this.http.get<Restriction>(this.getBaseUrl() + res.headers.get('Location'));
-        }
-         // catchError(this.handleError) // todo: how to fix???
-        )
+          return this.http.get<Restriction>(this.getBaseUrl() + res.headers.get('Location'))
+          .pipe(catchError(this.handleError));
+        })
       );
   }
 
