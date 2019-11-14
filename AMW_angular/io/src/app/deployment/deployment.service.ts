@@ -176,7 +176,6 @@ export class DeploymentService extends BaseService {
   }
 
   private extractDeploymentsAndTotalCount(res: HttpResponse<any>) {
-    debugger;
     const headerField: string = 'X-Total-Count';
     const ob: { deployments: Deployment[], total: number } = { deployments: [], total: 0 };
     ob.deployments = res.body;
