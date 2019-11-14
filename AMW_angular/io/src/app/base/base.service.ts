@@ -34,7 +34,7 @@ export class BaseService {
         console.log(e);
       }
     }
-    console.error(errorMsg);
+    console.error(error);
     // throw an application level error
     return throwError(errorMsg);
   }
