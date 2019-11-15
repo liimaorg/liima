@@ -7,11 +7,6 @@ describe('BaseService', () => {
     providers: [BaseService]
   }));
 
-  it('should have an extractPayload method',
-    inject([BaseService], (baseService: BaseService) => {
-      expect(baseService.extractPayload).toBeDefined();
-  }));
-
   it('should have a getBaseUrl method',
     inject([BaseService], (baseService: BaseService) => {
       expect(baseService.getBaseUrl).toBeDefined();
