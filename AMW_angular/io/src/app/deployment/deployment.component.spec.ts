@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { inject, TestBed } from '@angular/core/testing';
-import { BaseRequestOptions, ConnectionBackend, Http } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
+import { HttpRequest, HttpBackend, HttpClient } from '@angular/common/http';
+import { HttpTestingController} from '@angular/common/http/testing';
 import { CommonModule } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DeploymentComponent } from './deployment.component';
@@ -36,14 +36,14 @@ describe('DeploymentComponent (create deployment)', () => {
       ])
     ],
     providers: [
-      BaseRequestOptions,
-      MockBackend,
+      HttpRequest,
+      HttpTestingController,
       {
-        provide: Http,
-        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
-          return new Http(backend, defaultOptions);
+        provide: HttpClient,
+        useFactory(backend: HttpBackend) {
+          return new HttpClient(backend);
         },
-        deps: [MockBackend, BaseRequestOptions]
+        deps: [HttpTestingController, HttpRequest]
       },
       EnvironmentService,
       DeploymentService,
@@ -335,19 +335,19 @@ describe('DeploymentComponent (create deployment with params)', () => {
       ])
     ],
     providers: [
-      BaseRequestOptions, {
+      HttpRequest, {
         provide: ActivatedRoute,
         useValue: {
           params: of({appserverName: 'aServer', releaseName: 'aRelease'})
         },
       },
-      MockBackend,
+      HttpTestingController,
       {
-        provide: Http,
-        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
-          return new Http(backend, defaultOptions);
+        provide: HttpClient,
+        useFactory(backend: HttpBackend) {
+          return new HttpClient(backend);
         },
-        deps: [MockBackend, BaseRequestOptions]
+        deps: [HttpTestingController, HttpRequest]
       },
       EnvironmentService,
       DeploymentService,
@@ -379,19 +379,19 @@ describe('DeploymentComponent (create deployment with fake redeploy param)', () 
       ])
     ],
     providers: [
-      BaseRequestOptions, {
+      HttpRequest, {
         provide: ActivatedRoute,
         useValue: {
           params: of({deploymentId: 'aServer'})
         },
       },
-      MockBackend,
+      HttpTestingController,
       {
-        provide: Http,
-        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
-          return new Http(backend, defaultOptions);
+        provide: HttpClient,
+        useFactory(backend: HttpBackend) {
+          return new HttpClient(backend);
         },
-        deps: [MockBackend, BaseRequestOptions]
+        deps: [HttpTestingController, HttpRequest]
       },
       EnvironmentService,
       DeploymentService,
@@ -422,19 +422,19 @@ describe('DeploymentComponent (redeployment)', () => {
       ])
     ],
     providers: [
-      BaseRequestOptions, {
+      HttpRequest, {
         provide: ActivatedRoute,
         useValue: {
           params: of({ deploymentId: 123 })
         },
       },
-      MockBackend,
+      HttpTestingController,
       {
-        provide: Http,
-        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
-          return new Http(backend, defaultOptions);
+        provide: HttpClient,
+        useFactory(backend: HttpBackend) {
+          return new HttpClient(backend);
         },
-        deps: [MockBackend, BaseRequestOptions]
+        deps: [HttpTestingController, HttpRequest]
       },
       EnvironmentService,
       DeploymentService,
