@@ -209,7 +209,7 @@ describe('DeploymentComponent (create deployment)', () => {
     deploymentComponent.releases = [testRelease];
     deploymentComponent.selectedRelease = testRelease;
     spyOn(resourceService, 'getLatestForRelease').and.returnValue(of(betterRelease));
-    spyOn(resourceService, 'getAppsWithVersions').and.returnValue(of(''));
+    spyOn(resourceService, 'getAppsWithVersions').and.returnValue(of([]));
     deploymentComponent.selectedAppserver = {name: 'testServer', releases: [testRelease]} as Resource;
     // when
     deploymentComponent.onChangeRelease();

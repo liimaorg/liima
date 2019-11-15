@@ -117,7 +117,7 @@ describe('DeploymentsComponent (with query params)', () => {
       spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
       spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of([]));
       spyOn(deploymentService, 'canRequestDeployments').and.returnValue(of(true));
-      spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of([]));
+      spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({deployments: [], total:0}));
 
       // when
       deploymentsComponent.ngOnInit();
@@ -348,7 +348,7 @@ describe('DeploymentsComponent (without query params)', () => {
       const comparatorOptions: ComparatorFilterOption[] = [{name: 'lt', displayName: '<'}, {name: 'eq', displayName: 'is'}, {name: 'neq', displayName: 'is not' }];
       spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
       spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
-      spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of([]));
+      spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({deployments: [], total:0}));
 
       // when
       deploymentsComponent.ngOnInit();
@@ -382,7 +382,7 @@ describe('DeploymentsComponent (without query params)', () => {
         {name: 'eq', displayName: 'is'}, {name: 'neq', displayName: 'is not'}];
       spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
       spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
-      spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of([]));
+      spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({deployments: [], total:0}));
 
       // when
       deploymentsComponent.ngOnInit();
@@ -430,7 +430,7 @@ describe('DeploymentsComponent (without query params)', () => {
         {name: 'eq', displayName: 'is'}, {name: 'neq', displayName: 'is not'}];
       spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
       spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
-      spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of([]));
+      spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({deployments: [], total:0}));
 
       // when
       deploymentsComponent.sortDeploymentsBy('d.trackingId');
