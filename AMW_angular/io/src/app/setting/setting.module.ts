@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { SettingService } from './setting.service';
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
-  imports: [],
+  imports: [NgbModule],
   declarations: [],
   providers: [ SettingService ]
 })

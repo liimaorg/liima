@@ -59,8 +59,8 @@
     <repositories>
         <repository>
             <id>central</id>
-            <name>Maven Central Repository Europe</name>
-            <url>http://uk.maven.org/maven2</url>
+            <name>Maven Central Repository</name>
+            <url>https://repo1.maven.org/maven2/</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>false</enabled>

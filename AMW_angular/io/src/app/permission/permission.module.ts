@@ -8,9 +8,10 @@ import { PermissionRoutingModule } from './permission-routing.module';
 import { RestrictionEditComponent } from './restriction-edit.component';
 import { RestrictionListComponent } from './restriction-list.component';
 import { RestrictionAddComponent } from './restriction-add.component';
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
-  imports: [ CommonModule, FormsModule, NgSelectModule, PermissionRoutingModule ],
+  imports: [ CommonModule, FormsModule, NgSelectModule, PermissionRoutingModule, NgbModule],
   declarations: [ PermissionComponent, RestrictionEditComponent, RestrictionListComponent, RestrictionAddComponent ],
   providers: [ PermissionService ]
 })

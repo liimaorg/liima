@@ -20,6 +20,7 @@
     "@angular/platform-browser": "~8.2.4",
     "@angular/platform-browser-dynamic": "~8.2.4",
     "@angular/router": "~8.2.4",
+    "@ng-bootstrap/ng-bootstrap": "^5.1.5",
     "@ng-select/ng-select": "~3.0.7",
     "bootstrap-3-typeahead": "4.0.2",
     "bootstrap-sass": "3.4.1",

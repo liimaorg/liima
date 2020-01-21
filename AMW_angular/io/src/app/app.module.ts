@@ -22,6 +22,7 @@ import { AppComponent } from './app.component';
 import { PageNotFoundComponent } from './not-found.component';
 import { AppState, InternalStateType } from './app.service';
 import { APP_RESOLVER_PROVIDERS } from './app.resolver';
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 
 // Application wide providers
@@ -56,7 +57,8 @@ type StoreType = {
     AuditviewModule,
     PermissionModule,
     SettingModule,
-    BaseModule
+    BaseModule,
+    NgbModule
   ],
   providers: [ // expose our Services and Providers into Angular's dependency injection
     APP_PROVIDERS
