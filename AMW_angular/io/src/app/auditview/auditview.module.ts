@@ -6,10 +6,9 @@ import { AuditviewRoutingModule } from './auditview-routing.module';
 import { AuditviewService } from './auditview.service';
 import { NewlineFilterPipe } from '../customfilter/newlineFilterPipe';
 import { AuditviewFilterPipe } from '../customfilter/auditviewFilterPipe';
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
-  imports: [CommonModule, FormsModule, AuditviewRoutingModule, NgbModule],
+  imports: [CommonModule, FormsModule, AuditviewRoutingModule],
   declarations: [AuditviewComponent, NewlineFilterPipe, AuditviewFilterPipe],
   providers: [AuditviewService]
 })

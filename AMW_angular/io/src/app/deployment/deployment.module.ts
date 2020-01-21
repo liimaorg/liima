@@ -9,10 +9,9 @@ import { DeploymentService } from './deployment.service';
 import { EnvironmentService } from './environment.service';
 import { DeploymentRoutingModule } from './deployment-routing.module';
 import { PaginationComponent } from './pagination.component';
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
-  imports: [CommonModule, FormsModule, DeploymentRoutingModule, NgbModule],
+  imports: [CommonModule, FormsModule, DeploymentRoutingModule],
   declarations: [DeploymentComponent, DeploymentsComponent, DeploymentsListComponent, DeploymentsEditModalComponent, PaginationComponent],
   providers: [DeploymentService, EnvironmentService]
 })
