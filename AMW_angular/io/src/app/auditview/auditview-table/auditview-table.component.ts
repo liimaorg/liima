@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
-import { Observable, pipe } from 'rxjs';
+import { Component, QueryList, ViewChildren } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
 import { AuditLogEntry } from '../auditview-entry';
-import { AuditviewService } from '../auditview.service';
-import { SortEvent, SortableHeader } from '../sortable.directive';
-import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AuditviewTableService } from '../auditview-table.service';
-import { switchMap } from 'rxjs/operators';
+import { AuditviewService } from '../auditview.service';
+import { SortableHeader, SortEvent } from '../sortable.directive';
 
 @Component({
   selector: 'app-auditview-table',
@@ -17,11 +16,10 @@ export class AuditviewTableComponent {
   auditlogEntries$: Observable<AuditLogEntry[]>;
   total$: Observable<number>;
   resourceId: number;
-
   @ViewChildren(SortableHeader) headers: QueryList<SortableHeader>;
 
   constructor(
-    private service: AuditviewTableService,
+    public service: AuditviewTableService,
     private auditviewservice: AuditviewService,
     private route: ActivatedRoute
   ) {
