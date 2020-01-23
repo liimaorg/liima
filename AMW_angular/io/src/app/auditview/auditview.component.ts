@@ -23,7 +23,7 @@ export class AuditviewComponent implements OnInit {
     private auditViewService: AuditviewService,
     private resourceService: ResourceService,
     private activatedRoute: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.appState.set('navShow', false);
@@ -42,14 +42,14 @@ export class AuditviewComponent implements OnInit {
 
     if (this.resourceId) {
       this.resourceService.getResourceName(this.resourceId).subscribe(
-        /* happy path */ r => (this.name = r),
+        /* happy path */ r => (this.name = r.name),
         /* error path */ e => (this.errorMessage = e),
-        /* onComplete */ () => {}
+        /* onComplete */() => { }
       );
       this.auditViewService.getAuditLogForResource(this.resourceId).subscribe(
         /* happy path */ r => (this.auditLogEntries = r),
         /* error path */ e => (this.errorMessage = e),
-        /* onComplete */ () => (this.isLoading = false)
+        /* onComplete */() => (this.isLoading = false)
       );
     } else {
       console.error('Resource Id must be set');
