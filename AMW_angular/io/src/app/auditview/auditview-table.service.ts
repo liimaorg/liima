@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, Subject, of } from 'rxjs';
-import { tap, debounceTime, switchMap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, Subject, of, combineLatest } from 'rxjs';
+import { tap, debounceTime, switchMap, map } from 'rxjs/operators';
 import { AuditLogEntry } from './auditview-entry';
 import { SortDirection } from './sortable.directive';
 import { DatePipe } from '@angular/common';
@@ -9,11 +9,6 @@ interface State {
   searchTerm: string;
   sortColumn: string;
   sortDirection: SortDirection;
-}
-
-interface SearchResult {
-  auditviewEntries: AuditLogEntry[];
-  total: number;
 }
 
 function sort(
@@ -59,83 +54,69 @@ function compare(v1, v2) {
 })
 export class AuditviewTableService {
   private _loading$ = new BehaviorSubject<boolean>(true);
-  private _search$ = new Subject<void>();
-  private _auditlogentries$ = new BehaviorSubject<AuditLogEntry[]>([]);
-  private _total$ = new BehaviorSubject<number>(0);
 
-  private _state: State = {
-    searchTerm: '',
-    sortColumn: '',
-    sortDirection: ''
-  };
-  auditlogEntries: AuditLogEntry[] = [];
+  private _result$: Observable<AuditLogEntry[]>;
+
+  private searchTerm$ = new BehaviorSubject<string>('');
+  private sortColumn$ = new BehaviorSubject<string>('timestamp');
+  private sortDirection$ = new BehaviorSubject<SortDirection>('');
+  private auditlogEntries$: Subject<AuditLogEntry[]> = new Subject();
+
+  private _search$ = combineLatest(
+    this.searchTerm$,
+    this.sortColumn$,
+    this.sortDirection$,
+    this.auditlogEntries$
+  );
 
   constructor(private pipe: DatePipe) {
-    this._search$
-      .pipe(
-        tap(() => this._loading$.next(true)),
-        debounceTime(200),
-        switchMap(() => this._search()),
-        tap(() => this._loading$.next(false))
-      )
-      .subscribe(result => {
-        this._auditlogentries$.next(result.auditviewEntries);
-      });
-
-    this._search$.next();
+    this._result$ = this._search$.pipe(
+      tap(() => this._loading$.next(true)),
+      debounceTime(200),
+      map(([searchTerm, sortColumn, sortDirection, auditlogEntries]) => {
+        console.log('mapping it');
+        return this._search(
+          searchTerm,
+          sortColumn,
+          sortDirection,
+          auditlogEntries
+        );
+      }),
+      tap(() => this._loading$.next(false))
+    );
   }
 
-  get auditlogEntries$() {
-    return this._auditlogentries$.asObservable();
+  get result$() {
+    return this._result$;
   }
 
-  get total$() {
-    return this._total$.asObservable();
+  set auditLogEntries(entries: AuditLogEntry[]) {
+    this.auditlogEntries$.next(entries);
   }
-
-  get loading$() {
-    return this._loading$.asObservable();
-  }
-  get searchTerm() {
-    return this._state.searchTerm;
-  }
-
   set searchTerm(searchTerm: string) {
-    this._set({ searchTerm });
+    this.searchTerm$.next(searchTerm);
   }
 
   set sortColumn(sortColumn: string) {
-    this._set({ sortColumn });
+    this.sortColumn$.next(sortColumn);
   }
   set sortDirection(sortDirection: SortDirection) {
-    this._set({ sortDirection });
+    this.sortDirection$.next(sortDirection);
   }
 
-  private _set(patch: Partial<State>) {
-    Object.assign(this._state, patch);
-    this._search$.next();
-  }
-  private _search(): Observable<SearchResult> {
-    const { sortColumn, sortDirection, searchTerm } = this._state;
-
+  private _search(
+    searchTerm: string,
+    sortColumn: string,
+    sortDirection: SortDirection,
+    auditlogEntries: AuditLogEntry[]
+  ): AuditLogEntry[] {
     // sort
-    let auditviewEntries = sort(
-      this.auditlogEntries,
-      sortColumn,
-      sortDirection
-    );
+    let auditviewEntries = sort(auditlogEntries, sortColumn, sortDirection);
 
     // filter
-    auditviewEntries = auditviewEntries.filter(entry =>
+    let result = auditviewEntries.filter(entry =>
       matches(entry, searchTerm, this.pipe)
     );
-    const total = auditviewEntries.length;
-
-    return of({ auditviewEntries, total });
-  }
-
-  setAuditlogEntries(entries: AuditLogEntry[]) {
-    this.auditlogEntries = entries;
-    this._search$.next();
+    return result;
   }
 }

@@ -1,4 +1,11 @@
-import { Component, QueryList, ViewChildren } from '@angular/core';
+import {
+  Component,
+  QueryList,
+  ViewChildren,
+  OnChanges,
+  SimpleChanges,
+  Input
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuditLogEntry } from '../auditview-entry';
@@ -12,7 +19,9 @@ import { SortableHeader, SortEvent } from '../sortable.directive';
   styleUrls: ['./auditview-table.component.scss'],
   providers: [AuditviewService]
 })
-export class AuditviewTableComponent {
+export class AuditviewTableComponent implements OnChanges {
+  @Input() auditlogEntries;
+
   auditlogEntries$: Observable<AuditLogEntry[]>;
   total$: Observable<number>;
   resourceId: number;
@@ -20,29 +29,16 @@ export class AuditviewTableComponent {
 
   constructor(
     public service: AuditviewTableService,
-    private auditviewservice: AuditviewService,
-    private route: ActivatedRoute
+    private auditviewservice: AuditviewService
   ) {
-    // TODO: use a path param instead of a query param and clean it up...
-    this.route.queryParams.subscribe((param: any) => {
-      if (param['resourceId']) {
-        try {
-          this.resourceId = JSON.parse(param['resourceId']);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    });
+    this.auditlogEntries$ = service.result$;
+  }
 
-    if (this.resourceId) {
-      this.auditviewservice
-        .getAuditLogForResource(this.resourceId)
-        .subscribe(auditlogEntries =>
-          service.setAuditlogEntries(auditlogEntries)
-        );
+  ngOnChanges(changes: SimpleChanges): void {
+    // todo: set auditlogentries in service...
+    if (changes.auditlogEntries) {
+      this.service.auditLogEntries = changes.auditlogEntries.currentValue;
     }
-    this.auditlogEntries$ = service.auditlogEntries$;
-    this.total$ = service.total$;
   }
 
   onSort({ column, direction }: SortEvent) {
