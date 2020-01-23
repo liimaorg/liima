@@ -10,36 +10,19 @@
 
 <div class="col-sm-10 main-full">
   <div class="panel panel-default">
-    <div class="panel-heading clearfix">{{ name }}</div>
+
+    <app-panel-heading [name]="name"></app-panel-heading>
 
     <div class="panel-body">
       <span class="form-horizontal">
-        <div
-          *ngIf="successMessage"
-          class="alert alert-success alert-dismissible fade in"
-          role="alert"
-        >
-          <button
-            type="button"
-            class="close"
-            data-dismiss="alert"
-            aria-label="Close"
-          >
+        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade in" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
           <span [innerHTML]="successMessage"></span>
         </div>
-        <div
-          *ngIf="errorMessage"
-          class="alert alert-warning alert-dismissible fade in"
-          role="alert"
-        >
-          <button
-            type="button"
-            class="close"
-            data-dismiss="alert"
-            aria-label="Close"
-          >
+        <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible fade in" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
           <span [innerHTML]="errorMessage"></span>

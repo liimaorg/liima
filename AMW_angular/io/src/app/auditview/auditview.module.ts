@@ -9,9 +9,10 @@ import { AuditviewFilterPipe } from '../customfilter/auditviewFilterPipe';
 import { AuditviewTableComponent } from './auditview-table/auditview-table.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SortableHeader } from './sortable.directive';
+import { BaseModule } from '../base/base.module';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, AuditviewRoutingModule, NgbModule],
+  imports: [CommonModule, FormsModule, AuditviewRoutingModule, NgbModule, BaseModule],
   declarations: [
     AuditviewComponent,
     NewlineFilterPipe,
@@ -21,4 +22,4 @@ import { SortableHeader } from './sortable.directive';
   ],
   providers: [AuditviewService, DatePipe]
 })
-export class AuditviewModule {}
+export class AuditviewModule { }
