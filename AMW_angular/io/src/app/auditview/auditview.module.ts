@@ -12,7 +12,13 @@ import { SortableHeader } from './sortable.directive';
 import { BaseModule } from '../base/base.module';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, AuditviewRoutingModule, NgbModule, BaseModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AuditviewRoutingModule,
+    NgbModule,
+    BaseModule
+  ],
   declarations: [
     AuditviewComponent,
     NewlineFilterPipe,
@@ -22,4 +28,4 @@ import { BaseModule } from '../base/base.module';
   ],
   providers: [AuditviewService, DatePipe]
 })
-export class AuditviewModule { }
+export class AuditviewModule {}

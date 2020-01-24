@@ -6,7 +6,6 @@ import {
   SimpleChanges,
   Input
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuditLogEntry } from '../auditview-entry';
 import { AuditviewTableService } from '../auditview-table.service';
@@ -24,18 +23,13 @@ export class AuditviewTableComponent implements OnChanges {
 
   auditlogEntries$: Observable<AuditLogEntry[]>;
   total$: Observable<number>;
-  resourceId: number;
   @ViewChildren(SortableHeader) headers: QueryList<SortableHeader>;
 
-  constructor(
-    public service: AuditviewTableService,
-    private auditviewservice: AuditviewService
-  ) {
+  constructor(public service: AuditviewTableService) {
     this.auditlogEntries$ = service.result$;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // todo: set auditlogentries in service...
     if (changes.auditlogEntries) {
       this.service.auditLogEntries = changes.auditlogEntries.currentValue;
     }
