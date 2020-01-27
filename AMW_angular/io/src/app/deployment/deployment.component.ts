@@ -74,13 +74,14 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   isLoading: boolean = false;
   isDeploymentBlocked: boolean = false;
 
-  constructor(private resourceService: ResourceService,
-              private environmentService: EnvironmentService,
-              private deploymentService: DeploymentService,
-              private activatedRoute: ActivatedRoute,
-              private location: Location,
-              public appService: AppService) {
-  }
+  constructor(
+    private resourceService: ResourceService,
+    private environmentService: EnvironmentService,
+    private deploymentService: DeploymentService,
+    private activatedRoute: ActivatedRoute,
+    private location: Location,
+    public appService: AppService
+  ) {}
 
   ngOnInit() {
     this.appService.set('navShow', false);
@@ -95,6 +96,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     });
 
     // a deploymentId MUST be numeric..
+    // TODO: this seems wrong... this.deploymentId is probably never set...
     if (this.deploymentId && !isNaN(this.deploymentId)) {
       this.appService.set('pageTitle', 'Redeploy');
       this.isRedeployment = true;

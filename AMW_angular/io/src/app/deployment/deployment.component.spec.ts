@@ -1,534 +1,685 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { inject, TestBed } from '@angular/core/testing';
-import { HttpRequest, HttpBackend, HttpClient } from '@angular/common/http';
-import { HttpTestingController} from '@angular/common/http/testing';
-import { CommonModule } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
+import { of, Subject } from 'rxjs';
+import { AppService } from '../app.service';
+import { Release } from '../resource/release';
+import { Resource } from '../resource/resource';
+import { ResourceTag } from '../resource/resource-tag';
+import { ResourceService } from '../resource/resource.service';
+import { AppWithVersion } from './app-with-version';
+import { Deployment } from './deployment';
+import { DeploymentParameter } from './deployment-parameter';
+import { DeploymentRequest } from './deployment-request';
 import { DeploymentComponent } from './deployment.component';
 import { DeploymentService } from './deployment.service';
-import { EnvironmentService } from './environment.service';
-import { ResourceService } from '../resource/resource.service';
-import { of } from 'rxjs';
 import { Environment } from './environment';
-import { Resource } from '../resource/resource';
-import { Release } from '../resource/release';
-import { AppService } from '../app.service';
-import { DeploymentRequest } from './deployment-request';
-import { DeploymentParameter } from './deployment-parameter';
-import { Deployment } from './deployment';
-import { ResourceTag } from '../resource/resource-tag';
-import { AppWithVersion } from './app-with-version';
+import { EnvironmentService } from './environment.service';
 
 @Component({
   template: ''
 })
-class DummyComponent {
-}
+class DummyComponent {}
 
 describe('DeploymentComponent (create deployment)', () => {
-  // provide our implementations or mocks to the dependency injector
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [
-      CommonModule,
-      RouterTestingModule.withRoutes([
-        {path: 'deployment', component: DummyComponent}
-      ])
-    ],
-    providers: [
-      HttpRequest,
-      HttpTestingController,
-      {
-        provide: HttpClient,
-        useFactory(backend: HttpBackend) {
-          return new HttpClient(backend);
-        },
-        deps: [HttpTestingController, HttpRequest]
-      },
-      EnvironmentService,
-      DeploymentService,
-      ResourceService,
-      DeploymentComponent,
-      AppService,
-    ],
-    declarations: [DummyComponent],
-  }));
+  let component: DeploymentComponent;
+  let fixture: ComponentFixture<DeploymentComponent>;
+  let resourceService: ResourceService;
+  let environmentService: EnvironmentService;
+  let deploymentService: DeploymentService;
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [DeploymentComponent, DummyComponent],
+      imports: [FormsModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        ResourceService,
+        EnvironmentService,
+        DeploymentService,
+        AppService
+      ]
+    });
+    fixture = TestBed.createComponent(DeploymentComponent);
+    component = fixture.componentInstance;
 
-  it('should have default data', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
-    // given when then
-    expect(deploymentComponent.appserverName).toEqual('');
-    expect(deploymentComponent.releaseName).toEqual('');
-    expect(deploymentComponent.deploymentId).toBeUndefined();
-    expect(deploymentComponent.isLoading).toBeFalsy();
-    expect(deploymentComponent.isRedeployment).toBeFalsy();
-  }));
+    resourceService = TestBed.get(ResourceService);
+    environmentService = TestBed.get(EnvironmentService);
+    deploymentService = TestBed.get(DeploymentService);
+  });
 
-  it('should not be ready for deployment', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
-    // given
-    expect(deploymentComponent.isReadyForDeployment()).toBeFalsy();
-    // when
-    deploymentComponent.ngOnInit();
-    // then
-    expect(deploymentComponent.isReadyForDeployment()).toBeFalsy();
-  }));
+  it('should create the component', () => {
+    expect(component).toBeTruthy();
+  });
 
-  it('should call resourceService on ngOnInit', inject([DeploymentComponent, ResourceService],
-    (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
-    // given
+  it('should have default data', () => {
+    expect(component.appserverName).toEqual('');
+    expect(component.releaseName).toEqual('');
+    expect(component.deploymentId).toBeUndefined();
+    expect(component.isLoading).toBeFalsy();
+    expect(component.isRedeployment).toBeFalsy();
+  });
+
+  it('should not be ready for deployment', () => {
+    expect(component.isReadyForDeployment()).toBeFalsy();
+    component.ngOnInit();
+    expect(component.isReadyForDeployment()).toBeFalsy();
+  });
+
+  it('should call resourceService on ngOnInit', () => {
     spyOn(resourceService, 'getByType').and.returnValue(of([]));
     expect(resourceService.getByType).not.toHaveBeenCalled();
-    // when
-    deploymentComponent.ngOnInit();
-    // then
+    component.ngOnInit();
     expect(resourceService.getByType).toHaveBeenCalled();
-  }));
+  });
 
-  it('should call environmentService on ngOnInit', inject([DeploymentComponent, EnvironmentService],
-    (deploymentComponent: DeploymentComponent, environmentService: EnvironmentService) => {
-    // given
+  it('should call environmentService on ngOnInit', () => {
     spyOn(environmentService, 'getAll').and.returnValue(of([]));
     expect(environmentService.getAll).not.toHaveBeenCalled();
-    // when
-    deploymentComponent.ngOnInit();
-    // then
+    component.ngOnInit();
     expect(environmentService.getAll).toHaveBeenCalled();
-  }));
+  });
 
-  it('should populate groupedEnvironments on ngOnInit', inject([DeploymentComponent, EnvironmentService],
-    (deploymentComponent: DeploymentComponent, environmentService: EnvironmentService) => {
-    // given
-    const environments: Environment[] = [{id: 1, name: 'A', parent: 'DEV'} as Environment];
+  it('should populate groupedEnvironments on ngOnInit', () => {
+    const environments: Environment[] = [
+      { id: 1, name: 'A', parent: 'DEV' } as Environment
+    ];
     spyOn(environmentService, 'getAll').and.returnValue(of(environments));
-    expect(deploymentComponent.groupedEnvironments).toEqual({});
-    // when
-    deploymentComponent.ngOnInit();
-    // then
-    expect(deploymentComponent.groupedEnvironments['DEV'].length).toBe(1);
-  }));
+    expect(component.groupedEnvironments).toEqual({});
+    component.ngOnInit();
+    expect(component.groupedEnvironments['DEV'].length).toBe(1);
+  });
 
-  it('should call deploymentService on ngAfterViewInit', inject([DeploymentComponent, DeploymentService],
-    (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+  it('should call deploymentService on ngAfterViewInit', () => {
     // given
-    spyOn(deploymentService, 'getAllDeploymentParameterKeys').and.returnValue(of([]));
-    expect(deploymentService.getAllDeploymentParameterKeys).not.toHaveBeenCalled();
+    spyOn(deploymentService, 'getAllDeploymentParameterKeys').and.returnValue(
+      of([])
+    );
+    expect(
+      deploymentService.getAllDeploymentParameterKeys
+    ).not.toHaveBeenCalled();
     // when
-    deploymentComponent.ngAfterViewInit();
+    component.ngAfterViewInit();
     // then
     expect(deploymentService.getAllDeploymentParameterKeys).toHaveBeenCalled();
-  }));
+  });
 
-  it('should set selectedAppserver and selectedRelease', inject([DeploymentComponent, ResourceService],
-    (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
+  it('should set selectedAppserver and selectedRelease', () => {
     // given
-    const testReleases: Release[] = [{id: 1, release: 'testRelease'} as Release,
-      {id: 2, release: 'anotherRelease'} as Release];
-    deploymentComponent.appserverName = 'testServer';
-    deploymentComponent.releaseName = 'testRelease';
-    spyOn(resourceService, 'getByType').and.returnValue(of([{
-      name: 'testServer',
-      releases: testReleases
-    } as Resource]));
-    spyOn(resourceService, 'getDeployableReleases').and.returnValue(of(testReleases));
+    const testReleases: Release[] = [
+      { id: 1, release: 'testRelease' } as Release,
+      { id: 2, release: 'anotherRelease' } as Release
+    ];
+    component.appserverName = 'testServer';
+    component.releaseName = 'testRelease';
+    spyOn(resourceService, 'getByType').and.returnValue(
+      of([
+        {
+          name: 'testServer',
+          releases: testReleases
+        } as Resource
+      ])
+    );
+    spyOn(resourceService, 'getDeployableReleases').and.returnValue(
+      of(testReleases)
+    );
     // when
-    deploymentComponent.initAppservers();
+    component.initAppservers();
     // then
-    expect(deploymentComponent.selectedAppserver.name).toBe('testServer');
-    expect(deploymentComponent.selectedRelease.release).toBe('testRelease');
-  }));
+    expect(component.selectedAppserver.name).toBe('testServer');
+    expect(component.selectedRelease.release).toBe('testRelease');
+  });
 
-  it('should set selectedAppserver but not set selectedRelease if not available for selectedAppserver',
-    inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
-      // given
-      const testReleases: Release[] = [{id: 1, release: 'testRelease'} as Release];
-      deploymentComponent.appserverName = 'testServer';
-      deploymentComponent.releaseName = 'missingRelease';
-      spyOn(resourceService, 'getByType').and.returnValue(of([{
-        name: 'testServer',
-        releases: testReleases
-      } as Resource]));
-      // when
-      deploymentComponent.initAppservers();
-      // then
-      expect(deploymentComponent.selectedAppserver.name).toBe('testServer');
-      expect(deploymentComponent.selectedRelease).toBeNull();
-  }));
+  it('should set selectedAppserver but not set selectedRelease if not available for selectedAppserver', () => {
+    const testReleases: Release[] = [
+      { id: 1, release: 'testRelease' } as Release
+    ];
+    component.appserverName = 'testServer';
+    component.releaseName = 'missingRelease';
+    spyOn(resourceService, 'getByType').and.returnValue(
+      of([
+        {
+          name: 'testServer',
+          releases: testReleases
+        } as Resource
+      ])
+    );
+    // when
+    component.initAppservers();
+    // then
+    expect(component.selectedAppserver.name).toBe('testServer');
+    expect(component.selectedRelease).toBeNull();
+  });
 
-  it('should return environementGroupNames on getEnvironmentGroups()',
-    inject([DeploymentComponent, EnvironmentService], (deploymentComponent: DeploymentComponent, environmentService: EnvironmentService) => {
-    // given
-    const environments: Environment[] = [{id: 1, name: 'A', parent: 'DEV'} as Environment,
-      {id: 2, name: 'B', parent: 'DEV'} as Environment, {id: 3, name: 'P', parent: 'PROD'} as Environment];
+  it('should return environementGroupNames on getEnvironmentGroups()', () => {
+    const environments: Environment[] = [
+      { id: 1, name: 'A', parent: 'DEV' } as Environment,
+      { id: 2, name: 'B', parent: 'DEV' } as Environment,
+      { id: 3, name: 'P', parent: 'PROD' } as Environment
+    ];
     spyOn(environmentService, 'getAll').and.returnValue(of(environments));
-    deploymentComponent.ngOnInit();
-    // when
-    const groups: string[] = deploymentComponent.getEnvironmentGroups();
-    // then
+    component.ngOnInit();
+
+    const groups: string[] = component.getEnvironmentGroups();
+
     expect(groups.length).toBe(2);
     expect(groups).toContain('DEV', 'PROD');
-  }));
+  });
 
-  it('should keep environments selected on onChangeAppserver',
-    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should keep environments selected on onChangeAppserver', () => {
     // given
-    deploymentComponent.selectedRelease = {id: 1} as Release;
-    const appServer: Resource = {name: 'testServer'} as Resource;
-    deploymentComponent.environments = [{id: 1} as Environment, {id: 2, selected: true} as Environment];
-    deploymentComponent.selectedAppserver = appServer;
+    component.selectedRelease = { id: 1 } as Release;
+    const appServer: Resource = { name: 'testServer' } as Resource;
+    component.environments = [
+      { id: 1 } as Environment,
+      { id: 2, selected: true } as Environment
+    ];
+    component.selectedAppserver = appServer;
     // when
-    deploymentComponent.onChangeAppserver();
+    component.onChangeAppserver();
     // then
-    expect(deploymentComponent.selectedRelease).toBeNull();
-    expect(deploymentComponent.environments[0].selected).toBeFalsy();
-    expect(deploymentComponent.environments[1].selected).toBeTruthy();
-  }));
+    expect(component.selectedRelease).toBeNull();
+    expect(component.environments[0].selected).toBeFalsy();
+    expect(component.environments[1].selected).toBeTruthy();
+  });
 
-  it('should check permission on onChangeAppserver',
-    inject([DeploymentComponent, DeploymentService, ResourceService],
-      (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
-      // given
-      deploymentComponent.selectedRelease = {id: 1} as Release;
-      const appServer: Resource = {name: 'testServer', id: 3} as Resource;
-      deploymentComponent.environments = [{id: 1} as Environment, {id: 2, selected: true} as Environment];
-      deploymentComponent.selectedAppserver = appServer;
-      spyOn(resourceService, 'canCreateShakedownTest').and.returnValue(of(false));
-      spyOn(deploymentService, 'canDeploy').and.returnValue(of(true));
-      // when
-      deploymentComponent.onChangeAppserver();
-      // then
-      expect(resourceService.canCreateShakedownTest).toHaveBeenCalledWith(3);
-      expect(deploymentService.canDeploy).toHaveBeenCalledWith(3, [ 2 ]);
-      expect(deploymentComponent.hasPermissionShakedownTest).toBeFalsy();
-      expect(deploymentComponent.hasPermissionToDeploy).toBeTruthy();
-    }));
-
-  it('should call resourceService on onChangeRelease',
-    inject([DeploymentComponent, ResourceService], (deploymentComponent: DeploymentComponent, resourceService: ResourceService) => {
+  it('should check permission on onChangeAppserver', () => {
     // given
-    const testRelease: Release = {id: 1, release: 'testRelease'} as Release;
-    const betterRelease: Release = {id: 1, release: 'betterRelease'} as Release;
-    deploymentComponent.releases = [testRelease];
-    deploymentComponent.selectedRelease = testRelease;
-    spyOn(resourceService, 'getLatestForRelease').and.returnValue(of(betterRelease));
-    spyOn(resourceService, 'getAppsWithVersions').and.returnValue(of([]));
-    deploymentComponent.selectedAppserver = {name: 'testServer', releases: [testRelease]} as Resource;
+    component.selectedRelease = { id: 1 } as Release;
+    const appServer: Resource = { name: 'testServer', id: 3 } as Resource;
+    component.environments = [
+      { id: 1 } as Environment,
+      { id: 2, selected: true } as Environment
+    ];
+    component.selectedAppserver = appServer;
+    spyOn(resourceService, 'canCreateShakedownTest').and.returnValue(of(false));
+    spyOn(deploymentService, 'canDeploy').and.returnValue(of(true));
     // when
-    deploymentComponent.onChangeRelease();
+    component.onChangeAppserver();
+    // then
+    expect(resourceService.canCreateShakedownTest).toHaveBeenCalledWith(3);
+    expect(deploymentService.canDeploy).toHaveBeenCalledWith(3, [2]);
+    expect(component.hasPermissionShakedownTest).toBeFalsy();
+    expect(component.hasPermissionToDeploy).toBeTruthy();
+  });
+
+  it('should call resourceService on onChangeRelease', () => {
+    // given
+    const testRelease: Release = { id: 1, release: 'testRelease' } as Release;
+    const betterRelease: Release = {
+      id: 1,
+      release: 'betterRelease'
+    } as Release;
+    component.releases = [testRelease];
+    component.selectedRelease = testRelease;
+    spyOn(resourceService, 'getLatestForRelease').and.returnValue(
+      of(betterRelease)
+    );
+    spyOn(resourceService, 'getAppsWithVersions').and.returnValue(of([]));
+    component.selectedAppserver = {
+      name: 'testServer',
+      releases: [testRelease]
+    } as Resource;
+    // when
+    component.onChangeRelease();
     // then
     expect(resourceService.getLatestForRelease).toHaveBeenCalled();
     expect(resourceService.getAppsWithVersions).toHaveBeenCalled();
-  }));
+  });
 
-  it('should replace deploymentParameters with same key onAddParam',
-    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should replace deploymentParameters with same key onAddParam', () => {
     // given
-    deploymentComponent.transDeploymentParameters = [{key: 'atest', value: 'foo'} as DeploymentParameter];
-    deploymentComponent.transDeploymentParameter = {key: 'atest', value: 'bar'} as DeploymentParameter;
+    component.transDeploymentParameters = [
+      { key: 'atest', value: 'foo' } as DeploymentParameter
+    ];
+    component.transDeploymentParameter = {
+      key: 'atest',
+      value: 'bar'
+    } as DeploymentParameter;
     // when
-    deploymentComponent.onAddParam();
+    component.onAddParam();
     // then
-    expect(deploymentComponent.transDeploymentParameters.length).toBe(1);
-    expect(deploymentComponent.transDeploymentParameters[0].value).toEqual('bar');
-  }));
+    expect(component.transDeploymentParameters.length).toBe(1);
+    expect(component.transDeploymentParameters[0].value).toEqual('bar');
+  });
 
-  it('should remove the right deploymentParameter onRemoveParam',
-    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should remove the right deploymentParameter onRemoveParam', () => {
     // given
-    const parameterA: DeploymentParameter = {key: 'atest', value: 'foo'} as DeploymentParameter;
-    const parameterB: DeploymentParameter = {key: 'btest', value: 'bar'} as DeploymentParameter;
-    deploymentComponent.transDeploymentParameters = [ parameterA, parameterB ];
+    const parameterA: DeploymentParameter = {
+      key: 'atest',
+      value: 'foo'
+    } as DeploymentParameter;
+    const parameterB: DeploymentParameter = {
+      key: 'btest',
+      value: 'bar'
+    } as DeploymentParameter;
+    component.transDeploymentParameters = [parameterA, parameterB];
     // when
-    deploymentComponent.onRemoveParam(parameterA);
+    component.onRemoveParam(parameterA);
     // then
-    expect(deploymentComponent.transDeploymentParameters.length).toBe(1);
-    expect(deploymentComponent.transDeploymentParameters[0].value).toEqual(parameterB.value);
-  }));
+    expect(component.transDeploymentParameters.length).toBe(1);
+    expect(component.transDeploymentParameters[0].value).toEqual(
+      parameterB.value
+    );
+  });
 
-  it('should not be readyForDeployment if no environment is selected',
-    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should not be readyForDeployment if no environment is selected', () => {
     // given
-    deploymentComponent.selectedAppserver = {name: 'testServer'} as Resource;
-    deploymentComponent.selectedRelease = {id: 1, release: 'testRelease'} as Release;
-    deploymentComponent.environments = [{id: 1} as Environment];
+    component.selectedAppserver = { name: 'testServer' } as Resource;
+    component.selectedRelease = { id: 1, release: 'testRelease' } as Release;
+    component.environments = [{ id: 1 } as Environment];
     // when then
-    expect(deploymentComponent.isReadyForDeployment()).toBeFalsy();
-  }));
+    expect(component.isReadyForDeployment()).toBeFalsy();
+  });
 
-  it('should not be readyForDeployment if a release ist set, an environment is selected but appWithVersions is empty',
-    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
-      // given
-      deploymentComponent.selectedAppserver = {name: 'testServer'} as Resource;
-      deploymentComponent.selectedRelease = {id: 1, release: 'testRelease'} as Release;
-      deploymentComponent.environments = [{id: 1} as Environment, {id: 2, selected: true} as Environment];
-      // when then
-      expect(deploymentComponent.isReadyForDeployment()).toBeFalsy();
-    }));
-
-  it('should be readyForDeployment if a release ist set, an environment is selected and appWithVersions is not empty',
-    inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should not be readyForDeployment if a release ist set, an environment is selected but appWithVersions is empty', () => {
     // given
-    deploymentComponent.selectedAppserver = {name: 'testServer'} as Resource;
-    deploymentComponent.selectedRelease = {id: 1, release: 'testRelease'} as Release;
-    deploymentComponent.environments = [{id: 1} as Environment, {id: 2, selected: true} as Environment];
-    deploymentComponent.appsWithVersion = [{applicationName: 'testApp'} as AppWithVersion];
+    component.selectedAppserver = { name: 'testServer' } as Resource;
+    component.selectedRelease = { id: 1, release: 'testRelease' } as Release;
+    component.environments = [
+      { id: 1 } as Environment,
+      { id: 2, selected: true } as Environment
+    ];
     // when then
-    expect(deploymentComponent.isReadyForDeployment()).toBeTruthy();
-  }));
+    expect(component.isReadyForDeployment()).toBeFalsy();
+  });
 
-  it('should call the deploymentService with the right values on requestDeployment',
-    inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+  it('should be readyForDeployment if a release ist set, an environment is selected and appWithVersions is not empty', () => {
     // given
-    deploymentComponent.selectedAppserver = {name: 'testServer'} as Resource;
-    deploymentComponent.selectedRelease = {id: 1, release: 'testRelease'} as Release;
-    deploymentComponent.environments = [{id: 2, name: 'A'} as Environment, {id: 3, name: 'B', selected: true} as Environment];
-    deploymentComponent.doExecuteShakedownTest = true;
-    deploymentComponent.appsWithVersion = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion];
-    deploymentComponent.selectedResourceTag = {id: 5, tagDate: 1485378084103} as ResourceTag;
-    deploymentComponent.deploymentDate = '02.01.2017 12:00';
-    deploymentComponent.transDeploymentParameters = [{key: 'atest', value: 'foo'} as DeploymentParameter,
-      {key: 'btest', value: 'bar'} as DeploymentParameter];
-    const deploymentRequest: DeploymentRequest = {appServerName: 'testServer', contextIds: [3],
-      releaseName: 'testRelease', simulate: false, sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
-      neighbourhoodTest: false, requestOnly: true,  appsWithVersion: deploymentComponent.appsWithVersion,
-      stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentDate: 1483354800000,
-      deploymentParameters: deploymentComponent.transDeploymentParameters} as DeploymentRequest;
-    spyOn(deploymentService, 'createDeployment').and.returnValue(of({ trackingId: 910 } as Deployment));
-    // when
-    deploymentComponent.requestDeployment();
-    // then
-    expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
-    expect(deploymentComponent.successMessage).toContain('Tracking Id 910');
-  }));
+    component.selectedAppserver = { name: 'testServer' } as Resource;
+    component.selectedRelease = { id: 1, release: 'testRelease' } as Release;
+    component.environments = [
+      { id: 1 } as Environment,
+      { id: 2, selected: true } as Environment
+    ];
+    component.appsWithVersion = [
+      { applicationName: 'testApp' } as AppWithVersion
+    ];
+    // when then
+    expect(component.isReadyForDeployment()).toBeTruthy();
+  });
 
-  it('should call the deploymentService with the right values on createDeployment',
-    inject([DeploymentComponent, DeploymentService], (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
+  it('should call the deploymentService with the right values on requestDeployment', () => {
     // given
-    deploymentComponent.selectedAppserver = {name: 'testServer'} as Resource;
-    deploymentComponent.selectedRelease = {id: 1, release: 'testRelease'} as Release;
-    deploymentComponent.environments = [{id: 2, name: 'A', selected: true} as Environment, {id: 3, name: 'B', selected: true} as Environment];
-    deploymentComponent.doExecuteShakedownTest = true;
-    deploymentComponent.simulate = true;
-    deploymentComponent.appsWithVersion = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion,
-      {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'} as AppWithVersion];
-    deploymentComponent.selectedResourceTag = {id: 5, tagDate: 1485378084103} as ResourceTag;
-    deploymentComponent.transDeploymentParameters = [{key: 'atest', value: 'foo'} as DeploymentParameter,
-      {key: 'btest', value: 'bar'} as DeploymentParameter];
-    const deploymentRequest: DeploymentRequest = {appServerName: 'testServer', contextIds: [2, 3],
-      releaseName: 'testRelease', simulate: deploymentComponent.simulate, sendEmail: false, executeShakedownTest: deploymentComponent.doExecuteShakedownTest,
-      neighbourhoodTest: false, requestOnly: false,  appsWithVersion: deploymentComponent.appsWithVersion,
-      stateToDeploy: deploymentComponent.selectedResourceTag.tagDate, deploymentParameters: deploymentComponent.transDeploymentParameters} as DeploymentRequest;
-    spyOn(deploymentService, 'createDeployment').and.returnValue(of({trackingId: 911} as Deployment));
+    component.selectedAppserver = { name: 'testServer' } as Resource;
+    component.selectedRelease = { id: 1, release: 'testRelease' } as Release;
+    component.environments = [
+      { id: 2, name: 'A' } as Environment,
+      { id: 3, name: 'B', selected: true } as Environment
+    ];
+    component.doExecuteShakedownTest = true;
+    component.appsWithVersion = [
+      {
+        applicationId: 4,
+        applicationName: 'testApp',
+        version: '1.2.3'
+      } as AppWithVersion
+    ];
+    component.selectedResourceTag = {
+      id: 5,
+      tagDate: 1485378084103
+    } as ResourceTag;
+    component.deploymentDate = '02.01.2017 12:00';
+    component.transDeploymentParameters = [
+      { key: 'atest', value: 'foo' } as DeploymentParameter,
+      { key: 'btest', value: 'bar' } as DeploymentParameter
+    ];
+    const deploymentRequest: DeploymentRequest = {
+      appServerName: 'testServer',
+      contextIds: [3],
+      releaseName: 'testRelease',
+      simulate: false,
+      sendEmail: false,
+      executeShakedownTest: component.doExecuteShakedownTest,
+      neighbourhoodTest: false,
+      requestOnly: true,
+      appsWithVersion: component.appsWithVersion,
+      stateToDeploy: component.selectedResourceTag.tagDate,
+      deploymentDate: 1483354800000,
+      deploymentParameters: component.transDeploymentParameters
+    } as DeploymentRequest;
+    spyOn(deploymentService, 'createDeployment').and.returnValue(
+      of({ trackingId: 910 } as Deployment)
+    );
     // when
-    deploymentComponent.createDeployment();
+    component.requestDeployment();
     // then
-    expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
-    expect(deploymentComponent.successMessage).toContain('Tracking Id 911');
-  }));
+    expect(deploymentService.createDeployment).toHaveBeenCalledWith(
+      deploymentRequest
+    );
+    expect(component.successMessage).toContain('Tracking Id 910');
+  });
 
+  it('should call the deploymentService with the right values on createDeployment', () => {
+    // given
+    component.selectedAppserver = { name: 'testServer' } as Resource;
+    component.selectedRelease = { id: 1, release: 'testRelease' } as Release;
+    component.environments = [
+      { id: 2, name: 'A', selected: true } as Environment,
+      { id: 3, name: 'B', selected: true } as Environment
+    ];
+    component.doExecuteShakedownTest = true;
+    component.simulate = true;
+    component.appsWithVersion = [
+      {
+        applicationId: 4,
+        applicationName: 'testApp',
+        version: '1.2.3'
+      } as AppWithVersion,
+      {
+        applicationId: 5,
+        applicationName: 'testAPP',
+        version: '1.2.3.4'
+      } as AppWithVersion
+    ];
+    component.selectedResourceTag = {
+      id: 5,
+      tagDate: 1485378084103
+    } as ResourceTag;
+    component.transDeploymentParameters = [
+      { key: 'atest', value: 'foo' } as DeploymentParameter,
+      { key: 'btest', value: 'bar' } as DeploymentParameter
+    ];
+    const deploymentRequest: DeploymentRequest = {
+      appServerName: 'testServer',
+      contextIds: [2, 3],
+      releaseName: 'testRelease',
+      simulate: component.simulate,
+      sendEmail: false,
+      executeShakedownTest: component.doExecuteShakedownTest,
+      neighbourhoodTest: false,
+      requestOnly: false,
+      appsWithVersion: component.appsWithVersion,
+      stateToDeploy: component.selectedResourceTag.tagDate,
+      deploymentParameters: component.transDeploymentParameters
+    } as DeploymentRequest;
+    spyOn(deploymentService, 'createDeployment').and.returnValue(
+      of({ trackingId: 911 } as Deployment)
+    );
+    // when
+    component.createDeployment();
+    // then
+    expect(deploymentService.createDeployment).toHaveBeenCalledWith(
+      deploymentRequest
+    );
+    expect(component.successMessage).toContain('Tracking Id 911');
+  });
 });
 
 describe('DeploymentComponent (create deployment with params)', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [
-      CommonModule,
-      RouterTestingModule.withRoutes([
-        {path: 'deployment', component: DummyComponent}
-      ])
-    ],
-    providers: [
-      HttpRequest, {
-        provide: ActivatedRoute,
-        useValue: {
-          params: of({appserverName: 'aServer', releaseName: 'aRelease'})
-        },
-      },
-      HttpTestingController,
-      {
-        provide: HttpClient,
-        useFactory(backend: HttpBackend) {
-          return new HttpClient(backend);
-        },
-        deps: [HttpTestingController, HttpRequest]
-      },
-      EnvironmentService,
-      DeploymentService,
-      ResourceService,
-      DeploymentComponent,
-      AppService,
-    ],
-    declarations: [DummyComponent],
-  }));
+  let component: DeploymentComponent;
+  let fixture: ComponentFixture<DeploymentComponent>;
+  let mockRoute: any = { snapshot: {} };
 
-  it('should init vars with route params on ngOnInit', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  mockRoute.params = new Subject<any>();
+  mockRoute.queryParams = new Subject<any>();
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [DeploymentComponent, DummyComponent],
+      imports: [
+        FormsModule,
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([])
+      ],
+      providers: [
+        ResourceService,
+        EnvironmentService,
+        DeploymentService,
+        AppService,
+        { provide: ActivatedRoute, useValue: mockRoute }
+      ]
+    });
+    fixture = TestBed.createComponent(DeploymentComponent);
+    component = fixture.componentInstance;
+  });
+  it('should init vars with route params on ngOnInit', () => {
     // given // when
-    deploymentComponent.ngOnInit();
+    component.ngOnInit();
+    mockRoute.params.next({
+      appserverName: 'aServer',
+      releaseName: 'aRelease'
+    });
     // then
-    expect(deploymentComponent.appserverName).toEqual('aServer');
-    expect(deploymentComponent.releaseName).toEqual('aRelease');
-    expect(deploymentComponent.deploymentId).toBeUndefined();
-    expect(deploymentComponent.isRedeployment).toBeFalsy();
-  }));
+    expect(component.appserverName).toEqual('aServer');
+    expect(component.releaseName).toEqual('aRelease');
+    expect(component.deploymentId).toBeUndefined();
+    expect(component.isRedeployment).toBeFalsy();
+  });
 
-});
-
-describe('DeploymentComponent (create deployment with fake redeploy param)', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [
-      CommonModule,
-      RouterTestingModule.withRoutes([
-        {path: 'deployment', component: DummyComponent}
-      ])
-    ],
-    providers: [
-      HttpRequest, {
-        provide: ActivatedRoute,
-        useValue: {
-          params: of({deploymentId: 'aServer'})
-        },
-      },
-      HttpTestingController,
-      {
-        provide: HttpClient,
-        useFactory(backend: HttpBackend) {
-          return new HttpClient(backend);
-        },
-        deps: [HttpTestingController, HttpRequest]
-      },
-      EnvironmentService,
-      DeploymentService,
-      ResourceService,
-      DeploymentComponent,
-      AppService,
-    ],
-    declarations: [DummyComponent],
-  }));
-
-  it('should init vars with corrected route params on ngOnInit', inject([DeploymentComponent], (deploymentComponent: DeploymentComponent) => {
+  it('should init vars with corrected route params on ngOnInit', () => {
     // given // when
-    deploymentComponent.ngOnInit();
+    component.ngOnInit();
+    mockRoute.params.next({
+      appserverName: 'aServer'
+    });
     // then
-    expect(deploymentComponent.appserverName).toEqual('aServer');
-    expect(deploymentComponent.deploymentId).toBeUndefined();
-    expect(deploymentComponent.isRedeployment).toBeFalsy();
-  }));
-
+    expect(component.appserverName).toEqual('aServer');
+    expect(component.deploymentId).toBeUndefined();
+    expect(component.isRedeployment).toBeFalsy();
+  });
 });
 
 describe('DeploymentComponent (redeployment)', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [
-      CommonModule,
-      RouterTestingModule.withRoutes([
-        {path: 'deployment', component: DummyComponent}
-      ])
-    ],
-    providers: [
-      HttpRequest, {
-        provide: ActivatedRoute,
-        useValue: {
-          params: of({ deploymentId: 123 })
-        },
-      },
-      HttpTestingController,
-      {
-        provide: HttpClient,
-        useFactory(backend: HttpBackend) {
-          return new HttpClient(backend);
-        },
-        deps: [HttpTestingController, HttpRequest]
-      },
-      EnvironmentService,
-      DeploymentService,
-      ResourceService,
-      DeploymentComponent,
-      AppService,
-    ],
-    declarations: [DummyComponent],
-  }));
+  let component: DeploymentComponent;
+  let fixture: ComponentFixture<DeploymentComponent>;
+  let resourceService: ResourceService;
+  let environmentService: EnvironmentService;
+  let deploymentService: DeploymentService;
 
-  it('should call deploymentService on ngOnInit', inject([DeploymentComponent, DeploymentService],
-    (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService) => {
-    // given
-    const deployment: Deployment = {appsWithVersion: []} as Deployment;
+  let mockRoute: any = { snapshot: {} };
+
+  mockRoute.params = new Subject<any>();
+  mockRoute.queryParams = new Subject<any>();
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [DeploymentComponent, DummyComponent],
+      imports: [
+        FormsModule,
+        RouterTestingModule.withRoutes([]),
+        HttpClientTestingModule
+      ],
+      providers: [
+        { provide: ActivatedRoute, useValue: mockRoute },
+        ResourceService,
+        EnvironmentService,
+        DeploymentService,
+        AppService
+      ]
+    });
+    fixture = TestBed.createComponent(DeploymentComponent);
+    component = fixture.componentInstance;
+
+    resourceService = TestBed.get(ResourceService);
+    environmentService = TestBed.get(EnvironmentService);
+    deploymentService = TestBed.get(DeploymentService);
+  });
+
+  it('should call deploymentService on ngOnInit', () => {
+    const deployment: Deployment = { appsWithVersion: [] } as Deployment;
     spyOn(deploymentService, 'get').and.returnValue(of(deployment));
     expect(deploymentService.get).not.toHaveBeenCalled();
-    // when
-    deploymentComponent.ngOnInit();
-    // then
+    component.deploymentId = 123;
+
+    component.ngOnInit();
+
     expect(deploymentService.get).toHaveBeenCalledWith(123);
-  }));
+  });
 
-  it('should initRedeploymentValues ngOnInit and leave isDeploymentBlocked to false if all appWithVersion have been found',
-    inject([DeploymentComponent, DeploymentService, ResourceService],
-    (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
+  it('should initRedeploymentValues ngOnInit and leave isDeploymentBlocked to false if all appWithVersion have been found', () => {
     // given
-    deploymentComponent.environments = [{name: 'X'} as Environment, {name: 'Y'} as Environment];
-    const appsWithVersion: AppWithVersion[] = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion,
-      {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'} as AppWithVersion];
-    const deploymentParameter: DeploymentParameter = {key: 'atest', value: 'foo'} as DeploymentParameter;
-    const deployment: Deployment = {appsWithVersion, deploymentParameters: [deploymentParameter],
-      releaseName: 'testRelease', appServerName: 'testServer', environmentName: 'Y'} as Deployment;
+    component.environments = [
+      { name: 'X' } as Environment,
+      { name: 'Y' } as Environment
+    ];
+    const appsWithVersion: AppWithVersion[] = [
+      {
+        applicationId: 4,
+        applicationName: 'testApp',
+        version: '1.2.3'
+      } as AppWithVersion,
+      {
+        applicationId: 5,
+        applicationName: 'testAPP',
+        version: '1.2.3.4'
+      } as AppWithVersion
+    ];
+    const deploymentParameter: DeploymentParameter = {
+      key: 'atest',
+      value: 'foo'
+    } as DeploymentParameter;
+    const deployment: Deployment = {
+      appsWithVersion,
+      deploymentParameters: [deploymentParameter],
+      releaseName: 'testRelease',
+      appServerName: 'testServer',
+      environmentName: 'Y'
+    } as Deployment;
+
     spyOn(deploymentService, 'get').and.returnValue(of(deployment));
-    spyOn(resourceService, 'getDeployableReleases').and.returnValue(of([{ id: 9, release: 'testRelease' } as Release]));
-    spyOn(resourceService, 'getAppsWithVersions').and.returnValue(of([{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion,
-        {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'} as AppWithVersion]));
+    spyOn(resourceService, 'getDeployableReleases').and.returnValue(
+      of([{ id: 9, release: 'testRelease' } as Release])
+    );
+    spyOn(resourceService, 'getAppsWithVersions').and.returnValue(
+      of([
+        {
+          applicationId: 4,
+          applicationName: 'testApp',
+          version: '1.2.3'
+        } as AppWithVersion,
+        {
+          applicationId: 5,
+          applicationName: 'testAPP',
+          version: '1.2.3.4'
+        } as AppWithVersion
+      ])
+    );
     // when
-    deploymentComponent.ngOnInit();
+    component.deploymentId = 123; // TODO: this is a workaround for a sketchy implementation in ngOnInit
+    component.ngOnInit();
     // then
-    expect(deploymentComponent.isRedeployment).toBeTruthy();
-    expect(deploymentComponent.isDeploymentBlocked).toBeFalsy();
-    expect(deploymentComponent.selectedRelease.release).toEqual('testRelease');
-    expect(deploymentComponent.selectedAppserver.name).toEqual('testServer');
-    expect(deploymentComponent.appsWithVersion).toEqual(appsWithVersion);
-    expect(deploymentComponent.transDeploymentParameters).toEqual([deploymentParameter]);
-    expect(deploymentComponent.redeploymentAppserverDisplayName).toContain('testServer');
-    expect(deploymentComponent.redeploymentAppserverDisplayName).toContain('testRelease');
-    expect(deploymentComponent.environments[0].selected).toBeFalsy();
-    expect(deploymentComponent.environments[1].selected).toBeTruthy();
-  }));
+    expect(component.isRedeployment).toBeTruthy();
+    expect(component.isDeploymentBlocked).toBeFalsy();
+    expect(component.selectedRelease.release).toEqual('testRelease');
+    expect(component.selectedAppserver.name).toEqual('testServer');
+    expect(component.appsWithVersion).toEqual(appsWithVersion);
+    expect(component.transDeploymentParameters).toEqual([deploymentParameter]);
+    expect(component.redeploymentAppserverDisplayName).toContain('testServer');
+    expect(component.redeploymentAppserverDisplayName).toContain('testRelease');
+    expect(component.environments[0].selected).toBeFalsy();
+    expect(component.environments[1].selected).toBeTruthy();
+  });
 
-  it('should initRedeploymentValues and set isDeploymentBlocked to true if an appWithVersion is missing ngOnInit',
-    inject([DeploymentComponent, DeploymentService, ResourceService],
-    (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
-      // given
-      deploymentComponent.environments = [{name: 'X'} as Environment, {name: 'Y'} as Environment];
-      const appsWithVersion: AppWithVersion[] = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion,
-        {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'} as AppWithVersion];
-      const deploymentParameter: DeploymentParameter = {key: 'atest', value: 'foo'} as DeploymentParameter;
-      const deployment: Deployment = {appsWithVersion, deploymentParameters: [deploymentParameter],
-        releaseName: 'testRelease', appServerName: 'testServer', appServerId: 1, environmentName: 'Y'} as Deployment;
-      spyOn(deploymentService, 'get').and.returnValue(of(deployment));
-      spyOn(resourceService, 'getDeployableReleases').and.returnValue(of([{id: 9, release: 'testRelease'} as Release]));
-      // second app missing
-      spyOn(resourceService, 'getAppsWithVersions').and.returnValue(of([{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion]));
-      // when
-      deploymentComponent.ngOnInit();
-      // then
-      expect(deploymentComponent.isRedeployment).toBeTruthy();
-      expect(deploymentComponent.isDeploymentBlocked).toBeTruthy();
-  }));
+  it('should initRedeploymentValues and set isDeploymentBlocked to true if an appWithVersion is missing ngOnInit', () => {
+    // given
+    component.environments = [
+      { name: 'X' } as Environment,
+      { name: 'Y' } as Environment
+    ];
+    const appsWithVersion: AppWithVersion[] = [
+      {
+        applicationId: 4,
+        applicationName: 'testApp',
+        version: '1.2.3'
+      } as AppWithVersion,
+      {
+        applicationId: 5,
+        applicationName: 'testAPP',
+        version: '1.2.3.4'
+      } as AppWithVersion
+    ];
+    const deploymentParameter: DeploymentParameter = {
+      key: 'atest',
+      value: 'foo'
+    } as DeploymentParameter;
+    const deployment: Deployment = {
+      appsWithVersion,
+      deploymentParameters: [deploymentParameter],
+      releaseName: 'testRelease',
+      appServerName: 'testServer',
+      appServerId: 1,
+      environmentName: 'Y'
+    } as Deployment;
+    spyOn(deploymentService, 'get').and.returnValue(of(deployment));
+    spyOn(resourceService, 'getDeployableReleases').and.returnValue(
+      of([{ id: 9, release: 'testRelease' } as Release])
+    );
+    // second app missing
+    spyOn(resourceService, 'getAppsWithVersions').and.returnValue(
+      of([
+        {
+          applicationId: 4,
+          applicationName: 'testApp',
+          version: '1.2.3'
+        } as AppWithVersion
+      ])
+    );
+    // when
+    component.deploymentId = 123; // this is necessary because of sketchy evaluation of request params in onInit
+    component.ngOnInit();
+    // then
+    expect(component.isRedeployment).toBeTruthy();
+    expect(component.isDeploymentBlocked).toBeTruthy();
+  });
 
-  it('should call the deploymentService with the right values on createDeployment', inject([DeploymentComponent, DeploymentService, ResourceService],
-      (deploymentComponent: DeploymentComponent, deploymentService: DeploymentService, resourceService: ResourceService) => {
-      // given
-      deploymentComponent.environments = [{name: 'X', id: 1} as Environment, {name: 'Y', id: 2} as Environment];
-      const appsWithVersion: AppWithVersion[] = [{applicationId: 4, applicationName: 'testApp', version: '1.2.3'} as AppWithVersion,
-        {applicationId: 5, applicationName: 'testAPP', version: '1.2.3.4'} as AppWithVersion];
-      const deploymentParameters: DeploymentParameter[] = [{key: 'atest', value: 'foo'} as DeploymentParameter,
-        {key: 'btest', value: 'bar'} as DeploymentParameter];
-      const deployment: Deployment = {appsWithVersion, deploymentParameters,
-        releaseName: 'testRelease', appServerName: 'testServer', environmentName: 'Y'} as Deployment;
-      spyOn(deploymentService, 'get').and.returnValue(of(deployment));
-      const deploymentRequest: DeploymentRequest = {appServerName: 'testServer', releaseName: 'testRelease',
-        contextIds: [2], simulate: false, sendEmail: false, executeShakedownTest: false, neighbourhoodTest: false,
-        requestOnly: false,  appsWithVersion, deploymentParameters} as DeploymentRequest;
-      spyOn(resourceService, 'getDeployableReleases').and.returnValue(of([{id: 9, release: 'testRelease'} as Release]));
-      spyOn(deploymentService, 'createDeployment').and.returnValue(of({trackingId: 911} as Deployment));
-      // when
-      deploymentComponent.ngOnInit();
-      deploymentComponent.createDeployment();
-      // then
-      expect(deploymentService.createDeployment).toHaveBeenCalledWith(deploymentRequest);
-      expect(deploymentComponent.successMessage).toContain('Tracking Id 911');
-    }));
-
+  it('should call the deploymentService with the right values on createDeployment', () => {
+    // given
+    component.environments = [
+      { name: 'X', id: 1 } as Environment,
+      { name: 'Y', id: 2 } as Environment
+    ];
+    const appsWithVersion: AppWithVersion[] = [
+      {
+        applicationId: 4,
+        applicationName: 'testApp',
+        version: '1.2.3'
+      } as AppWithVersion,
+      {
+        applicationId: 5,
+        applicationName: 'testAPP',
+        version: '1.2.3.4'
+      } as AppWithVersion
+    ];
+    const deploymentParameters: DeploymentParameter[] = [
+      { key: 'atest', value: 'foo' } as DeploymentParameter,
+      { key: 'btest', value: 'bar' } as DeploymentParameter
+    ];
+    const deployment: Deployment = {
+      appsWithVersion,
+      deploymentParameters,
+      releaseName: 'testRelease',
+      appServerName: 'testServer',
+      environmentName: 'Y'
+    } as Deployment;
+    spyOn(deploymentService, 'get').and.returnValue(of(deployment));
+    const deploymentRequest: DeploymentRequest = {
+      appServerName: 'testServer',
+      releaseName: 'testRelease',
+      contextIds: [2],
+      simulate: false,
+      sendEmail: false,
+      executeShakedownTest: false,
+      neighbourhoodTest: false,
+      requestOnly: false,
+      appsWithVersion,
+      deploymentParameters
+    } as DeploymentRequest;
+    spyOn(resourceService, 'getDeployableReleases').and.returnValue(
+      of([{ id: 9, release: 'testRelease' } as Release])
+    );
+    spyOn(deploymentService, 'createDeployment').and.returnValue(
+      of({ trackingId: 911 } as Deployment)
+    );
+    // when
+    component.deploymentId = 123; // this is necessary because of sketchy evaluation of request params in onInit
+    component.ngOnInit();
+    component.createDeployment();
+    // then
+    expect(deploymentService.createDeployment).toHaveBeenCalledWith(
+      deploymentRequest
+    );
+    expect(component.successMessage).toContain('Tracking Id 911');
+  });
 });
