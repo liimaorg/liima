@@ -1,13 +1,13 @@
 import { ChangeDetectorRef } from '@angular/core';
-import { inject, TestBed } from '@angular/core/testing';
+import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-// Load the implementations that should be tested
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
 import { AppConfiguration } from './setting/app-configuration';
 import { SettingService } from './setting/setting.service';
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
 class RouterStub {
   navigateByUrl(url: string) {
@@ -16,27 +16,38 @@ class RouterStub {
 }
 
 describe('App', () => {
-  // provide our implementations or mocks to the dependency injector
-  beforeEach(() =>
+  let appService: AppService;
+  let router: Router;
+  let app: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+  let settingService: SettingService;
+
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      declarations: [AppComponent],
+      imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         AppService,
-        AppComponent,
         SettingService,
         ChangeDetectorRef,
-        { provide: Router, useClass: RouterStub }
+        AppComponent,
+        {provide: Router, useClass: RouterStub}
       ]
-    })
-  );
+    }).compileComponents();
+    appService = TestBed.get(AppService);
+    router = TestBed.get(Router);
+    settingService = TestBed.get(SettingService);
+
+    fixture = TestBed.createComponent(AppComponent);
+    app = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
   it('should have a name', inject([AppComponent], (app: AppComponent) => {
-    expect(app.name).toEqual('Angular 4');
+    expect(app.name).toEqual('Angular 8');
   }));
 
-  it('should navigate to the right target', inject(
-    [AppComponent, AppService, Router],
-    (app: AppComponent, appService: AppService, router: Router) => {
+  it('should navigate to the right target', () => {
       // given
       const item: any = { title: 'test', target: 'target' };
       spyOn(appService, 'set').and.callThrough();
@@ -47,11 +58,9 @@ describe('App', () => {
       expect(appService.set).toHaveBeenCalledWith('navTitle', 'test');
       expect(router.navigateByUrl).toHaveBeenCalledWith('target');
     }
-  ));
+  );
 
-  it('should set logoutUrl on ngOnInit', inject(
-    [AppComponent, AppService, SettingService],
-    (app: AppComponent, appService: AppService, settingService: SettingService) => {
+  it('should set logoutUrl on ngOnInit', () => {
       // given
       const expectedKey: string = 'logoutUrl';
       const expectedValue: string = 'testUrl';
@@ -70,11 +79,9 @@ describe('App', () => {
       // then
       expect(appService.set).toHaveBeenCalledWith(expectedKey, expectedValue);
     }
-  ));
+  );
 
-  it('should set empty logoutUrl on ngOnInit if config not found', inject(
-    [AppComponent, AppService, SettingService],
-    (app: AppComponent, appService: AppService, settingService: SettingService) => {
+  it('should set empty logoutUrl on ngOnInit if config not found', () => {
       // given
       const expectedKey: string = 'logoutUrl';
       const expectedValue: string = '';
@@ -90,5 +97,5 @@ describe('App', () => {
       // then
       expect(appService.set).toHaveBeenCalledWith(expectedKey, expectedValue);
     }
-  ));
+  );
 });

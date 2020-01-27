@@ -1,6 +1,3 @@
-/*
- * Angular 4 decorators and services
- */
 import { Component, ViewEncapsulation, OnInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppService } from './app.service';
@@ -21,7 +18,7 @@ import * as _ from 'lodash';
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit, AfterViewChecked {
-  name = 'Angular 4';
+  name = 'Angular 8';
 
   private logoutUrlKey: string = 'amw.logoutUrl';
 
