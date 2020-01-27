@@ -5,23 +5,22 @@ import * as _ from 'lodash';
 
 @Injectable()
 export class BaseService {
-
   private baseUrl: string = '/AMW_rest/resources';
 
   public getBaseUrl(): string {
     return this.baseUrl;
   }
 
-  public getHeaders() {
-    const headers = new HttpHeaders();
-    headers.append('Accept', 'application/json');
+  public getHeaders(): HttpHeaders {
+    let headers = new HttpHeaders();
+    headers = headers.append('Accept', 'application/json');
     return headers;
   }
 
   public postHeaders() {
-    const headers = new HttpHeaders();
-    headers.append('Content-Type', 'application/json');
-    headers.append('Accept', 'application/json');
+    let headers = new HttpHeaders();
+    headers = headers.append('Content-Type', 'application/json');
+    headers = headers.append('Accept', 'application/json');
     return headers;
   }
 
