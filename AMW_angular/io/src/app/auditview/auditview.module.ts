@@ -5,7 +5,6 @@ import { AuditviewComponent } from './auditview.component';
 import { AuditviewRoutingModule } from './auditview-routing.module';
 import { AuditviewService } from './auditview.service';
 import { NewlineFilterPipe } from '../customfilter/newlineFilterPipe';
-import { AuditviewFilterPipe } from '../customfilter/auditviewFilterPipe';
 import { AuditviewTableComponent } from './auditview-table/auditview-table.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SortableHeader } from './sortable.directive';
@@ -22,7 +21,6 @@ import { BaseModule } from '../base/base.module';
   declarations: [
     AuditviewComponent,
     NewlineFilterPipe,
-    AuditviewFilterPipe,
     AuditviewTableComponent,
     SortableHeader
   ],
