@@ -1,24 +1,28 @@
 import { Component, Input, Output, EventEmitter, NgZone } from '@angular/core';
 import { Deployment } from './deployment';
 import * as moment from 'moment';
-
-
 @Component({
   selector: 'amw-deployments-edit-modal',
   templateUrl: './deployments-edit-modal.component.html'
 })
-
 export class DeploymentsEditModalComponent {
-
   @Input() deployments: Deployment[] = [];
   @Input() editActions: string[];
   @Input() hasPermissionShakedownTest: boolean;
 
   @Output() errorMessage: EventEmitter<string> = new EventEmitter<string>();
-  @Output() doConfirmDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
-  @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
-  @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
-  @Output() doEditDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
+  @Output() doConfirmDeployment: EventEmitter<Deployment> = new EventEmitter<
+    Deployment
+  >();
+  @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<
+    Deployment
+  >();
+  @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<
+    Deployment
+  >();
+  @Output() doEditDeploymentDate: EventEmitter<Deployment> = new EventEmitter<
+    Deployment
+  >();
 
   confirmationAttributes: Deployment;
   deploymentDate: string; // for deployment date change in during confirmation (format 'DD.MM.YYYY HH:mm')
@@ -30,7 +34,8 @@ export class DeploymentsEditModalComponent {
 
   changeEditAction() {
     const isConfirm = this.selectedEditAction === this.editActions[1];
-    const isEditDeploymentDate = this.selectedEditAction === this.editActions[0];
+    const isEditDeploymentDate =
+      this.selectedEditAction === this.editActions[0];
     if (isConfirm || isEditDeploymentDate) {
       this.addDatePicker();
     }
@@ -59,6 +64,10 @@ export class DeploymentsEditModalComponent {
         break;
     }
     this.clear();
+    this.hideModal();
+  }
+
+  hideModal() {
     $('#deploymentsEdit').modal('hide');
   }
 
@@ -107,7 +116,7 @@ export class DeploymentsEditModalComponent {
 
   private addDatePicker() {
     this.ngZone.onMicrotaskEmpty.subscribe(() => {
-      $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
+      $('.datepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
     });
   }
 }
