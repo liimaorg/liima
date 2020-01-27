@@ -13,7 +13,7 @@ import { of } from 'rxjs';
 import { Environment } from './environment';
 import { Resource } from '../resource/resource';
 import { Release } from '../resource/release';
-import { AppState } from '../app.service';
+import { AppService } from '../app.service';
 import { DeploymentRequest } from './deployment-request';
 import { DeploymentParameter } from './deployment-parameter';
 import { Deployment } from './deployment';
@@ -49,7 +49,7 @@ describe('DeploymentComponent (create deployment)', () => {
       DeploymentService,
       ResourceService,
       DeploymentComponent,
-      AppState,
+      AppService,
     ],
     declarations: [DummyComponent],
   }));
@@ -353,7 +353,7 @@ describe('DeploymentComponent (create deployment with params)', () => {
       DeploymentService,
       ResourceService,
       DeploymentComponent,
-      AppState,
+      AppService,
     ],
     declarations: [DummyComponent],
   }));
@@ -397,7 +397,7 @@ describe('DeploymentComponent (create deployment with fake redeploy param)', () 
       DeploymentService,
       ResourceService,
       DeploymentComponent,
-      AppState,
+      AppService,
     ],
     declarations: [DummyComponent],
   }));
@@ -440,7 +440,7 @@ describe('DeploymentComponent (redeployment)', () => {
       DeploymentService,
       ResourceService,
       DeploymentComponent,
-      AppState,
+      AppService,
     ],
     declarations: [DummyComponent],
   }));

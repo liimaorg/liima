@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AppState } from '../app.service';
+import { AppService } from '../app.service';
 import { AuditviewService } from './auditview.service';
 import { ResourceService } from '../resource/resource.service';
 import { AuditLogEntry } from './auditview-entry';
@@ -19,15 +19,15 @@ export class AuditviewComponent implements OnInit {
   isLoading: boolean = true;
 
   constructor(
-    public appState: AppState,
+    public appService: AppService,
     private auditViewService: AuditviewService,
     private resourceService: ResourceService,
     private activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit() {
-    this.appState.set('navShow', false);
-    this.appState.set('pageTitle', 'Audit View');
+    this.appService.set('navShow', false);
+    this.appService.set('pageTitle', 'Audit View');
 
     this.activatedRoute.queryParams.subscribe((param: any) => {
       if (param['resourceId']) {

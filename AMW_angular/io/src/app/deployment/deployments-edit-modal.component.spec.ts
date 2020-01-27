@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { inject, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AppState } from '../app.service';
+import { AppService } from '../app.service';
 import { Deployment } from './deployment';
 import { DeploymentService } from './deployment.service';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
@@ -26,7 +26,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
           { path: 'deployments', component: DummyComponent }
         ])
       ],
-      providers: [DeploymentService, DeploymentsEditModalComponent, AppState],
+      providers: [DeploymentService, DeploymentsEditModalComponent, AppService],
       declarations: [DummyComponent]
     })
   );

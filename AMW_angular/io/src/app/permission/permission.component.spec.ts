@@ -8,7 +8,7 @@ import { PermissionService } from './permission.service';
 import { EnvironmentService } from '../deployment/environment.service';
 import { ResourceService } from '../resource/resource.service';
 import { Environment } from '../deployment/environment';
-import { AppState } from '../app.service';
+import { AppService } from '../app.service';
 import { Restriction } from './restriction';
 import { of } from 'rxjs';
 import { Permission } from './permission';
@@ -36,7 +36,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         PermissionService,
         ResourceService,
         PermissionComponent,
-        AppState
+        AppService
       ],
       declarations: [DummyComponent]
     })
@@ -503,7 +503,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
           PermissionService,
           ResourceService,
           PermissionComponent,
-          AppState
+          AppService
         ],
         declarations: [DummyComponent]
       })
@@ -592,7 +592,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
           PermissionService,
           ResourceService,
           PermissionComponent,
-          AppState
+          AppService
         ],
         declarations: [DummyComponent]
       })

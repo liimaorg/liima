@@ -4,7 +4,7 @@ import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { timer } from 'rxjs';
-import { AppState } from '../app.service';
+import { AppService } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
 import { Deployment } from './deployment';
 import { DeploymentFilter } from './deployment-filter';
@@ -88,13 +88,13 @@ export class DeploymentsComponent implements OnInit {
               private location: Location,
               private deploymentService: DeploymentService,
               private resourceService: ResourceService,
-              public appState: AppState) {
+              public appService: AppService) {
   }
 
   ngOnInit() {
-    this.appState.set('navShow', false);
-    this.appState.set('navTitle', 'Deployments');
-    this.appState.set('pageTitle', 'Deployments');
+    this.appService.set('navShow', false);
+    this.appService.set('navTitle', 'Deployments');
+    this.appService.set('pageTitle', 'Deployments');
 
     this.activatedRoute.queryParams.subscribe(
       (param: any) => {

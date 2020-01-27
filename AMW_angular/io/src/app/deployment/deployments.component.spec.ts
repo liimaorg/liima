@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { NgModel } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { AppState } from '../app.service';
+import { AppService } from '../app.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
 import { DeploymentsComponent } from './deployments.component';
 import { Deployment } from './deployment';
@@ -38,7 +38,7 @@ describe('DeploymentsComponent (with query params)', () => {
         DeploymentService,
         ResourceService,
         DeploymentsComponent,
-        AppState
+        AppService
       ],
       declarations: [DummyComponent]
     })
@@ -234,7 +234,7 @@ describe('DeploymentsComponent (with illegal query params)', () => {
         DeploymentService,
         ResourceService,
         DeploymentsComponent,
-        AppState
+        AppService
       ],
       declarations: [DummyComponent]
     })
@@ -284,7 +284,7 @@ describe('DeploymentsComponent (without query params)', () => {
         DeploymentService,
         ResourceService,
         DeploymentsComponent,
-        AppState,
+        AppService,
         NgModel
       ],
       declarations: [DummyComponent]

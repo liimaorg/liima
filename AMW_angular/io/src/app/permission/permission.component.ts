@@ -6,7 +6,7 @@ import { EnvironmentService } from '../deployment/environment.service';
 import { Resource } from '../resource/resource';
 import { ResourceType } from '../resource/resource-type';
 import { ResourceService } from '../resource/resource.service';
-import { AppState } from '../app.service';
+import { AppService } from '../app.service';
 import { Restriction } from './restriction';
 import { RestrictionsCreation } from './restrictions-creation';
 import { Permission } from './permission';
@@ -54,14 +54,14 @@ export class PermissionComponent implements OnInit, OnDestroy {
               private environmentService: EnvironmentService,
               private resourceService: ResourceService,
               private activatedRoute: ActivatedRoute,
-              public appState: AppState) {
+              public appService: AppService) {
   }
 
   ngOnInit() {
-    this.appState.set('navShow', true);
-    this.appState.set('navItems', [{title: 'Roles', target: '/permission/role'}, {title: 'Users', target: '/permission/user'}]);
-    this.appState.set('navTitle', this.defaultNavItem);
-    this.appState.set('pageTitle', 'Permissions');
+    this.appService.set('navShow', true);
+    this.appService.set('navItems', [{title: 'Roles', target: '/permission/role'}, {title: 'Users', target: '/permission/user'}]);
+    this.appService.set('navTitle', this.defaultNavItem);
+    this.appService.set('pageTitle', 'Permissions');
 
     this.activatedRoute.params.subscribe(
       (param: any) => {
@@ -85,7 +85,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.appState.set('navItems', null);
+    this.appService.set('navItems', null);
   }
 
   onChangeRole() {
@@ -244,13 +244,13 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.assignedRestrictions = [];
     this.restrictionType = (type === 'role' || type === 'user') ? type : 'role';
     if (this.restrictionType === 'user') {
-      this.appState.set('navTitle', 'Users');
+      this.appService.set('navTitle', 'Users');
       this.selectedRoleName = null;
       if (this.userNames.length < 1) {
         this.getAllUserNames();
       }
     } else {
-      this.appState.set('navTitle', 'Roles');
+      this.appService.set('navTitle', 'Roles');
       this.selectedUserNames = [];
       if (this.roleNames.length < 1) {
         this.getAllRoleNames();
@@ -262,8 +262,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.clearMessages();
     this.assignedRestrictions = [];
     this.actingUserName = userName;
-    this.appState.set('navItems', [ { title: this.actingUserName, target: '/permission/delegation/' + this.actingUserName } ]);
-    this.appState.set('navTitle', this.actingUserName);
+    this.appService.set('navItems', [ { title: this.actingUserName, target: '/permission/delegation/' + this.actingUserName } ]);
+    this.appService.set('navTitle', this.actingUserName);
     this.selectedUserNames = [];
     this.selectedRoleName = null;
     this.getAllAssignableUserNames();

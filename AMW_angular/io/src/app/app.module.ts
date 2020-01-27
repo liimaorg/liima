@@ -20,11 +20,11 @@ import { AppRoutingModule } from './app-routing.module';
 // App is our top level component
 import { AppComponent } from './app.component';
 import { PageNotFoundComponent } from './not-found.component';
-import { AppState, InternalStateType } from './app.service';
+import { AppService, InternalStateType } from './app.service';
 import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 
 // Application wide providers
-const APP_PROVIDERS = [...APP_RESOLVER_PROVIDERS, AppState];
+const APP_PROVIDERS = [...APP_RESOLVER_PROVIDERS, AppService];
 
 type StoreType = {
   state: InternalStateType;

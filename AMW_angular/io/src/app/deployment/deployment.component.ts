@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { AppState } from '../app.service';
+import { AppService } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
 import { ResourceTag } from '../resource/resource-tag';
 import { Resource } from '../resource/resource';
@@ -74,18 +74,17 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   isLoading: boolean = false;
   isDeploymentBlocked: boolean = false;
 
-  constructor(
-    private resourceService: ResourceService,
-    private environmentService: EnvironmentService,
-    private deploymentService: DeploymentService,
-    private activatedRoute: ActivatedRoute,
-    private location: Location,
-    public appState: AppState
-  ) {}
+  constructor(private resourceService: ResourceService,
+              private environmentService: EnvironmentService,
+              private deploymentService: DeploymentService,
+              private activatedRoute: ActivatedRoute,
+              private location: Location,
+              public appService: AppService) {
+  }
 
   ngOnInit() {
-    this.appState.set('navShow', false);
-    this.appState.set('navTitle', 'Deployments');
+    this.appService.set('navShow', false);
+    this.appService.set('navTitle', 'Deployments');
 
     this.initEnvironments();
 
@@ -97,7 +96,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
     // a deploymentId MUST be numeric..
     if (this.deploymentId && !isNaN(this.deploymentId)) {
-      this.appState.set('pageTitle', 'Redeploy');
+      this.appService.set('pageTitle', 'Redeploy');
       this.isRedeployment = true;
       this.getDeployment();
     } else {
@@ -106,7 +105,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
         this.appserverName = this.deploymentId.toString();
         delete this.deploymentId;
       }
-      this.appState.set('pageTitle', 'Create new deployment');
+      this.appService.set('pageTitle', 'Create new deployment');
       this.initAppservers();
     }
   }

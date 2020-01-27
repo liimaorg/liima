@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 // Load the implementations that should be tested
 import { AppComponent } from './app.component';
-import { AppState } from './app.service';
+import { AppService } from './app.service';
 import { AppConfiguration } from './setting/app-configuration';
 import { SettingService } from './setting/setting.service';
 
@@ -21,7 +21,7 @@ describe('App', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       providers: [
-        AppState,
+        AppService,
         AppComponent,
         SettingService,
         ChangeDetectorRef,
@@ -35,23 +35,23 @@ describe('App', () => {
   }));
 
   it('should navigate to the right target', inject(
-    [AppComponent, AppState, Router],
-    (app: AppComponent, appState: AppState, router: Router) => {
+    [AppComponent, AppService, Router],
+    (app: AppComponent, appService: AppService, router: Router) => {
       // given
       const item: any = { title: 'test', target: 'target' };
-      spyOn(appState, 'set').and.callThrough();
+      spyOn(appService, 'set').and.callThrough();
       spyOn(router, 'navigateByUrl').and.callThrough();
       // when
       app.navigateTo(item);
       // then
-      expect(appState.set).toHaveBeenCalledWith('navTitle', 'test');
+      expect(appService.set).toHaveBeenCalledWith('navTitle', 'test');
       expect(router.navigateByUrl).toHaveBeenCalledWith('target');
     }
   ));
 
   it('should set logoutUrl on ngOnInit', inject(
-    [AppComponent, AppState, SettingService],
-    (app: AppComponent, appState: AppState, settingService: SettingService) => {
+    [AppComponent, AppService, SettingService],
+    (app: AppComponent, appService: AppService, settingService: SettingService) => {
       // given
       const expectedKey: string = 'logoutUrl';
       const expectedValue: string = 'testUrl';
@@ -64,17 +64,17 @@ describe('App', () => {
       spyOn(settingService, 'getAllAppSettings').and.returnValues(
         of([appConf])
       );
-      spyOn(appState, 'set').and.callThrough();
+      spyOn(appService, 'set').and.callThrough();
       // when
       app.ngOnInit();
       // then
-      expect(appState.set).toHaveBeenCalledWith(expectedKey, expectedValue);
+      expect(appService.set).toHaveBeenCalledWith(expectedKey, expectedValue);
     }
   ));
 
   it('should set empty logoutUrl on ngOnInit if config not found', inject(
-    [AppComponent, AppState, SettingService],
-    (app: AppComponent, appState: AppState, settingService: SettingService) => {
+    [AppComponent, AppService, SettingService],
+    (app: AppComponent, appService: AppService, settingService: SettingService) => {
       // given
       const expectedKey: string = 'logoutUrl';
       const expectedValue: string = '';
@@ -84,11 +84,11 @@ describe('App', () => {
       spyOn(settingService, 'getAllAppSettings').and.returnValues(
         of([appConf])
       );
-      spyOn(appState, 'set').and.callThrough();
+      spyOn(appService, 'set').and.callThrough();
       // when
       app.ngOnInit();
       // then
-      expect(appState.set).toHaveBeenCalledWith(expectedKey, expectedValue);
+      expect(appService.set).toHaveBeenCalledWith(expectedKey, expectedValue);
     }
   ));
 });

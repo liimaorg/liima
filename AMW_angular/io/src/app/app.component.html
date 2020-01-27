@@ -18,7 +18,7 @@
         <li><a href="#/deployments/">Deploy</a></li>
         <li><a href="/AMW_web/pages/shakedownTest.xhtml">Shakedown Test</a></li>
         <li><a href="/AMW_web/pages/settings.xhtml">Settings</a></li>
-        <li><a href="{{appState.get('logoutUrl')}}">Logout</a></li>
+        <li><a href="{{appService.get('logoutUrl')}}">Logout</a></li>
       </ul>
       <form class="navbar-form navbar-right">
         <div class="checkbox">
@@ -31,14 +31,14 @@
   </div>
 </nav>
 
-<div *ngIf="appState.get('navShow')" class="col-sm-2 col-lg-1 sidebar">
+<div *ngIf="appService.get('navShow')" class="col-sm-2 col-lg-1 sidebar">
   <ul class="nav nav-sidebar">
-    <ng-container *ngIf="!appState.navItems()">
-      <li class="active"><a href="#">{{appState.get('navTitle')}}<span class="sr-only">(current)</span></a></li>
+    <ng-container *ngIf="!appService.navItems()">
+      <li class="active"><a href="#">{{appService.get('navTitle')}}<span class="sr-only">(current)</span></a></li>
     </ng-container>
-    <ng-container *ngIf="appState.navItems()">
-      <ng-container *ngFor="let item of appState.navItems()">
-          <li [ngClass]="(item.title === appState.get('navTitle')) ? 'active' : ''">
+    <ng-container *ngIf="appService.navItems()">
+      <ng-container *ngFor="let item of appService.navItems()">
+          <li [ngClass]="(item.title === appService.get('navTitle')) ? 'active' : ''">
             <a href="#{{item.target}}" (mouseup)="navigateTo(item)">{{item.title}}</a></li>
       </ng-container>
     </ng-container>
@@ -49,4 +49,4 @@
   <router-outlet></router-outlet>
 </main>
 
-<!--<pre class="app-state">this.appState.state = {{ appState.state | json }}</pre>-->
+<!--<pre class="app-state">this.appService.state = {{ appService.state | json }}</pre>-->

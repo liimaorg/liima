@@ -1,26 +1,22 @@
-import { inject, TestBed } from '@angular/core/testing';
 // Load the implementations that should be tested
-import { AppState } from './app.service';
+import {AppService} from './app.service';
 
 describe('AppService', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    providers: [
-      AppState
-    ]
-  }));
+  let service: AppService;
+  beforeEach(() => {
+    service = new AppService();
+  });
 
-  it('should return an empty if no navItems have been set',
-    inject([AppState], (appState: AppState) => {
-      expect(appState.navItems()).toEqual([]);
-  }));
+  it('should return an empty if no navItems have been set', () => {
+    expect(service.navItems()).toEqual([])
+  });
 
   it('should return an array of navItems if navItems have been set',
-    inject([AppState], (appState: AppState) => {
+    () => {
       // given
       const items: any[] = [{title: 'aTest', target: '/aTarget'}, {title: 'bTest', target: '/bTarget'}];
-      appState.set('navItems', items);
+      service.set('navItems', items);
       // when then
-      expect(appState.navItems()).toEqual(items);
-  }));
-
+      expect(service.navItems()).toEqual(items);
+    });
 });
