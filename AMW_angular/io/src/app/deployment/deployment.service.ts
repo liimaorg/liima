@@ -20,14 +20,6 @@ export class DeploymentService extends BaseService {
     super();
   }
 
-  getAll(): Observable<Deployment[]> {
-    return this.http
-      .get<Deployment[]>(`${this.getBaseUrl()}/deployments`, {
-        headers: this.getHeaders()
-      })
-      .pipe(catchError(this.handleError));
-  }
-
   getFilteredDeployments(
     filterString: string,
     sortCol: string,

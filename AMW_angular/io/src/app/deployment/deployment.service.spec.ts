@@ -1,12 +1,14 @@
-import { inject, TestBed } from '@angular/core/testing';
-import { DeploymentService } from './deployment.service';
-import { DeploymentRequest } from './deployment-request';
+import { HttpClient } from '@angular/common/http';
 import {
-  HttpTestingController,
-  HttpClientTestingModule
+  HttpClientTestingModule,
+  HttpTestingController
 } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { Deployment } from './deployment';
+import { DeploymentService } from './deployment.service';
 
 describe('DeploymentService', () => {
+  let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let service: DeploymentService;
 
@@ -17,6 +19,7 @@ describe('DeploymentService', () => {
     });
 
     httpTestingController = TestBed.get(HttpTestingController);
+    httpClient = TestBed.get(HttpClient); // is this
     service = TestBed.get(DeploymentService);
   });
 
@@ -28,65 +31,70 @@ describe('DeploymentService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should have a getAll method', inject(
-    [DeploymentService],
-    (deploymentService: DeploymentService) => {
-      expect(deploymentService.getAll()).toBeDefined();
-    }
-  ));
+  it('should getAllDeploymentParamterKeys() a list of deploymentPerameters', () => {
+    const deploymentParamter = {
+      key: 'key',
+      value: 'value'
+    };
 
-  it('should have a createDeployment method', inject(
-    [DeploymentService],
-    (deploymentService: DeploymentService) => {
-      const deploymentRequest: DeploymentRequest = {} as DeploymentRequest;
-      expect(
-        deploymentService.createDeployment(deploymentRequest)
-      ).toBeDefined();
-    }
-  ));
+    service.getAllDeploymentParameterKeys().subscribe(deploymentParameters => {
+      expect(deploymentParameters).toEqual([deploymentParamter]);
+    });
 
-  // it('should request data from the right endpoint when getAll is called',
-  //   inject([DeploymentService, MockBackend], (deploymentService: DeploymentService, mockBackend) => {
-  //   // given
-  //   mockBackend.connections.subscribe((connection) => {
-  //     expect(connection.request.method).toBe(RequestMethod.Get);
-  //     expect(connection.request.url).toMatch('/AMW_rest/resources/deployments');
-  //     const mockResponse = new Response(new ResponseOptions({body: [{id: 1}]}));
-  //     connection.mockRespond(mockResponse);
-  //   });
-  //   // when then
-  //   deploymentService.getAll().subscribe((response) => {
-  //     expect(response).toEqual([{id: 1}]);
-  //   });
-  // }));
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/deployments/deploymentParameterKeys/'
+    );
 
-  // it('should request data from the right endpoint when getAllDeploymentParameterKeys is called',
-  //   inject([DeploymentService, MockBackend], (deploymentService: DeploymentService, mockBackend: MockBackend) => {
-  //   // given
-  //   mockBackend.connections.subscribe((connection) => {
-  //     expect(connection.request.method).toBe(RequestMethod.Get);
-  //     expect(connection.request.url).toMatch('/AMW_rest/resources/deployments/deploymentParameterKeys');
-  //     const mockResponse = new Response(new ResponseOptions({body: [{key: 1, value: 'test'}]}));
-  //     connection.mockRespond(mockResponse);
-  //   });
-  //   // when then
-  //   deploymentService.getAllDeploymentParameterKeys().subscribe((response) => {
-  //     expect(response).toEqual([{key: 1, value: 'test'}]);
-  //   });
-  // }));
+    expect(req.request.method).toEqual('GET');
 
-  // it('should request data from the right endpoint when get is called',
-  //   inject([DeploymentService, MockBackend], (deploymentService: DeploymentService, mockBackend: MockBackend) => {
-  //   // given
-  //   mockBackend.connections.subscribe((connection) => {
-  //     expect(connection.request.method).toBe(RequestMethod.Get);
-  //     expect(connection.request.url).toMatch('/AMW_rest/resources/deployments/123');
-  //     const mockResponse = new Response(new ResponseOptions({body: [{id: 123}]}));
-  //     connection.mockRespond(mockResponse);
-  //   });
-  //   // when then
-  //   deploymentService.get(123).subscribe((response) => {
-  //     expect(response).toEqual([{id: 123}]);
-  //   });
-  // }));
+    req.flush([deploymentParamter]);
+  });
+
+  it('should get() a deployment', () => {
+    service.get(123).subscribe(deployment => {
+      expect(deployment).toEqual(mockDeployment);
+    });
+
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/deployments/123'
+    );
+
+    expect(req.request.method).toEqual('GET');
+    req.flush(mockDeployment);
+  });
+
+  const mockDeployment: Deployment = {
+    id: 1,
+    trackingId: 123,
+    state: 'final',
+    deploymentDate: 1254689765564,
+    deploymentJobCreationDate: 1254689765512,
+    deploymentConfirmationDate: 125468976545,
+    deploymentCancelDate: 1254679765564,
+    reason: 'because of reasons',
+    appServerName: 'haskell-backend',
+    appServerId: 1,
+    resourceId: 1234,
+    appsWithVersion: [],
+    deploymentParameters: [],
+    environmentName: 'production',
+    environmentNameAlias: 'prod',
+    releaseName: 'alpha-release',
+    runtimeName: 'ghc',
+    requestUser: 'reto',
+    confirmUser: 'yves',
+    cancelUser: 'max',
+    deploymentDelayed: false,
+    selected: true,
+    actions: null,
+    statusMessage: 'msg',
+    buildSuccess: true,
+    executed: true,
+    deploymentConfirmed: true,
+    stateToDeploy: 1,
+    sendEmailWhenDeployed: true,
+    simulateBeforeDeployment: true,
+    shakedownTestsWhenDeployed: true,
+    neighbourhoodTest: false
+  };
 });
