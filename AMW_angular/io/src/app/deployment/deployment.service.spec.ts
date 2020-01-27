@@ -19,7 +19,7 @@ describe('DeploymentService', () => {
     });
 
     httpTestingController = TestBed.get(HttpTestingController);
-    httpClient = TestBed.get(HttpClient); // is this
+    httpClient = TestBed.get(HttpClient);
     service = TestBed.get(DeploymentService);
   });
 
