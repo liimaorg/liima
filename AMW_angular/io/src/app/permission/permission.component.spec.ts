@@ -313,7 +313,6 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     component.removeRestriction(122);
     // then
     expect(permissionService.removeRestriction).toHaveBeenCalledWith(122);
-    // TODO
     expect(component.assignedRestrictions).toContain({
       id: 121,
       contextName: 'T'
