@@ -22,7 +22,7 @@ export class EnvironmentService extends BaseService {
   private getEnvironments(includingGroups: boolean): Observable<Environment[]> {
     let params = new HttpParams();
     if (includingGroups) {
-      params.set('includingGroups', 'true');
+      params = params.set('includingGroups', 'true');
     }
     return this.http
       .get<Environment[]>(`${this.getBaseUrl()}/environments`, {
