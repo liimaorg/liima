@@ -256,7 +256,7 @@ describe('DeploymentsComponent (with illegal query params)', () => {
   });
 });
 
-fdescribe('DeploymentsComponent (without query params)', () => {
+describe('DeploymentsComponent (without query params)', () => {
   // provide our implementations or mocks to the dependency injector
   let component: DeploymentsComponent;
   let fixture: ComponentFixture<DeploymentsComponent>;
