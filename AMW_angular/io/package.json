@@ -8,7 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "mavenbuild": "ng test && ng build --prod --outputPath=dist"
+    "mavenbuild": "ng test -watch false -browsers ChromeHeadless && ng build --prod --outputPath=dist"
   },
   "private": true,
   "dependencies": {
