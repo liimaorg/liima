@@ -6,7 +6,7 @@ import {HttpClient} from "@angular/common/http";
 describe('SettingService', () => {
 
   let httpClient: HttpClient;
-  let httpMock: HttpTestingController;
+  let httpTestingController: HttpTestingController;
   let settingService: SettingService;
 
   beforeEach(() => {
@@ -15,13 +15,13 @@ describe('SettingService', () => {
       providers: [SettingService]
     });
 
-    httpMock = TestBed.get(HttpTestingController);
+    httpTestingController = TestBed.get(HttpTestingController);
     httpClient = TestBed.get(HttpClient);
     settingService = TestBed.get(SettingService);
   });
 
   afterEach(() => {
-    httpMock.verify();
+    httpTestingController.verify();
   });
 
   it('should have a getAllAppSettings method', () => {
@@ -42,7 +42,7 @@ describe('SettingService', () => {
       expect(settingRes).toEqual([settingsResponse])
     });
 
-    const req = httpMock.expectOne(
+    const req = httpTestingController.expectOne(
       '/AMW_rest/resources/settings'
     );
 

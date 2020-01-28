@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Resource } from './resource';
@@ -86,8 +86,8 @@ export class ResourceService extends BaseService {
   }
 
   getRuntime(resourceGroupName: string, releaseName: string): Observable<Relation[]> {
-    const params = new HttpParams();
-    params.set('type', 'RUNTIME');
+    let params = new HttpParams();
+    params = params.set('type', 'RUNTIME');
     return this.http
       .get<Relation[]>(`${this.getBaseUrl()}/resources/${resourceGroupName}/${releaseName}/relations`,
         {
@@ -116,8 +116,8 @@ export class ResourceService extends BaseService {
   }
 
   getAppsWithVersions(resourceGroupId: number, releaseId: number, environmentIds: number[]): Observable<AppWithVersion[]> {
-    const params = new HttpParams();
-    environmentIds.forEach((id) => params.append('context', String(id)));
+    let params = new HttpParams();
+    environmentIds.forEach((id) => params = params.append('context', String(id)));
     return this.http
       .get<AppWithVersion[]>(`${this.getBaseUrl()}/resources/resourceGroups/${resourceGroupId}/releases/${releaseId}/appWithVersions/`,
         {
