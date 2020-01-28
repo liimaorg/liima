@@ -7,7 +7,6 @@ import { BaseService } from '../base/base.service';
 
 @Injectable()
 export class EnvironmentService extends BaseService {
-
   constructor(private http: HttpClient) {
     super();
   }
@@ -21,17 +20,15 @@ export class EnvironmentService extends BaseService {
   }
 
   private getEnvironments(includingGroups: boolean): Observable<Environment[]> {
-    const params = new HttpParams();
+    let params = new HttpParams();
     if (includingGroups) {
       params.set('includingGroups', 'true');
     }
     return this.http
-      .get<Environment[]>(`${this.getBaseUrl()}/environments`,
-        {
-          params: params,
-          headers: this.getHeaders()
-        })
+      .get<Environment[]>(`${this.getBaseUrl()}/environments`, {
+        params: params,
+        headers: this.getHeaders()
+      })
       .pipe(catchError(this.handleError));
   }
-
 }
