@@ -1,225 +1,154 @@
 import { inject, TestBed } from '@angular/core/testing';
 import { PermissionService } from './permission.service';
 import { Restriction } from './restriction';
-import { HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  HttpClientTestingModule
+} from '@angular/common/http/testing';
+import { HttpClient } from '@angular/common/http';
 
-describe('PermissiontService', () => {
-  beforeEach(() =>
+describe('PermissionService', () => {
+  let service: PermissionService;
+
+  let httpTestingController: HttpTestingController;
+  let httpClient: HttpClient;
+
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpTestingController],
+      imports: [HttpClientTestingModule],
       providers: [PermissionService]
-    })
-  );
+    });
+    service = TestBed.get(PermissionService);
 
-  it('should have a getAllRoleNames method', inject(
-    [PermissionService],
-    (permissionService: PermissionService) => {
-      expect(permissionService.getAllRoleNames()).toBeDefined();
-    }
-  ));
+    httpTestingController = TestBed.get(HttpTestingController);
+    httpClient = TestBed.get(HttpClient);
+  });
 
-  // TODO:
-  // it('should request data from the right endpoint when getAllRoleNames is called', inject(
-  //   [PermissionService],
-  //   // TODO
-  //   (permissionService: PermissionService, mockBackend) => {
-  //     // given
-  //     mockBackend.connections.subscribe(connection => {
-  //       expect(connection.request.method).toBe(RequestMethod.Get);
-  //       expect(connection.request.url).toMatch(
-  //         '/AMW_rest/resources/permissions/restrictions/roleNames'
-  //       );
-  //       const mockResponse = new Response(
-  //         new ResponseOptions({ body: ['viewer'] })
-  //       );
-  //       connection.mockRespond(mockResponse);
-  //     });
-  //     // when then
-  //     permissionService.getAllRoleNames().subscribe(response => {
-  //       expect(response).toEqual(['viewer']);
-  //     });
-  //   }
-  // ));
+  afterEach(() => {
+    httpTestingController.verify();
+  });
 
-  // it('should request data from the right endpoint when getAllUserRestrictionNames is called', inject(
-  //   [PermissionService, MockBackend],
-  //   (permissionService: PermissionService, mockBackend: typeof MockBackend) => {
-  //     // given
-  //     mockBackend.connections.subscribe(connection => {
-  //       expect(connection.request.method).toBe(RequestMethod.Get);
-  //       expect(connection.request.url).toMatch(
-  //         '/AMW_rest/resources/permissions/restrictions/userRestrictionNames'
-  //       );
-  //       const mockResponse = new Response(
-  //         new ResponseOptions({ body: ['testerli'] })
-  //       );
-  //       connection.mockRespond(mockResponse);
-  //     });
-  //     // when then
-  //     permissionService.getAllUserRestrictionNames().subscribe(response => {
-  //       expect(response).toEqual(['testerli']);
-  //     });
-  //   }
-  // ));
+  it('should create service', () => {
+    expect(service).toBeTruthy();
+  });
 
-  // it('should request data from the right endpoint when getAllUserPermissionNames is called', inject(
-  //   [PermissionService, MockBackend],
-  //   (permissionService: PermissionService, mockBackend: typeof MockBackend) => {
-  //     // given
-  //     mockBackend.connections.subscribe(connection => {
-  //       expect(connection.request.method).toBe(RequestMethod.Get);
-  //       expect(connection.request.url).toMatch(
-  //         '/AMW_rest/resources/permissions/restrictions/permissionEnumValues'
-  //       );
-  //       const mockResponse = new Response(
-  //         new ResponseOptions({ body: ['RESOURCE'] })
-  //       );
-  //       connection.mockRespond(mockResponse);
-  //     });
-  //     // when then
-  //     permissionService.getAllPermissionEnumValues().subscribe(response => {
-  //       // TODO:
-  //       //expect(response).toEqual([{ name: 'RESOURCE' }]);
-  //     });
-  //   }
-  // ));
+  it('should getAllRoleNames from the correct endpoint', () => {
+    service.getAllRoleNames().subscribe(roleNames => {
+      expect(roleNames).toEqual(['admin', 'user', 'guest']);
+    });
 
-  // it('should request data from the right endpoint when getRoleWithRestrictions is called', inject(
-  //   [PermissionService, MockBackend],
-  //   (permissionService: PermissionService, mockBackend: typeof MockBackend) => {
-  //     // given
-  //     mockBackend.connections.subscribe(connection => {
-  //       expect(connection.request.method).toBe(RequestMethod.Get);
-  //       expect(connection.request.url).toMatch(
-  //         '/AMW_rest/resources/permissions/restrictions/roles/viewer'
-  //       );
-  //       const mockResponse = new Response(
-  //         new ResponseOptions({
-  //           body: [
-  //             { id: 1, roleName: 'viewer' },
-  //             { id: 2, roleName: 'viewer' }
-  //           ]
-  //         })
-  //       );
-  //       connection.mockRespond(mockResponse);
-  //     });
-  //     // when then
-  //     permissionService
-  //       .getRoleWithRestrictions('viewer')
-  //       .subscribe(response => {
-  //         // TODO:
-  //         // expect(response).toEqual([
-  //         //   { id: 1, roleName: 'viewer' },
-  //         //   { id: 2, roleName: 'viewer' }
-  //         // ]);
-  //       });
-  //   }
-  // ));
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/permissions/restrictions/roleNames'
+    );
 
-  // it('should request data from the right endpoint when getUserWithRestrictions is called', inject(
-  //   [PermissionService, MockBackend],
-  //   (permissionService: PermissionService, mockBackend: typeof MockBackend) => {
-  //     // given
-  //     mockBackend.connections.subscribe(connection => {
-  //       expect(connection.request.method).toBe(RequestMethod.Get);
-  //       expect(connection.request.url).toMatch(
-  //         '/AMW_rest/resources/permissions/restrictions/users/tester'
-  //       );
-  //       const mockResponse = new Response(
-  //         new ResponseOptions({
-  //           body: [
-  //             { id: 1, userName: 'tester' },
-  //             { id: 2, userName: 'tester' }
-  //           ]
-  //         })
-  //       );
-  //       connection.mockRespond(mockResponse);
-  //     });
-  //     // when then
-  //     permissionService
-  //       .getUserWithRestrictions('tester')
-  //       .subscribe(response => {
-  //         // TODO
-  //         // expect(response).toEqual([
-  //         //   { id: 1, userName: 'tester' },
-  //         //   { id: 2, userName: 'tester' }
-  //         // ]);
-  //       });
-  //   }
-  // ));
+    expect(req.request.method).toEqual('GET');
+    req.flush(['admin', 'user', 'guest']);
+  });
 
-  // it('should invoke the right endpoint when removeRestriction is called', inject(
-  //   [PermissionService, MockBackend],
-  //   (permissionService: PermissionService, mockBackend: typeof MockBackend) => {
-  //     // given
-  //     mockBackend.connections.subscribe(connection => {
-  //       expect(connection.request.method).toBe(RequestMethod.Delete);
-  //       expect(connection.request.url).toMatch(
-  //         '/AMW_rest/resources/permissions/restrictions/23'
-  //       );
-  //       const mockResponse = new Response(new ResponseOptions({}));
-  //       connection.mockRespond(mockResponse);
-  //     });
-  //     // when then
-  //     permissionService.removeRestriction(23).subscribe(response => {
-  //       expect(response).toEqual({});
-  //     });
-  //   }
-  // ));
+  it('should request data from the right endpoint when getAllUserRestrictionNames is called', () => {
+    service.getAllUserRestrictionNames().subscribe(response => {
+      expect(response).toEqual(['testerli']);
+    });
 
-  // it('should invoke the right endpoint when updateRestriction is called', inject(
-  //   [PermissionService, MockBackend],
-  //   (permissionService: PermissionService, mockBackend: typeof MockBackend) => {
-  //     // given
-  //     mockBackend.connections.subscribe(connection => {
-  //       expect(connection.request.method).toBe(RequestMethod.Put);
-  //       expect(connection.request.url).toMatch(
-  //         '/AMW_rest/resources/permissions/restrictions/2'
-  //       );
-  //       const mockResponse = new Response(new ResponseOptions({ status: 200 }));
-  //       connection.mockRespond(mockResponse);
-  //     });
-  //     // when then
-  //     permissionService
-  //       .updateRestriction({ id: 2 } as Restriction)
-  //       .subscribe(response => {
-  //         expect(response).toEqual({});
-  //       });
-  //   }
-  // ));
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/permissions/restrictions/userRestrictionNames'
+    );
 
-  // it('should invoke the right endpoints when createRestriction is called', inject(
-  //   [PermissionService, MockBackend],
-  //   (permissionService: PermissionService, mockBackend: typeof MockBackend) => {
-  //     // given
-  //     mockBackend.connections.subscribe(connection => {
-  //       if (connection.request.method === RequestMethod.Post) {
-  //         expect(connection.request.url).toMatch(
-  //           '/AMW_rest/resources/permissions/restrictions/'
-  //         );
-  //         const locationHeaders = new Headers();
-  //         locationHeaders.set('Location', '/permissions/restrictions/8');
-  //         const mockResponse = new Response(
-  //           new ResponseOptions({ status: 201, headers: locationHeaders })
-  //         );
-  //         connection.mockRespond(mockResponse);
-  //       } else {
-  //         expect(connection.request.method).toBe(RequestMethod.Get);
-  //         expect(connection.request.url).toMatch(
-  //           '/AMW_rest/resources/permissions/restrictions/8'
-  //         );
-  //         const mockResponse = new Response(
-  //           new ResponseOptions({ body: { id: 8, roleName: 'TESTER' } })
-  //         );
-  //         connection.mockRespond(mockResponse);
-  //       }
-  //     });
-  //     // when then
-  //     permissionService
-  //       .createRestriction({ roleName: 'TESTER' } as Restriction, false)
-  //       .subscribe(response => {
-  //         // expect(response).toEqual({ id: 8, roleName: 'TESTER' });
-  //       });
-  //   }
-  // ));
+    expect(req.request.method).toEqual('GET');
+    req.flush(['testerli']);
+  });
+
+  it('should request data from the right endpoint when getAllUserPermissionNames is called', () => {
+    const permission = {
+      name: 'permission',
+      old: false,
+      longName: 'longname'
+    };
+
+    service.getAllPermissionEnumValues().subscribe(response => {
+      expect(response).toEqual([permission]);
+    });
+
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/permissions/restrictions/permissionEnumValues'
+    );
+
+    req.flush([permission]);
+  });
+
+  it('should request data from the right endpoint when getRoleWithRestrictions is called', () => {
+    // given
+
+    const mockeResponse = [
+      { id: 1, roleName: 'viewer' } as Restriction,
+      { id: 2, roleName: 'viewer' } as Restriction
+    ];
+
+    service.getRoleWithRestrictions('viewer').subscribe(response => {
+      expect(response).toEqual(mockeResponse);
+    });
+
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/permissions/restrictions/roles/viewer'
+    );
+
+    req.flush(mockeResponse);
+  });
+
+  it('should request data from the right endpoint when getUserWithRestrictions is called', () => {
+    // given
+    const mockeResponse = [
+      { id: 1, roleName: 'viewer' } as Restriction,
+      { id: 2, roleName: 'viewer' } as Restriction
+    ];
+
+    service.getUserWithRestrictions('tester').subscribe(response => {
+      expect(response).toEqual(mockeResponse);
+    });
+
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/permissions/restrictions/users/tester'
+    );
+
+    req.flush(mockeResponse);
+  });
+
+  it('should invoke the right endpoint when removeRestriction is called', () => {
+    service.removeRestriction(23).subscribe(response => {
+      expect(response).toEqual({});
+    });
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/permissions/restrictions/23'
+    );
+
+    expect(req.request.method).toEqual('DELETE');
+    req.flush({});
+  });
+
+  it('should invoke the right endpoint when updateRestriction is called', () => {
+    service.updateRestriction({ id: 2 } as Restriction).subscribe(response => {
+      expect(response).toEqual({});
+    });
+
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/permissions/restrictions/2'
+    );
+    expect(req.request.method).toEqual('PUT');
+    req.flush({});
+  });
+
+  it('should invoke the right endpoints when createRestriction is called', () => {
+    service
+      .createRestriction({ roleName: 'TESTER' } as Restriction, false)
+      .subscribe(response => {
+        expect(response).toEqual({ id: 8, roleName: 'TESTER' } as Restriction);
+      });
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/permissions/restrictions/'
+    );
+
+    expect(req.request.method).toEqual('POST');
+    req.flush({ id: 8, roleName: 'TESTER' } as Restriction);
+    httpTestingController.expectOne('/AMW_rest/resourcesnull'); // TODO: set location header in req... but how???
+  });
 });
