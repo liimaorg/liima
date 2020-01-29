@@ -1,7 +1,4 @@
 sudo: required
-dist: trusty
-addons:
-  chrome: stable
 cache:
   directories:
   - .m2
@@ -11,9 +8,9 @@ install:
 - docker run -it --name amw-install -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw maven:3-jdk-8 mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 - AMW_docker/build.sh
 script:
-- docker run -it --name amw-test -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw maven:3-jdk-8 mvn test -B
+- docker run -it --name amw-test -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw markhobson/maven-chrome mvn test -B
 before_deploy:
-- docker run -it --name amw-deploy -e CHROME_BIN=chromium -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw maven:3-jdk-8 mvn deploy -DskipTests=true -Dmaven.javadoc.skip=true -f AMW_ear -B
+- docker run -it --name amw-deploy -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw maven:3-jdk-8 mvn deploy -DskipTests=true -Dmaven.javadoc.skip=true -f AMW_ear -B
 - ls -l AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear
 - sudo chmod 777 AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear
 after_success:
