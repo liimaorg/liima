@@ -18,7 +18,7 @@ import { DeploymentComponent } from './deployment.component';
 import { DeploymentService } from './deployment.service';
 import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
-
+import * as moment from 'moment';
 @Component({
   template: ''
 })
@@ -336,7 +336,7 @@ describe('DeploymentComponent (create deployment)', () => {
       requestOnly: true,
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,
-      deploymentDate: 1483354800000,
+      deploymentDate: moment('02.01.2017 12:00', 'DD.MM.YYYY hh:mm').valueOf(),
       deploymentParameters: component.transDeploymentParameters
     } as DeploymentRequest;
     spyOn(deploymentService, 'createDeployment').and.returnValue(
