@@ -98,7 +98,6 @@ export class DeploymentsComponent implements OnInit {
         try {
           this.paramFilters = JSON.parse(param['filters']);
         } catch (e) {
-          console.error(e);
           this.errorMessage = 'Error parsing filter';
           this.autoload = false;
         }
