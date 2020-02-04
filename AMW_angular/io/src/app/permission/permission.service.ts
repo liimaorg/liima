@@ -89,15 +89,18 @@ export class PermissionService extends BaseService {
     restriction: Restriction,
     delegation: boolean
   ): Observable<Restriction> {
-    const params = new HttpParams();
-    params.set('delegation', delegation ? 'true' : 'false');
+    const params = new HttpParams().set(
+      'delegation',
+      delegation ? 'true' : 'false'
+    );
+    const headers = this.postHeaders();
     return this.http
       .post<Restriction>(
         `${this.getBaseUrl()}/permissions/restrictions/`,
         restriction,
         {
-          params: params,
-          headers: this.postHeaders(),
+          params,
+          headers,
           observe: 'response'
         }
       )
@@ -114,15 +117,18 @@ export class PermissionService extends BaseService {
     restrictionsCreation: RestrictionsCreation,
     delegation: boolean
   ) {
-    const params = new HttpParams();
-    params.set('delegation', delegation ? 'true' : 'false');
+    const params = new HttpParams().set(
+      'delegation',
+      delegation ? 'true' : 'false'
+    );
+    const headers = this.postHeaders();
     return this.http
       .post(
         `${this.getBaseUrl()}/permissions/restrictions/multi/`,
         restrictionsCreation,
         {
-          params: params,
-          headers: this.postHeaders()
+          params,
+          headers
         }
       )
       .pipe(catchError(this.handleError));

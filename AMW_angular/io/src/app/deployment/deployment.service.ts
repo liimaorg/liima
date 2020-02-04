@@ -54,15 +54,17 @@ export class DeploymentService extends BaseService {
     sortCol: string,
     sortDir: string
   ): Observable<string> {
-    const params = new HttpParams();
-    params.append('filters', filterString);
-    params.append('colToSort', sortCol);
-    params.append('sortDirection', sortDir);
+    const params = new HttpParams()
+      .append('filters', filterString)
+      .append('colToSort', sortCol)
+      .append('sortDirection', sortDir);
+
+    const headers = this.csvHeaders();
 
     return this.http
       .get<string>(`${this.getBaseUrl()}/deployments/filter`, {
-        params: params,
-        headers: this.csvHeaders()
+        params,
+        headers
       })
       .pipe(catchError(this.handleError));
   }
@@ -137,14 +139,18 @@ export class DeploymentService extends BaseService {
     resourceGroupId: number,
     contextIds: number[]
   ): Observable<boolean> {
-    const params = new HttpParams();
-    contextIds.forEach(key => params.append('contextId', String(key)));
+    let params = new HttpParams();
+    contextIds.forEach(
+      key => (params = params.append('contextId', String(key)))
+    );
+    const headers = this.getHeaders();
+
     return this.http
       .get<boolean>(
         `${this.getBaseUrl()}/deployments/canDeploy/${resourceGroupId}`,
         {
-          params: params,
-          headers: this.getHeaders()
+          params,
+          headers
         }
       )
       .pipe(catchError(this.handleError));
@@ -154,14 +160,18 @@ export class DeploymentService extends BaseService {
     resourceGroupId: number,
     contextIds: number[]
   ): Observable<boolean> {
-    const params = new HttpParams();
-    contextIds.forEach(key => params.append('contextId', String(key)));
+    let params = new HttpParams();
+
+    contextIds.forEach(
+      key => (params = params.append('contextId', String(key)))
+    );
+    const headers = this.getHeaders();
     return this.http
       .get<boolean>(
         `${this.getBaseUrl()}/deployments/canRequestDeployment/${resourceGroupId}`,
         {
-          params: params,
-          headers: this.getHeaders()
+          params,
+          headers
         }
       )
       .pipe(catchError(this.handleError));
@@ -194,12 +204,12 @@ export class DeploymentService extends BaseService {
   }
 
   getFilterOptionValues(filterName: string): Observable<string[]> {
-    const param = new HttpParams();
-    param.append('filterName', filterName);
+    const params = new HttpParams().append('filterName', filterName);
+    const headers = this.getHeaders();
     return this.http
-      .get<string[]>(`${this.getBaseUrl()}/deployments/filterOptionValues/`, {
-        params: param,
-        headers: this.getHeaders()
+      .get<string[]>(`${this.getBaseUrl()}/deployments/filterOptionValues`, {
+        params,
+        headers
       })
       .pipe(catchError(this.handleError));
   }
