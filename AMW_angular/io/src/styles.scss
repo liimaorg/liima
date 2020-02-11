@@ -1,3 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import '~@ng-select/ng-select/scss/default.theme.scss';
+
+/* global table styles */
+.table > tr > th,
+.table > tr > td {
+  padding: 8px;
+  line-height: 1.42857;
+  vertical-align: top;
+  border-top: 1px solid #ddd;
+}
