@@ -1,5 +1,11 @@
 import { Location } from '@angular/common';
-import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  NgZone,
+  OnInit,
+  ViewChild,
+  AfterViewInit
+} from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
@@ -12,12 +18,13 @@ import { Deployment } from './deployment';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
-
+import * as $ from 'jquery';
+import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 @Component({
   selector: 'amw-deployments',
   templateUrl: './deployments.component.html'
 })
-export class DeploymentsComponent implements OnInit {
+export class DeploymentsComponent implements OnInit, AfterViewInit {
   defaultComparator: string = 'eq';
 
   // initially by queryParam
@@ -111,6 +118,11 @@ export class DeploymentsComponent implements OnInit {
       this.initTypeAndOptions();
       this.canRequestDeployments();
     });
+  }
+
+  ngAfterViewInit() {
+    $.fn.datetimepicker = datetimepicker;
+    $('.datepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
   }
 
   addFilter() {
