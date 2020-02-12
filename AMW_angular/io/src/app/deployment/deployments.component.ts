@@ -83,7 +83,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
   successMessage: string = '';
   isLoading: boolean = true;
 
-  @ViewChild('selectModel', { static: false })
+  @ViewChild('selectModel')
   selectModel: NgModel;
 
   constructor(
