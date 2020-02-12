@@ -53,7 +53,7 @@ describe('DeploymentsComponent (with query params)', () => {
 
     fixture = TestBed.createComponent(DeploymentsComponent);
     component = fixture.componentInstance;
-    deploymentService = TestBed.get(DeploymentService);
+    deploymentService = TestBed.inject(DeploymentService);
   });
 
   it('should extract filters from param on ngOnInit', () => {
@@ -229,7 +229,7 @@ describe('DeploymentsComponent (with illegal query params)', () => {
 
     fixture = TestBed.createComponent(DeploymentsComponent);
     component = fixture.componentInstance;
-    deploymentService = TestBed.get(DeploymentService);
+    deploymentService = TestBed.inject(DeploymentService);
   });
 
   it('should display error message on faulty filters params on ngOnInit', () => {
@@ -293,8 +293,8 @@ describe('DeploymentsComponent (without query params)', () => {
 
     fixture = TestBed.createComponent(DeploymentsComponent);
     component = fixture.componentInstance;
-    deploymentService = TestBed.get(DeploymentService);
-    resourceService = TestBed.get(ResourceService);
+    deploymentService = TestBed.inject(DeploymentService);
+    resourceService = TestBed.inject(ResourceService);
   });
 
   it('should check permission on ngOnInit', () => {

@@ -59,9 +59,9 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    permissionService = TestBed.get(PermissionService);
-    environmentService = TestBed.get(EnvironmentService);
-    resourceService = TestBed.get(ResourceService);
+    permissionService = TestBed.inject(PermissionService);
+    environmentService = TestBed.inject(EnvironmentService);
+    resourceService = TestBed.inject(ResourceService);
   });
 
   it('should have default data', () => {
@@ -459,9 +459,9 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    permissionService = TestBed.get(PermissionService);
-    environmentService = TestBed.get(EnvironmentService);
-    resourceService = TestBed.get(ResourceService);
+    permissionService = TestBed.inject(PermissionService);
+    environmentService = TestBed.inject(EnvironmentService);
+    resourceService = TestBed.inject(ResourceService);
   });
 
   it('should invoke some services on ngOnInt', () => {
@@ -556,9 +556,9 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    permissionService = TestBed.get(PermissionService);
-    environmentService = TestBed.get(EnvironmentService);
-    resourceService = TestBed.get(ResourceService);
+    permissionService = TestBed.inject(PermissionService);
+    environmentService = TestBed.inject(EnvironmentService);
+    resourceService = TestBed.inject(ResourceService);
   });
   it('should invoke some services on ngOnInt', () => {
     // given

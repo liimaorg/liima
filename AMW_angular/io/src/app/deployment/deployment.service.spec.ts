@@ -18,9 +18,9 @@ describe('DeploymentService', () => {
       providers: [DeploymentService]
     });
 
-    httpTestingController = TestBed.get(HttpTestingController);
-    httpClient = TestBed.get(HttpClient);
-    service = TestBed.get(DeploymentService);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    httpClient = TestBed.inject(HttpClient);
+    service = TestBed.inject(DeploymentService);
   });
 
   afterEach(() => {

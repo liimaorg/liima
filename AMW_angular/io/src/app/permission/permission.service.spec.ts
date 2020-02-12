@@ -18,10 +18,10 @@ describe('PermissionService', () => {
       imports: [HttpClientTestingModule],
       providers: [PermissionService]
     });
-    service = TestBed.get(PermissionService);
+    service = TestBed.inject(PermissionService);
 
-    httpTestingController = TestBed.get(HttpTestingController);
-    httpClient = TestBed.get(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    httpClient = TestBed.inject(HttpClient);
   });
 
   afterEach(() => {

@@ -44,9 +44,9 @@ describe('DeploymentComponent (create deployment)', () => {
     fixture = TestBed.createComponent(DeploymentComponent);
     component = fixture.componentInstance;
 
-    resourceService = TestBed.get(ResourceService);
-    environmentService = TestBed.get(EnvironmentService);
-    deploymentService = TestBed.get(DeploymentService);
+    resourceService = TestBed.inject(ResourceService);
+    environmentService = TestBed.inject(EnvironmentService);
+    deploymentService = TestBed.inject(DeploymentService);
   });
 
   it('should create the component', () => {
@@ -492,9 +492,9 @@ describe('DeploymentComponent (redeployment)', () => {
     fixture = TestBed.createComponent(DeploymentComponent);
     component = fixture.componentInstance;
 
-    resourceService = TestBed.get(ResourceService);
-    environmentService = TestBed.get(EnvironmentService);
-    deploymentService = TestBed.get(DeploymentService);
+    resourceService = TestBed.inject(ResourceService);
+    environmentService = TestBed.inject(EnvironmentService);
+    deploymentService = TestBed.inject(DeploymentService);
   });
 
   it('should call deploymentService on ngOnInit', () => {

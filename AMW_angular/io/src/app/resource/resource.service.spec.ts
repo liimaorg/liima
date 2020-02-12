@@ -1,16 +1,17 @@
-import {TestBed} from '@angular/core/testing';
-import {ResourceService} from './resource.service';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {HttpClient} from "@angular/common/http";
-import {Resource} from "./resource";
-import {Release} from "./release";
+import { TestBed } from '@angular/core/testing';
+import { ResourceService } from './resource.service';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
+import { HttpClient } from '@angular/common/http';
+import { Resource } from './resource';
+import { Release } from './release';
 
 describe('ResourceService', () => {
-
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let resourceService: ResourceService;
-
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -18,10 +19,9 @@ describe('ResourceService', () => {
       providers: [ResourceService]
     });
 
-    httpClient = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
-    resourceService = TestBed.get(ResourceService);
-
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    resourceService = TestBed.inject(ResourceService);
   });
 
   it('should have a getAll method', () => {
@@ -39,15 +39,17 @@ describe('ResourceService', () => {
         release: 'release_2020',
         relations: [],
         properties: [],
-        resourceTags: [],
+        resourceTags: []
       },
       releases: []
     };
     resourceService.getAll().subscribe(resourcesRes => {
-      expect(resourcesRes).toEqual([mockResource])
+      expect(resourcesRes).toEqual([mockResource]);
     });
 
-    const req = httpTestingController.expectOne('/AMW_rest/resources/resources');
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/resources'
+    );
 
     expect(req.request.method).toEqual('GET');
 
@@ -55,31 +57,36 @@ describe('ResourceService', () => {
   });
 
   it('should request data from the right endpoint when getLatestForRelease is called', () => {
-
     const mockRelease: Release = {
       id: 55,
       release: 'release2010',
-      relations: [{
-        relatedResourceName: 'relResName',
-        relatedResourceRelease: 'relResRelease',
-        identifier: 'id',
-        type: 'releasetype'
-      }],
-      properties: [{
-        name: 'propertyName',
-        value: 'propertyValue',
-        replacedValue: 'replValue',
-        generalComment: 'any comment',
-        valueComment: 'comment',
-        context: 'context value'
-      }],
+      relations: [
+        {
+          relatedResourceName: 'relResName',
+          relatedResourceRelease: 'relResRelease',
+          identifier: 'id',
+          type: 'releasetype'
+        }
+      ],
+      properties: [
+        {
+          name: 'propertyName',
+          value: 'propertyValue',
+          replacedValue: 'replValue',
+          generalComment: 'any comment',
+          valueComment: 'comment',
+          context: 'context value'
+        }
+      ],
       resourceTags: []
     };
     resourceService.getLatestForRelease(1, 2).subscribe(response => {
       expect(response).toEqual(mockRelease);
     });
 
-    const req = httpTestingController.expectOne('/AMW_rest/resources/resources/resourceGroups/1/releases/2');
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/resources/resourceGroups/1/releases/2'
+    );
 
     expect(req.request.method).toEqual('GET');
 
@@ -91,15 +98,17 @@ describe('ResourceService', () => {
       relatedResourceName: 'relResourceName',
       relatedResourceRelease: 'relResrourceRelease',
       identifier: 'adam_application_server',
-      type: 'applicationserver',
+      type: 'applicationserver'
     };
     resourceService
       .getRuntime('testGroup', 'testRelease')
       .subscribe(response => {
-        expect(response).toEqual([mockRelation])
+        expect(response).toEqual([mockRelation]);
       });
 
-    const req = httpTestingController.expectOne('/AMW_rest/resources/resources/testGroup/testRelease/relations?type=RUNTIME');
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/resources/testGroup/testRelease/relations?type=RUNTIME'
+    );
 
     expect(req.request.method).toEqual('GET');
 
@@ -119,11 +128,12 @@ describe('ResourceService', () => {
         expect(response).toEqual([mockAppWithVersions]);
       });
 
-    const req = httpTestingController.expectOne('/AMW_rest/resources/resources/resourceGroups/123/releases/321/appWithVersions/?context=1&context=2');
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/resources/resourceGroups/123/releases/321/appWithVersions/?context=1&context=2'
+    );
 
     expect(req.request.method).toEqual('GET');
 
     req.flush([mockAppWithVersions]);
   });
-
 });

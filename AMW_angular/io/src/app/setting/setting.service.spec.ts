@@ -1,10 +1,12 @@
-import {TestBed} from '@angular/core/testing';
-import {SettingService} from './setting.service';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {HttpClient} from "@angular/common/http";
+import { TestBed } from '@angular/core/testing';
+import { SettingService } from './setting.service';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
+import { HttpClient } from '@angular/common/http';
 
 describe('SettingService', () => {
-
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let settingService: SettingService;
@@ -15,9 +17,9 @@ describe('SettingService', () => {
       providers: [SettingService]
     });
 
-    httpTestingController = TestBed.get(HttpTestingController);
-    httpClient = TestBed.get(HttpClient);
-    settingService = TestBed.get(SettingService);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    httpClient = TestBed.inject(HttpClient);
+    settingService = TestBed.inject(SettingService);
   });
 
   afterEach(() => {
@@ -39,16 +41,13 @@ describe('SettingService', () => {
     };
 
     settingService.getAllAppSettings().subscribe(settingRes => {
-      expect(settingRes).toEqual([settingsResponse])
+      expect(settingRes).toEqual([settingsResponse]);
     });
 
-    const req = httpTestingController.expectOne(
-      '/AMW_rest/resources/settings'
-    );
+    const req = httpTestingController.expectOne('/AMW_rest/resources/settings');
 
     expect(req.request.method).toEqual('GET');
 
     req.flush([settingsResponse]);
   });
-
 });

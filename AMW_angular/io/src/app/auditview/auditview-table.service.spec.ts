@@ -12,7 +12,9 @@ describe('AuditviewTableService', () => {
   );
 
   it('should be created', () => {
-    const service: AuditviewTableService = TestBed.get(AuditviewTableService);
+    const service: AuditviewTableService = TestBed.inject(
+      AuditviewTableService
+    );
     expect(service).toBeTruthy();
   });
 });

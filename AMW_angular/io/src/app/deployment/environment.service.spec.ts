@@ -27,9 +27,9 @@ describe('DeploymentService', () => {
       providers: [EnvironmentService]
     });
 
-    httpTestingController = TestBed.get(HttpTestingController);
-    httpClient = TestBed.get(HttpClient);
-    service = TestBed.get(EnvironmentService);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    httpClient = TestBed.inject(HttpClient);
+    service = TestBed.inject(EnvironmentService);
   });
 
   afterEach(() => {
