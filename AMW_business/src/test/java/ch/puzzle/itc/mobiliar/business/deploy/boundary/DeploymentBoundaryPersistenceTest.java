@@ -1050,7 +1050,7 @@ public class DeploymentBoundaryPersistenceTest
 		List<Object[]> latest = deploymentBoundary.getEssentialListOfLastDeploymentsForAppServerAndContext(true);
 
 		// then
-		assertThat(latest.size(), is(3));
+		assertThat(latest.toString(), latest.size(), is(3));
 	}
 
 	@Test

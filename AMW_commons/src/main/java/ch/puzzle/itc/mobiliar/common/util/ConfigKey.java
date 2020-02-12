@@ -45,8 +45,6 @@ public enum ConfigKey {
     CONSUMABLE_SOFTLINK_RESOURCE_TYPES("amw.consumableSoftlinkResourceTypes", "AMW_CONSUMABLESOFTLINKRESOURCETYPES", false),
     EXTERNAL_RESOURCE_BACKLINK_SCHEMA("amw.externalResourceBacklinkSchema", "AMW_EXTERNALRESOURCEBACKLINKSCHEMA", false),
     EXTERNAL_RESOURCE_BACKLINK_HOST("amw.externalResourceBacklinkHost", "AMW_EXTERNALRESOURCEBACKLINKHOST", false),
-    /** Database Change sets */
-    LOAD_INITIAL_SCHEMA_DATA("amw.loadInitialSchemaAndData", "AMW_LOADINITIALSCHEMAANDDATA", "false", false),
     /** Create not Existent Directory Structure */
     CREATE_NOT_EXISTING_DIRECTORIES_ON_STARTUP("amw.createNotExistingDirectoriesOnStartUp", "AMW_CREATENOTEXISTINGDIRECTORIESONSTARTUP", "false", false),
     /** Feature toggles */

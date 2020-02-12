@@ -25,3 +25,4 @@ AMW_docker/tmp
 
 .idea/*
 !/.idea/runConfigurations
+/server-install

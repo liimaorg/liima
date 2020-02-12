@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 	<changeSet author="initial-data" id="example-resources-group-csv">
-		<loadData encoding="UTF-8"
-				  file="liquibase/changesets/base/data/exampleapp/data/resource-groups.csv"
-				  separator=","
-				  tableName="TAMW_RESOURCEGROUP">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<changeSetExecuted id="scheme_cleanup_drop" author="rgalante" changeLogFile="liquibase/changesets/model/scheme_cleanup/scheme_cleanup_drop.xml" />
+			</not>
+		</preConditions>
+		<loadData encoding="UTF-8" file="data/resource-groups.csv" relativeToChangelogFile="true" separator="," tableName="TAMW_RESOURCEGROUP">
 			<column name="ID" type="NUMERIC" />
 			<column name="OUTOFSERVICERELEASE_ID" type="NUMERIC" />
 			<column name="NAME" type="STRING"/>
@@ -21,10 +22,12 @@
 	</changeSet>
 
 	<changeSet author="initial-data" id="example-resources-csv">
-		<loadData encoding="UTF-8"
-				  file="liquibase/changesets/base/data/exampleapp/data/resources.csv"
-				  separator=","
-				  tableName="TAMW_RESOURCE">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<changeSetExecuted id="scheme_cleanup_drop" author="rgalante" changeLogFile="liquibase/changesets/model/scheme_cleanup/scheme_cleanup_drop.xml" />
+			</not>
+		</preConditions>
+		<loadData encoding="UTF-8" file="data/resources.csv" relativeToChangelogFile="true" separator="," tableName="TAMW_RESOURCE">
 			<column name="ID" type="NUMERIC" />
 			<column name="NAME" type="STRING"/>
 			<column name="V" type="NUMERIC" />
@@ -42,6 +45,11 @@
 	</changeSet>
 
 	<changeSet author="initial-data" id="example-resource-relations">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<changeSetExecuted id="scheme_cleanup_drop" author="rgalante" changeLogFile="liquibase/changesets/model/scheme_cleanup/scheme_cleanup_drop.xml" />
+			</not>
+		</preConditions>
 		<comment>Connect Resources</comment>
 		<sql>
 			Insert into TAMW_RESOURCERELATIONTYPE (ID,IDENTIFIER,V,RESOURCETYPEA_ID,RESOURCETYPEB_ID) values (2851,null,0,2,1);

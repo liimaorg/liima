@@ -1,73 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
-    <!-- Base Modell and Base Data  -->
-    <!-- TODO integrate the changelogs from auto.db.changelog-initialrun.xml -->
-
-    <!--1.8 -->
-    <include file="changesets/model/ora_migration_smallint/oramigration_smallint.xml" relativeToChangelogFile="true"/>
-
-    <include file="changesets/model/runtime/#5553_runtime.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/resourceActivation/#8440_resourceActivation.xml" relativeToChangelogFile="true"/>
-
-    <!-- 1.10 -->
-    <include file="changesets/model/maiaPropertyChanges/maiaPropertyDescriptorChanges.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/vmOrder/#10038_nodeActivation.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/vmOrder/#10133_predeployment.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#10344_removeOldMaiaImplementation.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#10350_addPropertyTagType.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#10352_removePropertyValueComments.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#10357_propertyType_changes.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#10583_addMik.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#10583_addFunction.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#10583_extendMik.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#10884_globalAmwFunctions.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#10841_function_permissions.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#10782_addFunctionParentAndChild.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaForeignables/#11225_addForeignableElementsToModel.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaForeignables/#11305_foreignable_permissions.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaForeignables/#11305_foreignable_permissions_rename_chucknorris_role.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaForeignables/#11675_maia_specific_resource_types.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaSoftlink/#11752_softlinkRelations.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#12164_addLocalPortId.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaSoftlink/#12194_softlink_permissions.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaSoftlink/#11752_softlinkRelations_aud.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/#12304_propertyTagSequenceFix.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/data/#12304_migrationSvnPathPropertiesToTag.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/maiaPropertyChanges/refactoringPropertyDescriptorChanges.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/zwischenreleases/zwischenreleases.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/globalTags/globalTags_permissions.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/data/permissionfix.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/runtime/deployment_Runtime_notNull.xml" relativeToChangelogFile="true"/>
-
-    <!--1.10.7-->
-    <include file="changesets/model/refactoring/#15798_remove_deployment_started_and_executed.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/data/#15797_removeChangeRelationshipPermission.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/refactoring/#15797_remove_node_relationship.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/data/#13322_modify_duplicate_resourcegroup_name.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/refactoring/#13322_add_resourcegroup_unique_name_constraint.xml" relativeToChangelogFile="true"/>
-
-    <!--1.10.8-->
-
-    <include file="changesets/data/admin_developer_permission.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/data/bugfix/#9992_addnewpermission_remove_related_resourcetype.xml" relativeToChangelogFile="true"/>
-
-    <include file="changesets/model/deploymentparameter/#19759_addDeploymentParameter.xml" relativeToChangelogFile="true"/>
-
-    <include file="changesets/model/mvnversion_version/#20719_rename_mvnversion_version.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/data/#20719_update_version_content.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/data/#20719_update_propertyname_content.xml" relativeToChangelogFile="true"/>
+    <!-- Base Modell and Base Data -->
+    <include file="changesets/base/auto.db.changelog-base.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/base/data/initial.data.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/base/data/exampleapp/app.data.xml" relativeToChangelogFile="true"/>
 
     <!--1.12.2-->
     <include file="changesets/model/scheme_cleanup/scheme_cleanup_drop.xml" relativeToChangelogFile="true"/>
     <include file="changesets/model/scheme_cleanup/scheme_cleanup_fix_boolean.xml" relativeToChangelogFile="true"/>
-
-  <!--include Database Changes always in both changesets auto.db.changelog-initialrun.xml and this one
-    it is necessary  until all production instances have the changelogs for the initial data run
-    -->
-
     <include file="changesets/model/remove_appserverrelations/remove_appserver_relations.xml" relativeToChangelogFile="true"/>
 
     <!--1.13.0-->

@@ -40,7 +40,7 @@
         <version.mockito.all>1.10.8</version.mockito.all>
         <version.junit>4.12</version.junit>
 
-        <version.liquibase>3.6.3</version.liquibase>
+        <version.liquibase>3.8.6</version.liquibase>
         <version.assertj-core>2.4.1</version.assertj-core>
         <version.java>1.7</version.java>
     </properties>
@@ -59,8 +59,8 @@
     <repositories>
         <repository>
             <id>central</id>
-            <name>Maven Central Repository Europe</name>
-            <url>http://uk.maven.org/maven2</url>
+            <name>Maven Central Repository</name>
+            <url>https://repo1.maven.org/maven2/</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>false</enabled>
@@ -242,7 +242,7 @@
                         <useSystemClassLoader>false</useSystemClassLoader>
                         <forkCount>1</forkCount>
                         <reuseForks>true</reuseForks>
-                        <argLine>-Xmx2048m</argLine>
+                        <argLine>-Xmx4096m</argLine>
                     </configuration>
                 </plugin>
             </plugins>
