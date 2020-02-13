@@ -13,6 +13,7 @@ import { PermissionModule } from './permission/permission.module';
 import { AuditviewModule } from './auditview/auditview.module';
 import { SettingModule } from './setting/setting.module';
 import { BaseModule } from './base/base.module';
+import { SharedModule } from './shared/shared.module';
 /*
  * Platform and Environment providers/directives/pipes
  */
@@ -50,7 +51,8 @@ type StoreType = {
     AuditviewModule,
     PermissionModule,
     SettingModule,
-    BaseModule
+    BaseModule,
+    SharedModule
   ],
   providers: [
     // expose our Services and Providers into Angular's dependency injection

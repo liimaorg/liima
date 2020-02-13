@@ -12,15 +12,9 @@
           <span class="link" (click)="reSort('d.trackingId')"
             >Tracking id
             <ng-container *ngIf="sortCol === 'd.trackingId'">
-              <span
-                [ngClass]="[
-                  'glyphicon',
-                  sortDirection === 'DESC'
-                    ? 'glyphicon-triangle-bottom'
-                    : 'glyphicon-triangle-top'
-                ]"
-                aria-hidden="true"
-              ></span>
+              <app-sort-direction
+                [sortDirection]="sortDirection"
+              ></app-sort-direction>
             </ng-container>
           </span>
         </th>
@@ -28,14 +22,9 @@
           <span class="link" (click)="reSort('d.deploymentState')"
             >State
             <ng-container *ngIf="sortCol === 'd.deploymentState'">
-              <span
-                [ngClass]="[
-                  'glyphicon',
-                  sortDirection === 'DESC'
-                    ? 'glyphicon-triangle-bottom'
-                    : 'glyphicon-triangle-top'
-                ]"
-              ></span>
+              <app-sort-direction
+                [sortDirection]="sortDirection"
+              ></app-sort-direction>
             </ng-container>
           </span>
         </th>
@@ -43,14 +32,9 @@
           <span class="link" (click)="reSort('d.resourceGroup.name')"
             >App server
             <ng-container *ngIf="sortCol === 'd.resourceGroup.name'">
-              <span
-                [ngClass]="[
-                  'glyphicon',
-                  sortDirection === 'DESC'
-                    ? 'glyphicon-triangle-bottom'
-                    : 'glyphicon-triangle-top'
-                ]"
-              ></span>
+              <app-sort-direction
+                [sortDirection]="sortDirection"
+              ></app-sort-direction>
             </ng-container>
           </span>
         </th>
@@ -62,14 +46,9 @@
             <ng-container
               *ngIf="sortCol === 'd.release.installationInProductionAt'"
             >
-              <span
-                [ngClass]="[
-                  'glyphicon',
-                  sortDirection === 'DESC'
-                    ? 'glyphicon-triangle-bottom'
-                    : 'glyphicon-triangle-top'
-                ]"
-              ></span>
+            <app-sort-direction
+                [sortDirection]="sortDirection"
+              ></app-sort-direction>
             </ng-container>
           </span>
         </th>
@@ -77,14 +56,9 @@
           <span class="link" (click)="reSort('d.context.name')"
             >Env
             <ng-container *ngIf="sortCol === 'd.context.name'">
-              <span
-                [ngClass]="[
-                  'glyphicon',
-                  sortDirection === 'DESC'
-                    ? 'glyphicon-triangle-bottom'
-                    : 'glyphicon-triangle-top'
-                ]"
-              ></span>
+              <app-sort-direction
+                [sortDirection]="sortDirection"
+              ></app-sort-direction>
             </ng-container>
           </span>
         </th>
@@ -92,14 +66,9 @@
           <span class="link" (click)="reSort('d.deploymentDate')"
             >Deployment date
             <ng-container *ngIf="sortCol === 'd.deploymentDate'">
-              <span
-                [ngClass]="[
-                  'glyphicon',
-                  sortDirection === 'DESC'
-                    ? 'glyphicon-triangle-bottom'
-                    : 'glyphicon-triangle-top'
-                ]"
-              ></span>
+              <app-sort-direction
+                [sortDirection]="sortDirection"
+              ></app-sort-direction>
             </ng-container>
           </span>
         </th>
