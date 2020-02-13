@@ -18,7 +18,6 @@ import { Deployment } from './deployment';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
-import * as $ from 'jquery';
 import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 @Component({
   selector: 'amw-deployments',
