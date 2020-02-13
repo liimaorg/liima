@@ -13,14 +13,13 @@
             >Tracking id
             <ng-container *ngIf="sortCol === 'd.trackingId'">
               <span
-                *ngIf="sortDirection === 'DESC'"
+                [ngClass]="[
+                  'glyphicon',
+                  sortDirection === 'DESC'
+                    ? 'glyphicon-triangle-bottom'
+                    : 'glyphicon-triangle-top'
+                ]"
                 aria-hidden="true"
-                class="glyphicon glyphicon-triangle-bottom"
-              ></span>
-              <span
-                *ngIf="sortDirection === 'ASC'"
-                aria-hidden="true"
-                class="glyphicon glyphicon-triangle-top"
               ></span>
             </ng-container>
           </span>
@@ -30,14 +29,12 @@
             >State
             <ng-container *ngIf="sortCol === 'd.deploymentState'">
               <span
-                *ngIf="sortDirection === 'DESC'"
-                aria-hidden="true"
-                class="glyphicon glyphicon-triangle-bottom"
-              ></span>
-              <span
-                *ngIf="sortDirection === 'ASC'"
-                aria-hidden="true"
-                class="glyphicon glyphicon-triangle-top"
+                [ngClass]="[
+                  'glyphicon',
+                  sortDirection === 'DESC'
+                    ? 'glyphicon-triangle-bottom'
+                    : 'glyphicon-triangle-top'
+                ]"
               ></span>
             </ng-container>
           </span>
@@ -47,14 +44,12 @@
             >App server
             <ng-container *ngIf="sortCol === 'd.resourceGroup.name'">
               <span
-                *ngIf="sortDirection === 'DESC'"
-                aria-hidden="true"
-                class="glyphicon glyphicon-triangle-bottom"
-              ></span>
-              <span
-                *ngIf="sortDirection === 'ASC'"
-                aria-hidden="true"
-                class="glyphicon glyphicon-triangle-top"
+                [ngClass]="[
+                  'glyphicon',
+                  sortDirection === 'DESC'
+                    ? 'glyphicon-triangle-bottom'
+                    : 'glyphicon-triangle-top'
+                ]"
               ></span>
             </ng-container>
           </span>
@@ -68,14 +63,12 @@
               *ngIf="sortCol === 'd.release.installationInProductionAt'"
             >
               <span
-                *ngIf="sortDirection === 'DESC'"
-                aria-hidden="true"
-                class="glyphicon glyphicon-triangle-bottom"
-              ></span>
-              <span
-                *ngIf="sortDirection === 'ASC'"
-                aria-hidden="true"
-                class="glyphicon glyphicon-triangle-top"
+                [ngClass]="[
+                  'glyphicon',
+                  sortDirection === 'DESC'
+                    ? 'glyphicon-triangle-bottom'
+                    : 'glyphicon-triangle-top'
+                ]"
               ></span>
             </ng-container>
           </span>
@@ -85,14 +78,12 @@
             >Env
             <ng-container *ngIf="sortCol === 'd.context.name'">
               <span
-                *ngIf="sortDirection === 'DESC'"
-                aria-hidden="true"
-                class="glyphicon glyphicon-triangle-bottom"
-              ></span>
-              <span
-                *ngIf="sortDirection === 'ASC'"
-                aria-hidden="true"
-                class="glyphicon glyphicon-triangle-top"
+                [ngClass]="[
+                  'glyphicon',
+                  sortDirection === 'DESC'
+                    ? 'glyphicon-triangle-bottom'
+                    : 'glyphicon-triangle-top'
+                ]"
               ></span>
             </ng-container>
           </span>
@@ -102,14 +93,12 @@
             >Deployment date
             <ng-container *ngIf="sortCol === 'd.deploymentDate'">
               <span
-                *ngIf="sortDirection === 'DESC'"
-                aria-hidden="true"
-                class="glyphicon glyphicon-triangle-bottom"
-              ></span>
-              <span
-                *ngIf="sortDirection === 'ASC'"
-                aria-hidden="true"
-                class="glyphicon glyphicon-triangle-top"
+                [ngClass]="[
+                  'glyphicon',
+                  sortDirection === 'DESC'
+                    ? 'glyphicon-triangle-bottom'
+                    : 'glyphicon-triangle-top'
+                ]"
               ></span>
             </ng-container>
           </span>
