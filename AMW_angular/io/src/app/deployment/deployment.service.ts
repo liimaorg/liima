@@ -53,7 +53,7 @@ export class DeploymentService extends BaseService {
     filterString: string,
     sortCol: string,
     sortDir: string
-  ): Observable<string> {
+  ): Observable<ArrayBuffer> {
     const params = new HttpParams()
       .append('filters', filterString)
       .append('colToSort', sortCol)
@@ -62,9 +62,10 @@ export class DeploymentService extends BaseService {
     const headers = this.csvHeaders();
 
     return this.http
-      .get<string>(`${this.getBaseUrl()}/deployments/filter`, {
+      .get(`${this.getBaseUrl()}/deployments/filter`, {
         params,
-        headers
+        headers,
+        responseType: 'arraybuffer'
       })
       .pipe(catchError(this.handleError));
   }
@@ -234,9 +235,7 @@ export class DeploymentService extends BaseService {
   }
 
   private csvHeaders() {
-    const headers = new HttpHeaders();
-    headers.append('Accept', 'text/csv');
-    return headers;
+    return new HttpHeaders().append('Accept', 'text/csv');
   }
 
   private extractDeploymentsAndTotalCount(res: HttpResponse<any>) {
