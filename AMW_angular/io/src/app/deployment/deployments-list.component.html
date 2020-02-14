@@ -10,7 +10,7 @@
         <th class="has-checkbox">
           <input type="checkbox" (click)="switchAllDeployments()" />
           <span class="link" (click)="reSort('d.trackingId')"
-            >Tracking id
+            >&nbsp;Tracking id
             <ng-container *ngIf="sortCol === 'd.trackingId'">
               <app-sort-direction
                 [sortDirection]="sortDirection"
@@ -46,7 +46,7 @@
             <ng-container
               *ngIf="sortCol === 'd.release.installationInProductionAt'"
             >
-            <app-sort-direction
+              <app-sort-direction
                 [sortDirection]="sortDirection"
               ></app-sort-direction>
             </ng-container>
