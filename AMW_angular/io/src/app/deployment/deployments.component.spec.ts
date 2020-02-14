@@ -173,10 +173,11 @@ describe('DeploymentsComponent (with query params)', () => {
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' }
     ];
+    var buffer = new ArrayBuffer(8);
     spyOn(
       deploymentService,
       'getFilteredDeploymentsForCsvExport'
-    ).and.returnValue(of('c;s;v;'));
+    ).and.returnValue(of(buffer));
 
     // when
     component.exportCSV();
