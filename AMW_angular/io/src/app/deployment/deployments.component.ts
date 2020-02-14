@@ -60,7 +60,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
   deployments: Deployment[] = [];
 
   // csv export
-  csvDocument: string;
+  csvDocument: ArrayBuffer;
 
   // sorting with default values
   sortCol: string = 'd.deploymentDate';
@@ -416,7 +416,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
 
   private addDatePicker() {
     this.ngZone.onMicrotaskEmpty.subscribe(() => {
-      $('.datepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
+       $('.datepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
     });
   }
 
