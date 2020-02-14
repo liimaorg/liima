@@ -24,16 +24,16 @@ export class BaseService {
     return headers;
   }
 
-  public handleError(error: any) {
+  public handleError(response: any) {
     let errorMsg = 'Error retrieving your data';
-    if (error._body) {
+    if (response.error) {
       try {
-        errorMsg = _.escape(JSON.parse(error._body).message);
+        errorMsg = _.escape(response.error.message);
       } catch (e) {
         console.log(e);
       }
     }
-    console.error(error);
+    console.error(response);
     // throw an application level error
     return throwError(errorMsg);
   }
