@@ -9,10 +9,12 @@ import { AuditviewTableComponent } from './auditview-table/auditview-table.compo
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SortableHeader } from './sortable.directive';
 import { BaseModule } from '../base/base.module';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
+    SharedModule,
     FormsModule,
     AuditviewRoutingModule,
     NgbModule,
