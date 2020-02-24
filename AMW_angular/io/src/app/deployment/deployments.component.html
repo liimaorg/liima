@@ -1,10 +1,7 @@
 <app-page-header>
   <h1>{{ appService.get('pageTitle') }}</h1>
 </app-page-header>
-
-<div *ngIf="isLoading" class="loading">
-  <div class="loading-bg"></div>
-</div>
+<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
 
 <div class="col-sm-11 main-full">
   <div class="panel-body">
