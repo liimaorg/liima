@@ -10,6 +10,7 @@ import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import * as $ from 'jquery';
 import { Subscription, timer } from 'rxjs';
 import { AppService } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
@@ -416,7 +417,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
 
   private addDatePicker() {
     this.ngZone.onMicrotaskEmpty.subscribe(() => {
-       $('.datepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
+      $('.datepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
     });
   }
 
