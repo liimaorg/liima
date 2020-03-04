@@ -9,7 +9,6 @@ import {
 import { ResourceService } from '../resource/resource.service';
 import { Deployment } from './deployment';
 import { DeploymentFilter } from './deployment-filter';
-import { DeploymentService } from './deployment.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
