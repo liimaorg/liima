@@ -15,6 +15,7 @@ import { DeploymentsEditModalComponent } from './deployments-edit-modal.componen
 import { DeploymentsListComponent } from './deployments-list.component';
 import { DeploymentsComponent } from './deployments.component';
 import { PaginationComponent } from './pagination.component';
+import { SharedModule } from '../shared/shared.module';
 
 describe('DeploymentsComponent (with query params)', () => {
   let component: DeploymentsComponent;
@@ -35,7 +36,8 @@ describe('DeploymentsComponent (with query params)', () => {
       imports: [
         FormsModule,
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([]),
+        SharedModule
       ],
       providers: [
         DeploymentService,
@@ -212,7 +214,8 @@ describe('DeploymentsComponent (with illegal query params)', () => {
       imports: [
         FormsModule,
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([]),
+        SharedModule
       ],
       providers: [
         DeploymentService,
@@ -276,7 +279,8 @@ describe('DeploymentsComponent (without query params)', () => {
       imports: [
         FormsModule,
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([]),
+        SharedModule
       ],
       providers: [
         DeploymentService,

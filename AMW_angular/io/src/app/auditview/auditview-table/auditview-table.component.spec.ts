@@ -1,9 +1,4 @@
-import {
-  async,
-  ComponentFixture,
-  ComponentFixtureAutoDetect,
-  TestBed
-} from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NewlineFilterPipe } from 'src/app/customfilter/newlineFilterPipe';

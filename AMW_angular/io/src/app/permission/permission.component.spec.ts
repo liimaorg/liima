@@ -18,6 +18,7 @@ import { RestrictionEditComponent } from './restriction-edit.component';
 import { RestrictionListComponent } from './restriction-list.component';
 import { Restriction } from './restriction';
 import { Tag } from './tag';
+import { SharedModule } from '../shared/shared.module';
 
 describe('PermissionComponent without any params (default: type Role)', () => {
   let fixture: ComponentFixture<PermissionComponent>;
@@ -438,7 +439,8 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
         CommonModule,
         FormsModule,
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([]),
+        SharedModule
       ],
       providers: [
         EnvironmentService,
@@ -535,7 +537,8 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
         CommonModule,
         FormsModule,
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([]),
+        SharedModule
       ],
       providers: [
         EnvironmentService,

@@ -19,6 +19,7 @@ import { DeploymentService } from './deployment.service';
 import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
 import * as moment from 'moment';
+import { SharedModule } from '../shared/shared.module';
 @Component({
   template: ''
 })
@@ -33,7 +34,12 @@ describe('DeploymentComponent (create deployment)', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [DeploymentComponent, DummyComponent],
-      imports: [FormsModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [
+        FormsModule,
+        RouterTestingModule,
+        HttpClientTestingModule,
+        SharedModule
+      ],
       providers: [
         ResourceService,
         EnvironmentService,
@@ -421,7 +427,8 @@ describe('DeploymentComponent (create deployment with params)', () => {
       imports: [
         FormsModule,
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([]),
+        SharedModule
       ],
       providers: [
         ResourceService,
@@ -479,7 +486,8 @@ describe('DeploymentComponent (redeployment)', () => {
       imports: [
         FormsModule,
         RouterTestingModule.withRoutes([]),
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        SharedModule
       ],
       providers: [
         { provide: ActivatedRoute, useValue: mockRoute },
