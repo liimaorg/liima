@@ -1,18 +1,23 @@
-import { Component, Input, Output, EventEmitter, NgZone } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  NgZone,
+  AfterViewInit
+} from '@angular/core';
 import { ResourceService } from '../resource/resource.service';
 import { Deployment } from './deployment';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentService } from './deployment.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-
-declare var $: any;
-
+import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 @Component({
   selector: 'amw-deployments-list',
   templateUrl: './deployments-list.component.html'
 })
-export class DeploymentsListComponent {
+export class DeploymentsListComponent implements AfterViewInit {
   @Input() deployments: Deployment[] = [];
   @Input() sortCol: string;
   @Input() sortDirection: string;
@@ -57,9 +62,12 @@ export class DeploymentsListComponent {
 
   constructor(
     private ngZone: NgZone,
-    private deploymentService: DeploymentService,
     private resourceService: ResourceService
   ) {}
+
+  ngAfterViewInit(): void {
+    $.fn.datetimepicker = datetimepicker;
+  }
 
   showDetails(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
@@ -70,7 +78,7 @@ export class DeploymentsListComponent {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     $('#deploymentDateChange').modal('show');
     this.ngZone.onMicrotaskEmpty.subscribe(() => {
-      $('.datepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
+      $('#datetimepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
     });
   }
 

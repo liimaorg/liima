@@ -321,10 +321,11 @@
             </button>
             <span [innerHTML]="errorMessage"></span>
           </div>
-          <div class="input-group date datepicker">
+          <div class="input-group date">
             <input
+              id="datetimepicker"
               type="text"
-              class="form-control"
+              class="form-control datepicker"
               #datePicker
               [ngModel]="deployment.deploymentDate | date: 'dd.MM.y HH:mm'"
               (blur)="deploymentDate = datePicker.value"
