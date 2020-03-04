@@ -17,6 +17,8 @@ import { DeploymentsComponent } from './deployments.component';
 import { PaginationComponent } from './pagination.component';
 import { SharedModule } from '../shared/shared.module';
 
+declare var $: any;
+
 describe('DeploymentsComponent (with query params)', () => {
   let component: DeploymentsComponent;
   let fixture: ComponentFixture<DeploymentsComponent>;
