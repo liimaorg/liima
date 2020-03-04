@@ -419,7 +419,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
 
   private addDatePicker() {
     this.ngZone.onMicrotaskEmpty.subscribe(() => {
-      $('.datetimepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
+      $('#datetimepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
     });
   }
 
