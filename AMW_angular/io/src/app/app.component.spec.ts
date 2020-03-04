@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { AppComponent } from './app.component';
-import { AppService } from './app.service';
+import { AppService, Keys } from './app.service';
 import { AppConfiguration } from './setting/app-configuration';
 import { SettingService } from './setting/setting.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -55,7 +55,7 @@ describe('App', () => {
     // when
     app.navigateTo(item);
     // then
-    expect(appService.set).toHaveBeenCalledWith('navTitle', 'test');
+    expect(appService.set).toHaveBeenCalledWith(Keys.NavTitle, 'test');
     expect(router.navigateByUrl).toHaveBeenCalledWith('target');
   });
 

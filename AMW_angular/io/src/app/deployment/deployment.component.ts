@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { AppService } from '../app.service';
+import { AppService, Keys } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
 import { ResourceTag } from '../resource/resource-tag';
 import { Resource } from '../resource/resource';
@@ -81,12 +81,12 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     private activatedRoute: ActivatedRoute,
     private location: Location,
     public appService: AppService
-  ) {}
+  ) {
+    this.appService.set(Keys.NavShow, false);
+    this.appService.set(Keys.NavTitle, 'Deployments');
+  }
 
   ngOnInit() {
-    this.appService.set('navShow', false);
-    this.appService.set('navTitle', 'Deployments');
-
     this.initEnvironments();
 
     this.activatedRoute.params.subscribe((param: any) => {

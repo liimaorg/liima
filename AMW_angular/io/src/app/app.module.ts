@@ -23,6 +23,8 @@ import { AppComponent } from './app.component';
 import { PageNotFoundComponent } from './not-found.component';
 import { AppService, InternalStateType } from './app.service';
 import { APP_RESOLVER_PROVIDERS } from './app.resolver';
+import { NavigationComponent } from './navigation.component';
+import { NavigationSidebarComponent } from './navigation-sidebar.component';
 
 // Application wide providers
 const APP_PROVIDERS = [...APP_RESOLVER_PROVIDERS, AppService];
@@ -37,7 +39,7 @@ type StoreType = {
  * `AppModule` is the main entry point into Angular2's bootstraping process
  */
 @NgModule({
-  declarations: [AppComponent, PageNotFoundComponent],
+  declarations: [AppComponent, PageNotFoundComponent, NavigationComponent, NavigationSidebarComponent],
   imports: [
     // import Angular's modules
     BrowserModule,

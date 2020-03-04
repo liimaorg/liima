@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PermissionService } from './permission.service';
 import { Environment } from '../deployment/environment';
@@ -6,7 +6,7 @@ import { EnvironmentService } from '../deployment/environment.service';
 import { Resource } from '../resource/resource';
 import { ResourceType } from '../resource/resource-type';
 import { ResourceService } from '../resource/resource.service';
-import { AppService } from '../app.service';
+import { AppService, Keys } from '../app.service';
 import { Restriction } from './restriction';
 import { RestrictionsCreation } from './restrictions-creation';
 import { Permission } from './permission';
@@ -16,7 +16,7 @@ import * as _ from 'lodash';
   selector: 'amw-permission',
   templateUrl: './permission.component.html'
 })
-export class PermissionComponent implements OnInit, OnDestroy {
+export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
   // loaded only once
   roleNames: string[] = [];
   userNames: string[] = [];
@@ -59,18 +59,18 @@ export class PermissionComponent implements OnInit, OnDestroy {
     private resourceService: ResourceService,
     private activatedRoute: ActivatedRoute,
     public appService: AppService
-  ) {}
-
-  ngOnInit() {
-    this.appService.set('navShow', true);
-    this.appService.set('navItems', [
+  ) {
+    this.appService.set(Keys.PageTitle, 'Permissions');
+    this.appService.set(Keys.NavShow, true);
+    this.appService.set(Keys.NavItems, [
       { title: 'Roles', target: '/permission/role' },
       { title: 'Users', target: '/permission/user' }
     ]);
-    this.appService.set('navTitle', this.defaultNavItem);
-    this.appService.set('pageTitle', 'Permissions');
+    if (!['Roles', 'Users'].includes(this.appService.get(Keys.NavTitle))) {
+      this.appService.set(Keys.NavTitle, this.defaultNavItem);
+    }
 
-    this.activatedRoute.params.subscribe((param: any) => {
+    this.activatedRoute.queryParams.subscribe((param: any) => {
       if (param['actingUser']) {
         this.delegationMode = true;
         this.restrictionType = 'user';
@@ -84,11 +84,15 @@ export class PermissionComponent implements OnInit, OnDestroy {
         this.onChangeType(this.restrictionType);
       }
     });
+  }
 
+  ngOnInit() {
     this.getAllEnvironments();
     this.getAllResourceGroups();
     this.getAllResourceTypes();
   }
+
+  ngAfterViewInit(): void {}
 
   ngOnDestroy() {
     this.appService.set('navItems', null);
@@ -279,13 +283,11 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.assignedRestrictions = [];
     this.restrictionType = type === 'role' || type === 'user' ? type : 'role';
     if (this.restrictionType === 'user') {
-      this.appService.set('navTitle', 'Users');
       this.selectedRoleName = null;
       if (this.userNames.length < 1) {
         this.getAllUserNames();
       }
     } else {
-      this.appService.set('navTitle', 'Roles');
       this.selectedUserNames = [];
       if (this.roleNames.length < 1) {
         this.getAllRoleNames();

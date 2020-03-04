@@ -1,56 +1,49 @@
-import { Component, ViewEncapsulation, OnInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AppService } from './app.service';
+import { AppService, Keys, InternalStateType } from './app.service';
 import { SettingService } from './setting/setting.service';
 import { AppConfiguration } from './setting/app-configuration';
-import * as _ from 'lodash';
+import { NavigationItem } from './core/navigation-item';
+import { AMW_LOGOUT_URL } from './core/amw-constants';
+import { Observable, of } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
-/*
- * App Component
- * Top Level Component
- */
 @Component({
   selector: 'app',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: [
-    './app.component.scss'
-  ],
+  styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit, AfterViewChecked {
-  name = 'Angular 8';
+export class AppComponent {
+  navigationState$: Observable<InternalStateType>;
 
-  private logoutUrlKey: string = 'amw.logoutUrl';
-
-  constructor(public appService: AppService,
-              private router: Router,
-              private cdRef: ChangeDetectorRef,
-              private settingService: SettingService) {
+  constructor(
+    public appService: AppService,
+    private router: Router,
+    private settingService: SettingService
+  ) {
+    this.navigationState$ = this.appService.state$.pipe(
+      map(state => ({
+        navigationItems: state[Keys.NavItems],
+        current: state[Keys.NavTitle],
+        isVisible: state[Keys.NavShow],
+        pageTitle: state[Keys.PageTitle]
+      }))
+    );
+    this.settingService
+      .getAllAppSettings()
+      .subscribe(r => this.configureSettings(r));
   }
 
-  ngOnInit() {
-    this.fetchLogoutUrl();
-  }
-
-  ngAfterViewChecked() {
-    // explicit change detection to avoid "expression-has-changed-after-it-was-checked-error"
-    this.cdRef.detectChanges();
-  }
-
-  navigateTo(item: any) {
-    this.appService.set('navTitle', item.title);
+  navigateTo(item: NavigationItem) {
+    this.appService.set(Keys.NavTitle, item.title);
     this.router.navigateByUrl(item.target);
   }
 
-  private fetchLogoutUrl() {
-    this.settingService.getAllAppSettings().subscribe(
-      /* happy path */ (r) => this.setLogoutUrl(r)
+  private configureSettings(settings: AppConfiguration[]) {
+    const logoutUrl = settings.find(
+      config => config.key.value === AMW_LOGOUT_URL
     );
+    this.appService.set(Keys.LogoutUrl, logoutUrl ? logoutUrl.value : '');
   }
-
-  private setLogoutUrl(settings: AppConfiguration[]) {
-    const logoutUrl: AppConfiguration = _.find(settings, ['key.value', this.logoutUrlKey]);
-    this.appService.set('logoutUrl', logoutUrl ? logoutUrl.value : '');
-  }
-
 }

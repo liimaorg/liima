@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Subscription, timer } from 'rxjs';
-import { AppService } from '../app.service';
+import { AppService, Keys } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
 import { Deployment } from './deployment';
@@ -95,13 +95,13 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
     private deploymentService: DeploymentService,
     private resourceService: ResourceService,
     public appService: AppService
-  ) {}
+  ) {
+    this.appService.set(Keys.NavShow, false);
+    this.appService.set(Keys.NavTitle, 'Deployments');
+    this.appService.set(Keys.PageTitle, 'Deployments');
+  }
 
   ngOnInit() {
-    this.appService.set('navShow', false);
-    this.appService.set('navTitle', 'Deployments');
-    this.appService.set('pageTitle', 'Deployments');
-
     this.activatedRoute.queryParams.subscribe((param: any) => {
       if (param['filters']) {
         try {

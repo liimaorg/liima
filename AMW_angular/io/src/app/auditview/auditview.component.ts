@@ -23,12 +23,12 @@ export class AuditviewComponent implements OnInit {
     private auditViewService: AuditviewService,
     private resourceService: ResourceService,
     private activatedRoute: ActivatedRoute
-  ) { }
-
-  ngOnInit() {
+  ) {
     this.appService.set('navShow', false);
     this.appService.set('pageTitle', 'Audit View');
+  }
 
+  ngOnInit() {
     this.activatedRoute.queryParams.subscribe((param: any) => {
       if (param['resourceId']) {
         try {
@@ -44,12 +44,12 @@ export class AuditviewComponent implements OnInit {
       this.resourceService.getResourceName(this.resourceId).subscribe(
         /* happy path */ r => (this.name = r.name),
         /* error path */ e => (this.errorMessage = e),
-        /* onComplete */() => { }
+        /* onComplete */ () => {}
       );
       this.auditViewService.getAuditLogForResource(this.resourceId).subscribe(
         /* happy path */ r => (this.auditLogEntries = r),
         /* error path */ e => (this.errorMessage = e),
-        /* onComplete */() => (this.isLoading = false)
+        /* onComplete */ () => (this.isLoading = false)
       );
     } else {
       console.error('Resource Id must be set');
