@@ -1,22 +1,27 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
-import { Auditviewentrytype } from './auditview-entry-type';
-import { BaseService } from "../base/base.service";
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { BaseService } from '../base/base.service';
+import { AuditLogEntry } from './auditview-entry';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AuditviewService extends BaseService {
-
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
     super();
   }
 
-  getAuditLogForResource(resourceId: number): Observable<Auditviewentrytype[]> {
+  getAuditLogForResource(resourceId: number): Observable<AuditLogEntry[]> {
     const resource$ = this.http
-      .get(`${this.getBaseUrl()}/auditview/resource/${resourceId}`,{headers: this.getHeaders()})
-      .map((response: Response) => this.extractPayload(response))
-      .catch(this.handleError);
+      .get<AuditLogEntry[]>(
+        `${this.getBaseUrl()}/auditview/resource/${resourceId}`,
+        {
+          headers: this.getHeaders()
+        }
+      )
+      .pipe(catchError(this.handleError));
     return resource$;
   }
-
 }

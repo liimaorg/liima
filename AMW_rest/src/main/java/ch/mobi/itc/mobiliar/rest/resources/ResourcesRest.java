@@ -164,8 +164,10 @@ public class ResourcesRest {
     @GET
     @ApiOperation(value = "Get resource name by id")
     public Response getResourceName(@PathParam("resourceId") Integer resourceId) {
+        Map<String, String> responseMap = new HashMap<>();
         String resourceName = resourceBoundary.getResourceName(resourceId);
-        return Response.status(Response.Status.OK).entity(resourceName).build();
+        responseMap.put("name", resourceName);
+        return Response.status(Response.Status.OK).entity(responseMap).build();
     }
 
     @Path("/{resourceGroupName}")

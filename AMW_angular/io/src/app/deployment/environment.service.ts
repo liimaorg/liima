@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, URLSearchParams, RequestOptions } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Environment } from './environment';
 import { BaseService } from '../base/base.service';
 
 @Injectable()
 export class EnvironmentService extends BaseService {
-
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
     super();
   }
 
@@ -20,18 +20,17 @@ export class EnvironmentService extends BaseService {
   }
 
   private getEnvironments(includingGroups: boolean): Observable<Environment[]> {
-    const params: URLSearchParams = new URLSearchParams();
-    if (includingGroups) {
-      params.set('includingGroups', 'true');
-    }
-    const options = new RequestOptions({
-      search: params,
-      headers: this.getHeaders()
-    });
-    return this.http
-      .get(`${this.getBaseUrl()}/environments`, options)
-      .map((response: Response) => response.json())
-      .catch(this.handleError);
-  }
+    let params = new HttpParams();
+    const headers = this.getHeaders();
 
+    if (includingGroups) {
+      params = params.set('includingGroups', 'true');
+    }
+    return this.http
+      .get<Environment[]>(`${this.getBaseUrl()}/environments`, {
+        params,
+        headers
+      })
+      .pipe(catchError(this.handleError));
+  }
 }

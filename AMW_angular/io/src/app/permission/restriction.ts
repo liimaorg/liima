@@ -1,4 +1,3 @@
-import { Restriction } from './restriction';
 import { Permission } from './permission';
 
 export interface Restriction {

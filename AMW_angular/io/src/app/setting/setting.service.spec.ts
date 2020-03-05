@@ -1,55 +1,53 @@
-import { BaseRequestOptions, Http, RequestMethod, Response, ResponseOptions } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
-import { inject, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { SettingService } from './setting.service';
-import { AppConfiguration } from './app-configuration';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
+import { HttpClient } from '@angular/common/http';
 
 describe('SettingService', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    providers: [
-      BaseRequestOptions,
-      MockBackend,
-      {
-        provide: Http,
-        useFactory(backend: MockBackend, defaultOptions: BaseRequestOptions) {
-          return new Http(backend, defaultOptions);
-        },
-        deps: [MockBackend, BaseRequestOptions]
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
+  let settingService: SettingService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [SettingService]
+    });
+
+    httpTestingController = TestBed.inject(HttpTestingController);
+    httpClient = TestBed.inject(HttpClient);
+    settingService = TestBed.inject(SettingService);
+  });
+
+  afterEach(() => {
+    httpTestingController.verify();
+  });
+
+  it('should have a getAllAppSettings method', () => {
+    expect(settingService.getAllAppSettings()).toBeDefined();
+  });
+
+  it('should request data from the right endpoint when getAllAppSettings is called', () => {
+    const settingsResponse = {
+      key: {
+        value: 'amw.logsPath',
+        env: 'AMW_LOGSPATH'
       },
-      SettingService
-    ]
-  }));
+      value: '/tmp/amw/logs',
+      defaultValue: null
+    };
 
-  it('should have a getAllAppSettings method',
-    inject([SettingService], (settingService: SettingService) => {
-      expect(settingService.getAllAppSettings()).toBeDefined();
-  }));
+    settingService.getAllAppSettings().subscribe(settingRes => {
+      expect(settingRes).toEqual([settingsResponse]);
+    });
 
-  it('should request data from the right endpoint when getAllAppSettings is called',
-    inject([SettingService, MockBackend], (settingService: SettingService, mockBackend: MockBackend) => {
-      // given
-      mockBackend.connections.subscribe((connection) => {
-        expect(connection.request.method).toBe(RequestMethod.Get);
-        expect(connection.request.url).toMatch('/AMW_rest/resources/settings');
-        const mockResponse = new Response(new ResponseOptions({body: [ {} as AppConfiguration ]}));
-        connection.mockRespond(mockResponse);
-      });
-      // when then
-      settingService.getAllAppSettings().subscribe((response) => {
-        expect(response).toEqual([{}]);
-      });
-  }));
+    const req = httpTestingController.expectOne('/AMW_rest/resources/settings');
 
-  it('should handle backend errors',
-    inject([SettingService, MockBackend], (settingService: SettingService, mockBackend: MockBackend) => {
-      // given
-      mockBackend.connections.subscribe((connection) => {
-        expect(connection.request.method).toBe(RequestMethod.Get);
-        expect(connection.request.url).toMatch('/AMW_rest/resources/settings');
-        connection.mockError({});
-      });
-      // when then
-      expect(function() {settingService.getAllAppSettings().subscribe()}).toThrow('Error retrieving your data');
-  }));
+    expect(req.request.method).toEqual('GET');
 
+    req.flush([settingsResponse]);
+  });
 });

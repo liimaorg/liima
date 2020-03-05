@@ -1,97 +1,139 @@
-import { inject, TestBed } from '@angular/core/testing';
-import { BaseRequestOptions, Response, ResponseOptions, Http } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { ResourceService } from './resource.service';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
+import { HttpClient } from '@angular/common/http';
+import { Resource } from './resource';
+import { Release } from './release';
 
 describe('ResourceService', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    providers: [
-      BaseRequestOptions,
-      MockBackend,
-      {
-        provide: Http,
-        useFactory(backend: MockBackend, defaultOptions: BaseRequestOptions) {
-          return new Http(backend, defaultOptions);
-        },
-        deps: [MockBackend, BaseRequestOptions]
-      },
-      ResourceService
-    ]
-  }));
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
+  let resourceService: ResourceService;
 
-  it('should have a getAll method', inject([ResourceService], (resourceService: ResourceService) => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [ResourceService]
+    });
+
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    resourceService = TestBed.inject(ResourceService);
+  });
+
+  it('should have a getAll method', () => {
     expect(resourceService.getAll()).toBeDefined();
-  }));
+  });
 
-  it('should request data from the right endpoint when getAll is called', inject([ResourceService, MockBackend, Http], (resourceService: ResourceService, mockBackend: MockBackend, http: Http) => {
-    // given
-    mockBackend.connections.subscribe((connection) => {
-      expect(connection.request.url).toMatch('/AMW_rest/resources/resources');
-      const mockResponse = new Response(new ResponseOptions({body: [{id: 1}]}));
-      connection.mockRespond(mockResponse);
+  it('should request data from the right endpoint when getAll is called', () => {
+    const mockResource: Resource = {
+      id: 11,
+      name: 'workflow',
+      type: 'applicationserver',
+      version: '1.0',
+      release: {
+        id: 22,
+        release: 'release_2020',
+        relations: [],
+        properties: [],
+        resourceTags: []
+      },
+      releases: []
+    };
+    resourceService.getAll().subscribe(resourcesRes => {
+      expect(resourcesRes).toEqual([mockResource]);
     });
-    // when then
-    resourceService.getAll().subscribe((response) => {
-      expect(response).toBeDefined();
-      expect(response[0].id).toEqual(1);
-    });
-  }));
 
-  it('should request data from the right endpoint when getLatestForRelease is called', inject([ResourceService, MockBackend, Http], (resourceService: ResourceService, mockBackend: MockBackend, http: Http) => {
-    // given
-    mockBackend.connections.subscribe((connection) => {
-      expect(connection.request.url).toContain('/AMW_rest/resources/resources/resourceGroups/1/releases/2');
-      const mockResponse = new Response(new ResponseOptions({body: [{name: 'testApp'}]}));
-      connection.mockRespond(mockResponse);
-    });
-    // when then
-    resourceService.getLatestForRelease(1, 2).subscribe((response) => {
-      expect(response).toBeDefined();
-      expect(response[0].name).toEqual('testApp');
-    });
-  }));
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/resources'
+    );
 
-  it('should request data from the right endpoint when getRuntime is called', inject([ResourceService, MockBackend, Http], (resourceService: ResourceService, mockBackend: MockBackend, http: Http) => {
-    // given
-    mockBackend.connections.subscribe((connection) => {
-      expect(connection.request.url).toContain('/AMW_rest/resources/resources/testGroup/testRelease/relations?type=RUNTIME');
-      const mockResponse = new Response(new ResponseOptions({body: [{identifier: 'EAP6'}]}));
-      connection.mockRespond(mockResponse);
-    });
-    // when then
-    resourceService.getRuntime('testGroup', 'testRelease').subscribe((response) => {
-      expect(response).toBeDefined();
-      expect(response[0].identifier).toEqual('EAP6');
-    });
-  }));
+    expect(req.request.method).toEqual('GET');
 
-  it('should request data from the right endpoint when getAppsWithVersions is called', inject([ResourceService, MockBackend, Http], (resourceService: ResourceService, mockBackend: MockBackend, http: Http) => {
-    // given
-    mockBackend.connections.subscribe((connection) => {
-      expect(connection.request.url).toContain('/AMW_rest/resources/resources/resourceGroups/123/releases/321/appWithVersions/?context=1&context=2');
-      const mockResponse = new Response(new ResponseOptions({body: [{version: 0.1, mavenVersion: 1.0},
-        {version: 0.2, mavenVersion: 1.2}]}));
-      connection.mockRespond(mockResponse);
-    });
-    // when then
-    resourceService.getAppsWithVersions(123, 321, [1, 2]).subscribe((response) => {
-      expect(response).toBeDefined();
-    });
-  }));
+    req.flush([mockResource]);
+  });
 
-  it('should correctly map the returned data from the endpoint when getAppsWithVersions is called', inject([ResourceService, MockBackend, Http], (resourceService: ResourceService, mockBackend: MockBackend, http: Http) => {
-    // given
-    mockBackend.connections.subscribe((connection) => {
-      expect(connection.request.url).toContain('/AMW_rest/resources/resources/resourceGroups/123/releases/321/appWithVersions/?context=1&context=2');
-      const mockResponse = new Response(new ResponseOptions({body: [{version: 0.1, mavenVersion: 1.0},
-        {version: 0.2, mavenVersion: 1.2}]}));
-      connection.mockRespond(mockResponse);
+  it('should request data from the right endpoint when getLatestForRelease is called', () => {
+    const mockRelease: Release = {
+      id: 55,
+      release: 'release2010',
+      relations: [
+        {
+          relatedResourceName: 'relResName',
+          relatedResourceRelease: 'relResRelease',
+          identifier: 'id',
+          type: 'releasetype'
+        }
+      ],
+      properties: [
+        {
+          name: 'propertyName',
+          value: 'propertyValue',
+          replacedValue: 'replValue',
+          generalComment: 'any comment',
+          valueComment: 'comment',
+          context: 'context value'
+        }
+      ],
+      resourceTags: []
+    };
+    resourceService.getLatestForRelease(1, 2).subscribe(response => {
+      expect(response).toEqual(mockRelease);
     });
-    // when then
-    resourceService.getAppsWithVersions(123, 321, [1, 2]).subscribe((response) => {
-      expect(response[0].version).toEqual(0.1);
-      expect(response.find((item) => item.hasOwnProperty('mavenVersion'))).toBeFalsy();
-    });
-  }));
 
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/resources/resourceGroups/1/releases/2'
+    );
+
+    expect(req.request.method).toEqual('GET');
+
+    req.flush(mockRelease);
+  });
+
+  it('should request data from the right endpoint when getRuntime is called', () => {
+    const mockRelation = {
+      relatedResourceName: 'relResourceName',
+      relatedResourceRelease: 'relResrourceRelease',
+      identifier: 'adam_application_server',
+      type: 'applicationserver'
+    };
+    resourceService
+      .getRuntime('testGroup', 'testRelease')
+      .subscribe(response => {
+        expect(response).toEqual([mockRelation]);
+      });
+
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/resources/testGroup/testRelease/relations?type=RUNTIME'
+    );
+
+    expect(req.request.method).toEqual('GET');
+
+    req.flush([mockRelation]);
+  });
+
+  it('should request data from the right endpoint when getAppsWithVersions is called', () => {
+    const mockAppWithVersions = {
+      applicationName: 'adam',
+      applicationId: 211558,
+      version: '1.9'
+    };
+
+    resourceService
+      .getAppsWithVersions(123, 321, [1, 2])
+      .subscribe(response => {
+        expect(response).toEqual([mockAppWithVersions]);
+      });
+
+    const req = httpTestingController.expectOne(
+      '/AMW_rest/resources/resources/resourceGroups/123/releases/321/appWithVersions/?context=1&context=2'
+    );
+
+    expect(req.request.method).toEqual('GET');
+
+    req.flush([mockAppWithVersions]);
+  });
 });

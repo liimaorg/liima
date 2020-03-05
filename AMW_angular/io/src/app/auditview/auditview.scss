@@ -1,8 +1,9 @@
+@import './auditview-table/auditview-table.component.scss';
+
 /*
  * Audit View
  */
 #auditview-list td {
-    word-wrap: break-word;
-    max-width: 15rem;
+  word-wrap: break-word;
+  max-width: 15rem;
 }
-
