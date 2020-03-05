@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { NavigationItem } from './core/navigation-item';
+import { NavigationItem } from './navigation-item';
 
 @Component({
   selector: 'app-navigation-sidebar',
@@ -19,7 +19,11 @@ import { NavigationItem } from './core/navigation-item';
             <li
               [ngClass]="item.title === navigationState.current ? 'active' : ''"
             >
-              <a (mouseup)="itemSelected.emit(item)">{{ item.title }}</a>
+              <a
+                href="#{{ item.target }}"
+                (mouseup)="itemSelected.emit(item)"
+                >{{ item.title }}</a
+              >
             </li>
           </ng-container>
         </ng-container>

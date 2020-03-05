@@ -43,10 +43,6 @@ describe('App', () => {
     fixture.detectChanges();
   });
 
-  it('should have a name', inject([AppComponent], (app: AppComponent) => {
-    expect(app.name).toEqual('Angular 8');
-  }));
-
   it('should navigate to the right target', () => {
     // given
     const item: any = { title: 'test', target: 'target' };
@@ -71,13 +67,13 @@ describe('App', () => {
     } as AppConfiguration;
     spyOn(settingService, 'getAllAppSettings').and.returnValues(of([appConf]));
     spyOn(appService, 'set').and.callThrough();
-    // when
-    app.ngOnInit();
-    // then
+
+    new AppComponent(appService, router, settingService);
+
     expect(appService.set).toHaveBeenCalledWith(expectedKey, expectedValue);
   });
 
-  it('should set empty logoutUrl on ngOnInit if config not found', () => {
+  it('should set empty logoutUrl if config not found', () => {
     // given
     const expectedKey: string = 'logoutUrl';
     const expectedValue: string = '';
@@ -87,8 +83,8 @@ describe('App', () => {
     spyOn(settingService, 'getAllAppSettings').and.returnValues(of([appConf]));
     spyOn(appService, 'set').and.callThrough();
     // when
-    app.ngOnInit();
-    // then
+    new AppComponent(appService, router, settingService);
+    //
     expect(appService.set).toHaveBeenCalledWith(expectedKey, expectedValue);
   });
 });

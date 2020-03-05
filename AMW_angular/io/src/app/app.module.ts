@@ -25,6 +25,7 @@ import { AppService, InternalStateType } from './app.service';
 import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { NavigationComponent } from './navigation.component';
 import { NavigationSidebarComponent } from './navigation-sidebar.component';
+import { NavigationModule } from './navigation/navigation.module';
 
 // Application wide providers
 const APP_PROVIDERS = [...APP_RESOLVER_PROVIDERS, AppService];
@@ -39,7 +40,7 @@ type StoreType = {
  * `AppModule` is the main entry point into Angular2's bootstraping process
  */
 @NgModule({
-  declarations: [AppComponent, PageNotFoundComponent, NavigationComponent, NavigationSidebarComponent],
+  declarations: [AppComponent, PageNotFoundComponent],
   imports: [
     // import Angular's modules
     BrowserModule,
@@ -54,7 +55,8 @@ type StoreType = {
     PermissionModule,
     SettingModule,
     BaseModule,
-    SharedModule
+    SharedModule,
+    NavigationModule
   ],
   providers: [
     // expose our Services and Providers into Angular's dependency injection

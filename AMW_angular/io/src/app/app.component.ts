@@ -1,12 +1,12 @@
-import { Component, ViewEncapsulation, OnInit } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppService, Keys, InternalStateType } from './app.service';
 import { SettingService } from './setting/setting.service';
 import { AppConfiguration } from './setting/app-configuration';
-import { NavigationItem } from './core/navigation-item';
 import { AMW_LOGOUT_URL } from './core/amw-constants';
 import { Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
+import { NavigationItem } from './navigation/navigation-item';
 
 @Component({
   selector: 'app',

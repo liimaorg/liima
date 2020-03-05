@@ -70,7 +70,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
       this.appService.set(Keys.NavTitle, this.defaultNavItem);
     }
 
-    this.activatedRoute.queryParams.subscribe((param: any) => {
+    this.activatedRoute.params.subscribe((param: any) => {
       if (param['actingUser']) {
         this.delegationMode = true;
         this.restrictionType = 'user';
