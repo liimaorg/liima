@@ -217,6 +217,7 @@
             Insert into TAMW_PERMISSION (ID,V,VALUE,CONTEXT_ID) values (1762,0,'COPY_FROM_RESOURCE_APPSERVER',null);
             Insert into TAMW_PERMISSION (ID,V,VALUE,CONTEXT_ID) values (1763,0,'COPY_FROM_RESOURCE_NODE',null);
             Insert into TAMW_PERMISSION (ID,V,VALUE,CONTEXT_ID) values (1764,0,'REMOVE_RELATED_RESOURCETYPE',null);
+            Insert into TAMW_PERMISSION (ID,V,VALUE,CONTEXT_ID) values (1765,0,'MANAGE_DEPLOYMENT_PARAMETER',null);
 
 
             Insert into TAMW_ROLE_PERMISSION (ROLES_ID,PERMISSIONS_ID) values (1052,1295);
@@ -289,6 +290,7 @@
             Insert into TAMW_ROLE_PERMISSION (ROLES_ID,PERMISSIONS_ID) values (1053,1762);
             Insert into TAMW_ROLE_PERMISSION (ROLES_ID,PERMISSIONS_ID) values (1053,1763);
             Insert into TAMW_ROLE_PERMISSION (ROLES_ID,PERMISSIONS_ID) values (1053,1764);
+            Insert into TAMW_ROLE_PERMISSION (ROLES_ID,PERMISSIONS_ID) values (1053,1765);
             Insert into TAMW_ROLE_PERMISSION (ROLES_ID,PERMISSIONS_ID) values (1054,1331);
             Insert into TAMW_ROLE_PERMISSION (ROLES_ID,PERMISSIONS_ID) values (1054,1332);
             Insert into TAMW_ROLE_PERMISSION (ROLES_ID,PERMISSIONS_ID) values (1054,1334);
@@ -463,7 +465,7 @@
         <sql>
             Insert into SAMW_SEQUENCES (SEQ_NAME,NEXT_VAL) values ('releaseId',550);
             Insert into SAMW_SEQUENCES (SEQ_NAME,NEXT_VAL) values ('resourceGroupId',250958);
-            Insert into SAMW_SEQUENCES (SEQ_NAME,NEXT_VAL) values ('permissionId',1765);
+            Insert into SAMW_SEQUENCES (SEQ_NAME,NEXT_VAL) values ('permissionId',1766);
             Insert into SAMW_SEQUENCES (SEQ_NAME,NEXT_VAL) values ('contextId',277650);
             Insert into SAMW_SEQUENCES (SEQ_NAME,NEXT_VAL) values ('resourceRelationId',290432);
             Insert into SAMW_SEQUENCES (SEQ_NAME,NEXT_VAL) values ('deploymentId',81150);
