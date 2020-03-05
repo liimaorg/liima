@@ -1,3 +1,13 @@
+@media (min-width: 768px) {
+  .navbar-nav {
+    li {
+      a {
+        padding-left: 5px;
+      }
+    }
+  }
+}
+
 /*
  * Top navigation
  * Hide default border to remove 1px line.

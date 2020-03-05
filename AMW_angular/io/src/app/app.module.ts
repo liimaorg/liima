@@ -14,6 +14,7 @@ import { AuditviewModule } from './auditview/auditview.module';
 import { SettingModule } from './setting/setting.module';
 import { BaseModule } from './base/base.module';
 import { SharedModule } from './shared/shared.module';
+import { NavigationModule } from './navigation/navigation.module';
 /*
  * Platform and Environment providers/directives/pipes
  */
@@ -21,27 +22,13 @@ import { AppRoutingModule } from './app-routing.module';
 // App is our top level component
 import { AppComponent } from './app.component';
 import { AppService, InternalStateType } from './app.service';
-import { APP_RESOLVER_PROVIDERS } from './app.resolver';
-import { NavigationComponent } from './navigation.component';
-import { NavigationSidebarComponent } from './navigation-sidebar.component';
-import { NavigationModule } from './navigation/navigation.module';
 
 // Application wide providers
-const APP_PROVIDERS = [...APP_RESOLVER_PROVIDERS, AppService];
+const APP_PROVIDERS = [AppService];
 
-type StoreType = {
-  state: InternalStateType;
-  restoreInputValues: () => void;
-  disposeOldHosts: () => void;
-};
-
-/**
- * `AppModule` is the main entry point into Angular2's bootstraping process
- */
 @NgModule({
   declarations: [AppComponent],
   imports: [
-    // import Angular's modules
     BrowserModule,
     BrowserAnimationsModule,
     NgSelectModule,
@@ -57,10 +44,7 @@ type StoreType = {
     SharedModule,
     NavigationModule
   ],
-  providers: [
-    // expose our Services and Providers into Angular's dependency injection
-    APP_PROVIDERS
-  ],
+  providers: [APP_PROVIDERS],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

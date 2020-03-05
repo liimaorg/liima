@@ -57,7 +57,6 @@ describe('App', () => {
 
   it('should set logoutUrl on ngOnInit', () => {
     // given
-    const expectedKey: string = 'logoutUrl';
     const expectedValue: string = 'testUrl';
     const configKeyVal: string = 'amw.logoutUrl';
     const configKeyEnv: string = 'AMW_LOGOUTURL';
@@ -66,11 +65,10 @@ describe('App', () => {
       value: expectedValue
     } as AppConfiguration;
     spyOn(settingService, 'getAllAppSettings').and.returnValues(of([appConf]));
-    spyOn(appService, 'set').and.callThrough();
 
-    new AppComponent(appService, router, settingService);
+    app.ngOnInit();
 
-    expect(appService.set).toHaveBeenCalledWith(expectedKey, expectedValue);
+    expect(app.logoutUrl).toEqual(expectedValue);
   });
 
   it('should set empty logoutUrl if config not found', () => {
@@ -81,10 +79,9 @@ describe('App', () => {
       key: { value: 'test', env: 'TEST' }
     } as AppConfiguration;
     spyOn(settingService, 'getAllAppSettings').and.returnValues(of([appConf]));
-    spyOn(appService, 'set').and.callThrough();
-    // when
-    new AppComponent(appService, router, settingService);
-    //
-    expect(appService.set).toHaveBeenCalledWith(expectedKey, expectedValue);
+
+    app.ngOnInit();
+
+    expect(app.logoutUrl).toEqual('');
   });
 });

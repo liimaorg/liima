@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppService, Keys, InternalStateType } from './app.service';
 import { SettingService } from './setting/setting.service';
@@ -14,8 +14,10 @@ import { NavigationItem } from './navigation/navigation-item';
   styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   navigationState$: Observable<InternalStateType>;
+
+  logoutUrl: string;
 
   constructor(
     public appService: AppService,
@@ -30,12 +32,15 @@ export class AppComponent {
         pageTitle: state[Keys.PageTitle]
       }))
     );
+  }
+
+  ngOnInit(): void {
     this.settingService
       .getAllAppSettings()
       .subscribe(r => this.configureSettings(r));
   }
 
-  navigateTo(item: NavigationItem) {
+  navigateTo(item: NavigationItem): void {
     this.appService.set(Keys.NavTitle, item.title);
     this.router.navigateByUrl(item.target);
   }
@@ -44,6 +49,6 @@ export class AppComponent {
     const logoutUrl = settings.find(
       config => config.key.value === AMW_LOGOUT_URL
     );
-    this.appService.set(Keys.LogoutUrl, logoutUrl ? logoutUrl.value : '');
+    this.logoutUrl = logoutUrl ? logoutUrl.value : '';
   }
 }

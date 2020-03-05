@@ -14,11 +14,10 @@ export enum Keys {
   NavShow = 'navShow'
 }
 
+// TODO: check if this Service could act as the Single Source of Truth... without using ngrx
 @Injectable()
 export class AppService {
   _state: InternalStateType = {};
-
-  //private _state$: Subject<InternalStateType> = new BehaviourSubject();
 
   private _state$: BehaviorSubject<InternalStateType> = new BehaviorSubject({});
 
@@ -31,6 +30,7 @@ export class AppService {
   }
 
   // already return a clone of the current state
+  // deprecated - subscribe to the BehaviourSubject instead
   public get state() {
     return (this._state = this._clone(this._state));
   }
@@ -39,12 +39,14 @@ export class AppService {
     throw new Error('do not mutate the `.state` directly');
   }
 
+  // deprecated - subscribe to the BehaviourSubject instead
   public get(prop?: any) {
     // use our state getter for the clone
     const state = this.state;
     return state.hasOwnProperty(prop) ? state[prop] : state;
   }
 
+  // TODO: refactor to accept an object... maybe an action with payload
   public set(prop: string, value: any) {
     // internally mutate our state
     this._state[prop] = value;
@@ -53,13 +55,6 @@ export class AppService {
     // return the state for backwards compatibility
     return this._state;
   }
-
-  // public navItems(): NavigationItem[] {
-  //   if (this.get(Keys.NavItems)) {
-  //     return Array.from(this.get(Keys.NavItems));
-  //   }
-  //   return [];
-  // }
 
   private _clone(object: InternalStateType) {
     // simple object clone
