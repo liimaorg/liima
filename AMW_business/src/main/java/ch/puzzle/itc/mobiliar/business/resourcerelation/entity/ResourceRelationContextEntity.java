@@ -33,6 +33,12 @@ import static javax.persistence.CascadeType.PERSIST;
 
 @Entity
 @Audited
+@SqlResultSetMappings(value = {
+	@SqlResultSetMapping(name = "ContextResult", columns = {
+			@ColumnResult(name = "context_id", type = Integer.class) }),
+	@SqlResultSetMapping(name = "NameAndContextResult", columns = {
+			@ColumnResult(name = "resource_name"),
+			@ColumnResult(name = "context_id", type = Integer.class) }) })
 @Table(name="TAMW_resRelContext")
 @AssociationOverrides({
 	@AssociationOverride(name="properties", joinTable=@JoinTable(name="TAMW_resRelCtx_prop", 
