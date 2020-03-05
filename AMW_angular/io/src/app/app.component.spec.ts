@@ -1,80 +1,94 @@
 import { ChangeDetectorRef } from '@angular/core';
-import { inject, TestBed } from '@angular/core/testing';
-import { ConnectionBackend, Http, HttpModule } from '@angular/http';
+import { ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable } from 'rxjs/Rx';
-
-// Load the implementations that should be tested
+import { of } from 'rxjs';
 import { AppComponent } from './app.component';
-import { AppState } from './app.service';
-import { SettingService } from './setting/setting.service';
+import { AppService } from './app.service';
 import { AppConfiguration } from './setting/app-configuration';
+import { SettingService } from './setting/setting.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 class RouterStub {
-  navigateByUrl( url: string ) { return url; }
+  navigateByUrl(url: string) {
+    return url;
+  }
 }
 
 describe('App', () => {
-  // provide our implementations or mocks to the dependency injector
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [ HttpModule, RouterTestingModule ],
-    providers: [
-      AppState,
-      AppComponent,
-      SettingService,
-      ChangeDetectorRef,
-      Http,
-      ConnectionBackend,
-      { provide: Router, useClass: RouterStub }
-    ]
-  }));
+  let appService: AppService;
+  let router: Router;
+  let app: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+  let settingService: SettingService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        AppService,
+        SettingService,
+        ChangeDetectorRef,
+        AppComponent,
+        { provide: Router, useClass: RouterStub }
+      ]
+    }).compileComponents();
+    appService = TestBed.inject(AppService);
+    router = TestBed.inject(Router);
+    settingService = TestBed.inject(SettingService);
+
+    fixture = TestBed.createComponent(AppComponent);
+    app = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
   it('should have a name', inject([AppComponent], (app: AppComponent) => {
-    expect(app.name).toEqual('Angular 4');
+    expect(app.name).toEqual('Angular 8');
   }));
 
-  it('should navigate to the right target',
-    inject([AppComponent, AppState, Router], (app: AppComponent, appState: AppState, router: Router) => {
+  it('should navigate to the right target', () => {
     // given
-    const item: any = {title: 'test', target: 'target'};
-    spyOn(appState, 'set').and.callThrough();
+    const item: any = { title: 'test', target: 'target' };
+    spyOn(appService, 'set').and.callThrough();
     spyOn(router, 'navigateByUrl').and.callThrough();
     // when
     app.navigateTo(item);
     // then
-    expect(appState.set).toHaveBeenCalledWith('navTitle', 'test');
+    expect(appService.set).toHaveBeenCalledWith('navTitle', 'test');
     expect(router.navigateByUrl).toHaveBeenCalledWith('target');
-  }));
+  });
 
-  it('should set logoutUrl on ngOnInit',
-    inject( [AppComponent, AppState, SettingService ], (app: AppComponent, appState: AppState, settingService: SettingService) => {
-      // given
-      const expectedKey: string = 'logoutUrl';
-      const expectedValue: string = 'testUrl';
-      const configKeyVal: string = 'amw.logoutUrl';
-      const configKeyEnv: string = 'AMW_LOGOUTURL';
-      const appConf: AppConfiguration = {key: { value: configKeyVal, env: configKeyEnv }, value: expectedValue } as AppConfiguration;
-      spyOn(settingService, 'getAllAppSettings').and.returnValues(Observable.of([ appConf ]));
-      spyOn(appState, 'set').and.callThrough();
-      // when
-      app.ngOnInit();
-      // then
-      expect(appState.set).toHaveBeenCalledWith(expectedKey, expectedValue);
-  }));
+  it('should set logoutUrl on ngOnInit', () => {
+    // given
+    const expectedKey: string = 'logoutUrl';
+    const expectedValue: string = 'testUrl';
+    const configKeyVal: string = 'amw.logoutUrl';
+    const configKeyEnv: string = 'AMW_LOGOUTURL';
+    const appConf: AppConfiguration = {
+      key: { value: configKeyVal, env: configKeyEnv },
+      value: expectedValue
+    } as AppConfiguration;
+    spyOn(settingService, 'getAllAppSettings').and.returnValues(of([appConf]));
+    spyOn(appService, 'set').and.callThrough();
+    // when
+    app.ngOnInit();
+    // then
+    expect(appService.set).toHaveBeenCalledWith(expectedKey, expectedValue);
+  });
 
-  it('should set empty logoutUrl on ngOnInit if config not found',
-    inject( [AppComponent, AppState, SettingService ], (app: AppComponent, appState: AppState, settingService: SettingService) => {
-      // given
-      const expectedKey: string = 'logoutUrl';
-      const expectedValue: string = '';
-      const appConf: AppConfiguration =  {key: { value: 'test', env: 'TEST'}} as AppConfiguration;
-      spyOn(settingService, 'getAllAppSettings').and.returnValues(Observable.of([ appConf ]));
-      spyOn(appState, 'set').and.callThrough();
-      // when
-      app.ngOnInit();
-      // then
-      expect(appState.set).toHaveBeenCalledWith(expectedKey, expectedValue);
-  }));
-
+  it('should set empty logoutUrl on ngOnInit if config not found', () => {
+    // given
+    const expectedKey: string = 'logoutUrl';
+    const expectedValue: string = '';
+    const appConf: AppConfiguration = {
+      key: { value: 'test', env: 'TEST' }
+    } as AppConfiguration;
+    spyOn(settingService, 'getAllAppSettings').and.returnValues(of([appConf]));
+    spyOn(appService, 'set').and.callThrough();
+    // when
+    app.ngOnInit();
+    // then
+    expect(appService.set).toHaveBeenCalledWith(expectedKey, expectedValue);
+  });
 });

@@ -6,7 +6,7 @@ target/
 .idea
 .classpath
 .project
-.vscode
+
 AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegration.trace.db
 AMW_parent.iml
 todo.tasks
@@ -18,10 +18,17 @@ response*.GET.html
 .DS_Store
 .m2
 AMW_openshift_deploy/deployments
-AMW_angular/io/node/node
 AMW_docker/tmp
 .factorypath
 *.exe
 
 .idea/*
 !/.idea/runConfigurations
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*

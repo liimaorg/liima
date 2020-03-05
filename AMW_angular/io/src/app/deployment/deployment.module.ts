@@ -9,11 +9,17 @@ import { DeploymentService } from './deployment.service';
 import { EnvironmentService } from './environment.service';
 import { DeploymentRoutingModule } from './deployment-routing.module';
 import { PaginationComponent } from './pagination.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, DeploymentRoutingModule],
-  declarations: [DeploymentComponent, DeploymentsComponent, DeploymentsListComponent, DeploymentsEditModalComponent, PaginationComponent],
+  imports: [CommonModule, FormsModule, DeploymentRoutingModule, SharedModule],
+  declarations: [
+    DeploymentComponent,
+    DeploymentsComponent,
+    DeploymentsListComponent,
+    DeploymentsEditModalComponent,
+    PaginationComponent
+  ],
   providers: [DeploymentService, EnvironmentService]
 })
-export class DeploymentModule {
-}
+export class DeploymentModule {}

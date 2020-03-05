@@ -1,46 +1,40 @@
-import { Headers, Response } from '@angular/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
+import { throwError } from 'rxjs';
 import * as _ from 'lodash';
 
 @Injectable()
 export class BaseService {
-
   private baseUrl: string = '/AMW_rest/resources';
 
   public getBaseUrl(): string {
     return this.baseUrl;
   }
 
-  // to json without throwing an error if response is empty
-  public extractPayload(res: Response) {
-    return res.text() ? res.json() : {};
-  }
-
-  public getHeaders() {
-    const headers = new Headers();
-    headers.append('Accept', 'application/json');
+  public getHeaders(): HttpHeaders {
+    let headers = new HttpHeaders();
+    headers = headers.append('Accept', 'application/json');
     return headers;
   }
 
   public postHeaders() {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('Accept', 'application/json');
+    let headers = new HttpHeaders();
+    headers = headers.append('Content-Type', 'application/json');
+    headers = headers.append('Accept', 'application/json');
     return headers;
   }
 
-  public handleError(error: any) {
+  public handleError(response: any) {
     let errorMsg = 'Error retrieving your data';
-    if (error._body) {
+    if (response.error) {
       try {
-        errorMsg = _.escape(JSON.parse(error._body).message);
+        errorMsg = _.escape(response.error.message);
       } catch (e) {
         console.log(e);
       }
     }
-    console.error(errorMsg);
+    console.error(response);
     // throw an application level error
-    return Observable.throw(errorMsg);
+    return throwError(errorMsg);
   }
 }

@@ -1,27 +1,32 @@
-import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
+import {
+  Component,
+  NgZone,
+  OnInit,
+  ViewChild,
+  AfterViewInit
+} from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { AnonymousSubscription } from 'rxjs/Subscription';
-import { AppState } from '../app.service';
+import * as _ from 'lodash';
+import * as moment from 'moment';
+import { Subscription, timer } from 'rxjs';
+import { AppService } from '../app.service';
+import { ResourceService } from '../resource/resource.service';
 import { ComparatorFilterOption } from './comparator-filter-option';
 import { Deployment } from './deployment';
 import { DeploymentFilter } from './deployment-filter';
 import { DeploymentFilterType } from './deployment-filter-type';
 import { DeploymentService } from './deployment.service';
-import { ResourceService } from '../resource/resource.service';
-import { Datetimepicker } from 'eonasdan-bootstrap-datetimepicker';
-import * as _ from 'lodash';
-import * as moment from 'moment';
+import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
+
+declare var $: any;
 
 @Component({
   selector: 'amw-deployments',
   templateUrl: './deployments.component.html'
 })
-
-export class DeploymentsComponent implements OnInit {
-
+export class DeploymentsComponent implements OnInit, AfterViewInit {
   defaultComparator: string = 'eq';
 
   // initially by queryParam
@@ -58,7 +63,7 @@ export class DeploymentsComponent implements OnInit {
   deployments: Deployment[] = [];
 
   // csv export
-  csvDocument: string;
+  csvDocument: ArrayBuffer;
 
   // sorting with default values
   sortCol: string = 'd.deploymentDate';
@@ -74,7 +79,7 @@ export class DeploymentsComponent implements OnInit {
   // auto refresh
   refreshIntervals: number[] = [0, 5, 10, 30, 60, 120];
   refreshInterval: number = 0;
-  timerSubscription: AnonymousSubscription;
+  timerSubscription: Subscription;
 
   errorMessage: string = '';
   successMessage: string = '';
@@ -83,37 +88,43 @@ export class DeploymentsComponent implements OnInit {
   @ViewChild('selectModel')
   selectModel: NgModel;
 
-  constructor(private activatedRoute: ActivatedRoute,
-              private ngZone: NgZone,
-              private location: Location,
-              private deploymentService: DeploymentService,
-              private resourceService: ResourceService,
-              public appState: AppState) {
-  }
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private ngZone: NgZone,
+    private location: Location,
+    private deploymentService: DeploymentService,
+    private resourceService: ResourceService,
+    public appService: AppService
+  ) {}
 
   ngOnInit() {
-    this.appState.set('navShow', false);
-    this.appState.set('navTitle', 'Deployments');
-    this.appState.set('pageTitle', 'Deployments');
+    this.appService.set('navShow', false);
+    this.appService.set('navTitle', 'Deployments');
+    this.appService.set('pageTitle', 'Deployments');
 
-    this.activatedRoute.queryParams.subscribe(
-      (param: any) => {
-        if (param['filters']) {
-          try {
-            this.paramFilters = JSON.parse(param['filters']);
-          } catch (e) {
-            console.error(e);
-            this.errorMessage = 'Error parsing filter';
-            this.autoload = false;
-          }
-        } else {
-          if (sessionStorage.getItem('deploymentFilters')) {
-            this.paramFilters = JSON.parse(sessionStorage.getItem('deploymentFilters'));
-          }
+    this.activatedRoute.queryParams.subscribe((param: any) => {
+      if (param['filters']) {
+        try {
+          this.paramFilters = JSON.parse(param['filters']);
+        } catch (e) {
+          this.errorMessage = 'Error parsing filter';
+          this.autoload = false;
         }
-        this.initTypeAndOptions();
-        this.canRequestDeployments();
+      } else {
+        if (sessionStorage.getItem('deploymentFilters')) {
+          this.paramFilters = JSON.parse(
+            sessionStorage.getItem('deploymentFilters')
+          );
+        }
+      }
+      this.initTypeAndOptions();
+      this.canRequestDeployments();
     });
+  }
+
+  ngAfterViewInit() {
+    $.fn.datetimepicker = datetimepicker;
+    $('#datetimepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
   }
 
   addFilter() {
@@ -121,9 +132,12 @@ export class DeploymentsComponent implements OnInit {
       const newFilter: DeploymentFilter = {} as DeploymentFilter;
       newFilter.name = this.selectedFilterType.name;
       newFilter.comp = this.defaultComparator;
-      newFilter.val = this.selectedFilterType.type === 'booleanType' ? 'true' : '';
+      newFilter.val =
+        this.selectedFilterType.type === 'booleanType' ? 'true' : '';
       newFilter.type = this.selectedFilterType.type;
-      newFilter.compOptions = this.comparatorOptionsForType(this.selectedFilterType.type);
+      newFilter.compOptions = this.comparatorOptionsForType(
+        this.selectedFilterType.type
+      );
       this.setValueOptionsForFilter(newFilter);
       this.filters.push(newFilter);
       this.enableDatepicker(newFilter.type);
@@ -134,7 +148,11 @@ export class DeploymentsComponent implements OnInit {
   }
 
   removeFilter(filter: DeploymentFilter) {
-    const i: number = _.findIndex(this.filters, {name: filter.name, comp: filter.comp, val: filter.val});
+    const i: number = _.findIndex(this.filters, {
+      name: filter.name,
+      comp: filter.comp,
+      val: filter.val
+    });
     if (i !== -1) {
       this.filters.splice(i, 1);
     }
@@ -152,23 +170,35 @@ export class DeploymentsComponent implements OnInit {
     this.filtersForParam = [];
     const filtersToBeRemoved: DeploymentFilter[] = [];
     this.errorMessage = '';
-    this.filters.forEach((filter) => {
+    this.filters.forEach(filter => {
       if (filter.val || filter.type === 'SpecialFilterType') {
-        this.filtersForParam.push({name: filter.name, comp: filter.comp, val: filter.val} as DeploymentFilter);
+        this.filtersForParam.push({
+          name: filter.name,
+          comp: filter.comp,
+          val: filter.val
+        } as DeploymentFilter);
         if (filter.type === 'DateType') {
           const dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
           if (!dateTime || !dateTime.isValid()) {
             this.errorMessage = 'Invalid date';
           }
-          this.filtersForBackend.push({name: filter.name, comp: filter.comp, val: dateTime.valueOf().toString()} as DeploymentFilter);
+          this.filtersForBackend.push({
+            name: filter.name,
+            comp: filter.comp,
+            val: dateTime.valueOf().toString()
+          } as DeploymentFilter);
         } else {
-          this.filtersForBackend.push({name: filter.name, comp: filter.comp, val: filter.val} as DeploymentFilter);
+          this.filtersForBackend.push({
+            name: filter.name,
+            comp: filter.comp,
+            val: filter.val
+          } as DeploymentFilter);
         }
       } else {
         filtersToBeRemoved.push(filter);
       }
     });
-    filtersToBeRemoved.forEach((filter) => this.removeFilter(filter));
+    filtersToBeRemoved.forEach(filter => this.removeFilter(filter));
 
     if (!this.errorMessage) {
       this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
@@ -188,24 +218,28 @@ export class DeploymentsComponent implements OnInit {
   }
 
   switchDeployments(enable: boolean) {
-    this.deployments.forEach((deployment) => deployment.selected = enable);
+    this.deployments.forEach(deployment => (deployment.selected = enable));
   }
 
   editableDeployments(): boolean {
-    return (_.findIndex(this.deployments, {selected: true}) !== -1);
+    return _.findIndex(this.deployments, { selected: true }) !== -1;
   }
 
   showEdit() {
     if (this.editableDeployments()) {
       this.addDatePicker();
       // get shakeDownTestPermission for first element
-      const indexOfFirstSelectedElem = _.findIndex(this.deployments, {selected: true});
+      const indexOfFirstSelectedElem = _.findIndex(this.deployments, {
+        selected: true
+      });
       const firstDeployment = this.deployments[indexOfFirstSelectedElem];
-      this.resourceService.canCreateShakedownTest(firstDeployment.appServerId).subscribe(
-        /* happy path */ (r) => this.hasPermissionShakedownTest = r,
-        /* error path */ (e) => this.errorMessage = e,
-        /* onComplete */  () => $('#deploymentsEdit').modal('show')
-      );
+      this.resourceService
+        .canCreateShakedownTest(firstDeployment.appServerId)
+        .subscribe(
+          /* happy path */ r => (this.hasPermissionShakedownTest = r),
+          /* error path */ e => (this.errorMessage = e),
+          /* onComplete */ () => $('#deploymentsEdit').modal('show')
+        );
     }
   }
 
@@ -214,8 +248,11 @@ export class DeploymentsComponent implements OnInit {
       delete deployment.selected;
       deployment.state = this.reMapState(deployment.state);
       this.deploymentService.confirmDeployment(deployment).subscribe(
-        /* happy path */ (r) => r,
-        /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
+        /* happy path */ r => r,
+        /* error path */ e =>
+          (this.errorMessage = this.errorMessage
+            ? this.errorMessage + '<br>' + e
+            : e),
         /* onComplete */ () => this.reloadDeployment(deployment.id)
       );
     }
@@ -224,8 +261,11 @@ export class DeploymentsComponent implements OnInit {
   rejectDeployment(deployment: Deployment) {
     if (deployment) {
       this.deploymentService.rejectDeployment(deployment.id).subscribe(
-        /* happy path */ (r) => r,
-        /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
+        /* happy path */ r => r,
+        /* error path */ e =>
+          (this.errorMessage = this.errorMessage
+            ? this.errorMessage + '<br>' + e
+            : e),
         /* onComplete */ () => this.reloadDeployment(deployment.id)
       );
     }
@@ -234,8 +274,11 @@ export class DeploymentsComponent implements OnInit {
   cancelDeployment(deployment: Deployment) {
     if (deployment) {
       this.deploymentService.cancelDeployment(deployment.id).subscribe(
-        /* happy path */ (r) => r,
-        /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
+        /* happy path */ r => r,
+        /* error path */ e =>
+          (this.errorMessage = this.errorMessage
+            ? this.errorMessage + '<br>' + e
+            : e),
         /* onComplete */ () => this.reloadDeployment(deployment.id)
       );
     }
@@ -243,14 +286,23 @@ export class DeploymentsComponent implements OnInit {
 
   exportCSV() {
     this.isLoading = true;
-    this.errorMessage = 'Generating your CSV.<br>Please hold on, depending on the requested data this may take a while';
-    this.getFilteredDeploymentsForCsvExport(JSON.stringify(this.filtersForBackend));
+    this.errorMessage =
+      'Generating your CSV.<br>Please hold on, depending on the requested data this may take a while';
+    this.getFilteredDeploymentsForCsvExport(
+      JSON.stringify(this.filtersForBackend)
+    );
   }
 
   copyURL() {
     const url: string = decodeURIComponent(window.location.href);
-    $('body').append($('<input type="text" name="fname" class="textToCopyInput" style="opacity:0"/>')
-      .val(url)).find('.textToCopyInput').select();
+    $('body')
+      .append(
+        $(
+          '<input type="text" name="fname" class="textToCopyInput" style="opacity:0"/>'
+        ).val(url)
+      )
+      .find('.textToCopyInput')
+      .select();
     try {
       document.execCommand('copy');
     } catch (e) {
@@ -283,33 +335,44 @@ export class DeploymentsComponent implements OnInit {
   reloadDeployment(deploymentId: number) {
     let reloadedDeployment: Deployment;
     this.deploymentService.getWithActions(deploymentId).subscribe(
-      /* happy path */ (r) => reloadedDeployment = r,
-      /* error path */ (e) => this.errorMessage = e,
+      /* happy path */ r => (reloadedDeployment = r),
+      /* error path */ e => (this.errorMessage = e),
       /* on complete */ () => this.updateDeploymentsList(reloadedDeployment)
     );
   }
 
   getSelectedDeployments(): Deployment[] {
-    return this.deployments.filter((deployment) => deployment.selected === true);
+    return this.deployments.filter(deployment => deployment.selected === true);
   }
 
   autoRefresh() {
     if (this.refreshInterval > 0 && !this.timerSubscription) {
-      this.timerSubscription = Observable.timer(this.refreshInterval * 1000).first().subscribe(() => {
-        this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
-        this.timerSubscription = null;
-      });
+      this.timerSubscription = timer(this.refreshInterval * 1000).subscribe(
+        () => {
+          this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
+          this.timerSubscription = null;
+        }
+      );
     }
   }
 
   private canFilterBeAdded(): boolean {
-    return this.selectedFilterType.name !== 'Latest deployment job for App Server and Env' ||
-      _.findIndex(this.filters, {name: this.selectedFilterType.name}) === -1;
+    return (
+      this.selectedFilterType.name !==
+        'Latest deployment job for App Server and Env' ||
+      _.findIndex(this.filters, { name: this.selectedFilterType.name }) === -1
+    );
   }
 
   private pushDownload(prefix: string) {
     this.isLoading = false;
-    const docName: string = prefix + '_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
+    const docName: string =
+      prefix +
+      '_' +
+      moment()
+        .format('YYYY-MM-DD_HHmm')
+        .toString() +
+      '.csv';
     const blob = new Blob([this.csvDocument], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     if (navigator.msSaveOrOpenBlob) {
@@ -328,15 +391,24 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private setDeploymentDate(deployment: Deployment, deploymentDate: number) {
-    this.deploymentService.setDeploymentDate(deployment.id, deploymentDate).subscribe(
-      /* happy path */ (r) => r,
-      /* error path */ (e) => this.errorMessage = this.errorMessage ? this.errorMessage + '<br>' + e : e,
-      /* on complete */ () => this.reloadDeployment(deployment.id)
-    );
+    this.deploymentService
+      .setDeploymentDate(deployment.id, deploymentDate)
+      .subscribe(
+        /* happy path */ r => r,
+        /* error path */ e =>
+          (this.errorMessage = this.errorMessage
+            ? this.errorMessage + '<br>' + e
+            : e),
+        /* on complete */ () => this.reloadDeployment(deployment.id)
+      );
   }
 
   private updateDeploymentsList(deployment: Deployment) {
-    this.deployments.splice(_.findIndex(this.deployments, {id: deployment.id}), 1, deployment);
+    this.deployments.splice(
+      _.findIndex(this.deployments, { id: deployment.id }),
+      1,
+      deployment
+    );
   }
 
   private enableDatepicker(filterType: string) {
@@ -346,14 +418,18 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private addDatePicker() {
-    this.ngZone.onMicrotaskEmpty.first().subscribe(() => {
-      $('.datepicker').datetimepicker({format: 'DD.MM.YYYY HH:mm'});
+    this.ngZone.onMicrotaskEmpty.subscribe(() => {
+      $('#datetimepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
     });
   }
 
   private comparatorOptionsForType(filterType: string) {
-    if (filterType === 'booleanType' || filterType === 'StringType' || filterType === 'ENUM_TYPE') {
-      return [{name: 'eq', displayName: 'is'}];
+    if (
+      filterType === 'booleanType' ||
+      filterType === 'StringType' ||
+      filterType === 'ENUM_TYPE'
+    ) {
+      return [{ name: 'eq', displayName: 'is' }];
     } else {
       return this.comparatorOptions;
     }
@@ -362,7 +438,10 @@ export class DeploymentsComponent implements OnInit {
   private setValueOptionsForFilter(filter: DeploymentFilter) {
     if (!this.filterValueOptions[filter.name]) {
       if (filter.type === 'booleanType') {
-        filter.valOptions = this.filterValueOptions[filter.name] = [ 'true', 'false' ];
+        filter.valOptions = this.filterValueOptions[filter.name] = [
+          'true',
+          'false'
+        ];
       } else {
         this.getAndSetFilterOptionValues(filter);
       }
@@ -372,7 +451,7 @@ export class DeploymentsComponent implements OnInit {
 
   private mapStates() {
     if (this.deployments) {
-      this.deployments.forEach((deployment) => {
+      this.deployments.forEach(deployment => {
         switch (deployment.state) {
           case 'PRE_DEPLOYMENT':
             deployment.state = 'pre_deploy';
@@ -401,60 +480,86 @@ export class DeploymentsComponent implements OnInit {
   private initTypeAndOptions() {
     this.isLoading = true;
     this.deploymentService.getAllDeploymentFilterTypes().subscribe(
-      /* happy path */ (r) => this.filterTypes = _.sortBy(r, 'name'),
-      /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.getAllComparatorOptions());
+      /* happy path */ r => (this.filterTypes = _.sortBy(r, 'name')),
+      /* error path */ e => (this.errorMessage = e),
+      /* onComplete */ () => this.getAllComparatorOptions()
+    );
   }
 
   private getAllComparatorOptions() {
     this.deploymentService.getAllComparatorFilterOptions().subscribe(
-      /* happy path */ (r) => this.comparatorOptions = r,
-      /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => { this.populateMap();
-                               this.enhanceParamFilter(); }
+      /* happy path */ r => (this.comparatorOptions = r),
+      /* error path */ e => (this.errorMessage = e),
+      /* onComplete */ () => {
+        this.populateMap();
+        this.enhanceParamFilter();
+      }
     );
   }
 
   private getAndSetFilterOptionValues(filter: DeploymentFilter) {
     this.deploymentService.getFilterOptionValues(filter.name).subscribe(
-      /* happy path */ (r) => this.filterValueOptions[filter.name] = r,
-      /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => filter.valOptions = this.filterValueOptions[filter.name]);
+      /* happy path */ r => (this.filterValueOptions[filter.name] = r),
+      /* error path */ e => (this.errorMessage = e),
+      /* onComplete */ () =>
+        (filter.valOptions = this.filterValueOptions[filter.name])
+    );
   }
 
   private getFilteredDeployments(filterString: string) {
     this.isLoading = true;
-    this.deploymentService.getFilteredDeployments(filterString, this.sortCol, this.sortDirection, this.offset, this.maxResults).subscribe(
-      /* happy path */ (r) => { this.deployments = r.deployments;
-                                this.allResults = r.total;
-                                this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
-                                this.lastPage = Math.ceil(this.allResults / this.maxResults); },
-      /* error path */ (e) => { this.errorMessage = e;
-                                this.isLoading = false; },
-      /* onComplete */ () => { this.isLoading = false;
-                               this.mapStates();
-                               this.autoRefresh(); }
-    );
+    this.deploymentService
+      .getFilteredDeployments(
+        filterString,
+        this.sortCol,
+        this.sortDirection,
+        this.offset,
+        this.maxResults
+      )
+      .subscribe(
+        /* happy path */ r => {
+          this.deployments = r.deployments;
+          this.allResults = r.total;
+          this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
+          this.lastPage = Math.ceil(this.allResults / this.maxResults);
+        },
+        /* error path */ e => {
+          this.errorMessage = e;
+          this.isLoading = false;
+        },
+        /* onComplete */ () => {
+          this.isLoading = false;
+          this.mapStates();
+          this.autoRefresh();
+        }
+      );
   }
 
   private getFilteredDeploymentsForCsvExport(filterString: string) {
-    this.deploymentService.getFilteredDeploymentsForCsvExport(filterString, this.sortCol, this.sortDirection).subscribe(
-      /* happy path */ (r) => this.csvDocument = r,
-      /* error path */ (e) => this.errorMessage = e,
-      /* onComplete */ () => this.pushDownload('deployments')
-    );
+    this.deploymentService
+      .getFilteredDeploymentsForCsvExport(
+        filterString,
+        this.sortCol,
+        this.sortDirection
+      )
+      .subscribe(
+        /* happy path */ r => (this.csvDocument = r),
+        /* error path */ e => (this.errorMessage = e),
+        /* onComplete */ () => this.pushDownload('deployments')
+      );
   }
 
   private canRequestDeployments() {
     this.deploymentService.canRequestDeployments().subscribe(
-      /* happy path */ (r) => this.hasPermissionToRequestDeployments = r,
-      /* error path */ (e) => this.errorMessage = e);
+      /* happy path */ r => (this.hasPermissionToRequestDeployments = r),
+      /* error path */ e => (this.errorMessage = e)
+    );
   }
 
   private enhanceParamFilter() {
     if (this.paramFilters) {
       this.clearFilters();
-      this.paramFilters.forEach((filter) => {
+      this.paramFilters.forEach(filter => {
         const i: number = _.findIndex(this.filterTypes, ['name', filter.name]);
         if (i >= 0) {
           filter.type = this.filterTypes[i].type;
@@ -474,7 +579,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private populateMap() {
-    this.comparatorOptions.forEach((option) => {
+    this.comparatorOptions.forEach(option => {
       this.comparatorOptionsMap[option.name] = option.displayName;
     });
     this.isLoading = false;
@@ -487,5 +592,4 @@ export class DeploymentsComponent implements OnInit {
       this.location.replaceState('/deployments');
     }
   }
-
 }

@@ -1,0 +1,28 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import '~@ng-select/ng-select/scss/default.theme.scss';
+
+/* global table styles */
+.table > thead > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > th,
+.table > tbody > tr > td,
+.table > tfoot > tr > th,
+.table > tfoot > tr > td {
+  padding: 8px;
+  line-height: 1.42857;
+  vertical-align: top;
+  border-top: 1px solid #ddd;
+}
+
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+.modal-dialog {
+  margin: 2px auto;
+  z-index: 1100 !important;
+}
+
+.btn {
+  margin-right: 0.3rem;
+}

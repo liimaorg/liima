@@ -12,7 +12,7 @@ span.delayed:hover,
 span.reject,
 span.reject:hover {
   color: #333333;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   text-decoration: none;
 }
 
@@ -38,7 +38,8 @@ tr.failed {
 tr.success {
   background-color: #dff0d8;
 }
-
+span.action,
+span.delayed,
 span.state {
   margin-left: 8px;
 }
@@ -53,6 +54,7 @@ span.state {
  */
 .btn-main {
   margin-bottom: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 /*

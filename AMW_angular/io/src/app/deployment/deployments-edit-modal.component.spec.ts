@@ -1,106 +1,79 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { inject, TestBed } from '@angular/core/testing';
-import { BaseRequestOptions, ConnectionBackend, Http } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
-import { CommonModule } from '@angular/common';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AppState } from '../app.service';
-import { Deployment } from './deployment';
-import { DeploymentService } from './deployment.service';
-import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
+import { NgZone } from '@angular/core';
 import * as moment from 'moment';
-
-@Component({
-  template: ''
-})
-class DummyComponent {
-}
+import { Deployment } from './deployment';
+import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 
 describe('DeploymentsEditModalComponent (with query params)', () => {
-  // provide our implementations or mocks to the dependency injector
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [
-      CommonModule,
-      RouterTestingModule.withRoutes([
-        {path: 'deployments', component: DummyComponent}
-      ])
-    ],
-    providers: [
-      BaseRequestOptions, {
-        provide: ActivatedRoute
-      },
-      MockBackend,
-      {
-        provide: Http,
-        useFactory(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
-          return new Http(backend, defaultOptions);
-        },
-        deps: [MockBackend, BaseRequestOptions]
-      },
-      DeploymentService,
-      DeploymentsEditModalComponent,
-      AppState
-    ],
-    declarations: [DummyComponent],
-  }));
+  let component: DeploymentsEditModalComponent;
+  beforeEach(() => {
+    let zone: NgZone = new NgZone({ enableLongStackTrace: false });
+    component = new DeploymentsEditModalComponent(zone);
+  });
 
-  it('should log unknown edit actions on doEdit',
-    inject([DeploymentsEditModalComponent], (deploymentsEditModalComponent: DeploymentsEditModalComponent) => {
-      // given
-      deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
-      deploymentsEditModalComponent.selectedEditAction = 'test';
-      deploymentsEditModalComponent.deployments = [{id: 1, selected: true} as Deployment];
-      spyOn(console, 'error');
+  it('should log unknown edit actions on doEdit', () => {
+    // given
+    component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
+    component.selectedEditAction = 'test';
+    component.deployments = [{ id: 1, selected: true } as Deployment];
+    spyOn(console, 'error');
+    spyOn(component, 'hideModal');
 
-      // when
-      deploymentsEditModalComponent.doEdit();
+    // when
+    component.doEdit();
 
-      // then
-      expect(console.error).toHaveBeenCalled();
-  }));
+    // then
+    expect(console.error).toHaveBeenCalled();
+    expect(component.hideModal).toHaveBeenCalled();
+  });
 
-  it('should apply date for confirmation',
-    inject([DeploymentsEditModalComponent], (deploymentsEditModalComponent: DeploymentsEditModalComponent) => {
-      // given
-      const newDeploymentDate: string = '30.11.2017 09:19';
-      const expectedDeploymentDate: number = moment(newDeploymentDate, 'DD.MM.YYYY HH:mm').valueOf();
+  it('should apply date for confirmation', () => {
+    // given
+    const newDeploymentDate: string = '30.11.2017 09:19';
+    const expectedDeploymentDate: number = moment(
+      newDeploymentDate,
+      'DD.MM.YYYY HH:mm'
+    ).valueOf();
 
-      deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
-      deploymentsEditModalComponent.deploymentDate = newDeploymentDate;
-      deploymentsEditModalComponent.selectedEditAction = 'Confirm';
-      deploymentsEditModalComponent.deployments = [{id: 1, selected: true, deploymentDate: 5555} as Deployment,
-        {id: 1, selected: true, deploymentDate: 6666} as Deployment];
-      spyOn(console, 'error');
+    component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
+    component.deploymentDate = newDeploymentDate;
+    component.selectedEditAction = 'Confirm';
+    component.deployments = [
+      { id: 1, selected: true, deploymentDate: 5555 } as Deployment,
+      { id: 1, selected: true, deploymentDate: 6666 } as Deployment
+    ];
+    spyOn(console, 'error');
+    spyOn(component, 'hideModal');
 
-      // when
-      deploymentsEditModalComponent.doEdit();
+    // when
+    component.doEdit();
 
-      // then
-      const deployment1: Deployment = deploymentsEditModalComponent.deployments[0];
-      const deployment2: Deployment = deploymentsEditModalComponent.deployments[1];
-      expect(deployment1.deploymentDate).toEqual(expectedDeploymentDate);
-      expect(deployment2.deploymentDate).toEqual(expectedDeploymentDate);
-    }));
+    // then
+    const deployment1: Deployment = component.deployments[0];
+    const deployment2: Deployment = component.deployments[1];
+    expect(deployment1.deploymentDate).toEqual(expectedDeploymentDate);
+    expect(deployment2.deploymentDate).toEqual(expectedDeploymentDate);
+    expect(component.hideModal).toHaveBeenCalled();
+  });
 
-  it('should clear data after doEdit()',
-    inject([DeploymentsEditModalComponent], (deploymentsEditModalComponent: DeploymentsEditModalComponent) => {
-      // given
-      const newDeploymentDate: string = '30.11.2017 09:19';
+  it('should clear data after doEdit()', () => {
+    // given
+    const newDeploymentDate: string = '30.11.2017 09:19';
 
-      deploymentsEditModalComponent.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
-      deploymentsEditModalComponent.deploymentDate = newDeploymentDate;
-      deploymentsEditModalComponent.selectedEditAction = 'Confirm';
-      deploymentsEditModalComponent.deployments = [{id: 1, selected: true, deploymentDate: 5555} as Deployment,
-        {id: 1, selected: true, deploymentDate: 6666} as Deployment];
+    component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
+    component.deploymentDate = newDeploymentDate;
+    component.selectedEditAction = 'Confirm';
+    component.deployments = [
+      { id: 1, selected: true, deploymentDate: 5555 } as Deployment,
+      { id: 1, selected: true, deploymentDate: 6666 } as Deployment
+    ];
+    spyOn(component, 'hideModal');
+    // when
+    component.doEdit();
 
-      // when
-      deploymentsEditModalComponent.doEdit();
-
-      // then
-      expect(deploymentsEditModalComponent.confirmationAttributes).toEqual({} as Deployment);
-      expect(deploymentsEditModalComponent.selectedEditAction).toEqual('');
-      expect(deploymentsEditModalComponent.deploymentDate).toEqual('');
-  }));
-
+    // then
+    expect(component.confirmationAttributes).toEqual({} as Deployment);
+    expect(component.selectedEditAction).toEqual('');
+    expect(component.deploymentDate).toEqual('');
+    expect(component.hideModal).toHaveBeenCalled();
+  });
 });

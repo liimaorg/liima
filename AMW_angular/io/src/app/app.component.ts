@@ -1,9 +1,6 @@
-/*
- * Angular 4 decorators and services
- */
 import { Component, ViewEncapsulation, OnInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { Router } from '@angular/router';
-import { AppState } from './app.service';
+import { AppService } from './app.service';
 import { SettingService } from './setting/setting.service';
 import { AppConfiguration } from './setting/app-configuration';
 import * as _ from 'lodash';
@@ -21,11 +18,11 @@ import * as _ from 'lodash';
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit, AfterViewChecked {
-  name = 'Angular 4';
+  name = 'Angular 8';
 
   private logoutUrlKey: string = 'amw.logoutUrl';
 
-  constructor(public appState: AppState,
+  constructor(public appService: AppService,
               private router: Router,
               private cdRef: ChangeDetectorRef,
               private settingService: SettingService) {
@@ -41,7 +38,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
   }
 
   navigateTo(item: any) {
-    this.appState.set('navTitle', item.title);
+    this.appService.set('navTitle', item.title);
     this.router.navigateByUrl(item.target);
   }
 
@@ -53,7 +50,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
   private setLogoutUrl(settings: AppConfiguration[]) {
     const logoutUrl: AppConfiguration = _.find(settings, ['key.value', this.logoutUrlKey]);
-    this.appState.set('logoutUrl', logoutUrl ? logoutUrl.value : '');
+    this.appService.set('logoutUrl', logoutUrl ? logoutUrl.value : '');
   }
 
 }

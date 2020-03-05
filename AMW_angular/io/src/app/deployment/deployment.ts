@@ -1,4 +1,3 @@
-import { Deployment } from './deployment';
 import { DeploymentParameter } from './deployment-parameter';
 import { AppWithVersion } from './app-with-version';
 import { DeploymentAction } from './deployment-action';
@@ -27,7 +26,7 @@ export interface Deployment {
   deploymentDelayed: boolean;
   selected: boolean;
   actions: DeploymentAction;
-  statusMessage: string; //stateMessage: string;
+  statusMessage: string;
   buildSuccess: boolean;
   executed: boolean;
   deploymentConfirmed: boolean;
