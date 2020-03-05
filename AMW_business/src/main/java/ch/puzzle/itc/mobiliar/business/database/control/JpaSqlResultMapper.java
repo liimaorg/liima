@@ -25,7 +25,6 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;

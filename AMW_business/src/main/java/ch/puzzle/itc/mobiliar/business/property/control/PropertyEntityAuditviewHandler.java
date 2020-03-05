@@ -14,7 +14,6 @@ import javax.ejb.Stateless;
 import javax.inject.Named;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import java.math.BigDecimal;
 
 import static ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry.RELATION_CONSUMED_RESOURCE;
 import static ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry.RELATION_PROVIDED_RESOURCE;
@@ -23,10 +22,10 @@ import static ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry.RE
 @Named("propertyEntityAuditviewHandler")
 public class PropertyEntityAuditviewHandler extends AuditHandler {
     // Property on Master Resource
-    private static final String SELECT_FOR_RESOURCE = "SELECT TAMW_RESOURCECONTEXT_ID " +
+    private static final String SELECT_FOR_RESOURCE = "SELECT TAMW_RESOURCECONTEXT_ID as context_id " +
             "FROM TAMW_RESOURCECTX_PROP " +
             "WHERE PROPERTIES_ID = :propertyId";
-    private static final String SELECT_FOR_RESOURCE_FROM_AUDIT = "SELECT TAMW_RESOURCECONTEXT_ID " +
+    private static final String SELECT_FOR_RESOURCE_FROM_AUDIT = "SELECT TAMW_RESOURCECONTEXT_ID as context_id " +
             "FROM TAMW_RESOURCECTX_PROP_AUD " +
             "WHERE rev >= :rev " +
             "AND PROPERTIES_ID = :propertyId";
@@ -39,8 +38,8 @@ public class PropertyEntityAuditviewHandler extends AuditHandler {
                     "  CASE WHEN consumed_resource_relation.IDENTIFIER IS NOT NULL " +
                     "    THEN ' (' || consumed_resource_relation.IDENTIFIER || ')' " +
                     "    ELSE '' " +
-                    "  END, " +
-                    " resource_relation_context.CONTEXT_ID " +
+                    "  END as resource_name, " +
+                    " resource_relation_context.CONTEXT_ID as context_id " +
                     " FROM TAMW_RESOURCE consumed_resource " +
                     " JOIN TAMW_CONSUMEDRESREL consumed_resource_relation " +
                     "     ON consumed_resource_relation.SLAVERESOURCE_ID = consumed_resource.ID " +
@@ -56,8 +55,8 @@ public class PropertyEntityAuditviewHandler extends AuditHandler {
                     "  CASE WHEN consumed_resource_relation.IDENTIFIER IS NOT NULL " +
                     "    THEN ' (' || consumed_resource_relation.IDENTIFIER || ')' " +
                     "    ELSE '' " +
-                    "  END, " +
-                    "resource_relation_context.CONTEXT_ID " +
+                    "  END as resource_name, " +
+                    "resource_relation_context.CONTEXT_ID as context_id " +
                     "FROM TAMW_RESOURCE_AUD consumed_resource " +
                     "JOIN TAMW_CONSUMEDRESREL_AUD consumed_resource_relation ON consumed_resource_relation.SLAVERESOURCE_ID = consumed_resource.ID " +
                     "JOIN TAMW_RESRELCONTEXT_AUD resource_relation_context ON consumed_resource_relation.ID = resource_relation_context.CONSUMEDRESOURCERELATION_ID " +
@@ -70,7 +69,7 @@ public class PropertyEntityAuditviewHandler extends AuditHandler {
                     "ORDER BY property.REV";
 
     private static final String SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_PROVIDED_RESOURCE =
-            " SELECT provided_resource.NAME, resource_relation_context.CONTEXT_ID " +
+            " SELECT provided_resource.NAME as resource_name, resource_relation_context.CONTEXT_ID as context_id " +
                     " FROM TAMW_RESOURCE provided_resource " +
                     " JOIN TAMW_PROVIDEDRESREL provided_resource_relation " +
                     "     ON provided_resource_relation.SLAVERESOURCE_ID = provided_resource.ID " +
@@ -81,7 +80,7 @@ public class PropertyEntityAuditviewHandler extends AuditHandler {
                     " WHERE resource_relation_context_prop.PROPERTIES_ID = :propertyId";
 
      private static final String SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_PROVIDED_RESOURCE_FROM_AUDIT =
-                " SELECT provided_resource.NAME, resource_relation_context.CONTEXT_ID " +
+                " SELECT provided_resource.NAME as resource_name, resource_relation_context.CONTEXT_ID as context_id " +
                         " FROM TAMW_RESOURCE_AUD provided_resource " +
                         " JOIN TAMW_PROVIDEDRESREL_AUD provided_resource_relation " +
                         "     ON provided_resource_relation.SLAVERESOURCE_ID = provided_resource.ID " +
@@ -124,18 +123,18 @@ public class PropertyEntityAuditviewHandler extends AuditHandler {
         Object[] nameAndId;
         try {
             nameAndId = (Object[]) entityManager
-                    .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_PROVIDED_RESOURCE)
+                    .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_PROVIDED_RESOURCE, "NameAndContextResult")
                     .setParameter("propertyId", container.getEntityForRevision().getId())
                     .getSingleResult();
         } catch (NoResultException e) {
             // deleted property, get it from audit tables
             nameAndId = (Object[]) entityManager
-                    .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_PROVIDED_RESOURCE_FROM_AUDIT)
+                    .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_PROVIDED_RESOURCE_FROM_AUDIT, "NameAndContextResult")
                     .setParameter("propertyId", container.getEntityForRevision().getId())
                     .getSingleResult();
         }
         String name = (String) nameAndId[0];
-        int resourceContextId = ((BigDecimal) nameAndId[1]).intValue();
+        int resourceContextId = (int) nameAndId[1];
         return new Tuple<>(name, resourceContextId);
     }
 
@@ -148,13 +147,13 @@ public class PropertyEntityAuditviewHandler extends AuditHandler {
         Object[] nameAndId;
         try {
             nameAndId = (Object[]) entityManager
-                    .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_CONSUMED_RESOURCE)
+                    .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_CONSUMED_RESOURCE, "NameAndContextResult")
                     .setParameter("propertyId", container.getEntityForRevision().getId())
                     .getSingleResult();
         } catch (NoResultException e) {
             try {
                 nameAndId = (Object[]) entityManager
-                        .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_CONSUMED_RESOURCE_FROM_AUDIT)
+                        .createNativeQuery(SELECT_NAME_AND_CONTEXT_FOR_PROP_ON_CONSUMED_RESOURCE_FROM_AUDIT, "NameAndContextResult")
                         .setParameter("propertyId", container.getEntityForRevision().getId())
                         .setParameter("revision", container.getRevEntity().getId())
                         .getSingleResult();
@@ -163,21 +162,21 @@ public class PropertyEntityAuditviewHandler extends AuditHandler {
             }
         }
         String name = (String) nameAndId[0];
-        int resourceContextId = ((BigDecimal) nameAndId[1]).intValue();
+        int resourceContextId = (int) nameAndId[1];
         return new Tuple<>(name, resourceContextId);
     }
 
     public ResourceContextEntity getResourceContextEntityForPropertyOnMasterResource(AuditViewEntryContainer container) {
         try {
             Query query = entityManager
-                    .createNativeQuery(SELECT_FOR_PROP_ON_RESOURCE)
+                    .createNativeQuery(SELECT_FOR_PROP_ON_RESOURCE, "ContextResult")
                     .setParameter("rev", container.getRevEntity().getId())
                     .setParameter("propertyId", container.getEntityForRevision().getId());
-            BigDecimal resourceContextId = (BigDecimal) query.getSingleResult();
+            int resourceContextId = (int) query.getSingleResult();
             AuditReader reader = AuditReaderFactory.get(entityManager);
             return (ResourceContextEntity) reader.createQuery()
                     .forRevisionsOfEntity(ResourceContextEntity.class, true, true)
-                    .add(AuditEntity.id().eq(resourceContextId.intValue()))
+                    .add(AuditEntity.id().eq(resourceContextId))
                     .setMaxResults(1)
                     .getSingleResult();
         } catch (NoResultException e) {
