@@ -5,7 +5,6 @@ import { DeploymentsListComponent } from './deployments-list.component';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
-import { PaginationComponent } from '../deployment/pagination.component';
 import { DeploymentService } from '../deployment/deployment.service';
 import { EnvironmentService } from '../deployment/environment.service';
 import { DeploymentsRoutingModule } from './deployments-routing.module';
@@ -15,8 +14,7 @@ import { DeploymentsRoutingModule } from './deployments-routing.module';
   declarations: [
     DeploymentsComponent,
     DeploymentsListComponent,
-    DeploymentsEditModalComponent,
-    PaginationComponent
+    DeploymentsEditModalComponent
   ],
   providers: [DeploymentService, EnvironmentService]
 })

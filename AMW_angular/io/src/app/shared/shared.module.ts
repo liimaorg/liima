@@ -6,6 +6,8 @@ import { PageHeaderComponent } from './elements/page-header.component';
 import { LoadingIndicatorComponent } from './elements/loading-indicator.component';
 import { PageNotFoundComponent } from './page-not-found.component';
 import { PanelHeadingComponent } from './panel-heading/panel-heading.component';
+import { PaginationComponent } from './pagination/pagination.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -13,15 +15,17 @@ import { PanelHeadingComponent } from './panel-heading/panel-heading.component';
     PageHeaderComponent,
     PageNotFoundComponent,
     LoadingIndicatorComponent,
-    PanelHeadingComponent
+    PanelHeadingComponent,
+    PaginationComponent
   ],
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   exports: [
     SortableIconComponent,
     PageHeaderComponent,
     PageNotFoundComponent,
     LoadingIndicatorComponent,
-    PanelHeadingComponent
+    PanelHeadingComponent,
+    PaginationComponent
   ]
 })
 export class SharedModule {}
