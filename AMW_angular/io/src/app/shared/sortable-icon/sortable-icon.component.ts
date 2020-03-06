@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-sort-direction',
+  selector: 'app-sortable-icon',
   template: `
     <span
       [ngClass]="[
@@ -14,10 +14,10 @@ import { Component, OnInit, Input } from '@angular/core';
   `,
   styles: []
 })
-export class SortedColumnComponent implements OnInit {
-  @Input() sortDirection: string;
+export class SortableIconComponent {
+  @Input() sortDirection: SortDirection;
 
   constructor() {}
-
-  ngOnInit(): void {}
 }
+
+type SortDirection = 'ASC' | 'DESC';

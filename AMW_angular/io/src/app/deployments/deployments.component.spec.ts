@@ -6,16 +6,16 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject } from 'rxjs';
 import { AppService } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
-import { ComparatorFilterOption } from './comparator-filter-option';
-import { Deployment } from './deployment';
-import { DeploymentFilter } from './deployment-filter';
-import { DeploymentFilterType } from './deployment-filter-type';
-import { DeploymentService } from './deployment.service';
-import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
-import { DeploymentsListComponent } from './deployments-list.component';
 import { DeploymentsComponent } from './deployments.component';
-import { PaginationComponent } from './pagination.component';
+import { DeploymentService } from '../deployment/deployment.service';
 import { SharedModule } from '../shared/shared.module';
+import { DeploymentsListComponent } from './deployments-list.component';
+import { PaginationComponent } from '../deployment/pagination.component';
+import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
+import { DeploymentFilterType } from '../deployment/deployment-filter-type';
+import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
+import { DeploymentFilter } from '../deployment/deployment-filter';
+import { Deployment } from '../deployment/deployment';
 
 declare var $: any;
 

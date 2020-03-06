@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, NgZone } from '@angular/core';
-import { Deployment } from './deployment';
+import { Deployment } from '../deployment/deployment';
 import * as moment from 'moment';
+
 @Component({
   selector: 'amw-deployments-edit-modal',
   templateUrl: './deployments-edit-modal.component.html'

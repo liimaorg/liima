@@ -1,24 +1,27 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SortedColumnComponent } from './sorted-column/sorted-column.component';
+import { SortableIconComponent } from './sortable-icon/sortable-icon.component';
 import { PageHeaderComponent } from './elements/page-header.component';
 
 import { LoadingIndicatorComponent } from './elements/loading-indicator.component';
 import { PageNotFoundComponent } from './page-not-found.component';
+import { PanelHeadingComponent } from './panel-heading/panel-heading.component';
 
 @NgModule({
   declarations: [
-    SortedColumnComponent,
+    SortableIconComponent,
     PageHeaderComponent,
     PageNotFoundComponent,
-    LoadingIndicatorComponent
+    LoadingIndicatorComponent,
+    PanelHeadingComponent
   ],
   imports: [CommonModule],
   exports: [
-    SortedColumnComponent,
+    SortableIconComponent,
     PageHeaderComponent,
     PageNotFoundComponent,
-    LoadingIndicatorComponent
+    LoadingIndicatorComponent,
+    PanelHeadingComponent
   ]
 })
 export class SharedModule {}

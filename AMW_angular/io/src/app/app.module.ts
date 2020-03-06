@@ -22,6 +22,7 @@ import { AppRoutingModule } from './app-routing.module';
 // App is our top level component
 import { AppComponent } from './app.component';
 import { AppService, InternalStateType } from './app.service';
+import { DeploymentsModule } from './deployments/deployments.module';
 
 // Application wide providers
 const APP_PROVIDERS = [AppService];
@@ -37,6 +38,7 @@ const APP_PROVIDERS = [AppService];
     AppRoutingModule,
     ResourceModule,
     DeploymentModule,
+    DeploymentsModule,
     AuditviewModule,
     PermissionModule,
     SettingModule,

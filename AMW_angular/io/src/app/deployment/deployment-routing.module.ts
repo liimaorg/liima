@@ -4,13 +4,16 @@ import { DeploymentsComponent } from './deployments.component';
 import { NgModule } from '@angular/core';
 
 @NgModule({
-  imports: [RouterModule.forChild([
-    {path: 'deployment', component: DeploymentComponent},
-    {path: 'deployment/:deploymentId', component: DeploymentComponent},
-    {path: 'deployment/:appserverName/:releaseName', component: DeploymentComponent},
-    {path: 'deployments', component: DeploymentsComponent},
-  ])],
+  imports: [
+    RouterModule.forChild([
+      { path: 'deployment', component: DeploymentComponent },
+      { path: 'deployment/:deploymentId', component: DeploymentComponent },
+      {
+        path: 'deployment/:appserverName/:releaseName',
+        component: DeploymentComponent
+      }
+    ])
+  ],
   exports: [RouterModule]
 })
-export class DeploymentRoutingModule {
-}
+export class DeploymentRoutingModule {}

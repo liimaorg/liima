@@ -13,11 +13,11 @@ import * as moment from 'moment';
 import { Subscription, timer } from 'rxjs';
 import { AppService, Keys } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
-import { ComparatorFilterOption } from './comparator-filter-option';
-import { Deployment } from './deployment';
-import { DeploymentFilter } from './deployment-filter';
-import { DeploymentFilterType } from './deployment-filter-type';
-import { DeploymentService } from './deployment.service';
+import { DeploymentFilter } from '../deployment/deployment-filter';
+import { DeploymentFilterType } from '../deployment/deployment-filter-type';
+import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
+import { Deployment } from '../deployment/deployment';
+import { DeploymentService } from '../deployment/deployment.service';
 import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 
 declare var $: any;
