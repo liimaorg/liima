@@ -14,9 +14,10 @@ before_deploy:
 - ls -l AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear
 - sudo chmod 777 AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear
 after_success:
+  - "[[ -z $TRAVIS_PULL_REQUEST_BRANCH ]] && export CURRENT_BRANCH=$TRAVIS_BRANCH || export CURRENT_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH"
   - docker login -u="$DOCKERHUB_USER" -p="$DOCKERHUB_PASSWORD"
-  - docker tag liimaorg/liima:snapshot liimaorg/liima:$TRAVIS_BRANCH
-  - docker push liimaorg/liima:$TRAVIS_BRANCH
+  - docker tag liimaorg/liima:snapshot liimaorg/liima:$CURRENT_BRANCH
+  - docker push liimaorg/liima:$CURRENT_BRANCH
 deploy:
   provider: releases
   api_key:

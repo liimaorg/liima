@@ -67,13 +67,7 @@ public class LiquibaseProducer {
 	@LiquibaseType
 	public CDILiquibaseConfig createConfig() {
 		CDILiquibaseConfig config = new CDILiquibaseConfig();
-		// is used until all production instances have the changelogs for the initial data run
-		if(ConfigurationService.getPropertyAsBoolean(ConfigKey.LOAD_INITIAL_SCHEMA_DATA)){
-			config.setChangeLog("liquibase/auto.db.changelog-initialrun.xml");
-		}else{
-			config.setChangeLog("liquibase/auto.db.changelog.xml");
-		}
-
+		config.setChangeLog("liquibase/auto.db.changelog.xml");
 		return config;
 	}
 

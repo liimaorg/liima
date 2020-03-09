@@ -24,7 +24,7 @@ AMW_docker/tmp
 
 .idea/*
 !/.idea/runConfigurations
-
+/server-install
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json

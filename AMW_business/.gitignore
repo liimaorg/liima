@@ -2,10 +2,7 @@
 /build
 /src/test/resources/integration-test/tmp
 
-/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning.trace.db
-/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning.trace.db.old
-/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning.lock.db
-/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning.h2.db
-/src/test/resources/integration-test/testdb/amwFileDbIntegrationOpenChangeSets.trace.db
-/src/test/resources/integration-test/testdb/amwFileDbIntegrationOpenChangeSets.h2.db
+/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmpty.trace.db
+/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning*
+/src/test/resources/integration-test/testdb/amwFileDbIntegrationOpenChangeSets*
 

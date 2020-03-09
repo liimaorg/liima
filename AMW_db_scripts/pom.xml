@@ -127,6 +127,10 @@
 						<directory>src/main/resources</directory>
 						<filtering>true</filtering>
 					</resource>
+					<!-- liquibase sets the changelog path in the changelog, use classpath to make it constant -->
+                                        <resource>
+                                                <directory>${basedir}/../AMW_business/src/main/resources</directory>
+                                        </resource>
 				</resources>
 
 				<plugins>

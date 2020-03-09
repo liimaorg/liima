@@ -12,13 +12,14 @@ import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
 
 
 public class LiquibaseChangeSetTest {
@@ -35,7 +36,7 @@ public class LiquibaseChangeSetTest {
         conn = DriverManager.getConnection("jdbc:h2:mem:testdata", "sa", "");
 
         database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
-        Liquibase liquibase = new Liquibase("liquibase/auto.db.changelog-initialrun.xml", new ClassLoaderResourceAccessor(), database);
+        Liquibase liquibase = new Liquibase("liquibase/auto.db.changelog.xml", new ClassLoaderResourceAccessor(), database);
 
         //when
         liquibase.update(new Contexts(), new LabelExpression());
@@ -49,17 +50,12 @@ public class LiquibaseChangeSetTest {
     @Test
     public void shouldNotHaveAnyOpenChangeSets() throws LiquibaseException, SQLException, ClassNotFoundException, IOException {
         // given
-
-        EntityManagerProducerIntegrationTestImpl.copyIntegrationTestDB("amwFileDbIntegrationOpenChangeSets.h2.db");
-
-        Class.forName("org.h2.Driver");
-        conn = DriverManager.getConnection("jdbc:h2:file:../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationOpenChangeSets", "sa", "");
-
+        File testDB = EntityManagerProducerIntegrationTestImpl.copyIntegrationTestDB("amwFileDbIntegrationOpenChangeSets.mv.db");
+        conn = DriverManager.getConnection("jdbc:h2:file:" + testDB.getParent().toString() + "/amwFileDbIntegrationOpenChangeSets", "sa", "");
         database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
         Liquibase liquibase = new Liquibase("liquibase/auto.db.changelog.xml", new ClassLoaderResourceAccessor(), database);
 
         //when
-        //liquibase.changeLogSync(new Contexts(), new LabelExpression());
         List<ChangeSet> unrunChangeSets = liquibase.listUnrunChangeSets(new Contexts(), new LabelExpression());
 
         // if there are open Changesets apply them and look for errors

@@ -3,14 +3,6 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-
-    <!-- propertytype with name SVNPath must exist!-->
-    <preConditions onFail="WARN">
-        <sqlCheck expectedResult="1">(SELECT COUNT(1) FROM TAMW_PROPERTYTYPE WHERE PROPERTYTYPENAME = 'SVNPath')
-        </sqlCheck>
-    </preConditions>
-
-
     <changeSet author="bschwaller" id="#12304_migrationSvnPathPropertiesToTag_create_tag_for_propertytype">
 
         <!-- If not yet exists create a new SVNPath tag and add it to propertyType-->

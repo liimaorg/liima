@@ -22,13 +22,14 @@ package ch.puzzle.itc.mobiliar.business.database.control;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
-
-import com.google.common.io.Files;
 
 @Specializes
 public class EntityManagerProducerIntegrationTestImpl extends EntityManagerProducer {
@@ -53,24 +54,20 @@ public class EntityManagerProducerIntegrationTestImpl extends EntityManagerProdu
     }
 
     public static void copyIntegrationTestDB() throws IOException {
-        // also copy local integration Test DB to gitignored location
-        File from;
-        File to;
-
-        from = new File("../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmpty.h2.db");
-        to = new File("../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmptyRunning.h2.db");
-
-        Files.copy(from, to);
+        copyIntegrationTestDB("amwFileDbIntegrationEmptyRunning.mv.db");
     }
 
-    public static void copyIntegrationTestDB(String newName) throws IOException {
+    public static File copyIntegrationTestDB(String newName) throws IOException {
         // also copy local integration Test DB to gitignored location
         File from;
         File to;
 
-        from = new File("../AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmpty.h2.db");
-        to = new File("../AMW_business/src/test/resources/integration-test/testdb/"+ newName);
-        Files.copy(from, to);
+        URL location = EntityManagerProducerIntegrationTestImpl.class.getProtectionDomain().getCodeSource().getLocation();
+
+        from = new File(location.getPath() + "/../../src/test/resources/integration-test/testdb/amwFileDbIntegrationEmpty.mv.db");
+        to = new File(location.getPath() + "/../../src/test/resources/integration-test/testdb/"+ newName);
+        Files.copy(from.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        return to;
     }
 
 }
