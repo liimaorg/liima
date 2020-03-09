@@ -20,7 +20,13 @@ Follow [ReadMe file](./AMW_docker/README.md) in order to run Liima locally on do
 ## Build and create Release 
 Build the Liima ear
 
-**Note:** when using Oracle JDK to build Liima, make sure to install the Java Cryptography Extension (JCE) Unlimited Strength. Otherwise the decryption tests are going to fail.  
+Preconditions:
+- install JDK 8
+  - when using Oracle JDK to build Liima, make sure to install the Java Cryptography Extension (JCE) Unlimited Strength. Otherwise the decryption tests are going to fail.
+  - JDK 11 is not supporte yet
+- install Maven 3.5+
+- [Lombok](https://projectlombok.org/) is required in the IDE
+- [Angular CLI](https://cli.angular.io/) is required for Angular development
 
 ```
 mvn clean install
@@ -82,16 +88,10 @@ The Sonar properties must be confiured in ~/.m2/settings.xml
      </profiles>
 </settings>
 ```
-## Toggle Angular
-
-The Angular-UI can be disabled by setting the following property to true
-```
-amw.feature.disableAngularGui
-``` 
 
 ## Copying
 
-please check [Copying file](COPYING)
+Please check [Copying file](COPYING)
 
 ## License
 
