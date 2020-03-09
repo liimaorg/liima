@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, Subject, of, combineLatest } from 'rxjs';
 import { tap, debounceTime, switchMap, map } from 'rxjs/operators';
-import { AuditLogEntry } from './auditview-entry';
-import { SortDirection } from './sortable.directive';
 import { DatePipe } from '@angular/common';
+import { SortDirection } from '../sortable.directive';
+import { AuditLogEntry } from '../auditview-entry';
 
 interface State {
   searchTerm: string;

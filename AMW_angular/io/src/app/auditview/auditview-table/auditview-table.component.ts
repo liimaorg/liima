@@ -8,9 +8,9 @@ import {
 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuditLogEntry } from '../auditview-entry';
-import { AuditviewTableService } from '../auditview-table.service';
 import { AuditviewService } from '../auditview.service';
 import { SortableHeader, SortEvent } from '../sortable.directive';
+import { AuditviewTableService } from './auditview-table.service';
 
 @Component({
   selector: 'app-auditview-table',
