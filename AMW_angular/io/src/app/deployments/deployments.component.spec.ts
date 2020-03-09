@@ -10,12 +10,12 @@ import { DeploymentsComponent } from './deployments.component';
 import { DeploymentService } from '../deployment/deployment.service';
 import { SharedModule } from '../shared/shared.module';
 import { DeploymentsListComponent } from './deployments-list.component';
-import { PaginationComponent } from '../deployment/pagination.component';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DeploymentFilterType } from '../deployment/deployment-filter-type';
 import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { Deployment } from '../deployment/deployment';
+import { PaginationComponent } from '../shared/pagination/pagination.component';
 
 declare var $: any;
 
