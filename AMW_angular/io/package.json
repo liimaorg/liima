@@ -26,7 +26,6 @@
     "@ng-select/ng-select": "~3.7.2",
     "bootstrap-3-typeahead": "4.0.2",
     "bootstrap-sass": "3.4.1",
-    "bootstrap-tagsinput": "0.7.1",
     "eonasdan-bootstrap-datetimepicker": "4.17.47",
     "jquery": "^3.4.1",
     "rxjs": "~6.5.4",
