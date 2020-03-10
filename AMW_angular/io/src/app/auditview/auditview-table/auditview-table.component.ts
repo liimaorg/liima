@@ -9,8 +9,8 @@ import {
 import { Observable } from 'rxjs';
 import { AuditLogEntry } from '../auditview-entry';
 import { AuditviewService } from '../auditview.service';
-import { SortableHeader, SortEvent } from '../sortable.directive';
 import { AuditviewTableService } from './auditview-table.service';
+import { SortEvent, SortableHeader } from './sortable.directive';
 
 @Component({
   selector: 'app-auditview-table',
