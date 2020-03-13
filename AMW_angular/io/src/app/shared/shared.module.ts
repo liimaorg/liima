@@ -8,6 +8,7 @@ import { PageNotFoundComponent } from './page-not-found.component';
 import { PanelHeadingComponent } from './panel-heading/panel-heading.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { FormsModule } from '@angular/forms';
+import { NotificationComponent } from './elements/notification/notification.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { FormsModule } from '@angular/forms';
     PageNotFoundComponent,
     LoadingIndicatorComponent,
     PanelHeadingComponent,
-    PaginationComponent
+    PaginationComponent,
+    NotificationComponent
   ],
   imports: [CommonModule, FormsModule],
   exports: [
@@ -25,7 +27,8 @@ import { FormsModule } from '@angular/forms';
     PageNotFoundComponent,
     LoadingIndicatorComponent,
     PanelHeadingComponent,
-    PaginationComponent
+    PaginationComponent,
+    NotificationComponent
   ]
 })
 export class SharedModule {}
