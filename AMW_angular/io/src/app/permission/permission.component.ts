@@ -83,6 +83,11 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.getAllPermissions();
         this.onChangeType(this.restrictionType);
       }
+      // TODO: split this component into UserPermissionComponent and RolePermissionComponent and let the router handle this...
+      this.appService.set(
+        Keys.NavTitle,
+        this.restrictionType === 'user' ? 'Users' : 'Roles'
+      );
     });
   }
 

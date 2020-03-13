@@ -36,9 +36,6 @@ export class NavigationSidebarComponent {
   @Input()
   navigationState: any;
 
-  @Input()
-  current: string; // TODO: current is one of the available NavigationItems
-
   @Output()
   itemSelected: EventEmitter<NavigationItem> = new EventEmitter<
     NavigationItem
