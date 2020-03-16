@@ -5,18 +5,16 @@
     <app-panel-heading [name]="name"></app-panel-heading>
 
     <div class="panel-body">
-      <span class="form-horizontal">
-        <app-notification
-          *ngIf="successMessage"
-          [message]="successMessage"
-          [messageType]="'success'"
-        ></app-notification>
-        <app-notification
-          *ngIf="errorMessage"
-          [message]="errorMessage"
-          [messageType]="'warning'"
-        ></app-notification>
-      </span>
+      <app-notification
+        *ngIf="successMessage"
+        [message]="successMessage"
+        [messageType]="'success'"
+      ></app-notification>
+      <app-notification
+        *ngIf="errorMessage"
+        [message]="errorMessage"
+        [messageType]="'warning'"
+      ></app-notification>
       <app-auditview-table
         [auditlogEntries]="auditLogEntries"
       ></app-auditview-table>

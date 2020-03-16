@@ -3,18 +3,17 @@
 <!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
 <div class="col-sm-10 main-full">
   <div class="panel-body">
+    <app-notification
+      *ngIf="successMessage"
+      [message]="successMessage"
+      [messageType]="'success'"
+    ></app-notification>
+    <app-notification
+      *ngIf="errorMessage"
+      [message]="errorMessage"
+      [messageType]="'warning'"
+    ></app-notification>
     <span class="form-horizontal">
-      <app-notification
-        *ngIf="successMessage"
-        [message]="successMessage"
-        [messageType]="'success'"
-      ></app-notification>
-      <app-notification
-        *ngIf="errorMessage"
-        [message]="errorMessage"
-        [messageType]="'warning'"
-      ></app-notification>
-
       <div class="form-group" *ngIf="appservers.length > 0">
         <label for="selectApplicationserver" class="col-sm-2 control-label"
           >Applicationserver</label
