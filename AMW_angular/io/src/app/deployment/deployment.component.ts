@@ -1,7 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { AppService, Keys } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
 import { ResourceTag } from '../resource/resource-tag';
 import { Resource } from '../resource/resource';
@@ -19,6 +18,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as $ from 'jquery';
 import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
+import { NavigationStoreService } from '../navigation/navigation-store.service';
 
 @Component({
   selector: 'amw-deployment',
@@ -80,10 +80,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     private deploymentService: DeploymentService,
     private activatedRoute: ActivatedRoute,
     private location: Location,
-    public appService: AppService
+    public navigationStore: NavigationStoreService
   ) {
-    this.appService.set(Keys.NavShow, false);
-    this.appService.set(Keys.NavTitle, 'Deployments');
+    this.navigationStore.setVisible(false);
+    this.navigationStore.setCurrent('Deployments');
   }
 
   ngOnInit() {
@@ -97,7 +97,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
     // a deploymentId MUST be numeric..
     if (this.deploymentId && !isNaN(this.deploymentId)) {
-      this.appService.set('pageTitle', 'Redeploy');
+      this.navigationStore.setPageTitle('Redeploy');
       this.isRedeployment = true;
       this.getDeployment();
     } else {
@@ -106,7 +106,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
         this.appserverName = this.deploymentId.toString();
         delete this.deploymentId;
       }
-      this.appService.set('pageTitle', 'Create new deployment');
+      this.navigationStore.setPageTitle('Create new deployment');
       this.initAppservers();
     }
   }

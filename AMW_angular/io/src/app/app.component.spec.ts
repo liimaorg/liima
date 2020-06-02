@@ -4,10 +4,10 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { AppComponent } from './app.component';
-import { AppService, Keys } from './app.service';
 import { AppConfiguration } from './setting/app-configuration';
 import { SettingService } from './setting/setting.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NavigationStoreService } from './navigation/navigation-store.service';
 
 class RouterStub {
   navigateByUrl(url: string) {
@@ -16,7 +16,7 @@ class RouterStub {
 }
 
 describe('App', () => {
-  let appService: AppService;
+  let navigationStore: NavigationStoreService;
   let router: Router;
   let app: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
@@ -27,14 +27,14 @@ describe('App', () => {
       declarations: [AppComponent],
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
-        AppService,
+        NavigationStoreService,
         SettingService,
         ChangeDetectorRef,
         AppComponent,
-        { provide: Router, useClass: RouterStub }
-      ]
+        { provide: Router, useClass: RouterStub },
+      ],
     }).compileComponents();
-    appService = TestBed.inject(AppService);
+    navigationStore = TestBed.inject(NavigationStoreService);
     router = TestBed.inject(Router);
     settingService = TestBed.inject(SettingService);
 
@@ -46,12 +46,12 @@ describe('App', () => {
   it('should navigate to the right target', () => {
     // given
     const item: any = { title: 'test', target: 'target' };
-    spyOn(appService, 'set').and.callThrough();
+    spyOn(navigationStore, 'setCurrent').and.callThrough();
     spyOn(router, 'navigateByUrl').and.callThrough();
     // when
     app.navigateTo(item);
     // then
-    expect(appService.set).toHaveBeenCalledWith(Keys.NavTitle, 'test');
+    expect(navigationStore.setCurrent).toHaveBeenCalledWith('test');
     expect(router.navigateByUrl).toHaveBeenCalledWith('target');
   });
 
@@ -62,7 +62,7 @@ describe('App', () => {
     const configKeyEnv: string = 'AMW_LOGOUTURL';
     const appConf: AppConfiguration = {
       key: { value: configKeyVal, env: configKeyEnv },
-      value: expectedValue
+      value: expectedValue,
     } as AppConfiguration;
     spyOn(settingService, 'getAllAppSettings').and.returnValues(of([appConf]));
 
@@ -76,7 +76,7 @@ describe('App', () => {
     const expectedKey: string = 'logoutUrl';
     const expectedValue: string = '';
     const appConf: AppConfiguration = {
-      key: { value: 'test', env: 'TEST' }
+      key: { value: 'test', env: 'TEST' },
     } as AppConfiguration;
     spyOn(settingService, 'getAllAppSettings').and.returnValues(of([appConf]));
 

@@ -6,7 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject } from 'rxjs';
-import { AppService } from '../app.service';
 import { Environment } from '../deployment/environment';
 import { EnvironmentService } from '../deployment/environment.service';
 import { ResourceService } from '../resource/resource.service';
@@ -19,6 +18,7 @@ import { RestrictionListComponent } from './restriction-list.component';
 import { Restriction } from './restriction';
 import { Tag } from './tag';
 import { SharedModule } from '../shared/shared.module';
+import { NavigationStoreService } from '../navigation/navigation-store.service';
 
 describe('PermissionComponent without any params (default: type Role)', () => {
   let fixture: ComponentFixture<PermissionComponent>;
@@ -38,22 +38,22 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         CommonModule,
         FormsModule,
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([]),
       ],
       providers: [
         EnvironmentService,
         PermissionService,
         ResourceService,
-        AppService,
-        { provide: ActivatedRoute, useValue: mockRoute }
+        NavigationStoreService,
+        { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       declarations: [
         PermissionComponent,
         RestrictionEditComponent,
         RestrictionAddComponent,
-        RestrictionListComponent
-      ]
+        RestrictionListComponent,
+      ],
     });
 
     fixture = TestBed.createComponent(PermissionComponent);
@@ -76,8 +76,8 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         id: null,
         name: null,
         parent: 'All',
-        selected: false
-      } as Environment
+        selected: false,
+      } as Environment,
     ]);
     expect(component.resourceGroups).toEqual([]);
     expect(component.resourceTypes).toEqual([{ id: null, name: null }]);
@@ -88,12 +88,12 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     // given
     const permissions: Permission[] = [
       { name: 'RESOURCE', old: false } as Permission,
-      { name: 'RESOURCE_TYPE', old: false } as Permission
+      { name: 'RESOURCE_TYPE', old: false } as Permission,
     ];
     const environments: Environment[] = [
       { id: 1, name: 'U', parent: 'Dev' } as Environment,
       { id: 2, name: 'V', parent: 'Dev' } as Environment,
-      { id: 3, name: 'T', parent: 'Test' } as Environment
+      { id: 3, name: 'T', parent: 'Test' } as Environment,
     ];
     spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(
       of(permissions)
@@ -120,7 +120,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       id: null,
       name: null,
       parent: 'All',
-      selected: false
+      selected: false,
     } as Environment);
     expect(component.groupedEnvironments['Dev']).toContain(
       { id: 1, name: 'U', parent: 'Dev', selected: false } as Environment,
@@ -130,7 +130,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       id: 3,
       name: 'T',
       parent: 'Test',
-      selected: false
+      selected: false,
     } as Environment);
   });
 
@@ -140,18 +140,18 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       {
         id: 21,
         action: 'ALL',
-        permission: { name: 'RESOURCE' } as Permission
+        permission: { name: 'RESOURCE' } as Permission,
       } as Restriction,
       {
         id: 22,
         action: 'ALL',
-        permission: { name: 'DEPLOYMENT' } as Permission
+        permission: { name: 'DEPLOYMENT' } as Permission,
       } as Restriction,
       {
         id: 23,
         action: 'CREATE',
-        permission: { name: 'RESOURCE' } as Permission
-      } as Restriction
+        permission: { name: 'RESOURCE' } as Permission,
+      } as Restriction,
     ];
     component.selectedRoleName = 'TESTER';
     component.roleNames = ['tester', 'role'];
@@ -183,7 +183,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     // given
     component.assignedRestrictions = [
       { id: 31 } as Restriction,
-      { id: 32 } as Restriction
+      { id: 32 } as Restriction,
     ];
     component.selectedRoleName = 'TESTER';
     component.roleNames = ['role'];
@@ -200,7 +200,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     component.onChangeUser([
       'stringToBeTrimmed ',
       ' stringToBeTrimmedToo',
-      { label: ' tagToBeTrimmed ' } as Tag
+      { label: ' tagToBeTrimmed ' } as Tag,
     ]);
     // then
     expect(component.selectedUserNames[0]).toBe('stringToBeTrimmed');
@@ -214,13 +214,13 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       {
         id: 41,
         action: 'DELETE',
-        permission: { name: 'SAME' } as Permission
+        permission: { name: 'SAME' } as Permission,
       } as Restriction,
       {
         id: 42,
         action: 'CREATE',
-        permission: { name: 'SAME' } as Permission
-      } as Restriction
+        permission: { name: 'SAME' } as Permission,
+      } as Restriction,
     ];
     component.selectedUserNames = ['Tester'];
     component.userNames = ['tester', 'user'];
@@ -243,13 +243,13 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       {
         id: 41,
         action: 'DELETE',
-        permission: { name: 'SAME' } as Permission
+        permission: { name: 'SAME' } as Permission,
       } as Restriction,
       {
         id: 42,
         action: 'CREATE',
-        permission: { name: 'SAME' } as Permission
-      } as Restriction
+        permission: { name: 'SAME' } as Permission,
+      } as Restriction,
     ];
     component.selectedUserNames = ['Tester'];
     component.userNames = ['tester', 'user'];
@@ -271,7 +271,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     // given
     component.assignedRestrictions = [
       { id: 51 } as Restriction,
-      { id: 52 } as Restriction
+      { id: 52 } as Restriction,
     ];
     component.selectedUserNames = ['Tester'];
     component.userNames = ['user'];
@@ -287,7 +287,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     // given
     component.assignedRestrictions = [
       { id: 51 } as Restriction,
-      { id: 52 } as Restriction
+      { id: 52 } as Restriction,
     ];
     component.selectedUserNames = ['Tester'];
     component.userNames = ['user'];
@@ -303,11 +303,11 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     // given
     component.assignedRestrictions = [
       { id: 121, contextName: 'T' } as Restriction,
-      { id: 122, contextName: 'B' } as Restriction
+      { id: 122, contextName: 'B' } as Restriction,
     ];
     component.restriction = {
       id: 122,
-      contextName: 'B'
+      contextName: 'B',
     } as Restriction;
     spyOn(permissionService, 'removeRestriction').and.callThrough();
     // when
@@ -316,7 +316,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     expect(permissionService.removeRestriction).toHaveBeenCalledWith(122);
     expect(component.assignedRestrictions).toContain({
       id: 121,
-      contextName: 'T'
+      contextName: 'T',
     } as Restriction);
   });
 
@@ -325,12 +325,12 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     component.restriction = {
       id: 111,
       contextName: 'T',
-      permission: { name: 'aPermission' }
+      permission: { name: 'aPermission' },
     } as Restriction;
     component.backupRestriction = {
       id: 111,
       contextName: 'B',
-      permission: { name: 'aPermission' }
+      permission: { name: 'aPermission' },
     } as Restriction;
     component.errorMessage = 'Error';
     // when
@@ -358,7 +358,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     // given
     component.restriction = {
       id: 111,
-      contextName: 'T'
+      contextName: 'T',
     } as Restriction;
     spyOn(permissionService, 'updateRestriction').and.callThrough();
     // when
@@ -373,7 +373,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     // given
     component.restriction = {
       id: null,
-      contextName: 'S'
+      contextName: 'S',
     } as Restriction;
     spyOn(permissionService, 'createRestriction').and.callThrough();
     // when
@@ -440,22 +440,22 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule
+        SharedModule,
       ],
       providers: [
         EnvironmentService,
         PermissionService,
         ResourceService,
-        AppService,
-        { provide: ActivatedRoute, useValue: mockRoute }
+        NavigationStoreService,
+        { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       declarations: [
         PermissionComponent,
         RestrictionEditComponent,
         RestrictionAddComponent,
-        RestrictionListComponent
-      ]
+        RestrictionListComponent,
+      ],
     });
     fixture = TestBed.createComponent(PermissionComponent);
     component = fixture.componentInstance;
@@ -470,12 +470,12 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
     // given
     const permissions: Permission[] = [
       { name: 'RESOURCE', old: false } as Permission,
-      { name: 'RESOURCE_TYPE', old: false } as Permission
+      { name: 'RESOURCE_TYPE', old: false } as Permission,
     ];
     const environments: Environment[] = [
       { id: 1, name: 'U', parent: 'Dev' } as Environment,
       { id: 2, name: 'V', parent: 'Dev' } as Environment,
-      { id: 3, name: 'T', parent: 'Test' } as Environment
+      { id: 3, name: 'T', parent: 'Test' } as Environment,
     ];
     spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(
       of(permissions)
@@ -504,7 +504,7 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
       id: null,
       name: null,
       parent: 'All',
-      selected: false
+      selected: false,
     } as Environment);
     expect(component.groupedEnvironments['Dev']).toContain(
       { id: 1, name: 'U', parent: 'Dev', selected: false } as Environment,
@@ -514,7 +514,7 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
       id: 3,
       name: 'T',
       parent: 'Test',
-      selected: false
+      selected: false,
     } as Environment);
   });
 });
@@ -538,22 +538,22 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule
+        SharedModule,
       ],
       providers: [
         EnvironmentService,
         PermissionService,
         ResourceService,
-        AppService,
-        { provide: ActivatedRoute, useValue: mockRoute }
+        NavigationStoreService,
+        { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       declarations: [
         PermissionComponent,
         RestrictionEditComponent,
         RestrictionAddComponent,
-        RestrictionListComponent
-      ]
+        RestrictionListComponent,
+      ],
     });
     fixture = TestBed.createComponent(PermissionComponent);
     component = fixture.componentInstance;
@@ -570,22 +570,22 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
       {
         id: 1,
         action: 'CREATE',
-        permission: { name: 'RESOURCE', old: false }
+        permission: { name: 'RESOURCE', old: false },
       } as Restriction,
       {
         id: 2,
         action: 'UPDATE',
-        permission: { name: 'RESOURCE_TYPE', old: false }
-      } as Restriction
+        permission: { name: 'RESOURCE_TYPE', old: false },
+      } as Restriction,
     ];
     const permissions: Permission[] = [
       { name: 'RESOURCE', old: false, longName: 'RESOURCE' },
-      { name: 'RESOURCE_TYPE', old: false, longName: 'RESOURCE_TYPE' }
+      { name: 'RESOURCE_TYPE', old: false, longName: 'RESOURCE_TYPE' },
     ];
     const environments: Environment[] = [
       { id: 1, name: 'U', parent: 'Dev' } as Environment,
       { id: 2, name: 'V', parent: 'Dev' } as Environment,
-      { id: 3, name: 'T', parent: 'Test' } as Environment
+      { id: 3, name: 'T', parent: 'Test' } as Environment,
     ];
     spyOn(permissionService, 'getAllUserRestrictionNames').and.returnValue(
       of(userNames)

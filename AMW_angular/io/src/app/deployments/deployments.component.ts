@@ -4,14 +4,13 @@ import {
   NgZone,
   OnInit,
   ViewChild,
-  AfterViewInit
+  AfterViewInit,
 } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Subscription, timer } from 'rxjs';
-import { AppService, Keys } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { DeploymentFilterType } from '../deployment/deployment-filter-type';
@@ -19,12 +18,13 @@ import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentService } from '../deployment/deployment.service';
 import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
+import { NavigationStoreService } from '../navigation/navigation-store.service';
 
 declare var $: any;
 
 @Component({
   selector: 'amw-deployments',
-  templateUrl: './deployments.component.html'
+  templateUrl: './deployments.component.html',
 })
 export class DeploymentsComponent implements OnInit, AfterViewInit {
   defaultComparator: string = 'eq';
@@ -94,11 +94,11 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
     private location: Location,
     private deploymentService: DeploymentService,
     private resourceService: ResourceService,
-    public appService: AppService
+    public navigationStore: NavigationStoreService
   ) {
-    this.appService.set(Keys.NavShow, false);
-    this.appService.set(Keys.NavTitle, 'Deployments');
-    this.appService.set(Keys.PageTitle, 'Deployments');
+    this.navigationStore.setVisible(false);
+    this.navigationStore.setCurrent('Deployments');
+    this.navigationStore.setPageTitle('Deployments');
   }
 
   ngOnInit() {
@@ -151,7 +151,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
     const i: number = _.findIndex(this.filters, {
       name: filter.name,
       comp: filter.comp,
-      val: filter.val
+      val: filter.val,
     });
     if (i !== -1) {
       this.filters.splice(i, 1);
@@ -170,12 +170,12 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
     this.filtersForParam = [];
     const filtersToBeRemoved: DeploymentFilter[] = [];
     this.errorMessage = '';
-    this.filters.forEach(filter => {
+    this.filters.forEach((filter) => {
       if (filter.val || filter.type === 'SpecialFilterType') {
         this.filtersForParam.push({
           name: filter.name,
           comp: filter.comp,
-          val: filter.val
+          val: filter.val,
         } as DeploymentFilter);
         if (filter.type === 'DateType') {
           const dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
@@ -185,20 +185,20 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
           this.filtersForBackend.push({
             name: filter.name,
             comp: filter.comp,
-            val: dateTime.valueOf().toString()
+            val: dateTime.valueOf().toString(),
           } as DeploymentFilter);
         } else {
           this.filtersForBackend.push({
             name: filter.name,
             comp: filter.comp,
-            val: filter.val
+            val: filter.val,
           } as DeploymentFilter);
         }
       } else {
         filtersToBeRemoved.push(filter);
       }
     });
-    filtersToBeRemoved.forEach(filter => this.removeFilter(filter));
+    filtersToBeRemoved.forEach((filter) => this.removeFilter(filter));
 
     if (!this.errorMessage) {
       this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
@@ -218,7 +218,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
   }
 
   switchDeployments(enable: boolean) {
-    this.deployments.forEach(deployment => (deployment.selected = enable));
+    this.deployments.forEach((deployment) => (deployment.selected = enable));
   }
 
   editableDeployments(): boolean {
@@ -230,14 +230,14 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
       this.addDatePicker();
       // get shakeDownTestPermission for first element
       const indexOfFirstSelectedElem = _.findIndex(this.deployments, {
-        selected: true
+        selected: true,
       });
       const firstDeployment = this.deployments[indexOfFirstSelectedElem];
       this.resourceService
         .canCreateShakedownTest(firstDeployment.appServerId)
         .subscribe(
-          /* happy path */ r => (this.hasPermissionShakedownTest = r),
-          /* error path */ e => (this.errorMessage = e),
+          /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
+          /* error path */ (e) => (this.errorMessage = e),
           /* onComplete */ () => $('#deploymentsEdit').modal('show')
         );
     }
@@ -248,8 +248,8 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
       delete deployment.selected;
       deployment.state = this.reMapState(deployment.state);
       this.deploymentService.confirmDeployment(deployment).subscribe(
-        /* happy path */ r => r,
-        /* error path */ e =>
+        /* happy path */ (r) => r,
+        /* error path */ (e) =>
           (this.errorMessage = this.errorMessage
             ? this.errorMessage + '<br>' + e
             : e),
@@ -261,8 +261,8 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
   rejectDeployment(deployment: Deployment) {
     if (deployment) {
       this.deploymentService.rejectDeployment(deployment.id).subscribe(
-        /* happy path */ r => r,
-        /* error path */ e =>
+        /* happy path */ (r) => r,
+        /* error path */ (e) =>
           (this.errorMessage = this.errorMessage
             ? this.errorMessage + '<br>' + e
             : e),
@@ -274,8 +274,8 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
   cancelDeployment(deployment: Deployment) {
     if (deployment) {
       this.deploymentService.cancelDeployment(deployment.id).subscribe(
-        /* happy path */ r => r,
-        /* error path */ e =>
+        /* happy path */ (r) => r,
+        /* error path */ (e) =>
           (this.errorMessage = this.errorMessage
             ? this.errorMessage + '<br>' + e
             : e),
@@ -335,14 +335,16 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
   reloadDeployment(deploymentId: number) {
     let reloadedDeployment: Deployment;
     this.deploymentService.getWithActions(deploymentId).subscribe(
-      /* happy path */ r => (reloadedDeployment = r),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (reloadedDeployment = r),
+      /* error path */ (e) => (this.errorMessage = e),
       /* on complete */ () => this.updateDeploymentsList(reloadedDeployment)
     );
   }
 
   getSelectedDeployments(): Deployment[] {
-    return this.deployments.filter(deployment => deployment.selected === true);
+    return this.deployments.filter(
+      (deployment) => deployment.selected === true
+    );
   }
 
   autoRefresh() {
@@ -367,12 +369,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
   private pushDownload(prefix: string) {
     this.isLoading = false;
     const docName: string =
-      prefix +
-      '_' +
-      moment()
-        .format('YYYY-MM-DD_HHmm')
-        .toString() +
-      '.csv';
+      prefix + '_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
     const blob = new Blob([this.csvDocument], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     if (navigator.msSaveOrOpenBlob) {
@@ -394,8 +391,8 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
     this.deploymentService
       .setDeploymentDate(deployment.id, deploymentDate)
       .subscribe(
-        /* happy path */ r => r,
-        /* error path */ e =>
+        /* happy path */ (r) => r,
+        /* error path */ (e) =>
           (this.errorMessage = this.errorMessage
             ? this.errorMessage + '<br>' + e
             : e),
@@ -440,7 +437,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
       if (filter.type === 'booleanType') {
         filter.valOptions = this.filterValueOptions[filter.name] = [
           'true',
-          'false'
+          'false',
         ];
       } else {
         this.getAndSetFilterOptionValues(filter);
@@ -451,7 +448,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
 
   private mapStates() {
     if (this.deployments) {
-      this.deployments.forEach(deployment => {
+      this.deployments.forEach((deployment) => {
         switch (deployment.state) {
           case 'PRE_DEPLOYMENT':
             deployment.state = 'pre_deploy';
@@ -480,16 +477,16 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
   private initTypeAndOptions() {
     this.isLoading = true;
     this.deploymentService.getAllDeploymentFilterTypes().subscribe(
-      /* happy path */ r => (this.filterTypes = _.sortBy(r, 'name')),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (this.filterTypes = _.sortBy(r, 'name')),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => this.getAllComparatorOptions()
     );
   }
 
   private getAllComparatorOptions() {
     this.deploymentService.getAllComparatorFilterOptions().subscribe(
-      /* happy path */ r => (this.comparatorOptions = r),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (this.comparatorOptions = r),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => {
         this.populateMap();
         this.enhanceParamFilter();
@@ -499,8 +496,8 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
 
   private getAndSetFilterOptionValues(filter: DeploymentFilter) {
     this.deploymentService.getFilterOptionValues(filter.name).subscribe(
-      /* happy path */ r => (this.filterValueOptions[filter.name] = r),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (this.filterValueOptions[filter.name] = r),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () =>
         (filter.valOptions = this.filterValueOptions[filter.name])
     );
@@ -517,13 +514,13 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
         this.maxResults
       )
       .subscribe(
-        /* happy path */ r => {
+        /* happy path */ (r) => {
           this.deployments = r.deployments;
           this.allResults = r.total;
           this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
           this.lastPage = Math.ceil(this.allResults / this.maxResults);
         },
-        /* error path */ e => {
+        /* error path */ (e) => {
           this.errorMessage = e;
           this.isLoading = false;
         },
@@ -543,23 +540,23 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
         this.sortDirection
       )
       .subscribe(
-        /* happy path */ r => (this.csvDocument = r),
-        /* error path */ e => (this.errorMessage = e),
+        /* happy path */ (r) => (this.csvDocument = r),
+        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () => this.pushDownload('deployments')
       );
   }
 
   private canRequestDeployments() {
     this.deploymentService.canRequestDeployments().subscribe(
-      /* happy path */ r => (this.hasPermissionToRequestDeployments = r),
-      /* error path */ e => (this.errorMessage = e)
+      /* happy path */ (r) => (this.hasPermissionToRequestDeployments = r),
+      /* error path */ (e) => (this.errorMessage = e)
     );
   }
 
   private enhanceParamFilter() {
     if (this.paramFilters) {
       this.clearFilters();
-      this.paramFilters.forEach(filter => {
+      this.paramFilters.forEach((filter) => {
         const i: number = _.findIndex(this.filterTypes, ['name', filter.name]);
         if (i >= 0) {
           filter.type = this.filterTypes[i].type;
@@ -579,7 +576,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
   }
 
   private populateMap() {
-    this.comparatorOptions.forEach(option => {
+    this.comparatorOptions.forEach((option) => {
       this.comparatorOptionsMap[option.name] = option.displayName;
     });
     this.isLoading = false;

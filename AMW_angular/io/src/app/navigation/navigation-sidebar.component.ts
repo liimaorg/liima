@@ -1,24 +1,22 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { NavigationItem } from './navigation-item';
+import { Navigation } from './navigation-store.service';
 
 @Component({
   selector: 'app-navigation-sidebar',
   template: `
-    <div *ngIf="navigationState.isVisible" class="col-sm-2 col-lg-1 sidebar">
+    <div *ngIf="navigation.visible" class="col-sm-2 col-lg-1 sidebar">
       <ul class="nav nav-sidebar">
-        <ng-container *ngIf="!navigationState.navigationItems">
+        <ng-container *ngIf="!navigation.items">
           <li class="active">
             <a href="#"
-              >{{ navigationState.current
-              }}<span class="sr-only">(current)</span></a
+              >{{ navigation.current }}<span class="sr-only">(current)</span></a
             >
           </li>
         </ng-container>
-        <ng-container *ngIf="navigationState.navigationItems">
-          <ng-container *ngFor="let item of navigationState.navigationItems">
-            <li
-              [ngClass]="item.title === navigationState.current ? 'active' : ''"
-            >
+        <ng-container *ngIf="navigation.items">
+          <ng-container *ngFor="let item of navigation.items">
+            <li [ngClass]="item.title === navigation.current ? 'active' : ''">
               <a
                 href="#{{ item.target }}"
                 (mouseup)="itemSelected.emit(item)"
@@ -30,11 +28,11 @@ import { NavigationItem } from './navigation-item';
       </ul>
     </div>
   `,
-  styleUrls: ['./navigation-sidebar.component.scss']
+  styleUrls: ['./navigation-sidebar.component.scss'],
 })
 export class NavigationSidebarComponent {
   @Input()
-  navigationState: any;
+  navigation: Navigation;
 
   @Output()
   itemSelected: EventEmitter<NavigationItem> = new EventEmitter<

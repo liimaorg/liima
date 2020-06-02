@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import {
   HttpClientTestingModule,
-  HttpTestingController
+  HttpTestingController,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Deployment } from './deployment';
@@ -15,7 +15,7 @@ describe('DeploymentService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [DeploymentService]
+      providers: [DeploymentService],
     });
 
     httpTestingController = TestBed.inject(HttpTestingController);
@@ -34,12 +34,14 @@ describe('DeploymentService', () => {
   it('should getAllDeploymentParamterKeys() a list of deploymentPerameters', () => {
     const deploymentParamter = {
       key: 'key',
-      value: 'value'
+      value: 'value',
     };
 
-    service.getAllDeploymentParameterKeys().subscribe(deploymentParameters => {
-      expect(deploymentParameters).toEqual([deploymentParamter]);
-    });
+    service
+      .getAllDeploymentParameterKeys()
+      .subscribe((deploymentParameters) => {
+        expect(deploymentParameters).toEqual([deploymentParamter]);
+      });
 
     const req = httpTestingController.expectOne(
       '/AMW_rest/resources/deployments/deploymentParameterKeys/'
@@ -51,7 +53,7 @@ describe('DeploymentService', () => {
   });
 
   it('should get() a deployment', () => {
-    service.get(123).subscribe(deployment => {
+    service.get(123).subscribe((deployment) => {
       expect(deployment).toEqual(mockDeployment);
     });
 
@@ -95,6 +97,6 @@ describe('DeploymentService', () => {
     sendEmailWhenDeployed: true,
     simulateBeforeDeployment: true,
     shakedownTestsWhenDeployed: true,
-    neighbourhoodTest: false
+    neighbourhoodTest: false,
   };
 });

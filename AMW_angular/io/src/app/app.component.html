@@ -1,12 +1,12 @@
 <app-navigation [logoutUrl]="logoutUrl"></app-navigation>
 
 <app-navigation-sidebar
-  [navigationState]="navigationState$ | async"
+  [navigation]="navigationStore.navigation$ | async"
   (itemSelected)="navigateTo($event)"
 ></app-navigation-sidebar>
 
 <app-page-header>
-  <h1>{{ (navigationState$ | async).pageTitle }}</h1>
+  <h1>{{ (navigationStore.navigation$ | async).pageTitle }}</h1>
 </app-page-header>
 
 <main>

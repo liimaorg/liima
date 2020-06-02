@@ -21,11 +21,11 @@ import { NavigationModule } from './navigation/navigation.module';
 import { AppRoutingModule } from './app-routing.module';
 // App is our top level component
 import { AppComponent } from './app.component';
-import { AppService, InternalStateType } from './app.service';
 import { DeploymentsModule } from './deployments/deployments.module';
+import { NavigationStoreService } from './navigation/navigation-store.service';
 
 // Application wide providers
-const APP_PROVIDERS = [AppService];
+const APP_PROVIDERS = [NavigationStoreService];
 
 @NgModule({
   declarations: [AppComponent],
@@ -44,9 +44,9 @@ const APP_PROVIDERS = [AppService];
     SettingModule,
     BaseModule,
     SharedModule,
-    NavigationModule
+    NavigationModule,
   ],
   providers: [APP_PROVIDERS],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -6,11 +6,11 @@ import { EnvironmentService } from '../deployment/environment.service';
 import { Resource } from '../resource/resource';
 import { ResourceType } from '../resource/resource-type';
 import { ResourceService } from '../resource/resource.service';
-import { AppService, Keys } from '../app.service';
 import { Restriction } from './restriction';
 import { RestrictionsCreation } from './restrictions-creation';
 import { Permission } from './permission';
 import * as _ from 'lodash';
+import { NavigationStoreService } from '../navigation/navigation-store.service';
 
 @Component({
   selector: 'amw-permission',
@@ -58,16 +58,17 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     private environmentService: EnvironmentService,
     private resourceService: ResourceService,
     private activatedRoute: ActivatedRoute,
-    public appService: AppService
+    public navigationStore: NavigationStoreService
   ) {
-    this.appService.set(Keys.PageTitle, 'Permissions');
-    this.appService.set(Keys.NavShow, true);
-    this.appService.set(Keys.NavItems, [
+    this.navigationStore.setPageTitle('Permissions');
+    this.navigationStore.setVisible(true);
+    this.navigationStore.setItems([
       { title: 'Roles', target: '/permission/role' },
       { title: 'Users', target: '/permission/user' },
     ]);
-    if (!['Roles', 'Users'].includes(this.appService.get(Keys.NavTitle))) {
-      this.appService.set(Keys.NavTitle, this.defaultNavItem);
+
+    if (!['Roles', 'Users'].includes(this.navigationStore.navigation.current)) {
+      this.navigationStore.setCurrent(this.defaultNavItem);
     }
 
     this.activatedRoute.params.subscribe((param: any) => {
@@ -83,8 +84,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.getAllPermissions();
         this.onChangeType(this.restrictionType);
       }
-      this.appService.set(
-        Keys.NavTitle,
+      this.navigationStore.setCurrent(
         this.restrictionType === 'user' ? 'Users' : 'Roles'
       );
     });
@@ -99,7 +99,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): void {}
 
   ngOnDestroy() {
-    this.appService.set('navItems', null);
+    this.navigationStore.setItems([]);
   }
 
   onChangeRole() {
@@ -303,13 +303,13 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.clearMessages();
     this.assignedRestrictions = [];
     this.actingUserName = userName;
-    this.appService.set('navItems', [
+    this.navigationStore.setItems([
       {
         title: this.actingUserName,
         target: '/permission/delegation/' + this.actingUserName,
       },
     ]);
-    this.appService.set('navTitle', this.actingUserName);
+    this.navigationStore.setCurrent(this.actingUserName);
     this.selectedUserNames = [];
     this.selectedRoleName = null;
     this.getAllAssignableUserNames();

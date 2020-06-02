@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject } from 'rxjs';
-import { AppService } from '../app.service';
 import { Release } from '../resource/release';
 import { Resource } from '../resource/resource';
 import { ResourceTag } from '../resource/resource-tag';
@@ -20,6 +19,7 @@ import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
 import * as moment from 'moment';
 import { SharedModule } from '../shared/shared.module';
+import { NavigationStoreService } from '../navigation/navigation-store.service';
 @Component({
   template: '',
 })
@@ -44,7 +44,7 @@ describe('DeploymentComponent (create deployment)', () => {
         ResourceService,
         EnvironmentService,
         DeploymentService,
-        AppService,
+        NavigationStoreService,
       ],
     });
     fixture = TestBed.createComponent(DeploymentComponent);
@@ -434,7 +434,7 @@ describe('DeploymentComponent (create deployment with params)', () => {
         ResourceService,
         EnvironmentService,
         DeploymentService,
-        AppService,
+        NavigationStoreService,
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
     });
@@ -494,7 +494,7 @@ describe('DeploymentComponent (redeployment)', () => {
         ResourceService,
         EnvironmentService,
         DeploymentService,
-        AppService,
+        NavigationStoreService,
       ],
     });
     fixture = TestBed.createComponent(DeploymentComponent);
