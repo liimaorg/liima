@@ -11,10 +11,9 @@ export enum Keys {
   NavTitle = 'navTitle',
   PageTitle = 'pageTitle',
   LogoutUrl = 'logoutUrl',
-  NavShow = 'navShow'
+  NavShow = 'navShow',
 }
 
-// TODO: check if this Service could act as the Single Source of Truth... without using ngrx
 @Injectable()
 export class AppService {
   _state: InternalStateType = {};
@@ -46,7 +45,6 @@ export class AppService {
     return state.hasOwnProperty(prop) ? state[prop] : state;
   }
 
-  // TODO: refactor to accept an object... maybe an action with payload
   public set(prop: string, value: any) {
     // internally mutate our state
     this._state[prop] = value;
