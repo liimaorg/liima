@@ -4,14 +4,10 @@ cache:
   - .m2
 services:
 - docker
-install:
-- docker run -it --name amw-install -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw markhobson/maven-chrome mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-- AMW_docker/build.sh
 script:
-- docker run -it --name amw-test -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw markhobson/maven-chrome mvn test -B
+- docker run --rm -it -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw markhobson/maven-chrome mvn clean deploy
+- AMW_docker/build.sh
 before_deploy:
-- docker run -it --name amw-deploy -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw markhobson/maven-chrome mvn deploy -DskipTests=true -Dmaven.javadoc.skip=true -f AMW_ear -B
-- ls -l AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear
 - sudo chmod 777 AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear
 after_success:
   - "[[ -z $TRAVIS_PULL_REQUEST_BRANCH ]] && export CURRENT_BRANCH=$TRAVIS_BRANCH || export CURRENT_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH"

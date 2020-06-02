@@ -48,6 +48,13 @@
 			<groupId>ch.puzzle.itc.mobiliar</groupId>
 			<artifactId>AMW_commons</artifactId>
 		</dependency>
+
+                <!-- Workaround for liquibase changelog with wf 8+: https://liquibase.jira.com/browse/CORE-2472 -->
+                <dependency>
+                        <groupId>org.yaml</groupId>
+                        <artifactId>snakeyaml</artifactId>
+                        <version>1.26</version>
+                </dependency>
 		
 
 		<!-- Declare the APIs we depend on and need for compilation. All of them are provided by JBoss AS 7 -->
