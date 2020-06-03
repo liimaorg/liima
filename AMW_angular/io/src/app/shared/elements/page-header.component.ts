@@ -8,7 +8,8 @@ import { Component } from '@angular/core';
         <ng-content></ng-content>
       </div>
     </div>
-  `
+  `,
+  styleUrls: ['./page-header.component.scss']
 })
 export class PageHeaderComponent {
   constructor() {}

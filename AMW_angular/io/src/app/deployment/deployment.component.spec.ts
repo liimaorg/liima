@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject } from 'rxjs';
-import { AppService } from '../app.service';
 import { Release } from '../resource/release';
 import { Resource } from '../resource/resource';
 import { ResourceTag } from '../resource/resource-tag';
@@ -20,8 +19,9 @@ import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
 import * as moment from 'moment';
 import { SharedModule } from '../shared/shared.module';
+import { NavigationStoreService } from '../navigation/navigation-store.service';
 @Component({
-  template: ''
+  template: '',
 })
 class DummyComponent {}
 
@@ -38,14 +38,14 @@ describe('DeploymentComponent (create deployment)', () => {
         FormsModule,
         RouterTestingModule,
         HttpClientTestingModule,
-        SharedModule
+        SharedModule,
       ],
       providers: [
         ResourceService,
         EnvironmentService,
         DeploymentService,
-        AppService
-      ]
+        NavigationStoreService,
+      ],
     });
     fixture = TestBed.createComponent(DeploymentComponent);
     component = fixture.componentInstance;
@@ -89,7 +89,7 @@ describe('DeploymentComponent (create deployment)', () => {
 
   it('should populate groupedEnvironments on ngOnInit', () => {
     const environments: Environment[] = [
-      { id: 1, name: 'A', parent: 'DEV' } as Environment
+      { id: 1, name: 'A', parent: 'DEV' } as Environment,
     ];
     spyOn(environmentService, 'getAll').and.returnValue(of(environments));
     expect(component.groupedEnvironments).toEqual({});
@@ -115,7 +115,7 @@ describe('DeploymentComponent (create deployment)', () => {
     // given
     const testReleases: Release[] = [
       { id: 1, release: 'testRelease' } as Release,
-      { id: 2, release: 'anotherRelease' } as Release
+      { id: 2, release: 'anotherRelease' } as Release,
     ];
     component.appserverName = 'testServer';
     component.releaseName = 'testRelease';
@@ -123,8 +123,8 @@ describe('DeploymentComponent (create deployment)', () => {
       of([
         {
           name: 'testServer',
-          releases: testReleases
-        } as Resource
+          releases: testReleases,
+        } as Resource,
       ])
     );
     spyOn(resourceService, 'getDeployableReleases').and.returnValue(
@@ -139,7 +139,7 @@ describe('DeploymentComponent (create deployment)', () => {
 
   it('should set selectedAppserver but not set selectedRelease if not available for selectedAppserver', () => {
     const testReleases: Release[] = [
-      { id: 1, release: 'testRelease' } as Release
+      { id: 1, release: 'testRelease' } as Release,
     ];
     component.appserverName = 'testServer';
     component.releaseName = 'missingRelease';
@@ -147,8 +147,8 @@ describe('DeploymentComponent (create deployment)', () => {
       of([
         {
           name: 'testServer',
-          releases: testReleases
-        } as Resource
+          releases: testReleases,
+        } as Resource,
       ])
     );
     // when
@@ -162,7 +162,7 @@ describe('DeploymentComponent (create deployment)', () => {
     const environments: Environment[] = [
       { id: 1, name: 'A', parent: 'DEV' } as Environment,
       { id: 2, name: 'B', parent: 'DEV' } as Environment,
-      { id: 3, name: 'P', parent: 'PROD' } as Environment
+      { id: 3, name: 'P', parent: 'PROD' } as Environment,
     ];
     spyOn(environmentService, 'getAll').and.returnValue(of(environments));
     component.ngOnInit();
@@ -179,7 +179,7 @@ describe('DeploymentComponent (create deployment)', () => {
     const appServer: Resource = { name: 'testServer' } as Resource;
     component.environments = [
       { id: 1 } as Environment,
-      { id: 2, selected: true } as Environment
+      { id: 2, selected: true } as Environment,
     ];
     component.selectedAppserver = appServer;
     // when
@@ -196,7 +196,7 @@ describe('DeploymentComponent (create deployment)', () => {
     const appServer: Resource = { name: 'testServer', id: 3 } as Resource;
     component.environments = [
       { id: 1 } as Environment,
-      { id: 2, selected: true } as Environment
+      { id: 2, selected: true } as Environment,
     ];
     component.selectedAppserver = appServer;
     spyOn(resourceService, 'canCreateShakedownTest').and.returnValue(of(false));
@@ -215,7 +215,7 @@ describe('DeploymentComponent (create deployment)', () => {
     const testRelease: Release = { id: 1, release: 'testRelease' } as Release;
     const betterRelease: Release = {
       id: 1,
-      release: 'betterRelease'
+      release: 'betterRelease',
     } as Release;
     component.releases = [testRelease];
     component.selectedRelease = testRelease;
@@ -225,7 +225,7 @@ describe('DeploymentComponent (create deployment)', () => {
     spyOn(resourceService, 'getAppsWithVersions').and.returnValue(of([]));
     component.selectedAppserver = {
       name: 'testServer',
-      releases: [testRelease]
+      releases: [testRelease],
     } as Resource;
     // when
     component.onChangeRelease();
@@ -237,11 +237,11 @@ describe('DeploymentComponent (create deployment)', () => {
   it('should replace deploymentParameters with same key onAddParam', () => {
     // given
     component.transDeploymentParameters = [
-      { key: 'atest', value: 'foo' } as DeploymentParameter
+      { key: 'atest', value: 'foo' } as DeploymentParameter,
     ];
     component.transDeploymentParameter = {
       key: 'atest',
-      value: 'bar'
+      value: 'bar',
     } as DeploymentParameter;
     // when
     component.onAddParam();
@@ -254,11 +254,11 @@ describe('DeploymentComponent (create deployment)', () => {
     // given
     const parameterA: DeploymentParameter = {
       key: 'atest',
-      value: 'foo'
+      value: 'foo',
     } as DeploymentParameter;
     const parameterB: DeploymentParameter = {
       key: 'btest',
-      value: 'bar'
+      value: 'bar',
     } as DeploymentParameter;
     component.transDeploymentParameters = [parameterA, parameterB];
     // when
@@ -285,7 +285,7 @@ describe('DeploymentComponent (create deployment)', () => {
     component.selectedRelease = { id: 1, release: 'testRelease' } as Release;
     component.environments = [
       { id: 1 } as Environment,
-      { id: 2, selected: true } as Environment
+      { id: 2, selected: true } as Environment,
     ];
     // when then
     expect(component.isReadyForDeployment()).toBeFalsy();
@@ -297,10 +297,10 @@ describe('DeploymentComponent (create deployment)', () => {
     component.selectedRelease = { id: 1, release: 'testRelease' } as Release;
     component.environments = [
       { id: 1 } as Environment,
-      { id: 2, selected: true } as Environment
+      { id: 2, selected: true } as Environment,
     ];
     component.appsWithVersion = [
-      { applicationName: 'testApp' } as AppWithVersion
+      { applicationName: 'testApp' } as AppWithVersion,
     ];
     // when then
     expect(component.isReadyForDeployment()).toBeTruthy();
@@ -312,24 +312,24 @@ describe('DeploymentComponent (create deployment)', () => {
     component.selectedRelease = { id: 1, release: 'testRelease' } as Release;
     component.environments = [
       { id: 2, name: 'A' } as Environment,
-      { id: 3, name: 'B', selected: true } as Environment
+      { id: 3, name: 'B', selected: true } as Environment,
     ];
     component.doExecuteShakedownTest = true;
     component.appsWithVersion = [
       {
         applicationId: 4,
         applicationName: 'testApp',
-        version: '1.2.3'
-      } as AppWithVersion
+        version: '1.2.3',
+      } as AppWithVersion,
     ];
     component.selectedResourceTag = {
       id: 5,
-      tagDate: 1485378084103
+      tagDate: 1485378084103,
     } as ResourceTag;
     component.deploymentDate = '02.01.2017 12:00';
     component.transDeploymentParameters = [
       { key: 'atest', value: 'foo' } as DeploymentParameter,
-      { key: 'btest', value: 'bar' } as DeploymentParameter
+      { key: 'btest', value: 'bar' } as DeploymentParameter,
     ];
     const deploymentRequest: DeploymentRequest = {
       appServerName: 'testServer',
@@ -343,7 +343,7 @@ describe('DeploymentComponent (create deployment)', () => {
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,
       deploymentDate: moment('02.01.2017 12:00', 'DD.MM.YYYY hh:mm').valueOf(),
-      deploymentParameters: component.transDeploymentParameters
+      deploymentParameters: component.transDeploymentParameters,
     } as DeploymentRequest;
     spyOn(deploymentService, 'createDeployment').and.returnValue(
       of({ trackingId: 910 } as Deployment)
@@ -363,7 +363,7 @@ describe('DeploymentComponent (create deployment)', () => {
     component.selectedRelease = { id: 1, release: 'testRelease' } as Release;
     component.environments = [
       { id: 2, name: 'A', selected: true } as Environment,
-      { id: 3, name: 'B', selected: true } as Environment
+      { id: 3, name: 'B', selected: true } as Environment,
     ];
     component.doExecuteShakedownTest = true;
     component.simulate = true;
@@ -371,21 +371,21 @@ describe('DeploymentComponent (create deployment)', () => {
       {
         applicationId: 4,
         applicationName: 'testApp',
-        version: '1.2.3'
+        version: '1.2.3',
       } as AppWithVersion,
       {
         applicationId: 5,
         applicationName: 'testAPP',
-        version: '1.2.3.4'
-      } as AppWithVersion
+        version: '1.2.3.4',
+      } as AppWithVersion,
     ];
     component.selectedResourceTag = {
       id: 5,
-      tagDate: 1485378084103
+      tagDate: 1485378084103,
     } as ResourceTag;
     component.transDeploymentParameters = [
       { key: 'atest', value: 'foo' } as DeploymentParameter,
-      { key: 'btest', value: 'bar' } as DeploymentParameter
+      { key: 'btest', value: 'bar' } as DeploymentParameter,
     ];
     const deploymentRequest: DeploymentRequest = {
       appServerName: 'testServer',
@@ -398,7 +398,7 @@ describe('DeploymentComponent (create deployment)', () => {
       requestOnly: false,
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,
-      deploymentParameters: component.transDeploymentParameters
+      deploymentParameters: component.transDeploymentParameters,
     } as DeploymentRequest;
     spyOn(deploymentService, 'createDeployment').and.returnValue(
       of({ trackingId: 911 } as Deployment)
@@ -428,15 +428,15 @@ describe('DeploymentComponent (create deployment with params)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule
+        SharedModule,
       ],
       providers: [
         ResourceService,
         EnvironmentService,
         DeploymentService,
-        AppService,
-        { provide: ActivatedRoute, useValue: mockRoute }
-      ]
+        NavigationStoreService,
+        { provide: ActivatedRoute, useValue: mockRoute },
+      ],
     });
     fixture = TestBed.createComponent(DeploymentComponent);
     component = fixture.componentInstance;
@@ -446,7 +446,7 @@ describe('DeploymentComponent (create deployment with params)', () => {
     component.ngOnInit();
     mockRoute.params.next({
       appserverName: 'aServer',
-      releaseName: 'aRelease'
+      releaseName: 'aRelease',
     });
     // then
     expect(component.appserverName).toEqual('aServer');
@@ -459,7 +459,7 @@ describe('DeploymentComponent (create deployment with params)', () => {
     // given // when
     component.ngOnInit();
     mockRoute.params.next({
-      appserverName: 'aServer'
+      appserverName: 'aServer',
     });
     // then
     expect(component.appserverName).toEqual('aServer');
@@ -487,15 +487,15 @@ describe('DeploymentComponent (redeployment)', () => {
         FormsModule,
         RouterTestingModule.withRoutes([]),
         HttpClientTestingModule,
-        SharedModule
+        SharedModule,
       ],
       providers: [
         { provide: ActivatedRoute, useValue: mockRoute },
         ResourceService,
         EnvironmentService,
         DeploymentService,
-        AppService
-      ]
+        NavigationStoreService,
+      ],
     });
     fixture = TestBed.createComponent(DeploymentComponent);
     component = fixture.componentInstance;
@@ -520,30 +520,30 @@ describe('DeploymentComponent (redeployment)', () => {
     // given
     component.environments = [
       { name: 'X' } as Environment,
-      { name: 'Y' } as Environment
+      { name: 'Y' } as Environment,
     ];
     const appsWithVersion: AppWithVersion[] = [
       {
         applicationId: 4,
         applicationName: 'testApp',
-        version: '1.2.3'
+        version: '1.2.3',
       } as AppWithVersion,
       {
         applicationId: 5,
         applicationName: 'testAPP',
-        version: '1.2.3.4'
-      } as AppWithVersion
+        version: '1.2.3.4',
+      } as AppWithVersion,
     ];
     const deploymentParameter: DeploymentParameter = {
       key: 'atest',
-      value: 'foo'
+      value: 'foo',
     } as DeploymentParameter;
     const deployment: Deployment = {
       appsWithVersion,
       deploymentParameters: [deploymentParameter],
       releaseName: 'testRelease',
       appServerName: 'testServer',
-      environmentName: 'Y'
+      environmentName: 'Y',
     } as Deployment;
 
     spyOn(deploymentService, 'get').and.returnValue(of(deployment));
@@ -555,17 +555,17 @@ describe('DeploymentComponent (redeployment)', () => {
         {
           applicationId: 4,
           applicationName: 'testApp',
-          version: '1.2.3'
+          version: '1.2.3',
         } as AppWithVersion,
         {
           applicationId: 5,
           applicationName: 'testAPP',
-          version: '1.2.3.4'
-        } as AppWithVersion
+          version: '1.2.3.4',
+        } as AppWithVersion,
       ])
     );
     // when
-    component.deploymentId = 123; // TODO: this is a workaround for a sketchy implementation in ngOnInit
+    component.deploymentId = 123;
     component.ngOnInit();
     // then
     expect(component.isRedeployment).toBeTruthy();
@@ -584,23 +584,23 @@ describe('DeploymentComponent (redeployment)', () => {
     // given
     component.environments = [
       { name: 'X' } as Environment,
-      { name: 'Y' } as Environment
+      { name: 'Y' } as Environment,
     ];
     const appsWithVersion: AppWithVersion[] = [
       {
         applicationId: 4,
         applicationName: 'testApp',
-        version: '1.2.3'
+        version: '1.2.3',
       } as AppWithVersion,
       {
         applicationId: 5,
         applicationName: 'testAPP',
-        version: '1.2.3.4'
-      } as AppWithVersion
+        version: '1.2.3.4',
+      } as AppWithVersion,
     ];
     const deploymentParameter: DeploymentParameter = {
       key: 'atest',
-      value: 'foo'
+      value: 'foo',
     } as DeploymentParameter;
     const deployment: Deployment = {
       appsWithVersion,
@@ -608,7 +608,7 @@ describe('DeploymentComponent (redeployment)', () => {
       releaseName: 'testRelease',
       appServerName: 'testServer',
       appServerId: 1,
-      environmentName: 'Y'
+      environmentName: 'Y',
     } as Deployment;
     spyOn(deploymentService, 'get').and.returnValue(of(deployment));
     spyOn(resourceService, 'getDeployableReleases').and.returnValue(
@@ -620,8 +620,8 @@ describe('DeploymentComponent (redeployment)', () => {
         {
           applicationId: 4,
           applicationName: 'testApp',
-          version: '1.2.3'
-        } as AppWithVersion
+          version: '1.2.3',
+        } as AppWithVersion,
       ])
     );
     // when
@@ -636,30 +636,30 @@ describe('DeploymentComponent (redeployment)', () => {
     // given
     component.environments = [
       { name: 'X', id: 1 } as Environment,
-      { name: 'Y', id: 2 } as Environment
+      { name: 'Y', id: 2 } as Environment,
     ];
     const appsWithVersion: AppWithVersion[] = [
       {
         applicationId: 4,
         applicationName: 'testApp',
-        version: '1.2.3'
+        version: '1.2.3',
       } as AppWithVersion,
       {
         applicationId: 5,
         applicationName: 'testAPP',
-        version: '1.2.3.4'
-      } as AppWithVersion
+        version: '1.2.3.4',
+      } as AppWithVersion,
     ];
     const deploymentParameters: DeploymentParameter[] = [
       { key: 'atest', value: 'foo' } as DeploymentParameter,
-      { key: 'btest', value: 'bar' } as DeploymentParameter
+      { key: 'btest', value: 'bar' } as DeploymentParameter,
     ];
     const deployment: Deployment = {
       appsWithVersion,
       deploymentParameters,
       releaseName: 'testRelease',
       appServerName: 'testServer',
-      environmentName: 'Y'
+      environmentName: 'Y',
     } as Deployment;
     spyOn(deploymentService, 'get').and.returnValue(of(deployment));
     const deploymentRequest: DeploymentRequest = {
@@ -672,7 +672,7 @@ describe('DeploymentComponent (redeployment)', () => {
       neighbourhoodTest: false,
       requestOnly: false,
       appsWithVersion,
-      deploymentParameters
+      deploymentParameters,
     } as DeploymentRequest;
     spyOn(resourceService, 'getDeployableReleases').and.returnValue(
       of([{ id: 9, release: 'testRelease' } as Release])

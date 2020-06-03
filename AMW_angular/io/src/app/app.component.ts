@@ -1,56 +1,41 @@
-import { Component, ViewEncapsulation, OnInit, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AppService } from './app.service';
 import { SettingService } from './setting/setting.service';
 import { AppConfiguration } from './setting/app-configuration';
-import * as _ from 'lodash';
+import { AMW_LOGOUT_URL } from './core/amw-constants';
+import { NavigationItem } from './navigation/navigation-item';
+import { NavigationStoreService } from './navigation/navigation-store.service';
 
-/*
- * App Component
- * Top Level Component
- */
 @Component({
   selector: 'app',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: [
-    './app.component.scss'
-  ],
-  templateUrl: './app.component.html'
+  styleUrls: ['./app.component.scss'],
+  templateUrl: './app.component.html',
 })
-export class AppComponent implements OnInit, AfterViewChecked {
-  name = 'Angular 8';
+export class AppComponent implements OnInit {
+  logoutUrl: string;
 
-  private logoutUrlKey: string = 'amw.logoutUrl';
+  constructor(
+    public navigationStore: NavigationStoreService,
+    private router: Router,
+    private settingService: SettingService
+  ) {}
 
-  constructor(public appService: AppService,
-              private router: Router,
-              private cdRef: ChangeDetectorRef,
-              private settingService: SettingService) {
+  ngOnInit(): void {
+    this.settingService
+      .getAllAppSettings()
+      .subscribe((r) => this.configureSettings(r));
   }
 
-  ngOnInit() {
-    this.fetchLogoutUrl();
-  }
-
-  ngAfterViewChecked() {
-    // explicit change detection to avoid "expression-has-changed-after-it-was-checked-error"
-    this.cdRef.detectChanges();
-  }
-
-  navigateTo(item: any) {
-    this.appService.set('navTitle', item.title);
+  navigateTo(item: NavigationItem): void {
+    this.navigationStore.setCurrent(item.title);
     this.router.navigateByUrl(item.target);
   }
 
-  private fetchLogoutUrl() {
-    this.settingService.getAllAppSettings().subscribe(
-      /* happy path */ (r) => this.setLogoutUrl(r)
+  private configureSettings(settings: AppConfiguration[]) {
+    const logoutUrl = settings.find(
+      (config) => config.key.value === AMW_LOGOUT_URL
     );
+    this.logoutUrl = logoutUrl ? logoutUrl.value : '';
   }
-
-  private setLogoutUrl(settings: AppConfiguration[]) {
-    const logoutUrl: AppConfiguration = _.find(settings, ['key.value', this.logoutUrlKey]);
-    this.appService.set('logoutUrl', logoutUrl ? logoutUrl.value : '');
-  }
-
 }

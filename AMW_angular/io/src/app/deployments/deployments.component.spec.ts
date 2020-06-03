@@ -4,18 +4,18 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject } from 'rxjs';
-import { AppService } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
-import { ComparatorFilterOption } from './comparator-filter-option';
-import { Deployment } from './deployment';
-import { DeploymentFilter } from './deployment-filter';
-import { DeploymentFilterType } from './deployment-filter-type';
-import { DeploymentService } from './deployment.service';
-import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
-import { DeploymentsListComponent } from './deployments-list.component';
 import { DeploymentsComponent } from './deployments.component';
-import { PaginationComponent } from './pagination.component';
+import { DeploymentService } from '../deployment/deployment.service';
 import { SharedModule } from '../shared/shared.module';
+import { DeploymentsListComponent } from './deployments-list.component';
+import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
+import { DeploymentFilterType } from '../deployment/deployment-filter-type';
+import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
+import { DeploymentFilter } from '../deployment/deployment-filter';
+import { Deployment } from '../deployment/deployment';
+import { PaginationComponent } from '../shared/pagination/pagination.component';
+import { NavigationStoreService } from '../navigation/navigation-store.service';
 
 declare var $: any;
 
@@ -30,7 +30,7 @@ describe('DeploymentsComponent (with query params)', () => {
 
   const filter: string = JSON.stringify([
     { name: 'Application', val: 'test' },
-    { name: 'Confirmed on', comp: 'lt', val: '12.12.2012 12:12' }
+    { name: 'Confirmed on', comp: 'lt', val: '12.12.2012 12:12' },
   ]);
   let deploymentService: DeploymentService;
   beforeEach(() => {
@@ -39,20 +39,20 @@ describe('DeploymentsComponent (with query params)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule
+        SharedModule,
       ],
       providers: [
         DeploymentService,
         ResourceService,
-        AppService,
-        { provide: ActivatedRoute, useValue: mockRoute }
+        NavigationStoreService,
+        { provide: ActivatedRoute, useValue: mockRoute },
       ],
       declarations: [
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
-        DeploymentsEditModalComponent
-      ]
+        DeploymentsEditModalComponent,
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);
@@ -64,7 +64,7 @@ describe('DeploymentsComponent (with query params)', () => {
     // given
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' }
+      { name: 'Confirmed on', type: 'DateType' },
     ];
     spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
       of(deploymentFilters)
@@ -87,12 +87,12 @@ describe('DeploymentsComponent (with query params)', () => {
     // given
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' }
+      { name: 'Confirmed on', type: 'DateType' },
     ];
     const comparatorOptions: ComparatorFilterOption[] = [
       { name: 'lt', displayName: '<' },
       { name: 'eq', displayName: 'is' },
-      { name: 'neq', displayName: 'is not' }
+      { name: 'neq', displayName: 'is not' },
     ];
     spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
       of(deploymentFilters)
@@ -117,7 +117,7 @@ describe('DeploymentsComponent (with query params)', () => {
     // given
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' }
+      { name: 'Confirmed on', type: 'DateType' },
     ];
     spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
       of(deploymentFilters)
@@ -129,7 +129,7 @@ describe('DeploymentsComponent (with query params)', () => {
       (param: string) => {
         const optionValues: { [key: string]: string[] } = {
           Application: ['app1', 'app2'],
-          'Confirmed on': []
+          'Confirmed on': [],
         };
         return of(optionValues[param]);
       }
@@ -149,7 +149,7 @@ describe('DeploymentsComponent (with query params)', () => {
     // given
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' }
+      { name: 'Confirmed on', type: 'DateType' },
     ];
     spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
       of(deploymentFilters)
@@ -175,7 +175,7 @@ describe('DeploymentsComponent (with query params)', () => {
     // given
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' }
+      { name: 'Confirmed on', type: 'DateType' },
     ];
     var buffer = new ArrayBuffer(8);
     spyOn(
@@ -208,7 +208,7 @@ describe('DeploymentsComponent (with illegal query params)', () => {
 
   const filter: string = JSON.stringify([
     { name: 'Application', val: 'test' },
-    { name: 'Confirmed on', comp: 'lt', val: '12.12.2012 12:12' }
+    { name: 'Confirmed on', comp: 'lt', val: '12.12.2012 12:12' },
   ]);
   let deploymentService: DeploymentService;
   beforeEach(() => {
@@ -217,20 +217,20 @@ describe('DeploymentsComponent (with illegal query params)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule
+        SharedModule,
       ],
       providers: [
         DeploymentService,
         ResourceService,
-        AppService,
-        { provide: ActivatedRoute, useValue: mockRoute }
+        NavigationStoreService,
+        { provide: ActivatedRoute, useValue: mockRoute },
       ],
       declarations: [
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
-        DeploymentsEditModalComponent
-      ]
+        DeploymentsEditModalComponent,
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);
@@ -242,7 +242,7 @@ describe('DeploymentsComponent (with illegal query params)', () => {
     // given
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' }
+      { name: 'Confirmed on', type: 'DateType' },
     ];
     spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
       of(deploymentFilters)
@@ -272,7 +272,7 @@ describe('DeploymentsComponent (without query params)', () => {
 
   const filter: string = JSON.stringify([
     { name: 'Application', val: 'test' },
-    { name: 'Confirmed on', comp: 'lt', val: '12.12.2012 12:12' }
+    { name: 'Confirmed on', comp: 'lt', val: '12.12.2012 12:12' },
   ]);
   let deploymentService: DeploymentService;
   let resourceService: ResourceService;
@@ -282,20 +282,20 @@ describe('DeploymentsComponent (without query params)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule
+        SharedModule,
       ],
       providers: [
         DeploymentService,
         ResourceService,
-        AppService,
-        { provide: ActivatedRoute, useValue: mockRoute }
+        NavigationStoreService,
+        { provide: ActivatedRoute, useValue: mockRoute },
       ],
       declarations: [
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
-        DeploymentsEditModalComponent
-      ]
+        DeploymentsEditModalComponent,
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);
@@ -411,17 +411,17 @@ describe('DeploymentsComponent (without query params)', () => {
         name: 'Confirmed',
         comp: 'eq',
         val: 'true',
-        type: 'booleanType'
-      } as DeploymentFilter
+        type: 'booleanType',
+      } as DeploymentFilter,
     ];
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' }
+      { name: 'Confirmed on', type: 'DateType' },
     ];
     const comparatorOptions: ComparatorFilterOption[] = [
       { name: 'lt', displayName: '<' },
       { name: 'eq', displayName: 'is' },
-      { name: 'neq', displayName: 'is not' }
+      { name: 'neq', displayName: 'is not' },
     ];
     spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
       of(deploymentFilters)
@@ -446,8 +446,8 @@ describe('DeploymentsComponent (without query params)', () => {
         name: 'Confirmed',
         comp: 'eq',
         val: 'true',
-        type: 'booleanType'
-      } as DeploymentFilter
+        type: 'booleanType',
+      } as DeploymentFilter,
     ];
 
     // when
@@ -514,16 +514,16 @@ describe('DeploymentsComponent (without query params)', () => {
     sessionStorage.setItem('deploymentFilters', null);
     const expectedFilters: DeploymentFilter[] = [
       { name: 'Confirmed', comp: 'eq', val: 'true' } as DeploymentFilter,
-      { name: 'Application', comp: 'eq', val: 'TestApp' } as DeploymentFilter
+      { name: 'Application', comp: 'eq', val: 'TestApp' } as DeploymentFilter,
     ];
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' }
+      { name: 'Confirmed on', type: 'DateType' },
     ];
     const comparatorOptions: ComparatorFilterOption[] = [
       { name: 'lt', displayName: '<' },
       { name: 'eq', displayName: 'is' },
-      { name: 'neq', displayName: 'is not' }
+      { name: 'neq', displayName: 'is not' },
     ];
     spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
       of(deploymentFilters)
@@ -541,14 +541,14 @@ describe('DeploymentsComponent (without query params)', () => {
         name: 'Confirmed',
         comp: 'eq',
         val: 'true',
-        type: 'booleanType'
+        type: 'booleanType',
       } as DeploymentFilter,
       {
         name: 'Application',
         comp: 'eq',
         val: 'TestApp',
-        type: 'StringType'
-      } as DeploymentFilter
+        type: 'StringType',
+      } as DeploymentFilter,
     ];
 
     // when
@@ -573,18 +573,18 @@ describe('DeploymentsComponent (without query params)', () => {
     const expectedFilters: DeploymentFilter[] = [
       { name: 'Confirmed', comp: 'eq', val: 'false' } as DeploymentFilter,
       { name: 'Application', comp: 'eq', val: 'TestApp' } as DeploymentFilter,
-      { name: 'Latest deployment', comp: 'eq', val: '' } as DeploymentFilter
+      { name: 'Latest deployment', comp: 'eq', val: '' } as DeploymentFilter,
     ];
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
       { name: 'Application Server', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
-      { name: 'Latest deployment', type: 'SpecialFilterType' }
+      { name: 'Latest deployment', type: 'SpecialFilterType' },
     ];
     const comparatorOptions: ComparatorFilterOption[] = [
       { name: 'lt', displayName: '<' },
       { name: 'eq', displayName: 'is' },
-      { name: 'neq', displayName: 'is not' }
+      { name: 'neq', displayName: 'is not' },
     ];
     spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
       of(deploymentFilters)
@@ -601,26 +601,26 @@ describe('DeploymentsComponent (without query params)', () => {
         name: 'Confirmed',
         comp: 'eq',
         val: 'false',
-        type: 'booleanType'
+        type: 'booleanType',
       } as DeploymentFilter,
       {
         name: 'Application',
         comp: 'eq',
         val: 'TestApp',
-        type: 'StringType'
+        type: 'StringType',
       } as DeploymentFilter,
       {
         name: 'Application Server',
         comp: 'eq',
         val: '',
-        type: 'StringType'
+        type: 'StringType',
       } as DeploymentFilter,
       {
         name: 'Latest deployment',
         comp: 'eq',
         val: '',
-        type: 'SpecialFilterType'
-      } as DeploymentFilter
+        type: 'SpecialFilterType',
+      } as DeploymentFilter,
     ];
 
     // when
@@ -658,30 +658,30 @@ describe('DeploymentsComponent (without query params)', () => {
     // given
     const expectedFilters: DeploymentFilter[] = [
       { name: 'Confirmed', comp: 'eq', val: 'true' } as DeploymentFilter,
-      { name: 'Application', comp: 'eq', val: 'TestApp' } as DeploymentFilter
+      { name: 'Application', comp: 'eq', val: 'TestApp' } as DeploymentFilter,
     ];
     component.filters = [
       {
         name: 'Confirmed',
         comp: 'eq',
         val: 'true',
-        type: 'booleanType'
+        type: 'booleanType',
       } as DeploymentFilter,
       {
         name: 'Application',
         comp: 'eq',
         val: 'TestApp',
-        type: 'StringType'
-      } as DeploymentFilter
+        type: 'StringType',
+      } as DeploymentFilter,
     ];
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' }
+      { name: 'Confirmed on', type: 'DateType' },
     ];
     const comparatorOptions: ComparatorFilterOption[] = [
       { name: 'lt', displayName: '<' },
       { name: 'eq', displayName: 'is' },
-      { name: 'neq', displayName: 'is not' }
+      { name: 'neq', displayName: 'is not' },
     ];
     spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
       of(deploymentFilters)
@@ -722,7 +722,7 @@ describe('DeploymentsComponent (without query params)', () => {
     // given
     component.deployments = [
       { id: 1, appServerId: 12, selected: false } as Deployment,
-      { id: 21, appServerId: 22, selected: true } as Deployment
+      { id: 21, appServerId: 22, selected: true } as Deployment,
     ];
     spyOn(resourceService, 'canCreateShakedownTest').and.returnValue(of(true));
 
@@ -791,12 +791,12 @@ describe('DeploymentsComponent (without query params)', () => {
     // given
     const deployment: Deployment = {
       id: 3,
-      deploymentDate: 1253765123
+      deploymentDate: 1253765123,
     } as Deployment;
     component.deployments = [
       { id: 1, deploymentDate: 121212121 } as Deployment,
       { id: 3, deploymentDate: 121212111 } as Deployment,
-      { id: 5, deploymentDate: 121212122 } as Deployment
+      { id: 5, deploymentDate: 121212122 } as Deployment,
     ];
 
     spyOn(deploymentService, 'setDeploymentDate').and.returnValue(of());

@@ -7,15 +7,15 @@ import { BaseService } from '../base/base.service';
 
 @Injectable()
 export class SettingService extends BaseService {
-
   constructor(private http: HttpClient) {
     super();
   }
 
   getAllAppSettings(): Observable<AppConfiguration[]> {
     return this.http
-      .get<AppConfiguration[]>(`${this.getBaseUrl()}/settings`, {headers: this.getHeaders()})
+      .get<AppConfiguration[]>(`${this.getBaseUrl()}/settings`, {
+        headers: this.getHeaders()
+      })
       .pipe(catchError(this.handleError));
   }
-
 }

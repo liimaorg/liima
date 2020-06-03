@@ -6,12 +6,13 @@ import {
   NgZone,
   AfterViewInit
 } from '@angular/core';
+import { Deployment } from '../deployment/deployment';
+import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resource/resource.service';
-import { Deployment } from './deployment';
-import { DeploymentFilter } from './deployment-filter';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
+
 @Component({
   selector: 'amw-deployments-list',
   templateUrl: './deployments-list.component.html'

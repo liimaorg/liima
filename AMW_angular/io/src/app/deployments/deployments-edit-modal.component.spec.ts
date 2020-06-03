@@ -1,7 +1,7 @@
 import { NgZone } from '@angular/core';
 import * as moment from 'moment';
-import { Deployment } from './deployment';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
+import { Deployment } from '../deployment/deployment';
 
 describe('DeploymentsEditModalComponent (with query params)', () => {
   let component: DeploymentsEditModalComponent;

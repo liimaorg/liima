@@ -12,9 +12,7 @@ export class BaseService {
   }
 
   public getHeaders(): HttpHeaders {
-    let headers = new HttpHeaders();
-    headers = headers.append('Accept', 'application/json');
-    return headers;
+    return new HttpHeaders().append('Accept', 'application/json');
   }
 
   public postHeaders() {

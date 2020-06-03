@@ -1,7 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { AppService } from '../app.service';
 import { ResourceService } from '../resource/resource.service';
 import { ResourceTag } from '../resource/resource-tag';
 import { Resource } from '../resource/resource';
@@ -19,10 +18,11 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as $ from 'jquery';
 import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
+import { NavigationStoreService } from '../navigation/navigation-store.service';
 
 @Component({
   selector: 'amw-deployment',
-  templateUrl: './deployment.component.html'
+  templateUrl: './deployment.component.html',
 })
 export class DeploymentComponent implements OnInit, AfterViewInit {
   // from url
@@ -80,13 +80,13 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     private deploymentService: DeploymentService,
     private activatedRoute: ActivatedRoute,
     private location: Location,
-    public appService: AppService
-  ) {}
+    public navigationStore: NavigationStoreService
+  ) {
+    this.navigationStore.setVisible(false);
+    this.navigationStore.setCurrent('Deployments');
+  }
 
   ngOnInit() {
-    this.appService.set('navShow', false);
-    this.appService.set('navTitle', 'Deployments');
-
     this.initEnvironments();
 
     this.activatedRoute.params.subscribe((param: any) => {
@@ -96,9 +96,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     });
 
     // a deploymentId MUST be numeric..
-    // TODO: this seems wrong... this.deploymentId is probably never set...
     if (this.deploymentId && !isNaN(this.deploymentId)) {
-      this.appService.set('pageTitle', 'Redeploy');
+      this.navigationStore.setPageTitle('Redeploy');
       this.isRedeployment = true;
       this.getDeployment();
     } else {
@@ -107,7 +106,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
         this.appserverName = this.deploymentId.toString();
         delete this.deploymentId;
       }
-      this.appService.set('pageTitle', 'Create new deployment');
+      this.navigationStore.setPageTitle('Create new deployment');
       this.initAppservers();
     }
   }
@@ -122,13 +121,13 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   initAppservers() {
     this.isLoading = true;
     this.resourceService.getByType('APPLICATIONSERVER').subscribe(
-      /* happy path */ r =>
-        (this.appservers = r.sort(function(a, b) {
+      /* happy path */ (r) =>
+        (this.appservers = r.sort(function (a, b) {
           return a.name.localeCompare(b.name, undefined, {
-            sensitivity: 'base'
+            sensitivity: 'base',
           });
         })),
-      /* error path */ e => (this.errorMessage = e),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => {
         this.setPreselected();
         this.isLoading = false;
@@ -163,7 +162,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   onAddParam() {
     _.remove(this.transDeploymentParameters, {
-      key: this.transDeploymentParameter.key
+      key: this.transDeploymentParameter.key,
     });
     this.transDeploymentParameters.push(this.transDeploymentParameter);
     this.transDeploymentParameter = {} as DeploymentParameter;
@@ -200,8 +199,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private getDeployment() {
     return this.deploymentService.get(this.deploymentId).subscribe(
-      /* happy path */ r => (this.selectedDeployment = r),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (this.selectedDeployment = r),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => this.initRedeploymentValues()
     );
   }
@@ -213,7 +212,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.appsWithVersion = this.selectedDeployment.appsWithVersion;
     this.selectedAppserver = {
       id: this.selectedDeployment.appServerId,
-      name: this.selectedDeployment.appServerName
+      name: this.selectedDeployment.appServerName,
     } as Resource;
     this.loadReleases();
     this.setPreSelectedEnvironment();
@@ -229,7 +228,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       ')',
       '</h5>'
     );
-    this.selectedDeployment.appsWithVersion.forEach(appWithVersion => {
+    this.selectedDeployment.appsWithVersion.forEach((appWithVersion) => {
       this.redeploymentAppserverDisplayName = this.redeploymentAppserverDisplayName.concat(
         '<h6>',
         appWithVersion.applicationName,
@@ -243,7 +242,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private setPreSelectedEnvironment() {
     const env = _.find(this.environments, {
-      name: this.selectedDeployment.environmentName
+      name: this.selectedDeployment.environmentName,
     });
     if (env) {
       env.selected = true;
@@ -254,18 +253,18 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     return this.resourceService
       .getMostRelevantRelease(this.selectedAppserver.id)
       .subscribe(
-        /* happy path */ r =>
+        /* happy path */ (r) =>
           (this.selectedRelease = this.releases.find(
-            release => release.release === r.release
+            (release) => release.release === r.release
           )),
-        /* error path */ e => (this.errorMessage = e),
+        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () => this.onChangeRelease()
       );
   }
 
   private setSelectedReleaseForRedeployment() {
     this.selectedRelease = this.releases.find(
-      release => release.release === this.selectedDeployment.releaseName
+      (release) => release.release === this.selectedDeployment.releaseName
     );
     // will perform verifyRedeployment()
     this.getAppVersions();
@@ -275,8 +274,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     return this.resourceService
       .getDeployableReleases(this.selectedAppserver.id)
       .subscribe(
-        /* happy path */ r => (this.releases = r),
-        /* error path */ e => (this.errorMessage = e),
+        /* happy path */ (r) => (this.releases = r),
+        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () =>
           this.isRedeployment
             ? this.setSelectedReleaseForRedeployment()
@@ -288,15 +287,15 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.resourceService
       .getLatestForRelease(this.selectedAppserver.id, this.selectedRelease.id)
       .subscribe(
-        /* happy path */ r => (this.bestForSelectedRelease = r),
-        /* error path */ e => (this.errorMessage = e),
+        /* happy path */ (r) => (this.bestForSelectedRelease = r),
+        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () => this.extractFromRelations()
       );
   }
 
   private extractFromRelations() {
     this.runtime = _.filter(this.bestForSelectedRelease.relations, {
-      type: 'RUNTIME'
+      type: 'RUNTIME',
     }).pop();
     this.resourceTags = this.resourceTags.concat(
       this.bestForSelectedRelease.resourceTags
@@ -310,14 +309,14 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       .getAppsWithVersions(
         this.selectedAppserver.id,
         this.selectedRelease.id,
-        _.filter(this.environments, 'selected').map(val => val.id)
+        _.filter(this.environments, 'selected').map((val) => val.id)
       )
       .subscribe(
-        /* happy path */ r =>
+        /* happy path */ (r) =>
           this.isRedeployment
             ? (this.appsWithVersionForRedeployment = r)
             : (this.appsWithVersion = r),
-        /* error path */ e => (this.errorMessage = e),
+        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () =>
           this.isRedeployment ? this.verifyRedeployment() : ''
       );
@@ -346,8 +345,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.resourceService
       .canCreateShakedownTest(this.selectedAppserver.id)
       .subscribe(
-        /* happy path */ r => (this.hasPermissionShakedownTest = r),
-        /* error path */ e => (this.errorMessage = e)
+        /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
+        /* error path */ (e) => (this.errorMessage = e)
       );
   }
 
@@ -355,14 +354,14 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     if (this.selectedAppserver != null) {
       this.hasPermissionToDeploy = false;
       const contextIds: number[] = _.filter(this.environments, 'selected').map(
-        val => val.id
+        (val) => val.id
       );
       if (contextIds.length > 0) {
         this.deploymentService
           .canDeploy(this.selectedAppserver.id, contextIds)
           .subscribe(
-            /* happy path */ r => (this.hasPermissionToDeploy = r),
-            /* error path */ e => (this.errorMessage = e),
+            /* happy path */ (r) => (this.hasPermissionToDeploy = r),
+            /* error path */ (e) => (this.errorMessage = e),
             /* onComplete */ () => this.canRequestDeployment(contextIds)
           );
       }
@@ -376,8 +375,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
         this.deploymentService
           .canRequestDeployment(this.selectedAppserver.id, contextIds)
           .subscribe(
-            /* happy path */ r => (this.hasPermissionToRequestDeployment = r),
-            /* error path */ e => (this.errorMessage = e)
+            /* happy path */ (r) => (this.hasPermissionToRequestDeployment = r),
+            /* error path */ (e) => (this.errorMessage = e)
           );
       }
     }
@@ -404,7 +403,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private prepareDeployment() {
     if (this.isReadyForDeployment()) {
       const contextIds: number[] = _.filter(this.environments, 'selected').map(
-        val => val.id
+        (val) => val.id
       );
       this.createDeploymentRequest(contextIds);
     }
@@ -440,8 +439,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       deploymentRequest.deploymentParameters = this.transDeploymentParameters;
     }
     this.deploymentService.createDeployment(deploymentRequest).subscribe(
-      /* happy path */ r => (this.deploymentResponse = r),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (this.deploymentResponse = r),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => {
         this.isLoading = false;
         this.composeSuccessMessage();
@@ -469,17 +468,17 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private initEnvironments() {
     this.isLoading = true;
     this.environmentService.getAll().subscribe(
-      /* happy path */ r => {
+      /* happy path */ (r) => {
         this.environments = r;
         this.extractEnvironmentGroups();
       },
-      /* error path */ e => (this.errorMessage = e),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => (this.isLoading = false)
     );
   }
 
   private extractEnvironmentGroups() {
-    this.environments.forEach(environment => {
+    this.environments.forEach((environment) => {
       if (!this.groupedEnvironments[environment['parent']]) {
         this.groupedEnvironments[environment['parent']] = [];
       }
@@ -489,11 +488,11 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private loadDeploymentParameters() {
     this.deploymentService.getAllDeploymentParameterKeys().subscribe(
-      /* happy path */ r =>
-        (this.deploymentParameters = r.sort(function(a, b) {
+      /* happy path */ (r) =>
+        (this.deploymentParameters = r.sort(function (a, b) {
           return a.key.localeCompare(b.key, undefined, { sensitivity: 'base' });
         })),
-      /* error path */ e => (this.errorMessage = e)
+      /* error path */ (e) => (this.errorMessage = e)
     );
   }
 
@@ -502,14 +501,14 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     if (this.appserverName) {
       console.log('pre-selected server is ' + this.appserverName);
       this.selectedAppserver = _.find(this.appservers, {
-        name: this.appserverName
+        name: this.appserverName,
       });
       if (this.selectedAppserver) {
         this.resourceService
           .getDeployableReleases(this.selectedAppserver.id)
           .subscribe(
-            /* happy path */ r => (this.releases = r),
-            /* error path */ e => (this.errorMessage = e),
+            /* happy path */ (r) => (this.releases = r),
+            /* error path */ (e) => (this.errorMessage = e),
             /* onComplete */ () => this.setRelease()
           );
       }
@@ -521,7 +520,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     if (this.releaseName) {
       console.log('pre-selected release is ' + this.releaseName);
       this.selectedRelease = this.releases.find(
-        release => release.release === this.releaseName
+        (release) => release.release === this.releaseName
       );
       this.onChangeRelease();
     }

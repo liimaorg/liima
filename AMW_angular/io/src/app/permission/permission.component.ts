@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PermissionService } from './permission.service';
 import { Environment } from '../deployment/environment';
@@ -6,27 +6,27 @@ import { EnvironmentService } from '../deployment/environment.service';
 import { Resource } from '../resource/resource';
 import { ResourceType } from '../resource/resource-type';
 import { ResourceService } from '../resource/resource.service';
-import { AppService } from '../app.service';
 import { Restriction } from './restriction';
 import { RestrictionsCreation } from './restrictions-creation';
 import { Permission } from './permission';
 import * as _ from 'lodash';
+import { NavigationStoreService } from '../navigation/navigation-store.service';
 
 @Component({
   selector: 'amw-permission',
-  templateUrl: './permission.component.html'
+  templateUrl: './permission.component.html',
 })
-export class PermissionComponent implements OnInit, OnDestroy {
+export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
   // loaded only once
   roleNames: string[] = [];
   userNames: string[] = [];
   permissions: Permission[] = [];
   environments: Environment[] = [
-    { id: null, name: null, parent: 'All', selected: false } as Environment
+    { id: null, name: null, parent: 'All', selected: false } as Environment,
   ];
   groupedEnvironments: { [key: string]: Environment[] } = {
     All: [],
-    Global: []
+    Global: [],
   };
   resourceGroups: Resource[] = [];
   resourceTypes: ResourceType[] = [{ id: null, name: null }];
@@ -58,17 +58,18 @@ export class PermissionComponent implements OnInit, OnDestroy {
     private environmentService: EnvironmentService,
     private resourceService: ResourceService,
     private activatedRoute: ActivatedRoute,
-    public appService: AppService
-  ) {}
-
-  ngOnInit() {
-    this.appService.set('navShow', true);
-    this.appService.set('navItems', [
+    public navigationStore: NavigationStoreService
+  ) {
+    this.navigationStore.setPageTitle('Permissions');
+    this.navigationStore.setVisible(true);
+    this.navigationStore.setItems([
       { title: 'Roles', target: '/permission/role' },
-      { title: 'Users', target: '/permission/user' }
+      { title: 'Users', target: '/permission/user' },
     ]);
-    this.appService.set('navTitle', this.defaultNavItem);
-    this.appService.set('pageTitle', 'Permissions');
+
+    if (!['Roles', 'Users'].includes(this.navigationStore.navigation.current)) {
+      this.navigationStore.setCurrent(this.defaultNavItem);
+    }
 
     this.activatedRoute.params.subscribe((param: any) => {
       if (param['actingUser']) {
@@ -83,15 +84,22 @@ export class PermissionComponent implements OnInit, OnDestroy {
         this.getAllPermissions();
         this.onChangeType(this.restrictionType);
       }
+      this.navigationStore.setCurrent(
+        this.restrictionType === 'user' ? 'Users' : 'Roles'
+      );
     });
+  }
 
+  ngOnInit() {
     this.getAllEnvironments();
     this.getAllResourceGroups();
     this.getAllResourceTypes();
   }
 
+  ngAfterViewInit(): void {}
+
   ngOnDestroy() {
-    this.appService.set('navItems', null);
+    this.navigationStore.setItems([]);
   }
 
   onChangeRole() {
@@ -121,8 +129,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.clearMessages();
     if (id) {
       this.permissionService.removeRestriction(id).subscribe(
-        /* happy path */ r => '',
-        /* error path */ e => (this.errorMessage = e),
+        /* happy path */ (r) => '',
+        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () => _.remove(this.assignedRestrictions, { id })
       );
     } else {
@@ -152,8 +160,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     if (this.restriction.id != null) {
       this.permissionService.updateRestriction(this.restriction).subscribe(
-        /* happy path */ r => '',
-        /* error path */ e => (this.errorMessage = e),
+        /* happy path */ (r) => '',
+        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () => {
           this.updatePermissions(this.restriction);
           this.updateNamesLists();
@@ -167,8 +175,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
       this.permissionService
         .createRestriction(this.restriction, this.delegationMode)
         .subscribe(
-          /* happy path */ r => (this.restriction = r),
-          /* error path */ e => (this.errorMessage = e),
+          /* happy path */ (r) => (this.restriction = r),
+          /* error path */ (e) => (this.errorMessage = e),
           /* onComplete */ () => {
             this.updatePermissions(this.restriction);
             this.updateNamesLists();
@@ -187,8 +195,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.permissionService
       .createRestrictions(restrictionsCreation, this.delegationMode)
       .subscribe(
-        /* happy path */ r => '',
-        /* error path */ e => (this.errorMessage = e),
+        /* happy path */ (r) => '',
+        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () => {
           this.create = false;
           this.updateExistingNamesLists(restrictionsCreation);
@@ -212,7 +220,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   private convertToSelectedUserNames(users: any) {
     this.selectedUserNames = [];
-    users.forEach(user => {
+    users.forEach((user) => {
       if (user.label) {
         this.selectedUserNames.push(user.label.trim());
       } else {
@@ -254,7 +262,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
     ) {
       this.roleNames.push(restrictionsCreation.roleName.toLowerCase());
     } else if (restrictionsCreation.userNames.length > 0) {
-      restrictionsCreation.userNames.forEach(userName => {
+      restrictionsCreation.userNames.forEach((userName) => {
         if (!this.isExistingUser(userName)) {
           this.userNames.push(userName.toLowerCase());
         }
@@ -279,13 +287,11 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.assignedRestrictions = [];
     this.restrictionType = type === 'role' || type === 'user' ? type : 'role';
     if (this.restrictionType === 'user') {
-      this.appService.set('navTitle', 'Users');
       this.selectedRoleName = null;
       if (this.userNames.length < 1) {
         this.getAllUserNames();
       }
     } else {
-      this.appService.set('navTitle', 'Roles');
       this.selectedUserNames = [];
       if (this.roleNames.length < 1) {
         this.getAllRoleNames();
@@ -297,13 +303,13 @@ export class PermissionComponent implements OnInit, OnDestroy {
     this.clearMessages();
     this.assignedRestrictions = [];
     this.actingUserName = userName;
-    this.appService.set('navItems', [
+    this.navigationStore.setItems([
       {
         title: this.actingUserName,
-        target: '/permission/delegation/' + this.actingUserName
-      }
+        target: '/permission/delegation/' + this.actingUserName,
+      },
     ]);
-    this.appService.set('navTitle', this.actingUserName);
+    this.navigationStore.setCurrent(this.actingUserName);
     this.selectedUserNames = [];
     this.selectedRoleName = null;
     this.getAllAssignableUserNames();
@@ -313,8 +319,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getAllRoleNames() {
     this.isLoading = true;
     this.permissionService.getAllRoleNames().subscribe(
-      /* happy path */ r => (this.roleNames = r),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (this.roleNames = r),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => (this.isLoading = false)
     );
   }
@@ -322,8 +328,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getAllUserNames() {
     this.isLoading = true;
     this.permissionService.getAllUserRestrictionNames().subscribe(
-      /* happy path */ r => (this.userNames = r),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (this.userNames = r),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => (this.isLoading = false)
     );
   }
@@ -331,11 +337,11 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getAllPermissions() {
     this.isLoading = true;
     this.permissionService.getAllPermissionEnumValues().subscribe(
-      /* happy path */ r =>
-        (this.permissions = _.sortBy(r, function(s: Permission) {
+      /* happy path */ (r) =>
+        (this.permissions = _.sortBy(r, function (s: Permission) {
           return s.name.replace(/[_]/, '');
         })),
-      /* error path */ e => (this.errorMessage = e),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => {
         this.markGlobalPermissions(this.permissions);
         this.isLoading = false;
@@ -344,7 +350,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   private markGlobalPermissions(permissions: Permission[]) {
-    permissions.forEach(permission => {
+    permissions.forEach((permission) => {
       permission.longName = permission.old
         ? permission.name + ' (GLOBAL)'
         : permission.name;
@@ -354,8 +360,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getAllEnvironments() {
     this.isLoading = true;
     this.environmentService.getAllIncludingGroups().subscribe(
-      /* happy path */ r => (this.environments = this.environments.concat(r)),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (this.environments = this.environments.concat(r)),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => this.extractEnvironmentGroups()
     );
   }
@@ -363,8 +369,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getAllAssignableUserNames() {
     this.isLoading = true;
     this.permissionService.getAllUserRestrictionNames().subscribe(
-      /* happy path */ r => (this.userNames = _.pull(r, this.actingUserName)),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (this.userNames = _.pull(r, this.actingUserName)),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => (this.isLoading = false)
     );
   }
@@ -372,8 +378,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getAllAssignableRestrictions() {
     this.isLoading = true;
     this.permissionService.getOwnUserAndRoleRestrictions().subscribe(
-      /* happy path */ r => (this.assignableRestrictions = r),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (this.assignableRestrictions = r),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => {
         this.extractAllAssignablePermissions();
         this.markGlobalPermissions(this.assignablePermissions);
@@ -384,12 +390,12 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   private extractAllAssignablePermissions() {
     this.assignablePermissions = [];
-    this.assignableRestrictions.forEach(restriction => {
+    this.assignableRestrictions.forEach((restriction) => {
       if (!_.some(this.assignablePermissions, restriction.permission)) {
         this.assignablePermissions.push(restriction.permission);
       }
     });
-    this.assignablePermissions = _.sortBy(this.assignablePermissions, function(
+    this.assignablePermissions = _.sortBy(this.assignablePermissions, function (
       s: Permission
     ) {
       return s.name.replace(/[_]/, '');
@@ -399,8 +405,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getAllResourceGroups() {
     this.isLoading = true;
     this.resourceService.getAllResourceGroups().subscribe(
-      /* happy path */ r => (this.resourceGroups = r),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => (this.resourceGroups = r),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => (this.isLoading = false)
     );
   }
@@ -408,8 +414,9 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getAllResourceTypes() {
     this.isLoading = true;
     this.resourceService.getAllResourceTypes().subscribe(
-      /* happy path */ r => (this.resourceTypes = this.resourceTypes.concat(r)),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) =>
+        (this.resourceTypes = this.resourceTypes.concat(r)),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => (this.isLoading = false)
     );
   }
@@ -417,8 +424,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getRoleWithRestrictions(roleName: string) {
     this.isLoading = true;
     this.permissionService.getRoleWithRestrictions(roleName).subscribe(
-      /* happy path */ r => this.reorderRestrictions(r),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => this.reorderRestrictions(r),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => (this.isLoading = false)
     );
   }
@@ -426,8 +433,8 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getUserWithRestrictions(userName: string) {
     this.isLoading = true;
     this.permissionService.getUserWithRestrictions(userName).subscribe(
-      /* happy path */ r => this.reorderRestrictions(r),
-      /* error path */ e => (this.errorMessage = e),
+      /* happy path */ (r) => this.reorderRestrictions(r),
+      /* error path */ (e) => (this.errorMessage = e),
       /* onComplete */ () => (this.isLoading = false)
     );
   }
@@ -453,15 +460,15 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   private reorderRestrictions(restrictions: Restriction[]) {
     this.assignedRestrictions = _.sortBy(restrictions, [
-      function(s: Restriction) {
+      function (s: Restriction) {
         return s.permission.name.replace(/[_]/, '');
       },
-      'action'
+      'action',
     ]);
   }
 
   private extractEnvironmentGroups() {
-    this.environments.forEach(environment => {
+    this.environments.forEach((environment) => {
       environment.selected = false;
       if (!this.groupedEnvironments[environment['parent']]) {
         this.groupedEnvironments[environment['parent']] = [];

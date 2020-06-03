@@ -3,7 +3,7 @@ import { PermissionService } from './permission.service';
 import { Restriction } from './restriction';
 import {
   HttpTestingController,
-  HttpClientTestingModule
+  HttpClientTestingModule,
 } from '@angular/common/http/testing';
 import { HttpClient } from '@angular/common/http';
 
@@ -16,7 +16,7 @@ describe('PermissionService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [PermissionService]
+      providers: [PermissionService],
     });
     service = TestBed.inject(PermissionService);
 
@@ -33,7 +33,7 @@ describe('PermissionService', () => {
   });
 
   it('should getAllRoleNames from the correct endpoint', () => {
-    service.getAllRoleNames().subscribe(roleNames => {
+    service.getAllRoleNames().subscribe((roleNames) => {
       expect(roleNames).toEqual(['admin', 'user', 'guest']);
     });
 
@@ -46,7 +46,7 @@ describe('PermissionService', () => {
   });
 
   it('should request data from the right endpoint when getAllUserRestrictionNames is called', () => {
-    service.getAllUserRestrictionNames().subscribe(response => {
+    service.getAllUserRestrictionNames().subscribe((response) => {
       expect(response).toEqual(['testerli']);
     });
 
@@ -62,10 +62,10 @@ describe('PermissionService', () => {
     const permission = {
       name: 'permission',
       old: false,
-      longName: 'longname'
+      longName: 'longname',
     };
 
-    service.getAllPermissionEnumValues().subscribe(response => {
+    service.getAllPermissionEnumValues().subscribe((response) => {
       expect(response).toEqual([permission]);
     });
 
@@ -81,10 +81,10 @@ describe('PermissionService', () => {
 
     const mockeResponse = [
       { id: 1, roleName: 'viewer' } as Restriction,
-      { id: 2, roleName: 'viewer' } as Restriction
+      { id: 2, roleName: 'viewer' } as Restriction,
     ];
 
-    service.getRoleWithRestrictions('viewer').subscribe(response => {
+    service.getRoleWithRestrictions('viewer').subscribe((response) => {
       expect(response).toEqual(mockeResponse);
     });
 
@@ -99,10 +99,10 @@ describe('PermissionService', () => {
     // given
     const mockeResponse = [
       { id: 1, roleName: 'viewer' } as Restriction,
-      { id: 2, roleName: 'viewer' } as Restriction
+      { id: 2, roleName: 'viewer' } as Restriction,
     ];
 
-    service.getUserWithRestrictions('tester').subscribe(response => {
+    service.getUserWithRestrictions('tester').subscribe((response) => {
       expect(response).toEqual(mockeResponse);
     });
 
@@ -114,7 +114,7 @@ describe('PermissionService', () => {
   });
 
   it('should invoke the right endpoint when removeRestriction is called', () => {
-    service.removeRestriction(23).subscribe(response => {
+    service.removeRestriction(23).subscribe((response) => {
       expect(response).toEqual({});
     });
     const req = httpTestingController.expectOne(
@@ -126,9 +126,11 @@ describe('PermissionService', () => {
   });
 
   it('should invoke the right endpoint when updateRestriction is called', () => {
-    service.updateRestriction({ id: 2 } as Restriction).subscribe(response => {
-      expect(response).toEqual({});
-    });
+    service
+      .updateRestriction({ id: 2 } as Restriction)
+      .subscribe((response) => {
+        expect(response).toEqual({});
+      });
 
     const req = httpTestingController.expectOne(
       '/AMW_rest/resources/permissions/restrictions/2'
@@ -143,7 +145,7 @@ describe('PermissionService', () => {
   xit('should invoke the right endpoints when createRestriction is called', () => {
     service
       .createRestriction({ roleName: 'TESTER' } as Restriction, false)
-      .subscribe(response => {
+      .subscribe((response) => {
         expect(response).toEqual({ id: 8, roleName: 'TESTER' } as Restriction);
       });
     const req = httpTestingController.expectOne(
@@ -152,6 +154,6 @@ describe('PermissionService', () => {
 
     expect(req.request.method).toEqual('POST');
     req.flush({ id: 8, roleName: 'TESTER' } as Restriction);
-    httpTestingController.expectOne('/AMW_rest/resourcesnull'); // TODO: set location header in req... but how???
+    httpTestingController.expectOne('/AMW_rest/resourcesnull');
   });
 });

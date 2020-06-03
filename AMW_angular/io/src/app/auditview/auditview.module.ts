@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { AuditviewComponent } from './auditview.component';
 import { AuditviewRoutingModule } from './auditview-routing.module';
 import { AuditviewService } from './auditview.service';
-import { NewlineFilterPipe } from '../customfilter/newlineFilterPipe';
 import { AuditviewTableComponent } from './auditview-table/auditview-table.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { SortableHeader } from './sortable.directive';
 import { BaseModule } from '../base/base.module';
 import { SharedModule } from '../shared/shared.module';
+import { NewlineFilterPipe } from './auditview-table/newlineFilterPipe';
+import { SortableHeader } from './auditview-table/sortable.directive';
 
 @NgModule({
   imports: [
