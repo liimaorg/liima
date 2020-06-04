@@ -23,20 +23,21 @@
             <h:inputTextarea value="#{cc.attrs.property.propertyValue}" disabled="#{!propertyEditDataProvider.editableProperties}"
                              onfocus="this.className = 'propertyInputField currentContext ${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'}'"
                              onblur="setUpperContext(this, '${cc.attrs.property.propertyValue}', '${cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)}'); validateInput(this, '${cc.attrs.property.nullable}', '${cc.attrs.property.optional}', '${cc.attrs.property.validationLogic}', '${cc.attrs.property.propertyDefaultValue}', '${cc.attrs.property.mik}'); decorateInput(this, '${cc.attrs.property.mik}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue)}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue)}');"
-                             styleClass="propertyInputField ${cc.attrs.property.getClassNameForPropertyInputField(propertyEditDataProvider.contextId)} ${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} ${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue) || propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue) ? '' : ' oneLine'}"
+                             styleClass="${cc.attrs.property.propertyDisplayName} propertyInputField ${cc.attrs.property.getClassNameForPropertyInputField(propertyEditDataProvider.contextId)} ${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} ${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue) || propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue) ? '' : ' oneLine'}"
                              autocomplete="off" title="#{cc.attrs.property.propertyDefaultValue}">
                 <f:attribute name="regex" value="#{cc.attrs.property.validationLogic}"/>
                 <f:attribute name="isNullable" value="#{cc.attrs.property.nullable}"/>
                 <f:attribute name="errorMessage"
                              value="This value must not be empty or does not match the regex #{cc.attrs.property.validationLogic}"/>
-                <rich:placeholder value="#{cc.attrs.property.propertyDefaultValue}  " styleClass="propertyplaceholder">
-                    <!--Bug fix #16408 when displaying default value and then entering default value as new value it will be ignored for whatever reason!
-                    Thus add some blank characters to displayed placeholder default value such that the entered value most likely does not match
-                    the default value with blanks - on top blank characters will be trimmed off from input value-->
-                </rich:placeholder>
                 <a4j:ajax/>
             </h:inputTextarea>
-
+            <script type="text/javascript">
+                (function () {
+                    let input = document.getElementsByClassName('${cc.attrs.property.propertyDisplayName}')[0];
+                    if (input != undefined) {
+                        input.setAttribute('placeholder', '${cc.attrs.property.propertyDefaultValue}');
+                    }})();
+            </script>
             <!-- TOOLTIP -->
             <mobi:propertyTooltip property="#{prop}"/>
             <mobi:foreignableOwnerTooltip foreignableAttributes="#{propertyEditDataProvider.getForeignableToEdit(cc.attrs.property)}"/>
