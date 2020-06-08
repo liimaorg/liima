@@ -1,0 +1,16 @@
+embed-server --std-out=echo
+
+# JSF
+/subsystem=jsf:write-attribute(name=default-jsf-impl-slot,value=mojarra-2.2)
+
+# Mail
+/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=mail-smtp-amw:add(host="${env.MAIL_HOST:localhost}",port="${env.MAIL_PORT:25}")
+/subsystem=mail/mail-session=amw:add(from=amw@amw.ch,jndi-name="java:/AutomationMiddlewareMail")
+/subsystem=mail/mail-session=amw/server=smtp:add(outbound-socket-binding-ref="mail-smtp-amw",ssl=true)
+
+# Login Module
+/subsystem=security/security-domain=jboss-secure:add()
+/subsystem=security/security-domain=jboss-secure/authentication=classic:add(login-modules=[{"code"=>"UsersRoles","flag"=>"required","module-options"=>["usersProperties"=>"${jboss.server.config.dir}/props/application-users.properties","rolesProperties"=>"${jboss.server.config.dir}/props/application-roles.properties"]}])
+
+stop-embedded-server
+quit
