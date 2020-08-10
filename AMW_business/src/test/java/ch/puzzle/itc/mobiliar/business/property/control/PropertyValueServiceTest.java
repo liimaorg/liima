@@ -39,7 +39,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -113,8 +113,9 @@ public class PropertyValueServiceTest {
     public void setPropertyValueShouldLoadPropertyFromDBAndAddToContextWhenPropertyIsNotYetInContext() throws ValidationException {
         // given
         String unobfuscatedValue = "some value";
+        PropertyDescriptorEntity descriptorMock = mock(PropertyDescriptorEntity.class);
 
-
+        Mockito.when(entityManagerMock.find(PropertyDescriptorEntity.class, propertyDescriptorId)).thenReturn(descriptorMock);
         Mockito.when(resourceContextMock.getPropertyForDescriptor(propertyDescriptorId)).thenReturn(null);
         Mockito.when(propertyValidationServiceMock.canPropertyValueBeSetOnContext(Mockito.any(PropertyDescriptorEntity.class), Mockito.any(ContextDependency.class))).thenReturn(true);
 
@@ -133,8 +134,10 @@ public class PropertyValueServiceTest {
         String unobfuscatedValue = "some value";
 
         PropertyEntity propertyMock = mock(PropertyEntity.class);
+        PropertyDescriptorEntity descriptorMock = mock(PropertyDescriptorEntity.class);
 
         Mockito.when(resourceContextMock.getPropertyForDescriptor(propertyDescriptorId)).thenReturn(propertyMock);
+        Mockito.when(propertyMock.getDescriptor()).thenReturn(descriptorMock);
         Mockito.when(propertyValidationServiceMock.canPropertyValueBeSetOnContext(Mockito.any(PropertyDescriptorEntity.class), Mockito.any(ContextDependency.class))).thenReturn(true);
 
         //when
@@ -152,7 +155,6 @@ public class PropertyValueServiceTest {
         PropertyEntity propertyMock = mock(PropertyEntity.class);
 
         Mockito.when(resourceContextMock.getPropertyForDescriptor(propertyDescriptorId)).thenReturn(propertyMock);
-        Mockito.when(propertyValidationServiceMock.canPropertyValueBeSetOnContext(Mockito.any(PropertyDescriptorEntity.class), Mockito.any(ContextDependency.class))).thenReturn(false);
 
         //when
         service.setPropertyValue(resourceContextMock, propertyDescriptorId, unobfuscatedValue);
@@ -191,8 +193,6 @@ public class PropertyValueServiceTest {
         ResourceEditProperty resourceEditPropertyMock = mock(ResourceEditProperty.class);
         Mockito.when(resourceEditPropertyMock.getDefaultValue()).thenReturn(defaultValue);
         Mockito.when(resourceEditPropertyMock.getPropertyValue()).thenReturn(value);
-        Mockito.when(resourceEditPropertyMock.getParent()).thenReturn(null);
-        Mockito.when(resourceEditPropertyMock.getOriginalValue()).thenReturn(null);
 
         //when
         service.verifyDefaultPropertyCanBeSet(resourceEditPropertyMock, contextEntity);
@@ -233,7 +233,6 @@ public class PropertyValueServiceTest {
         Mockito.when(resourceEditPropertyMock.getDefaultValue()).thenReturn(defaultValue);
         Mockito.when(resourceEditPropertyMock.getPropertyValue()).thenReturn(defaultValue);
         Mockito.when(resourceEditPropertyMock.getParent()).thenReturn(mock(ResourceEditProperty.class));
-        Mockito.when(resourceEditPropertyMock.getOriginalValue()).thenReturn(null);
 
         //when
         service.verifyDefaultPropertyCanBeSet(resourceEditPropertyMock, contextEntity);
@@ -269,7 +268,6 @@ public class PropertyValueServiceTest {
         // given
         ContextEntity contextEntity = new ContextEntity();
         ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
-        when(resourceEntityMock.getId()).thenReturn(22);
 
         // when
         service.saveProperties(contextEntity, resourceEntityMock, Collections.EMPTY_LIST);
@@ -288,11 +286,12 @@ public class PropertyValueServiceTest {
         ResourceEditProperty changedProperty = new ResourceEditPropertyBuilder()
                 .withDisplayAndTechKeyName("Memory")
                 .withValue("100")
+                .withDescriptorId(123)
                 .build();
         changedProperty.setPropertyValue("101");
         List<ResourceEditProperty> resourceProperties = Arrays.asList(changedProperty);
         when(resourceEntityMock.getId()).thenReturn(resourceId);
-        doNothing().when(service).setPropertyValue(any(ContextDependency.class), anyInt(), anyString());
+        doNothing().when(service).setPropertyValue(Mockito.<ContextDependency>any(), eq(changedProperty.getDescriptorId()), eq(changedProperty.getPropertyValue()));
 
         // when
         service.saveProperties(contextEntity, resourceEntityMock, resourceProperties);
@@ -312,10 +311,11 @@ public class PropertyValueServiceTest {
         ResourceEditProperty changedProperty = new ResourceEditPropertyBuilder()
                 .withDisplayAndTechKeyName("Memory")
                 .withValue("100")
+                .withDescriptorId(123)
                 .build();
         changedProperty.setReset(true);
         List<ResourceEditProperty> resourceProperties = Arrays.asList(changedProperty);
-        doNothing().when(service).resetPropertyValue(any(ContextDependency.class), anyInt());
+        doNothing().when(service).resetPropertyValue(Mockito.<ContextDependency>any(), eq(changedProperty.getDescriptorId()));
 
         // when
         service.saveProperties(contextEntity, resourceEntityMock, resourceProperties);

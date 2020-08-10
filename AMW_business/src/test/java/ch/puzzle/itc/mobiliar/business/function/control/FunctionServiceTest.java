@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceTypeEntityBuilder;
@@ -42,9 +42,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.MikEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-
-import javax.validation.constraints.AssertTrue;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class FunctionServiceTest {
@@ -105,16 +102,12 @@ public class FunctionServiceTest {
 	public void setUp(){
 		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_A.getId())).thenReturn(FUNCTION_A);
 		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_A_OVERWRITE.getId())).thenReturn(FUNCTION_A_OVERWRITE);
-        when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_A_OVERWRITE_2.getId())).thenReturn(FUNCTION_A_OVERWRITE_2);
         when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(OTHER_FUNCTION_A.getId())).thenReturn(OTHER_FUNCTION_A);
 		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_B.getId())).thenReturn(FUNCTION_B);
 		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_B_OVERWRITE.getId())).thenReturn(FUNCTION_B_OVERWRITE);
-        when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_B_OVERWRITE_2.getId())).thenReturn(FUNCTION_B_OVERWRITE_2);
 		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_C.getId())).thenReturn(FUNCTION_C);
-		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_C_OVERWRITE.getId())).thenReturn(FUNCTION_C_OVERWRITE);
 		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_D.getId())).thenReturn(FUNCTION_D);
 		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_E.getId())).thenReturn(FUNCTION_E);
-		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_F.getId())).thenReturn(FUNCTION_F);
 
 	}
 
@@ -480,7 +473,7 @@ public class FunctionServiceTest {
         ResourceTypeEntity subResourceType = createSubResourceType(rootResourceType);
         ResourceEntity resource = createResourceWithType("amw", 1000, subResourceType);
 
-        ResourceTypeEntity otherSubResourceType = createSubResourceType(rootResourceType, OTHER_FUNCTION_A);
+        createSubResourceType(rootResourceType, OTHER_FUNCTION_A);
 
         when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
 
@@ -570,7 +563,7 @@ public class FunctionServiceTest {
         ResourceTypeEntity otherSubResourceType = createSubResourceType(rootResourceType);
 
         ResourceEntity resource = createResourceWithType("amw", 1000, subResourceType);
-        ResourceEntity otherResource = createResourceWithType("amw2", 1001, otherSubResourceType, OTHER_FUNCTION_A);
+        createResourceWithType("amw2", 1001, otherSubResourceType, OTHER_FUNCTION_A);
 
         when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
 
@@ -622,9 +615,7 @@ public class FunctionServiceTest {
 
         ResourceTypeEntity rootResourceType = createRootResourceType();
         ResourceTypeEntity subResourceType = createSubResourceType(rootResourceType);
-        ResourceEntity resource = createResourceWithType("amw", 1000, subResourceType);
-
-        when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
+        createResourceWithType("amw", 1000, subResourceType);
 
         // when
         List<AmwFunctionEntity> functionsWithName = functionService.findFunctionsByNameInNamespace(subResourceType, FUNCTION_A.getName());
@@ -639,11 +630,8 @@ public class FunctionServiceTest {
 
         ResourceTypeEntity rootResourceType = createRootResourceType();
         ResourceTypeEntity subResourceType = createSubResourceType(rootResourceType);
-        ResourceEntity resource = createResourceWithType("amw", 1000, subResourceType);
-
-        ResourceTypeEntity otherSubResourceType = createSubResourceType(rootResourceType, OTHER_FUNCTION_A);
-
-        when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
+        createResourceWithType("amw", 1000, subResourceType);
+        createSubResourceType(rootResourceType, OTHER_FUNCTION_A);
 
         // when
         List<AmwFunctionEntity> functionsWithName = functionService.findFunctionsByNameInNamespace(subResourceType, FUNCTION_A.getName());
@@ -658,9 +646,7 @@ public class FunctionServiceTest {
 
         ResourceTypeEntity rootResourceType = createRootResourceType();
         ResourceTypeEntity subResourceType = createSubResourceType(rootResourceType, OTHER_FUNCTION_A);
-        ResourceEntity resource = createResourceWithType("amw", 1000, subResourceType);
-
-        when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
+        createResourceWithType("amw", 1000, subResourceType);
 
         // when
         List<AmwFunctionEntity> functionsWithName = functionService.findFunctionsByNameInNamespace(subResourceType, FUNCTION_A.getName());
@@ -675,9 +661,7 @@ public class FunctionServiceTest {
 
         ResourceTypeEntity rootResourceType = createRootResourceType(OTHER_FUNCTION_A);
         ResourceTypeEntity subResourceType = createSubResourceType(rootResourceType);
-        ResourceEntity resource = createResourceWithType("amw", 1000, subResourceType);
-
-        when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
+        createResourceWithType("amw", 1000, subResourceType);
 
         // when
         List<AmwFunctionEntity> functionsWithName = functionService.findFunctionsByNameInNamespace(subResourceType, FUNCTION_A.getName());
@@ -692,9 +676,7 @@ public class FunctionServiceTest {
 
         ResourceTypeEntity rootResourceType = createRootResourceType();
         ResourceTypeEntity subResourceType = createSubResourceType(rootResourceType);
-        ResourceEntity resource = createResourceWithType("amw", 1000, subResourceType, OTHER_FUNCTION_A);
-
-        when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
+        createResourceWithType("amw", 1000, subResourceType, OTHER_FUNCTION_A);
 
         // when
         List<AmwFunctionEntity> functionsWithName = functionService.findFunctionsByNameInNamespace(subResourceType, FUNCTION_A.getName());
@@ -709,9 +691,7 @@ public class FunctionServiceTest {
 
         ResourceTypeEntity rootResourceType = createRootResourceType();
         ResourceTypeEntity subResourceType = createSubResourceType(rootResourceType);
-        ResourceEntity resource = createResourceWithType("amw", 1000, subResourceType);
-
-        when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
+        createResourceWithType("amw", 1000, subResourceType);
 
         // when
         List<AmwFunctionEntity> functionsWithName = functionService.findFunctionsByNameInNamespace(rootResourceType, FUNCTION_A.getName());
@@ -726,10 +706,7 @@ public class FunctionServiceTest {
 
         ResourceTypeEntity rootResourceType = createRootResourceType(OTHER_FUNCTION_A);
         ResourceTypeEntity subResourceType = createSubResourceType(rootResourceType);
-        ResourceEntity resource = createResourceWithType("amw", 1000, subResourceType);
-
-        when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
-
+        createResourceWithType("amw", 1000, subResourceType);
         // when
         List<AmwFunctionEntity> functionsWithName = functionService.findFunctionsByNameInNamespace(rootResourceType, FUNCTION_A.getName());
 
@@ -743,9 +720,7 @@ public class FunctionServiceTest {
 
         ResourceTypeEntity rootResourceType = createRootResourceType();
         ResourceTypeEntity subResourceType = createSubResourceType(rootResourceType, OTHER_FUNCTION_A);
-        ResourceEntity resource = createResourceWithType("amw", 1000, subResourceType);
-
-        when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
+        createResourceWithType("amw", 1000, subResourceType);
 
         // when
         List<AmwFunctionEntity> functionsWithName = functionService.findFunctionsByNameInNamespace(rootResourceType, FUNCTION_A.getName());
@@ -760,9 +735,7 @@ public class FunctionServiceTest {
 
         ResourceTypeEntity rootResourceType = createRootResourceType();
         ResourceTypeEntity subResourceType = createSubResourceType(rootResourceType);
-        ResourceEntity resource = createResourceWithType("amw", 1000, subResourceType, OTHER_FUNCTION_A);
-
-        when(resourceRepositoryMock.loadWithFunctionsAndMiksForId(resource.getId())).thenReturn(resource);
+        createResourceWithType("amw", 1000, subResourceType, OTHER_FUNCTION_A);
 
         // when
         List<AmwFunctionEntity> functionsWithName = functionService.findFunctionsByNameInNamespace(rootResourceType, FUNCTION_A.getName());

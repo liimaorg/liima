@@ -669,7 +669,7 @@ public class PermissionBoundaryTest {
         // given
         ResourceTypeEntity type = new ResourceTypeEntity();
         ContextEntity context = new ContextEntity();
-        when(entityManager.find(type.getClass(), 21)).thenReturn(type);
+        doReturn(type).when(entityManager).find(type.getClass(), 21);
         when(contextLocator.getContextById(23)).thenReturn(context);
         when(permissionService.hasPermission(Permission.RESOURCETYPE, context, UPDATE, null, type)).thenReturn(true);
         // when
@@ -688,7 +688,7 @@ public class PermissionBoundaryTest {
         resource.setResourceGroup(rg);
         resource.setResourceType(type);
         ContextEntity context = new ContextEntity();
-        when(entityManager.find(resource.getClass(), 21)).thenReturn(resource);
+        doReturn(resource).when(entityManager).find(resource.getClass(), 21);
         when(contextLocator.getContextById(23)).thenReturn(context);
         when(permissionService.hasPermission(Permission.RESOURCE, context, UPDATE, rg, null)).thenReturn(false);
         // when

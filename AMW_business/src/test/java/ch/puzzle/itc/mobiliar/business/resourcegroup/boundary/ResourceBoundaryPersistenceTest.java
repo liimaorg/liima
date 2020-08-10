@@ -48,6 +48,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -197,7 +199,7 @@ public class ResourceBoundaryPersistenceTest {
         Resource r1 = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1", appType.getId(),
                 release1.getId());
         when(commonService.getResourceEntityById(r1.getId())).thenReturn(r1.getEntity());
-        when(permissionBoundary.hasPermission(any(Permission.class), any(ContextEntity.class), any(Action.class),
+        when(permissionBoundary.hasPermission(any(Permission.class), ArgumentMatchers.<ContextEntity>any(), any(Action.class),
                 any(ResourceEntity.class), any(ResourceTypeEntity.class))).thenReturn(true);
         when(resourceGroupRepository.find(r1.getEntity().getResourceGroup().getId())).thenReturn(r1.getEntity().getResourceGroup());
 

@@ -48,6 +48,8 @@ import org.mockito.MockitoAnnotations;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -58,18 +60,17 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.*;
 
 @RunWith(PersistenceTestRunner.class)
-public class DeploymentBoundaryPersistenceTest
-{
+public class DeploymentBoundaryPersistenceTest {
 
 	@InjectMocks
-    DeploymentBoundary deploymentBoundary;
+	DeploymentBoundary deploymentBoundary;
 
 	@Mock
 	CommonFilterService commonFilterService;
 
 	@Mock
 	PermissionService permissionService;
-	
+
 	@Mock
 	DeploymentNotificationService deploymentNotificationService;
 
@@ -118,27 +119,22 @@ public class DeploymentBoundaryPersistenceTest
 
 		DeploymentEntity detachedEntity = getDetachedEntityFromDb(d);
 
-		Date deploymentDate = new Date(new Date().getTime()+100000l);
+		Date deploymentDate = new Date(new Date().getTime() + 100000l);
 		detachedEntity.setDeploymentDate(deploymentDate);
 
 		// when
-		DeploymentEntity result = deploymentBoundary
-				.changeDeploymentDate(detachedEntity.getId(), detachedEntity.getDeploymentDate());
+		DeploymentEntity result = deploymentBoundary.changeDeploymentDate(detachedEntity.getId(),
+				detachedEntity.getDeploymentDate());
 
 		// then
-		assertNotNull(
-				"Deployment should not be started or been executed so far",
-				result);
-		assertEquals(
-				"Deploymentdate should be set to "
-						+ deploymentDate.toString(),
-				getDetachedEntityFromDb(d).getDeploymentDate(),
-				deploymentDate);
+		assertNotNull("Deployment should not be started or been executed so far", result);
+		assertEquals("Deploymentdate should be set to " + deploymentDate.toString(),
+				getDetachedEntityFromDb(d).getDeploymentDate(), deploymentDate);
 
 	}
 
 	@Test(expected = DeploymentStateException.class)
-	public void test_changeDeploymentTime_failed_alreadyExecuted() throws DeploymentStateException  {
+	public void test_changeDeploymentTime_failed_alreadyExecuted() throws DeploymentStateException {
 		// given
 		d.setDeploymentState(DeploymentState.canceled);
 		persistDeploymentEntityForTest(d);
@@ -152,7 +148,7 @@ public class DeploymentBoundaryPersistenceTest
 	}
 
 	@Test(expected = DeploymentStateException.class)
-	public void test_changeDeploymentTime_failed_alreadyStarted() throws DeploymentStateException  {
+	public void test_changeDeploymentTime_failed_alreadyStarted() throws DeploymentStateException {
 		// given
 		d.setDeploymentState(DeploymentState.progress);
 		persistDeploymentEntityForTest(d);
@@ -171,7 +167,7 @@ public class DeploymentBoundaryPersistenceTest
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void test_cancelDeployment_exception_noId() throws DeploymentStateException  {
+	public void test_cancelDeployment_exception_noId() throws DeploymentStateException {
 		// given
 		d.setId(null);
 
@@ -181,7 +177,7 @@ public class DeploymentBoundaryPersistenceTest
 	}
 
 	@Test(expected = DeploymentStateException.class)
-	public void test_cancelDeployment_failed_alreadyExecuted() throws DeploymentStateException  {
+	public void test_cancelDeployment_failed_alreadyExecuted() throws DeploymentStateException {
 		// given
 		d.setDeploymentState(DeploymentState.failed);
 		persistDeploymentEntityForTest(d);
@@ -194,21 +190,21 @@ public class DeploymentBoundaryPersistenceTest
 	}
 
 	@Test(expected = DeploymentStateException.class)
-	public void test_cancelDeployment_failed_alreadyStarted() throws DeploymentStateException  {
+	public void test_cancelDeployment_failed_alreadyStarted() throws DeploymentStateException {
 		// given
 		d.setDeploymentState(DeploymentState.progress);
 		persistDeploymentEntityForTest(d);
 
 		persistDeploymentEntityForTest(d);
 
-		DeploymentEntity detachedEntity = getDetachedEntityFromDb(d);		
-		
+		DeploymentEntity detachedEntity = getDetachedEntityFromDb(d);
+
 		deploymentBoundary.cancelDeployment(detachedEntity.getId());
 
 	}
 
 	@Test
-	public void test_cancelDeployment_success() throws DeploymentStateException  {
+	public void test_cancelDeployment_success() throws DeploymentStateException {
 		// given
 		d.setDeploymentState(DeploymentState.scheduled);
 		d.appendStateMessage(null);
@@ -218,23 +214,23 @@ public class DeploymentBoundaryPersistenceTest
 
 		DeploymentEntity detachedEntity = getDetachedEntityFromDb(d);
 		String cancelUserName = "jupi";
-		
 
 		// when
 		when(permissionService.getCurrentUserName()).thenReturn(cancelUserName);
 		DeploymentEntity cancelDeployment = deploymentBoundary.cancelDeployment(detachedEntity.getId());
-		
+
 		// then
 		assertTrue("Deployment executed must be set to true after cancelling", cancelDeployment.isExecuted());
-		assertEquals("State must be set to canceled",DeploymentState.canceled, cancelDeployment.getDeploymentState());
+		assertEquals("State must be set to canceled", DeploymentState.canceled, cancelDeployment.getDeploymentState());
 		assertNotNull("A statemessage must be set", cancelDeployment.getStateMessage());
-		assertEquals("A cancel user must be set to "+cancelUserName,cancelUserName, cancelDeployment.getDeploymentCancelUser());
+		assertEquals("A cancel user must be set to " + cancelUserName, cancelUserName,
+				cancelDeployment.getDeploymentCancelUser());
 		assertNotNull("A cancel date be set", cancelDeployment.getDeploymentCancelDate());
 
 	}
-	
+
 	@Test
-	public void test_getDeploymentsInProgressTimeoutReached_started_inprogress_but_date_not_reached(){
+	public void test_getDeploymentsInProgressTimeoutReached_started_inprogress_but_date_not_reached() {
 		// given
 		d.appendStateMessage(null);
 		d.setDeploymentCancelUser(null);
@@ -242,175 +238,175 @@ public class DeploymentBoundaryPersistenceTest
 		d.setDeploymentDate(new Date());
 		d.setDeploymentState(DeploymentState.progress);
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsInProgressTimeoutReached();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsInProgressTimeoutReached_started_inprogress_and_date(){
+	public void test_getDeploymentsInProgressTimeoutReached_started_inprogress_and_date() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		deploymentDate.add(Calendar.SECOND, - ConfigurationService.getPropertyAsInt(ConfigKey.DEPLOYMENT_IN_PROGRESS_TIMEOUT) - 100); 
-		
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+		deploymentDate.add(Calendar.SECOND,
+				-ConfigurationService.getPropertyAsInt(ConfigKey.DEPLOYMENT_IN_PROGRESS_TIMEOUT) - 100);
+
 		d.appendStateMessage(null);
 		d.setDeploymentCancelUser(null);
 		d.setDeploymentCancelDate(null);
 		d.setDeploymentDate(deploymentDate.getTime());
 		d.setDeploymentState(DeploymentState.progress);
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsInProgressTimeoutReached();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(1, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsInProgressTimeoutReached_started_not_inprogress_and_date(){
+	public void test_getDeploymentsInProgressTimeoutReached_started_not_inprogress_and_date() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		deploymentDate.add(Calendar.SECOND, - 4000); 
-		
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+		deploymentDate.add(Calendar.SECOND, -4000);
+
 		d.setDeploymentDate(deploymentDate.getTime());
 		d.appendStateMessage(null);
 		d.setDeploymentCancelUser(null);
 		d.setDeploymentCancelDate(null);
 		d.setDeploymentState(DeploymentState.failed);
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsInProgressTimeoutReached();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToExecute_noDeployments(){
+	public void test_getDeploymentsToExecute_noDeployments() {
 		// given
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToExecute();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToExecute_oneDeployment(){
+	public void test_getDeploymentsToExecute_oneDeployment() {
 		// given
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		deploymentDate.add(Calendar.SECOND, + 4000);
-		
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+		deploymentDate.add(Calendar.SECOND, +4000);
+
 		d.setDeploymentDate(deploymentDate.getTime());
 		d.setDeploymentState(DeploymentState.READY_FOR_DEPLOYMENT);
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToExecute();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(1, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToExecute_oneDeployment_wrong_state(){
+	public void test_getDeploymentsToExecute_oneDeployment_wrong_state() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		deploymentDate.add(Calendar.SECOND, - 4000);
-		
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+		deploymentDate.add(Calendar.SECOND, -4000);
+
 		d.setDeploymentDate(deploymentDate.getTime());
 		d.setDeploymentState(DeploymentState.scheduled);
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToExecute();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
-	
+
 	@Test
-	public void test_getDeploymentsToExecute_oneDeployment_allok(){
+	public void test_getDeploymentsToExecute_oneDeployment_allok() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		deploymentDate.add(Calendar.SECOND, - 4000);
-		
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+		deploymentDate.add(Calendar.SECOND, -4000);
+
 		d.setDeploymentState(DeploymentState.scheduled);
 		d.setDeploymentDate(deploymentDate.getTime());
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsToExecute();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(1, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToExecute_oneDeployment_wrongTime(){
+	public void test_getDeploymentsToExecute_oneDeployment_wrongTime() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		deploymentDate.add(Calendar.SECOND, + 4000);
-		
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+		deploymentDate.add(Calendar.SECOND, +4000);
+
 		d.setDeploymentState(DeploymentState.scheduled);
 		d.setDeploymentDate(deploymentDate.getTime());
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsToExecute();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToExecute_oneDeployment_Started(){
+	public void test_getDeploymentsToExecute_oneDeployment_Started() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		deploymentDate.add(Calendar.SECOND, - 4000);
-		
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+		deploymentDate.add(Calendar.SECOND, -4000);
+
 		d.setDeploymentDate(deploymentDate.getTime());
 		d.setDeploymentState(DeploymentState.PRE_DEPLOYMENT);
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsToExecute();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToExecute_oneDeployment_Limit(){
+	public void test_getDeploymentsToExecute_oneDeployment_Limit() {
 		// given
 		persistDeploymentEntityForTest(createDeploymentEntityToExecute());
 		persistDeploymentEntityForTest(createDeploymentEntityToExecute());
@@ -421,206 +417,205 @@ public class DeploymentBoundaryPersistenceTest
 
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsToExecute();
-		
+
 		// then
 		assertNotNull(deployments);
 		// limit is 5 so only 5 are returned
 		assertEquals(5, deployments.size());
 	}
-	
-	private DeploymentEntity createDeploymentEntityToExecute(){
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		deploymentDate.add(Calendar.SECOND, - 4000);
-		
+
+	private DeploymentEntity createDeploymentEntityToExecute() {
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+		deploymentDate.add(Calendar.SECOND, -4000);
+
 		DeploymentEntity deploymentEntity = new DeploymentEntity();
 		deploymentEntity.setDeploymentState(DeploymentState.scheduled);
 		deploymentEntity.setDeploymentDate(deploymentDate.getTime());
-		
+
 		return deploymentEntity;
 	}
-	
-	
+
 	@Test
-	public void test_getDeploymentsToSimulate_noDeployments(){
+	public void test_getDeploymentsToSimulate_noDeployments() {
 		// given
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToSimulate_oneDeployment_allok_sameDay(){
+	public void test_getDeploymentsToSimulate_oneDeployment_allok_sameDay() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+
 		d.confirm("testuser");
 		d.setSimulating(true);
 		d.setDeploymentDate(deploymentDate.getTime());
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(1, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToSimulate_oneDeployment_allok_in_Future(){
+	public void test_getDeploymentsToSimulate_oneDeployment_allok_in_Future() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
 		deploymentDate.add(Calendar.DAY_OF_MONTH, 1);
-		
+
 		d.confirm("testuser");
 		d.setSimulating(true);
 		d.setDeploymentDate(deploymentDate.getTime());
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(1, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToSimulate_oneDeployment_notok_in_Past(){
+	public void test_getDeploymentsToSimulate_oneDeployment_notok_in_Past() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
 		deploymentDate.add(Calendar.DAY_OF_MONTH, -2);
-		
+
 		d.confirm("testuser");
 		d.setSimulating(true);
 		d.setDeploymentDate(deploymentDate.getTime());
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToSimulate_oneDeployment_Simulating(){
+	public void test_getDeploymentsToSimulate_oneDeployment_Simulating() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+
 		d.confirm("testuser");
 		d.setSimulating(true);
 		d.setDeploymentState(DeploymentState.simulating);
 		d.setDeploymentDate(deploymentDate.getTime());
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToSimulate_oneDeployment_NotConfirmed(){
+	public void test_getDeploymentsToSimulate_oneDeployment_NotConfirmed() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+
 		d.setSimulating(true);
 		d.setDeploymentState(DeploymentState.scheduled);
 		d.setDeploymentDate(deploymentDate.getTime());
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(1, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToSimulate_oneDeployment_Executed(){
+	public void test_getDeploymentsToSimulate_oneDeployment_Executed() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+
 		d.confirm("testuser");
 		d.setSimulating(true);
 		d.setDeploymentState(DeploymentState.rejected);
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToSimulate_oneDeployment_Started(){
+	public void test_getDeploymentsToSimulate_oneDeployment_Started() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
+
+		Calendar deploymentDate = Calendar.getInstance();
 		deploymentDate.setTime(new Date());
 		deploymentDate.add(Calendar.SECOND, 200);
-		
+
 		d.confirm("testuser");
 		d.setSimulating(true);
 		d.setDeploymentDate(deploymentDate.getTime());
 		d.setDeploymentState(DeploymentState.progress);
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToSimulate_oneDeployment_NotSimulating(){
+	public void test_getDeploymentsToSimulate_oneDeployment_NotSimulating() {
 		// given
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+
 		d.confirm("testuser");
 		d.setSimulating(false);
 		d.setDeploymentDate(deploymentDate.getTime());
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
-		
+
 		// then
 		assertNotNull(deployments);
 		assertEquals(0, deployments.size());
 	}
-	
+
 	@Test
-	public void test_getDeploymentsToSimulate_oneDeployment_Limit(){
+	public void test_getDeploymentsToSimulate_oneDeployment_Limit() {
 		// given
 		persistDeploymentEntityForTest(createDeploymentEntityToSimulate());
 		persistDeploymentEntityForTest(createDeploymentEntityToSimulate());
@@ -631,92 +626,92 @@ public class DeploymentBoundaryPersistenceTest
 
 		// when
 		List<DeploymentEntity> deployments = deploymentBoundary.getDeploymentsToSimulate();
-		
+
 		// then
 		assertNotNull(deployments);
 		// limit is 5 so only 5 are returned
 		assertEquals(5, deployments.size());
 	}
-	
-	private DeploymentEntity createDeploymentEntityToSimulate(){
-		
-		Calendar deploymentDate = Calendar.getInstance(); 
-		deploymentDate.setTime(new Date()); 
-		
+
+	private DeploymentEntity createDeploymentEntityToSimulate() {
+
+		Calendar deploymentDate = Calendar.getInstance();
+		deploymentDate.setTime(new Date());
+
 		DeploymentEntity deploymentEntity = new DeploymentEntity();
 		deploymentEntity.confirm("testuser");
 		deploymentEntity.setSimulating(true);
 		deploymentEntity.setDeploymentDate(deploymentDate.getTime());
-		
+
 		return deploymentEntity;
 	}
-	
+
 	@Test
-	public void test_sendOneNotificationForTrackingIdOfDeployment_non_Executed(){
+	public void test_sendOneNotificationForTrackingIdOfDeployment_non_Executed() {
 		// given
-		
+
 		DeploymentEntity d = new DeploymentEntity();
 		d.setTrackingId(Integer.valueOf(12));
-		
+
 		persistDeploymentEntityForTest(d);
-		
+
 		d = new DeploymentEntity();
 		d.setTrackingId(Integer.valueOf(12));
-		
+
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(Integer.valueOf(12));
-		
+
 		// then
 		verify(deploymentNotificationService, times(0)).createAndSendMailForDeplyoments(anyList());
 	}
-	
+
 	@Test
-	public void test_sendOneNotificationForTrackingIdOfDeployment_one_Executed(){
+	public void test_sendOneNotificationForTrackingIdOfDeployment_one_Executed() {
 		// given
-		
+
 		DeploymentEntity d = new DeploymentEntity();
 		d.setTrackingId(Integer.valueOf(12));
-		
+
 		persistDeploymentEntityForTest(d);
-		
+
 		d = new DeploymentEntity();
 		d.setTrackingId(Integer.valueOf(12));
 		d.setDeploymentState(DeploymentState.success);
-		
+
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(Integer.valueOf(12));
-		
+
 		// then
 		verify(deploymentNotificationService, times(0)).createAndSendMailForDeplyoments(anyList());
 	}
-	
+
 	@Test
-	public void test_sendOneNotificationForTrackingIdOfDeployment_both_Executed(){
+	public void test_sendOneNotificationForTrackingIdOfDeployment_both_Executed() {
 		// given
-		
+
 		DeploymentEntity d = new DeploymentEntity();
 		d.setTrackingId(Integer.valueOf(12));
 		d.setDeploymentState(DeploymentState.success);
-		
+
 		persistDeploymentEntityForTest(d);
-		
+
 		d = new DeploymentEntity();
 		d.setTrackingId(Integer.valueOf(12));
 		d.setDeploymentState(DeploymentState.success);
-		
+
 		persistDeploymentEntityForTest(d);
-		
+
 		// when
 		deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(Integer.valueOf(12));
-		
+
 		// then
 		verify(deploymentNotificationService, times(1)).createAndSendMailForDeplyoments(anyList());
 	}
-	
+
 	@Test
 	public void test_updateDeploymentInfo() {
 		// given
@@ -728,7 +723,8 @@ public class DeploymentBoundaryPersistenceTest
 		persistDeploymentEntityForTest(d);
 
 		// when
-		deploymentBoundary.updateDeploymentInfo(GenerationModus.DEPLOY, d.getId(), "foo error", resource.getId(), null, DeploymentFailureReason.DEPLOYMENT_SCRIPT);
+		deploymentBoundary.updateDeploymentInfo(GenerationModus.DEPLOY, d.getId(), "foo error", resource.getId(), null,
+				DeploymentFailureReason.DEPLOYMENT_SCRIPT);
 
 		// then
 		DeploymentEntity afterUpdate = entityManager.find(DeploymentEntity.class, d.getId());
@@ -739,19 +735,17 @@ public class DeploymentBoundaryPersistenceTest
 		assertThat(afterUpdate.getReason(), is(DeploymentFailureReason.DEPLOYMENT_SCRIPT));
 	}
 
-	
 	private void persistDeploymentEntityForTest(DeploymentEntity d) {
 		entityManager.persist(d);
 		entityManager.flush();
 	}
 
 	private DeploymentEntity getDetachedEntityFromDb(DeploymentEntity d) {
-		DeploymentEntity entity = entityManager.find(DeploymentEntity.class,
-				d.getId());
+		DeploymentEntity entity = entityManager.find(DeploymentEntity.class, d.getId());
 		entityManager.detach(entity);
 		return entity;
 	}
-	
+
 	@Test
 	public void test_getFilteredDeployments_sortByRelease() {
 		// given
@@ -771,7 +765,7 @@ public class DeploymentBoundaryPersistenceTest
 		entityManager.persist(releaseA);
 		entityManager.persist(releaseC);
 		entityManager.persist(releaseB);
-		
+
 		cal.set(2014, Calendar.AUGUST, 1);
 		d.setDeploymentDate(cal.getTime());
 		d.setRelease(releaseA);
@@ -783,7 +777,7 @@ public class DeploymentBoundaryPersistenceTest
 		d2.setRelease(releaseC);
 		d2.setDeploymentState(DeploymentState.success);
 		persistDeploymentEntityForTest(d2);
-		
+
 		DeploymentEntity d3 = new DeploymentEntity();
 		d3.setDeploymentDate(null);
 		d3.setRelease(releaseB);
@@ -791,8 +785,9 @@ public class DeploymentBoundaryPersistenceTest
 		persistDeploymentEntityForTest(d3);
 
 		// when sorting by release ascending (releaseA - releaseC - releaseB)
-		String colToSort =	DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(0, 10, Collections.EMPTY_LIST, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
+		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
+		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(0, 10,
+				Collections.EMPTY_LIST, colToSort, CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
 		assertNotNull(result1);
@@ -801,10 +796,10 @@ public class DeploymentBoundaryPersistenceTest
 		assertEquals(d, it.next());
 		assertEquals(d2, it.next());
 		assertEquals(d3, it.next());
-		
+
 		// when sorting by release descending (releaseB - releaseC - releaseC)
-		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(0,
-				10, Collections.EMPTY_LIST, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
+		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(0, 10,
+				Collections.EMPTY_LIST, colToSort, CommonFilterService.SortingDirectionType.DESC, null);
 
 		// then
 		assertNotNull(result2);
@@ -814,7 +809,7 @@ public class DeploymentBoundaryPersistenceTest
 		assertEquals(d2, it.next());
 		assertEquals(d, it.next());
 	}
-	
+
 	@Test
 	public void test_getFilteredDeployments_filterByRelease() {
 		// given
@@ -834,7 +829,7 @@ public class DeploymentBoundaryPersistenceTest
 		entityManager.persist(releaseA);
 		entityManager.persist(releaseC);
 		entityManager.persist(releaseB);
-		
+
 		cal.set(2014, Calendar.AUGUST, 1);
 		d.setDeploymentDate(cal.getTime());
 		d.setDeploymentState(DeploymentState.success);
@@ -846,7 +841,7 @@ public class DeploymentBoundaryPersistenceTest
 		d2.setDeploymentState(DeploymentState.success);
 		d2.setRelease(releaseC);
 		persistDeploymentEntityForTest(d2);
-		
+
 		DeploymentEntity d3 = new DeploymentEntity();
 		d3.setDeploymentDate(new Date());
 		d3.setDeploymentState(DeploymentState.requested);
@@ -859,8 +854,8 @@ public class DeploymentBoundaryPersistenceTest
 		CustomFilter filter = CustomFilter.builder(DeploymentFilterTypes.RELEASE)
 				.comparatorSelection(ComparatorFilterOption.gte).build();
 		filter.setValue(CustomFilter.convertDateToString(releaseA.getInstallationInProductionAt()));
-		result = deploymentBoundary.getFilteredDeployments(0, 10, Collections.singletonList(filter),
-				null, CommonFilterService.SortingDirectionType.ASC, null);
+		result = deploymentBoundary.getFilteredDeployments(0, 10, Collections.singletonList(filter), null,
+				CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
 		assertNotNull(result);
@@ -868,12 +863,11 @@ public class DeploymentBoundaryPersistenceTest
 		assertTrue(result.getA().contains(d));
 		assertTrue(result.getA().contains(d2));
 		assertTrue(result.getA().contains(d3));
-		
+
 		// when filtering <= releaseC
 		filter.setValue(CustomFilter.convertDateToString(releaseC.getInstallationInProductionAt()));
 		filter.setComparatorSelection(ComparatorFilterOption.lte);
-		result = deploymentBoundary.getFilteredDeployments(0,
-				10, Collections.singletonList(filter), null,
+		result = deploymentBoundary.getFilteredDeployments(0, 10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
@@ -886,8 +880,7 @@ public class DeploymentBoundaryPersistenceTest
 		// when filtering == releaseB
 		filter.setValue(CustomFilter.convertDateToString(releaseB.getInstallationInProductionAt()));
 		filter.setComparatorSelection(ComparatorFilterOption.eq);
-		result = deploymentBoundary.getFilteredDeployments(0,
-				10, Collections.singletonList(filter), null,
+		result = deploymentBoundary.getFilteredDeployments(0, 10, Collections.singletonList(filter), null,
 				CommonFilterService.SortingDirectionType.ASC, null);
 
 		// then
@@ -932,7 +925,8 @@ public class DeploymentBoundaryPersistenceTest
 	}
 
 	@Test
-	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatestForDeletedContext() throws AMWException {
+	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatestForDeletedContext()
+			throws AMWException {
 		// given
 		ResourceEntity resource = ResourceFactory.createNewResource();
 		resource.setName("fooAS");
@@ -968,11 +962,13 @@ public class DeploymentBoundaryPersistenceTest
 	}
 
 	@Test
-	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatestOnlyIfSuccessful() throws AMWException {
+	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatestOnlyIfSuccessful()
+			throws AMWException {
 		// given
 		ResourceEntity resource = ResourceFactory.createNewResource();
 		resource.setName("fooAS");
 		entityManager.persist(resource);
+		LocalDateTime now = LocalDateTime.now();
 
 		ContextEntity context = new ContextEntity();
 		context.setName("test");
@@ -981,14 +977,14 @@ public class DeploymentBoundaryPersistenceTest
 		DeploymentEntity successful = new DeploymentEntity();
 		successful.setResourceGroup(resource.getResourceGroup());
 		successful.setContext(context);
-		successful.setDeploymentDate(new Date());
+		successful.setDeploymentDate(java.sql.Timestamp.valueOf(now.minusNanos(1)));
 		successful.setDeploymentState(DeploymentState.success);
 		persistDeploymentEntityForTest(successful);
 
 		DeploymentEntity failed = new DeploymentEntity();
 		failed.setResourceGroup(resource.getResourceGroup());
 		failed.setContext(context);
-		failed.setDeploymentDate(new Date());
+		failed.setDeploymentDate(java.sql.Timestamp.valueOf(now));
 		failed.setDeploymentState(DeploymentState.failed);
 		persistDeploymentEntityForTest(failed);
 
@@ -1002,6 +998,7 @@ public class DeploymentBoundaryPersistenceTest
 	@Test
 	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatestOfEveryResourceGroupAndContext() throws AMWException {
 		// given
+		LocalDateTime now = LocalDateTime.now();
 		ResourceEntity resourceA = ResourceFactory.createNewResource();
 		resourceA.setName("A");
 		entityManager.persist(resourceA);
@@ -1021,28 +1018,28 @@ public class DeploymentBoundaryPersistenceTest
 		DeploymentEntity deploymentAColder = new DeploymentEntity();
 		deploymentAColder.setResourceGroup(resourceA.getResourceGroup());
 		deploymentAColder.setContext(contextC);
-		deploymentAColder.setDeploymentDate(new Date());
+		deploymentAColder.setDeploymentDate(java.sql.Timestamp.valueOf(now.minusNanos(1)));
 		deploymentAColder.setDeploymentState(DeploymentState.success);
 		persistDeploymentEntityForTest(deploymentAColder);
 
 		DeploymentEntity deploymentAC = new DeploymentEntity();
 		deploymentAC.setResourceGroup(resourceA.getResourceGroup());
 		deploymentAC.setContext(contextC);
-		deploymentAC.setDeploymentDate(new Date());
+		deploymentAC.setDeploymentDate(java.sql.Timestamp.valueOf(now));
 		deploymentAC.setDeploymentState(DeploymentState.success);
 		persistDeploymentEntityForTest(deploymentAC);
 
 		DeploymentEntity deploymentBC = new DeploymentEntity();
 		deploymentBC.setResourceGroup(resourceB.getResourceGroup());
 		deploymentBC.setContext(contextC);
-		deploymentBC.setDeploymentDate(new Date());
+		deploymentBC.setDeploymentDate(java.sql.Timestamp.valueOf(now));
 		deploymentBC.setDeploymentState(DeploymentState.success);
 		persistDeploymentEntityForTest(deploymentBC);
 
 		DeploymentEntity deploymentBT = new DeploymentEntity();
 		deploymentBT.setResourceGroup(resourceB.getResourceGroup());
 		deploymentBT.setContext(contextT);
-		deploymentBT.setDeploymentDate(new Date());
+		deploymentBT.setDeploymentDate(java.sql.Timestamp.valueOf(now));
 		deploymentBT.setDeploymentState(DeploymentState.success);
 		persistDeploymentEntityForTest(deploymentBT);
 

@@ -42,21 +42,19 @@
 		</plugins>
 	</build>
 	<dependencies>
-
 		<!-- Project dependency -->
 		<dependency>
 			<groupId>ch.puzzle.itc.mobiliar</groupId>
 			<artifactId>AMW_commons</artifactId>
 		</dependency>
 
-                <!-- Workaround for liquibase changelog with wf 8+: https://liquibase.jira.com/browse/CORE-2472 -->
-                <dependency>
-                        <groupId>org.yaml</groupId>
-                        <artifactId>snakeyaml</artifactId>
-                        <version>1.26</version>
-                </dependency>
+		<!-- Workaround for liquibase changelog with wf 8+: https://liquibase.jira.com/browse/CORE-2472 -->
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.26</version>
+		</dependency>
 		
-
 		<!-- Declare the APIs we depend on and need for compilation. All of them are provided by JBoss AS 7 -->
 
 		<!-- Import the EJB API, we use provided scope as the API is included in JBoss AS 7 -->
@@ -126,17 +124,17 @@
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
-			<version>2.3.23</version>
+			<version>2.3.30</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
+			<version>2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.8</version>
+			<version>1.14</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -145,7 +143,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>13.0.1</version>
+			<version>29.0-jre</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
@@ -171,7 +169,7 @@
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
-			<version>1.1</version>
+			<version>1.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -227,7 +225,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
+			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -237,5 +235,5 @@
 			<scope>test</scope>
 		</dependency>
 
-	</dependencies>
+	 </dependencies>
 </project>

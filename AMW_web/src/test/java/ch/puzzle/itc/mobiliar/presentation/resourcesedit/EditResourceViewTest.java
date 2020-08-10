@@ -35,7 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Date;
 
@@ -73,7 +73,6 @@ public class EditResourceViewTest {
 	@Test
 	public void testGetDefaultResourceTypeCapitalizedName() {
 		when(resourceType.getName()).thenReturn(DefaultResourceTypeDefinition.APPLICATION.name());
-		when(resourceType.isDefaultResourceType()).thenReturn(true);
 		String displayName = context.getCapitalizedResourceTypeName();
 		Assert.assertEquals("Application", displayName);
 	}

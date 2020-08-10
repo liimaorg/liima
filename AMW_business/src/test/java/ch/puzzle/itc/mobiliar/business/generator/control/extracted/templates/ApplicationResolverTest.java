@@ -30,9 +30,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import com.google.common.collect.Lists;
 import freemarker.template.SimpleHash;
-import freemarker.template.SimpleSequence;
 import freemarker.template.TemplateModelException;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,33 +71,24 @@ public class ApplicationResolverTest {
 		builder = new ApplicationResolverEntityBuilder(entityManager).buildScenario();
 		context = builder.context;
 		MockitoAnnotations.initMocks(this);
-	    	Mockito.when(resourceDependencyResolverService
-			    .getProvidedMasterRelationsForRelease(Mockito.any(ResourceEntity.class),
-					    Mockito.any(ReleaseEntity.class))).thenAnswer(
-			    new Answer<Set<ProvidedResourceRelationEntity>>() {
+		Mockito.when(resourceDependencyResolverService.getProvidedMasterRelationsForRelease(ArgumentMatchers.<ResourceEntity>any(), ArgumentMatchers.<ReleaseEntity>any()))
+				.thenAnswer(new Answer<Set<ProvidedResourceRelationEntity>>() {
 
-				   @Override
-				   public Set<ProvidedResourceRelationEntity> answer(InvocationOnMock invocation)
-						   throws Throwable {
-					  return ((ResourceEntity) invocation.getArguments()[0])
-							  .getProvidedMasterRelations();
-				   }
-			    });
-	    	Mockito.when(resourceDependencyResolverService
-			    .getProvidedSlaveRelationsForRelease(Mockito.any(ResourceEntity.class),
-					    Mockito.any(ReleaseEntity.class))).thenAnswer(
-			    new Answer<Set<ProvidedResourceRelationEntity>>() {
+					@Override
+					public Set<ProvidedResourceRelationEntity> answer(InvocationOnMock invocation) throws Throwable {
+						return ((ResourceEntity) invocation.getArguments()[0]).getProvidedMasterRelations();
+					}
+				});
+		Mockito.when(resourceDependencyResolverService.getProvidedSlaveRelationsForRelease(ArgumentMatchers.<ResourceEntity>any(), ArgumentMatchers.<ReleaseEntity>any()))
+				.thenAnswer(new Answer<Set<ProvidedResourceRelationEntity>>() {
 
-				   @Override
-				   public Set<ProvidedResourceRelationEntity> answer(InvocationOnMock invocation)
-						   throws Throwable {
-					  return ((ResourceEntity) invocation.getArguments()[0])
-							  .getProvidedSlaveRelations();
-				   }
-			    });
+					@Override
+					public Set<ProvidedResourceRelationEntity> answer(InvocationOnMock invocation) throws Throwable {
+						return ((ResourceEntity) invocation.getArguments()[0]).getProvidedSlaveRelations();
+					}
+				});
 		resolver = new ApplicationResolver(builder.options, builder.ws, resourceDependencyResolverService);
 		assertEquals(true, resolver.resolve());
-
 	}
 
 	/**

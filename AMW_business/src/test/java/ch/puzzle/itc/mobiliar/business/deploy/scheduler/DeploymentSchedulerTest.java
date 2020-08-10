@@ -38,9 +38,9 @@ import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.ArgumentMatchers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,12 +48,12 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.matches;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.*;
 
 public class DeploymentSchedulerTest {
@@ -374,7 +374,7 @@ public class DeploymentSchedulerTest {
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
-				Matchers.<Integer>eq(null), Matchers.<GenerationResult>eq(null), Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
+				ArgumentMatchers.<Integer>eq(null), ArgumentMatchers.<GenerationResult>eq(null), ArgumentMatchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(log, times(2)).log(argThat(matchesLevel(Level.INFO)), anyString());
 	}
 
@@ -482,14 +482,14 @@ public class DeploymentSchedulerTest {
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
-				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), Matchers.<GenerationResult>eq(null),
-				Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
+				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), ArgumentMatchers.<GenerationResult>eq(null),
+				ArgumentMatchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(2)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
-				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), Matchers.<GenerationResult>eq(null),
-				Matchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
+				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), ArgumentMatchers.<GenerationResult>eq(null),
+				ArgumentMatchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(deploymentBoundary, times(0)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.PREDEPLOY), anyInt(),
-				anyString(), anyInt(), Matchers.<GenerationResult>any(), Matchers.<DeploymentFailureReason>any());
+				anyString(), anyInt(), ArgumentMatchers.<GenerationResult>any(), ArgumentMatchers.<DeploymentFailureReason>any());
 		
 		verify(log, times(3)).log(argThat(matchesLevel(Level.INFO)), anyString());
 	}

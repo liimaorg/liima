@@ -46,8 +46,6 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 
 	private ResourceTypeEntityBuilder resourceTypeEntityBuilder = new ResourceTypeEntityBuilder();
 
-	private ResourceRelationEntityBuilder relationEntityBuilder = new ResourceRelationEntityBuilder();
-
 	private String name;
 	private Integer id;
 	private ResourceTypeEntity type;

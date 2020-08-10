@@ -21,10 +21,10 @@
 package ch.puzzle.itc.mobiliar.business.domain;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.Charsets;
 
@@ -34,12 +34,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.test.EntityBuilderType;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 
 import freemarker.template.TemplateHashModel;
@@ -58,13 +52,9 @@ public class TestUtils {
 	}
 
 	public static List<ResourceEntity> filterResources(List<ResourceEntity> list, final String typeName) {
-		return Lists.newArrayList(Collections2.filter(list, new Predicate<ResourceEntity>() {
-
-			@Override
-			public boolean apply(ResourceEntity input) {
-				return input.getResourceType().getName().equals(typeName);
-			}
-		}));
+		return list.stream()
+				   .filter(r -> r.getResourceType().getName().equals(typeName))
+				   .collect(Collectors.<ResourceEntity>toList());
 	}
 
 	public static String get(Map<String, Object> map, String... keys) {
@@ -124,73 +114,50 @@ public class TestUtils {
 
 	public static AppServerRelationProperties propertiesForRelation(List<AppServerRelationProperties> list,
 			final EntityBuilderType entityType) {
-		return Iterables.find(list, new Predicate<AppServerRelationProperties>() {
 
-			@Override
-			public boolean apply(AppServerRelationProperties input) {
-				return input.getOwner().getResourceType().getName().equals(entityType.type);
-			}
-		});
+		return list.stream()
+				   .filter(p -> p.getOwner().getResourceType().getName().equals(entityType.type))
+				   .findFirst()
+				   .orElse(null);
 	}
 
 	public static GenerationUnit unitFor(Set<GenerationUnit> units, final ResourceEntity entity) {
-		return Iterables.find(units, new Predicate<GenerationUnit>() {
-
-			@Override
-			public boolean apply(GenerationUnit input) {
-				return input.getSlaveResource().equals(entity);
-			}
-		});
+		return units.stream()
+					.filter(u -> u.getSlaveResource().equals(entity))
+					.findFirst()
+					.orElse(null);
 	}
 
 	public static GenerationUnit unitFor(Set<GenerationUnit> units, final EntityBuilderType type) {
-		return Iterables.find(units, new Predicate<GenerationUnit>() {
-
-			@Override
-			public boolean apply(GenerationUnit input) {
-				return input.getSlaveResource().getName().equals(type.name);
-			}
-		});
+		return units.stream()
+					.filter(u -> u.getSlaveResource().getName().equals(type.name))
+					.findFirst()
+					.orElse(null);
 	}
 
 	public static List<GenerationUnit> unitsFor(Set<GenerationUnit> units, final EntityBuilderType type) {
-		return Lists.newArrayList(Iterables.filter(units, new Predicate<GenerationUnit>() {
-
-			@Override
-			public boolean apply(GenerationUnit input) {
-				return input.getSlaveResource().getName().equals(type.name);
-			}
-		}));
+		return units.stream()
+					.filter(u -> u.getSlaveResource().getName().equals(type.name))
+					.collect(Collectors.<GenerationUnit>toList());
 	}
 
 	public static AppServerRelationProperties propertiesFor(Set<GenerationUnit> units, final EntityBuilderType type) {
-		return Iterables.find(units, new Predicate<GenerationUnit>() {
-
-			@Override
-			public boolean apply(GenerationUnit input) {
-				return input.getSlaveResource().getName().equals(type.name);
-			}
-		}).getAppServerRelationProperties();
+		return units.stream()
+					.filter(u -> u.getSlaveResource().getName().equals(type.name))
+					.map(u -> u.getAppServerRelationProperties())
+					.findFirst()
+					.orElse(null);
 	}
 
-	public static ImmutableSet<Iterable<ResourceEntity>> resources(Set<GenerationUnit> units) {
-		return ImmutableSet.of(Iterables.transform(units, new Function<GenerationUnit, ResourceEntity>() {
-
-			@Override
-			public ResourceEntity apply(GenerationUnit input) {
-				return input.getSlaveResource();
-			}
-		}));
+	public static Set<ResourceEntity> resources(Set<GenerationUnit> units) {
+		return units.stream()
+					.map(u -> u.getSlaveResource())
+					.collect(Collectors.<ResourceEntity>toSet());
 	}
 
-	public static LinkedList<AppServerRelationProperties> properties(Set<GenerationUnit> units) {
-
-		return Lists.newLinkedList(Iterables.transform(units, new Function<GenerationUnit, AppServerRelationProperties>() {
-
-			@Override
-			public AppServerRelationProperties apply(GenerationUnit input) {
-				return input.getAppServerRelationProperties();
-			}
-		}));
+	public static List<AppServerRelationProperties> properties(Set<GenerationUnit> units) {
+		return units.stream()
+					.map(u -> u.getAppServerRelationProperties())
+					.collect(Collectors.<AppServerRelationProperties>toList());
 	}
 }

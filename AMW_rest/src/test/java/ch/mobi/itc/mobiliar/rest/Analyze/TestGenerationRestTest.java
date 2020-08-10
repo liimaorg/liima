@@ -17,6 +17,7 @@ import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -107,7 +108,7 @@ public class TestGenerationRestTest {
         when(releaseLocator.getReleaseByName(releaseName)).thenReturn(release);
         when(contextLocator.getContextByName(env)).thenReturn(context);
 
-        when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), any(Date.class))).thenThrow(AMWException.class);
+        when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), ArgumentMatchers.<Date>any())).thenThrow(AMWException.class);
 
         // when
         rest.testGeneration(resourceGroupName, releaseName, env);
@@ -131,7 +132,7 @@ public class TestGenerationRestTest {
         when(resourceLocator.getResourceByGroupNameAndRelease(anyString(), anyString())).thenReturn(resourceEntity);
         when(releaseLocator.getReleaseByName(releaseName)).thenReturn(release);
         when(contextLocator.getContextByName(env)).thenReturn(context);
-        when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), any(Date.class))).thenThrow(AMWException.class);
+        when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), ArgumentMatchers.<Date>any())).thenThrow(AMWException.class);
 
         // when
         Response response = rest.testGeneration(resourceGroupName, releaseName, env);
@@ -157,7 +158,7 @@ public class TestGenerationRestTest {
         when(resourceLocator.getApplicationServerForApplication(resourceEntity)).thenReturn(resourceEntity);
         when(releaseLocator.getReleaseByName(releaseName)).thenReturn(release);
         when(contextLocator.getContextByName(env)).thenReturn(context);
-        when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), any(Date.class))).thenThrow(AMWException.class);
+        when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), ArgumentMatchers.<Date>any())).thenThrow(AMWException.class);
 
         // when
         rest.testGeneration(resourceGroupName, releaseName, env);
@@ -182,7 +183,7 @@ public class TestGenerationRestTest {
         when(resourceLocator.getApplicationServerForApplication(resourceEntity)).thenReturn(resourceEntity);
         when(releaseLocator.getReleaseByName(releaseName)).thenReturn(release);
         when(contextLocator.getContextByName(env)).thenReturn(context);
-        when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), any(Date.class))).thenThrow(AMWException.class);
+        when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), ArgumentMatchers.<Date>any())).thenThrow(AMWException.class);
 
         // when
         rest.testGeneration(resourceGroupName, releaseName, env);
@@ -209,7 +210,7 @@ public class TestGenerationRestTest {
         when(contextLocator.getContextByName(env)).thenReturn(context);
         when(environmentGenerationResult.hasErrors()).thenReturn(true);
         when(environmentGenerationResult.getErrorMessage()).thenReturn("error");
-        when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), any(Date.class))).thenReturn(environmentGenerationResult);
+        when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), ArgumentMatchers.<Date>any())).thenReturn(environmentGenerationResult);
 
         // when
         Response response = rest.testGeneration(resourceGroupName, releaseName, env);

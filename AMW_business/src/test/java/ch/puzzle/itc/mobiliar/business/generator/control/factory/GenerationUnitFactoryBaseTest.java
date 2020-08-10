@@ -89,7 +89,7 @@ public class GenerationUnitFactoryBaseTest<T extends EntityBuilder> {
 	protected void initialize() {
 	    Mockito.when(dependencyResolver
 			    .getConsumedMasterRelationsForRelease(Mockito.any(ResourceEntity.class),
-					    Mockito.any(ReleaseEntity.class))).thenAnswer(new Answer<Set<ConsumedResourceRelationEntity>>() {
+					    Mockito.<ReleaseEntity>any())).thenAnswer(new Answer<Set<ConsumedResourceRelationEntity>>() {
 		   @Override
 		   public Set<ConsumedResourceRelationEntity> answer(InvocationOnMock invocation){
 			  ResourceEntity r = ((ResourceEntity)invocation.getArguments()[0]);
@@ -98,8 +98,7 @@ public class GenerationUnitFactoryBaseTest<T extends EntityBuilder> {
 	    });
 	    Mockito.when(dependencyResolver
 			    .getProvidedMasterRelationsForRelease(Mockito.any(ResourceEntity.class),
-					    Mockito.any(
-							    ReleaseEntity.class))).thenAnswer(new Answer<Set<ProvidedResourceRelationEntity>>() {
+					    Mockito.<ReleaseEntity>any())).thenAnswer(new Answer<Set<ProvidedResourceRelationEntity>>() {
 		   @Override
 		   public Set<ProvidedResourceRelationEntity> answer(InvocationOnMock invocation){
 			  ResourceEntity r = ((ResourceEntity)invocation.getArguments()[0]);

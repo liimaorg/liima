@@ -45,7 +45,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -112,8 +112,6 @@ public class MaiaAmwFederationServicePredecessorHandlerTest {
         resources.add(resource);
         Mockito.when(resourceRepositoryMock.getResourcesByGroupNameWithAllRelationsOrderedByRelease(APPNAME_S)).thenReturn(resources);
         Mockito.when(resourceRepositoryMock.getResourcesByGroupNameWithAllRelationsOrderedByRelease(APPNAME_P)).thenReturn(new LinkedList<ResourceEntity>());
-        Mockito.when(dependencyResolverServiceMock.getResourceEntityForRelease(resources, new ReleaseEntity())).thenReturn(resource);
-
 
         // when
         servicePredecessorHandler.handlePredecessor(APPNAME_S, APPNAME_P, ForeignableOwner.MAIA);
@@ -138,9 +136,6 @@ public class MaiaAmwFederationServicePredecessorHandlerTest {
         resources.add(predecessorResource);
         Mockito.when(resourceRepositoryMock.getResourcesByGroupNameWithAllRelationsOrderedByRelease(APPNAME_S)).thenReturn(Collections.singletonList(successorResource));
         Mockito.when(resourceRepositoryMock.getResourcesByGroupNameWithAllRelationsOrderedByRelease(APPNAME_P)).thenReturn(new LinkedList<ResourceEntity>(resources));
-        Mockito.when(resourceLocatorMock.hasResourceConsumableSoftlinkType(cpi)).thenReturn(true);
-        Mockito.when(dependencyResolverServiceMock.getResourceEntityForRelease(resources, new ReleaseEntity())).thenReturn(predecessorResource);
-
 
         // when
         PredecessorResult rh = servicePredecessorHandler.handlePredecessor(APPNAME_S, APPNAME_P, ForeignableOwner.MAIA);
@@ -166,8 +161,6 @@ public class MaiaAmwFederationServicePredecessorHandlerTest {
         resources.add(predecessorResource);
         Mockito.when(resourceRepositoryMock.getResourcesByGroupNameWithAllRelationsOrderedByRelease(APPNAME_S)).thenReturn(Collections.singletonList(successorResource));
         Mockito.when(resourceRepositoryMock.getResourcesByGroupNameWithAllRelationsOrderedByRelease(APPNAME_P)).thenReturn(new LinkedList<ResourceEntity>(resources));
-        Mockito.when(resourceLocatorMock.hasResourceProvidableSoftlinkType(ppi)).thenReturn(true);
-        Mockito.when(dependencyResolverServiceMock.getResourceEntityForRelease(resources, new ReleaseEntity())).thenReturn(predecessorResource);
 
         // when
         PredecessorResult rh = servicePredecessorHandler.handlePredecessor(APPNAME_S, APPNAME_P, ForeignableOwner.MAIA);
@@ -202,7 +195,6 @@ public class MaiaAmwFederationServicePredecessorHandlerTest {
 
         Mockito.when(resourceRepositoryMock.getResourcesByGroupNameWithAllRelationsOrderedByRelease(APPNAME_S)).thenReturn(successorResources);
         Mockito.when(resourceRepositoryMock.getResourcesByGroupNameWithAllRelationsOrderedByRelease(APPNAME_P)).thenReturn(predecessorResources);
-        Mockito.when(dependencyResolverServiceMock.getResourceEntityForRelease(successorResources, successorResources.get(0).getRelease())).thenReturn(successorResource);
         Mockito.when(dependencyResolverServiceMock.getResourceEntityForRelease(predecessorResources, successorResources.get(0).getRelease())).thenReturn(predecessorResource);
 
 
