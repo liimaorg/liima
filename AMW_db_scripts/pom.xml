@@ -29,16 +29,6 @@
 		<goal>updateSQL</goal>
 	</properties>
 
-	<dependencies>
-
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-cdi</artifactId>
-			<version>${version.liquibase}</version>
-		</dependency>
-
-	</dependencies>
-
 	<profiles>
 		<profile>
 			<id>h2</id>
