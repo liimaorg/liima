@@ -374,7 +374,7 @@ public class DeploymentSchedulerTest {
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
-				ArgumentMatchers.<Integer>eq(null), ArgumentMatchers.<GenerationResult>eq(null), ArgumentMatchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
+				ArgumentMatchers.isNull(), ArgumentMatchers.isNull(), ArgumentMatchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(log, times(2)).log(argThat(matchesLevel(Level.INFO)), anyString());
 	}
 
@@ -482,11 +482,11 @@ public class DeploymentSchedulerTest {
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(1)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
-				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), ArgumentMatchers.<GenerationResult>eq(null),
+				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), ArgumentMatchers.isNull(),
 				ArgumentMatchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.DEPLOY), eq(Integer.valueOf(2)),
 				matches("Deployment was marked as failed because it reached the deplyoment timeout \\(" + timeout + " s\\).*"),
-				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), ArgumentMatchers.<GenerationResult>eq(null),
+				eq(deployment.getResource() != null ? deployment.getResource().getId() : null), ArgumentMatchers.isNull(),
 				ArgumentMatchers.<DeploymentFailureReason>eq(DeploymentFailureReason.TIMEOUT));
 		verify(deploymentBoundary, times(0)).updateDeploymentInfoAndSendNotification(eq(GenerationModus.PREDEPLOY), anyInt(),
 				anyString(), anyInt(), ArgumentMatchers.<GenerationResult>any(), ArgumentMatchers.<DeploymentFailureReason>any());

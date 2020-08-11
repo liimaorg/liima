@@ -100,7 +100,7 @@ public class HasPermissionInterceptorTest {
         hasPermissionInterceptor.roleCall(context);
         //then
         verify(hasPermissionInterceptor.permissionService, times(2)).hasPermission(any(Permission.class),
-                eq(null), any(Action.class), eq(null), eq(null));
+                isNull(), any(Action.class), isNull(), isNull());
         verify(hasPermissionInterceptor.permissionService, times(1)).throwNotAuthorizedException(null);
     }
 
@@ -124,7 +124,7 @@ public class HasPermissionInterceptorTest {
         //when
         hasPermissionInterceptor.roleCall(context);
         //then
-        verify(hasPermissionInterceptor.permissionService, times(4)).hasPermission(any(Permission.class), eq(null), any(Action.class), eq(null), eq(null));
+        verify(hasPermissionInterceptor.permissionService, times(4)).hasPermission(any(Permission.class), isNull(), any(Action.class), isNull(), isNull());
         verify(hasPermissionInterceptor.permissionService, times(1)).throwNotAuthorizedException(null);
     }
 
