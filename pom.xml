@@ -37,12 +37,12 @@
         <version.site.maven.plugin>3.7.1</version.site.maven.plugin>
         <version.release.maven.plugin>2.5.3</version.release.maven.plugin>
 
-        <version.mockito>3.4.6</version.mockito>
-        <version.junit>4.13</version.junit>
-
         <version.liquibase>3.8.8</version.liquibase>
         <version.assertj-core>2.4.1</version.assertj-core>
         <version.java>1.8</version.java>
+        <version.jackson>2.11.1</version.jackson>
+        <version.powermock>2.0.7</version.powermock>
+        <version.swagger>1.5.20</version.swagger>
     </properties>
 
 
@@ -304,13 +304,6 @@
                 <scope>compile</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.18.0</version>
-                <scope>provided</scope>
-            </dependency>
-
             <!-- JBoss distributes a complete set of Java EE 6 APIs including a Bill
                 of Materials (BOM). A BOM specifies the versions of a "stack" (or a collection)
                 of artifacts. We use this here so that we always get the correct versions
@@ -323,6 +316,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <!-- JSR-303 (Bean Validation) Implementation -->
             <!-- Provides portable constraints such as @Email -->
             <!-- Hibernate Validator is shipped in JBoss AS 7 -->
@@ -364,18 +358,66 @@
                 </exclusions>
                 <scope>provided</scope>
             </dependency>
-
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.6</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>3.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.json-lib</groupId>
+                <artifactId>json-lib</artifactId>
+                <version>2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${version.jackson}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${version.jackson}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${version.jackson}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.3.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>29.0-jre</version>
+            </dependency>
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>${version.junit}</version>
+                <version>4.13</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>${version.mockito}</version>
+                <version>3.4.6</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -384,13 +426,18 @@
                 <version>${version.assertj-core}</version>
                 <scope>test</scope>
             </dependency>
-
             <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.2.4</version>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-core</artifactId>
+                <version>1.3</version>
+                <scope>test</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>1.3</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -398,6 +445,8 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.0</version>
         </dependency>
     </dependencies>
 </project>
+

@@ -37,15 +37,6 @@
             <scope>provided</scope>
         </dependency>
 
-
-        <!-- Import the JAX-RS API, we use provided scope as the API is included
-            in JBoss AS 7 -->
-        <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Import the CDI API, we use provided scope as the API is included in
             JBoss AS 7 -->
         <dependency>
@@ -62,13 +53,13 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.transaction</groupId>
-            <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-            <scope>provided</scope>
+            <groupId>org.richfaces</groupId>
+            <artifactId>richfaces-core</artifactId>
+            <version>4.5.17.Final</version>
         </dependency>
         <dependency>
             <groupId>org.richfaces</groupId>
-            <artifactId>richfaces</artifactId>
+            <artifactId>richfaces-a4j</artifactId>
             <version>4.5.17.Final</version>
         </dependency>
         <dependency>
@@ -76,12 +67,35 @@
             <artifactId>AMW_commons</artifactId>
             <scope>provided</scope>
         </dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+			<scope>provided</scope>
+		</dependency>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+            <scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
