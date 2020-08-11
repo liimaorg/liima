@@ -37,8 +37,8 @@
         <version.site.maven.plugin>3.7.1</version.site.maven.plugin>
         <version.release.maven.plugin>2.5.3</version.release.maven.plugin>
 
-        <version.mockito>2.28.2</version.mockito>
-        <version.junit>4.12</version.junit>
+        <version.mockito>3.4.6</version.mockito>
+        <version.junit>4.13</version.junit>
 
         <version.liquibase>3.8.8</version.liquibase>
         <version.assertj-core>2.4.1</version.assertj-core>

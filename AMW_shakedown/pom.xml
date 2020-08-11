@@ -19,8 +19,8 @@
         <version.deploy.maven.plugin>3.0.0-M1</version.deploy.maven.plugin>
         <version.source.maven.plugin>3.0.1</version.source.maven.plugin>
         <version.javadoc.maven.plugin>3.0.1</version.javadoc.maven.plugin>
-        <version.mockito>2.28.2</version.mockito>
-        <version.junit>4.12</version.junit>
+        <version.mockito>3.4.6</version.mockito>
+        <version.junit>4.13</version.junit>
     </properties>
     <modules>
         <module>AMW_stm</module>
