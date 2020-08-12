@@ -32,8 +32,8 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(PersistenceTestRunner.class)
 public class BaseRepositoryTest {

@@ -53,7 +53,7 @@ import static junit.framework.TestCase.assertNull;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(PersistenceTestRunner.class)
 public class AuditServiceTest {

@@ -61,6 +61,7 @@ import org.mockito.MockitoAnnotations;
 import javax.persistence.EntityManager;
 import java.util.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 

@@ -59,8 +59,8 @@ import javax.persistence.NoResultException;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
