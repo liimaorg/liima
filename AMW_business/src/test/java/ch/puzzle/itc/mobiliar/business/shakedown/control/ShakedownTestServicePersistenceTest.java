@@ -94,7 +94,7 @@ public class ShakedownTestServicePersistenceTest {
 
 	@Before
 	public void before() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		int trackingId = 200;
 		when(sequencesService.getNextValueAndUpdate(DeploymentEntity.SEQ_NAME)).thenReturn(trackingId++);
 		when(sequencesService.getNextValueAndUpdate(ShakedownTestEntity.SEQ_NAME)).thenReturn(trackingId++);

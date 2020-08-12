@@ -66,7 +66,7 @@ public class ResourceRelationsTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         release = Mockito.mock(ReleaseEntity.class);
         as = Mockito.mock(ResourceEntity.class);
         asGrp = Mockito.mock(ResourceGroupEntity.class);

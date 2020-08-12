@@ -81,7 +81,7 @@ public class GenerationUnitFactoryBaseTest<T extends EntityBuilder> {
 	@Before
 	public void before() {
 		CustomLogging.setup(Level.OFF);
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		initialize();
 	}

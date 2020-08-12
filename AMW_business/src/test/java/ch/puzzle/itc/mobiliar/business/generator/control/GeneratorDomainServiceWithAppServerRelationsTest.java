@@ -50,7 +50,7 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
 

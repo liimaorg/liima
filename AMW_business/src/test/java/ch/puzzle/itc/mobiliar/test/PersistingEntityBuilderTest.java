@@ -72,7 +72,7 @@ public class PersistingEntityBuilderTest {
 
 	@Before
 	public void before() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test

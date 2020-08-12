@@ -67,7 +67,7 @@ public class ComparedGenerationResultTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		nodeResult = createNewNodeGenerationResultWithNode();
 		nodeResultList = new ArrayList<NodeGenerationResult>();
 		nodeResultList.add(nodeResult);

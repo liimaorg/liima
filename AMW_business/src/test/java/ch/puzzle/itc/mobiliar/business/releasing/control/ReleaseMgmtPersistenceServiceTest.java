@@ -59,7 +59,7 @@ public class ReleaseMgmtPersistenceServiceTest {
 
 	@Before
 	public void before() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		releaseEntity = new ReleaseEntity();
 	}
 

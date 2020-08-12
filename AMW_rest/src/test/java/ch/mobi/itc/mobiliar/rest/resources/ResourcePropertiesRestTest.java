@@ -23,7 +23,7 @@ public class ResourcePropertiesRestTest {
 
     @Before
     public void configure() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

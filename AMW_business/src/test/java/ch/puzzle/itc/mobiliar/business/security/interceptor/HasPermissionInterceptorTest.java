@@ -37,7 +37,7 @@ import javax.interceptor.InvocationContext;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import org.mockito.MockitoAnnotations;
 
 public class HasPermissionInterceptorTest {
 
@@ -52,7 +52,7 @@ public class HasPermissionInterceptorTest {
 
     @Before
     public void init() {
-        initMocks(this);
+        MockitoAnnotations.openMocks(this);
         permissionService = mock(PermissionService.class);
         hasPermissionInterceptor.permissionService = permissionService;
         when(context.getTarget()).thenReturn(new TestBoundary());

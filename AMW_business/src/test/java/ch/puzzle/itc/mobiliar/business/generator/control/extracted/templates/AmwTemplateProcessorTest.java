@@ -27,7 +27,7 @@ import ch.puzzle.itc.mobiliar.test.AmwEntityBuilder;
 public class AmwTemplateProcessorTest extends TemplateProcessorBaseTest<AmwEntityBuilder> {
 
 	public void before() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		builder = new AmwEntityBuilder();
 		context = builder.context;
 	}

@@ -47,7 +47,7 @@ public class ResourceRelationServiceTest {
     @Before
     public void setUp() {
         ThreadLocalUtil.destroy();
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

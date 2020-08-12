@@ -60,7 +60,7 @@ public class CopyResourceTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test(expected = AMWException.class)

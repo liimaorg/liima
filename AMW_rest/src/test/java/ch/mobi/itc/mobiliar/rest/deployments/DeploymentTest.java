@@ -97,7 +97,7 @@ public class DeploymentTest {
     
     @Before
     public void configure() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         // Test data
         entities = new HashSet<>();

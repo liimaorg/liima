@@ -68,7 +68,7 @@ public class TestGenerationRestTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         resourceGroupName = "TestGroup";
         releaseName = "TestRelease";
         env = "T";

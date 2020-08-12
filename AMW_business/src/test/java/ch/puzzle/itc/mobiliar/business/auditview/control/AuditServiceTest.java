@@ -66,7 +66,7 @@ public class AuditServiceTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         auditService.entityManager = entityManager;
         ThreadLocalUtil.destroy();
     }

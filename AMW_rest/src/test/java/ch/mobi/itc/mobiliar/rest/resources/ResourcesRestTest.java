@@ -110,7 +110,7 @@ public class ResourcesRestTest {
 
     @Before
     public void configure() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

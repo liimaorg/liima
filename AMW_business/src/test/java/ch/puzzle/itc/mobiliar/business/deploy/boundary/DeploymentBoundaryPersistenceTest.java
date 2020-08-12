@@ -88,7 +88,7 @@ public class DeploymentBoundaryPersistenceTest {
 	@Before
 	public void setup() {
 
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		deploymentBoundary.setEntityManager(entityManager);
 
 		commonFilterService = new CommonFilterService();

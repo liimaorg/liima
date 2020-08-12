@@ -38,7 +38,7 @@ public class SoftLinkRelationServiceTest {
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         ThreadLocalUtil.destroy();
     }
 

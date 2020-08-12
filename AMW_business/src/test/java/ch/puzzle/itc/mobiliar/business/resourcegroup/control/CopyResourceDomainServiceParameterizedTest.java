@@ -112,7 +112,7 @@ public class CopyResourceDomainServiceParameterizedTest {
 
 	@Before
 	public void before() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		globalContextMock = contextEntityBuilder.mockContextEntity("GLOBAL", null, null);
 
