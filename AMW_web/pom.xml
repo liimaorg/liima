@@ -54,12 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.richfaces</groupId>
-            <artifactId>richfaces-core</artifactId>
-            <version>4.5.17.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.richfaces</groupId>
-            <artifactId>richfaces-a4j</artifactId>
+            <artifactId>richfaces</artifactId>
             <version>4.5.17.Final</version>
         </dependency>
         <dependency>
