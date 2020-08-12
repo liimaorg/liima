@@ -4,6 +4,10 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { AppComponent } from './app.component';
+import { NavigationComponent } from './navigation/navigation.component';
+import { NavigationSidebarComponent } from './navigation/navigation-sidebar.component';
+import { PageHeaderComponent } from './shared/elements/page-header.component';
+
 import { AppConfiguration } from './setting/app-configuration';
 import { SettingService } from './setting/setting.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -24,7 +28,7 @@ describe('App', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [AppComponent],
+      declarations: [AppComponent, NavigationComponent, NavigationSidebarComponent, PageHeaderComponent],
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         NavigationStoreService,
