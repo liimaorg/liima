@@ -97,7 +97,7 @@ public class PropertyEditingServicePropertyDescriptorsTest {
 
     @Before
     public void setUp() throws ElementAlreadyExistsException {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         service.queries = queries;
         service.contextHierarchy = contextHierarchy;
         propertyDescriptorEntity = new PropertyDescriptorEntity();

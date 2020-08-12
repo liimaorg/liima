@@ -22,8 +22,8 @@ import org.mockito.Spy;
 import javax.persistence.EntityManager;
 import java.util.Collections;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -47,7 +47,7 @@ public class ResourceRelationServiceTest {
     @Before
     public void setUp() {
         ThreadLocalUtil.destroy();
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

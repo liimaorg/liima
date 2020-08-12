@@ -46,7 +46,7 @@ public class MailServiceTest {
 	
 	@Before
 	public void setup() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	

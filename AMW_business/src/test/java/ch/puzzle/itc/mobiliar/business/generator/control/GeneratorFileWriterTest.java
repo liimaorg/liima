@@ -56,7 +56,7 @@ public class GeneratorFileWriterTest {
 	
 	@Before
 	public void setUp(){
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		
 		System.getProperties().remove(ConfigKey.GENERATOR_PATH.getValue());
 		System.getProperties().remove(ConfigKey.GENERATOR_PATH_SIMULATION.getValue());

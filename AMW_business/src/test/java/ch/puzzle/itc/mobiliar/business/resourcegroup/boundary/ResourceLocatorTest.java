@@ -83,7 +83,7 @@ public class ResourceLocatorTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         Properties props = System.getProperties();
         props.setProperty(ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES.getValue(),

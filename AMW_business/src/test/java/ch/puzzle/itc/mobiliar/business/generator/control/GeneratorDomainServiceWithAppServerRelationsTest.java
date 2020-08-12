@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.any;
 
 public class GeneratorDomainServiceWithAppServerRelationsTest {
@@ -49,7 +50,7 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
 
@@ -57,7 +58,7 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     public void testDoNotOmitTemplateWithPermission() throws Exception {
         //given
         Mockito.when(permissionService.hasPermission(any(Permission.class), any(
-                  ContextEntity.class), any(Action.class), any(ResourceGroupEntity.class), any(ResourceTypeEntity.class))).thenReturn(true);
+                  ContextEntity.class), any(Action.class), isNull(), isNull())).thenReturn(true);
 
         //when
         service.omitTemplateForLackingPermissions(new ContextEntity(), new ResourceEntity(), result);

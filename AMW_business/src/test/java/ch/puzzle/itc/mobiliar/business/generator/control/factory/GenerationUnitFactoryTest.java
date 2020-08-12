@@ -46,7 +46,7 @@ public class GenerationUnitFactoryTest extends GenerationUnitFactoryBaseTest<Sim
     @Override
 	public void before() {
 		CustomLogging.setup(Level.OFF);
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		builder = new SimpleEntityBuilder();
 		builder.as = builder.buildResource(EntityBuilderType.AS, EntityBuilderType.AS.name);
 		builder.app = builder.buildResource(EntityBuilderType.APP, "app");

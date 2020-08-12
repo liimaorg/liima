@@ -90,7 +90,7 @@ public class DeploymentExecuterServiceTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		contextEntity = new ContextEntity();
 		contextEntity.setName("testContext");

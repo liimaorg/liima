@@ -76,7 +76,7 @@ public class ShakedownTestExecuterServiceTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		contextEntity = new ContextEntity();
 		contextEntity.setName("testContext");

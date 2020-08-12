@@ -39,7 +39,6 @@ import org.mockito.MockitoAnnotations;
 
 import javax.persistence.EntityManager;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -47,7 +46,7 @@ import java.util.logging.Logger;
 import static java.util.Collections.EMPTY_SET;
 import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 public class ResourceRepositoryTest {
@@ -63,7 +62,7 @@ public class ResourceRepositoryTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

@@ -55,7 +55,7 @@ public class Issue6110NestedPropertyAccessTest extends TemplateProcessorBaseTest
 		CustomLogging.setup(Level.OFF);
 		builder = new SimpleEntityBuilder();
 		context = builder.context;
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		as = builder.as;
 		app = builder.app;

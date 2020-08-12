@@ -50,7 +50,7 @@ public class Issue5959AppServerRelationsTemplateProcessortTest extends TemplateP
 		CustomLogging.setup(Level.OFF);
 		builder = new SimpleEntityBuilder();
 		context = builder.context;
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test

@@ -53,7 +53,7 @@ import static junit.framework.TestCase.assertNull;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(PersistenceTestRunner.class)
 public class AuditServiceTest {
@@ -66,7 +66,7 @@ public class AuditServiceTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         auditService.entityManager = entityManager;
         ThreadLocalUtil.destroy();
     }

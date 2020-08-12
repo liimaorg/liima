@@ -95,7 +95,7 @@ public class SoftlinkRelationServicePersistenceTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         service.dependencyResolverService = dependencyResolverService;
         init();
         EntityTransaction transaction = entityManager.getTransaction();

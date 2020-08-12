@@ -23,12 +23,8 @@ package ch.puzzle.itc.mobiliar.builders;
 import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import org.apache.commons.lang.StringUtils;
-import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.mockito.Mockito.when;

@@ -91,7 +91,7 @@ public class ShakedownTestGeneratorDomainServiceTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		contextEntity = new ContextEntity();
 		contextEntity.setName("testContext");
@@ -115,7 +115,7 @@ public class ShakedownTestGeneratorDomainServiceTest {
 		release.setInstallationInProductionAt(new Date());
 
 		applicationServer = ResourceFactory.createNewResource("testAppserver");
-	    	applicationServer.setResourceType(asType);
+	    applicationServer.setResourceType(asType);
 		applicationServer.setId(5);
 		applicationServer.setRelease(release);
 		applicationServer.getResourceGroup().setId(2);
@@ -150,8 +150,10 @@ public class ShakedownTestGeneratorDomainServiceTest {
 
 		when(entityManager.find(same(ResourceEntity.class), anyInt())).thenReturn(applicationServer);
 		when(entityManager.find(same(ContextEntity.class), anyInt())).thenReturn(contextEntity);
+		when(entityManager.find(same(ResourceGroupEntity.class), anyInt())).thenReturn(applicationServer.getResourceGroup());
+
 		when(generatorDomainService.getAllEnvironments(contextEntity)).thenReturn(Collections.singletonList(contextEntity));
-		when(resourceDependencyResolver.getResourceEntityForRelease(any(ResourceGroupEntity.class), any(ReleaseEntity.class))).thenReturn(applicationServer);
+		when(resourceDependencyResolver.getResourceEntityForRelease(applicationServer.getResourceGroup(), applicationServer.getRelease())).thenReturn(applicationServer);
 		
 		IOException exception = new IOException("foo");
 
@@ -185,11 +187,12 @@ public class ShakedownTestGeneratorDomainServiceTest {
 		when(entityManager.find(same(ResourceGroupEntity.class), anyInt())).thenReturn(applicationServer.getResourceGroup());
 
 		when(generatorDomainService.getAllEnvironments(contextEntity)).thenReturn(Collections.singletonList(contextEntity));
-		when(resourceDependencyResolver.getResourceEntityForRelease(any(ResourceGroupEntity.class), any(ReleaseEntity.class))).thenReturn(applicationServer);
+		when(resourceDependencyResolver.getResourceEntityForRelease(applicationServer.getResourceGroup(), applicationServer.getRelease())).thenReturn(applicationServer);
 		GeneratorException exception = new GeneratorException("foo", MISSING.STS_TEMPLATE);
 
 
-		when(generatorDomainService.generateApplicationServerConfigPerNode(any(GenerationContext.class))).thenThrow(exception);
+		when(generatorDomainService.generateApplicationServerConfigPerNode(any(GenerationContext.class)))
+						.thenThrow(exception);
 
 		// when
 		ShakedownTestGenerationResult result = service.generateConfigurationForShakedownTest(test);
@@ -210,8 +213,9 @@ public class ShakedownTestGeneratorDomainServiceTest {
 
 		when(entityManager.find(same(ResourceEntity.class), anyInt())).thenReturn(applicationServer);
 		when(entityManager.find(same(ContextEntity.class), anyInt())).thenReturn(contextEntity);
+		when(entityManager.find(same(ResourceGroupEntity.class), anyInt())).thenReturn(applicationServer.getResourceGroup());
 		when(generatorDomainService.getAllEnvironments(contextEntity)).thenReturn(Collections.singletonList(contextEntity));
-		when(resourceDependencyResolver.getResourceEntityForRelease(any(ResourceGroupEntity.class), any(ReleaseEntity.class))).thenReturn(applicationServer);
+		when(resourceDependencyResolver.getResourceEntityForRelease(applicationServer.getResourceGroup(), applicationServer.getRelease())).thenReturn(applicationServer);
 		
 		NodeGenerationResult nodeResult = mock(NodeGenerationResult.class);
 		when(nodeResult.hasErrors()).thenReturn(true);

@@ -37,7 +37,7 @@ import javax.interceptor.InvocationContext;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import org.mockito.MockitoAnnotations;
 
 public class HasPermissionInterceptorTest {
 
@@ -52,7 +52,7 @@ public class HasPermissionInterceptorTest {
 
     @Before
     public void init() {
-        initMocks(this);
+        MockitoAnnotations.openMocks(this);
         permissionService = mock(PermissionService.class);
         hasPermissionInterceptor.permissionService = permissionService;
         when(context.getTarget()).thenReturn(new TestBoundary());
@@ -100,7 +100,7 @@ public class HasPermissionInterceptorTest {
         hasPermissionInterceptor.roleCall(context);
         //then
         verify(hasPermissionInterceptor.permissionService, times(2)).hasPermission(any(Permission.class),
-                any(ContextEntity.class), any(Action.class), any(ResourceGroupEntity.class), any(ResourceTypeEntity.class));
+                isNull(), any(Action.class), isNull(), isNull());
         verify(hasPermissionInterceptor.permissionService, times(1)).throwNotAuthorizedException(null);
     }
 
@@ -124,8 +124,7 @@ public class HasPermissionInterceptorTest {
         //when
         hasPermissionInterceptor.roleCall(context);
         //then
-        verify(hasPermissionInterceptor.permissionService, times(4)).hasPermission(any(Permission.class),
-                any(ContextEntity.class), any(Action.class), any(ResourceGroupEntity.class), any(ResourceTypeEntity.class));
+        verify(hasPermissionInterceptor.permissionService, times(4)).hasPermission(any(Permission.class), isNull(), any(Action.class), isNull(), isNull());
         verify(hasPermissionInterceptor.permissionService, times(1)).throwNotAuthorizedException(null);
     }
 

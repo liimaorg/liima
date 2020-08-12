@@ -60,7 +60,7 @@ public class ResourceValidationServiceIntegrationTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         service.queries = queries;
     }
 

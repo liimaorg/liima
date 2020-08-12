@@ -37,6 +37,7 @@ public class ShakedownTestEntityBuilder {
 		when(test.getDeployment()).thenReturn(dep);
 		when(test.getResourceGroup()).thenReturn(group);
 		when(test.getId()).thenReturn(id);
+		when(test.getRelease()).thenReturn(appServer.getRelease());
 
 		return test;
 	}

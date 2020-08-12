@@ -74,7 +74,7 @@ public class Issue5959AppServerRelationsTemplateProcessorProvidedConsumedTest ex
 
 		builder = new ApplicationResolverEntityBuilder(entityManager).buildScenario();
 		context = builder.context;
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 	}
 

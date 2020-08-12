@@ -77,7 +77,7 @@ public class DeploymentNotificationServiceTest {
 	
 	@Before
 	public void setUp(){
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		
 		applicationServer =  ResourceFactory.createNewResource("appServer");
 		when(dependencyResolverService.getResourceEntityForRelease((ResourceGroupEntity) any(), (ReleaseEntity) any())).thenReturn(

@@ -72,7 +72,7 @@ public class ResourceGroupPersistenceServiceTest {
 
 	@Before
 	public void before() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	private void init() {

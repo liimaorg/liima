@@ -59,7 +59,7 @@ public class ResourceEntityTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		providedResourceRelationEntity.setResourceRelationType(relationTypeEntity);
 		providedResourceRelationEntity.setMasterResource(masterResource);
 		providedResourceRelationEntity.setSlaveResource(slaveResourceEntity);

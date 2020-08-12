@@ -81,7 +81,7 @@ public class ResourceRelationsIntegrationTest {
 
     	@Before
     	public void before() throws GeneralDBException {
-	   MockitoAnnotations.initMocks(this);
+	   MockitoAnnotations.openMocks(this);
 	   release1 = new ReleaseEntity();
 	   release1.setName("Release 1");
 	   release1.setInstallationInProductionAt(DateUtils.addDays(new Date(), -1));

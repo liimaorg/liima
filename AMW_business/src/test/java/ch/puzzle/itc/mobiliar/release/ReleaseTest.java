@@ -81,7 +81,7 @@ public class ReleaseTest {
 
 	@Before
 	public void before() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		builder = new PersistingEntityBuilder(entityManager).buildSimple();
 		as = builder.resourceFor(AS);
 		app = builder.resourceFor(APP);

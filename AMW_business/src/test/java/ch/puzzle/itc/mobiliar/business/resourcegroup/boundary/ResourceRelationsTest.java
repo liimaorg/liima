@@ -66,7 +66,7 @@ public class ResourceRelationsTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         release = Mockito.mock(ReleaseEntity.class);
         as = Mockito.mock(ResourceEntity.class);
         asGrp = Mockito.mock(ResourceGroupEntity.class);
@@ -86,8 +86,8 @@ public class ResourceRelationsTest {
         Mockito.when(userSettings.isMyAmwEnabled()).thenReturn(false);
         Mockito.when(userSettingsService.getUserSettings(Mockito.anyString())).thenReturn(userSettings);
         List<ResourceEntity> aslist = Arrays.asList(as);
-        Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.anyString(),
-                  Mockito.anyInt(), Mockito.anyList(), Mockito.anyBoolean())).thenReturn(aslist);
+        Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.isNull(),
+                Mockito.isNull(), Mockito.isNull(), Mockito.anyBoolean())).thenReturn(aslist);
         service.getAppServersWithApplications(null, null, release);
         Mockito.verify(service).filterAppServersByRelease(release, aslist, null);
     }

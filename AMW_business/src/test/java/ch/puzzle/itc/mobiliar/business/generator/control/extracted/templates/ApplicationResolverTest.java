@@ -26,25 +26,19 @@ import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDepen
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwAppServerNodeModel;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import com.google.common.collect.Lists;
 import freemarker.template.SimpleHash;
-import freemarker.template.SimpleSequence;
 import freemarker.template.TemplateModelException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.IOException;
-import java.util.Set;
 import java.util.logging.Level;
 
 import static org.junit.Assert.assertEquals;
@@ -72,39 +66,19 @@ public class ApplicationResolverTest {
 		CustomLogging.setup(Level.OFF);
 		builder = new ApplicationResolverEntityBuilder(entityManager).buildScenario();
 		context = builder.context;
-		MockitoAnnotations.initMocks(this);
-	    	Mockito.when(resourceDependencyResolverService
-			    .getProvidedMasterRelationsForRelease(Mockito.any(ResourceEntity.class),
-					    Mockito.any(ReleaseEntity.class))).thenAnswer(
-			    new Answer<Set<ProvidedResourceRelationEntity>>() {
-
-				   @Override
-				   public Set<ProvidedResourceRelationEntity> answer(InvocationOnMock invocation)
-						   throws Throwable {
-					  return ((ResourceEntity) invocation.getArguments()[0])
-							  .getProvidedMasterRelations();
-				   }
-			    });
-	    	Mockito.when(resourceDependencyResolverService
-			    .getProvidedSlaveRelationsForRelease(Mockito.any(ResourceEntity.class),
-					    Mockito.any(ReleaseEntity.class))).thenAnswer(
-			    new Answer<Set<ProvidedResourceRelationEntity>>() {
-
-				   @Override
-				   public Set<ProvidedResourceRelationEntity> answer(InvocationOnMock invocation)
-						   throws Throwable {
-					  return ((ResourceEntity) invocation.getArguments()[0])
-							  .getProvidedSlaveRelations();
-				   }
-			    });
+		MockitoAnnotations.openMocks(this);
+		Mockito.when(resourceDependencyResolverService.getProvidedMasterRelationsForRelease(ArgumentMatchers.<ResourceEntity>any(), ArgumentMatchers.<ReleaseEntity>any()))
+				.thenAnswer(invocation -> ((ResourceEntity) invocation.getArguments()[0]).getProvidedMasterRelations());
+		Mockito.when(resourceDependencyResolverService.getProvidedSlaveRelationsForRelease(ArgumentMatchers.<ResourceEntity>any(), ArgumentMatchers.<ReleaseEntity>any()))
+				.thenAnswer(invocation -> ((ResourceEntity) invocation.getArguments()[0]).getProvidedSlaveRelations());
 		resolver = new ApplicationResolver(builder.options, builder.ws, resourceDependencyResolverService);
 		assertEquals(true, resolver.resolve());
-
 	}
 
 	/**
 	 * FIXME ama -> what about node, doesnt seem right but that's how i understand old generation code
 	 */
+	@Test
 	public void testResolvedEntities() throws IOException, TemplatePropertyException {
 		assertEquals(builder.app2, resolver.getApplication());
 		assertEquals(builder.as2, resolver.getApplicationServer());

@@ -61,6 +61,7 @@ import org.mockito.MockitoAnnotations;
 import javax.persistence.EntityManager;
 import java.util.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -112,7 +113,7 @@ public class CopyResourceDomainServiceParameterizedTest {
 
 	@Before
 	public void before() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		globalContextMock = contextEntityBuilder.mockContextEntity("GLOBAL", null, null);
 

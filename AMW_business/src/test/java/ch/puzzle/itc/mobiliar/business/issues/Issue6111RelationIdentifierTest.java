@@ -60,7 +60,7 @@ public class Issue6111RelationIdentifierTest extends TemplateProcessorBaseTest<P
 
 	@Before
 	public void before() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		builder = new PersistingEntityBuilder(entityManager).buildSimple();
 
 		context = builder.context;

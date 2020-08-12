@@ -56,7 +56,7 @@ public class DeploymentExecutionResultHandlerServiceTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		deployment = new DeploymentEntity();
 		deployment.setId(Integer.valueOf(100));

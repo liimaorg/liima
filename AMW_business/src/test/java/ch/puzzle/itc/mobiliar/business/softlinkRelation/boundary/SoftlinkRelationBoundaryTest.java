@@ -24,7 +24,6 @@ import static org.mockito.Mockito.*;
 
 import javax.persistence.EntityManager;
 
-import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import org.junit.Assert;
@@ -35,7 +34,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.SoftlinkRelationEntityBuilder;
@@ -46,10 +45,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.control.SoftlinkRelationService;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 
-import java.util.Date;
-
-
-@RunWith(MockitoJUnitRunner.class)
+// disable Strict Stubbing because of extra mocking of the EntityBuilders
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class SoftlinkRelationBoundaryTest {
 
     @Mock
@@ -71,9 +68,7 @@ public class SoftlinkRelationBoundaryTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
-
-        pastRelease = new ReleaseEntityBuilder().mockReleaseEntity("Past", new Date());
+        MockitoAnnotations.openMocks(this);
     }
 
 

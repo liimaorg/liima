@@ -42,21 +42,42 @@
 		</plugins>
 	</build>
 	<dependencies>
-
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<classifier>jdk15</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<version>${version.liquibase}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-cdi</artifactId>
+			<version>${version.liquibase}</version>
+		</dependency>
 		<!-- Project dependency -->
 		<dependency>
 			<groupId>ch.puzzle.itc.mobiliar</groupId>
 			<artifactId>AMW_commons</artifactId>
 		</dependency>
 
-                <!-- Workaround for liquibase changelog with wf 8+: https://liquibase.jira.com/browse/CORE-2472 -->
-                <dependency>
-                        <groupId>org.yaml</groupId>
-                        <artifactId>snakeyaml</artifactId>
-                        <version>1.26</version>
-                </dependency>
+		<!-- Workaround for liquibase changelog with wf 8+: https://liquibase.jira.com/browse/CORE-2472 -->
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.26</version>
+		</dependency>
 		
-
 		<!-- Declare the APIs we depend on and need for compilation. All of them are provided by JBoss AS 7 -->
 
 		<!-- Import the EJB API, we use provided scope as the API is included in JBoss AS 7 -->
@@ -126,17 +147,17 @@
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
-			<version>2.3.23</version>
+			<version>2.3.30</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
+			<version>2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.8</version>
+			<version>1.14</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -145,7 +166,6 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>13.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
@@ -155,24 +175,30 @@
 		</dependency>
 		<!-- for jaxb annotation processing for json with jackson -->
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.11.1</version>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
 			<scope>provided</scope>
 		</dependency>
-		
 		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-cdi</artifactId>
-			<version>${version.liquibase}</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.1.0.Final</version>
+			<scope>provided</scope>
 		</dependency>
 	
         <!-- Test scope dependencies -->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
-			<version>1.1</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
     		<groupId>junit</groupId>
@@ -185,49 +211,15 @@
             <scope>test</scope>
         </dependency>
 		<dependency>
-			<groupId>org.jboss.weld.se</groupId>
-			<artifactId>weld-se-core</artifactId>
-			<version>1.1.8.Final</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<!-- downgraded from 1.4.197 see https://github.com/h2database/h2database/issues/1073 -->
 			<version>1.4.196</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- Needed for TestSetTest on Java 8 -->
-		<dependency>
-		    <groupId>xerces</groupId>
-		    <artifactId>xercesImpl</artifactId>
-		    <version>2.12.0</version>
-		    <scope>test</scope>
-		</dependency>
-            
-
-		<!-- Optional, but highly recommended -->
-		<dependency>
-			<groupId>org.apache.ant</groupId>
-			<artifactId>ant</artifactId>
-			<version>1.7.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jaxen</groupId>
-			<artifactId>jaxen</artifactId>
-			<version>1.1.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>javax.xml.rpc</artifactId>
-			<version>10.0-b28</version>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
+			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -236,6 +228,17 @@
 			<version>3.0.3</version>
 			<scope>test</scope>
 		</dependency>
-
-	</dependencies>
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.rpc</groupId>
+			<artifactId>javax.xml.rpc-api</artifactId>
+			<version>1.1.2</version>
+			<scope>test</scope>
+		</dependency>
+	 </dependencies>
 </project>

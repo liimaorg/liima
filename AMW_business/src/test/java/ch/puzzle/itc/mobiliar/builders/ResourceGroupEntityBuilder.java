@@ -34,10 +34,6 @@ public class ResourceGroupEntityBuilder extends BaseEntityBuilder {
 
 	public ResourceGroupEntity mockResourceGroupEntity(String name, Set<ResourceEntity> resources) {
 		ResourceGroupEntity mock = mock(ResourceGroupEntity.class);
-		Integer id = getNextId();
-		when(mock.getId()).thenReturn(id);
-		when(mock.getName()).thenReturn(name);
-		when(mock.getResources()).thenReturn(resources);
 		if (resources != null) {
 			for (ResourceEntity r : resources) {
 				if (Mockito.mockingDetails(r).isMock()) {

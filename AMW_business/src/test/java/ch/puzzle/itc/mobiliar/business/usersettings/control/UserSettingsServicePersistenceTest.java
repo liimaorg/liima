@@ -62,7 +62,7 @@ public class UserSettingsServicePersistenceTest {
 
 	@Before
 	public void before() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test

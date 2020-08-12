@@ -10,7 +10,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class DeploymentDtoCsvBodyWriterTest {
 
@@ -19,7 +19,7 @@ public class DeploymentDtoCsvBodyWriterTest {
 
     @Before
     public void configure() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

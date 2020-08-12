@@ -24,24 +24,10 @@
 		
 		<version.hibernate4-maven-plugin>1.1.1</version.hibernate4-maven-plugin>
 		<version.ant-contrib>20020829</version.ant-contrib>
-
-		<!-- maven-compiler-plugin -->
-		<maven.compiler.target>1.7</maven.compiler.target>
-		<maven.compiler.source>1.7</maven.compiler.source>
-
+		
 		<db>h2.test</db>
 		<goal>updateSQL</goal>
 	</properties>
-
-	<dependencies>
-
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-cdi</artifactId>
-			<version>${version.liquibase}</version>
-		</dependency>
-
-	</dependencies>
 
 	<profiles>
 		<profile>

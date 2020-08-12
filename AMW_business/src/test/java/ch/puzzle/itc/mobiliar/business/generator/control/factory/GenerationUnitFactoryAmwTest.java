@@ -117,7 +117,7 @@ public class GenerationUnitFactoryAmwTest extends GenerationUnitFactoryBaseTest<
 		AmwResourceTemplateModel properties = propertiesFor(work.getAsSet(), DB2).transformModel();
 		assertEquals("mailrelay", TestUtils.asHashModel(properties, "consumedResTypes", "Mail", "mail_1").get("name").toString());
 		assertEquals("mailrelay", TestUtils.asHashModel(properties, "mail_1").get("name").toString());
-		
+
 	}
 
 	@Test

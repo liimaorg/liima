@@ -46,6 +46,8 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -57,8 +59,8 @@ import javax.persistence.NoResultException;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
@@ -95,7 +97,7 @@ public class DeploymentTest {
     
     @Before
     public void configure() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         // Test data
         entities = new HashSet<>();
@@ -211,32 +213,38 @@ public class DeploymentTest {
 
     @Test
     public void verifyThatDeploymentServiceIsCalledWithNonEmptyFilterIfDeploymentParametersAreSet() {
-        when(deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
+        when(deploymentBoundary.getFilteredDeployments(isNull(), isNull(), anyList(), isNull(), isNull(), isNull())).thenReturn(
                 new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<DeploymentEntity>(), 0));
         deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, Collections.singletonList("TEST"), null, false);
 
-        verify(deploymentBoundary, never()).getFilteredDeployments(null, null, Collections.<CustomFilter>emptyList(), null, null, null);
-        verify(deploymentBoundary, times(1)).getFilteredDeployments(anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<CustomFilter>> captor = ArgumentCaptor.forClass(List.class);
+        verify(deploymentBoundary, times(1)).getFilteredDeployments(isNull(), isNull(), captor.capture(), isNull(), isNull(), isNull());
+        assertEquals(1, captor.getValue().size());
     }
 
     @Test
     public void verifyThatDeploymentServiceIsCalledWithNonEmptyFilterIfDeploymentParameterValuesAreSet() {
-        when(deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
+        when(deploymentBoundary.getFilteredDeployments(isNull(), isNull(), anyList(), isNull(), isNull(), isNull())).thenReturn(
                 new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<DeploymentEntity>(), 0));
         deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, null, Collections.singletonList("TESTVALUE"), false);
 
-        verify(deploymentBoundary, never()).getFilteredDeployments(null, null, Collections.<CustomFilter>emptyList(), null, null, null);
-        verify(deploymentBoundary, times(1)).getFilteredDeployments(anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<CustomFilter>> captor = ArgumentCaptor.forClass(List.class);
+        verify(deploymentBoundary, times(1)).getFilteredDeployments(isNull(), isNull(), captor.capture(), isNull(), isNull(), isNull());
+        assertEquals(1, captor.getValue().size());
     }
 
     @Test
     public void verifyThatDeploymentServiceIsCalledWithNonEmptyFilterIfDeploymentParametersAndDeploymentParameterValuesAreSet() {
-        when(deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList())).thenReturn(
+        when(deploymentBoundary.getFilteredDeployments(isNull(), isNull(), anyList(), isNull(), isNull(), isNull())).thenReturn(
                 new Tuple<Set<DeploymentEntity>, Integer>(new HashSet<DeploymentEntity>(), 0));
         deploymentRestService.getDeployments(null, null, null, null, null, null, null, null, null, null, Collections.singletonList("TEST"), Collections.singletonList("TESTVALUE"), false);
 
-        verify(deploymentBoundary, never()).getFilteredDeployments(null, null, Collections.<CustomFilter>emptyList(), null, null, null);
-        verify(deploymentBoundary, times(1)).getFilteredDeployments(anyInt(), anyInt(), anyList(), anyString(), any(CommonFilterService.SortingDirectionType.class), anyList());
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<CustomFilter>> captor = ArgumentCaptor.forClass(List.class);
+        verify(deploymentBoundary, times(1)).getFilteredDeployments(isNull(), isNull(), captor.capture(), isNull(), isNull(), isNull());
+        assertEquals(2, captor.getValue().size());
     }
 
     @Test
@@ -263,34 +271,35 @@ public class DeploymentTest {
 
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void addDeployment() {
-        ReleaseEntity release = mockRelease();
-        when(
-                deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
-                        any(LinkedList.class), any(ArrayList.class),
-                        anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
-        
-        when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
-        when(
-                deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), any(LinkedList.class), anyString(),
-                        any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
-                new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
-        when(releaseService.findByName(anyString())).thenReturn(release);
+        @SuppressWarnings("unchecked")
+        @Test
+        public void addDeployment() {
+                ReleaseEntity release = mockRelease();
+                when(deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class),
+                                any(Date.class), any(LinkedList.class), any(LinkedList.class), any(ArrayList.class),
+                                anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean()))
+                                                .thenReturn(deploymentEntity.getTrackingId());
 
-        when(generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(any(ResourceEntity.class), any(ContextEntity.class), any(Date.class))).thenReturn(Boolean.TRUE);
-        
-        Response response = deploymentRestService.addDeployment(deploymentRequestDto);
+                when(environmentsService.getContextByName(deploymentEntity.getContext().getName()))
+                                .thenReturn(deploymentEntity.getContext());
+                when(deploymentBoundary.getFilteredDeployments(eq(0), eq(1), any(LinkedList.class), isNull(), isNull(), isNull())).thenReturn(
+                                                new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
+                when(releaseService.findByName(anyString())).thenReturn(release);
 
-        assertEquals(201, response.getStatus());
-        DeploymentDTO responseDto = (DeploymentDTO) response.getEntity();
-        assertEquals(responseDto.getId(), deploymentDto.getId());
+                when(generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(
+                                any(ResourceEntity.class), any(ContextEntity.class), ArgumentMatchers.<Date>any()))
+                                                .thenReturn(Boolean.TRUE);
 
-        LinkedList<String> metaList = new LinkedList<>();
-        metaList.add("/deployments/" + deploymentEntity.getId());
-        assertEquals(metaList, response.getMetadata().get("Location"));
-    }
+                Response response = deploymentRestService.addDeployment(deploymentRequestDto);
+
+                assertEquals(201, response.getStatus());
+                DeploymentDTO responseDto = (DeploymentDTO) response.getEntity();
+                assertEquals(responseDto.getId(), deploymentDto.getId());
+
+                LinkedList<String> metaList = new LinkedList<>();
+                metaList.add("/deployments/" + deploymentEntity.getId());
+                assertEquals(metaList, response.getMetadata().get("Location"));
+        }
 
     @SuppressWarnings("unchecked")
     @Test
@@ -302,11 +311,12 @@ public class DeploymentTest {
                 .thenReturn(deploymentEntity.getTrackingId());
 
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
-        when(deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), any(LinkedList.class), anyString(),
-                        any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
+        when(deploymentBoundary.getFilteredDeployments(eq(0), eq(1), any(LinkedList.class), isNull(), isNull(), isNull())).thenReturn(
                 new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
         when(releaseService.findByName(anyString())).thenReturn(release);
-        when(generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(any(ResourceEntity.class), any(ContextEntity.class), any(Date.class))).thenReturn(Boolean.TRUE);
+        when(generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(
+                any(ResourceEntity.class), any(ContextEntity.class), ArgumentMatchers.<Date>any()))
+                                .thenReturn(Boolean.TRUE);
         when(deploymentBoundary.getVersions(deploymentEntity.getResource(), new ArrayList<Integer>(deploymentEntity.getContext().getId()), release)).thenReturn(deploymentEntity.getApplicationsWithVersion());
         deploymentRequestDto.setAppsWithVersion(null);
 
@@ -353,15 +363,13 @@ public class DeploymentTest {
                         any(LinkedList.class), any(ArrayList.class), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(
                 deploymentEntity.getTrackingId());
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
-        when(
-                deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), any(LinkedList.class), anyString(),
-                        any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
+        when(deploymentBoundary.getFilteredDeployments(eq(0), eq(1), any(LinkedList.class), isNull(), isNull(), isNull())).thenReturn(
                 new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
         when(releaseService.findByName(null)).thenReturn(null);
         when(releaseService.loadAllReleases(false)).thenReturn(Collections.singletonList(release));
-        when(generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(any(ResourceEntity.class), any(ContextEntity.class), any(Date.class))).thenReturn(Boolean.TRUE);
-        
-
+        when(generatorDomainServiceWithAppServerRelations.hasActiveNodeToDeployOnAtDate(
+                any(ResourceEntity.class), any(ContextEntity.class), ArgumentMatchers.<Date>any()))
+                                .thenReturn(Boolean.TRUE);        
         Response response = deploymentRestService.addDeployment(deploymentRequestDto);
 
         assertEquals(201, response.getStatus());

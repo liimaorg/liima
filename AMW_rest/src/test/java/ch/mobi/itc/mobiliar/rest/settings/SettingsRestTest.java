@@ -14,7 +14,7 @@ import java.util.List;
 
 import static ch.puzzle.itc.mobiliar.common.util.ConfigKey.GENERATOR_PATH;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @Ignore
@@ -28,7 +28,7 @@ public class SettingsRestTest {
 
     @Before
     public void configure() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
