@@ -29,7 +29,6 @@ import javax.persistence.criteria.*;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 
 public class ResourceTypeRepository extends BaseRepository<ResourceTypeEntity> {

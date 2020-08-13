@@ -58,7 +58,6 @@ import static org.mockito.Mockito.verify;
 @RunWith(PersistenceTestRunner.class)
 public class SoftlinkRelationServicePersistenceTest {
 
-
     @Spy
     @PersistenceContext
     EntityManager entityManager;
@@ -107,7 +106,6 @@ public class SoftlinkRelationServicePersistenceTest {
         // Release
         pastRelease = new ReleaseEntityBuilder().buildReleaseEntity("Past", new Date(), false);
         entityManager.persist(pastRelease);
-
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(pastRelease.getInstallationInProductionAt());

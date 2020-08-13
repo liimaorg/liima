@@ -6,7 +6,7 @@ cache:
 services:
 - docker
 script:
-- docker run --rm -it -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw markhobson/maven-chrome mvn clean deploy
+- docker run --rm -it -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw markhobson/maven-chrome:jdk-11 mvn clean deploy
 - AMW_docker/build.sh
 before_deploy:
 - sudo chmod 777 AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear
