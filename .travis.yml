@@ -2,23 +2,25 @@ dist: bionic
 sudo: required
 cache:
   directories:
-  - .m2
+  - ".m2"
 services:
 - docker
 script:
-- docker run --rm -it -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw markhobson/maven-chrome:jdk-11 mvn clean deploy
+- docker run --rm -it -v "$PWD":/usr/src/amw -v "$PWD/.m2":"/root/.m2" -w /usr/src/amw
+  markhobson/maven-chrome:jdk-11 mvn clean deploy
 - AMW_docker/build.sh
 before_deploy:
 - sudo chmod 777 AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear
 after_success:
-  - "[[ -z $TRAVIS_PULL_REQUEST_BRANCH ]] && export CURRENT_BRANCH=$TRAVIS_BRANCH || export CURRENT_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH"
-  - docker login -u="$DOCKERHUB_USER" -p="$DOCKERHUB_PASSWORD"
-  - docker tag liimaorg/liima:snapshot liimaorg/liima:$CURRENT_BRANCH
-  - docker push liimaorg/liima:$CURRENT_BRANCH
+- "[[ -z $TRAVIS_PULL_REQUEST_BRANCH ]] && export CURRENT_BRANCH=$TRAVIS_BRANCH ||
+  export CURRENT_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH"
+- docker login -u="$DOCKERHUB_USER" -p="$DOCKERHUB_PASSWORD"
+- docker tag liimaorg/liima:snapshot liimaorg/liima:$CURRENT_BRANCH
+- docker push liimaorg/liima:$CURRENT_BRANCH
 deploy:
   provider: releases
   api_key:
-    secure: aMserxLJT49UCceWT7Ti4E7TXdWGqc0pR/Wjyh7N4OYpFlZE2tx+o7T3LrplMVpKYZy+YlWuXYizeF+uL7swVzLJL8pgVb8j+zI/CNA/UL6QwzXWW8t5Cy6Ob+mcQSeIItimvowgdZ8AAja2hBS8of3xUoESZo6DsCSVS5s8BqSiPu6oV9Ua9yoKnNs2J17FjJ23x8DUAHTTVU84FKqtFVtSI+pTIBnex/b0wVgypeFMciIUIUXrp2flQewZ0pdTAYfCrIG74VNgsTRzs9ikBK5+lr8I8se62zW1m7gOP7ycYU+HJEUrahwe4W+ckfgXv4pK50P5ZsiwfYWEeo6jzKUg5qQubX1GKDoB0+LL/sDYxq/uiQ+7Djs/UIrwsBQ8Xzt/FTQEfANA0CTIyVHv0SyL+nwSJDl4wUSwmkLx76FcZIggh45HECC63g9TBcDqZxOFttWIbYWIz15UDtbgBDSvqowEOxooU3P1FkLaHR2ZvvOCkSwLRoSH0CN5aVy3PT/XA88rkzR/IT+hAm03Yr0ZeaIY28bvwBR+VXydzKxsYYraU1b1ecAw2qhdVF1vDp7xlaVC9Aaj0+u7RdJra7WRbMf6g22LQ3e8NYP6O/hLQnS6oAXdaN+XmoNV8GT44KNkg1XEKPwOj7N1z2zOCDFcMHsgmq+8CU0tQB1O3HY=
+    secure: E9tzuMEkm1Z8SoOJNJCFRXFY6P3wTgjvQQ4yUbY70WE9TzJ65nqncL83D+mGXz1DWmEQTbDt+ZoYyZBtcVvFsNjb/+GYBEoAI7IBi5OSAomzL3RosZB4YEM/6W4pFL+aItgaXwD+WdJbOaTbPuab5KsBzS0Vjw6MH0xb8o7ex6Eu77CkNWxLr0wchMHHMRJSPzbwQrOpsXnewoByF4tPHPJegc41AT0hjHPkWczHfUIEDs9irLNIAiSEaTzYuRwHiDrvdc02ThuZzfYcbBKBAhcCZIeS3j6ncxGl/VMdkoBpanqE+SRNaxqh4K6YzRX0LFlCZqPcRSj3+CxoYKwzdkBCjlH2dBaPAUKpMVSBkgRzp+vbaUpRPaXYJBxUBLk0b369I/2QNeC0UXVzFVYlQekQeXyC1XADi/ypKl0vwI+Mm4YH6NY6GwaEUGJWlu3TGeckeA47MiFuMBuspoQ4+v977eEPweA0wGrtqQVPD/da0nrJ/7i563bIjvObZJbJ4kb/EB6hexE+rm6Jxpg77W9AyCEE1CgYfvxw2BQcl+gR9rXj7gvDGy8H6tRpyrpZz+aWwgCKjNBg51EReE5VNqrg1m4Mjv5kyAW/GwEy/D3g+3M9Gkuk878wyL5QGMP+22e8PFylpI03vFNvZ3SDm4K5yZhz+Q1AdBWATvUIzJM=
   file_glob: true
   file: "AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear"
   skip_cleanup: true
@@ -27,5 +29,5 @@ deploy:
 branches:
   only:
   - master
-  - /^release-.*$/
-  - /^v1.*$/
+  - "/^release-.*$/"
+  - "/^v1.*$/"
