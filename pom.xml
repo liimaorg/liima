@@ -321,37 +321,19 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>6.1.5.Final</version>
                 <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>
 		<version>5.1.17.Final</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>dom4j</artifactId>
-                        <groupId>dom4j</groupId>
-                    </exclusion>
-                </exclusions>
                 <scope>provided</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-envers</artifactId>
-		<version>5.1.17.Final</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>dom4j</artifactId>
-                        <groupId>dom4j</groupId>
-                    </exclusion>
-                </exclusions>
+                <version>5.1.17.Final</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
