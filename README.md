@@ -21,9 +21,7 @@ Follow [ReadMe file](./AMW_docker/README.md) in order to run Liima locally on do
 Build the Liima ear
 
 Preconditions:
-- install JDK 8
-  - when using Oracle JDK to build Liima, make sure to install the Java Cryptography Extension (JCE) Unlimited Strength. Otherwise the decryption tests are going to fail.
-  - JDK 11 is not supporte yet
+- JDK 11
 - install Maven 3.5+
 - [Lombok](https://projectlombok.org/) is required in the IDE
 - [Angular CLI](https://cli.angular.io/) is required for Angular development

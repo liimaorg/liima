@@ -1,3 +1,20 @@
+# v1.17.16
+With this release Liima is build using JDK 11 and is required to run it. We now use the Angular cli to simplify updates and switched to Angular 10.
+
+## Bug fixes
+* Switch to angular cli [#512](https://github.com/liimaorg/liima/pull/512)
+* Update to Angular 10 [#543](https://github.com/liimaorg/liima/pull/543), [#562](https://github.com/liimaorg/liima/pull/562)
+* Update to JDK 11 and require it to build [#563](https://github.com/liimaorg/liima/pull/563)
+* Update div Java and Angular libraries [#561](https://github.com/liimaorg/liima/pull/561)
+* Don't cache Angular index.html [#551](https://github.com/liimaorg/liima/issues/551)
+* Wildfly is now configured to use jsf 2.2 [#547](https://github.com/liimaorg/liima/pull/547), which fixes two issues:
+  * Warning "A newer release for this resource exist. Are you..." doesn't disappear [#520](https://github.com/liimaorg/liima/issues/520)
+  * Warning "Changes you made may not be saved." with default properties [#513](https://github.com/liimaorg/liima/issues/513)
+* Update to Docker Image to Wildfly 20 [#563](https://github.com/liimaorg/liima/pull/563)
+* Fix amwFileDbIntegrationEmpty [#526](https://github.com/liimaorg/liima/pull/526)
+* Document build preconditions [#534](https://github.com/liimaorg/liima/pull/534)
+* Environment Strings in the REST API are case sensitive [#418](https://github.com/liimaorg/liima/issues/418)
+
 # v1.17.15
 ## Bug fixes
 * copyFrom TransientPropertyValueException [#480](https://github.com/liimaorg/liima/issues/480)

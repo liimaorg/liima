@@ -30,7 +30,6 @@ public class AmwEntityBuilder extends EntityBuilder {
 	@Override
 	protected void build() {
 		buildInternal();
-
 	}
 
 	protected void buildInternal() {

@@ -260,7 +260,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	public <T extends AbstractResourceRelationEntity> void removeRelation(final T relation) {
 		if (relation instanceof ConsumedResourceRelationEntity) {
 			if (relation != null && consumedMasterRelations != null) {
-				ConsumedResourceRelationEntity rel = (ConsumedResourceRelationEntity) relation;
 				consumedMasterRelations.remove(relation);
 			}
 		}

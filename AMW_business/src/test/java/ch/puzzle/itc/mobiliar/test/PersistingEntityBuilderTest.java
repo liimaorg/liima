@@ -90,7 +90,7 @@ public class PersistingEntityBuilderTest {
 		assertEquals(1, builder.getResourceCount(ContextTypeEntity.class));
 		assertEquals(3, builder.getResourceCount(ResourceGroupEntity.class));
 	}
-//
+
 	@Test
 	public void testSimpleWithProperties() throws TemplatePropertyException {
 		AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
