@@ -10,8 +10,8 @@ script:
   markhobson/maven-chrome:jdk-11 mvn clean deploy
 - AMW_docker/build.sh
 before_deploy:
-- mv AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear AMW_ear-${TRAVIS_BRANCH:1}.ear
-- sudo chmod 777 AMW_ear-*.ear
+- sudo chmod 777 AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear
+- mv AMW_ear/target/mvn-repo/ch/puzzle/itc/mobiliar/AMW_ear/*/AMW_ear-*.ear AMW_ear-${TRAVIS_BRANCH :1}.ear
 after_success:
 - "[[ -z $TRAVIS_PULL_REQUEST_BRANCH ]] && export CURRENT_BRANCH=$TRAVIS_BRANCH ||
   export CURRENT_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH"
