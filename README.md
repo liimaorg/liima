@@ -34,7 +34,7 @@ mvn clean install
 
 Version Updates are done with the maven release plugin. 
 ```
-mvn release:clean release:prepare -Darguments="-DskipTests"
+mvn release:clean release:prepare -Darguments="-DskipTests" -Dline.separator=$'\n'
 ```
 
 * Choose the version number of the new release as well as the following version number when asked. Please make sure, that the following version number is postfixed with "SNAPSHOT"
