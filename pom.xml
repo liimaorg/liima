@@ -3,7 +3,7 @@
     <groupId>ch.puzzle.itc.mobiliar</groupId>
     <artifactId>AMW_parent</artifactId>
     <name>AMW_parent</name>
-    <version>1.17.16</version>
+    <version>1.17.17-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -248,7 +248,7 @@
     <!-- URL to Git repository used by maven-release-plugin -->
     <scm>
         <developerConnection>scm:git:https://github.com/a-gogo/agogo.git</developerConnection>
-        <tag>v1.17.16</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
@@ -265,21 +265,21 @@
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_business</artifactId>
-                <version>1.17.16</version>
+                <version>1.17.17-SNAPSHOT</version>
                 <type>ejb</type>
             </dependency>
 
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_commons</artifactId>
-                <version>1.17.16</version>
+                <version>1.17.17-SNAPSHOT</version>
                 <scope>compile</scope>
             </dependency>
 
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_web</artifactId>
-                <version>1.17.16</version>
+                <version>1.17.17-SNAPSHOT</version>
                 <type>war</type>
                 <scope>compile</scope>
             </dependency>
@@ -287,7 +287,7 @@
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_angular</artifactId>
-                <version>1.17.16</version>
+                <version>1.17.17-SNAPSHOT</version>
                 <type>war</type>
                 <scope>compile</scope>
             </dependency>
@@ -295,7 +295,7 @@
             <dependency>
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_rest</artifactId>
-                <version>1.17.16</version>
+                <version>1.17.17-SNAPSHOT</version>
                 <type>war</type>
                 <scope>compile</scope>
             </dependency>
