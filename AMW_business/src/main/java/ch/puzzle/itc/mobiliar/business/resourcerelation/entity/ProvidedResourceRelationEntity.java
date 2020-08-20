@@ -27,7 +27,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.Entity;

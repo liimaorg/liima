@@ -37,7 +37,7 @@ import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;

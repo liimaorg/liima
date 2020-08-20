@@ -23,7 +23,7 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 import ch.puzzle.itc.mobiliar.business.utils.DomainObject;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

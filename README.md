@@ -22,12 +22,19 @@ Build the Liima ear
 
 Preconditions:
 - JDK 11
-- install Maven 3.5+
-- [Lombok](https://projectlombok.org/) is required in the IDE
+- Maven 3.5+
+- Chrome Headless for Angular tests
 - [Angular CLI](https://cli.angular.io/) is required for Angular development
+- [Lombok](https://projectlombok.org/) is required in the IDE
 
 ```
 mvn clean install
+```
+
+Or build Liima inside a container:
+
+```
+docker run -it -u $(id -u):$(id -g) -e MAVEN_CONFIG=$HOME/.m2 -e HOME=$HOME -v "$PWD":/usr/src/amw -v "$HOME":"$HOME" -w /usr/src/amw markhobson/maven-chrome:jdk-11 mvn -Duser.home=$HOME clean install
 ```
 
 ### Create new Release

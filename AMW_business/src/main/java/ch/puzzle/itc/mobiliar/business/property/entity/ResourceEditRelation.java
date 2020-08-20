@@ -24,7 +24,7 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesD
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import lombok.Getter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Comparator;
 import java.util.Date;
