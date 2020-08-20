@@ -8,8 +8,6 @@ import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -76,24 +74,5 @@ public class AuditViewRest {
         sortByTimestamp(dtos);
         return dtos;
     }
-
-
-    /**
-     *
-     * @param propertyDescriptors
-     * @return list only containing the propertyDescriptors
-     */
-    private List<ResourceEditProperty> filterPropertyDescriptors(List<ResourceEditProperty> propertyDescriptors) {
-        List<ResourceEditProperty> onlyPropertyDescriptors = new ArrayList<>(propertyDescriptors);
-        CollectionUtils.filter(onlyPropertyDescriptors, new Predicate() {
-            @Override
-            public boolean evaluate(Object object) {
-                ResourceEditProperty p = (ResourceEditProperty) object;
-                return p.getPropertyId() == null;
-            }
-        });
-        return onlyPropertyDescriptors;
-    }
-
 
 }
