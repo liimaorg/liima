@@ -38,7 +38,7 @@ import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;

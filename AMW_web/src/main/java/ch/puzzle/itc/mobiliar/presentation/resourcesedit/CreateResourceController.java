@@ -33,7 +33,7 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;

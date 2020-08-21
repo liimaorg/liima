@@ -6,7 +6,7 @@ import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextRepository;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.RevisionType;

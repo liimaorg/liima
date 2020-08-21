@@ -44,7 +44,7 @@ import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;

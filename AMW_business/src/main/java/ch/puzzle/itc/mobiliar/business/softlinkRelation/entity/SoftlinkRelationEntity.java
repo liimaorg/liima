@@ -29,7 +29,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainS
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.envers.Audited;
 
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;

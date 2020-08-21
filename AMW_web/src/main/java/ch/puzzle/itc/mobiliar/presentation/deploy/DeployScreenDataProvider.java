@@ -41,7 +41,7 @@ import ch.puzzle.itc.mobiliar.presentation.components.impl.CustomFilterComp;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
