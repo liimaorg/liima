@@ -29,7 +29,7 @@ public class RuntimeEnvironment {
      * @param key
      * @return value
      */
-    public static String getValueOfEnvironmentVariable(String key){
+    public String getValueOfEnvironmentVariable(String key){
         return System.getenv(key);
     }
 }
