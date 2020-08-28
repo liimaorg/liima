@@ -23,8 +23,7 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -148,7 +147,7 @@ public class ResourceGroupRepository {
         qString.append("SELECT DISTINCT g FROM ResourceGroupEntity g left join " + fetchString + "g.resources r");
         qString.append(" WHERE r.resourceType."+typeParam+"=:typePram");
         qString.append(" AND r.name IS NOT :asContainer");
-        if (!CollectionUtils.isEmpty(myAmw)) {
+        if (myAmw != null && myAmw.size() != 0) {
             qString.append(" AND g.id in (:myAmw)");
         }
 
@@ -156,7 +155,7 @@ public class ResourceGroupRepository {
                 ResourceGroupEntity.class);
         q.setParameter("typePram", typeParamValue);
         q.setParameter("asContainer", ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName());
-        if (!CollectionUtils.isEmpty(myAmw)) {
+        if (myAmw != null && myAmw.size() != 0) {
             q.setParameter("myAmw", myAmw);
         }
         

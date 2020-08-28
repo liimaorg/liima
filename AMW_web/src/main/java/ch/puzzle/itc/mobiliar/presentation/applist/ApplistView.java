@@ -34,7 +34,7 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;

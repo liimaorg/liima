@@ -24,7 +24,7 @@ import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -30,8 +30,8 @@ import ch.puzzle.itc.mobiliar.business.utils.Copyable;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;

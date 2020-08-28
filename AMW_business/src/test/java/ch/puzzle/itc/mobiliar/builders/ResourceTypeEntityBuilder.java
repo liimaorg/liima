@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;

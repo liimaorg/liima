@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

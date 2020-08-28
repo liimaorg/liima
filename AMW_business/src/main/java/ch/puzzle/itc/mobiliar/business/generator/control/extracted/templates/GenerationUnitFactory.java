@@ -44,7 +44,7 @@ import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import com.google.common.collect.Sets;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;

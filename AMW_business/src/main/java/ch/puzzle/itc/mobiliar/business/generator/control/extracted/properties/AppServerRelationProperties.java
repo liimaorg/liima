@@ -32,7 +32,7 @@ import ch.puzzle.itc.mobiliar.business.property.entity.AmwTemplateModel;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;

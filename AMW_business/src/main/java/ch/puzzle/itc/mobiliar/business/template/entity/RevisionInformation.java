@@ -22,7 +22,7 @@ package ch.puzzle.itc.mobiliar.business.template.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.util.Date;
 

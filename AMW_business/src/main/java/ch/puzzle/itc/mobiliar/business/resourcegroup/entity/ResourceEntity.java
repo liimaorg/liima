@@ -49,7 +49,7 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
