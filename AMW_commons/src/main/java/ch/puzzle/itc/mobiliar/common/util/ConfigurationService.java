@@ -20,17 +20,19 @@
 
 package ch.puzzle.itc.mobiliar.common.util;
 
-
 /**
  * Class that manages all the System Properties of AMW
  */
 public class ConfigurationService {
 
+    // For testing only
+    protected static RuntimeEnvironment runtimeEnv = new RuntimeEnvironment();
+
     private static String getPropertyValue(ConfigKey key) {
         String configPropertyValue = System.getProperty(key.getValue());
         // if the systemProperty is not set, check corresponding ENV
         if(configPropertyValue == null){
-            configPropertyValue = RuntimeEnvironment.getValueOfEnvironmentVariable(key.getEnvName());
+            configPropertyValue = runtimeEnv.getValueOfEnvironmentVariable(key.getEnvName());
         }
 
         return configPropertyValue;

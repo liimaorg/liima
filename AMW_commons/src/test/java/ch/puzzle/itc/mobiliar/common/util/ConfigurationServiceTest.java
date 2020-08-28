@@ -24,21 +24,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(RuntimeEnvironment.class)
+
 public class ConfigurationServiceTest {
 
 	@Before
@@ -50,8 +45,9 @@ public class ConfigurationServiceTest {
 		//used for booleanTests
 		props.setProperty(ConfigKey.GENERATOR_PATH.getValue(), "true");
 
-		PowerMockito.mockStatic(RuntimeEnvironment.class);
-		Mockito.when(RuntimeEnvironment.getValueOfEnvironmentVariable(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST.getEnvName())).thenReturn("envvalue");
+		RuntimeEnvironment runtimeEnv = mock(RuntimeEnvironment.class);
+		ConfigurationService.runtimeEnv = runtimeEnv;
+		Mockito.when(runtimeEnv.getValueOfEnvironmentVariable(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST.getEnvName())).thenReturn("envvalue");
 	}
 	
 	@After
@@ -61,6 +57,8 @@ public class ConfigurationServiceTest {
 		props.remove(ConfigKey.DEPLOYMENT_IN_PROGRESS_TIMEOUT.getValue());
 		props.remove(ConfigKey.DELIVER_MAIL.getValue());
 		props.remove(ConfigKey.GENERATOR_PATH.getValue());
+		// unmock the static class
+		ConfigurationService.runtimeEnv = new RuntimeEnvironment();
 	}
 	
 	@Test
