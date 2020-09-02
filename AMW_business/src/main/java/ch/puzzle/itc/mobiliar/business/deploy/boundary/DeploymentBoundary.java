@@ -335,6 +335,14 @@ public class DeploymentBoundary {
         return deployment.getRelease().getName();
     }
 
+    public String getDeletedRuntimeName(DeploymentEntity deployment) {
+        if (deployment.getRuntime() == null) {
+            ResourceEntity res = (ResourceEntity) auditService.getDeletedEntity(new ResourceEntity(), deployment.getExRuntimeResourceId());
+            return res.getName();
+        }
+        return deployment.getRuntime().getName();
+    }
+
     private void populateDeletedContextMap() {
         deletedContextNameIdMap = new HashMap<>();
         List<ContextEntity> allDeletedEnvironments = contextLocator.getAllDeletedEnvironments();
