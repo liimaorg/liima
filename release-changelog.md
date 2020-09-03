@@ -1,5 +1,13 @@
+# v1.17.17
+This release fixes a NullPointer and cleans up some java dependencies.
+
+## Bug fixes
+* Fix a bug in GET `AMW_rest/resources/deployments/filter` that leads to a NullPointer when a runtime was deleted: [#572](https://github.com/liimaorg/liima/pull/572)
+* Remove PowerMockito [#568](https://github.com/liimaorg/liima/issues/568)
+* Update to Commons Lang 3 [#565](https://github.com/liimaorg/liima/issues/565)
+
 # v1.17.16
-With this release Liima is build using JDK 11 and is required to run it. We now use the Angular cli to simplify updates and switched to Angular 10.
+With this release Liima is built using JDK 11 and is required to run it. We now use the Angular cli to simplify updates and switched to Angular 10.
 
 ## Bug fixes
 * Switch to angular cli [#512](https://github.com/liimaorg/liima/pull/512)
