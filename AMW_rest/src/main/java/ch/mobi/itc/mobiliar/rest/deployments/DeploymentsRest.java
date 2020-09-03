@@ -175,6 +175,9 @@ public class DeploymentsRest {
         if (deployment.getExReleaseId() != null) {
             properties.setReleaseName(deploymentBoundary.getDeletedReleaseName(deployment));
         }
+        if (deployment.getExRuntimeResourceId() != null) {
+            properties.setRuntimeName(deploymentBoundary.getDeletedRuntimeName(deployment));
+        }
         deploymentDTO.setPreservedValues(deployment, properties);
         deploymentDTO.setActions(new DeploymentActionsDTO());
         return deploymentDTO;
