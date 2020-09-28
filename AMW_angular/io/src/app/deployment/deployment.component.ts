@@ -93,19 +93,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       this.releaseName = param['releaseName'];
       this.deploymentId = param['deploymentId'];
 
-      // a deploymentId MUST be numeric..
-      if (this.deploymentId && !isNaN(this.deploymentId)) {
-        this.navigationStore.setPageTitle('Redeploy');
-        this.isRedeployment = true;
-        this.getDeployment();
+      if (this.deploymentId && Number(this.deploymentId)) {
+        this.prepareRedeploy();
       } else {
-        // ..or it's rather an appserverName (we got no type safety on runtime)
-        if (this.deploymentId) {
-          this.appserverName = this.deploymentId.toString();
-          delete this.deploymentId;
-        }
-        this.navigationStore.setPageTitle('Create new deployment');
-        this.initAppservers();
+        this.prepareNewDeployment();
       }
     });
   }
@@ -196,7 +187,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     return Object.keys(this.groupedEnvironments);
   }
 
-  private getDeployment() {
+  private getDeployment(): Subscription {
     return this.deploymentService.get(this.deploymentId).subscribe(
       /* happy path */ (r) => (this.selectedDeployment = r),
       /* error path */ (e) => (this.errorMessage = e),
@@ -512,6 +503,21 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
           );
       }
     }
+  }
+
+  private prepareNewDeployment() {
+    if (this.deploymentId) {
+      this.appserverName = this.deploymentId.toString();
+      delete this.deploymentId;
+    }
+    this.navigationStore.setPageTitle('Create new deployment');
+    this.initAppservers();
+  }
+
+  private prepareRedeploy() {
+    this.navigationStore.setPageTitle('Redeploy');
+    this.isRedeployment = true;
+    this.getDeployment();
   }
 
   // for url params only
