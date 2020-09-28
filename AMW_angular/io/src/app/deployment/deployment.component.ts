@@ -88,27 +88,26 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.initEnvironments();
-
     this.activatedRoute.params.subscribe((param: any) => {
       this.appserverName = param['appserverName'];
       this.releaseName = param['releaseName'];
       this.deploymentId = param['deploymentId'];
-    });
 
-    // a deploymentId MUST be numeric..
-    if (this.deploymentId && !isNaN(this.deploymentId)) {
-      this.navigationStore.setPageTitle('Redeploy');
-      this.isRedeployment = true;
-      this.getDeployment();
-    } else {
-      // ..or it's rather an appserverName (we got no type safety on runtime)
-      if (this.deploymentId) {
-        this.appserverName = this.deploymentId.toString();
-        delete this.deploymentId;
+      // a deploymentId MUST be numeric..
+      if (this.deploymentId && !isNaN(this.deploymentId)) {
+        this.navigationStore.setPageTitle('Redeploy');
+        this.isRedeployment = true;
+        this.getDeployment();
+      } else {
+        // ..or it's rather an appserverName (we got no type safety on runtime)
+        if (this.deploymentId) {
+          this.appserverName = this.deploymentId.toString();
+          delete this.deploymentId;
+        }
+        this.navigationStore.setPageTitle('Create new deployment');
+        this.initAppservers();
       }
-      this.navigationStore.setPageTitle('Create new deployment');
-      this.initAppservers();
-    }
+    });
   }
 
   ngAfterViewInit() {
