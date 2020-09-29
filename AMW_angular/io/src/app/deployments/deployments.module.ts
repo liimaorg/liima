@@ -8,14 +8,21 @@ import { DeploymentsEditModalComponent } from './deployments-edit-modal.componen
 import { DeploymentService } from '../deployment/deployment.service';
 import { EnvironmentService } from '../deployment/environment.service';
 import { DeploymentsRoutingModule } from './deployments-routing.module';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, DeploymentsRoutingModule, SharedModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    DeploymentsRoutingModule,
+    SharedModule,
+    FontAwesomeModule,
+  ],
   declarations: [
     DeploymentsComponent,
     DeploymentsListComponent,
-    DeploymentsEditModalComponent
+    DeploymentsEditModalComponent,
   ],
-  providers: [DeploymentService, EnvironmentService]
+  providers: [DeploymentService, EnvironmentService],
 })
 export class DeploymentsModule {}

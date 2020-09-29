@@ -33,7 +33,15 @@ import {
   FontAwesomeModule,
   FaIconLibrary,
 } from '@fortawesome/angular-fontawesome';
-import { faCalendar, faClock } from '@fortawesome/free-regular-svg-icons';
+import {
+  faCalendar,
+  faClock,
+  faTrashAlt,
+  faClipboard,
+  faEdit,
+  faPlusSquare,
+  faArrowAltCircleDown,
+} from '@fortawesome/free-regular-svg-icons';
 
 @NgModule({
   declarations: [AppComponent],
@@ -61,6 +69,14 @@ import { faCalendar, faClock } from '@fortawesome/free-regular-svg-icons';
 })
 export class AppModule {
   constructor(library: FaIconLibrary) {
-    library.addIcons(faCalendar, faClock);
+    library.addIcons(
+      faCalendar,
+      faClock,
+      faTrashAlt,
+      faClipboard,
+      faEdit,
+      faPlusSquare,
+      faArrowAltCircleDown
+    );
   }
 }

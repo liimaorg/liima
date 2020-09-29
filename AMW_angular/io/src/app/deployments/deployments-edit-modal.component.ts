@@ -29,7 +29,7 @@ export class DeploymentsEditModalComponent {
   deploymentDate: string; // for deployment date change in during confirmation (format 'DD.MM.YYYY HH:mm')
   selectedEditAction: string;
 
-  constructor(private ngZone: NgZone) {
+  constructor() {
     this.confirmationAttributes = {} as Deployment;
   }
 
