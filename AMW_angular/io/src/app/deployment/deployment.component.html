@@ -132,7 +132,8 @@
         <label for="dateDeployment" class="col-sm-2 control-label"
           >Deploy at</label
         >
-        <div class="col-sm-10 col-md-5">
+
+        <!--<div class="col-sm-10 col-md-5">
           <div class="input-group date datepicker">
             <input
               id="dateDeployment"
@@ -143,10 +144,10 @@
               (blur)="deploymentDate = datePicker.value"
             />
             <span class="input-group-addon"
-              ><i class="glyphicon glyphicon-calendar"></i
+            ><i class="glyphicon glyphicon-calendar"></i
             ></span>
           </div>
-        </div>
+        </div>-->
       </div>
 
       <div class="form-group">
@@ -276,6 +277,10 @@
           >
             Deploy
           </button>
+        </div>
+
+        <div>
+          <ngb-datepicker #dp [(ngModel)]="deploymentDate"></ngb-datepicker>
         </div>
       </div>
     </span>
