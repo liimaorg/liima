@@ -70,14 +70,14 @@ span.interval-label {
  * For the states pre_deploy, progress and simulating the default glyphicon is overwritten by .glyphicon-spin and .glyphicon-refresh
  */
 table#deployment-list .glyphicon-info-combined {
-  @extend .pointer;
-  @extend .glyphicon;
-  @extend .glyphicon-info-sign;
+  @extend .pointer !optional;
+  @extend .glyphicon !optional;
+  @extend .glyphicon-info-sign !optional;
   &.state-pre_deploy,
   &.state-progress,
   &.state-simulating {
-    @extend .glyphicon-spin;
-    @extend .glyphicon-refresh;
+    @extend .glyphicon-spin !optional;
+    @extend .glyphicon-refresh !optional;
   }
 }
 

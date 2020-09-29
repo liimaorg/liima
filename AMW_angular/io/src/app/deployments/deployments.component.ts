@@ -17,7 +17,6 @@ import { DeploymentFilterType } from '../deployment/deployment-filter-type';
 import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentService } from '../deployment/deployment.service';
-import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
 
 declare var $: any;
@@ -26,7 +25,7 @@ declare var $: any;
   selector: 'amw-deployments',
   templateUrl: './deployments.component.html',
 })
-export class DeploymentsComponent implements OnInit, AfterViewInit {
+export class DeploymentsComponent implements OnInit {
   defaultComparator: string = 'eq';
 
   // initially by queryParam
@@ -120,11 +119,6 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
       this.initTypeAndOptions();
       this.canRequestDeployments();
     });
-  }
-
-  ngAfterViewInit() {
-    $.fn.datetimepicker = datetimepicker;
-    $('#datetimepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
   }
 
   addFilter() {
@@ -415,9 +409,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
   }
 
   private addDatePicker() {
-    this.ngZone.onMicrotaskEmpty.subscribe(() => {
-      $('#datetimepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
-    });
+    // TODO
   }
 
   private comparatorOptionsForType(filterType: string) {

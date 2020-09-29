@@ -29,6 +29,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 // Application wide providers
 const APP_PROVIDERS = [NavigationStoreService];
 
+import {
+  FontAwesomeModule,
+  FaIconLibrary,
+} from '@fortawesome/angular-fontawesome';
+import { faCalendar, faClock } from '@fortawesome/free-regular-svg-icons';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -47,9 +53,14 @@ const APP_PROVIDERS = [NavigationStoreService];
     BaseModule,
     SharedModule,
     NavigationModule,
+    FontAwesomeModule,
     NgbModule,
   ],
   providers: [APP_PROVIDERS],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(library: FaIconLibrary) {
+    library.addIcons(faCalendar, faClock);
+  }
+}

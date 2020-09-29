@@ -9,6 +9,9 @@ import { PanelHeadingComponent } from './panel-heading/panel-heading.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { FormsModule } from '@angular/forms';
 import { NotificationComponent } from './elements/notification/notification.component';
+import { DateTimePickerComponent } from './date-time-picker/date-time-picker.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -18,9 +21,11 @@ import { NotificationComponent } from './elements/notification/notification.comp
     LoadingIndicatorComponent,
     PanelHeadingComponent,
     PaginationComponent,
-    NotificationComponent
+    NotificationComponent,
+
+    DateTimePickerComponent,
   ],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgbModule, FontAwesomeModule],
   exports: [
     SortableIconComponent,
     PageHeaderComponent,
@@ -28,7 +33,8 @@ import { NotificationComponent } from './elements/notification/notification.comp
     LoadingIndicatorComponent,
     PanelHeadingComponent,
     PaginationComponent,
-    NotificationComponent
-  ]
+    NotificationComponent,
+    DateTimePickerComponent,
+  ],
 })
 export class SharedModule {}

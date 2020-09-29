@@ -17,7 +17,6 @@ import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as $ from 'jquery';
-import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
 
 @Component({
@@ -102,8 +101,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    $.fn.datetimepicker = datetimepicker;
-    $('.datepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
     // we dont need this right away
     this.loadDeploymentParameters();
   }

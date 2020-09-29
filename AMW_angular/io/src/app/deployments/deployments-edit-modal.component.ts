@@ -4,7 +4,7 @@ import * as moment from 'moment';
 
 @Component({
   selector: 'amw-deployments-edit-modal',
-  templateUrl: './deployments-edit-modal.component.html'
+  templateUrl: './deployments-edit-modal.component.html',
 })
 export class DeploymentsEditModalComponent {
   @Input() deployments: Deployment[] = [];
@@ -40,6 +40,10 @@ export class DeploymentsEditModalComponent {
     if (isConfirm || isEditDeploymentDate) {
       this.addDatePicker();
     }
+  }
+
+  addDatePicker() {
+    // TODO
   }
 
   doEdit() {
@@ -113,11 +117,5 @@ export class DeploymentsEditModalComponent {
         }
       }
     }
-  }
-
-  private addDatePicker() {
-    this.ngZone.onMicrotaskEmpty.subscribe(() => {
-      $('#datepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
-    });
   }
 }

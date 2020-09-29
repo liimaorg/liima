@@ -4,20 +4,19 @@ import {
   Output,
   EventEmitter,
   NgZone,
-  AfterViewInit
+  AfterViewInit,
 } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resource/resource.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 
 @Component({
   selector: 'amw-deployments-list',
-  templateUrl: './deployments-list.component.html'
+  templateUrl: './deployments-list.component.html',
 })
-export class DeploymentsListComponent implements AfterViewInit {
+export class DeploymentsListComponent {
   @Input() deployments: Deployment[] = [];
   @Input() sortCol: string;
   @Input() sortDirection: string;
@@ -57,17 +56,13 @@ export class DeploymentsListComponent implements AfterViewInit {
     NODE_MISSING: 'no nodes enabled',
     TIMEOUT: 'timeout',
     UNEXPECTED_ERROR: 'unexpected error',
-    RUNTIME_ERROR: 'runtime error'
+    RUNTIME_ERROR: 'runtime error',
   };
 
   constructor(
     private ngZone: NgZone,
     private resourceService: ResourceService
   ) {}
-
-  ngAfterViewInit(): void {
-    $.fn.datetimepicker = datetimepicker;
-  }
 
   showDetails(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
@@ -87,8 +82,8 @@ export class DeploymentsListComponent implements AfterViewInit {
     this.resourceService
       .canCreateShakedownTest(this.deployment.appServerId)
       .subscribe(
-        /* happy path */ r => (this.hasPermissionShakedownTest = r),
-        /* error path */ e => (this.errorMessage = e),
+        /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
+        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () => $('#deploymentConfirmation').modal('show')
       );
   }
@@ -161,7 +156,7 @@ export class DeploymentsListComponent implements AfterViewInit {
 
   appLink(appId: number) {
     this.resourceService.resourceExists(appId).subscribe(
-      /* happy path */ r => {
+      /* happy path */ (r) => {
         if (r) {
           window.location.href =
             '/AMW_web/pages/editResourceView.xhtml?id=' + appId + '&ctx=1';

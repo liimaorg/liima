@@ -132,21 +132,12 @@
         <label for="dateDeployment" class="col-sm-2 control-label"
           >Deploy at</label
         >
-
         <div class="col-sm-10 col-md-5">
-          <div class="input-group date datepicker">
-            <input
-              id="dateDeployment"
-              type="text"
-              class="form-control"
-              #datePicker
-              [ngModel]="deploymentDate"
-              (blur)="deploymentDate = datePicker.value"
-            />
-            <span class="input-group-addon"
-              ><i class="glyphicon glyphicon-calendar"></i
-            ></span>
-          </div>
+          <app-date-time-picker
+            [(ngModel)]="deploymentDate"
+            name="dateDeployment"
+            id="dateDeployment"
+          ></app-date-time-picker>
         </div>
       </div>
 
