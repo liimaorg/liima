@@ -4,6 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "backend:build": "cd ./../../ && mvn clean install -DskipTests && ./AMW_docker/build.sh && cd ./AMW_angular/io",
+    "backend:start": "docker-compose -f ./../../AMW_docker/docker-compose/docker-compose.yml up -d",
+    "backend:stop": "docker-compose -f ./../../AMW_docker/docker-compose/docker-compose.yml down",
     "build": "ng build",
     "test": "ng test",
     "test-headless": "ng test --browsers=ChromeHeadless",
