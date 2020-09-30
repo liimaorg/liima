@@ -15,7 +15,7 @@
       [disabled]="disabled"
       type="button"
     >
-      <fa-icon [icon]="['far', 'calendar']"></fa-icon>
+      <app-icon icon="calendar3"></app-icon>
     </button>
   </div>
 </div>
@@ -36,7 +36,7 @@
         type="button"
         (click)="toggleDateTimeState($event)"
       >
-        <fa-icon [icon]="['far', 'clock']"></fa-icon>
+        <app-icon icon="clock"></app-icon>
       </button>
     </div>
     <div *ngIf="showTimePickerToggle">
@@ -46,7 +46,7 @@
         type="button"
         (click)="toggleDateTimeState($event)"
       >
-        <fa-icon [icon]="['far', 'calendar']"></fa-icon>
+        <app-icon icon="calendar3"></app-icon>
       </button>
       <div class="mt-auto">
         <ngb-timepicker

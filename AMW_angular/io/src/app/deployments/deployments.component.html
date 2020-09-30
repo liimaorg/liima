@@ -112,7 +112,7 @@
               class="btn btn-link"
               (click)="removeFilter(filter)"
             >
-              <fa-icon [icon]="['far', 'trash-alt']"></fa-icon>
+              <app-icon icon="trash"></app-icon>
             </button>
           </div>
         </div>
@@ -140,7 +140,7 @@
             [attr.disabled]="filters.length < 1 ? '' : null"
             (click)="copyURL()"
           >
-            <fa-icon [icon]="['far', 'clipboard']"></fa-icon>
+            <app-icon icon="clipboard"></app-icon>
             Clipboard
           </button>
           <button
@@ -149,7 +149,7 @@
             [attr.disabled]="deployments.length < 1 ? '' : null"
             (click)="exportCSV()"
           >
-            <fa-icon [icon]="['far', 'arrow-alt-circle-down']"></fa-icon>
+            <app-icon icon="cloud-arrow-down"></app-icon>
             <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
             Export
           </button>
@@ -159,13 +159,13 @@
             [attr.disabled]="editableDeployments() ? null : ''"
             (click)="showEdit()"
           >
-            <fa-icon [icon]="['far', 'edit']"></fa-icon>
+            <app-icon icon="pencil-square"></app-icon>
             Edit
           </button>
           <ng-container *ngIf="hasPermissionToRequestDeployments">
             <a href="#/deployment/">
               <button type="submit" class="btn btn-default btn-main">
-                <fa-icon [icon]="['far', 'plus-square']"></fa-icon>
+                <app-icon icon="plus-circle"></app-icon>
                 Create
               </button>
             </a>
