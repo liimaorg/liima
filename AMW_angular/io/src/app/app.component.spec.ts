@@ -6,7 +6,6 @@ import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { NavigationSidebarComponent } from './navigation/navigation-sidebar.component';
-import { PageHeaderComponent } from './shared/elements/page-header.component';
 
 import { AppConfiguration } from './setting/app-configuration';
 import { SettingService } from './setting/setting.service';
@@ -28,7 +27,11 @@ describe('App', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [AppComponent, NavigationComponent, NavigationSidebarComponent, PageHeaderComponent],
+      declarations: [
+        AppComponent,
+        NavigationComponent,
+        NavigationSidebarComponent,
+      ],
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         NavigationStoreService,

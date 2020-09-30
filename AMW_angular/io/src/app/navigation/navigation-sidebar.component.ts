@@ -5,28 +5,33 @@ import { Navigation } from './navigation-store.service';
 @Component({
   selector: 'app-navigation-sidebar',
   template: `
-    <div *ngIf="navigation.visible" class="col-sm-2 col-lg-1 sidebar">
-      <ul class="nav nav-sidebar">
-        <ng-container *ngIf="!navigation.items">
-          <li class="active">
-            <a href="#"
-              >{{ navigation.current }}<span class="sr-only">(current)</span></a
+    <ul
+      *ngIf="navigation.visible"
+      class="nav flex-column pt-4 d-none d-sm-block"
+    >
+      <ng-container *ngIf="!navigation.items">
+        <li class="nav-item active">
+          <a class="nav-link" href="#"
+            >{{ navigation.current }}<span class="sr-only">(current)</span></a
+          >
+        </li>
+      </ng-container>
+      <ng-container *ngIf="navigation.items">
+        <ng-container *ngFor="let item of navigation.items">
+          <li
+            class="nav-item"
+            [ngClass]="item.title === navigation.current ? 'active' : ''"
+          >
+            <a
+              class="nav-link"
+              href="#{{ item.target }}"
+              (mouseup)="itemSelected.emit(item)"
+              >{{ item.title }}</a
             >
           </li>
         </ng-container>
-        <ng-container *ngIf="navigation.items">
-          <ng-container *ngFor="let item of navigation.items">
-            <li [ngClass]="item.title === navigation.current ? 'active' : ''">
-              <a
-                href="#{{ item.target }}"
-                (mouseup)="itemSelected.emit(item)"
-                >{{ item.title }}</a
-              >
-            </li>
-          </ng-container>
-        </ng-container>
-      </ul>
-    </div>
+      </ng-container>
+    </ul>
   `,
   styleUrls: ['./navigation-sidebar.component.scss'],
 })
