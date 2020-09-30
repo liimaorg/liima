@@ -13,8 +13,10 @@
       [messageType]="'warning'"
     ></app-notification>
     <span class="form-horizontal">
-      <div class="form-group" *ngIf="appservers.length > 0">
-        <label for="selectApplicationserver" class="col-sm-2 control-label"
+      <div class="form-group row" *ngIf="appservers.length > 0">
+        <label
+          for="selectApplicationserver"
+          class="col-sm-2 font-weight-bold text-right"
           >Applicationserver</label
         >
         <div class="col-sm-10 col-md-5">
@@ -31,8 +33,10 @@
         </div>
       </div>
 
-      <div class="form-group" *ngIf="isRedeployment">
-        <label for="selectApplicationserver" class="col-sm-2 control-label"
+      <div class="form-group row" *ngIf="isRedeployment">
+        <label
+          for="selectApplicationserver"
+          class="col-sm-2 font-weight-bold text-right"
           >Applicationserver</label
         >
         <div class="col-sm-10 col-md-5">
@@ -43,8 +47,8 @@
         </div>
       </div>
 
-      <div class="form-group" *ngIf="!isRedeployment">
-        <label for="selectRelease" class="col-sm-2 control-label"
+      <div class="form-group row" *ngIf="!isRedeployment">
+        <label for="selectRelease" class="col-sm-2 font-weight-bold text-right"
           >Release</label
         >
         <div class="col-sm-10 col-md-5">
@@ -62,14 +66,15 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Environments</label>
+      <div class="form-group row">
+        <label class="col-sm-2 font-weight-bold text-right">Environments</label>
         <div class="col-sm-10">
           <ng-container *ngFor="let group of getEnvironmentGroups()">
-            <h5 class="environments-title">{{ group }}:</h5>
+            <p class="mb-1">{{ group }}:</p>
             <ng-container *ngFor="let env of groupedEnvironments[group]">
-              <label class="checkbox-inline"
+              <label
                 ><input
+                  class="mr-2"
                   type="checkbox"
                   (change)="onChangeEnvironment()"
                   [(ngModel)]="env.selected"
@@ -83,26 +88,27 @@
         </div>
       </div>
 
-      <div class="form-group" *ngIf="!isRedeployment">
-        <label class="col-sm-2 control-label">Applications</label>
-        <div class="col-sm-10 col-md-5">
-          <table class="table table-striped" *ngIf="appsWithVersion.length > 0">
-            <tr *ngFor="let app of appsWithVersion">
-              <td class="col-md-2">{{ app.applicationName }}</td>
-              <td>
-                <input
-                  class="form-control"
-                  type="text"
-                  [(ngModel)]="app.version"
-                />
-              </td>
-            </tr>
-          </table>
-        </div>
+      <div class="form-group row" *ngIf="!isRedeployment">
+        <label class="col-sm-2 font-weight-bold text-right">Applications</label>
+        <table
+          class="col-sm-10 col-md-5 table table-striped table-borderless pt-0"
+          *ngIf="appsWithVersion.length > 0"
+        >
+          <tr class="pt-0" *ngFor="let app of appsWithVersion">
+            <td class="pt-0">{{ app.applicationName }}</td>
+            <td class="pt-0">
+              <input
+                class="form-control"
+                type="text"
+                [(ngModel)]="app.version"
+              />
+            </td>
+          </tr>
+        </table>
       </div>
 
-      <div class="form-group" *ngIf="!isRedeployment">
-        <label class="col-sm-2 control-label">Runtime</label>
+      <div class="form-group row" *ngIf="!isRedeployment">
+        <label class="col-sm-2 font-weight-bold text-right">Runtime</label>
         <div class="col-sm-10 col-md-5">
           <h5 class="environments-title" *ngIf="runtime">
             {{ runtime.identifier }}
@@ -110,8 +116,10 @@
         </div>
       </div>
 
-      <div class="form-group" *ngIf="!isRedeployment">
-        <label for="selectState" class="col-sm-2 control-label">State</label>
+      <div class="form-group row" *ngIf="!isRedeployment">
+        <label for="selectState" class="col-sm-2 font-weight-bold text-right"
+          >State</label
+        >
         <div class="col-sm-10 col-md-5" *ngIf="bestForSelectedRelease">
           <select
             id="selectState"
@@ -127,8 +135,8 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="dateDeployment" class="col-sm-2 control-label"
+      <div class="form-group row">
+        <label for="dateDeployment" class="col-sm-2 font-weight-bold text-right"
           >Deploy at</label
         >
         <div class="col-sm-10 col-md-5">
@@ -140,8 +148,10 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Deployment parameter</label>
+      <div class="form-group row">
+        <label class="col-sm-2 font-weight-bold text-right"
+          >Deployment parameter</label
+        >
         <div class="col-sm-2">
           <input
             class="form-control"
@@ -171,22 +181,19 @@
             "
             (click)="onAddParam()"
           >
-            <span
-              class="glyphicon glyphicon-plus-sign"
-              aria-hidden="true"
-            ></span>
+            <app-icon icon="plus"></app-icon>
           </button>
         </div>
       </div>
 
       <ng-container *ngIf="transDeploymentParameters.length > 0">
         <div
-          class="form-group"
+          class="form-group row"
           *ngFor="let transDepParam of transDeploymentParameters"
         >
           <label
             for="selectApplicationserver"
-            class="col-sm-2 control-label"
+            class="col-sm-2 font-weight-bold text-right"
           ></label>
           <div class="col-sm-2">
             <input
@@ -210,16 +217,16 @@
               class="btn btn-default"
               (click)="onRemoveParam(transDepParam)"
             >
-              <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+              <app-icon icon="trash"></app-icon>
             </button>
           </div>
         </div>
       </ng-container>
 
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Details</label>
+      <div class="form-group row">
+        <label class="col-sm-2 font-weight-bold text-right">Details</label>
         <div class="col-sm-10">
-          <div class="checkbox">
+          <div>
             <label>
               <input type="checkbox" [(ngModel)]="simulate" />
               simulate before deployment
@@ -247,7 +254,7 @@
       </div>
 
       <div
-        class="form-group"
+        class="form-group row"
         [attr.disabled]="isReadyForDeployment() ? null : ''"
       >
         <div class="col-sm-offset-2 col-sm-10">
