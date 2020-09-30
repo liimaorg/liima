@@ -51,5 +51,6 @@ const APP_PROVIDERS = [NavigationStoreService];
   ],
   providers: [APP_PROVIDERS],
   bootstrap: [AppComponent],
+  exports: [AppComponent],
 })
 export class AppModule {}
