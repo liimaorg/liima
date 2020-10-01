@@ -1,5 +1,5 @@
 <app-navigation [logoutUrl]="logoutUrl"></app-navigation>
-<div class="container-fluid">
+<div class="container-fluid h-100">
   <div class="row bg-light">
     <div class="col">
       <h4 class="pt-2 text-dark">
@@ -7,8 +7,8 @@
       </h4>
     </div>
   </div>
-  <main>
-    <div class="row">
+  <main class="h-100">
+    <div class="row h-100 overflow-auto">
       <app-navigation-sidebar
         [navigation]="navigationStore.navigation$ | async"
         (itemSelected)="navigateTo($event)"
