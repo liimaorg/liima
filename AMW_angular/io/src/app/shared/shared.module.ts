@@ -4,7 +4,6 @@ import { SortableIconComponent } from './sortable-icon/sortable-icon.component';
 
 import { LoadingIndicatorComponent } from './elements/loading-indicator.component';
 import { PageNotFoundComponent } from './page-not-found.component';
-import { PanelHeadingComponent } from './panel-heading/panel-heading.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { FormsModule } from '@angular/forms';
 import { NotificationComponent } from './elements/notification/notification.component';
@@ -17,12 +16,9 @@ import { IconComponent } from './icon/icon.component';
     SortableIconComponent,
     PageNotFoundComponent,
     LoadingIndicatorComponent,
-    PanelHeadingComponent,
     PaginationComponent,
     NotificationComponent,
-
     DateTimePickerComponent,
-
     IconComponent,
   ],
   imports: [CommonModule, FormsModule, NgbModule],
@@ -30,7 +26,6 @@ import { IconComponent } from './icon/icon.component';
     SortableIconComponent,
     PageNotFoundComponent,
     LoadingIndicatorComponent,
-    PanelHeadingComponent,
     PaginationComponent,
     NotificationComponent,
     DateTimePickerComponent,
