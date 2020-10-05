@@ -350,6 +350,10 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
+          <h5 class="modal-title">
+            Confirm deployment #{{ deployment.id }} for app server
+            {{ deployment.appServerName }}
+          </h5>
           <button
             type="button"
             class="close"
@@ -358,14 +362,10 @@
           >
             &times;
           </button>
-          <h4 class="modal-title">
-            Confirm deployment #{{ deployment.id }} for app server
-            {{ deployment.appServerName }}
-          </h4>
         </div>
         <div class="modal-body">
           <div class="modal-body">
-            <div class="checkbox">
+            <div>
               <label>
                 <input
                   type="checkbox"
@@ -420,6 +420,10 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
+          <h6 class="modal-title">
+            Reject deployment #{{ deployment.id }} for app server
+            {{ deployment.appServerName }}
+          </h6>
           <button
             type="button"
             class="close"
@@ -428,13 +432,9 @@
           >
             &times;
           </button>
-          <h4 class="modal-title">
-            Reject deployment #{{ deployment.id }} for app server
-            {{ deployment.appServerName }}
-          </h4>
         </div>
         <div class="modal-body">
-          <p class="text-warning">
+          <p class="text-warning-2">
             <small>Are you sure that you want to reject this deployment?</small>
           </p>
         </div>
@@ -453,6 +453,10 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
+          <h6 class="modal-title">
+            Cancel deployment #{{ deployment.id }} for app server
+            {{ deployment.appServerName }}
+          </h6>
           <button
             type="button"
             class="close"
@@ -461,13 +465,9 @@
           >
             &times;
           </button>
-          <h4 class="modal-title">
-            Cancel deployment #{{ deployment.id }} for app server
-            {{ deployment.appServerName }}
-          </h4>
         </div>
         <div class="modal-body">
-          <p class="text-warning">
+          <p class="text-warning-2">
             <small>Are you sure that you want to cancel this deployment?</small>
           </p>
         </div>
