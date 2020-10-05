@@ -42,7 +42,7 @@ export class DateTimePickerComponent
   dateString: string;
 
   @Input()
-  inputDatetimeFormat = 'd.M.yyyy H:mm';
+  inputDatetimeFormat = 'dd.MM.yyyy HH:mm';
   @Input()
   hourStep = 1;
   @Input()
