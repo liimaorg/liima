@@ -64,9 +64,12 @@ export class DateTimeModel implements NgbDateTimeStruct {
       if (!this.second) {
         this.second = 0;
       }
-      if (!this.timeZoneOffset) {
-        this.timeZoneOffset = new Date().getTimezoneOffset();
-      }
+
+      this.timeZoneOffset = new Date(
+        this.year,
+        this.month - 1, // javascript has zero-based months
+        this.day
+      ).getTimezoneOffset();
 
       const hour = this.hour.toString().padStart(2, '0');
       const minute = this.minute.toString().padStart(2, '0');
@@ -75,9 +78,9 @@ export class DateTimeModel implements NgbDateTimeStruct {
       const tzo = -this.timeZoneOffset;
       const dif = tzo >= 0 ? '+' : '-';
       const pad = (num) => {
-          const norm = Math.floor(Math.abs(num));
-          return (norm < 10 ? '0' : '') + norm;
-        };
+        const norm = Math.floor(Math.abs(num));
+        return (norm < 10 ? '0' : '') + norm;
+      };
 
       const isoString = `${pad(year)}-${pad(month)}-${pad(day)}T${pad(
         hour
