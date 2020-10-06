@@ -20,6 +20,7 @@ import { EnvironmentService } from './environment.service';
 import * as moment from 'moment';
 import { SharedModule } from '../shared/shared.module';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
+import { DATE_FORMAT } from '../core/amw-constants';
 @Component({
   template: '',
 })
@@ -342,7 +343,7 @@ describe('DeploymentComponent (create deployment)', () => {
       requestOnly: true,
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,
-      deploymentDate: moment('2017-01-02 12:00', 'YYYY-MM-DD hh:mm').valueOf(),
+      deploymentDate: moment('2017-01-02 12:00', DATE_FORMAT).valueOf(),
       deploymentParameters: component.transDeploymentParameters,
     } as DeploymentRequest;
     spyOn(deploymentService, 'createDeployment').and.returnValue(

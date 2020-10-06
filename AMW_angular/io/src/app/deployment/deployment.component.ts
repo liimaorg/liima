@@ -18,6 +18,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as $ from 'jquery'; // this needs to be here...
 import { NavigationStoreService } from '../navigation/navigation-store.service';
+import { DATE_FORMAT } from '../core/amw-constants';
 
 @Component({
   selector: 'amw-deployment',
@@ -417,7 +418,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
           : new Date().getTime();
     }
     if (this.deploymentDate) {
-      const dateTime = moment(this.deploymentDate, 'YYYY-MM-DD hh:mm');
+      const dateTime = moment(this.deploymentDate, DATE_FORMAT);
       if (dateTime && dateTime.isValid()) {
         deploymentRequest.deploymentDate = dateTime.valueOf();
       }

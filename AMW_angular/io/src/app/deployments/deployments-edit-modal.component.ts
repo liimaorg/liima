@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, NgZone } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
 import * as moment from 'moment';
+import { DATE_FORMAT } from '../core/amw-constants';
 
 @Component({
   selector: 'amw-deployments-edit-modal',
@@ -31,19 +32,6 @@ export class DeploymentsEditModalComponent {
 
   constructor() {
     this.confirmationAttributes = {} as Deployment;
-  }
-
-  changeEditAction() {
-    const isConfirm = this.selectedEditAction === this.editActions[1];
-    const isEditDeploymentDate =
-      this.selectedEditAction === this.editActions[0];
-    if (isConfirm || isEditDeploymentDate) {
-      this.addDatePicker();
-    }
-  }
-
-  addDatePicker() {
-    // TODO
   }
 
   doEdit() {
@@ -106,7 +94,7 @@ export class DeploymentsEditModalComponent {
   }
 
   private editDeploymentDate(emit: boolean) {
-    const dateTime = moment(this.deploymentDate, 'YYYY-MM-DD HH:mm');
+    const dateTime = moment(this.deploymentDate, DATE_FORMAT);
     if (!dateTime || !dateTime.isValid()) {
       this.errorMessage.emit('Invalid date');
     } else {

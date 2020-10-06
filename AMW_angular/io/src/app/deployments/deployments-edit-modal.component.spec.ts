@@ -1,7 +1,7 @@
-import { NgZone } from '@angular/core';
 import * as moment from 'moment';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { Deployment } from '../deployment/deployment';
+import { DATE_FORMAT } from '../core/amw-constants';
 
 describe('DeploymentsEditModalComponent (with query params)', () => {
   let component: DeploymentsEditModalComponent;
@@ -30,7 +30,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
     const newDeploymentDate: string = '30.11.2017 09:19';
     const expectedDeploymentDate: number = moment(
       newDeploymentDate,
-      'YYYY-MM-DD HH:mm'
+      DATE_FORMAT
     ).valueOf();
 
     component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];

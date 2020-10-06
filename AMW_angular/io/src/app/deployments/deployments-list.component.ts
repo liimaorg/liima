@@ -4,6 +4,7 @@ import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resource/resource.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import { DATE_FORMAT } from '../core/amw-constants';
 
 @Component({
   selector: 'amw-deployments-list',
@@ -89,7 +90,7 @@ export class DeploymentsListComponent {
     debugger;
     if (this.deployment) {
       this.errorMessage = '';
-      const dateTime = moment(this.deploymentDate, 'YYYY-MM-DD hh:mm');
+      const dateTime = moment(this.deploymentDate, DATE_FORMAT);
       if (!dateTime || !dateTime.isValid()) {
         this.errorMessage = 'Invalid date';
       } else {

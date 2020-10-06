@@ -12,6 +12,7 @@ import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentService } from '../deployment/deployment.service';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
+import { DATE_FORMAT } from '../core/amw-constants';
 
 declare var $: any;
 
@@ -165,7 +166,7 @@ export class DeploymentsComponent implements OnInit {
           val: filter.val,
         } as DeploymentFilter);
         if (filter.type === 'DateType') {
-          const dateTime = moment(filter.val, 'YYYY-MM-DD HH:mm');
+          const dateTime = moment(filter.val, DATE_FORMAT);
           if (!dateTime || !dateTime.isValid()) {
             this.errorMessage = 'Invalid date';
           }
