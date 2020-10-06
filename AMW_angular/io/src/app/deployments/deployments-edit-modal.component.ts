@@ -26,7 +26,7 @@ export class DeploymentsEditModalComponent {
   >();
 
   confirmationAttributes: Deployment;
-  deploymentDate: string; // for deployment date change in during confirmation (format 'DD.MM.YYYY HH:mm')
+  deploymentDate: string; // for deployment date change in during confirmation (format 'YYYY-MM-DD HH:mm')
   selectedEditAction: string;
 
   constructor() {
@@ -106,7 +106,7 @@ export class DeploymentsEditModalComponent {
   }
 
   private editDeploymentDate(emit: boolean) {
-    const dateTime = moment(this.deploymentDate, 'DD.MM.YYYY HH:mm');
+    const dateTime = moment(this.deploymentDate, 'YYYY-MM-DD HH:mm');
     if (!dateTime || !dateTime.isValid()) {
       this.errorMessage.emit('Invalid date');
     } else {

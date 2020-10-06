@@ -132,7 +132,6 @@ export class DateTimePickerComponent
     }
   }
 
-  //onDateChange($event: string | NgbDateStruct) {
   onDateChange($event) {
     if ($event.year) {
       $event = `${$event.year}-${$event.month}-${$event.day}`;
@@ -170,15 +169,7 @@ export class DateTimePickerComponent
 
   setDateStringModel() {
     this.dateString = this.datetime.toString();
-
-    if (!this.firstTimeAssign) {
-      this.onChange(this.dateString);
-    } else {
-      // Skip very first assignment to null done by Angular
-      if (this.dateString !== null) {
-        this.firstTimeAssign = false;
-      }
-    }
+    this.onChange(this.dateString);
   }
 
   inputBlur($event) {

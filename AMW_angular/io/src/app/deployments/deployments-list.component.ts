@@ -1,11 +1,4 @@
-import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  NgZone,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resource/resource.service';
@@ -59,10 +52,7 @@ export class DeploymentsListComponent {
     RUNTIME_ERROR: 'runtime error',
   };
 
-  constructor(
-    private ngZone: NgZone,
-    private resourceService: ResourceService
-  ) {}
+  constructor(private resourceService: ResourceService) {}
 
   showDetails(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
@@ -72,9 +62,6 @@ export class DeploymentsListComponent {
   showDateChange(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     $('#deploymentDateChange').modal('show');
-    this.ngZone.onMicrotaskEmpty.subscribe(() => {
-      $('#datetimepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
-    });
   }
 
   showConfirm(deploymentId: number) {
@@ -99,9 +86,10 @@ export class DeploymentsListComponent {
   }
 
   doDateChange() {
+    debugger;
     if (this.deployment) {
       this.errorMessage = '';
-      const dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
+      const dateTime = moment(this.deploymentDate, 'YYYY-MM-DD hh:mm');
       if (!dateTime || !dateTime.isValid()) {
         this.errorMessage = 'Invalid date';
       } else {

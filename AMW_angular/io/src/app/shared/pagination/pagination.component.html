@@ -1,7 +1,7 @@
 <div class="btn-toolbar p-2 justify-content-between" role="toolbar">
   <ng-container *ngIf="pages()">
     <nav>
-      <ul class="pagination pointer">
+      <ul class="pagination pointer m-1">
         <li
           class="page-item {{ currentPage < 2 ? 'disabled' : '' }}"
           aria-label="first"
@@ -45,7 +45,7 @@
   </ng-container>
   <div class="btn-group justify-content-end" role="group">
     <select
-      class="pagination pagination-amw form-control"
+      class="pagination form-control m-1"
       [(ngModel)]="maxResults"
       (change)="setMax()"
     >

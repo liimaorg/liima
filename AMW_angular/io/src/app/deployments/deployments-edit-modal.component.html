@@ -44,16 +44,13 @@
                 >Date</label
               >
               <div class="col-sm-9">
-                <div id="datepicker" class="input-group date">
-                  <input
-                    type="text"
-                    class="form-control"
-                    #datePicker
-                    (blur)="deploymentDate = datePicker.value"
-                  />
-                  <span class="input-group-addon"
-                    ><i class="glyphicon glyphicon-calendar"></i
-                  ></span>
+                <div class="input-group date">
+                  <app-date-time-picker
+                    [(ngModel)]="deploymentDate"
+                    name="dateDeployment"
+                    id="datetimepicker"
+                    class="w-100"
+                  ></app-date-time-picker>
                 </div>
               </div>
             </div>

@@ -326,7 +326,7 @@ describe('DeploymentComponent (create deployment)', () => {
       id: 5,
       tagDate: 1485378084103,
     } as ResourceTag;
-    component.deploymentDate = '02.01.2017 12:00';
+    component.deploymentDate = '2017-01-02 12:00';
     component.transDeploymentParameters = [
       { key: 'atest', value: 'foo' } as DeploymentParameter,
       { key: 'btest', value: 'bar' } as DeploymentParameter,
@@ -342,7 +342,7 @@ describe('DeploymentComponent (create deployment)', () => {
       requestOnly: true,
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,
-      deploymentDate: moment('2017.01.02 12:00', 'DD.MM.YYYY hh:mm').valueOf(),
+      deploymentDate: moment('2017-01-02 12:00', 'YYYY-MM-DD hh:mm').valueOf(),
       deploymentParameters: component.transDeploymentParameters,
     } as DeploymentRequest;
     spyOn(deploymentService, 'createDeployment').and.returnValue(

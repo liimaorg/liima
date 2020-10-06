@@ -102,6 +102,7 @@
                   [(ngModel)]="filter.val"
                   name="dateDeployment"
                   id="datetimepicker"
+                  class="w-100"
                 ></app-date-time-picker>
               </div>
             </div>
@@ -150,7 +151,6 @@
             (click)="exportCSV()"
           >
             <app-icon icon="cloud-arrow-down"></app-icon>
-            <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
             Export
           </button>
           <button

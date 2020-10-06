@@ -2,22 +2,17 @@ import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-sortable-icon',
-  template: `
-    <span
-      [ngClass]="[
-        'glyphicon',
-        sortDirection === 'DESC'
-          ? 'glyphicon-triangle-bottom'
-          : 'glyphicon-triangle-top'
-      ]"
-    ></span>
-  `,
-  styles: []
+  template: ` <app-icon icon="caret-{{ direction }}-fill"></app-icon> `,
+  styles: [],
 })
 export class SortableIconComponent {
   @Input() sortDirection: SortDirection;
 
-  constructor() {}
+  direction: string;
+
+  constructor() {
+    this.direction = this.sortDirection === 'ASC' ? 'up' : 'down';
+  }
 }
 
 type SortDirection = 'ASC' | 'DESC';

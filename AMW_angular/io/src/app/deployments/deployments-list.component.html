@@ -82,12 +82,11 @@
           {{ deployment.trackingId }}
         </td>
         <td>
-          <span
-            class="glyphicon-info-combined state-{{ deployment.state }}"
-            aria-hidden="true"
+          <app-icon
+            icon="info-circle"
             title="Show details about this deployment"
             (click)="showDetails(deployment.id)"
-          ></span>
+          ></app-icon>
           <span class="state">{{
             deployment.reason
               ? failureReason[deployment.reason]
@@ -121,38 +120,38 @@
         </td>
         <td>
           <ng-container *ngIf="deployment.actions.editPossible">
+            <app-icon
+              *ngIf="deployment.deploymentDelayed"
+              icon="hourglass-split"
+            ></app-icon>
             <span
-              [attr.class]="
-                deployment.deploymentDelayed
-                  ? 'glyphicon glyphicon-hourglass pointer'
-                  : 'pointer'
-              "
+              class="pointer"
               (click)="showDateChange(deployment.id)"
               title="change the deployment date"
             >
               <span
                 [attr.class]="
-                  deployment.deploymentDelayed ? 'delayed' : 'action'
+                  deployment.deploymentDelayed
+                    ? 'align-text-top delayed'
+                    : 'align-text-top action'
                 "
                 >{{ deployment.deploymentDate | date: 'dd.MM.y HH:mm' }}</span
               >
             </span>
           </ng-container>
           <ng-container *ngIf="!deployment.actions.editPossible">
+            <app-icon
+              *ngIf="deployment.deploymentDelayed"
+              icon="hourglass-split"
+            ></app-icon>
             <span
               [attr.class]="
                 deployment.deploymentDelayed
-                  ? 'glyphicon glyphicon-hourglass'
-                  : null
+                  ? 'align-text-top delayed'
+                  : 'align-text-top action'
               "
+              >{{ deployment.deploymentDate | date: 'dd.MM.y HH:mm' }}</span
             >
-              <span
-                [attr.class]="
-                  deployment.deploymentDelayed ? 'delayed' : 'action'
-                "
-                >{{ deployment.deploymentDate | date: 'dd.MM.y HH:mm' }}</span
-              >
-            </span>
           </ng-container>
         </td>
         <td>
@@ -185,9 +184,8 @@
           </ng-container>
           <ng-container *ngIf="deployment.actions.hasLogFiles">
             <a class="action" (click)="logViewerLink(deployment.id)">
-              <span class="glyphicon glyphicon-file pointer">
-                <span class="action">logs</span>
-              </span> </a
+              <app-icon icon="journal-text" class="pointer"></app-icon>
+              <span class="action">logs</span> </a
             ><br />
           </ng-container>
         </td>
@@ -201,6 +199,11 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
+          <h6 class="modal-title">
+            Details for deployment #{{ deployment.id }} [tracking id:
+            {{ deployment.trackingId }}] for app server:
+            {{ deployment.appServerName }}
+          </h6>
           <button
             type="button"
             class="close"
@@ -209,14 +212,9 @@
           >
             &times;
           </button>
-          <h4 class="modal-title">
-            Details for deployment #{{ deployment.id }} [tracking id:
-            {{ deployment.trackingId }}] for app server:
-            {{ deployment.appServerName }}
-          </h4>
         </div>
         <div class="modal-body">
-          <h4>{{ deployment.state }}</h4>
+          <h6>{{ deployment.state }}</h6>
           <p>
             requested by: {{ deployment.requestUser }}<br />
             created at:
@@ -245,14 +243,14 @@
             </p>
           </ng-container>
           <ng-container *ngIf="deployment.deploymentDelayed">
-            <h4>deployment job delayed</h4>
+            <h6>deployment job delayed</h6>
             <p>
               planed deployment date:
               {{ deployment.deploymentDate | date: 'dd.MM.y HH:mm' }}
             </p>
           </ng-container>
           <ng-container *ngIf="deployment.cancelUser">
-            <h4>deployment job canceled</h4>
+            <h6>deployment job canceled</h6>
             <p>
               canceled by: {{ deployment.cancelUser }}<br />
               canceled at:
@@ -260,7 +258,7 @@
             </p>
           </ng-container>
           <ng-container *ngIf="deployment.deploymentParameters.length > 0">
-            <h4>deployment parameter</h4>
+            <h6>deployment parameter</h6>
             <p>
               <ng-container
                 *ngFor="let param of deployment.deploymentParameters"
@@ -270,12 +268,14 @@
             </p>
           </ng-container>
           <ng-container *ngIf="deployment.reason">
-            <h4>failure reason</h4>
+            <h6>failure reason</h6>
             <p>{{ failureReason[deployment.reason] }}</p>
           </ng-container>
           <ng-container *ngIf="deployment.statusMessage">
-            <h4>state message</h4>
-            <pre>{{ deployment.statusMessage }}</pre>
+            <h6>state message</h6>
+            <pre
+              class="bg-light border p-1 rounded pre-scrollable"
+            ><code>{{ deployment.statusMessage }}</code></pre>
           </ng-container>
         </div>
       </div>
@@ -288,6 +288,10 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
+          <h6 class="modal-title">
+            Change deployment date of deployment #{{ deployment.id }} for app
+            server {{ deployment.appServerName }}
+          </h6>
           <button
             type="button"
             class="close"
@@ -296,17 +300,14 @@
           >
             &times;
           </button>
-          <h4 class="modal-title">
-            Change deployment date of deployment #{{ deployment.id }} for app
-            server {{ deployment.appServerName }}
-          </h4>
         </div>
         <div class="modal-body">
           <div
             *ngIf="errorMessage"
-            class="alert alert-warning alert-dismissible fade in"
+            class="alert alert-warning alert-dismissible"
             role="alert"
           >
+            <span [innerHTML]="errorMessage"></span>
             <button
               type="button"
               class="close"
@@ -315,20 +316,14 @@
             >
               <span aria-hidden="true">&times;</span>
             </button>
-            <span [innerHTML]="errorMessage"></span>
           </div>
           <div class="input-group date">
-            <input
+            <app-date-time-picker
+              [(ngModel)]="deploymentDate"
+              name="dateDeployment"
               id="datetimepicker"
-              type="text"
-              class="form-control datepicker"
-              #datePicker
-              [ngModel]="deployment.deploymentDate | date: 'dd.MM.y HH:mm'"
-              (blur)="deploymentDate = datePicker.value"
-            />
-            <span class="input-group-addon"
-              ><i class="glyphicon glyphicon-calendar"></i
-            ></span>
+              class="w-100"
+            ></app-date-time-picker>
           </div>
         </div>
         <div class="modal-footer">
@@ -350,10 +345,10 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">
+          <h6 class="modal-title">
             Confirm deployment #{{ deployment.id }} for app server
             {{ deployment.appServerName }}
-          </h5>
+          </h6>
           <button
             type="button"
             class="close"

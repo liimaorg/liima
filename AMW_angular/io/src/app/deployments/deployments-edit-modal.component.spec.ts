@@ -30,7 +30,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
     const newDeploymentDate: string = '30.11.2017 09:19';
     const expectedDeploymentDate: number = moment(
       newDeploymentDate,
-      'DD.MM.YYYY HH:mm'
+      'YYYY-MM-DD HH:mm'
     ).valueOf();
 
     component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];

@@ -44,10 +44,6 @@ span.state {
   margin-left: 8px;
 }
 
-.pagination-amw {
-  display: block;
-  margin: 0;
-}
 
 /*
  * Nicer alignment of large buttons when they are getting wrapped
@@ -65,41 +61,3 @@ span.interval-label {
   line-height: 2;
 }
 
-/*
- * In the deployment-list table the default glyphicon icon is the info icon (.glyphicon-info-sign).
- * For the states pre_deploy, progress and simulating the default glyphicon is overwritten by .glyphicon-spin and .glyphicon-refresh
- */
-table#deployment-list .glyphicon-info-combined {
-  @extend .pointer !optional;
-  @extend .glyphicon !optional;
-  @extend .glyphicon-info-sign !optional;
-  &.state-pre_deploy,
-  &.state-progress,
-  &.state-simulating {
-    @extend .glyphicon-spin !optional;
-    @extend .glyphicon-refresh !optional;
-  }
-}
-
-/*
- * Animated glyphicons
- */
-.glyphicon-spin {
-  animation: spin 1000ms infinite linear;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(359deg);
-  }
-}
-
-/*
- * No whitespace between table and pagination
- */
-table#deployment-list {
-  margin-bottom: 0;
-}
