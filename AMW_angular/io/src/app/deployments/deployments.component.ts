@@ -1,11 +1,5 @@
 import { Location } from '@angular/common';
-import {
-  Component,
-  NgZone,
-  OnInit,
-  ViewChild,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
@@ -134,7 +128,6 @@ export class DeploymentsComponent implements OnInit {
       );
       this.setValueOptionsForFilter(newFilter);
       this.filters.push(newFilter);
-      this.enableDatepicker(newFilter.type);
       this.offset = 0;
       this.selectedFilterType = null;
       this.selectModel.reset(null);
@@ -172,7 +165,7 @@ export class DeploymentsComponent implements OnInit {
           val: filter.val,
         } as DeploymentFilter);
         if (filter.type === 'DateType') {
-          const dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
+          const dateTime = moment(filter.val, 'YYYY-MM-DD HH:mm');
           if (!dateTime || !dateTime.isValid()) {
             this.errorMessage = 'Invalid date';
           }
@@ -221,7 +214,6 @@ export class DeploymentsComponent implements OnInit {
 
   showEdit() {
     if (this.editableDeployments()) {
-      this.addDatePicker();
       // get shakeDownTestPermission for first element
       const indexOfFirstSelectedElem = _.findIndex(this.deployments, {
         selected: true,
@@ -402,16 +394,6 @@ export class DeploymentsComponent implements OnInit {
     );
   }
 
-  private enableDatepicker(filterType: string) {
-    if (filterType === 'DateType') {
-      this.addDatePicker();
-    }
-  }
-
-  private addDatePicker() {
-    // TODO
-  }
-
   private comparatorOptionsForType(filterType: string) {
     if (
       filterType === 'booleanType' ||
@@ -556,7 +538,6 @@ export class DeploymentsComponent implements OnInit {
           filter.comp = !filter.comp ? this.defaultComparator : filter.comp;
           this.setValueOptionsForFilter(filter);
           this.filters.push(filter);
-          this.enableDatepicker(filter.type);
         } else {
           this.errorMessage = 'Error parsing filter';
         }
