@@ -1,7 +1,7 @@
 <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
 
 <div class="col-sm-10 main-full">
-  <div class="panel-body">
+  <div>
     <app-notification
       *ngIf="successMessage"
       [message]="successMessage"
@@ -232,19 +232,19 @@
               simulate before deployment
             </label>
           </div>
-          <div class="checkbox">
+          <div>
             <label>
               <input type="checkbox" [(ngModel)]="doSendEmail" />
               send an email when deployed
             </label>
           </div>
-          <div class="checkbox" *ngIf="hasPermissionShakedownTest">
+          <div *ngIf="hasPermissionShakedownTest">
             <label>
               <input type="checkbox" [(ngModel)]="doExecuteShakedownTest" />
               execute shakedown tests when deployed
             </label>
           </div>
-          <div class="checkbox" *ngIf="doExecuteShakedownTest">
+          <div *ngIf="doExecuteShakedownTest">
             <label>
               <input type="checkbox" [(ngModel)]="doNeighbourhoodTest" />
               test neighbourhood

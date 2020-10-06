@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, Subject, of, combineLatest } from 'rxjs';
-import { tap, debounceTime, switchMap, map } from 'rxjs/operators';
+import { tap, debounceTime, map } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { AuditLogEntry } from '../auditview-entry';
 import { SortDirection } from './sortable.directive';
@@ -50,7 +50,7 @@ function compare(v1, v2) {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuditviewTableService {
   private _loading$ = new BehaviorSubject<boolean>(true);
@@ -110,11 +110,9 @@ export class AuditviewTableService {
     sortDirection: SortDirection,
     auditlogEntries: AuditLogEntry[]
   ): AuditLogEntry[] {
-    // sort
     let auditviewEntries = sort(auditlogEntries, sortColumn, sortDirection);
 
-    // filter
-    let result = auditviewEntries.filter(entry =>
+    let result = auditviewEntries.filter((entry) =>
       matches(entry, searchTerm, this.pipe)
     );
     return result;
