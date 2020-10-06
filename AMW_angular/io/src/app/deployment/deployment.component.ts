@@ -417,7 +417,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
           : new Date().getTime();
     }
     if (this.deploymentDate) {
-      const dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
+      const dateTime = moment(this.deploymentDate, 'YYYY.MM.DD hh:mm');
       if (dateTime && dateTime.isValid()) {
         deploymentRequest.deploymentDate = dateTime.valueOf();
       }

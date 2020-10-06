@@ -24,7 +24,6 @@
   <div>
     <div *ngIf="!showTimePickerToggle">
       <ngb-datepicker
-        #dp
         name="datepicker"
         [ngModel]="datetime"
         (ngModelChange)="onDateChange($event)"
@@ -50,7 +49,6 @@
       </button>
       <div class="mt-auto">
         <ngb-timepicker
-          #tp
           name="timepicker"
           [ngModel]="datetime"
           (ngModelChange)="onTimeChange($event)"
@@ -67,3 +65,7 @@
 <ng-template #timePickerContent>
   <h1>content of timepicker...</h1>
 </ng-template>
+<!-- workaround to make the datetimepicker actually work -->
+<div class="d-none">
+  <div *ngIf="false; else calendarContent"></div>
+</div>

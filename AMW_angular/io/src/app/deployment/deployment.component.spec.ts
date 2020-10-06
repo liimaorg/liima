@@ -342,7 +342,7 @@ describe('DeploymentComponent (create deployment)', () => {
       requestOnly: true,
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,
-      deploymentDate: moment('02.01.2017 12:00', 'DD.MM.YYYY hh:mm').valueOf(),
+      deploymentDate: moment('2017.01.02 12:00', 'DD.MM.YYYY hh:mm').valueOf(),
       deploymentParameters: component.transDeploymentParameters,
     } as DeploymentRequest;
     spyOn(deploymentService, 'createDeployment').and.returnValue(

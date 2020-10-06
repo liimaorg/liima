@@ -50,7 +50,7 @@ export class DateTimePickerComponent
   @Input()
   secondStep = 30;
   @Input()
-  seconds = true;
+  seconds = false;
 
   @Input()
   disabled = false;
@@ -157,7 +157,6 @@ export class DateTimePickerComponent
       year: this.datetime.year,
       month: this.datetime.month,
     });
-    console.log('test');
     this.setDateStringModel();
   }
 
