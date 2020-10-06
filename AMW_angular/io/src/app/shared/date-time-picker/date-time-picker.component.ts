@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import {
   NgbTimeStruct,
-  NgbDateStruct,
   NgbPopoverConfig,
   NgbPopover,
   NgbDatepicker,
@@ -58,7 +57,6 @@ export class DateTimePickerComponent
   showTimePickerToggle = false;
 
   datetime = new DateTimeModel();
-  firstTimeAssign = true;
 
   @ViewChild(NgbDatepicker)
   dp: NgbDatepicker;
