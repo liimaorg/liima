@@ -156,20 +156,26 @@
         </td>
         <td>
           <ng-container *ngIf="deployment.actions.confirmPossible">
-            <span class="text-success" (click)="showConfirm(deployment.id)">
+            <span
+              class="text-success cursor-pointer"
+              (click)="showConfirm(deployment.id)"
+            >
               <app-icon icon="check-circle"></app-icon>
               <span class="ml-1">confirm</span>
             </span>
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.rejectPossible">
-            <span class="text-danger" (click)="showReject(deployment.id)">
+            <span
+              class="text-danger cursor-pointer"
+              (click)="showReject(deployment.id)"
+            >
               <app-icon icon="x-circle"></app-icon>
               <span class="ml-1">reject</span> </span
             ><br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.cancelPossible">
-            <span (click)="showCancel(deployment.id)">
+            <span (click)="showCancel(deployment.id)" class="cursor-pointer">
               <app-icon icon="slash-circle"></app-icon>
               <span class="ml-1">cancel</span>
             </span>
