@@ -171,14 +171,14 @@
           <ng-container *ngIf="deployment.actions.cancelPossible">
             <span (click)="showCancel(deployment.id)">
               <app-icon icon="slash-circle"></app-icon>
-              <span class="action">cancel</span>
+              <span class="ml-1">cancel</span>
             </span>
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.redeployPossible">
             <a class="action" href="#/deployment/{{ deployment.id }}">
               <app-icon icon="arrow-clockwise"></app-icon>
-              <span class="action">redeploy</span>
+              <span class="ml-1">redeploy</span>
             </a>
             <br />
           </ng-container>
