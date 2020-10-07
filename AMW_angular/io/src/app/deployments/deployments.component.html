@@ -137,7 +137,7 @@
             Clear filters
           </button>
           <button
-            class="btn btn-default btn-main"
+            class="btn btn-outline-secondary btn-main"
             [attr.disabled]="filters.length < 1 ? '' : null"
             (click)="copyURL()"
           >
@@ -146,7 +146,7 @@
           </button>
           <button
             type="submit"
-            class="btn btn-default btn-main"
+            class="btn btn-outline-secondary btn-main"
             [attr.disabled]="deployments.length < 1 ? '' : null"
             (click)="exportCSV()"
           >
@@ -155,7 +155,7 @@
           </button>
           <button
             type="submit"
-            class="btn btn-default btn-main"
+            class="btn btn-outline-secondary btn-main"
             [attr.disabled]="editableDeployments() ? null : ''"
             (click)="showEdit()"
           >
@@ -164,7 +164,7 @@
           </button>
           <ng-container *ngIf="hasPermissionToRequestDeployments">
             <a href="#/deployment/">
-              <button type="submit" class="btn btn-default btn-main">
+              <button type="submit" class="btn btn-outline-secondary btn-main">
                 <app-icon icon="plus-circle"></app-icon>
                 Create
               </button>
