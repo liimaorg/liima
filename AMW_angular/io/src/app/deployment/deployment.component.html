@@ -71,7 +71,10 @@
         <div class="col-sm-10">
           <ng-container *ngFor="let group of getEnvironmentGroups()">
             <p class="mb-1">{{ group }}:</p>
-            <ng-container *ngFor="let env of groupedEnvironments[group]">
+            <div
+              class="d-inline mr-3"
+              *ngFor="let env of groupedEnvironments[group]"
+            >
               <label
                 ><input
                   class="mr-2"
@@ -83,7 +86,7 @@
                   >({{ env.nameAlias }})</ng-container
                 >
               </label>
-            </ng-container>
+            </div>
           </ng-container>
         </div>
       </div>
