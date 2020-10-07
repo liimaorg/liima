@@ -8,7 +8,7 @@
     </div>
   </div>
   <main class="h-100">
-    <div class="row h-100 overflow-auto">
+    <div class="row h-100">
       <app-navigation-sidebar
         [navigation]="navigationStore.navigation$ | async"
         (itemSelected)="navigateTo($event)"
