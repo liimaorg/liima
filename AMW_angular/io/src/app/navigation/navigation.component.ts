@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
   selector: 'app-navigation',
   template: `
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-0">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top bg-dark mb-0">
       <span class="navbar-brand">
         <img src="assets/images/Liima.svg" alt="Liima" width="80px" />
       </span>

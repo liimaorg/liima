@@ -1,6 +1,6 @@
 <app-navigation [logoutUrl]="logoutUrl"></app-navigation>
 <div class="container-fluid h-100">
-  <div class="row bg-light">
+  <div class="row bg-light position-fixed w-100" style="z-index: 9999;">
     <div class="col">
       <h4 class="pt-2 text-dark">
         {{ (navigationStore.navigation$ | async).pageTitle }}

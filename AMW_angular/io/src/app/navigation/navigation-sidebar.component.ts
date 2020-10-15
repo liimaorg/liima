@@ -7,7 +7,7 @@ import { Navigation } from './navigation-store.service';
   template: `
     <ul
       *ngIf="navigation.visible"
-      class="nav flex-column pt-4 d-none d-sm-block"
+      class="nav flex-column pt-4 d-none d-sm-block pt-5"
     >
       <ng-container *ngIf="!navigation.items">
         <li class="nav-item active">
