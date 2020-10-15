@@ -1,6 +1,8 @@
 // override bootstrap variables before importing boostrap itself
 $font-size-base : 0.9rem;
 
+$btn-disabled-opacity: .55;
+
 /* Importing Bootstrap SCSS file. */
 @import '~bootstrap/scss/bootstrap';
 
@@ -13,11 +15,6 @@ $font-size-base : 0.9rem;
 .cursor-pointer {
   cursor: pointer;
 }
-
-.btn-secondary:disabled {
-  background-color: rgb(130, 137, 146);
-}
-
 
 // legacy style definition below - check if they can be deleted
 /* global table styles */
