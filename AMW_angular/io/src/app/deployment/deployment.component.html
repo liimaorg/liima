@@ -178,7 +178,7 @@
         <div class="col-sm-2">
           <button
             type="button"
-            class="btn btn-outline-secondary"
+            class="btn btn-secondary"
             *ngIf="
               transDeploymentParameter.key && transDeploymentParameter.value
             "
@@ -217,7 +217,7 @@
           <div class="col-sm-2">
             <button
               type="button"
-              class="btn btn-outline-secondary"
+              class="btn btn-secondary"
               (click)="onRemoveParam(transDepParam)"
             >
               <app-icon icon="trash"></app-icon>
@@ -263,7 +263,7 @@
         <div class="col-sm-offset-2 col-sm-10">
           <button
             type="submit"
-            class="btn btn-outline-secondary btn-main"
+            class="btn btn-secondary btn-main"
             [attr.disabled]="hasPermissionToRequestDeployment ? null : ''"
             (click)="requestDeployment()"
           >

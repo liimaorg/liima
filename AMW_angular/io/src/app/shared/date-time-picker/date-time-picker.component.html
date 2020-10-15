@@ -10,7 +10,7 @@
 
   <div class="input-group-append">
     <button
-      class="btn btn-outline-secondary"
+      class="btn btn-secondary"
       [ngbPopover]="calendarContent"
       [disabled]="disabled"
       type="button"
@@ -29,7 +29,7 @@
         (ngModelChange)="onDateChange($event)"
       ></ngb-datepicker>
       <button
-        class="btn btn-block btn-outline-secondary"
+        class="btn btn-block btn-secondary"
         [disabled]="!datetime?.day"
         [ngbPopover]="timePickerContent"
         type="button"
@@ -40,7 +40,7 @@
     </div>
     <div *ngIf="showTimePickerToggle">
       <button
-        class="btn btn-block btn-outline-secondary"
+        class="btn btn-block btn-secondary"
         [ngbPopover]="calendarContent"
         type="button"
         (click)="toggleDateTimeState($event)"
