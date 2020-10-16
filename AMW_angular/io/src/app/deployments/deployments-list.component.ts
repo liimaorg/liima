@@ -1,23 +1,16 @@
-import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  NgZone,
-  AfterViewInit
-} from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resource/resource.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
+import { DATE_FORMAT } from '../core/amw-constants';
 
 @Component({
   selector: 'amw-deployments-list',
-  templateUrl: './deployments-list.component.html'
+  templateUrl: './deployments-list.component.html',
 })
-export class DeploymentsListComponent implements AfterViewInit {
+export class DeploymentsListComponent {
   @Input() deployments: Deployment[] = [];
   @Input() sortCol: string;
   @Input() sortDirection: string;
@@ -57,17 +50,10 @@ export class DeploymentsListComponent implements AfterViewInit {
     NODE_MISSING: 'no nodes enabled',
     TIMEOUT: 'timeout',
     UNEXPECTED_ERROR: 'unexpected error',
-    RUNTIME_ERROR: 'runtime error'
+    RUNTIME_ERROR: 'runtime error',
   };
 
-  constructor(
-    private ngZone: NgZone,
-    private resourceService: ResourceService
-  ) {}
-
-  ngAfterViewInit(): void {
-    $.fn.datetimepicker = datetimepicker;
-  }
+  constructor(private resourceService: ResourceService) {}
 
   showDetails(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
@@ -77,9 +63,6 @@ export class DeploymentsListComponent implements AfterViewInit {
   showDateChange(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     $('#deploymentDateChange').modal('show');
-    this.ngZone.onMicrotaskEmpty.subscribe(() => {
-      $('#datetimepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
-    });
   }
 
   showConfirm(deploymentId: number) {
@@ -87,8 +70,8 @@ export class DeploymentsListComponent implements AfterViewInit {
     this.resourceService
       .canCreateShakedownTest(this.deployment.appServerId)
       .subscribe(
-        /* happy path */ r => (this.hasPermissionShakedownTest = r),
-        /* error path */ e => (this.errorMessage = e),
+        /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
+        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () => $('#deploymentConfirmation').modal('show')
       );
   }
@@ -104,9 +87,10 @@ export class DeploymentsListComponent implements AfterViewInit {
   }
 
   doDateChange() {
+    debugger;
     if (this.deployment) {
       this.errorMessage = '';
-      const dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
+      const dateTime = moment(this.deploymentDate, DATE_FORMAT);
       if (!dateTime || !dateTime.isValid()) {
         this.errorMessage = 'Invalid date';
       } else {
@@ -161,7 +145,7 @@ export class DeploymentsListComponent implements AfterViewInit {
 
   appLink(appId: number) {
     this.resourceService.resourceExists(appId).subscribe(
-      /* happy path */ r => {
+      /* happy path */ (r) => {
         if (r) {
           window.location.href =
             '/AMW_web/pages/editResourceView.xhtml?id=' + appId + '&ctx=1';

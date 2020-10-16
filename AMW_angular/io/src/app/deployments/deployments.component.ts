@@ -1,11 +1,5 @@
 import { Location } from '@angular/common';
-import {
-  Component,
-  NgZone,
-  OnInit,
-  ViewChild,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
@@ -17,8 +11,8 @@ import { DeploymentFilterType } from '../deployment/deployment-filter-type';
 import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentService } from '../deployment/deployment.service';
-import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
+import { DATE_FORMAT } from '../core/amw-constants';
 
 declare var $: any;
 
@@ -26,7 +20,7 @@ declare var $: any;
   selector: 'amw-deployments',
   templateUrl: './deployments.component.html',
 })
-export class DeploymentsComponent implements OnInit, AfterViewInit {
+export class DeploymentsComponent implements OnInit {
   defaultComparator: string = 'eq';
 
   // initially by queryParam
@@ -122,11 +116,6 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
-    $.fn.datetimepicker = datetimepicker;
-    $('#datetimepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
-  }
-
   addFilter() {
     if (this.selectedFilterType && this.canFilterBeAdded()) {
       const newFilter: DeploymentFilter = {} as DeploymentFilter;
@@ -140,7 +129,6 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
       );
       this.setValueOptionsForFilter(newFilter);
       this.filters.push(newFilter);
-      this.enableDatepicker(newFilter.type);
       this.offset = 0;
       this.selectedFilterType = null;
       this.selectModel.reset(null);
@@ -178,7 +166,7 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
           val: filter.val,
         } as DeploymentFilter);
         if (filter.type === 'DateType') {
-          const dateTime = moment(filter.val, 'DD.MM.YYYY HH:mm');
+          const dateTime = moment(filter.val, DATE_FORMAT);
           if (!dateTime || !dateTime.isValid()) {
             this.errorMessage = 'Invalid date';
           }
@@ -227,7 +215,6 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
 
   showEdit() {
     if (this.editableDeployments()) {
-      this.addDatePicker();
       // get shakeDownTestPermission for first element
       const indexOfFirstSelectedElem = _.findIndex(this.deployments, {
         selected: true,
@@ -408,18 +395,6 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
     );
   }
 
-  private enableDatepicker(filterType: string) {
-    if (filterType === 'DateType') {
-      this.addDatePicker();
-    }
-  }
-
-  private addDatePicker() {
-    this.ngZone.onMicrotaskEmpty.subscribe(() => {
-      $('#datetimepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
-    });
-  }
-
   private comparatorOptionsForType(filterType: string) {
     if (
       filterType === 'booleanType' ||
@@ -564,7 +539,6 @@ export class DeploymentsComponent implements OnInit, AfterViewInit {
           filter.comp = !filter.comp ? this.defaultComparator : filter.comp;
           this.setValueOptionsForFilter(filter);
           this.filters.push(filter);
-          this.enableDatepicker(filter.type);
         } else {
           this.errorMessage = 'Error parsing filter';
         }

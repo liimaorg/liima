@@ -16,9 +16,9 @@ import { AppWithVersion } from './app-with-version';
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import * as $ from 'jquery';
-import datetimepicker from 'eonasdan-bootstrap-datetimepicker';
+import * as $ from 'jquery'; // this needs to be here...
 import { NavigationStoreService } from '../navigation/navigation-store.service';
+import { DATE_FORMAT } from '../core/amw-constants';
 
 @Component({
   selector: 'amw-deployment',
@@ -88,32 +88,20 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.initEnvironments();
-
     this.activatedRoute.params.subscribe((param: any) => {
       this.appserverName = param['appserverName'];
       this.releaseName = param['releaseName'];
       this.deploymentId = param['deploymentId'];
-    });
 
-    // a deploymentId MUST be numeric..
-    if (this.deploymentId && !isNaN(this.deploymentId)) {
-      this.navigationStore.setPageTitle('Redeploy');
-      this.isRedeployment = true;
-      this.getDeployment();
-    } else {
-      // ..or it's rather an appserverName (we got no type safety on runtime)
-      if (this.deploymentId) {
-        this.appserverName = this.deploymentId.toString();
-        delete this.deploymentId;
+      if (this.deploymentId && Number(this.deploymentId)) {
+        this.prepareRedeploy();
+      } else {
+        this.prepareNewDeployment();
       }
-      this.navigationStore.setPageTitle('Create new deployment');
-      this.initAppservers();
-    }
+    });
   }
 
   ngAfterViewInit() {
-    $.fn.datetimepicker = datetimepicker;
-    $('.datepicker').datetimepicker({ format: 'DD.MM.YYYY HH:mm' });
     // we dont need this right away
     this.loadDeploymentParameters();
   }
@@ -197,7 +185,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     return Object.keys(this.groupedEnvironments);
   }
 
-  private getDeployment() {
+  private getDeployment(): Subscription {
     return this.deploymentService.get(this.deploymentId).subscribe(
       /* happy path */ (r) => (this.selectedDeployment = r),
       /* error path */ (e) => (this.errorMessage = e),
@@ -430,7 +418,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
           : new Date().getTime();
     }
     if (this.deploymentDate) {
-      const dateTime = moment(this.deploymentDate, 'DD.MM.YYYY hh:mm');
+      const dateTime = moment(this.deploymentDate, DATE_FORMAT);
       if (dateTime && dateTime.isValid()) {
         deploymentRequest.deploymentDate = dateTime.valueOf();
       }
@@ -513,6 +501,21 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
           );
       }
     }
+  }
+
+  private prepareNewDeployment() {
+    if (this.deploymentId) {
+      this.appserverName = this.deploymentId.toString();
+      delete this.deploymentId;
+    }
+    this.navigationStore.setPageTitle('Create new deployment');
+    this.initAppservers();
+  }
+
+  private prepareRedeploy() {
+    this.navigationStore.setPageTitle('Redeploy');
+    this.isRedeployment = true;
+    this.getDeployment();
   }
 
   // for url params only

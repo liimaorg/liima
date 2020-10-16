@@ -1,42 +1,7 @@
-@media (min-width: 768px) {
-  .navbar-nav {
-    li {
-      a {
-        padding-left: 5px;
-      }
-    }
-  }
+.navbar {
+  height: 50px;
 }
 
-/*
- * Top navigation
- * Hide default border to remove 1px line.
- */
-.navbar-fixed-top {
-  border: 0;
-  .navbar-nav li > a {
-    color: #ccc;
-  }
-  .navbar-form .checkbox {
-    color: #ccc;
-    margin-top: 6px;
-  }
-}
-
-/*
- * Liima logo
- */
-.navbar-header {
-  .navbar-brand {
-    color: #ffffff;
-    margin-left: 0;
-    padding-top: 8px;
-  }
-}
-@media (min-width: 768px) {
-  .navbar-brand {
-    margin-left: -15px;
-    padding-top: 10px;
-    padding-right: 0;
-  }
+.navbar-brand {
+  margin-top: -10px;
 }

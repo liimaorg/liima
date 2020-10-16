@@ -6,10 +6,17 @@ import { DeploymentService } from './deployment.service';
 import { EnvironmentService } from './environment.service';
 import { DeploymentRoutingModule } from './deployment-routing.module';
 import { SharedModule } from '../shared/shared.module';
+import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, DeploymentRoutingModule, SharedModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    DeploymentRoutingModule,
+    SharedModule,
+    NgbDatepickerModule,
+  ],
   declarations: [DeploymentComponent],
-  providers: [DeploymentService, EnvironmentService]
+  providers: [DeploymentService, EnvironmentService],
 })
 export class DeploymentModule {}

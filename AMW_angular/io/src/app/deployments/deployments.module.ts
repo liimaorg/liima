@@ -14,8 +14,8 @@ import { DeploymentsRoutingModule } from './deployments-routing.module';
   declarations: [
     DeploymentsComponent,
     DeploymentsListComponent,
-    DeploymentsEditModalComponent
+    DeploymentsEditModalComponent,
   ],
-  providers: [DeploymentService, EnvironmentService]
+  providers: [DeploymentService, EnvironmentService],
 })
 export class DeploymentsModule {}

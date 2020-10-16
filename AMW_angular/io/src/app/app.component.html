@@ -1,14 +1,21 @@
 <app-navigation [logoutUrl]="logoutUrl"></app-navigation>
-
-<app-navigation-sidebar
-  [navigation]="navigationStore.navigation$ | async"
-  (itemSelected)="navigateTo($event)"
-></app-navigation-sidebar>
-
-<app-page-header>
-  <h1>{{ (navigationStore.navigation$ | async).pageTitle }}</h1>
-</app-page-header>
-
-<main>
-  <router-outlet></router-outlet>
-</main>
+<div class="container-fluid h-100">
+  <div class="row bg-light" style="z-index: 9999;">
+    <div class="col">
+      <h4 class="pt-2 text-dark">
+        {{ (navigationStore.navigation$ | async).pageTitle }}
+      </h4>
+    </div>
+  </div>
+  <main class="h-100">
+    <div class="row h-100">
+      <app-navigation-sidebar
+        [navigation]="navigationStore.navigation$ | async"
+        (itemSelected)="navigateTo($event)"
+      ></app-navigation-sidebar>
+      <div class="col">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </main>
+</div>

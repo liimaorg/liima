@@ -1,49 +1,51 @@
-<div class="btn-toolbar" role="toolbar" aria-label="...">
+<div class="btn-toolbar p-2 justify-content-between" role="toolbar">
   <ng-container *ngIf="pages()">
-    <div class="btn-group" role="group">
-      <ul class="pagination pagination-amw pointer">
+    <nav>
+      <ul class="pagination pointer m-1">
         <li
-          class="{{ currentPage < 2 ? 'disabled' : '' }}"
+          class="page-item {{ currentPage < 2 ? 'disabled' : '' }}"
           aria-label="first"
           (click)="toPage(1)"
         >
-          <span aria-hidden="true">&laquo;</span>
+          <a class="page-link" aria-hidden="true" href="#">&laquo;</a>
         </li>
         <li
-          class="{{ currentPage < 2 ? 'disabled' : '' }}"
+          class="page-item {{ currentPage < 2 ? 'disabled' : '' }}"
           aria-label="previous"
           (click)="toPage(currentPage - 1)"
         >
-          <span aria-hidden="true">&lt;</span>
+          <a class="page-link" aria-hidden="true" href="#">&lt;</a>
         </li>
         <li
           *ngFor="let page of pages()"
-          class="{{ currentPage === page ? 'active' : '' }}"
+          class="page-item {{ currentPage === page ? 'active' : '' }}"
         >
-          <a (click)="toPage(page)"
+          <a class="page-link" (click)="toPage(page)"
             >{{ page }}<span class="sr-only">(current)</span></a
           >
         </li>
         <li
-          class="{{ currentPage === lastPage ? 'disabled' : '' }}"
+          class="page-item {{ currentPage === lastPage ? 'disabled' : '' }}"
           aria-label="next"
           (click)="toPage(currentPage + 1)"
         >
-          <span aria-hidden="true">&gt;</span>
+          <a class="page-link" href="#"><span aria-hidden="true">&gt;</span></a>
         </li>
         <li
-          class="{{ currentPage === lastPage ? 'disabled' : '' }}"
+          class="page-item {{ currentPage === lastPage ? 'disabled' : '' }}"
           aria-label="last"
           (click)="toPage(lastPage)"
         >
-          <span aria-hidden="true">&raquo;</span>
+          <a class="page-link" href="#"
+            ><span aria-hidden="true">&raquo;</span></a
+          >
         </li>
       </ul>
-    </div>
+    </nav>
   </ng-container>
-  <div class="btn-group pull-right" role="group">
+  <div class="btn-group justify-content-end" role="group">
     <select
-      class="pagination pagination-amw form-control"
+      class="pagination form-control m-1"
       [(ngModel)]="maxResults"
       (change)="setMax()"
     >

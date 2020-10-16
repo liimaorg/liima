@@ -21,8 +21,10 @@ import { NavigationModule } from './navigation/navigation.module';
 import { AppRoutingModule } from './app-routing.module';
 // App is our top level component
 import { AppComponent } from './app.component';
+
 import { DeploymentsModule } from './deployments/deployments.module';
 import { NavigationStoreService } from './navigation/navigation-store.service';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 // Application wide providers
 const APP_PROVIDERS = [NavigationStoreService];
@@ -45,8 +47,10 @@ const APP_PROVIDERS = [NavigationStoreService];
     BaseModule,
     SharedModule,
     NavigationModule,
+    NgbModule,
   ],
   providers: [APP_PROVIDERS],
   bootstrap: [AppComponent],
+  exports: [AppComponent],
 })
 export class AppModule {}

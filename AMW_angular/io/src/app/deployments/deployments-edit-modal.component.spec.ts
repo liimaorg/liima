@@ -1,13 +1,12 @@
-import { NgZone } from '@angular/core';
 import * as moment from 'moment';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { Deployment } from '../deployment/deployment';
+import { DATE_FORMAT } from '../core/amw-constants';
 
 describe('DeploymentsEditModalComponent (with query params)', () => {
   let component: DeploymentsEditModalComponent;
   beforeEach(() => {
-    let zone: NgZone = new NgZone({ enableLongStackTrace: false });
-    component = new DeploymentsEditModalComponent(zone);
+    component = new DeploymentsEditModalComponent();
   });
 
   it('should log unknown edit actions on doEdit', () => {
@@ -31,7 +30,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
     const newDeploymentDate: string = '30.11.2017 09:19';
     const expectedDeploymentDate: number = moment(
       newDeploymentDate,
-      'DD.MM.YYYY HH:mm'
+      DATE_FORMAT
     ).valueOf();
 
     component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
@@ -39,7 +38,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
     component.selectedEditAction = 'Confirm';
     component.deployments = [
       { id: 1, selected: true, deploymentDate: 5555 } as Deployment,
-      { id: 1, selected: true, deploymentDate: 6666 } as Deployment
+      { id: 1, selected: true, deploymentDate: 6666 } as Deployment,
     ];
     spyOn(console, 'error');
     spyOn(component, 'hideModal');
@@ -64,7 +63,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
     component.selectedEditAction = 'Confirm';
     component.deployments = [
       { id: 1, selected: true, deploymentDate: 5555 } as Deployment,
-      { id: 1, selected: true, deploymentDate: 6666 } as Deployment
+      { id: 1, selected: true, deploymentDate: 6666 } as Deployment,
     ];
     spyOn(component, 'hideModal');
     // when

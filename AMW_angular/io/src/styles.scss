@@ -1,7 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
+// override bootstrap variables before importing boostrap itself
+$font-size-base : 0.9rem;
+
+$btn-disabled-opacity: .55;
+
+/* Importing Bootstrap SCSS file. */
+@import '~bootstrap/scss/bootstrap';
 
 @import '~@ng-select/ng-select/scss/default.theme.scss';
 
+.text-warning-2 {
+  color: #8a6d3b
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+// legacy style definition below - check if they can be deleted
 /* global table styles */
 .table > thead > tr > th,
 .table > thead > tr > td,
@@ -26,3 +41,4 @@
 .btn {
   margin-right: 0.3rem;
 }
+

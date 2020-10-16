@@ -20,6 +20,7 @@ import { EnvironmentService } from './environment.service';
 import * as moment from 'moment';
 import { SharedModule } from '../shared/shared.module';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
+import { DATE_FORMAT } from '../core/amw-constants';
 @Component({
   template: '',
 })
@@ -326,7 +327,7 @@ describe('DeploymentComponent (create deployment)', () => {
       id: 5,
       tagDate: 1485378084103,
     } as ResourceTag;
-    component.deploymentDate = '02.01.2017 12:00';
+    component.deploymentDate = '2017-01-02 12:00';
     component.transDeploymentParameters = [
       { key: 'atest', value: 'foo' } as DeploymentParameter,
       { key: 'btest', value: 'bar' } as DeploymentParameter,
@@ -342,7 +343,7 @@ describe('DeploymentComponent (create deployment)', () => {
       requestOnly: true,
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,
-      deploymentDate: moment('02.01.2017 12:00', 'DD.MM.YYYY hh:mm').valueOf(),
+      deploymentDate: moment('2017-01-02 12:00', DATE_FORMAT).valueOf(),
       deploymentParameters: component.transDeploymentParameters,
     } as DeploymentRequest;
     spyOn(deploymentService, 'createDeployment').and.returnValue(
@@ -506,13 +507,18 @@ describe('DeploymentComponent (redeployment)', () => {
   });
 
   it('should call deploymentService on ngOnInit', () => {
+    // given
     const deployment: Deployment = { appsWithVersion: [] } as Deployment;
     spyOn(deploymentService, 'get').and.returnValue(of(deployment));
     expect(deploymentService.get).not.toHaveBeenCalled();
-    component.deploymentId = 123;
 
+    // when
     component.ngOnInit();
+    mockRoute.params.next({
+      deploymentId: 123,
+    });
 
+    // then
     expect(deploymentService.get).toHaveBeenCalledWith(123);
   });
 
@@ -565,8 +571,10 @@ describe('DeploymentComponent (redeployment)', () => {
       ])
     );
     // when
-    component.deploymentId = 123;
     component.ngOnInit();
+    mockRoute.params.next({
+      deploymentId: 123,
+    });
     // then
     expect(component.isRedeployment).toBeTruthy();
     expect(component.isDeploymentBlocked).toBeFalsy();
@@ -625,8 +633,10 @@ describe('DeploymentComponent (redeployment)', () => {
       ])
     );
     // when
-    component.deploymentId = 123; // this is necessary because of sketchy evaluation of request params in onInit
     component.ngOnInit();
+    mockRoute.params.next({
+      deploymentId: 123,
+    });
     // then
     expect(component.isRedeployment).toBeTruthy();
     expect(component.isDeploymentBlocked).toBeTruthy();
@@ -681,8 +691,10 @@ describe('DeploymentComponent (redeployment)', () => {
       of({ trackingId: 911 } as Deployment)
     );
     // when
-    component.deploymentId = 123; // this is necessary because of sketchy evaluation of request params in onInit
     component.ngOnInit();
+    mockRoute.params.next({
+      deploymentId: 123,
+    });
     component.createDeployment();
     // then
     expect(deploymentService.createDeployment).toHaveBeenCalledWith(

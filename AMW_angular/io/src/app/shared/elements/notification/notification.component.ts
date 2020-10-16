@@ -3,11 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
   selector: 'app-notification',
   template: `
-    <div
-      *ngIf="message"
-      class="alert alert-{{ messageType }} alert-dismissible fade in visible"
-      role="alert"
-    >
+    <div *ngIf="message" class="alert alert-{{ messageType }}" role="alert">
       <span [innerHTML]="message"></span
       ><button
         type="button"
@@ -19,7 +15,6 @@ import { Component, OnInit, Input } from '@angular/core';
       </button>
     </div>
   `,
-  styleUrls: ['./notification.component.scss']
 })
 export class NotificationComponent implements OnInit {
   @Input()
