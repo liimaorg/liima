@@ -166,13 +166,13 @@
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.rejectPossible">
-            <span
-              class="text-danger cursor-pointer"
+            <span class="text-danger cursor-pointer"
               (click)="showReject(deployment.id)"
             >
               <app-icon icon="x-circle"></app-icon>
-              <span class="ml-1">reject</span> </span
-            ><br />
+              <span class="ml-1">reject</span>
+            </span>
+            <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.cancelPossible">
             <span (click)="showCancel(deployment.id)" class="cursor-pointer">
@@ -189,10 +189,11 @@
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.hasLogFiles">
-            <a class="action" (click)="logViewerLink(deployment.id)">
-              <app-icon icon="journal-text" class="pointer"></app-icon>
-              <span class="action">logs</span> </a
-            ><br />
+            <span (click)="logViewerLink(deployment.id)" class="cursor-pointer">
+              <app-icon icon="journal-text"></app-icon>
+              <span class="ml-1">logs</span>
+            </span>
+            <br />
           </ng-container>
         </td>
       </tr>
