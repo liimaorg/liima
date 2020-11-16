@@ -30,11 +30,16 @@ span.reject:hover {
   color: #db4a4a;
 }
 
-tr.failed {
+tr.deploy-pre_deploy,
+tr.deploy-progress {
+  background-color: #e9ecef;
+}
+
+tr.deploy-failed {
   background-color: #f2dede;
 }
 
-tr.success {
+tr.deploy-success {
   background-color: #dff0d8;
 }
 span.action,
