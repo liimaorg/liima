@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
-
 import ch.puzzle.itc.mobiliar.builders.DeploymentEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
@@ -51,7 +50,8 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -174,9 +174,7 @@ public class DeploymentBoundaryTest
         Mockito.doReturn(deployment).when(deploymentBoundary).saveDeployment(deployment);
         Mockito.doReturn("Tom").when(permissionService).getCurrentUserName();
 
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date deploymentDate = format.parse ( "2020-10-20 12:12:12" );
-
+		Date deploymentDate = Date.from(LocalDate.now().plusDays(2).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         // when
         DeploymentEntity deploymentEntity = deploymentBoundary.confirmDeployment(deploymentId, sendEmailWhenDeployed, shakedownTestsWhenDeployed, neighbourhoodTest, simulateBeforeDeployment, deploymentDate);
 

@@ -884,8 +884,7 @@ public class DeploymentBoundary {
     public List<DeploymentEntity> getDeploymentsToExecute() {
         return em.createQuery(
                 "from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS
-                        + " left join fetch " + DEPLOYMENT_QL_ALIAS
-                        + ".runtime where " + DEPLOYMENT_QL_ALIAS
+                        + " where " + DEPLOYMENT_QL_ALIAS
                         + ".deploymentState = :deploymentState", DeploymentEntity.class)
                 .setParameter("deploymentState", DeploymentState.READY_FOR_DEPLOYMENT)
                 .setMaxResults(getDeploymentProcessingLimit())
@@ -901,8 +900,7 @@ public class DeploymentBoundary {
     public List<DeploymentEntity> getPreDeploymentsToExecute() {
         return em.createQuery(
                 "from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS
-                        + " left join fetch " + DEPLOYMENT_QL_ALIAS
-                        + ".runtime where " + DEPLOYMENT_QL_ALIAS
+                        + " where " + DEPLOYMENT_QL_ALIAS
                         + ".deploymentState = :deploymentState and " + DEPLOYMENT_QL_ALIAS
                         + ".deploymentDate<=:now", DeploymentEntity.class)
                 .setParameter("deploymentState", DeploymentState.scheduled)
