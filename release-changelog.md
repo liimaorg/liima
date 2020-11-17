@@ -1,3 +1,8 @@
+# v1.17.18
+* Fix deployment dateTime picker and fix layout: [#570](https://github.com/liimaorg/liima/issues/570) and [#510](https://github.com/liimaorg/liima/issues/510)
+* Migrat to Bootstrap 4: [#574](https://github.com/liimaorg/liima/pull/574)
+* Update to Angular 11: [#577](https://github.com/liimaorg/liima/pull/577)
+
 # v1.17.17
 This release fixes a NullPointer and cleans up some java dependencies.
 
