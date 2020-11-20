@@ -626,19 +626,19 @@ public class ResourcesRest {
                                      @ApiParam(value = "The origin ResourceGroup (from)") @QueryParam("originResourceGroupName") String originResourceGroupName,
                                      @ApiParam(value = "The origin ReleaseName (from)") @QueryParam("originReleaseName") String originReleaseName) throws ValidationException {
 
-        ResourceEntity targetResource = resourceLocator.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName);
-        if (targetResource == null) {
+        ResourceEntity targetResourceEntity = resourceLocator.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName);
+        if (targetResourceEntity == null) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto("Target Resource not found")).build();
         }
-        ResourceEntity originResource = resourceLocator.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName);
-        if (originResource == null) {
+        ResourceEntity originResourceEntity = resourceLocator.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName);
+        if (originResourceEntity == null) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto("Origin Resource not found")).build();
         }
 
         try {
-            CopyResourceResult copyResourceResult = copyResource.doCopyResource(targetResource.getId(), originResource.getId(), ForeignableOwner.getSystemOwner());
+            CopyResourceResult copyResourceResult = copyResource.doCopyResource(targetResourceEntity, originResourceEntity, ForeignableOwner.getSystemOwner());
             if (!copyResourceResult.isSuccess()) {
-                return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from " + originResource.getName() + " failed")).build();
+                return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from " + originResourceEntity.getName() + " failed")).build();
             }
             return Response.ok().build();
         } catch (ForeignableOwnerViolationException | AMWException e) {

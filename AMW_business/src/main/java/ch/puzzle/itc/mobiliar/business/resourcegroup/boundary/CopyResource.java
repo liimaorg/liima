@@ -56,7 +56,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
 /**
  * A boundary for copy resourcess
- * 
+ *
  * @author cweber
  */
 @Stateless
@@ -110,20 +110,32 @@ public class CopyResource {
 	 */
 	public CopyResourceResult doCopyResource(Integer targetResourceId, Integer originResourceId, ForeignableOwner actingOwner)
             throws ForeignableOwnerViolationException, AMWException {
-		// Load resources
 		ResourceEntity targetResource = commonDomainService.getResourceEntityById(targetResourceId);
 		ResourceEntity originResource = commonDomainService.getResourceEntityById(originResourceId);
 
-		if (!originResource.getResourceType().equals(targetResource.getResourceType())) {
+		return  this.doCopyResource(targetResource, originResource, actingOwner);
+	}
+
+	/**
+	 * @param targetResourceEntity
+	 * @param originResourceEntity
+	 * @return result if copy was successful, contains a list with error messages if copy fails
+	 * @throws ResourceNotFoundException
+	 */
+	public CopyResourceResult doCopyResource(ResourceEntity targetResourceEntity, ResourceEntity originResourceEntity, ForeignableOwner actingOwner)
+			throws ForeignableOwnerViolationException, AMWException {
+
+		if (!originResourceEntity.getResourceType().equals(targetResourceEntity.getResourceType())) {
 			throw new AMWException("Target and origin Resource are not of the same ResourceType");
 		}
 
-		if(!permissionBoundary.canCopyFromSpecificResource(originResource, targetResource.getResourceGroup())){
+		if(!permissionBoundary.canCopyFromSpecificResource(originResourceEntity, targetResourceEntity.getResourceGroup())){
 			throw new NotAuthorizedException("Permission Denied");
 		}
 
-		return copyResourceDomainService.copyFromOriginToTargetResource(originResource, targetResource, actingOwner);
+		return copyResourceDomainService.copyFromOriginToTargetResource(originResourceEntity, targetResourceEntity, actingOwner);
 	}
+
 
 	/**
 	 * Creates a new Release of an existing Resource
