@@ -625,6 +625,7 @@ public class ResourcesRest {
                                      @ApiParam(value = "The target ReleaseName (to)") @PathParam("releaseName") String targetReleaseName,
                                      @ApiParam(value = "The origin ResourceGroup (from)") @QueryParam("originResourceGroupName") String originResourceGroupName,
                                      @ApiParam(value = "The origin ReleaseName (from)") @QueryParam("originReleaseName") String originReleaseName) throws ValidationException {
+
         ResourceEntity targetResource = resourceLocator.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName);
         if (targetResource == null) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto("Target Resource not found")).build();
@@ -633,22 +634,16 @@ public class ResourcesRest {
         if (originResource == null) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto("Origin Resource not found")).build();
         }
-        if ((!originResource.getResourceType().isApplicationResourceType() && !originResource.getResourceType().isApplicationServerResourceType())
-                || (!targetResource.getResourceType().isApplicationResourceType() && !targetResource.getResourceType().isApplicationServerResourceType())) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Only Application or ApplicationServer ResourceTypes are allowed")).build();
-        }
 
-        CopyResourceResult copyResourceResult;
         try {
-            copyResourceResult = copyResource.doCopyResource(targetResource.getId(), originResource.getId(), ForeignableOwner.getSystemOwner());
+            CopyResourceResult copyResourceResult = copyResource.doCopyResource(targetResource.getId(), originResource.getId(), ForeignableOwner.getSystemOwner());
+            if (!copyResourceResult.isSuccess()) {
+                return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from " + originResource.getName() + " failed")).build();
+            }
+            return Response.ok().build();
         } catch (ForeignableOwnerViolationException | AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
-
-        if (!copyResourceResult.isSuccess()) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from " + originResource.getName() + " failed")).build();
-        }
-        return Response.ok().build();
     }
 
     @Path("/{resourceGroupName}/{releaseName}/dependencies/")

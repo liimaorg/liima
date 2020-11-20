@@ -62,16 +62,12 @@ import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import javax.ws.rs.core.Response;
 
 import static ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer.APPSERVERCONTAINER;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ResourcesRestTest {
 
@@ -214,7 +210,7 @@ public class ResourcesRestTest {
         Integer type = 2305;
         List<ServerTuple> list = new ArrayList<>();
         when(serverViewMock.getServers(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(list);
-        
+
         // when
         BatchJobInventoryDTO result = rest.getBatchJobInventar(env, type, null, null, null, null, null);
 
@@ -357,7 +353,7 @@ public class ResourcesRestTest {
         verify(resourcePropertiesMock).getResourceProperties(resourceGroupName, closestRelease.getName(), env);
         verify(resourceTemplatesRestMock).getResourceTemplates(resourceGroupName, closestRelease.getName(), "");
     }
-  
+
     @Test
     public void shouldInvokeBoundaryWithRightArgumentsOnGetApplicationsWithVersionForRelease() {
         // given
@@ -418,7 +414,7 @@ public class ResourcesRestTest {
     }
 
     @Test
-    public void shouldNotAllowCopyFromResourceOfNodeType() throws ValidationException {
+    public void shouldAllowCopyFromResourceOfNodeType() throws ValidationException, ForeignableOwnerViolationException, AMWException {
         // given
         String originResourceGroupName = "Origin";
         String originReleaseName = "From";
@@ -445,12 +441,15 @@ public class ResourcesRestTest {
 
         when(resourceLocatorMock.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName)).thenReturn(target);
         when(resourceLocatorMock.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName)).thenReturn(origin);
+        CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
+        when(copyResourceResult.isSuccess()).thenReturn(true);
+        when(copyResourceMock.doCopyResource(targetResourceGroup.getId(), originResourceGroup.getId(), ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
 
         // when
         Response response = rest.copyFromResource(targetResourceGroupName, targetReleaseName, originResourceGroupName, originReleaseName);
 
         // then
-        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
