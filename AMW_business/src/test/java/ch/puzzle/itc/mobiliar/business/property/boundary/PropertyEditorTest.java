@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.property.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationContextRepository;
@@ -110,11 +111,13 @@ public class PropertyEditorTest {
     ForeignableService foreignableServiceMock;
 
     @Mock
+    AuditService auditServiceMock;
+
+    @Mock
     Logger log;
 
     @InjectMocks
     PropertyEditor editor;
-
 
     @Test(expected = ValidationException.class)
     public void setPropertyValueOnResourceForContextOnInvalidArgumentShouldThrowValidationException() throws Exception {
@@ -214,6 +217,7 @@ public class PropertyEditorTest {
 
         //then
         verify(propertyValueServiceMock).setPropertyValue(ArgumentMatchers.any(ContextDependency.class), eq(1), ArgumentMatchers.eq(propertyValue));
+        verify(auditServiceMock).storeIdInThreadLocalForAuditLog(any(ContextDependency.class));
 
     }
 
@@ -453,6 +457,7 @@ public class PropertyEditorTest {
 
         // then
         verify(propertyValueServiceMock).setPropertyValue(ArgumentMatchers.any(ContextDependency.class), eq(1), ArgumentMatchers.eq(propertyValue));
+       // verify(auditServiceMock).storeIdInThreadLocalForAuditLog(any(HasContexts.class));
     }
 
 
@@ -778,7 +783,7 @@ public class PropertyEditorTest {
 
         // then
         verify(propertyValueServiceMock).setPropertyValue(ArgumentMatchers.any(ContextDependency.class), eq(1), ArgumentMatchers.eq(propertyValue));
-
+        verify(auditServiceMock).storeIdInThreadLocalForAuditLog(any(ContextDependency.class));
     }
 
 
