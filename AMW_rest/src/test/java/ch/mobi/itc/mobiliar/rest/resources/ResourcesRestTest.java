@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.mobi.itc.mobiliar.rest.dtos.*;
+import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -371,6 +372,55 @@ public class ResourcesRestTest {
 
         // then
         verify(deploymentBoundaryMock, times(1)).getVersions(appServer, contextIds, release);
+    }
+
+    @Test
+    public void shouldNotAllowCopyFromWhenTargetNotFound() throws ValidationException {
+        // given
+        when(resourceLocatorMock.getResourceByGroupNameAndRelease(anyString(), anyString())).thenReturn(null);
+
+        // when
+        final Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
+
+        // then
+        assertThat(response.getStatus(), is(NOT_FOUND.getStatusCode()));
+        assertThat(((ExceptionDto) response.getEntity()).getMessage(), is("Target Resource not found"));
+    }
+
+    @Test
+    public void shouldNotAllowCopyFromWhenOriginNotFound() throws ValidationException {
+        // given
+        ResourceEntity targetResourceEntity = mock(ResourceEntity.class);
+        when(resourceLocatorMock.getResourceByGroupNameAndRelease("targetResourceGroupName", "targetReleaseName")).thenReturn(targetResourceEntity);
+        when(resourceLocatorMock.getResourceByGroupNameAndRelease("originResourceGroupName", "originReleaseName")).thenReturn(null);
+
+        // when
+        final Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
+
+        // then
+        assertThat(response.getStatus(), is(NOT_FOUND.getStatusCode()));
+        assertThat(((ExceptionDto) response.getEntity()).getMessage(), is("Origin Resource not found"));
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenCopyFromDoesNotSucceed() throws ValidationException, ForeignableOwnerViolationException, AMWException {
+        // given
+        ResourceEntity targetResourceEntity = mock(ResourceEntity.class);
+        when(resourceLocatorMock.getResourceByGroupNameAndRelease("targetResourceGroupName", "targetReleaseName")).thenReturn(targetResourceEntity);
+        ResourceEntity originResourceEntity = mock(ResourceEntity.class);
+        when(originResourceEntity.getName()).thenReturn("Origin");
+        when(resourceLocatorMock.getResourceByGroupNameAndRelease("originResourceGroupName", "originReleaseName")).thenReturn(originResourceEntity);
+
+        CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
+        when(copyResourceResult.isSuccess()).thenReturn(false);
+        when(copyResourceMock.doCopyResource(targetResourceEntity.getId(), originResourceEntity.getId(), ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
+
+        // when
+        final Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
+
+        // then
+        assertThat(response.getStatus(), is(BAD_REQUEST.getStatusCode()));
+        assertThat(((ExceptionDto) response.getEntity()).getMessage(), is("Copy from Origin failed"));
     }
 
     @Test
