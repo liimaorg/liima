@@ -446,6 +446,7 @@ public class PropertyEditor {
             HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
             ContextEntity contextMerged = entityManager.merge(context);
             ContextDependency<?> contextDependency = hasContextMerged.getOrCreateContext(contextMerged);
+            auditService.storeIdInThreadLocalForAuditLog(contextDependency);
             propertyValueService.setPropertyValue(contextDependency, propertyDescriptorId,
                     unobfuscatedValue);
         }
