@@ -66,6 +66,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.ValidationException;
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
 import static ch.puzzle.itc.mobiliar.common.util.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI;
@@ -97,6 +99,9 @@ public class DeploymentsRest {
     private PermissionBoundary permissionBoundary;
     @Inject
     private ContextLocator contextLocator;
+
+    @Inject
+    Logger log;
 
     @GET
     @Path("/filter")
@@ -315,6 +320,25 @@ public class DeploymentsRest {
         }
 
         return Response.status(Status.OK).entity(new DeploymentDTO(result)).build();
+    }
+
+    @GET
+    @Path("/{id : \\d+}/logs") // only digits
+    @ApiOperation(value = "get all log files for a given deployment")
+    public Response getDeploymentLogs(@ApiParam("Deployment ID") @PathParam("id") Integer id) throws IllegalAccessException {
+        List<String> availableLogFiles = Arrays.asList(deploymentBoundary.getLogFileNames(id));
+
+        final List<DeploymentLog> deploymentLogs = availableLogFiles.stream().map(filename -> {
+            String deploymentLog;
+            try {
+                deploymentLog = deploymentBoundary.getDeploymentLog(filename);
+            } catch (IllegalAccessException e) {
+                deploymentLog = "error: unable to get contents of logfile " + filename;
+                log.info(deploymentLog);
+            }
+            return new DeploymentLog(id, filename, deploymentLog);
+        }).collect(Collectors.toList());
+        return Response.ok(deploymentLogs).build();
     }
 
     @GET
