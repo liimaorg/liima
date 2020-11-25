@@ -8,6 +8,8 @@ import { DeploymentsEditModalComponent } from './deployments-edit-modal.componen
 import { DeploymentService } from '../deployment/deployment.service';
 import { EnvironmentService } from '../deployment/environment.service';
 import { DeploymentsRoutingModule } from './deployments-routing.module';
+import { LogsComponent } from './logs/logs.component';
+import { DeploymentContainerComponent } from './deployment-container/deployment-container.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, DeploymentsRoutingModule, SharedModule],
@@ -15,6 +17,8 @@ import { DeploymentsRoutingModule } from './deployments-routing.module';
     DeploymentsComponent,
     DeploymentsListComponent,
     DeploymentsEditModalComponent,
+    LogsComponent,
+    DeploymentContainerComponent,
   ],
   providers: [DeploymentService, EnvironmentService],
 })

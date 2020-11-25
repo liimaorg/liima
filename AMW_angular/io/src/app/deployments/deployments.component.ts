@@ -13,6 +13,7 @@ import { Deployment } from '../deployment/deployment';
 import { DeploymentService } from '../deployment/deployment.service';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { DATE_FORMAT } from '../core/amw-constants';
+import { DeploymentsStoreService } from './deployments-store.service';
 
 declare var $: any;
 
@@ -84,11 +85,11 @@ export class DeploymentsComponent implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private ngZone: NgZone,
     private location: Location,
     private deploymentService: DeploymentService,
     private resourceService: ResourceService,
-    public navigationStore: NavigationStoreService
+    public navigationStore: NavigationStoreService,
+    private deploymentStore: DeploymentsStoreService
   ) {
     this.navigationStore.setVisible(false);
     this.navigationStore.setCurrent('Deployments');
@@ -494,6 +495,7 @@ export class DeploymentsComponent implements OnInit {
           this.allResults = r.total;
           this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
           this.lastPage = Math.ceil(this.allResults / this.maxResults);
+          this.deploymentStore.deployments = r.deployments;
         },
         /* error path */ (e) => {
           this.errorMessage = e;

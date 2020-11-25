@@ -1,0 +1,11 @@
+<!-- <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator> -->
+
+<div class="col main-full">
+  <div *ngIf="deployment$ | async as deployment" class="card mt-3">
+    <div class="card-header">
+      Log file for {{ deployment.id }} ({{ deployment.appServerName }}
+      {{ deployment.releaseName }})
+    </div>
+    <div class="card-body"></div>
+  </div>
+</div>

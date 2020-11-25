@@ -3,7 +3,7 @@ import {
   HttpClient,
   HttpParams,
   HttpResponse,
-  HttpHeaders
+  HttpHeaders,
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -32,19 +32,19 @@ export class DeploymentService extends BaseService {
       colToSort: sortCol,
       sortDirection: sortDir,
       offset: String(offset),
-      maxResults: String(maxResults)
+      maxResults: String(maxResults),
     };
     let params = new HttpParams({ fromObject: paramObj });
     return this.http
       .get<Deployment[]>(`${this.getBaseUrl()}/deployments/filter`, {
         headers: new HttpHeaders({
-          Accept: 'application/json'
+          Accept: 'application/json',
         }),
         params: params,
-        observe: 'response'
+        observe: 'response',
       })
       .pipe(
-        map(data => this.extractDeploymentsAndTotalCount(data)),
+        map((data) => this.extractDeploymentsAndTotalCount(data)),
         catchError(this.handleError)
       );
   }
@@ -65,7 +65,7 @@ export class DeploymentService extends BaseService {
       .get(`${this.getBaseUrl()}/deployments/filter`, {
         params,
         headers,
-        responseType: 'arraybuffer'
+        responseType: 'arraybuffer',
       })
       .pipe(catchError(this.handleError));
   }
@@ -73,7 +73,7 @@ export class DeploymentService extends BaseService {
   get(deploymentId: number): Observable<Deployment> {
     return this.http
       .get<Deployment>(`${this.getBaseUrl()}/deployments/${deploymentId}`, {
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
   }
@@ -92,7 +92,7 @@ export class DeploymentService extends BaseService {
   ): Observable<Deployment> {
     return this.http
       .post<Deployment>(`${this.getBaseUrl()}/deployments`, deploymentRequest, {
-        headers: this.postHeaders()
+        headers: this.postHeaders(),
       })
       .pipe(catchError(this.handleError));
   }
@@ -142,7 +142,7 @@ export class DeploymentService extends BaseService {
   ): Observable<boolean> {
     let params = new HttpParams();
     contextIds.forEach(
-      key => (params = params.append('contextId', String(key)))
+      (key) => (params = params.append('contextId', String(key)))
     );
     const headers = this.getHeaders();
 
@@ -151,7 +151,7 @@ export class DeploymentService extends BaseService {
         `${this.getBaseUrl()}/deployments/canDeploy/${resourceGroupId}`,
         {
           params,
-          headers
+          headers,
         }
       )
       .pipe(catchError(this.handleError));
@@ -164,7 +164,7 @@ export class DeploymentService extends BaseService {
     let params = new HttpParams();
 
     contextIds.forEach(
-      key => (params = params.append('contextId', String(key)))
+      (key) => (params = params.append('contextId', String(key)))
     );
     const headers = this.getHeaders();
     return this.http
@@ -172,7 +172,7 @@ export class DeploymentService extends BaseService {
         `${this.getBaseUrl()}/deployments/canRequestDeployment/${resourceGroupId}`,
         {
           params,
-          headers
+          headers,
         }
       )
       .pipe(catchError(this.handleError));
@@ -181,7 +181,7 @@ export class DeploymentService extends BaseService {
   canRequestDeployments(): Observable<boolean> {
     return this.http
       .get<boolean>(`${this.getBaseUrl()}/deployments/canRequestDeployment/`, {
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
   }
@@ -210,7 +210,7 @@ export class DeploymentService extends BaseService {
     return this.http
       .get<string[]>(`${this.getBaseUrl()}/deployments/filterOptionValues`, {
         params,
-        headers
+        headers,
       })
       .pipe(catchError(this.handleError));
   }
@@ -242,7 +242,7 @@ export class DeploymentService extends BaseService {
     const headerField: string = 'X-Total-Count';
     const ob: { deployments: Deployment[]; total: number } = {
       deployments: [],
-      total: 0
+      total: 0,
     };
     ob.deployments = res.body;
     ob.total = res.headers.get(headerField)
