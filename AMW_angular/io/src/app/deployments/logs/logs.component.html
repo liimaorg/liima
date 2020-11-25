@@ -6,6 +6,11 @@
       Log file for {{ deployment.id }} ({{ deployment.appServerName }}
       {{ deployment.releaseName }})
     </div>
-    <div class="card-body"></div>
+    <div class="card-body">
+      available files:
+      <div *ngFor="let filename of deploymentLogStore.filenames$ | async">
+        <p>{{ filename }}</p>
+      </div>
+    </div>
   </div>
 </div>

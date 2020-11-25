@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, first, map, take } from 'rxjs/operators';
-import { Deployment } from '../deployment/deployment';
+import { filter, find, first, map, take } from 'rxjs/operators';
+import { Deployment, deploymentIdPredicate } from '../deployment/deployment';
 
 @Injectable({
   providedIn: 'root',
@@ -23,8 +23,6 @@ export class DeploymentsStoreService {
 
   readonly withid$ = (id: number): Observable<Deployment> =>
     this.deployments$.pipe(
-      map((deployments) =>
-        deployments.find((deployment) => deployment.id === id)
-      )
+      map((deployments) => deployments.find(deploymentIdPredicate(id)))
     );
 }
