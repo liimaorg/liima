@@ -10,9 +10,16 @@ import { EnvironmentService } from '../deployment/environment.service';
 import { DeploymentsRoutingModule } from './deployments-routing.module';
 import { LogsComponent } from './logs/logs.component';
 import { DeploymentContainerComponent } from './deployment-container/deployment-container.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, DeploymentsRoutingModule, SharedModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    DeploymentsRoutingModule,
+    SharedModule,
+    NgbModule,
+  ],
   declarations: [
     DeploymentsComponent,
     DeploymentsListComponent,

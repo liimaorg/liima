@@ -3,13 +3,33 @@
 <div class="col main-full">
   <div *ngIf="deployment$ | async as deployment" class="card mt-3">
     <div class="card-header">
-      Log file for {{ deployment.id }} ({{ deployment.appServerName }}
-      {{ deployment.releaseName }})
+      <h4>
+        Log file for {{ deployment.id }} ({{ deployment.appServerName }}
+        {{ deployment.releaseName }})
+      </h4>
+      <div class="text-right">
+        <div ngbDropdown class="d-inline-block">
+          <button
+            class="btn btn-outline-primary"
+            id="filename-picker"
+            ngbDropdownToggle
+          >
+            {{ currentFilename | async }}
+          </button>
+          <div ngbDropdownMenu aria-labelledby="filename-picker">
+            <button
+              *ngFor="let filename of deploymentLogStore.filenames$ | async"
+              (click)="selectFile(filename)"
+            >
+              {{ filename }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="card-body">
-      available files:
-      <div *ngFor="let filename of deploymentLogStore.filenames$ | async">
-        <p>{{ filename }}</p>
+      <div *ngIf="deploymentLog$ | async as deploymentLog">
+        {{ deploymentLog.content }}
       </div>
     </div>
   </div>
