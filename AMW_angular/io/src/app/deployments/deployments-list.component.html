@@ -193,13 +193,6 @@
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.hasLogFiles">
-            <span (click)="logViewerLink(deployment.id)" class="cursor-pointer">
-              <app-icon icon="journal-text"></app-icon>
-              <span class="ml-1">legacylogs</span>
-            </span>
-            <br />
-          </ng-container>
-          <ng-container *ngIf="deployment.actions.hasLogFiles">
             <a
               [routerLink]="['/deployments', deployment.id, 'logs']"
               class="cursor-pointer"
