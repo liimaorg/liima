@@ -7,6 +7,7 @@
         Log file for {{ deployment.id }} ({{ deployment.appServerName }}
         {{ deployment.releaseName }})
       </h4>
+
       <div class="text-right">
         <div ngbDropdown class="d-inline-block">
           <button
@@ -18,6 +19,7 @@
           </button>
           <div ngbDropdownMenu aria-labelledby="filename-picker">
             <button
+              ngbDropdownItem
               *ngFor="let filename of deploymentLogStore.filenames$ | async"
               (click)="selectFile(filename)"
             >
