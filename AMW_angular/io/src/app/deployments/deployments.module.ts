@@ -11,6 +11,7 @@ import { DeploymentsRoutingModule } from './deployments-routing.module';
 import { LogsComponent } from './logs/logs.component';
 import { DeploymentContainerComponent } from './deployment-container/deployment-container.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     DeploymentsRoutingModule,
     SharedModule,
     NgbModule,
+    CodemirrorModule,
   ],
   declarations: [
     DeploymentsComponent,

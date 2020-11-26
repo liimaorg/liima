@@ -29,7 +29,14 @@
     </div>
     <div class="card-body">
       <div *ngIf="deploymentLog$ | async as deploymentLog">
-        {{ deploymentLog.content }}
+        <ngx-codemirror
+          [(ngModel)]="deploymentLog.content"
+          [options]="{
+            lineNumbers: true,
+            theme: 'default',
+            mode: 'markdown'
+          }"
+        ></ngx-codemirror>
       </div>
     </div>
   </div>
