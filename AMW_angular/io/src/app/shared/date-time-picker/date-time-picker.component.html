@@ -3,7 +3,7 @@
     [ngClass]="ngControl?.valid ? 'ng-valid' : 'ng-invalid'"
     class="form-control"
     (blur)="inputBlur($event)"
-    [ngModel]="dateString | date: inputDatetimeFormat"
+    [ngModel]="dateString"
     (change)="onInputChange($event)"
     [disabled]="disabled"
   />

@@ -40,8 +40,9 @@ export class DateTimePickerComponent
   @Input()
   dateString: string;
 
+  // moment js format
   @Input()
-  inputDatetimeFormat = 'dd.MM.yyyy HH:mm';
+  dateStringFormat = 'DD.MM.yyyy HH:mm';
   @Input()
   hourStep = 1;
   @Input()
@@ -88,7 +89,7 @@ export class DateTimePickerComponent
     if (newModel) {
       this.datetime = Object.assign(
         this.datetime,
-        DateTimeModel.fromLocalString(newModel)
+        DateTimeModel.fromLocalString(newModel, this.dateStringFormat)
       );
       this.dateString = newModel;
       this.setDateStringModel();
@@ -116,7 +117,7 @@ export class DateTimePickerComponent
 
   onInputChange($event: any) {
     const value = $event.target.value;
-    const dt = DateTimeModel.fromLocalString(value);
+    const dt = DateTimeModel.fromLocalString(value, this.dateStringFormat);
 
     if (dt) {
       this.datetime = dt;
@@ -131,24 +132,9 @@ export class DateTimePickerComponent
   }
 
   onDateChange($event) {
-    if ($event.year) {
-      $event = `${$event.year}-${$event.month}-${$event.day}`;
-    }
-
-    const date = DateTimeModel.fromLocalString($event);
-
-    if (!date) {
-      this.dateString = this.dateString;
-      return;
-    }
-
-    if (!this.datetime) {
-      this.datetime = date;
-    }
-
-    this.datetime.year = date.year;
-    this.datetime.month = date.month;
-    this.datetime.day = date.day;
+    this.datetime.year = $event.year;
+    this.datetime.month = $event.month;
+    this.datetime.day = $event.day;
 
     this.dp.navigateTo({
       year: this.datetime.year,
@@ -166,7 +152,7 @@ export class DateTimePickerComponent
   }
 
   setDateStringModel() {
-    this.dateString = this.datetime.toString();
+    this.dateString = this.datetime.toString(this.dateStringFormat);
     this.onChange(this.dateString);
   }
 

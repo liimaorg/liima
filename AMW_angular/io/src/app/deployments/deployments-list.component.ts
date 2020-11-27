@@ -87,7 +87,6 @@ export class DeploymentsListComponent {
   }
 
   doDateChange() {
-    debugger;
     if (this.deployment) {
       this.errorMessage = '';
       const dateTime = moment(this.deploymentDate, DATE_FORMAT);
