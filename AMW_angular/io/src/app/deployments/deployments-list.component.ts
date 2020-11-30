@@ -37,8 +37,6 @@ export class DeploymentsListComponent {
 
   hasPermissionShakedownTest: boolean = null;
 
-  errorMessage: string = '';
-
   allSelected: boolean = false;
 
   failureReason: { [key: string]: string } = {
@@ -71,7 +69,6 @@ export class DeploymentsListComponent {
       .canCreateShakedownTest(this.deployment.appServerId)
       .subscribe(
         /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
-        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () => $('#deploymentConfirmation').modal('show')
       );
   }
@@ -88,18 +85,11 @@ export class DeploymentsListComponent {
 
   doDateChange() {
     if (this.deployment) {
-      this.errorMessage = '';
-      const dateTime = this.deploymentDate.toEpoch();
-      // todo: move to timepicker
- //     if (!dateTime || !dateTime.isValid()) {
- //       this.errorMessage = 'Invalid date';
- //     } else {
-        this.deployment.deploymentDate = dateTime.valueOf();
-        this.editDeploymentDate.emit(this.deployment);
-        $('#deploymentDateChange').modal('hide');
-        delete this.deployment;
-        delete this.deploymentDate;
-  //    }
+      this.deployment.deploymentDate = this.deploymentDate.toEpoch();
+      this.editDeploymentDate.emit(this.deployment);
+      $('#deploymentDateChange').modal('hide');
+      delete this.deployment;
+      delete this.deploymentDate;
     }
   }
 

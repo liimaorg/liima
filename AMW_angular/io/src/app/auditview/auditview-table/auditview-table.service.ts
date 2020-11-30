@@ -75,7 +75,6 @@ export class AuditviewTableService {
       tap(() => this._loading$.next(true)),
       debounceTime(200),
       map(([searchTerm, sortColumn, sortDirection, auditlogEntries]) => {
-        console.log('mapping it');
         return this._search(
           searchTerm,
           sortColumn,

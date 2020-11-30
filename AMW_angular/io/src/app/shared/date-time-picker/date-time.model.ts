@@ -17,46 +17,48 @@ export class DateTimeModel implements NgbDateTimeStruct {
     Object.assign(this, init);
   }
 
-  public static fromLocalString(dateString: string, format: string): DateTimeModel {
-    const date = moment(dateString, format).toDate();
-    const isValidDate = !isNaN(date.valueOf());
-
-    if (!dateString || !isValidDate) {
+  private static fromMoment(m: moment.Moment): DateTimeModel {
+    if (!m.isValid()) {
       return null;
     }
-
     return new DateTimeModel({
-      year: date.getFullYear(),
-      month: date.getMonth() + 1,
-      day: date.getDate(),
-      hour: date.getHours(),
-      minute: date.getMinutes(),
-      second: date.getSeconds(),
-      timeZoneOffset: date.getTimezoneOffset(),
+      year: m.year(),
+      month: m.month() + 1,
+      day: m.day(),
+      hour: m.hour(),
+      minute: m.minute(),
+      second: m.second(),
+      timeZoneOffset: m.utcOffset(),
     });
+  }
+
+  public static fromLocalString(dateString: string, format: string): DateTimeModel {
+    const m = moment(dateString, format);
+    return this.fromMoment(m);
   }
 
   public static fromEpoch(epoch: number) {
-    debugger;
-    const date = moment(epoch).toDate();
-    return new DateTimeModel({
-      year: date.getFullYear(),
-      month: date.getMonth() + 1,
-      day: date.getDate(),
-      hour: date.getHours(),
-      minute: date.getMinutes(),
-      second: date.getSeconds(),
-      timeZoneOffset: date.getTimezoneOffset(),
-    });
+    const m = moment(epoch);
+    return this.fromMoment(m);
+  }
+
+  private toMoment(): moment.Moment {
+    return moment({ year: this.year, month: this.month - 1, day: this.day, hour: this.hour, minute: this.minute, second: this.second});;
   }
 
   public toString(format: string): string {
-    const m = moment({ year: this.year, month: this.month - 1, day: this.day, hour: this.hour, minute: this.minute, second: this.second});
+    const m = this.toMoment();
+    if (!m.isValid()) {
+      return null;
+    }
     return m.format(format);
   }
 
   public toEpoch(): number {
-    const m = moment({ year: this.year, month: this.month - 1, day: this.day, hour: this.hour, minute: this.minute, second: this.second});
+    const m = this.toMoment();
+    if (!m.isValid()) {
+      return null;
+    }
     return m.valueOf();
   }
 }

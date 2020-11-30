@@ -11,7 +11,7 @@ import {
   NgbTimeStruct,
   NgbPopoverConfig,
   NgbPopover,
-  NgbDatepicker,
+  NgbDateStruct,
 } from '@ng-bootstrap/ng-bootstrap';
 import {
   NG_VALUE_ACCESSOR,
@@ -56,9 +56,7 @@ export class DateTimePickerComponent
 
   showTimePickerToggle = false;
   datetime = new DateTimeModel();
-
-  @ViewChild(NgbDatepicker)
-  dp: NgbDatepicker;
+  errorMessage = "";
 
   @ViewChild(NgbPopover)
   popover: NgbPopover;
@@ -84,7 +82,6 @@ export class DateTimePickerComponent
   }
 
   writeValue(newModel: DateTimeModel) {
-    debugger;
     if (newModel) {
       this.datetime = Object.assign(this.datetime, newModel)
       //this.datetime = newModel;
@@ -115,8 +112,8 @@ export class DateTimePickerComponent
   onDateStringChange($event: any) {
     const value = $event.target.value;
     const dt = DateTimeModel.fromLocalString(value, this.dateStringFormat);
+    this.errorMessage = ""
 
-    //todo: handle invalid datestring
     if (dt) {
       this.datetime = dt;
       this.onChange(dt);
@@ -124,27 +121,28 @@ export class DateTimePickerComponent
       this.datetime = new DateTimeModel();
       this.dateString = '';
       this.onChange(this.datetime);
+    } else {
+      this.errorMessage = "Invalid date!"
     }
   }
 
-  onDateChange($event) {
-    debugger;
-    this.datetime.year = $event.year;
-    this.datetime.month = $event.month;
-    this.datetime.day = $event.day;
-
-    this.dp.navigateTo({
-      year: this.datetime.year,
-      month: this.datetime.month,
-    });
+  onDateChange(event: NgbDateStruct) {
+    if(!event) {
+      return
+    }
+    this.datetime.year = event.year;
+    this.datetime.month = event.month;
+    this.datetime.day = event.day;
     this.setDateString();
   }
 
   onTimeChange(event: NgbTimeStruct) {
+    if(!event) {
+      return
+    }
     this.datetime.hour = event.hour;
     this.datetime.minute = event.minute;
     this.datetime.second = event.second;
-
     this.setDateString();
   }
 
