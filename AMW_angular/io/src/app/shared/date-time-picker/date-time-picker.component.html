@@ -4,8 +4,9 @@
     class="form-control"
     (blur)="inputBlur($event)"
     [ngModel]="dateString"
-    (change)="onInputChange($event)"
+    (change)="onDateStringChange($event)"
     [disabled]="disabled"
+    placeholder="{{ dateStringFormat }}"
   />
 
   <div class="input-group-append">

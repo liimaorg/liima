@@ -51,12 +51,10 @@ export class DateTimePickerComponent
   secondStep = 30;
   @Input()
   seconds = false;
-
   @Input()
   disabled = false;
 
   showTimePickerToggle = false;
-
   datetime = new DateTimeModel();
 
   @ViewChild(NgbDatepicker)
@@ -85,14 +83,12 @@ export class DateTimePickerComponent
     });
   }
 
-  writeValue(newModel: string) {
+  writeValue(newModel: DateTimeModel) {
+    debugger;
     if (newModel) {
-      this.datetime = Object.assign(
-        this.datetime,
-        DateTimeModel.fromLocalString(newModel, this.dateStringFormat)
-      );
-      this.dateString = newModel;
-      this.setDateStringModel();
+      this.datetime = Object.assign(this.datetime, newModel)
+      //this.datetime = newModel;
+      this.setDateString();
     } else {
       this.datetime = new DateTimeModel();
     }
@@ -115,23 +111,24 @@ export class DateTimePickerComponent
     this.disabled = isDisabled;
   }
 
-  onInputChange($event: any) {
+  // called when user updates the datestring directly
+  onDateStringChange($event: any) {
     const value = $event.target.value;
     const dt = DateTimeModel.fromLocalString(value, this.dateStringFormat);
 
+    //todo: handle invalid datestring
     if (dt) {
       this.datetime = dt;
-      this.setDateStringModel();
+      this.onChange(dt);
     } else if (value.trim() === '') {
       this.datetime = new DateTimeModel();
       this.dateString = '';
-      this.onChange(this.dateString);
-    } else {
-      this.onChange(value);
+      this.onChange(this.datetime);
     }
   }
 
   onDateChange($event) {
+    debugger;
     this.datetime.year = $event.year;
     this.datetime.month = $event.month;
     this.datetime.day = $event.day;
@@ -140,7 +137,7 @@ export class DateTimePickerComponent
       year: this.datetime.year,
       month: this.datetime.month,
     });
-    this.setDateStringModel();
+    this.setDateString();
   }
 
   onTimeChange(event: NgbTimeStruct) {
@@ -148,12 +145,12 @@ export class DateTimePickerComponent
     this.datetime.minute = event.minute;
     this.datetime.second = event.second;
 
-    this.setDateStringModel();
+    this.setDateString();
   }
 
-  setDateStringModel() {
+  setDateString() {
     this.dateString = this.datetime.toString(this.dateStringFormat);
-    this.onChange(this.dateString);
+    this.onChange(this.datetime);
   }
 
   inputBlur($event) {

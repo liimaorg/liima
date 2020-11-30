@@ -3,8 +3,7 @@ import { Deployment } from '../deployment/deployment';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resource/resource.service';
 import * as _ from 'lodash';
-import * as moment from 'moment';
-import { DATE_FORMAT } from '../core/amw-constants';
+import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 
 @Component({
   selector: 'amw-deployments-list',
@@ -34,7 +33,7 @@ export class DeploymentsListComponent {
 
   deployment: Deployment;
 
-  deploymentDate: number;
+  deploymentDate: DateTimeModel = new DateTimeModel();
 
   hasPermissionShakedownTest: boolean = null;
 
@@ -62,6 +61,7 @@ export class DeploymentsListComponent {
 
   showDateChange(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
+    this.deploymentDate = DateTimeModel.fromEpoch(this.deployment.deploymentDate);
     $('#deploymentDateChange').modal('show');
   }
 
@@ -89,16 +89,17 @@ export class DeploymentsListComponent {
   doDateChange() {
     if (this.deployment) {
       this.errorMessage = '';
-      const dateTime = moment(this.deploymentDate, DATE_FORMAT);
-      if (!dateTime || !dateTime.isValid()) {
-        this.errorMessage = 'Invalid date';
-      } else {
+      const dateTime = this.deploymentDate.toEpoch();
+      // todo: move to timepicker
+ //     if (!dateTime || !dateTime.isValid()) {
+ //       this.errorMessage = 'Invalid date';
+ //     } else {
         this.deployment.deploymentDate = dateTime.valueOf();
         this.editDeploymentDate.emit(this.deployment);
         $('#deploymentDateChange').modal('hide');
         delete this.deployment;
         delete this.deploymentDate;
-      }
+  //    }
     }
   }
 
