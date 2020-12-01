@@ -42,6 +42,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class CopyResourceTest {
@@ -86,7 +87,7 @@ public class CopyResourceTest {
         copyResource.doCopyResource(targetResourceId, originResourceId, ForeignableOwner.getSystemOwner());
     }
 
-    @Test(expected = NotAuthorizedException.class)
+    @Test
     public void shouldThrowNotAuthorizedExceptionWhenPermissionIsDenied() throws ForeignableOwnerViolationException, AMWException {
         // given
         ResourceEntity originResourceEntity = mock(ResourceEntity.class);
@@ -96,7 +97,9 @@ public class CopyResourceTest {
         when(originResourceEntity.getResourceType()).thenReturn(resourceType);
 
         // when
-        copyResource.doCopyResource(targetResourceEntity, originResourceEntity, ForeignableOwner.AMW);
+        assertThrows(NotAuthorizedException.class, () -> {
+            copyResource.doCopyResource(targetResourceEntity, originResourceEntity, ForeignableOwner.AMW);
+        });
 
         // then
         verify(copyResourceDomainService, never()).copyFromOriginToTargetResource(originResourceEntity, targetResourceEntity, ForeignableOwner.AMW);
