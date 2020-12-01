@@ -47,7 +47,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   runtime: Relation = null;
   resourceTags: ResourceTag[] = [this.defaultResourceTag];
   selectedResourceTag: ResourceTag = this.defaultResourceTag;
-  deploymentDate: DateTimeModel = new DateTimeModel();
+  deploymentDate: DateTimeModel = null;
   appsWithVersion: AppWithVersion[] = [];
   transDeploymentParameter: DeploymentParameter = {} as DeploymentParameter;
   transDeploymentParameters: DeploymentParameter[] = [];

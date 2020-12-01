@@ -31,7 +31,6 @@
   <div>
     <div *ngIf="!showTimePickerToggle">
       <ngb-datepicker
-        [startDate]="datetime"
         name="datepicker"
         [ngModel]="datetime"
         (ngModelChange)="onDateChange($event)"

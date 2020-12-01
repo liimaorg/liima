@@ -23,8 +23,10 @@ export class DateTimeModel implements NgbDateTimeStruct {
     }
     return new DateTimeModel({
       year: m.year(),
+      // months start at 0
       month: m.month() + 1,
-      day: m.day(),
+      // date is the day of month
+      day: m.date(),
       hour: m.hour(),
       minute: m.minute(),
       second: m.second(),
@@ -43,7 +45,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
   }
 
   private toMoment(): moment.Moment {
-    return moment({ year: this.year, month: this.month - 1, day: this.day, hour: this.hour, minute: this.minute, second: this.second});;
+    return moment({ year: this.year, month: this.month - 1, date: this.day, hour: this.hour, minute: this.minute, second: this.second});;
   }
 
   public toString(format: string): string {
