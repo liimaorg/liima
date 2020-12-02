@@ -11,7 +11,7 @@ import {
   NgbTimeStruct,
   NgbPopoverConfig,
   NgbPopover,
-  NgbDatepicker,
+  NgbDateStruct,
 } from '@ng-bootstrap/ng-bootstrap';
 import {
   NG_VALUE_ACCESSOR,
@@ -40,8 +40,9 @@ export class DateTimePickerComponent
   @Input()
   dateString: string;
 
+  // moment js format
   @Input()
-  inputDatetimeFormat = 'dd.MM.yyyy HH:mm';
+  dateStringFormat = 'DD.MM.yyyy HH:mm';
   @Input()
   hourStep = 1;
   @Input()
@@ -50,16 +51,12 @@ export class DateTimePickerComponent
   secondStep = 30;
   @Input()
   seconds = false;
-
   @Input()
   disabled = false;
 
   showTimePickerToggle = false;
-
   datetime = new DateTimeModel();
-
-  @ViewChild(NgbDatepicker)
-  dp: NgbDatepicker;
+  errorMessage = "";
 
   @ViewChild(NgbPopover)
   popover: NgbPopover;
@@ -84,14 +81,11 @@ export class DateTimePickerComponent
     });
   }
 
-  writeValue(newModel: string) {
+  writeValue(newModel: DateTimeModel) {
     if (newModel) {
-      this.datetime = Object.assign(
-        this.datetime,
-        DateTimeModel.fromLocalString(newModel)
-      );
-      this.dateString = newModel;
-      this.setDateStringModel();
+      this.datetime = Object.assign(this.datetime, newModel)
+      //this.datetime = newModel;
+      this.setDateString();
     } else {
       this.datetime = new DateTimeModel();
     }
@@ -114,60 +108,47 @@ export class DateTimePickerComponent
     this.disabled = isDisabled;
   }
 
-  onInputChange($event: any) {
+  // called when user updates the datestring directly
+  onDateStringChange($event: any) {
     const value = $event.target.value;
-    const dt = DateTimeModel.fromLocalString(value);
+    const dt = DateTimeModel.fromLocalString(value, this.dateStringFormat);
+    this.errorMessage = ""
 
     if (dt) {
       this.datetime = dt;
-      this.setDateStringModel();
+      this.onChange(dt);
     } else if (value.trim() === '') {
       this.datetime = new DateTimeModel();
       this.dateString = '';
-      this.onChange(this.dateString);
+      this.onChange(this.datetime);
     } else {
-      this.onChange(value);
+      this.errorMessage = "Invalid date!"
     }
   }
 
-  onDateChange($event) {
-    if ($event.year) {
-      $event = `${$event.year}-${$event.month}-${$event.day}`;
+  onDateChange(event: NgbDateStruct) {
+    if(!event) {
+      return
     }
-
-    const date = DateTimeModel.fromLocalString($event);
-
-    if (!date) {
-      this.dateString = this.dateString;
-      return;
-    }
-
-    if (!this.datetime) {
-      this.datetime = date;
-    }
-
-    this.datetime.year = date.year;
-    this.datetime.month = date.month;
-    this.datetime.day = date.day;
-
-    this.dp.navigateTo({
-      year: this.datetime.year,
-      month: this.datetime.month,
-    });
-    this.setDateStringModel();
+    this.datetime.year = event.year;
+    this.datetime.month = event.month;
+    this.datetime.day = event.day;
+    this.setDateString();
   }
 
   onTimeChange(event: NgbTimeStruct) {
+    if(!event) {
+      return
+    }
     this.datetime.hour = event.hour;
     this.datetime.minute = event.minute;
     this.datetime.second = event.second;
-
-    this.setDateStringModel();
+    this.setDateString();
   }
 
-  setDateStringModel() {
-    this.dateString = this.datetime.toString();
-    this.onChange(this.dateString);
+  setDateString() {
+    this.dateString = this.datetime.toString(this.dateStringFormat);
+    this.onChange(this.datetime);
   }
 
   inputBlur($event) {

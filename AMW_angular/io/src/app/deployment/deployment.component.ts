@@ -19,6 +19,7 @@ import * as moment from 'moment';
 import * as $ from 'jquery'; // this needs to be here...
 import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { DATE_FORMAT } from '../core/amw-constants';
+import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 
 @Component({
   selector: 'amw-deployment',
@@ -46,7 +47,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   runtime: Relation = null;
   resourceTags: ResourceTag[] = [this.defaultResourceTag];
   selectedResourceTag: ResourceTag = this.defaultResourceTag;
-  deploymentDate: string = '';
+  deploymentDate: DateTimeModel = null;
   appsWithVersion: AppWithVersion[] = [];
   transDeploymentParameter: DeploymentParameter = {} as DeploymentParameter;
   transDeploymentParameters: DeploymentParameter[] = [];
@@ -134,7 +135,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     if (!this.selectedRelease) {
       this.selectedRelease = this.releases[0];
     }
-    console.log('selected release is ' + this.selectedRelease.release);
     this.getRelatedForRelease();
     this.goTo(this.selectedAppserver.name + '/' + this.selectedRelease.release);
   }
@@ -171,13 +171,11 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   requestDeployment() {
     this.requestOnly = true;
-    console.log('requestDeployment()');
     this.prepareDeployment();
   }
 
   createDeployment() {
     this.requestOnly = false;
-    console.log('createDeployment()');
     this.prepareDeployment();
   }
 
@@ -418,10 +416,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
           : new Date().getTime();
     }
     if (this.deploymentDate) {
-      const dateTime = moment(this.deploymentDate, DATE_FORMAT);
-      if (dateTime && dateTime.isValid()) {
-        deploymentRequest.deploymentDate = dateTime.valueOf();
-      }
+      deploymentRequest.deploymentDate = this.deploymentDate.toEpoch();
     }
     if (this.transDeploymentParameters.length > 0) {
       deploymentRequest.deploymentParameters = this.transDeploymentParameters;
@@ -487,7 +482,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   // for url params only
   private setPreselected() {
     if (this.appserverName) {
-      console.log('pre-selected server is ' + this.appserverName);
       this.selectedAppserver = _.find(this.appservers, {
         name: this.appserverName,
       });
@@ -521,7 +515,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   // for url params only
   private setRelease() {
     if (this.releaseName) {
-      console.log('pre-selected release is ' + this.releaseName);
       this.selectedRelease = this.releases.find(
         (release) => release.release === this.releaseName
       );

@@ -21,6 +21,7 @@ import * as moment from 'moment';
 import { SharedModule } from '../shared/shared.module';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { DATE_FORMAT } from '../core/amw-constants';
+import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 @Component({
   template: '',
 })
@@ -327,7 +328,7 @@ describe('DeploymentComponent (create deployment)', () => {
       id: 5,
       tagDate: 1485378084103,
     } as ResourceTag;
-    component.deploymentDate = '2017-01-02 12:00';
+    component.deploymentDate = DateTimeModel.fromLocalString('2017-01-02 12:00', DATE_FORMAT);
     component.transDeploymentParameters = [
       { key: 'atest', value: 'foo' } as DeploymentParameter,
       { key: 'btest', value: 'bar' } as DeploymentParameter,

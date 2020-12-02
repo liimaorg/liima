@@ -3,8 +3,7 @@ import { Deployment } from '../deployment/deployment';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resource/resource.service';
 import * as _ from 'lodash';
-import * as moment from 'moment';
-import { DATE_FORMAT } from '../core/amw-constants';
+import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 
 @Component({
   selector: 'amw-deployments-list',
@@ -34,11 +33,9 @@ export class DeploymentsListComponent {
 
   deployment: Deployment;
 
-  deploymentDate: number;
+  deploymentDate: DateTimeModel = new DateTimeModel();
 
   hasPermissionShakedownTest: boolean = null;
-
-  errorMessage: string = '';
 
   allSelected: boolean = false;
 
@@ -62,6 +59,7 @@ export class DeploymentsListComponent {
 
   showDateChange(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
+    this.deploymentDate = DateTimeModel.fromEpoch(this.deployment.deploymentDate);
     $('#deploymentDateChange').modal('show');
   }
 
@@ -71,7 +69,6 @@ export class DeploymentsListComponent {
       .canCreateShakedownTest(this.deployment.appServerId)
       .subscribe(
         /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
-        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () => $('#deploymentConfirmation').modal('show')
       );
   }
@@ -87,19 +84,12 @@ export class DeploymentsListComponent {
   }
 
   doDateChange() {
-    debugger;
     if (this.deployment) {
-      this.errorMessage = '';
-      const dateTime = moment(this.deploymentDate, DATE_FORMAT);
-      if (!dateTime || !dateTime.isValid()) {
-        this.errorMessage = 'Invalid date';
-      } else {
-        this.deployment.deploymentDate = dateTime.valueOf();
-        this.editDeploymentDate.emit(this.deployment);
-        $('#deploymentDateChange').modal('hide');
-        delete this.deployment;
-        delete this.deploymentDate;
-      }
+      this.deployment.deploymentDate = this.deploymentDate.toEpoch();
+      this.editDeploymentDate.emit(this.deployment);
+      $('#deploymentDateChange').modal('hide');
+      delete this.deployment;
+      delete this.deploymentDate;
     }
   }
 

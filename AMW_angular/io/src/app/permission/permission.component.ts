@@ -191,7 +191,6 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
   createRestrictions(restrictionsCreation: RestrictionsCreation) {
     this.clearMessages();
     this.isLoading = true;
-    console.log('createRestrictions ' + JSON.stringify(restrictionsCreation));
     this.permissionService
       .createRestrictions(restrictionsCreation, this.delegationMode)
       .subscribe(
