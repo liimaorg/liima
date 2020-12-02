@@ -24,6 +24,7 @@ import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceGroupEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -31,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -40,9 +42,8 @@ import org.mockito.MockitoAnnotations;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.*;
 
 public class CopyResourceTest {
 
@@ -84,11 +85,28 @@ public class CopyResourceTest {
 
         // when // then
         copyResource.doCopyResource(targetResourceId, originResourceId, ForeignableOwner.getSystemOwner());
-
     }
 
     @Test
-    public void shouldInvokePermissionSeviceAndCopyResourceDomainServiceWithCorrectParams() throws Exception {
+    public void shouldThrowNotAuthorizedExceptionWhenPermissionIsDenied() throws ForeignableOwnerViolationException, AMWException {
+        // given
+        ResourceEntity originResourceEntity = mock(ResourceEntity.class);
+        ResourceEntity targetResourceEntity = mock(ResourceEntity.class);
+        ResourceTypeEntity resourceType = mock(ResourceTypeEntity.class);
+        when(targetResourceEntity.getResourceType()).thenReturn(resourceType);
+        when(originResourceEntity.getResourceType()).thenReturn(resourceType);
+
+        // when
+        assertThrows(NotAuthorizedException.class, () -> {
+            copyResource.doCopyResource(targetResourceEntity, originResourceEntity, ForeignableOwner.AMW);
+        });
+
+        // then
+        verify(copyResourceDomainService, never()).copyFromOriginToTargetResource(originResourceEntity, targetResourceEntity, ForeignableOwner.AMW);
+    }
+
+    @Test
+    public void shouldInvokePermissionServiceAndCopyResourceDomainServiceWithCorrectParams() throws Exception {
 
         //given
         String targetResourceName = "target";
