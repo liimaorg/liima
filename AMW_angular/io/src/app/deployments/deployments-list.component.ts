@@ -39,6 +39,9 @@ export class DeploymentsListComponent {
 
   allSelected: boolean = false;
 
+  // TODO: show this error somewhere?
+  errorMessage = ""
+
   failureReason: { [key: string]: string } = {
     PRE_DEPLOYMENT_GENERATION: 'pre deployment generation failed',
     DEPLOYMENT_GENERATION: 'deployment generation failed',
@@ -69,6 +72,7 @@ export class DeploymentsListComponent {
       .canCreateShakedownTest(this.deployment.appServerId)
       .subscribe(
         /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
+        /* error path */ (e) => (this.errorMessage = e),
         /* onComplete */ () => $('#deploymentConfirmation').modal('show')
       );
   }
