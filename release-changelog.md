@@ -1,10 +1,13 @@
+# v1.17.22
+* Fix copyFrom in REST: [#584](https://github.com/liimaorg/liima/pull/584)
+
 # v1.17.21
-* fix confirm modal not showing [#583](https://github.com/liimaorg/liima/pull/583)
+* fix confirm modal not showing: [#583](https://github.com/liimaorg/liima/pull/583)
 
 # v1.17.20
 * Deployment datetime picker fixes: [#580](https://github.com/liimaorg/liima/issues/580)
-* Rest copyFrom can now be used on all resources [#522](https://github.com/liimaorg/liima/issues/522)
-* Properties set via REST are now visible in the audit view [#549](https://github.com/liimaorg/liima/issues/549)
+* Rest copyFrom can now be used on all resources: [#522](https://github.com/liimaorg/liima/issues/522)
+* Properties set via REST are now visible in the audit view: [#549](https://github.com/liimaorg/liima/issues/549)
 
 # v1.17.19
 Same as v1.17.20
