@@ -413,7 +413,7 @@ public class ResourcesRestTest {
 
         CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
         when(copyResourceResult.isSuccess()).thenReturn(false);
-        when(copyResourceMock.doCopyResource(targetResourceEntity, originResourceEntity, ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
+        when(copyResourceMock.doCopyResource(targetResourceEntity.getId(), originResourceEntity.getId(), ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
 
         // when
         final Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
@@ -453,7 +453,7 @@ public class ResourcesRestTest {
 
         when(resourceLocatorMock.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName)).thenReturn(target);
         when(resourceLocatorMock.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName)).thenReturn(origin);
-        when(copyResourceMock.doCopyResource(target, origin, ForeignableOwner.getSystemOwner())).thenThrow(new AMWException("Target and origin Resource are not of the same ResourceType"));
+        when(copyResourceMock.doCopyResource(target.getId(), origin.getId(), ForeignableOwner.getSystemOwner())).thenThrow(new AMWException("Target and origin Resource are not of the same ResourceType"));
 
         // when
         Response response = rest.copyFromResource(targetResourceGroupName, targetReleaseName, originResourceGroupName, originReleaseName);
@@ -493,7 +493,7 @@ public class ResourcesRestTest {
         when(resourceLocatorMock.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName)).thenReturn(origin);
         CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
         when(copyResourceResult.isSuccess()).thenReturn(true);
-        when(copyResourceMock.doCopyResource(target, origin, ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
+        when(copyResourceMock.doCopyResource(target.getId(), origin.getId(), ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
 
         // when
         Response response = rest.copyFromResource(targetResourceGroupName, targetReleaseName, originResourceGroupName, originReleaseName);

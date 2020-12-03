@@ -636,7 +636,9 @@ public class ResourcesRest {
         }
 
         try {
-            CopyResourceResult copyResourceResult = copyResource.doCopyResource(targetResourceEntity, originResourceEntity, ForeignableOwner.getSystemOwner());
+            // don't pass the entity directly or elese an exception is thrown: 
+            // failed to lazily initialize a collection of role: ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity.consumedMasterRelations, could not initialize proxy - no Session
+            CopyResourceResult copyResourceResult = copyResource.doCopyResource(targetResourceEntity.getId(), originResourceEntity.getId(), ForeignableOwner.getSystemOwner());
             if (!copyResourceResult.isSuccess()) {
                 return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from " + originResourceEntity.getName() + " failed")).build();
             }
