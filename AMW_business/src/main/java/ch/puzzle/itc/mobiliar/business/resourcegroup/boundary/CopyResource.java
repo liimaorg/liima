@@ -124,8 +124,7 @@ public class CopyResource {
 	 */
 	public CopyResourceResult doCopyResource(ResourceEntity targetResourceEntity, ResourceEntity originResourceEntity, ForeignableOwner actingOwner)
 			throws ForeignableOwnerViolationException, AMWException {
-
-		if (!originResourceEntity.getResourceType().equals(targetResourceEntity.getResourceType())) {
+		if (!originResourceEntity.getResourceType().getId().equals(targetResourceEntity.getResourceType().getId())) {
 			throw new AMWException("Target and origin Resource are not of the same ResourceType");
 		}
 
