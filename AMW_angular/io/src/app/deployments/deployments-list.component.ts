@@ -102,17 +102,14 @@ export class DeploymentsListComponent {
     });
   }
 
-  showCancel(deploymentId: number) {
+  showCancel(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    $('#deploymentCancelation').modal('show');
-  }
-
-  doCancel() {
-    if (this.deployment) {
+    this.modalService.open(content).result.then((result) => {
       this.doCancelDeployment.emit(this.deployment);
-      $('#deploymentCancelation').modal('hide');
       delete this.deployment;
-    }
+    }, (reason) => {
+      delete this.deployment;
+    });
   }
 
   reSort(col: string) {

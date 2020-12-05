@@ -176,7 +176,7 @@
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.cancelPossible">
-            <span (click)="showCancel(deployment.id)" class="cursor-pointer">
+            <span (click)="showCancel(deploymentCancelation, deployment.id)" class="cursor-pointer">
               <app-icon icon="slash-circle"></app-icon>
               <span class="ml-1">cancel</span>
             </span>
@@ -356,35 +356,23 @@
   </div>
 </ng-template>
 
-<div id="deploymentCancelation" class="modal">
-  <ng-container *ngIf="deployment">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h6 class="modal-title">
-            Cancel deployment #{{ deployment.id }} for app server
-            {{ deployment.appServerName }}
-          </h6>
-          <button
-            type="button"
-            class="close"
-            data-dismiss="modal"
-            aria-hidden="true"
-          >
-            &times;
-          </button>
-        </div>
-        <div class="modal-body">
-          <p class="text-warning-2">
-            <small>Are you sure that you want to cancel this deployment?</small>
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" (click)="doCancel()">
-            Confirm
-          </button>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-</div>
+<ng-template #deploymentCancelation let-modal>
+  <div class="modal-header">
+    <h6 class="modal-title">
+      Cancel deployment #{{ deployment.id }} for app server {{ deployment.appServerName }}
+    </h6>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p class="text-warning-2">
+      Are you sure that you want to cancel this deployment?
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" ngbAutofocus (click)="modal.close('Confirm click')">
+      Confirm
+    </button>
+  </div>
+</ng-template>
