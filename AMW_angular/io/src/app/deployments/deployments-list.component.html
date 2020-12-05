@@ -161,7 +161,7 @@
           <ng-container *ngIf="deployment.actions.confirmPossible">
             <span
               class="text-success cursor-pointer"
-              (click)="showConfirm(deployment.id)"
+              (click)="showConfirm(deploymentConfirmation, deployment.id)"
             >
               <app-icon icon="check-circle"></app-icon>
               <span class="ml-1">confirm</span>
@@ -339,75 +339,52 @@
   </ng-container>
 </div>
 
-<div id="deploymentConfirmation" class="modal">
-  <ng-container *ngIf="deployment">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h6 class="modal-title">
-            Confirm deployment #{{ deployment.id }} for app server
-            {{ deployment.appServerName }}
-          </h6>
-          <button
-            type="button"
-            class="close"
-            data-dismiss="modal"
-            aria-hidden="true"
-          >
-            &times;
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="modal-body">
-            <div>
-              <label>
-                <input
-                  type="checkbox"
-                  [ngModel]="deployment.sendEmailWhenDeployed"
-                />
-                send an email when deployed
-              </label>
-            </div>
+<ng-template #deploymentConfirmation let-modal>
+  <div class="modal-header">
+    <h6 class="modal-title">
+      Confirm deployment #{{ deployment.id }} for app server
+      {{ deployment.appServerName }}
+    </h6>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="modal-body">
+      <div>
+        <label>
+          <input type="checkbox" [ngModel]="deployment.sendEmailWhenDeployed" />
+          send an email when deployed
+        </label>
+      </div>
 
-            <div class="checkbox">
-              <label>
-                <input
-                  type="checkbox"
-                  [ngModel]="deployment.simulateBeforeDeployment"
-                />
-                simulate before deployment
-              </label>
-            </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" [ngModel]="deployment.simulateBeforeDeployment" />
+          simulate before deployment
+        </label>
+      </div>
 
-            <div class="checkbox" *ngIf="hasPermissionShakedownTest">
-              <label>
-                <input
-                  type="checkbox"
-                  [(ngModel)]="deployment.shakedownTestsWhenDeployed"
-                />
-                execute shakedown tests when deployed
-              </label>
-            </div>
-            <div class="checkbox" *ngIf="deployment.shakedownTestsWhenDeployed">
-              <label>
-                <input
-                  type="checkbox"
-                  [(ngModel)]="deployment.neighbourhoodTest"
-                />
-                test neighbourhood
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" (click)="doConfirm()">
-            Confirm
-          </button>
-        </div>
+      <div class="checkbox" *ngIf="hasPermissionShakedownTest">
+        <label>
+          <input type="checkbox" [(ngModel)]="deployment.shakedownTestsWhenDeployed" />
+          execute shakedown tests when deployed
+        </label>
+      </div>
+      <div class="checkbox" *ngIf="deployment.shakedownTestsWhenDeployed">
+        <label>
+          <input type="checkbox" [(ngModel)]="deployment.neighbourhoodTest" />
+          test neighbourhood
+        </label>
       </div>
     </div>
-  </ng-container>
-</div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" ngbAutofocus (click)="modal.close('Confirm click')">
+      Confirm
+    </button>
+  </div>
+</ng-template>
 
 <div id="deploymentRejection" class="modal">
   <ng-container *ngIf="deployment">

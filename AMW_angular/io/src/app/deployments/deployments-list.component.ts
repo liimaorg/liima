@@ -4,6 +4,7 @@ import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resource/resource.service';
 import * as _ from 'lodash';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'amw-deployments-list',
@@ -53,7 +54,7 @@ export class DeploymentsListComponent {
     RUNTIME_ERROR: 'runtime error',
   };
 
-  constructor(private resourceService: ResourceService) {}
+  constructor(private resourceService: ResourceService, private modalService: NgbModal) {}
 
   showDetails(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
@@ -66,14 +67,20 @@ export class DeploymentsListComponent {
     $('#deploymentDateChange').modal('show');
   }
 
-  showConfirm(deploymentId: number) {
+  showConfirm(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.resourceService
       .canCreateShakedownTest(this.deployment.appServerId)
       .subscribe(
-        /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
-        /* error path */ (e) => (this.errorMessage = e),
-        /* onComplete */ () => $('#deploymentConfirmation').modal('show')
+        /* happy path */(r) => (this.hasPermissionShakedownTest = r),
+        /* error path */(e) => (this.errorMessage = e),
+        /* onComplete */() => (
+          this.modalService.open(content).result.then((result) => {
+            this.doConfirmDeployment.emit(this.deployment);
+            delete this.deployment;
+          }, (reason) => {
+            delete this.deployment;
+          }))
       );
   }
 
@@ -109,14 +116,6 @@ export class DeploymentsListComponent {
     if (this.deployment) {
       this.doCancelDeployment.emit(this.deployment);
       $('#deploymentCancelation').modal('hide');
-      delete this.deployment;
-    }
-  }
-
-  doConfirm() {
-    if (this.deployment) {
-      this.doConfirmDeployment.emit(this.deployment);
-      $('#deploymentConfirmation').modal('hide');
       delete this.deployment;
     }
   }
