@@ -129,7 +129,7 @@
             ></app-icon>
             <span
               class="pointer"
-              (click)="showDateChange(deployment.id)"
+              (click)="showDateChange(deploymentDateChange, deployment.id)"
               title="change the deployment date"
             >
               <span
@@ -169,10 +169,7 @@
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.rejectPossible">
-            <span
-              class="text-danger cursor-pointer"
-              (click)="showReject(deployment.id)"
-            >
+            <span class="text-danger cursor-pointer" (click)="showReject(deploymentRejection, deployment.id)">
               <app-icon icon="x-circle"></app-icon>
               <span class="ml-1">reject</span>
             </span>
@@ -268,47 +265,28 @@
   </div>
 </ng-template>
 
-<div id="deploymentDateChange" class="modal">
-  <ng-container *ngIf="deployment">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h6 class="modal-title">
-            Change deployment date of deployment #{{ deployment.id }} for app
-            server {{ deployment.appServerName }}
-          </h6>
-          <button
-            type="button"
-            class="close"
-            data-dismiss="modal"
-            aria-hidden="true"
-          >
-            &times;
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="input-group date">
-            <app-date-time-picker
-              [(ngModel)]="deploymentDate"
-              name="dateDeployment"
-              id="datetimepicker"
-              class="w-100"
-            ></app-date-time-picker>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-primary"
-            (click)="doDateChange()"
-          >
-            Save
-          </button>
-        </div>
-      </div>
+<ng-template #deploymentDateChange let-modal>
+  <div class="modal-header">
+    <h6 class="modal-title">
+      Change deployment date of deployment #{{ deployment.id }} for app
+      server {{ deployment.appServerName }}
+    </h6>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="input-group date">
+      <app-date-time-picker [(ngModel)]="deploymentDate" name="dateDeployment" id="datetimepicker" class="w-100">
+      </app-date-time-picker>
     </div>
-  </ng-container>
-</div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" ngbAutofocus (click)="modal.close('Confirm click')">
+      Save
+    </button>
+  </div>
+</ng-template>
 
 <ng-template #deploymentConfirmation let-modal>
   <div class="modal-header">
@@ -357,38 +335,26 @@
   </div>
 </ng-template>
 
-<div id="deploymentRejection" class="modal">
-  <ng-container *ngIf="deployment">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h6 class="modal-title">
-            Reject deployment #{{ deployment.id }} for app server
-            {{ deployment.appServerName }}
-          </h6>
-          <button
-            type="button"
-            class="close"
-            data-dismiss="modal"
-            aria-hidden="true"
-          >
-            &times;
-          </button>
-        </div>
-        <div class="modal-body">
-          <p class="text-warning-2">
-            <small>Are you sure that you want to reject this deployment?</small>
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" (click)="doReject()">
-            Confirm
-          </button>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-</div>
+<ng-template #deploymentRejection let-modal>
+  <div class="modal-header">
+    <h6 class="modal-title">
+      Reject deployment #{{ deployment.id }} for app server {{ deployment.appServerName }}
+    </h6>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p class="text-warning-2">
+      Are you sure that you want to reject this deployment?
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" ngbAutofocus (click)="modal.close('Confirm click')">
+      Confirm
+    </button>
+  </div>
+</ng-template>
 
 <div id="deploymentCancelation" class="modal">
   <ng-container *ngIf="deployment">

@@ -61,10 +61,18 @@ export class DeploymentsListComponent {
     this.modalService.open(content);
   }
 
-  showDateChange(deploymentId: number) {
+  showDateChange(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.deploymentDate = DateTimeModel.fromEpoch(this.deployment.deploymentDate);
-    $('#deploymentDateChange').modal('show');
+    this.modalService.open(content).result.then((result) => {
+      this.deployment.deploymentDate = this.deploymentDate.toEpoch();
+      this.editDeploymentDate.emit(this.deployment);
+      delete this.deployment;
+      delete this.deploymentDate;
+    }, (reason) => {
+      delete this.deployment;
+      delete this.deploymentDate;
+    });
   }
 
   showConfirm(content, deploymentId: number) {
@@ -84,32 +92,19 @@ export class DeploymentsListComponent {
       );
   }
 
-  showReject(deploymentId: number) {
+  showReject(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    $('#deploymentRejection').modal('show');
+    this.modalService.open(content).result.then((result) => {
+      this.doRejectDeployment.emit(this.deployment);
+      delete this.deployment;
+    }, (reason) => {
+      delete this.deployment;
+    });
   }
 
   showCancel(deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     $('#deploymentCancelation').modal('show');
-  }
-
-  doDateChange() {
-    if (this.deployment) {
-      this.deployment.deploymentDate = this.deploymentDate.toEpoch();
-      this.editDeploymentDate.emit(this.deployment);
-      $('#deploymentDateChange').modal('hide');
-      delete this.deployment;
-      delete this.deploymentDate;
-    }
-  }
-
-  doReject() {
-    if (this.deployment) {
-      this.doRejectDeployment.emit(this.deployment);
-      $('#deploymentRejection').modal('hide');
-      delete this.deployment;
-    }
   }
 
   doCancel() {
