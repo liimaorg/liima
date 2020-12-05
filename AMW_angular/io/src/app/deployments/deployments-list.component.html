@@ -88,7 +88,7 @@
             class="cursor-pointer"
             icon="info-circle"
             title="Show details about this deployment"
-            (click)="showDetails(deployment.id)"
+            (click)="showDetails(deploymentDetails, deployment.id)"
           ></app-icon>
           <span class="state">{{
             deployment.reason
@@ -208,94 +208,65 @@
   </table>
 </div>
 
-<div id="deploymentDetails" class="modal">
-  <ng-container *ngIf="deployment">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h6 class="modal-title">
-            Details for deployment #{{ deployment.id }} [tracking id:
-            {{ deployment.trackingId }}] for app server:
-            {{ deployment.appServerName }}
-          </h6>
-          <button
-            type="button"
-            class="close"
-            data-dismiss="modal"
-            aria-hidden="true"
-          >
-            &times;
-          </button>
-        </div>
-        <div class="modal-body">
-          <h6>{{ deployment.state }}</h6>
-          <p>
-            requested by: {{ deployment.requestUser }}<br />
-            created at:
-            {{ deployment.deploymentJobCreationDate | date: 'dd.MM.y HH:mm' }}
-          </p>
-          <ng-container
-            *ngIf="deployment.confirmUser && deployment.state !== 'rejected'"
-          >
-            <p>
-              confirmed by: {{ deployment.confirmUser }}<br />
-              confirmed at:
-              {{
-                deployment.deploymentConfirmationDate | date: 'dd.MM.y HH:mm'
-              }}
-            </p>
-          </ng-container>
-          <ng-container
-            *ngIf="deployment.confirmUser && deployment.state === 'rejected'"
-          >
-            <p>
-              rejected by: {{ deployment.confirmUser }}<br />
-              rejected at:
-              {{
-                deployment.deploymentConfirmationDate | date: 'dd.MM.y HH:mm'
-              }}
-            </p>
-          </ng-container>
-          <ng-container *ngIf="deployment.deploymentDelayed">
-            <h6>deployment job delayed</h6>
-            <p>
-              planed deployment date:
-              {{ deployment.deploymentDate | date: 'dd.MM.y HH:mm' }}
-            </p>
-          </ng-container>
-          <ng-container *ngIf="deployment.cancelUser">
-            <h6>deployment job canceled</h6>
-            <p>
-              canceled by: {{ deployment.cancelUser }}<br />
-              canceled at:
-              {{ deployment.deploymentCancelDate | date: 'dd.MM.y HH:mm' }}
-            </p>
-          </ng-container>
-          <ng-container *ngIf="deployment.deploymentParameters.length > 0">
-            <h6>deployment parameter</h6>
-            <p>
-              <ng-container
-                *ngFor="let param of deployment.deploymentParameters"
-              >
-                {{ param.key }}: {{ param.value }}<br />
-              </ng-container>
-            </p>
-          </ng-container>
-          <ng-container *ngIf="deployment.reason">
-            <h6>failure reason</h6>
-            <p>{{ failureReason[deployment.reason] }}</p>
-          </ng-container>
-          <ng-container *ngIf="deployment.statusMessage">
-            <h6>state message</h6>
-            <pre
-              class="bg-light border p-1 rounded pre-scrollable"
-            ><code>{{ deployment.statusMessage }}</code></pre>
-          </ng-container>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-</div>
+<ng-template #deploymentDetails let-modal>
+  <div class="modal-header">
+    <h6 class="modal-title">
+      Details for deployment #{{ deployment.id }} [tracking id:
+      {{ deployment.trackingId }}] for app server: {{ deployment.appServerName }}
+    </h6>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <h6>{{ deployment.state }}</h6>
+    <p>
+      requested by: {{ deployment.requestUser }}<br />
+      created at: {{ deployment.deploymentJobCreationDate | date: 'dd.MM.y HH:mm' }}
+    </p>
+    <ng-container *ngIf="deployment.confirmUser && deployment.state !== 'rejected'">
+      <p>
+        confirmed by: {{ deployment.confirmUser }}<br />
+        confirmed at: {{ deployment.deploymentConfirmationDate | date: 'dd.MM.y HH:mm' }}
+      </p>
+    </ng-container>
+    <ng-container *ngIf="deployment.confirmUser && deployment.state === 'rejected'">
+      <p>
+        rejected by: {{ deployment.confirmUser }}<br />
+        rejected at: {{ deployment.deploymentConfirmationDate | date: 'dd.MM.y HH:mm' }}
+      </p>
+    </ng-container>
+    <ng-container *ngIf="deployment.deploymentDelayed">
+      <h6>deployment job delayed</h6>
+      <p>
+        planed deployment date: {{ deployment.deploymentDate | date: 'dd.MM.y HH:mm' }}
+      </p>
+    </ng-container>
+    <ng-container *ngIf="deployment.cancelUser">
+      <h6>deployment job canceled</h6>
+      <p>
+        canceled by: {{ deployment.cancelUser }}<br />
+        canceled at: {{ deployment.deploymentCancelDate | date: 'dd.MM.y HH:mm' }}
+      </p>
+    </ng-container>
+    <ng-container *ngIf="deployment.deploymentParameters.length > 0">
+      <h6>deployment parameter</h6>
+      <p>
+        <ng-container *ngFor="let param of deployment.deploymentParameters">
+          {{ param.key }}: {{ param.value }}<br />
+        </ng-container>
+      </p>
+    </ng-container>
+    <ng-container *ngIf="deployment.reason">
+      <h6>failure reason</h6>
+      <p>{{ failureReason[deployment.reason] }}</p>
+    </ng-container>
+    <ng-container *ngIf="deployment.statusMessage">
+      <h6>state message</h6>
+      <pre class="bg-light border p-1 rounded pre-scrollable"><code>{{ deployment.statusMessage }}</code></pre>
+    </ng-container>
+  </div>
+</ng-template>
 
 <div id="deploymentDateChange" class="modal">
   <ng-container *ngIf="deployment">

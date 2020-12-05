@@ -56,9 +56,9 @@ export class DeploymentsListComponent {
 
   constructor(private resourceService: ResourceService, private modalService: NgbModal) {}
 
-  showDetails(deploymentId: number) {
+  showDetails(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    $('#deploymentDetails').modal('show');
+    this.modalService.open(content);
   }
 
   showDateChange(deploymentId: number) {
