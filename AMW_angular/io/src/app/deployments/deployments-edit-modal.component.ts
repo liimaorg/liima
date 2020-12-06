@@ -24,6 +24,7 @@ export class DeploymentsEditModalComponent {
 
   constructor(public activeModal: NgbActiveModal) {
     this.confirmationAttributes = {} as Deployment;
+    this.activeModal = activeModal;
   }
 
   doEdit() {

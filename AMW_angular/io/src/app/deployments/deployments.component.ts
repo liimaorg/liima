@@ -14,6 +14,7 @@ import { DeploymentService } from '../deployment/deployment.service';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
+import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 
 declare var $: any;
 
@@ -170,7 +171,7 @@ export class DeploymentsComponent implements OnInit {
           this.filtersForBackend.push({
             name: filter.name,
             comp: filter.comp,
-            val: filter.val.toEpoch().toString(),
+            val: filter.val.toEpoch().toString()
           } as DeploymentFilter);
         } else {
           this.filtersForBackend.push({
@@ -544,6 +545,7 @@ export class DeploymentsComponent implements OnInit {
           filter.type = this.filterTypes[i].type;
           filter.compOptions = this.comparatorOptionsForType(filter.type);
           filter.comp = !filter.comp ? this.defaultComparator : filter.comp;
+          this.parseDateTime(filter);
           this.setValueOptionsForFilter(filter);
           this.filters.push(filter);
         } else {
@@ -553,6 +555,13 @@ export class DeploymentsComponent implements OnInit {
     }
     if (this.autoload) {
       this.applyFilters();
+    }
+  }
+
+  // parse string from json back to DateTimeModel
+  private parseDateTime(filter: DeploymentFilter) {
+    if (filter.type === 'DateType') {
+      filter.val = DateTimeModel.fromLocalString(filter.val);
     }
   }
 

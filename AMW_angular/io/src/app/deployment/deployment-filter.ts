@@ -1,4 +1,3 @@
-import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { ComparatorFilterOption } from './comparator-filter-option';
 
 export interface DeploymentFilter {

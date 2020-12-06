@@ -20,7 +20,6 @@ import { EnvironmentService } from './environment.service';
 import * as moment from 'moment';
 import { SharedModule } from '../shared/shared.module';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
-import { DATE_FORMAT } from '../core/amw-constants';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 @Component({
   template: '',
@@ -328,7 +327,7 @@ describe('DeploymentComponent (create deployment)', () => {
       id: 5,
       tagDate: 1485378084103,
     } as ResourceTag;
-    component.deploymentDate = DateTimeModel.fromLocalString('2017-01-02 12:00', DATE_FORMAT);
+    component.deploymentDate = DateTimeModel.fromLocalString('02.01.2017 12:00');
     component.transDeploymentParameters = [
       { key: 'atest', value: 'foo' } as DeploymentParameter,
       { key: 'btest', value: 'bar' } as DeploymentParameter,
@@ -344,7 +343,7 @@ describe('DeploymentComponent (create deployment)', () => {
       requestOnly: true,
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,
-      deploymentDate: moment('2017-01-02 12:00', DATE_FORMAT).valueOf(),
+      deploymentDate: moment('02.01.2017 12:00').valueOf(),
       deploymentParameters: component.transDeploymentParameters,
     } as DeploymentRequest;
     spyOn(deploymentService, 'createDeployment').and.returnValue(

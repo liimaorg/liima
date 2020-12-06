@@ -6,6 +6,7 @@ import {
   ViewChild,
   AfterViewInit,
   Injector,
+  Output,
 } from '@angular/core';
 import {
   NgbTimeStruct,
@@ -21,6 +22,7 @@ import {
 import { DatePipe } from '@angular/common';
 import { DateTimeModel } from './date-time.model';
 import { noop } from 'rxjs';
+import { DATE_FORMAT } from 'src/app/core/amw-constants';
 
 @Component({
   selector: 'app-date-time-picker',
@@ -37,12 +39,9 @@ import { noop } from 'rxjs';
 })
 export class DateTimePickerComponent
   implements ControlValueAccessor, OnInit, AfterViewInit {
-  @Input()
-  dateString: string;
-
   // moment js format
   @Input()
-  dateStringFormat = 'DD.MM.yyyy HH:mm';
+  dateStringFormat = DATE_FORMAT;
   @Input()
   hourStep = 1;
   @Input()
@@ -53,6 +52,8 @@ export class DateTimePickerComponent
   seconds = false;
   @Input()
   disabled = false;
+
+  dateString = "";
 
   showTimePickerToggle = false;
   datetime = new DateTimeModel();
