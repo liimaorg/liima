@@ -12,7 +12,6 @@ import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentService } from '../deployment/deployment.service';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
-import { DATE_FORMAT } from '../core/amw-constants';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 
@@ -165,14 +164,13 @@ export class DeploymentsComponent implements OnInit {
           val: filter.val,
         } as DeploymentFilter);
         if (filter.type === 'DateType') {
-          const dateTime = moment(filter.val, DATE_FORMAT);
-          if (!dateTime || !dateTime.isValid()) {
+          if (!filter.val) {
             this.errorMessage = 'Invalid date';
           }
           this.filtersForBackend.push({
             name: filter.name,
             comp: filter.comp,
-            val: dateTime.valueOf().toString(),
+            val: filter.val.toEpoch().toString(),
           } as DeploymentFilter);
         } else {
           this.filtersForBackend.push({
