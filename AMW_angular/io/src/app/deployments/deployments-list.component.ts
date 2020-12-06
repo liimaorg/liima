@@ -67,10 +67,8 @@ export class DeploymentsListComponent {
     this.modalService.open(content).result.then((result) => {
       this.deployment.deploymentDate = this.deploymentDate.toEpoch();
       this.editDeploymentDate.emit(this.deployment);
-      delete this.deployment;
       delete this.deploymentDate;
     }, (reason) => {
-      delete this.deployment;
       delete this.deploymentDate;
     });
   }
@@ -85,10 +83,7 @@ export class DeploymentsListComponent {
         /* onComplete */() => (
           this.modalService.open(content).result.then((result) => {
             this.doConfirmDeployment.emit(this.deployment);
-            delete this.deployment;
-          }, (reason) => {
-            delete this.deployment;
-          }))
+          }, (reason) => { }))
       );
   }
 
@@ -96,20 +91,14 @@ export class DeploymentsListComponent {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.modalService.open(content).result.then((result) => {
       this.doRejectDeployment.emit(this.deployment);
-      delete this.deployment;
-    }, (reason) => {
-      delete this.deployment;
-    });
+    }, (reason) => { });
   }
 
   showCancel(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.modalService.open(content).result.then((result) => {
       this.doCancelDeployment.emit(this.deployment);
-      delete this.deployment;
-    }, (reason) => {
-      delete this.deployment;
-    });
+    }, (reason) => { });
   }
 
   reSort(col: string) {

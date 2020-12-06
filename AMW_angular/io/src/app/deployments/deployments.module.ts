@@ -12,6 +12,7 @@ import { DeploymentContainerComponent } from './deployment-container/deployment-
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { DeploymentLogsComponent } from './logs/deployment-logs.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   imports: [
@@ -29,6 +30,7 @@ import { DeploymentLogsComponent } from './logs/deployment-logs.component';
     DeploymentLogsComponent,
     DeploymentContainerComponent,
   ],
-  providers: [DeploymentService, EnvironmentService],
+  providers: [DeploymentService, EnvironmentService, NgbActiveModal],
+  entryComponents: [DeploymentsEditModalComponent]
 })
 export class DeploymentsModule {}

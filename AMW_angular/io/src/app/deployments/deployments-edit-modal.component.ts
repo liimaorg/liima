@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
-import * as moment from 'moment';
-import { DATE_FORMAT } from '../core/amw-constants';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 
 @Component({
   selector: 'amw-deployments-edit-modal',
@@ -9,28 +9,20 @@ import { DATE_FORMAT } from '../core/amw-constants';
 })
 export class DeploymentsEditModalComponent {
   @Input() deployments: Deployment[] = [];
-  @Input() editActions: string[];
   @Input() hasPermissionShakedownTest: boolean;
 
   @Output() errorMessage: EventEmitter<string> = new EventEmitter<string>();
-  @Output() doConfirmDeployment: EventEmitter<Deployment> = new EventEmitter<
-    Deployment
-  >();
-  @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<
-    Deployment
-  >();
-  @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<
-    Deployment
-  >();
-  @Output() doEditDeploymentDate: EventEmitter<Deployment> = new EventEmitter<
-    Deployment
-  >();
+  @Output() doConfirmDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
+  @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
+  @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
+  @Output() doEditDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
 
   confirmationAttributes: Deployment;
-  deploymentDate: string; // for deployment date change in during confirmation (format 'YYYY-MM-DD HH:mm')
+  deploymentDate: DateTimeModel;
   selectedEditAction: string;
+  editActions: string[] = ['Change date', 'Confirm', 'Reject', 'Cancel'];
 
-  constructor() {
+  constructor(public activeModal: NgbActiveModal) {
     this.confirmationAttributes = {} as Deployment;
   }
 
@@ -57,17 +49,13 @@ export class DeploymentsEditModalComponent {
         break;
     }
     this.clear();
-    this.hideModal();
-  }
-
-  hideModal() {
-    $('#deploymentsEdit').modal('hide');
+    this.activeModal.close('Close click')
   }
 
   private clear() {
     this.confirmationAttributes = {} as Deployment;
     this.selectedEditAction = '';
-    this.deploymentDate = '';
+    delete this.deploymentDate;
   }
 
   private confirmSelectedDeployments() {
@@ -94,12 +82,11 @@ export class DeploymentsEditModalComponent {
   }
 
   private editDeploymentDate(emit: boolean) {
-    const dateTime = moment(this.deploymentDate, DATE_FORMAT);
-    if (!dateTime || !dateTime.isValid()) {
+    if (!this.deploymentDate) {
       this.errorMessage.emit('Invalid date');
     } else {
       for (const deployment of this.deployments) {
-        deployment.deploymentDate = dateTime.valueOf();
+        deployment.deploymentDate = this.deploymentDate.toEpoch();
         if (emit) {
           this.doEditDeploymentDate.emit(deployment);
         }

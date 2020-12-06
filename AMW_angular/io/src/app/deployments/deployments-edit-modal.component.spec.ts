@@ -11,7 +11,6 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
 
   it('should log unknown edit actions on doEdit', () => {
     // given
-    component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
     component.selectedEditAction = 'test';
     component.deployments = [{ id: 1, selected: true } as Deployment];
     spyOn(console, 'error');
@@ -33,7 +32,6 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
       DATE_FORMAT
     ).valueOf();
 
-    component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
     component.deploymentDate = newDeploymentDate;
     component.selectedEditAction = 'Confirm';
     component.deployments = [
@@ -58,7 +56,6 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
     // given
     const newDeploymentDate: string = '30.11.2017 09:19';
 
-    component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
     component.deploymentDate = newDeploymentDate;
     component.selectedEditAction = 'Confirm';
     component.deployments = [

@@ -13,6 +13,8 @@ import { Deployment } from '../deployment/deployment';
 import { DeploymentService } from '../deployment/deployment.service';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { DATE_FORMAT } from '../core/amw-constants';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 
 declare var $: any;
 
@@ -40,7 +42,6 @@ export class DeploymentsComponent implements OnInit {
   csvSeparator: string = '';
 
   // available edit actions
-  editActions: string[] = ['Change date', 'Confirm', 'Reject', 'Cancel'];
   hasPermissionShakedownTest: boolean = false;
   deploymentDate: number; // for deployment date change
 
@@ -87,7 +88,8 @@ export class DeploymentsComponent implements OnInit {
     private location: Location,
     private deploymentService: DeploymentService,
     private resourceService: ResourceService,
-    public navigationStore: NavigationStoreService
+    public navigationStore: NavigationStoreService,
+    private modalService: NgbModal
   ) {
     this.navigationStore.setVisible(false);
   }
@@ -211,20 +213,30 @@ export class DeploymentsComponent implements OnInit {
   }
 
   showEdit() {
-    if (this.editableDeployments()) {
-      // get shakeDownTestPermission for first element
-      const indexOfFirstSelectedElem = _.findIndex(this.deployments, {
-        selected: true,
-      });
-      const firstDeployment = this.deployments[indexOfFirstSelectedElem];
-      this.resourceService
-        .canCreateShakedownTest(firstDeployment.appServerId)
-        .subscribe(
-          /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
-          /* error path */ (e) => (this.errorMessage = e),
-          /* onComplete */ () => $('#deploymentsEdit').modal('show')
-        );
+    if (!this.editableDeployments()) {
+      return;
     }
+    // get shakeDownTestPermission for first element
+    const indexOfFirstSelectedElem = _.findIndex(this.deployments, {
+      selected: true,
+    });
+    const firstDeployment = this.deployments[indexOfFirstSelectedElem];
+    this.resourceService
+      .canCreateShakedownTest(firstDeployment.appServerId)
+      .subscribe(
+        /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
+        /* error path */ (e) => (this.errorMessage = e),
+        /* onComplete */ () => {
+          const modalRef = this.modalService.open(DeploymentsEditModalComponent);
+          modalRef.componentInstance.deployments = this.getSelectedDeployments();
+          modalRef.componentInstance.hasPermissionShakedownTest = this.hasPermissionShakedownTest;
+
+          modalRef.componentInstance.doConfirmDeployment.subscribe((deployment: Deployment) => this.confirmDeployment(deployment))
+          modalRef.componentInstance.doRejectDeployment.subscribe((deployment: Deployment) => this.rejectDeployment(deployment))
+          modalRef.componentInstance.doCancelDeployment.subscribe((deployment: Deployment) => this.cancelDeployment(deployment))
+          modalRef.componentInstance.doEditDeploymentDate.subscribe((deployment: Deployment) => this.changeDeploymentDate(deployment))
+        }
+      );
   }
 
   confirmDeployment(deployment: Deployment) {
