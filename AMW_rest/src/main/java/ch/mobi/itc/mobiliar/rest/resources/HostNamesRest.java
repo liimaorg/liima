@@ -102,7 +102,7 @@ public class HostNamesRest {
 	}
 	
 	@GET
-	@ApiOperation(value = "Get hostnames", notes = "Returns all hostnames matching the optional filter Query Params")
+	@ApiOperation(value = "Get hostnames", notes = "Returns all hostnames matching the optional filter Query Params", produces = "application/json, text/csv")
 	public List<ServerTuple> getHostNames(
 			 @ApiParam("Application server name") @QueryParam("appServer") String appServer,
 			 @ApiParam("Runtime name") @QueryParam("runtime") String runtime,

@@ -100,7 +100,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/filter")
-    @ApiOperation(value = "returns all Deployments matching the list of json filters - used by Angular")
+    @ApiOperation(value = "returns all Deployments matching the list of json filters - used by Angular", produces = "application/json, text/csv")
     public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters,
                                    @QueryParam("colToSort") String colToSort,
                                    @QueryParam("sortDirection") String sortDirection,
