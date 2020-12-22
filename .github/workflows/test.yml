@@ -19,12 +19,12 @@ jobs:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
-    - name: Cache Maven packages
+    - name: Cache node
       uses: actions/cache@v2
       with:
         path: ~/.node
         key: ${{ runner.os }}-node-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+        restore-keys: ${{ runner.os }}-node
     - name: Setup chromedriver
       uses: nanasess/setup-chromedriver@master
     - name: Set up JDK 11
