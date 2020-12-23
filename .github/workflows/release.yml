@@ -28,6 +28,9 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
     - name: Build, test and deploy
       run: mvn --batch-mode clean deploy
     - name: Build Docker image
@@ -45,20 +48,20 @@ jobs:
         registry: docker.pkg.github.com
     - name: Push to Docker Hub
       run: |
-        docker tag liimaorg/liima:snapshot liimaorg/liima:${{ github.ref }}
-        docker push liimaorg/liima:${{ github.ref }}
+        docker tag liimaorg/liima:snapshot liimaorg/liima:${{ steps.get_version.outputs.VERSION }}
+        docker push liimaorg/liima:${{ steps.get_version.outputs.VERSION }}
     - name: Push to GitHub Packages Docker Registry
       run: |
-        docker tag liimaorg/liima:snapshot docker.pkg.github.com/liimaorg/liima:${{ github.ref }}
-        docker push docker.pkg.github.com/liimaorg/liima:${{ github.ref }}
+        docker tag liimaorg/liima:snapshot docker.pkg.github.com/liimaorg/liima:${{ steps.get_version.outputs.VERSION }}
+        docker push docker.pkg.github.com/liimaorg/liima:${{ steps.get_version.outputs.VERSION }}
     - name: Create Release
       id: create_release
-      uses: docker/build-push-action@v2
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ steps.get_version.outputs.VERSION }}
+        release_name: Release ${{ steps.get_version.outputs.VERSION }}
         body: |
           Release Changelog: <https://github.com/liimaorg/liima/blob/master/release-changelog.md>
           GitHub Packages: <https://github.com/orgs/liimaorg/packages?repo_name=liima>
