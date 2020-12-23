@@ -126,15 +126,6 @@
         <tag>HEAD</tag>
     </scm>
 
-    <!-- distribution management URL used by maven-release-plugin (implicitly by maven-deploy-plugin) to know where to deploy the builded artifacts to -->
-    <distributionManagement>
-        <repository>
-            <!-- this id must match the <servers><server><id /></server></servers> in your local maven settings.xml -->
-            <id>puzzle-releases</id>
-            <url>https://artifactory.puzzle.ch/artifactory/libs-release-local</url>
-        </repository>
-    </distributionManagement>
-
     <dependencyManagement>
         <dependencies>
             <!-- Test dependencies -->
