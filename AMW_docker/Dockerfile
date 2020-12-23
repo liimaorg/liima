@@ -1,4 +1,4 @@
-FROM jboss/wildfly:20.0.1.Final
+FROM jboss/wildfly:21.0.1.Final
 LABEL MAINTAINER="liimaorg <amw-dev@puzzle.ch>"
 
 ARG DB_CLI_SCRIPT=wildfly_h2.cli 
