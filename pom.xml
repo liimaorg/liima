@@ -246,15 +246,15 @@
 
     <!-- URL to Git repository used by maven-release-plugin -->
     <scm>
-        <developerConnection>scm:git:https://github.com/a-gogo/agogo.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/liimaorg/liima.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
         <repository>
-            <id>internal.repo</id>
-            <name>Temporary Repository</name>
-            <url>file://${project.build.directory}/mvn-repo</url>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/liimaorg/liima</url>
         </repository>
     </distributionManagement>
 
