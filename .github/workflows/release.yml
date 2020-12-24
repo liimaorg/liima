@@ -92,3 +92,4 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./AMW_ear/target/AMW.ear
         asset_name: AMW_ear-${{ steps.get_version.outputs.VERSION }}.ear
+        asset_content_type: application/octet-stream
