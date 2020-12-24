@@ -39,22 +39,13 @@ docker run -it -u $(id -u):$(id -g) -e MAVEN_CONFIG=$HOME/.m2 -e HOME=$HOME -v "
 
 ### Create new Release
 
-Version Updates are done with the maven release plugin. 
-```
-mvn release:clean release:prepare -Darguments="-DskipTests" -Dline.separator=$'\n'
-```
-
-* Choose the version number of the new release as well as the following version number when asked. Please make sure, that the following version number is postfixed with "SNAPSHOT"
-* This will create a new Git Tag, update the version numbers and commit the changes.
-* The new Tag creates a release in GitHub and Travis will automatically add the binary to the release page on GitHub once it's done building. You can then add the release notes.
-* The `*.releaseBackup` files can be removed with `mvn release:clean`
-* Push the changes
-* We do not use `mvn release:perform` as the ear is not uploaded to a maven repository.
-
-You also can rollback your release-step with
-```
-mvn release:rollback
-```
+1. Update the release-changelog.md
+1. Push a tag to git:
+    ```
+    git tag v1.17.23
+    git push origin v1.17.23
+    ```
+The release will then be built and published by the release GitHub action: https://github.com/liimaorg/liima/actions
 
 ### Create Code Coverage Report
 ```
