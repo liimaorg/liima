@@ -80,8 +80,8 @@ jobs:
           Release Changelog: <https://github.com/liimaorg/liima/blob/master/release-changelog.md>
           GitHub Packages: <https://github.com/orgs/liimaorg/packages?repo_name=liima>
           Docker Hub: <https://hub.docker.com/r/liimaorg/liima>
-        draft: true
-        prerelease: true
+        draft: false
+        prerelease: false
 
     - name: Upload ear as Release Asset
       id: upload-release-asset
