@@ -60,13 +60,13 @@ jobs:
 
     - name: Push to Docker Hub
       run: |
-        docker tag liimaorg/liima:snapshot liimaorg/liima/liima:${{ steps.get_version.outputs.VERSION }}
+        docker tag liimaorg/liima:snapshot liimaorg/liima:${{ steps.get_version.outputs.VERSION }}
         docker push liimaorg/liima:${{ steps.get_version.outputs.VERSION }}
 
     - name: Push to GitHub Packages Docker Registry
       run: |
-        docker tag liimaorg/liima:snapshot docker.pkg.github.com/liimaorg/liima:${{ steps.get_version.outputs.VERSION }}
-        docker push docker.pkg.github.com/liimaorg/liima:${{ steps.get_version.outputs.VERSION }}
+        docker tag liimaorg/liima:snapshot docker.pkg.github.com/liimaorg/liima/liima:${{ steps.get_version.outputs.VERSION }}
+        docker push docker.pkg.github.com/liimaorg/liima/liima:${{ steps.get_version.outputs.VERSION }}
 
     - name: Create Release
       id: create_release
