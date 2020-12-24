@@ -35,13 +35,12 @@ jobs:
 
     - name: Get the version
       id: get_version
-      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
 
     - name: Build, test and deploy
       run: |
         mvn --batch-mode -DnewVersion=${{ steps.get_version.outputs.VERSION }} versions:set
         mvn --batch-mode clean install
-        mvn --batch-mode --projects AMW_ear deploy
 
     - name: Build Docker image
       run: AMW_docker/build.sh
@@ -83,3 +82,13 @@ jobs:
           Docker Hub: <https://hub.docker.com/r/liimaorg/liima>
         draft: true
         prerelease: true
+
+    - name: Upload ear as Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./AMW_ear/target/AMW.ear
+        asset_name: AMW_ear-${{ steps.get_version.outputs.VERSION }}.ear
