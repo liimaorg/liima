@@ -38,7 +38,9 @@
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/bootstrap/dist/js/bootstrap.js"
+              "node_modules/bootstrap/dist/js/bootstrap.js",
+              "node_modules/codemirror/lib/codemirror.js",
+              "node_modules/codemirror/addon/mode/simple.js"
             ]
           },
           "configurations": {

@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { Deployment } from 'src/app/deployment/deployment';
 import { DeploymentService } from 'src/app/deployment/deployment.service';
 import { DeploymentsStoreService } from '../deployments-store.service';
 import { DeploymentLog } from './deployment-log';
 import { DeploymentLogStoreService } from './deployment-log-store.service';
 
+declare var CodeMirror: any;
 @Component({
   selector: 'app-logs',
   templateUrl: './logs.component.html',
@@ -31,6 +32,10 @@ export class LogsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    CodeMirror.defineSimpleMode('simplemode', {
+      start: [{ regex: /(error|failure|failed)\b/i, token: 'error' }],
+    });
+
     this.route.paramMap.subscribe((params) => {
       const deploymentId: number = +params.get('deploymentId');
 
