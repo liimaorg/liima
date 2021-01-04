@@ -8,7 +8,7 @@
         {{ deployment.releaseName }})
       </h4>
 
-      <div class="text-right">
+      <div>
         <div ngbDropdown class="d-inline-block">
           <button
             class="btn btn-outline-primary"
@@ -29,7 +29,7 @@
         </div>
       </div>
     </div>
-    <div class="card-body">
+    <div>
       <div *ngIf="deploymentLog$ | async as deploymentLog">
         <ngx-codemirror
           [(ngModel)]="deploymentLog.content"
