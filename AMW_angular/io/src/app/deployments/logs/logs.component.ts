@@ -7,6 +7,7 @@ import { DeploymentService } from 'src/app/deployment/deployment.service';
 import { DeploymentsStoreService } from '../deployments-store.service';
 import { DeploymentLog } from './deployment-log';
 import { DeploymentLogStoreService } from './deployment-log-store.service';
+import { DeploymentLogService } from './deployment-log.service';
 
 declare var CodeMirror: any;
 @Component({
@@ -18,6 +19,8 @@ export class LogsComponent implements OnInit {
   deployment$: Observable<Deployment>;
   deploymentLogs$: Observable<DeploymentLog[]>;
 
+  errorMessage: string = '';
+
   currentFilename = new BehaviorSubject<string>('');
 
   readonly deploymentLog$ = this.currentFilename.pipe(
@@ -26,6 +29,7 @@ export class LogsComponent implements OnInit {
 
   constructor(
     private deploymentService: DeploymentService,
+    private deploymentLogService: DeploymentLogService,
     private deploymentStore: DeploymentsStoreService,
     public deploymentLogStore: DeploymentLogStoreService,
     private route: ActivatedRoute
@@ -40,18 +44,27 @@ export class LogsComponent implements OnInit {
       const deploymentId: number = +params.get('deploymentId');
 
       this.deployment$ = this.deploymentStore.withid$(deploymentId);
-      this.deploymentLogStore.fetch(deploymentId);
+      this.deployment$.subscribe((deployment) => {
+        if (deployment === undefined) {
+          this.deploymentService.get(deploymentId).subscribe(
+            (d) => (this.deploymentStore.deployments = [d]),
+            (error) => (this.errorMessage = error)
+          );
+        }
+      });
+
+      this.deploymentLogService.get(deploymentId).subscribe(
+        (deploymentLogs) => {
+          this.deploymentLogStore.deploymentLogs = deploymentLogs;
+        },
+        (error) => {
+          this.errorMessage = error;
+        }
+      );
+
       this.deploymentLogStore.filenames$.subscribe((filenames) =>
         this.currentFilename.next(filenames[0])
       );
-
-      this.deployment$.subscribe((deployment) => {
-        if (deployment === undefined) {
-          this.deploymentService.get(deploymentId).subscribe((d) => {
-            this.deploymentStore.deployments = [d];
-          });
-        }
-      });
     });
   }
 

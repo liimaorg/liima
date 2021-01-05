@@ -1,44 +1,52 @@
 <!-- <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator> -->
 
 <div class="col main-full">
+  <app-notification
+    *ngIf="errorMessage"
+    [message]="errorMessage"
+    [messageType]="'warning'"
+  ></app-notification>
   <div *ngIf="deployment$ | async as deployment" class="card mt-3">
-    <div class="card-header">
-      <h4>
-        Log file for {{ deployment.id }} ({{ deployment.appServerName }}
-        {{ deployment.releaseName }})
-      </h4>
+    <div *ngIf="deploymentLog$ | async as deploymentLog">
+      <div class="card-header">
+        <h4>
+          Log file for {{ deployment.id }} ({{ deployment.appServerName }}
+          {{ deployment.releaseName }})
+        </h4>
 
-      <div>
-        <div ngbDropdown class="d-inline-block">
-          <button
-            class="btn btn-outline-primary"
-            id="filename-picker"
-            ngbDropdownToggle
-          >
-            {{ currentFilename | async }}
-          </button>
-          <div ngbDropdownMenu aria-labelledby="filename-picker">
+        <div>
+          <div ngbDropdown class="d-inline-block">
             <button
-              ngbDropdownItem
-              *ngFor="let filename of deploymentLogStore.filenames$ | async"
-              (click)="selectFile(filename)"
+              class="btn btn-outline-primary"
+              id="filename-picker"
+              ngbDropdownToggle
             >
-              {{ filename }}
+              {{ currentFilename | async }}
             </button>
+            <div ngbDropdownMenu aria-labelledby="filename-picker">
+              <button
+                ngbDropdownItem
+                *ngFor="let filename of deploymentLogStore.filenames$ | async"
+                (click)="selectFile(filename)"
+              >
+                {{ filename }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div>
-      <div *ngIf="deploymentLog$ | async as deploymentLog">
-        <ngx-codemirror
-          [(ngModel)]="deploymentLog.content"
-          [options]="{
-            lineNumbers: true,
-            theme: 'default',
-            mode: 'simplemode'
-          }"
-        ></ngx-codemirror>
+      <div>
+        <div>
+          <ngx-codemirror
+            [(ngModel)]="deploymentLog.content"
+            [options]="{
+              lineNumbers: true,
+              theme: 'default',
+              mode: 'simplemode',
+              readOnly: true
+            }"
+          ></ngx-codemirror>
+        </div>
       </div>
     </div>
   </div>

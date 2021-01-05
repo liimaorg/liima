@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, scheduled } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DeploymentLog, filenamePredicate, toFileName } from './deployment-log';
 import { DeploymentLogService } from './deployment-log.service';
