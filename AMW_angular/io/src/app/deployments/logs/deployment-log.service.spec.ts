@@ -59,8 +59,7 @@ describe('DeploymentLogService', () => {
 
     service.get(1).subscribe(
       (_) => fail('expected an error, not a list of deploymentLogs'),
-      (error) =>
-        expect(error.error.message).toContain('no deployment logs found')
+      (error) => expect(error).toContain('no deployment logs found')
     );
   });
 });

@@ -1,53 +1,66 @@
-<!-- <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator> -->
+<div class="col">
+  <div *ngIf="deployment$ | async as deployment; else loading">
+    <div *ngIf="deployment === 'failed'">
+      <app-notification
+        [message]="'Unable to load log files for deployment'"
+        [messageType]="'warning'"
+      ></app-notification>
+    </div>
 
-<div class="col main-full">
-  <app-notification
-    *ngIf="errorMessage"
-    [message]="errorMessage"
-    [messageType]="'warning'"
-  ></app-notification>
-  <div *ngIf="deployment$ | async as deployment" class="card mt-3">
-    <div *ngIf="deploymentLog$ | async as deploymentLog">
-      <div class="card-header">
+    <div *ngIf="deployment !== 'failed'" class="card mt-3">
+      <div
+        *ngIf="deploymentLogs$ | async as deploymentLogs; else loading"
+        class="card-header"
+      >
         <h4>
           Log file for {{ deployment.id }} ({{ deployment.appServerName }}
           {{ deployment.releaseName }})
         </h4>
-
-        <div>
+        <div *ngIf="deploymentLogs?.length === 0">
+          <app-notification
+            [message]="'no log files found for deployment'"
+            [messageType]="'warning'"
+          ></app-notification>
+        </div>
+        <div *ngIf="deploymentLogs.length > 0">
           <div ngbDropdown class="d-inline-block">
             <button
               class="btn btn-outline-primary"
               id="filename-picker"
               ngbDropdownToggle
             >
-              {{ currentFilename | async }}
+              {{ (currentDeploymentLog$ | async)?.filename }}
             </button>
             <div ngbDropdownMenu aria-labelledby="filename-picker">
               <button
                 ngbDropdownItem
-                *ngFor="let filename of deploymentLogStore.filenames$ | async"
-                (click)="selectFile(filename)"
+                *ngFor="let deploymentLog of deploymentLogs"
+                (click)="selectFile(deploymentLog)"
               >
-                {{ filename }}
+                {{ deploymentLog.filename }}
               </button>
             </div>
           </div>
         </div>
-      </div>
-      <div>
         <div>
-          <ngx-codemirror
-            [(ngModel)]="deploymentLog.content"
-            [options]="{
-              lineNumbers: true,
-              theme: 'default',
-              mode: 'simplemode',
-              readOnly: true
-            }"
-          ></ngx-codemirror>
+          <div>
+            <ngx-codemirror
+              *ngIf="currentDeploymentLog$ | async as currentDeploymentLog"
+              [(ngModel)]="currentDeploymentLog.content"
+              [options]="{
+                lineNumbers: true,
+                theme: 'default',
+                mode: 'simplemode',
+                readOnly: true
+              }"
+            ></ngx-codemirror>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<ng-template #loading>
+  <app-loading-indicator [isLoading]="true"></app-loading-indicator>
+</ng-template>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DeploymentsStoreService } from '../deployments-store.service';
+import { NavigationStoreService } from 'src/app/navigation/navigation-store.service';
 
 @Component({
   selector: 'app-deployment-container',
@@ -7,9 +7,10 @@ import { DeploymentsStoreService } from '../deployments-store.service';
   styles: [],
 })
 export class DeploymentContainerComponent implements OnInit {
-  constructor(private deploymentStore: DeploymentsStoreService) {}
-
-  ngOnInit(): void {
-    this.deploymentStore.deployments = [];
+  constructor(public navigationStore: NavigationStoreService) {
+    this.navigationStore.setPageTitle('Deployments');
+    this.navigationStore.setCurrent('Deployments');
   }
+
+  ngOnInit(): void {}
 }

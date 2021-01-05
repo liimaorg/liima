@@ -339,9 +339,6 @@ public class DeploymentsRest {
             return new DeploymentLog(id, filename, deploymentLog);
         }).collect(Collectors.toList());
 
-        if (deploymentLogs.size() == 0) {
-            return Response.status(Status.NOT_FOUND).entity(new ExceptionDto("no deploymentlogs found for deployment with id " + id)).build();
-        }
         return Response.ok(deploymentLogs).build();
     }
 
