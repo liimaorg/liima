@@ -33,7 +33,7 @@ export class LogsComponent implements OnInit {
 
   ngOnInit(): void {
     CodeMirror.defineSimpleMode('simplemode', {
-      start: [{ regex: /(error|failure|failed)\b/i, token: 'error' }],
+      start: [{ regex: /(error|failure|failed|fatal)\b/i, token: 'error' }],
     });
 
     this.route.paramMap.subscribe((params) => {
