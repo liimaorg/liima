@@ -325,7 +325,7 @@ public class DeploymentsRest {
     @GET
     @Path("/{id : \\d+}/logs") // only digits
     @ApiOperation(value = "get all log files for a given deployment")
-    public Response getDeploymentLogs(@ApiParam("Deployment ID") @PathParam("id") Integer id) throws IllegalAccessException {
+    public Response getDeploymentLogs(@ApiParam("Deployment ID") @PathParam("id") Integer id) {
         List<String> availableLogFiles = Arrays.asList(deploymentBoundary.getLogFileNames(id));
 
         final List<DeploymentLog> deploymentLogs = availableLogFiles.stream().map(filename -> {

@@ -58,6 +58,7 @@ import org.mockito.stubbing.Answer;
 import javax.persistence.NoResultException;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -87,6 +88,8 @@ public class DeploymentTest {
     private ResourceGroupPersistenceService resourceGroupService;
     @Mock
     private ContextDomainService contextDomainService;
+    @Mock
+    private Logger log;
 
 
     private HashSet<DeploymentEntity> entities;
@@ -269,6 +272,50 @@ public class DeploymentTest {
         ExceptionDto exception = (ExceptionDto) response.getEntity();
         assertTrue(exception.getMessage().length() > 0);
 
+    }
+
+    @Test
+    public void getDeploymentLogs() throws IllegalAccessException {
+        String[] fileNames = {"log1", "log2"};
+        when(deploymentBoundary.getLogFileNames(deploymentEntity.getId())).thenReturn(fileNames);
+        when(deploymentBoundary.getDeploymentLog("log1")).thenReturn("content 1");
+        when(deploymentBoundary.getDeploymentLog("log2")).thenReturn("content 2");
+
+        Response response = deploymentRestService.getDeploymentLogs(deploymentEntity.getId());
+        assertThat(response.getStatus(), is(200));
+        List<DeploymentLog> deploymentLogs = (List<DeploymentLog>) response.getEntity();
+        assertThat(deploymentLogs.size(), is(2));
+        verify(deploymentBoundary).getDeploymentLog("log1");
+        verify(deploymentBoundary).getDeploymentLog("log2");
+    }
+
+    @Test
+    public void getDeploymentLogs_emptyList() throws IllegalAccessException {
+        when(deploymentBoundary.getLogFileNames(deploymentEntity.getId())).thenReturn(new String[] {});
+        when(deploymentBoundary.getDeploymentLog(anyString())).thenReturn("content");
+
+        Response response = deploymentRestService.getDeploymentLogs(deploymentEntity.getId());
+        assertThat(response.getStatus(), is(200));
+        assertThat(((List<Object>) response.getEntity()).size(), is(0));
+        verify(deploymentBoundary, never()).getDeploymentLog(anyString());
+    }
+
+    @Test
+    public void getDeploymentLogs_withIllegalAccess() throws IllegalAccessException {
+        String[] fileNames = {"log1", "log2"};
+        when(deploymentBoundary.getLogFileNames(deploymentEntity.getId())).thenReturn(fileNames);
+        when(deploymentBoundary.getDeploymentLog("log1")).thenReturn("content 1");
+        when(deploymentBoundary.getDeploymentLog("log2")).thenThrow(new IllegalAccessException());
+
+        Response response = deploymentRestService.getDeploymentLogs(deploymentEntity.getId());
+        assertThat(response.getStatus(), is(200));
+        List<DeploymentLog> deploymentLogs = (List<DeploymentLog>) response.getEntity();
+        assertThat(deploymentLogs.size(), is(2));
+        DeploymentLog withException = deploymentLogs.stream()
+                .filter(deploymentLog -> deploymentLog.getFilename().equals("log2"))
+                .findAny()
+                .orElseThrow();
+        assertThat(withException.getContent(), is("error: unable to get contents of logfile log2" ));
     }
 
         @SuppressWarnings("unchecked")
