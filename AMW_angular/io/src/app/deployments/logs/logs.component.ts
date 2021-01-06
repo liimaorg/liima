@@ -4,8 +4,6 @@ import { merge, Observable, of, Subject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Deployment } from 'src/app/deployment/deployment';
 import { DeploymentService } from 'src/app/deployment/deployment.service';
-import { NavigationStoreService } from 'src/app/navigation/navigation-store.service';
-import { DeploymentsStoreService } from '../deployments-store.service';
 import { DeploymentLog } from './deployment-log';
 import { DeploymentLogService } from './deployment-log.service';
 
