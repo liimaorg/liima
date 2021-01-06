@@ -5,7 +5,7 @@ import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Deployment } from 'src/app/deployment/deployment';
 import { DeploymentService } from 'src/app/deployment/deployment.service';
 import { DeploymentLog } from './deployment-log';
-import { DeploymentLogService } from './deployment-log.service';
+import { DeploymentLogsService } from './deployment-logs.service';
 
 declare var CodeMirror: any;
 
@@ -17,14 +17,12 @@ function failed(): Observable<Failed> {
 
 @Component({
   selector: 'app-logs',
-  templateUrl: './logs.component.html',
-  styleUrls: ['./logs.component.scss'],
+  templateUrl: './deployment-logs.component.html',
 })
-export class LogsComponent implements OnInit {
+export class DeploymentLogsComponent implements OnInit {
   constructor(
-    private deploymentLogService: DeploymentLogService,
+    private deploymentLogsService: DeploymentLogsService,
     private deploymentService: DeploymentService,
-
     private route: ActivatedRoute
   ) {}
 
@@ -66,6 +64,6 @@ export class LogsComponent implements OnInit {
   loadDeploymentLogs(deployment) {
     return deployment === 'failed' || deployment === undefined
       ? of([])
-      : this.deploymentLogService.get(deployment.id);
+      : this.deploymentLogsService.get(deployment.id);
   }
 }

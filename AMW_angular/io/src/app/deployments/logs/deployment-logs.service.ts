@@ -8,7 +8,7 @@ import { DeploymentLog } from './deployment-log';
 @Injectable({
   providedIn: 'root',
 })
-export class DeploymentLogService extends BaseService {
+export class DeploymentLogsService extends BaseService {
   constructor(private http: HttpClient) {
     super();
   }

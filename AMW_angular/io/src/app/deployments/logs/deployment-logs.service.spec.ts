@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { defer } from 'rxjs';
 import { DeploymentLog } from './deployment-log';
-import { DeploymentLogService } from './deployment-log.service';
+import { DeploymentLogsService } from './deployment-logs.service';
 
 /** Create async observable that emits-once and completes
  *  after a JS engine turn */
@@ -18,12 +18,12 @@ export function asyncError<T>(errorObject: any) {
 }
 
 describe('DeploymentLogService', () => {
-  let service: DeploymentLogService;
+  let service: DeploymentLogsService;
   let httpClientSpy: { get: jasmine.Spy };
 
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    service = new DeploymentLogService(httpClientSpy as any);
+    service = new DeploymentLogsService(httpClientSpy as any);
   });
 
   it('should return expected deployment logs', () => {
