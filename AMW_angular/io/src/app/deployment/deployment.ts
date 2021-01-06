@@ -36,7 +36,3 @@ export interface Deployment {
   shakedownTestsWhenDeployed: boolean;
   neighbourhoodTest: boolean;
 }
-
-export const deploymentIdPredicate = (deploymentId: number) => (
-  deployment: Deployment
-): boolean => deployment?.id === deploymentId;
