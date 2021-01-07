@@ -1,5 +1,5 @@
 <div class="col">
-  <div *ngIf="deployment$ | async as deployment; else loading">
+  <div *ngIf="deployment$ | async as deployment; else loading" class="h-100">
     <div *ngIf="deployment === 'failed'">
       <app-notification
         [message]="'Unable to load log files for deployment'"
@@ -7,7 +7,7 @@
       ></app-notification>
     </div>
 
-    <div *ngIf="deployment !== 'failed'" class="card mt-3">
+    <div *ngIf="deployment !== 'failed'" class="card mt-3 h-100">
       <div
         *ngIf="deploymentLogs$ | async as deploymentLogs; else loading"
         class="card-header"
@@ -42,20 +42,21 @@
             </div>
           </div>
         </div>
-        <div>
-          <div>
+      </div>
+        <div class="mt-3 h-100">
+          <div class="h-100">
             <ngx-codemirror
+              class="h-100"
               *ngIf="currentDeploymentLog$ | async as currentDeploymentLog"
               [(ngModel)]="currentDeploymentLog.content"
               [options]="{
-                lineNumbers: true,
+                lineNumbers: false,
                 theme: 'default',
                 mode: 'simplemode',
                 readOnly: true
               }"
             ></ngx-codemirror>
           </div>
-        </div>
       </div>
     </div>
   </div>

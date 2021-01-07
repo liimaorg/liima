@@ -4,6 +4,7 @@ import { merge, Observable, of, Subject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Deployment } from 'src/app/deployment/deployment';
 import { DeploymentService } from 'src/app/deployment/deployment.service';
+import { NavigationStoreService } from 'src/app/navigation/navigation-store.service';
 import { DeploymentLog } from './deployment-log';
 import { DeploymentLogsService } from './deployment-logs.service';
 
@@ -23,12 +24,18 @@ export class DeploymentLogsComponent implements OnInit {
   constructor(
     private deploymentLogsService: DeploymentLogsService,
     private deploymentService: DeploymentService,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private navigationStore: NavigationStoreService
+  ) {  }
+
 
   deploymentId$: Observable<number> = this.route.paramMap.pipe(
     map((params) => +params.get('deploymentId'))
   );
+
+  pagetitle$: Observable<string> = this.deploymentId$.pipe(
+    map((id) => `Log file for ${id}`)
+  )
 
   deployment$: Observable<Deployment | Failed> = this.deploymentId$.pipe(
     switchMap(this.loadDeployment.bind(this)),
@@ -53,6 +60,7 @@ export class DeploymentLogsComponent implements OnInit {
         { regex: /^.*\b(error|failure|failed|fatal)\b.*$/i, token: 'error' },
       ],
     });
+    this.pagetitle$.subscribe(title => this.navigationStore.setPageTitle(title));
   }
 
   selectFile(filename: DeploymentLog) {
