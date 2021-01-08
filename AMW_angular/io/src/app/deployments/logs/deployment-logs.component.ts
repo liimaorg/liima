@@ -26,8 +26,11 @@ export class DeploymentLogsComponent implements OnInit {
     private deploymentService: DeploymentService,
     private route: ActivatedRoute,
     private navigationStore: NavigationStoreService
-  ) {  }
-
+  ) {
+    this.pagetitle$.subscribe((title) =>
+      this.navigationStore.setPageTitle(title)
+    );
+  }
 
   deploymentId$: Observable<number> = this.route.paramMap.pipe(
     map((params) => +params.get('deploymentId'))
@@ -35,7 +38,7 @@ export class DeploymentLogsComponent implements OnInit {
 
   pagetitle$: Observable<string> = this.deploymentId$.pipe(
     map((id) => `Log file for ${id}`)
-  )
+  );
 
   deployment$: Observable<Deployment | Failed> = this.deploymentId$.pipe(
     switchMap(this.loadDeployment.bind(this)),
@@ -60,7 +63,6 @@ export class DeploymentLogsComponent implements OnInit {
         { regex: /^.*\b(error|failure|failed|fatal)\b.*$/i, token: 'error' },
       ],
     });
-    this.pagetitle$.subscribe(title => this.navigationStore.setPageTitle(title));
   }
 
   selectFile(filename: DeploymentLog) {
