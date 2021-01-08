@@ -40,7 +40,10 @@
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.js",
               "node_modules/codemirror/lib/codemirror.js",
-              "node_modules/codemirror/addon/mode/simple.js"
+              "node_modules/codemirror/addon/mode/simple.js",
+              "node_modules/codemirror/addon/dialog/dialog.js",
+              "node_modules/codemirror/addon/search/searchcursor.js",
+              "node_modules/codemirror/addon/search/search.js"
             ]
           },
           "configurations": {
