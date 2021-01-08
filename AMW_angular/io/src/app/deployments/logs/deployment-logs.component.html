@@ -1,4 +1,4 @@
-<div class="col">
+<div class="col h-100">
   <div *ngIf="deployment$ | async as deployment; else loading" class="h-100">
     <div *ngIf="deployment === 'failed'">
       <app-notification
