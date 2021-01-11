@@ -12,10 +12,6 @@
         *ngIf="deploymentLogs$ | async as deploymentLogs; else loading"
         class="card-header"
       >
-        <h4>
-          Log file for {{ deployment.id }} ({{ deployment.appServerName }}
-          {{ deployment.releaseName }})
-        </h4>
         <div *ngIf="deploymentLogs?.length === 0">
           <app-notification
             [message]="'no log files found for deployment'"
@@ -43,20 +39,20 @@
           </div>
         </div>
       </div>
-        <div class="mt-3 h-100">
-          <div class="h-100">
-            <ngx-codemirror
-              class="h-100"
-              *ngIf="currentDeploymentLog$ | async as currentDeploymentLog"
-              [(ngModel)]="currentDeploymentLog.content"
-              [options]="{
-                lineNumbers: false,
-                theme: 'default',
-                mode: 'simplemode',
-                readOnly: true
-              }"
-            ></ngx-codemirror>
-          </div>
+      <div class="mt-3 h-100">
+        <div class="h-100">
+          <ngx-codemirror
+            class="h-100"
+            *ngIf="currentDeploymentLog$ | async as currentDeploymentLog"
+            [(ngModel)]="currentDeploymentLog.content"
+            [options]="{
+              lineNumbers: false,
+              theme: 'default',
+              mode: 'simplemode',
+              readOnly: true
+            }"
+          ></ngx-codemirror>
+        </div>
       </div>
     </div>
   </div>

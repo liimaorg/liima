@@ -36,13 +36,18 @@ export class DeploymentLogsComponent implements OnInit {
     map((params) => +params.get('deploymentId'))
   );
 
-  pagetitle$: Observable<string> = this.deploymentId$.pipe(
-    map((id) => `Log file for ${id}`)
-  );
-
   deployment$: Observable<Deployment | Failed> = this.deploymentId$.pipe(
     switchMap(this.loadDeployment.bind(this)),
     shareReplay(1)
+  );
+
+  pagetitle$: Observable<string> = this.deployment$.pipe(
+    map((deployment) =>
+      deployment === 'failed'
+        ? ``
+        : `Log file for ${deployment.id} (${deployment.appServerName}
+          ${deployment.releaseName})`
+    )
   );
 
   deploymentLogs$: Observable<DeploymentLog[]> = this.deployment$.pipe(
