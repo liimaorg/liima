@@ -60,7 +60,10 @@ export class DeploymentLogsComponent implements OnInit {
   ngOnInit(): void {
     CodeMirror.defineSimpleMode('simplemode', {
       start: [
-        { regex: /^.*\b(error|failure|failed|fatal)\b.*$/i, token: 'error' },
+        {
+          regex: /^.*\b(error|failure|failed|fatal|not found)\b.*$/i,
+          token: 'error',
+        },
       ],
     });
   }
