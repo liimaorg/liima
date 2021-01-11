@@ -1,0 +1,9 @@
+.CodeMirror {
+  &.cm-s-default {
+    height: 100%;
+  }
+}
+
+.CodeMirror-vscrollbar {
+  overflow-y: hidden;
+}

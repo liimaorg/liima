@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { merge, Observable, of, Subject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
@@ -18,7 +18,9 @@ function failed(): Observable<Failed> {
 
 @Component({
   selector: 'app-logs',
+  styleUrls: ['./deployment-logs.component.scss'],
   templateUrl: './deployment-logs.component.html',
+  encapsulation: ViewEncapsulation.None,
 })
 export class DeploymentLogsComponent implements OnInit {
   constructor(
