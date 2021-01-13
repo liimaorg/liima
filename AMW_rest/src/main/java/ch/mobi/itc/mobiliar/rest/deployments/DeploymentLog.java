@@ -1,15 +1,15 @@
 package ch.mobi.itc.mobiliar.rest.deployments;
 
+import java.util.Objects;
+
 public class DeploymentLog {
 
     private int deploymentId;
     private String filename;
-    private String content;
 
-    public DeploymentLog(Integer id, String filename, String deploymentLog) {
-        this.deploymentId = id;
+    public DeploymentLog(Integer deploymentId, String filename) {
+        this.deploymentId = deploymentId;
         this.filename = filename;
-        this.content = deploymentLog;
     }
 
     public int getDeploymentId() {
@@ -28,31 +28,16 @@ public class DeploymentLog {
         this.filename = filename;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         DeploymentLog that = (DeploymentLog) o;
-
-        if (deploymentId != that.deploymentId) return false;
-        if (filename != null ? !filename.equals(that.filename) : that.filename != null) return false;
-        return content != null ? content.equals(that.content) : that.content == null;
+        return deploymentId == that.deploymentId && Objects.equals(filename, that.filename);
     }
 
     @Override
     public int hashCode() {
-        int result = deploymentId;
-        result = 31 * result + (filename != null ? filename.hashCode() : 0);
-        result = 31 * result + (content != null ? content.hashCode() : 0);
-        return result;
+        return Objects.hash(deploymentId, filename);
     }
 }

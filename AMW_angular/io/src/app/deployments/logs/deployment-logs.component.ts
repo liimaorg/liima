@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { merge, Observable, of, Subject } from 'rxjs';
-import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { catchError, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import { Deployment } from 'src/app/deployment/deployment';
 import { DeploymentService } from 'src/app/deployment/deployment.service';
 import { NavigationStoreService } from 'src/app/navigation/navigation-store.service';
-import { DeploymentLog } from './deployment-log';
+import { DeploymentLog, DeploymentLogContent } from './deployment-log';
 import { DeploymentLogsService } from './deployment-logs.service';
 
 declare var CodeMirror: any;
@@ -29,14 +29,10 @@ export class DeploymentLogsComponent implements OnInit {
     private route: ActivatedRoute,
     private navigationStore: NavigationStoreService
   ) {
-    this.pagetitle$.subscribe((title) =>
-      this.navigationStore.setPageTitle(title)
-    );
+    this.pagetitle$.subscribe((title) => this.navigationStore.setPageTitle(title));
   }
 
-  deploymentId$: Observable<number> = this.route.paramMap.pipe(
-    map((params) => +params.get('deploymentId'))
-  );
+  deploymentId$: Observable<number> = this.route.paramMap.pipe(map((params) => +params.get('deploymentId')));
 
   deployment$: Observable<Deployment | Failed> = this.deploymentId$.pipe(
     switchMap(this.loadDeployment.bind(this)),
@@ -52,7 +48,7 @@ export class DeploymentLogsComponent implements OnInit {
     )
   );
 
-  deploymentLogs$: Observable<DeploymentLog[]> = this.deployment$.pipe(
+  deploymentLogMetaData$: Observable<DeploymentLog[]> = this.deployment$.pipe(
     switchMap(this.loadDeploymentLogs.bind(this)),
     shareReplay(1)
   );
@@ -60,8 +56,12 @@ export class DeploymentLogsComponent implements OnInit {
   selectDeploymentLog$: Subject<DeploymentLog> = new Subject();
 
   currentDeploymentLog$: Observable<DeploymentLog> = merge(
-    this.deploymentLogs$.pipe(map((logs) => logs[0])),
+    this.deploymentLogMetaData$.pipe(map((logs) => logs[0])),
     this.selectDeploymentLog$
+  );
+
+  currentDeploymentLogContent$: Observable<DeploymentLogContent> = this.currentDeploymentLog$.pipe(
+    switchMap(this.loadDeploymentLogContent.bind(this))
   );
 
   ngOnInit(): void {
@@ -87,9 +87,20 @@ export class DeploymentLogsComponent implements OnInit {
     return this.deploymentService.get(id).pipe(catchError((error) => failed()));
   }
 
-  loadDeploymentLogs(deployment) {
+  loadDeploymentLogs(deployment: Deployment | Failed) {
     return deployment === 'failed' || deployment === undefined
       ? of([])
-      : this.deploymentLogsService.get(deployment.id);
+      : this.deploymentLogsService.getLogFileMetaData(deployment.id).pipe(catchError((error) => failed()));
+  }
+
+  loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed) {
+    return deploymentLog === 'failed' || deploymentLog === undefined
+      ? of('')
+      : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(
+          map((content) => {
+            return { content };
+          }),
+          catchError((error) => failed())
+        );
   }
 }

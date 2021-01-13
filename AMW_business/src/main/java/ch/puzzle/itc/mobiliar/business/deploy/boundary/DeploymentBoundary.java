@@ -823,12 +823,7 @@ public class DeploymentBoundary {
 
         File dir = new File(logsPath);
         if (dir.exists() && dir.isDirectory()) {
-            FilenameFilter filter = new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.startsWith(deploymentId + "_");
-                }
-            };
+            FilenameFilter filter = (dir1, name) -> name.startsWith(deploymentId + "_");
             String[] fileNames = dir.list(filter);
             Arrays.sort(Objects.requireNonNull(fileNames));
             return fileNames;

@@ -8,29 +8,22 @@
     </div>
 
     <div *ngIf="deployment !== 'failed'" class="card mt-3 h-100">
-      <div
-        *ngIf="deploymentLogs$ | async as deploymentLogs; else loading"
-        class="card-header"
-      >
-        <div *ngIf="deploymentLogs?.length === 0">
+      <div *ngIf="deploymentLogMetaData$ | async as deploymentLogMetaData; else loading" class="card-header">
+        <div *ngIf="deploymentLogMetaData?.length === 0">
           <app-notification
             [message]="'no log files found for deployment'"
             [messageType]="'warning'"
           ></app-notification>
         </div>
-        <div *ngIf="deploymentLogs.length > 0">
+        <div *ngIf="deploymentLogMetaData.length > 0">
           <div ngbDropdown class="d-inline-block">
-            <button
-              class="btn btn-outline-primary"
-              id="filename-picker"
-              ngbDropdownToggle
-            >
+            <button class="btn btn-outline-primary" id="filename-picker" ngbDropdownToggle>
               {{ (currentDeploymentLog$ | async)?.filename }}
             </button>
             <div ngbDropdownMenu aria-labelledby="filename-picker">
               <button
                 ngbDropdownItem
-                *ngFor="let deploymentLog of deploymentLogs"
+                *ngFor="let deploymentLog of deploymentLogMetaData"
                 (click)="selectFile(deploymentLog)"
               >
                 {{ deploymentLog.filename }}
@@ -39,12 +32,11 @@
           </div>
         </div>
       </div>
-      <div class="mt-3 h-100">
+      <div class="mt-3 h-100" *ngIf="currentDeploymentLogContent$ | async as currentDeploymentLogContent">
         <div class="h-100">
           <ngx-codemirror
             class="h-100"
-            *ngIf="currentDeploymentLog$ | async as currentDeploymentLog"
-            [(ngModel)]="currentDeploymentLog.content"
+            [(ngModel)]="currentDeploymentLogContent.content"
             [options]="{
               lineNumbers: false,
               theme: 'default',

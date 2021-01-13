@@ -28,20 +28,16 @@ describe('DeploymentLogService', () => {
 
   it('should return expected deployment logs', () => {
     const expectedDeploymentLogs: DeploymentLog[] = [
-      { deploymentId: 1, content: 'content 1', filename: 'log1.log' },
-      { deploymentId: 1, content: 'content 2', filename: 'log2.log' },
+      { deploymentId: 1, filename: 'log1.log' },
+      { deploymentId: 1, filename: 'log2.log' },
     ];
 
     httpClientSpy.get.and.returnValue(asyncData(expectedDeploymentLogs));
 
     service
-      .get(1)
+      .getLogFileMetaData(1)
       .subscribe(
-        (deploymentLogs) =>
-          expect(deploymentLogs).toEqual(
-            expectedDeploymentLogs,
-            'expected deploymentLogs'
-          ),
+        (deploymentLogs) => expect(deploymentLogs).toEqual(expectedDeploymentLogs, 'expected deploymentLogs'),
         fail
       );
 
@@ -57,7 +53,7 @@ describe('DeploymentLogService', () => {
 
     httpClientSpy.get.and.returnValue(asyncError(errorResponse));
 
-    service.get(1).subscribe(
+    service.getLogFileMetaData(1).subscribe(
       (_) => fail('expected an error, not a list of deploymentLogs'),
       (error) => expect(error).toContain('no deployment logs found')
     );
