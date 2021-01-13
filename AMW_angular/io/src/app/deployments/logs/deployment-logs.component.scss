@@ -1,7 +1,15 @@
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+
 .CodeMirror {
   &.cm-s-default {
     height: 100%;
   }
+}
+
+.cm-warning {
+  color: theme-color($key: 'warning');
 }
 
 .CodeMirror-vscrollbar {

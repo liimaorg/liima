@@ -71,6 +71,10 @@ export class DeploymentLogsComponent implements OnInit {
           regex: /^.*\b(error|failure|failed|fatal|not found)\b.*$/i,
           token: 'error',
         },
+        {
+          regex: /^.*\b(warn.*)\b.*$/i,
+          token: 'warning',
+        },
       ],
     });
   }
