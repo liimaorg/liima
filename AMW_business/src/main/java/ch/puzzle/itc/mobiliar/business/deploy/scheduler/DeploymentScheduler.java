@@ -95,7 +95,7 @@ public class DeploymentScheduler {
 			checkForEndlessPredeploymentDeployments();
 		}
 	}
-	
+
 	/**
 	 * Cleans up generated files and logs
 	 */
@@ -113,13 +113,13 @@ public class DeploymentScheduler {
 	/**
 	 * Eventhandler for the DeploymentStatusUpdate Event is triggered when
 	 * deployments are created or updated
-	 * 
+	 *
 	 * @param event
 	 */
 	@Asynchronous
 	public void handleDeploymentEvent(@Observes(during=TransactionPhase.AFTER_SUCCESS) DeploymentEvent event) {
-		log.log(logLevel, "Deployment event " + event.getEventType() + " fired for deplyoment " + event.getDeploymentId());
-		
+		log.log(logLevel, "Deployment event " + event.getEventType() + " fired for deployment " + event.getDeploymentId());
+
 		switch (event.getEventType()) {
 		case NEW:
 			executeSimulation();
@@ -141,11 +141,11 @@ public class DeploymentScheduler {
 			deploymentBoundary.handleNodeJobUpdate(event.getDeploymentId());
 		}
 	}
-	
+
 	@Asynchronous
 	public void handleShakedownTestEvent(@Observes(during=TransactionPhase.AFTER_SUCCESS) ShakedownTestEvent event) {
 		log.log(logLevel, "ShakedownTest event fired");
-		
+
 		executeForTests();
 	}
 
@@ -174,7 +174,7 @@ public class DeploymentScheduler {
 			log.log(Level.FINE, "No deployments found");
 		}
 	}
-	
+
 	protected synchronized void executePreDeployments() {
 		int preDeploymentProcessingLimit = deploymentBoundary.getPreDeploymentProcessingLimit();
 		log.log(Level.FINE, "Checking for preDeployments, max pro run " + preDeploymentProcessingLimit);
@@ -212,7 +212,7 @@ public class DeploymentScheduler {
 			log.log(Level.FINE, "No deployments inProgress have reached the timeout");
 		}
 	}
-	
+
 	protected synchronized void checkForEndlessPredeploymentDeployments() {
 		log.log(Level.FINE, "Checking preDeployments inprogress which reached the timeout");
 		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsInProgressTimeoutReached();
@@ -271,5 +271,5 @@ public class DeploymentScheduler {
 			}
 		}
 	}
-	
+
 }

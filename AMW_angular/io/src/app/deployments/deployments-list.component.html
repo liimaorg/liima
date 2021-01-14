@@ -75,7 +75,10 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let deployment of deployments" class="deploy-{{ deployment.state }}">
+      <tr
+        *ngFor="let deployment of deployments"
+        class="deploy-{{ deployment.state }}"
+      >
         <td class="has-checkbox">
           <input type="checkbox" [(ngModel)]="deployment.selected" />
           {{ deployment.trackingId }}
@@ -166,7 +169,8 @@
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.rejectPossible">
-            <span class="text-danger cursor-pointer"
+            <span
+              class="text-danger cursor-pointer"
               (click)="showReject(deployment.id)"
             >
               <app-icon icon="x-circle"></app-icon>
@@ -189,10 +193,13 @@
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.hasLogFiles">
-            <span (click)="logViewerLink(deployment.id)" class="cursor-pointer">
+            <a
+              [routerLink]="['/deployments', deployment.id, 'logs']"
+              class="cursor-pointer"
+            >
               <app-icon icon="journal-text"></app-icon>
               <span class="ml-1">logs</span>
-            </span>
+            </a>
             <br />
           </ng-container>
         </td>

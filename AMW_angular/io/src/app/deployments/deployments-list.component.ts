@@ -147,12 +147,4 @@ export class DeploymentsListComponent {
       }
     );
   }
-
-  logViewerLink(deploymentId: number) {
-    window.location.href =
-      '/AMW_web/pages/logView.xhtml?deploymentId=' +
-      deploymentId +
-      '&filters=' +
-      encodeURI(JSON.stringify(this.filtersForParam));
-  }
 }

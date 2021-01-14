@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
@@ -84,15 +84,12 @@ export class DeploymentsComponent implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private ngZone: NgZone,
     private location: Location,
     private deploymentService: DeploymentService,
     private resourceService: ResourceService,
     public navigationStore: NavigationStoreService
   ) {
     this.navigationStore.setVisible(false);
-    this.navigationStore.setCurrent('Deployments');
-    this.navigationStore.setPageTitle('Deployments');
   }
 
   ngOnInit() {

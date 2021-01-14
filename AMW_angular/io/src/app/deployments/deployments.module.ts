@@ -8,13 +8,26 @@ import { DeploymentsEditModalComponent } from './deployments-edit-modal.componen
 import { DeploymentService } from '../deployment/deployment.service';
 import { EnvironmentService } from '../deployment/environment.service';
 import { DeploymentsRoutingModule } from './deployments-routing.module';
+import { DeploymentContainerComponent } from './deployment-container/deployment-container.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { DeploymentLogsComponent } from './logs/deployment-logs.component';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, DeploymentsRoutingModule, SharedModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    DeploymentsRoutingModule,
+    SharedModule,
+    NgbModule,
+    CodemirrorModule,
+  ],
   declarations: [
     DeploymentsComponent,
     DeploymentsListComponent,
     DeploymentsEditModalComponent,
+    DeploymentLogsComponent,
+    DeploymentContainerComponent,
   ],
   providers: [DeploymentService, EnvironmentService],
 })
