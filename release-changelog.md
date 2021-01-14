@@ -1,3 +1,7 @@
+# v1.17.23
+* The Deployment log view was migrated to Angular. Log lines container errors or warnings are now highlited: [#443](https://github.com/liimaorg/liima/issues/443) and [#450](https://github.com/liimaorg/liima/issues/450)
+* Switch from TravisCI to GitHub Actions: [#585](https://github.com/liimaorg/liima/pull/585)
+
 # v1.17.22
 * Fix copyFrom in REST: [#584](https://github.com/liimaorg/liima/pull/584)
 
