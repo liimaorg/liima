@@ -13,6 +13,7 @@ import { DeploymentLogsComponent } from './logs/deployment-logs.component';
         children: [
           { path: '', component: DeploymentsComponent },
           { path: ':deploymentId/logs', component: DeploymentLogsComponent },
+          { path: ':deploymentId/logs/:fileName', component: DeploymentLogsComponent },
         ],
       },
     ]),
