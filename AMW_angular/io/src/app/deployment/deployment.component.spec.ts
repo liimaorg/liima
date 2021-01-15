@@ -285,7 +285,7 @@ describe('DeploymentComponent (create deployment)', () => {
       id: 5,
       tagDate: 1485378084103,
     } as ResourceTag;
-    component.deploymentDate = DateTimeModel.fromLocalString('02.01.2017 12:00', DATE_FORMAT_ANGULAR);
+    component.deploymentDate = DateTimeModel.fromLocalString('02.01.2017 12:00');
     component.transDeploymentParameters = [
       { key: 'atest', value: 'foo' } as DeploymentParameter,
       { key: 'btest', value: 'bar' } as DeploymentParameter,
@@ -301,7 +301,7 @@ describe('DeploymentComponent (create deployment)', () => {
       requestOnly: true,
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,
-      deploymentDate: DateTimeModel.fromLocalString('02.01.2017 12:00', DATE_FORMAT_ANGULAR).toEpoch(),
+      deploymentDate: DateTimeModel.fromLocalString('02.01.2017 12:00').toEpoch(),
       deploymentParameters: component.transDeploymentParameters,
     } as DeploymentRequest;
     spyOn(deploymentService, 'createDeployment').and.returnValue(of({ trackingId: 910 } as Deployment));
