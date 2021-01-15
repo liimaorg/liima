@@ -1,26 +1,10 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  forwardRef,
-  ViewChild,
-  AfterViewInit,
-  Injector,
-} from '@angular/core';
-import {
-  NgbTimeStruct,
-  NgbPopoverConfig,
-  NgbPopover,
-  NgbDateStruct,
-} from '@ng-bootstrap/ng-bootstrap';
-import {
-  NG_VALUE_ACCESSOR,
-  ControlValueAccessor,
-  NgControl,
-} from '@angular/forms';
+import { Component, OnInit, Input, forwardRef, ViewChild, AfterViewInit, Injector } from '@angular/core';
+import { NgbTimeStruct, NgbPopoverConfig, NgbPopover, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, NgControl } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { DateTimeModel } from './date-time.model';
 import { noop } from 'rxjs';
+import { DATE_FORMAT } from 'src/app/core/amw-constants';
 
 @Component({
   selector: 'app-date-time-picker',
@@ -35,14 +19,10 @@ import { noop } from 'rxjs';
     },
   ],
 })
-export class DateTimePickerComponent
-  implements ControlValueAccessor, OnInit, AfterViewInit {
-  @Input()
-  dateString: string;
-
+export class DateTimePickerComponent implements ControlValueAccessor, OnInit, AfterViewInit {
   // moment js format
   @Input()
-  dateStringFormat = 'DD.MM.yyyy HH:mm';
+  dateStringFormat = DATE_FORMAT;
   @Input()
   hourStep = 1;
   @Input()
@@ -54,9 +34,11 @@ export class DateTimePickerComponent
   @Input()
   disabled = false;
 
+  dateString = '';
+
   showTimePickerToggle = false;
   datetime = new DateTimeModel();
-  errorMessage = "";
+  errorMessage = '';
 
   @ViewChild(NgbPopover)
   popover: NgbPopover;
@@ -83,7 +65,7 @@ export class DateTimePickerComponent
 
   writeValue(newModel: DateTimeModel) {
     if (newModel) {
-      this.datetime = Object.assign(this.datetime, newModel)
+      this.datetime = Object.assign(this.datetime, newModel);
       //this.datetime = newModel;
       this.setDateString();
     } else {
@@ -112,7 +94,7 @@ export class DateTimePickerComponent
   onDateStringChange($event: any) {
     const value = $event.target.value;
     const dt = DateTimeModel.fromLocalString(value, this.dateStringFormat);
-    this.errorMessage = ""
+    this.errorMessage = '';
 
     if (dt) {
       this.datetime = dt;
@@ -122,13 +104,13 @@ export class DateTimePickerComponent
       this.dateString = '';
       this.onChange(this.datetime);
     } else {
-      this.errorMessage = "Invalid date!"
+      this.errorMessage = 'Invalid date!';
     }
   }
 
   onDateChange(event: NgbDateStruct) {
-    if(!event) {
-      return
+    if (!event) {
+      return;
     }
     this.datetime.year = event.year;
     this.datetime.month = event.month;
@@ -137,8 +119,8 @@ export class DateTimePickerComponent
   }
 
   onTimeChange(event: NgbTimeStruct) {
-    if(!event) {
-      return
+    if (!event) {
+      return;
     }
     this.datetime.hour = event.hour;
     this.datetime.minute = event.minute;

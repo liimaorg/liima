@@ -15,10 +15,7 @@ import { DeploymentRequest } from './deployment-request';
 import { AppWithVersion } from './app-with-version';
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
-import * as moment from 'moment';
-import * as $ from 'jquery'; // this needs to be here...
 import { NavigationStoreService } from '../navigation/navigation-store.service';
-import { DATE_FORMAT } from '../core/amw-constants';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 
 @Component({

@@ -1,39 +1,34 @@
-import * as moment from 'moment';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { Deployment } from '../deployment/deployment';
-import { DATE_FORMAT } from '../core/amw-constants';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 
 describe('DeploymentsEditModalComponent (with query params)', () => {
   let component: DeploymentsEditModalComponent;
+  var activeModal = new NgbActiveModal();
   beforeEach(() => {
-    component = new DeploymentsEditModalComponent();
+    component = new DeploymentsEditModalComponent(activeModal);
   });
 
   it('should log unknown edit actions on doEdit', () => {
     // given
-    component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
     component.selectedEditAction = 'test';
     component.deployments = [{ id: 1, selected: true } as Deployment];
     spyOn(console, 'error');
-    spyOn(component, 'hideModal');
+    spyOn(activeModal, 'close');
 
     // when
     component.doEdit();
 
     // then
     expect(console.error).toHaveBeenCalled();
-    expect(component.hideModal).toHaveBeenCalled();
+    expect(activeModal.close).toHaveBeenCalled();
   });
 
   it('should apply date for confirmation', () => {
     // given
-    const newDeploymentDate: string = '30.11.2017 09:19';
-    const expectedDeploymentDate: number = moment(
-      newDeploymentDate,
-      DATE_FORMAT
-    ).valueOf();
+    const newDeploymentDate = DateTimeModel.fromLocalString('30.11.2017 09:19');
 
-    component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
     component.deploymentDate = newDeploymentDate;
     component.selectedEditAction = 'Confirm';
     component.deployments = [
@@ -41,7 +36,7 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
       { id: 1, selected: true, deploymentDate: 6666 } as Deployment,
     ];
     spyOn(console, 'error');
-    spyOn(component, 'hideModal');
+    spyOn(activeModal, 'close');
 
     // when
     component.doEdit();
@@ -49,30 +44,29 @@ describe('DeploymentsEditModalComponent (with query params)', () => {
     // then
     const deployment1: Deployment = component.deployments[0];
     const deployment2: Deployment = component.deployments[1];
-    expect(deployment1.deploymentDate).toEqual(expectedDeploymentDate);
-    expect(deployment2.deploymentDate).toEqual(expectedDeploymentDate);
-    expect(component.hideModal).toHaveBeenCalled();
+    expect(deployment1.deploymentDate).toEqual(newDeploymentDate.toEpoch());
+    expect(deployment2.deploymentDate).toEqual(newDeploymentDate.toEpoch());
+    expect(activeModal.close).toHaveBeenCalled();
   });
 
   it('should clear data after doEdit()', () => {
     // given
-    const newDeploymentDate: string = '30.11.2017 09:19';
+    const newDeploymentDate = DateTimeModel.fromLocalString('30.11.2017 09:19');
 
-    component.editActions = ['Change date', 'Confirm', 'Reject', 'Cancel'];
     component.deploymentDate = newDeploymentDate;
     component.selectedEditAction = 'Confirm';
     component.deployments = [
       { id: 1, selected: true, deploymentDate: 5555 } as Deployment,
       { id: 1, selected: true, deploymentDate: 6666 } as Deployment,
     ];
-    spyOn(component, 'hideModal');
+    spyOn(activeModal, 'close');
     // when
     component.doEdit();
 
     // then
     expect(component.confirmationAttributes).toEqual({} as Deployment);
     expect(component.selectedEditAction).toEqual('');
-    expect(component.deploymentDate).toEqual('');
-    expect(component.hideModal).toHaveBeenCalled();
+    expect(component.deploymentDate).toEqual(undefined);
+    expect(activeModal.close).toHaveBeenCalled();
   });
 });
