@@ -664,4 +664,11 @@ public class ResourceRelationModel implements Serializable {
 
         }
     }
+
+    public void doRemoveRelation() {
+        if (ResourceTypeEntity.RUNTIME.equals(this.getRemoveResourceRelation().getSlaveTypeName())) {
+            this.runtimeRelations = new TreeMap<>();
+            this.setResourceRelationForRemoval(null);
+        }
+    }
 }
