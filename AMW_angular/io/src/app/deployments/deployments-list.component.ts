@@ -4,6 +4,8 @@ import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resource/resource.service';
 import * as _ from 'lodash';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DATE_FORMAT_ANGULAR } from '../core/amw-constants';
 
 @Component({
   selector: 'amw-deployments-list',
@@ -14,33 +16,20 @@ export class DeploymentsListComponent {
   @Input() sortCol: string;
   @Input() sortDirection: string;
   @Input() filtersForParam: DeploymentFilter[];
-  @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<
-    Deployment
-  >();
-  @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<
-    boolean
-  >();
-  @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<
-    Deployment
-  >();
-  @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<
-    Deployment
-  >();
-  @Output() doConfirmDeployment: EventEmitter<Deployment> = new EventEmitter<
-    Deployment
-  >();
+  @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
+  @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
+  @Output() doRejectDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
+  @Output() doConfirmDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doSort: EventEmitter<string> = new EventEmitter<string>();
 
   deployment: Deployment;
-
   deploymentDate: DateTimeModel = new DateTimeModel();
-
   hasPermissionShakedownTest: boolean = null;
-
   allSelected: boolean = false;
-
   // TODO: show this error somewhere?
   errorMessage = ""
+  dateFormat = DATE_FORMAT_ANGULAR;
 
   failureReason: { [key: string]: string } = {
     PRE_DEPLOYMENT_GENERATION: 'pre deployment generation failed',
@@ -53,72 +42,51 @@ export class DeploymentsListComponent {
     RUNTIME_ERROR: 'runtime error',
   };
 
-  constructor(private resourceService: ResourceService) {}
+  constructor(private resourceService: ResourceService, private modalService: NgbModal) {}
 
-  showDetails(deploymentId: number) {
+  showDetails(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    $('#deploymentDetails').modal('show');
+    this.modalService.open(content);
   }
 
-  showDateChange(deploymentId: number) {
+  showDateChange(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.deploymentDate = DateTimeModel.fromEpoch(this.deployment.deploymentDate);
-    $('#deploymentDateChange').modal('show');
+    this.modalService.open(content).result.then((result) => {
+      this.deployment.deploymentDate = this.deploymentDate.toEpoch();
+      this.editDeploymentDate.emit(this.deployment);
+      delete this.deploymentDate;
+    }, (reason) => {
+      delete this.deploymentDate;
+    });
   }
 
-  showConfirm(deploymentId: number) {
+  showConfirm(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.resourceService
       .canCreateShakedownTest(this.deployment.appServerId)
       .subscribe(
-        /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
-        /* error path */ (e) => (this.errorMessage = e),
-        /* onComplete */ () => $('#deploymentConfirmation').modal('show')
+        /* happy path */(r) => (this.hasPermissionShakedownTest = r),
+        /* error path */(e) => (this.errorMessage = e),
+        /* onComplete */() => (
+          this.modalService.open(content).result.then((result) => {
+            this.doConfirmDeployment.emit(this.deployment);
+          }, (reason) => { }))
       );
   }
 
-  showReject(deploymentId: number) {
+  showReject(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    $('#deploymentRejection').modal('show');
-  }
-
-  showCancel(deploymentId: number) {
-    this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    $('#deploymentCancelation').modal('show');
-  }
-
-  doDateChange() {
-    if (this.deployment) {
-      this.deployment.deploymentDate = this.deploymentDate.toEpoch();
-      this.editDeploymentDate.emit(this.deployment);
-      $('#deploymentDateChange').modal('hide');
-      delete this.deployment;
-      delete this.deploymentDate;
-    }
-  }
-
-  doReject() {
-    if (this.deployment) {
+    this.modalService.open(content).result.then((result) => {
       this.doRejectDeployment.emit(this.deployment);
-      $('#deploymentRejection').modal('hide');
-      delete this.deployment;
-    }
+    }, (reason) => { });
   }
 
-  doCancel() {
-    if (this.deployment) {
+  showCancel(content, deploymentId: number) {
+    this.deployment = _.find(this.deployments, ['id', deploymentId]);
+    this.modalService.open(content).result.then((result) => {
       this.doCancelDeployment.emit(this.deployment);
-      $('#deploymentCancelation').modal('hide');
-      delete this.deployment;
-    }
-  }
-
-  doConfirm() {
-    if (this.deployment) {
-      this.doConfirmDeployment.emit(this.deployment);
-      $('#deploymentConfirmation').modal('hide');
-      delete this.deployment;
-    }
+    }, (reason) => { });
   }
 
   reSort(col: string) {

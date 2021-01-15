@@ -221,14 +221,3 @@
     </div>
   </div>
 </div>
-
-<amw-deployments-edit-modal
-  [deployments]="getSelectedDeployments()"
-  [editActions]="editActions"
-  [hasPermissionShakedownTest]="hasPermissionShakedownTest"
-  (doConfirmDeployment)="confirmDeployment($event)"
-  (doCancelDeployment)="cancelDeployment($event)"
-  (doRejectDeployment)="rejectDeployment($event)"
-  (doEditDeploymentDate)="changeDeploymentDate($event)"
->
-</amw-deployments-edit-modal>

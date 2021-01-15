@@ -35,7 +35,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let entry of auditlogEntries$ | async">
-        <td scope="row">{{ entry.timestamp | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td scope="row">{{ entry.timestamp | date: dateFormat }}</td>
         <td>
           <ngb-highlight
             [result]="entry.relation"
