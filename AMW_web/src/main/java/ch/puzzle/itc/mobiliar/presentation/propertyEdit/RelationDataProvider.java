@@ -407,30 +407,33 @@ public class RelationDataProvider implements Serializable {
             if (!isEditResource() && getResourceType() == null) {
                 String message = "No resource type selected.";
                 GlobalMessageAppender.addErrorMessage(message);
-            } else if (resourceRelationModel.getRemoveResourceRelation() == null) {
-                String message = "No related resource selected.";
-                GlobalMessageAppender.addErrorMessage(message);
             } else {
-                try {
-                    if (isEditResource()) {
-                        relationEditor.removeRelation(ForeignableOwner.getSystemOwner(), resourceRelationModel.getRemoveResourceRelation()
-                                .getResRelId());
-                    } else {
-                        relationEditor.removeResourceTypeRelation(resourceRelationModel
-                                .getRemoveResourceRelation().getResRelTypeId());
+                ResourceEditRelation resourceRelationToRemove = resourceRelationModel.getRemoveResourceRelation();
+                if (resourceRelationToRemove == null) {
+                    String message = "No related resource selected.";
+                    GlobalMessageAppender.addErrorMessage(message);
+                } else {
+                    try {
+                        if (isEditResource()) {
+                            relationEditor.removeRelation(ForeignableOwner.getSystemOwner(), resourceRelationToRemove
+                                    .getResRelId());
+                        } else {
+                            relationEditor.removeResourceTypeRelation(resourceRelationToRemove.getResRelTypeId());
+                        }
+                        resourceRelationModel.doRemoveRelation();
+                        resourceRelationModel.reloadValues();
+                        String message = "Relation successfully removed.";
+                        GlobalMessageAppender.addSuccessMessage(message);
+                        isSuccessful = true;
+                    } catch (EJBException e) {
+                        if (e.getCause() instanceof NotAuthorizedException) {
+                            GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
+                        } else {
+                            throw e;
+                        }
+                    } catch (ElementAlreadyExistsException | ResourceTypeNotFoundException e) {
+                        GlobalMessageAppender.addErrorMessage(e.getMessage());
                     }
-                    resourceRelationModel.reloadValues();
-                    String message = "Relation successfully removed.";
-                    GlobalMessageAppender.addSuccessMessage(message);
-                    isSuccessful = true;
-                } catch (EJBException e) {
-                    if (e.getCause() instanceof NotAuthorizedException) {
-                        GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
-                    } else {
-                        throw e;
-                    }
-                } catch (ElementAlreadyExistsException | ResourceTypeNotFoundException e) {
-                    GlobalMessageAppender.addErrorMessage(e.getMessage());
                 }
             }
         } catch (ResourceNotFoundException e) {
