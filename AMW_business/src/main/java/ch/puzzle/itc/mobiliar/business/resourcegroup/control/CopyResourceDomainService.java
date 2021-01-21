@@ -621,17 +621,19 @@ public class CopyResourceDomainService {
         return targets;
     }
 
+    /**
+     * Try to get the new target property from the existing properties. If it does not exist but there is a propertydescriptor
+     * - reuse this property
+     *
+     * @param existingPropertiesByDescriptorId
+     * @param origin
+     * @param targetDescriptor
+     * @return
+     */
     private PropertyEntity getTargetPropertyFromExistingProperties(Map<Integer, PropertyEntity> existingPropertiesByDescriptorId, PropertyEntity origin, PropertyDescriptorEntity targetDescriptor) {
         PropertyEntity targetProperty = existingPropertiesByDescriptorId.get(origin.getDescriptor().getId());
-
-        if (targetProperty == null) {
-            // If it can't be found, it's possible that we have copied the target descriptor.
-            // Let's look for it.
-            if (targetDescriptor != null) {
-                // If a property is already defined for the existing descriptor, we update this
-                // value...
-                targetProperty = existingPropertiesByDescriptorId.get(targetDescriptor.getId());
-            }
+        if (targetProperty == null && targetDescriptor != null) {
+            targetProperty = existingPropertiesByDescriptorId.get(targetDescriptor.getId());
         }
         return targetProperty;
     }
