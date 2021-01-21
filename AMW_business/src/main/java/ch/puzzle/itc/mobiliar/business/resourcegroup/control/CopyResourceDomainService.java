@@ -636,6 +636,11 @@ public class CopyResourceDomainService {
                         // targetDescriptor null come for properties on ResourceTypes or relations
                         if (targetDescriptor != null) {
                             target.setDescriptor(targetDescriptor);
+                        } else {
+                            // create a copy of the old propertyDescriptor, fixes issue https://github.com/liimaorg/liima/issues/487
+                            PropertyDescriptorEntity propertyDescriptorEntity = target.getDescriptor().getCopy(new PropertyDescriptorEntity(), copyUnit);
+                            target.setDescriptor(propertyDescriptorEntity);
+                            entityManager.persist(target.getDescriptor());
                         }
                         targets.add(target);
                     } else {
