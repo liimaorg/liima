@@ -608,9 +608,8 @@ public class CopyResourceDomainService {
                 String key = createDescriptorKey(origin.getDescriptor());
                 PropertyDescriptorEntity targetDescriptor = targetPropDescriptorMap.get(key);
 
-                if (CopyMode.MAIA_PREDECESSOR == copyUnit.getMode() && targetDescriptor == null) {
-                    // do not add property for null descriptor when Predecessor mode
-                } else {
+                // do not add property for null descriptor when Predecessor mode
+                if (CopyMode.MAIA_PREDECESSOR != copyUnit.getMode() || targetDescriptor != null) {
                     targets.add(getTargetProperty(copyUnit, origin, targetDescriptor, existingPropertiesByDescriptorId));
                 }
             }
