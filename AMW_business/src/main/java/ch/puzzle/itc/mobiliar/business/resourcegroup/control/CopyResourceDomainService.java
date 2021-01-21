@@ -221,7 +221,7 @@ public class CopyResourceDomainService {
     protected void copyConsumedMasterRelations(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
         Set<ConsumedResourceRelationEntity> targetConsumedMasterRel = copyUnit.getTargetResource()
                 .getConsumedMasterRelations() != null ? copyUnit.getTargetResource()
-                .getConsumedMasterRelations() : new HashSet<ConsumedResourceRelationEntity>();
+                .getConsumedMasterRelations() : new HashSet<>();
         Set<ConsumedResourceRelationEntity> originConsumedMasterRel = copyUnit.getOriginResource()
                 .getConsumedMasterRelations();
         copyConsumedResourceRelationEntities(originConsumedMasterRel, targetConsumedMasterRel, copyUnit);
@@ -231,7 +231,7 @@ public class CopyResourceDomainService {
     protected void copyConsumedSlaveRelations(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
         Set<ConsumedResourceRelationEntity> targetConsumedSlaveRel = copyUnit.getTargetResource()
                 .getConsumedSlaveRelations() != null ? copyUnit.getTargetResource()
-                .getConsumedSlaveRelations() : new HashSet<ConsumedResourceRelationEntity>();
+                .getConsumedSlaveRelations() : new HashSet<>();
         Set<ConsumedResourceRelationEntity> originConsumedSlaveRel = copyUnit.getOriginResource()
                 .getConsumedSlaveRelations();
         if (copyUnit.getMode() == CopyMode.RELEASE) {
@@ -306,7 +306,7 @@ public class CopyResourceDomainService {
     protected void copyProvidedMasterRelations(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
         Set<ProvidedResourceRelationEntity> targetProvidedResRels = copyUnit.getTargetResource()
                 .getProvidedMasterRelations() != null ? copyUnit.getTargetResource()
-                .getProvidedMasterRelations() : new HashSet<ProvidedResourceRelationEntity>();
+                .getProvidedMasterRelations() : new HashSet<>();
         Set<ProvidedResourceRelationEntity> originProvidedResRels = copyUnit.getOriginResource()
                 .getProvidedMasterRelations();
         if (copyUnit.getMode() == CopyMode.RELEASE || copyUnit.getMode() == CopyMode.MAIA_PREDECESSOR) {
@@ -325,7 +325,7 @@ public class CopyResourceDomainService {
     protected void copyProvidedSlaveRelations(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
         Set<ProvidedResourceRelationEntity> targetProvidedSlaveRels = copyUnit.getTargetResource()
                 .getProvidedSlaveRelations() != null ? copyUnit.getTargetResource()
-                .getProvidedSlaveRelations() : new HashSet<ProvidedResourceRelationEntity>();
+                .getProvidedSlaveRelations() : new HashSet<>();
         Set<ProvidedResourceRelationEntity> originProvidedSlaveRels = copyUnit.getOriginResource()
                 .getProvidedSlaveRelations();
         if (copyUnit.getMode() == CopyMode.RELEASE) {
@@ -541,7 +541,7 @@ public class CopyResourceDomainService {
     }
 
     protected String createDescriptorKey(PropertyDescriptorEntity desc) {
-        return desc.getPropertyName() + "_" + String.valueOf(desc.isTesting());
+        return desc.getPropertyName() + "_" + desc.isTesting();
     }
 
     protected void copyTags(PropertyDescriptorEntity origin, PropertyDescriptorEntity target) {
@@ -715,14 +715,14 @@ public class CopyResourceDomainService {
         Map<String, TemplateDescriptorEntity> targetTemplatesMap = new HashMap<>();
         if (targets != null) {
             for (TemplateDescriptorEntity t : targets) {
-                String key = t.getName() + String.valueOf(t.isTesting());
+                String key = t.getName() + t.isTesting();
                 targetTemplatesMap.put(key, t);
             }
         }
 
         if (origins != null) {
             for (TemplateDescriptorEntity origin : origins) {
-                String key = origin.getName() + String.valueOf(origin.isTesting());
+                String key = origin.getName() + origin.isTesting();
                 targetTemplatesMap.put(key, origin.getCopy(targetTemplatesMap.get(key), copyUnit));
             }
         }
