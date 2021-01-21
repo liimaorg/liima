@@ -588,7 +588,7 @@ public class CopyResourceDomainService {
     /**
      * <ul>
      * <li>The identifier between target propertyDescriptor and origin TargetDescriptor is the propertyName (= technicalKey)</li>
-     * <li>If a propertyDescript of the targetResources has already a properyValue, this value will not be overwritten.
+     * <li>If a propertyDescriptor of the targetResources has already a propertyValue, this value will not be overwritten.
      * </ul>
      *
      * @param origins,                 all properties of the origin resource for one context
