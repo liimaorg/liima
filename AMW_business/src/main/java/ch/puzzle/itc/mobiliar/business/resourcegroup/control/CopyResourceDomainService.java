@@ -609,17 +609,7 @@ public class CopyResourceDomainService {
                 PropertyDescriptorEntity targetDescriptor = targetPropDescriptorMap.get(key);
                 // If a property exists on this context for the same descriptor, we define it as the
                 // target property...
-                PropertyEntity targetProperty = existingPropertiesByDescriptorId.get(origin.getDescriptor().getId());
-
-                if (targetProperty == null) {
-                    // If it can't be found, it's possible that we have copied the target descriptor.
-                    // Let's look for it.
-                    if (targetDescriptor != null) {
-                        // If a property is already defined for the existing descriptor, we update this
-                        // value...
-                        targetProperty = existingPropertiesByDescriptorId.get(targetDescriptor.getId());
-                    }
-                }
+                PropertyEntity targetProperty = getTargetPropertyFromExistingProperties(existingPropertiesByDescriptorId, origin, targetDescriptor);
 
                 if (CopyMode.MAIA_PREDECESSOR == copyUnit.getMode() && targetDescriptor == null) {
                     // do not add property for null descriptor when Predecessor mode
@@ -629,6 +619,21 @@ public class CopyResourceDomainService {
             }
         }
         return targets;
+    }
+
+    private PropertyEntity getTargetPropertyFromExistingProperties(Map<Integer, PropertyEntity> existingPropertiesByDescriptorId, PropertyEntity origin, PropertyDescriptorEntity targetDescriptor) {
+        PropertyEntity targetProperty = existingPropertiesByDescriptorId.get(origin.getDescriptor().getId());
+
+        if (targetProperty == null) {
+            // If it can't be found, it's possible that we have copied the target descriptor.
+            // Let's look for it.
+            if (targetDescriptor != null) {
+                // If a property is already defined for the existing descriptor, we update this
+                // value...
+                targetProperty = existingPropertiesByDescriptorId.get(targetDescriptor.getId());
+            }
+        }
+        return targetProperty;
     }
 
     /**
