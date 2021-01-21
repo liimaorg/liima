@@ -605,15 +605,15 @@ public class CopyResourceDomainService {
         Set<PropertyEntity> targets = new HashSet<>();
         if (origins != null) {
             for (PropertyEntity origin : origins) {
+                String key = createDescriptorKey(origin.getDescriptor());
+                PropertyDescriptorEntity targetDescriptor = targetPropDescriptorMap.get(key);
                 // If a property exists on this context for the same descriptor, we define it as the
                 // target property...
                 PropertyEntity targetProperty = existingPropertiesByDescriptorId.get(origin.getDescriptor().getId());
-                PropertyDescriptorEntity targetDescriptor = null;
+
                 if (targetProperty == null) {
                     // If it can't be found, it's possible that we have copied the target descriptor.
                     // Let's look for it.
-                    String key = createDescriptorKey(origin.getDescriptor());
-                    targetDescriptor = targetPropDescriptorMap.get(key);
                     if (targetDescriptor != null) {
                         // If a property is already defined for the existing descriptor, we update this
                         // value...
@@ -624,27 +624,62 @@ public class CopyResourceDomainService {
                 if (CopyMode.MAIA_PREDECESSOR == copyUnit.getMode() && targetDescriptor == null) {
                     // do not add property for null descriptor when Predecessor mode
                 } else {
-                    if (targetProperty == null) {
-                        // If no property for the found property descriptor exists, we create a new one...
-                        PropertyEntity target = origin.getCopy(null, copyUnit);
-                        // targetDescriptor null come for properties on ResourceTypes or relations
-                        if (targetDescriptor != null) {
-                            target.setDescriptor(targetDescriptor);
-                        } else {
-                            // create a copy of the old propertyDescriptor, fixes issue https://github.com/liimaorg/liima/issues/487
-                            PropertyDescriptorEntity propertyDescriptorEntity = target.getDescriptor().getCopy(new PropertyDescriptorEntity(), copyUnit);
-                            target.setDescriptor(propertyDescriptorEntity);
-                            entityManager.persist(target.getDescriptor());
-                        }
-                        targets.add(target);
-                    } else {
-                        // otherwise, we merge the new value with the old property entity
-                        targets.add(mergePropertyEntity(origin, targetProperty));
-                    }
+                    targets.add(getTargetProperty(copyUnit, origin, targetProperty, targetDescriptor));
                 }
             }
         }
         return targets;
+    }
+
+    /**
+     * Creates a new {@link PropertyEntity} if the targetProperty is null or merges the new value with the {@link PropertyEntity} from origin
+     *
+     * @param copyUnit
+     * @param origin
+     * @param targetProperty
+     * @param targetDescriptor
+     * @return
+     */
+    private PropertyEntity getTargetProperty(CopyUnit copyUnit, PropertyEntity origin, PropertyEntity targetProperty, PropertyDescriptorEntity targetDescriptor) {
+        return targetProperty == null ?
+                createNewPropertyEntityForDescriptor(copyUnit, origin, targetDescriptor) :
+                mergePropertyEntity(origin, targetProperty);
+    }
+
+    private PropertyEntity createNewPropertyEntityForDescriptor(CopyUnit copyUnit, PropertyEntity origin, PropertyDescriptorEntity targetDescriptor) {
+        PropertyEntity target = origin.getCopy(null, copyUnit);
+        // targetDescriptor null come for properties on ResourceTypes or relations
+        if (targetDescriptor != null) {
+            target.setDescriptor(targetDescriptor);
+        } else {
+            copyAndPersistPropertyDescriptor(copyUnit, target);
+        }
+        return target;
+    }
+
+    /**
+     * creates and persist a copy of the existing propertyDescriptor on the given propertyEntity
+     * fixes issue https://github.com/liimaorg/liima/issues/487
+     *
+     * @param copyUnit
+     * @param propertyEntity
+     */
+    private void copyAndPersistPropertyDescriptor(CopyUnit copyUnit, PropertyEntity propertyEntity) {
+        PropertyDescriptorEntity propertyDescriptorEntity = propertyEntity.getDescriptor().getCopy(new PropertyDescriptorEntity(), copyUnit);
+        propertyEntity.setDescriptor(propertyDescriptorEntity);
+        entityManager.persist(propertyEntity.getDescriptor());
+    }
+
+    private Map<Integer, PropertyEntity> groupPropertiesByDescriptorId(Set<PropertyEntity> targetProperties) {
+        Map<Integer, PropertyEntity> existingPropertiesByDescriptorId = new HashMap<>();
+        if (targetProperties != null) {
+            for (PropertyEntity existingProperty : targetProperties) {
+                if (existingProperty.getDescriptor() != null && existingProperty.getDescriptor().getId() != null) {
+                    existingPropertiesByDescriptorId.put(existingProperty.getDescriptor().getId(), existingProperty);
+                }
+            }
+        }
+        return existingPropertiesByDescriptorId;
     }
 
     /**
