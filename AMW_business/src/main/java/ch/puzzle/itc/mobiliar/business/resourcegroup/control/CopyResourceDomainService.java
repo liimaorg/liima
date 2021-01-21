@@ -607,18 +607,32 @@ public class CopyResourceDomainService {
             for (PropertyEntity origin : origins) {
                 String key = createDescriptorKey(origin.getDescriptor());
                 PropertyDescriptorEntity targetDescriptor = targetPropDescriptorMap.get(key);
-                // If a property exists on this context for the same descriptor, we define it as the
-                // target property...
-                PropertyEntity targetProperty = getTargetPropertyFromExistingProperties(existingPropertiesByDescriptorId, origin, targetDescriptor);
 
                 if (CopyMode.MAIA_PREDECESSOR == copyUnit.getMode() && targetDescriptor == null) {
                     // do not add property for null descriptor when Predecessor mode
                 } else {
-                    targets.add(getTargetProperty(copyUnit, origin, targetProperty, targetDescriptor));
+                    targets.add(getTargetProperty(copyUnit, origin, targetDescriptor, existingPropertiesByDescriptorId));
                 }
             }
         }
         return targets;
+    }
+
+    /**
+     * Creates a new {@link PropertyEntity} if the targetProperty is null or merges the new value with the {@link PropertyEntity} from origin
+     *
+     * @param copyUnit
+     * @param origin
+     * @param targetDescriptor
+     * @param existingPropertiesByDescriptorId
+     * @return
+     */
+    private PropertyEntity getTargetProperty(CopyUnit copyUnit, PropertyEntity origin, PropertyDescriptorEntity targetDescriptor, Map<Integer, PropertyEntity> existingPropertiesByDescriptorId) {
+
+        PropertyEntity targetProperty = getTargetPropertyFromExistingProperties(existingPropertiesByDescriptorId, origin, targetDescriptor);
+        return targetProperty == null ?
+                createNewPropertyEntityFromOrigin(copyUnit, origin, targetDescriptor) :
+                mergePropertyEntity(origin, targetProperty);
     }
 
     /**
@@ -639,29 +653,23 @@ public class CopyResourceDomainService {
     }
 
     /**
-     * Creates a new {@link PropertyEntity} if the targetProperty is null or merges the new value with the {@link PropertyEntity} from origin
+     * Create a copy of the given origin propertyEntity - and set the property descriptor. If there is one available (targetDescriptor) use
+     * this one, otherwise create and persist a new property descriptor.
+     * The target descriptor is set if it comes from the resource type
      *
      * @param copyUnit
      * @param origin
-     * @param targetProperty
      * @param targetDescriptor
      * @return
      */
-    private PropertyEntity getTargetProperty(CopyUnit copyUnit, PropertyEntity origin, PropertyEntity targetProperty, PropertyDescriptorEntity targetDescriptor) {
-        return targetProperty == null ?
-                createNewPropertyEntityForDescriptor(copyUnit, origin, targetDescriptor) :
-                mergePropertyEntity(origin, targetProperty);
-    }
-
-    private PropertyEntity createNewPropertyEntityForDescriptor(CopyUnit copyUnit, PropertyEntity origin, PropertyDescriptorEntity targetDescriptor) {
-        PropertyEntity target = origin.getCopy(null, copyUnit);
-        // targetDescriptor null come for properties on ResourceTypes or relations
+    private PropertyEntity createNewPropertyEntityFromOrigin(CopyUnit copyUnit, PropertyEntity origin, PropertyDescriptorEntity targetDescriptor) {
+        PropertyEntity propertyEntity = origin.getCopy(null, copyUnit);
         if (targetDescriptor != null) {
-            target.setDescriptor(targetDescriptor);
+            propertyEntity.setDescriptor(targetDescriptor);
         } else {
-            copyAndPersistPropertyDescriptor(copyUnit, target);
+            copyAndPersistPropertyDescriptor(copyUnit, propertyEntity);
         }
-        return target;
+        return propertyEntity;
     }
 
     /**
