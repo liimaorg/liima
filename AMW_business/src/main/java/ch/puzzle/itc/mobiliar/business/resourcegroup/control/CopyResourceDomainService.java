@@ -599,14 +599,8 @@ public class CopyResourceDomainService {
                                                  Map<String, PropertyDescriptorEntity> targetPropDescriptorMap,
                                                  Set<PropertyEntity> targetProperties,
                                                  CopyUnit copyUnit) {
-        Map<Integer, PropertyEntity> existingPropertiesByDescriptorId = new HashMap<>();
-        if (targetProperties != null) {
-            for (PropertyEntity existingProperty : targetProperties) {
-                if (existingProperty.getDescriptor() != null && existingProperty.getDescriptor().getId() != null) {
-                    existingPropertiesByDescriptorId.put(existingProperty.getDescriptor().getId(), existingProperty);
-                }
-            }
-        }
+
+        Map<Integer, PropertyEntity> existingPropertiesByDescriptorId = groupPropertiesByDescriptorId(targetProperties);
 
         Set<PropertyEntity> targets = new HashSet<>();
         if (origins != null) {
