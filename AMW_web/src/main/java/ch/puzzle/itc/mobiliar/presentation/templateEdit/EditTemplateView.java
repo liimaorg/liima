@@ -252,36 +252,9 @@ public class EditTemplateView implements Serializable {
         boolean success = true;
         String errorMessage = "Was not able to save the template: ";
         try {
-            // set the template to testing mode...
-            template.setTesting(settings.isTestingMode());
-            if (template.isTesting()) {
-                if (selectedStp != null) {
-                    template.setName(selectedStp.getStpName());
-                } else {
-                    throwError("No STP-name selected!");
-                }
-            }
-
-            if (template.getId() == null && !canAdd()) {
-                throwError("No permission to create template!");
-            } else if (!canModifyTemplates()) {
-                throwError("No permission to modify templates!");
-            }
-            if (template.getTargetPath() != null && template.getTargetPath().startsWith("/")) {
-                throwError("Absolute paths are not allowed for file path");
-            }
-
-            if (template.getTargetPath() != null && template.getTargetPath().contains("../")) {
-                throwError("No path traversals like '../' allowed in file path");
-            }
-            if (relationIdForTemplate != null) {
-                templateEditor.saveTemplateForRelation(template, relationIdForTemplate,
-                        resourceId != null);
-            } else if (resourceId == null) {
-                templateEditor.saveTemplateForResourceType(template, resourceTypeId);
-            } else {
-                templateEditor.saveTemplateForResource(template, resourceId);
-            }
+            setTemplateName();
+            validateInput();
+            saveTemplate();
         } catch (ResourceNotFoundException | ResourceTypeNotFoundException e) {
             success = fail(errorMessage + e.getMessage());
         } catch (AMWException e) {
@@ -289,6 +262,43 @@ public class EditTemplateView implements Serializable {
         }
         if (success) {
             succeed();
+        }
+    }
+
+    private void setTemplateName() throws AMWException {
+        template.setTesting(settings.isTestingMode());
+        if (template.isTesting()) {
+            if (selectedStp != null) {
+                template.setName(selectedStp.getStpName());
+            } else {
+                throwError("No STP-name selected!");
+            }
+        }
+    }
+
+    private void saveTemplate() throws AMWException {
+        if (relationIdForTemplate != null) {
+            templateEditor.saveTemplateForRelation(template, relationIdForTemplate,
+                    resourceId != null);
+        } else if (resourceId == null) {
+            templateEditor.saveTemplateForResourceType(template, resourceTypeId);
+        } else {
+            templateEditor.saveTemplateForResource(template, resourceId);
+        }
+    }
+
+    private void validateInput() throws AMWException {
+        if (template.getId() == null && !canAdd()) {
+            throwError("No permission to create template!");
+        } else if (!canModifyTemplates()) {
+            throwError("No permission to modify templates!");
+        }
+        if (template.getTargetPath() != null && template.getTargetPath().startsWith("/")) {
+            throwError("Absolute paths are not allowed for file path");
+        }
+
+        if (template.getTargetPath() != null && template.getTargetPath().contains("../")) {
+            throwError("No path traversals like '../' allowed in file path");
         }
     }
 
