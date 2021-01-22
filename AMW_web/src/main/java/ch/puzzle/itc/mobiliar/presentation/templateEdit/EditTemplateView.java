@@ -119,7 +119,7 @@ public class EditTemplateView implements Serializable {
     }
 
     /**
-     * @return true if testing is tue and initialized, otherwise false
+     * @return true if testing is true and initialized, otherwise false
      */
     public boolean isTesting() {
         return testing != null && testing;
@@ -257,42 +257,41 @@ public class EditTemplateView implements Serializable {
             if (template.isTesting()) {
                 if (selectedStp != null) {
                     template.setName(selectedStp.getStpName());
-                }
-                else {
-                    throw new AMWException("No STP-name selected!");
+                } else {
+                    throwError("No STP-name selected!");
                 }
             }
 
             if (template.getId() == null && !canAdd()) {
-                throw new AMWException("No permission to create template!");
+                throwError("No permission to create template!");
+            } else if (!canModifyTemplates()) {
+                throwError("No permission to modify templates!");
             }
-            else if (!canModifyTemplates()) {
-                throw new AMWException("No permission to modify templates!");
+            if (template.getTargetPath() != null && template.getTargetPath().startsWith("/")) {
+                throwError("Absolute paths are not allowed for file path");
+            }
+
+            if (template.getTargetPath() != null && template.getTargetPath().contains("../")) {
+                throwError("No path traversals like '../' allowed in file path");
             }
             if (relationIdForTemplate != null) {
                 templateEditor.saveTemplateForRelation(template, relationIdForTemplate,
                         resourceId != null);
-            }
-            else if (resourceId == null) {
+            } else if (resourceId == null) {
                 templateEditor.saveTemplateForResourceType(template, resourceTypeId);
-            }
-            else {
+            } else {
                 templateEditor.saveTemplateForResource(template, resourceId);
             }
-        }
-        catch (ResourceNotFoundException | ResourceTypeNotFoundException e) {
-            GlobalMessageAppender.addErrorMessage(errorMessage + e.getMessage());
-            success = false;
-        }
-        catch (AMWException e) {
-            GlobalMessageAppender.addErrorMessage(e);
-            success = false;
+        } catch (ResourceNotFoundException | ResourceTypeNotFoundException e) {
+            success = fail(errorMessage + e.getMessage());
+        } catch (AMWException e) {
+            success = fail(e);
         }
         if (success) {
-            GlobalMessageAppender.addSuccessMessage("Template successfully saved.");
-            revisionInformations = Lists.reverse(templateEditor.getTemplateRevisions(template.getId()));
+            succeed();
         }
     }
+
 
     public boolean canModifyTemplates() {
         // Resource (Instance)
@@ -315,5 +314,25 @@ public class EditTemplateView implements Serializable {
 
     public boolean isEditResource() {
         return resourceId != null;
+    }
+
+    // helper methods for testing below
+    void throwError(String msg) throws AMWException {
+        throw new AMWException(msg);
+    }
+
+    void succeed() {
+        GlobalMessageAppender.addSuccessMessage("Template successfully saved.");
+        revisionInformations = Lists.reverse(templateEditor.getTemplateRevisions(template.getId()));
+    }
+
+    boolean fail(AMWException e) {
+        GlobalMessageAppender.addErrorMessage(e);
+        return false;
+    }
+
+    boolean fail(String errorMessage) {
+        GlobalMessageAppender.addErrorMessage(errorMessage);
+        return false;
     }
 }
