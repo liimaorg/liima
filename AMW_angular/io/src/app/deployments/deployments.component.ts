@@ -80,7 +80,7 @@ export class DeploymentsComponent implements OnInit {
   successMessage: string = '';
   isLoading: boolean = true;
 
-  @ViewChild('selectModel')
+  @ViewChild('selectModel', { static: true })
   selectModel: NgModel;
 
   constructor(

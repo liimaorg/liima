@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuditviewTableComponent } from './auditview-table.component';
@@ -9,7 +9,7 @@ describe('AuditviewTableComponent', () => {
   let component: AuditviewTableComponent;
   let fixture: ComponentFixture<AuditviewTableComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [FormsModule, NgbModule],
       declarations: [AuditviewTableComponent, NewlineFilterPipe],
