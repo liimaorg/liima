@@ -60,10 +60,10 @@ public class EditTemplateView implements Serializable {
     UserSettings settings;
 
     @Inject
-    ShakedownStpService stpService;
+    PermissionService permissionService;
 
     @Inject
-    PermissionService permissionService;
+    ShakedownStpService stpService;
 
     @Inject
     @Getter
@@ -288,7 +288,6 @@ public class EditTemplateView implements Serializable {
         }
     }
 
-
     public boolean canModifyTemplates() {
         if (settings.isTestingMode()) {
             return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE);
@@ -299,27 +298,11 @@ public class EditTemplateView implements Serializable {
     }
 
     private Permission getPermission() {
-        Permission permission;
-        if (isEditResource()) {
-            permission = Permission.RESOURCE_TEMPLATE;
-        } else {
-            permission = Permission.RESOURCETYPE_TEMPLATE;
-        }
-        return permission;
+        return isEditResource() ? Permission.RESOURCE_TEMPLATE : Permission.RESOURCETYPE_TEMPLATE;
     }
 
     private Action getAction() {
-        Action action;
-        if (isNewTemplate()) {
-            action = Action.CREATE;
-        } else {
-            action = Action.UPDATE;
-        }
-        return action;
-    }
-
-    private boolean canAdd() {
-        return canModifyTemplates();
+        return isNewTemplate() ? Action.CREATE : Action.UPDATE;
     }
 
     public boolean isRelation() {

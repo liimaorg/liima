@@ -132,8 +132,7 @@ public class TemplateEditor {
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	boolean hasTemplateWithSameName(TemplateDescriptorEntity template, HasContexts<?> hasContext) {
-		for (ContextDependency<?> c : hasContext.getContextsByLowestContext(contextService
-																					.getGlobalResourceContextEntity())) {
+		for (ContextDependency<?> c : hasContext.getContextsByLowestContext(contextService.getGlobalResourceContextEntity())) {
 			for (TemplateDescriptorEntity t : c.getTemplates()) {
 				// If the template doesn't exist but has the same name, we return true
 				if (!t.getId().equals(template.getId()) && t.getName().equals(template.getName())) {
@@ -144,9 +143,9 @@ public class TemplateEditor {
 		return false;
 	}
 
-	public <T extends HasContexts<?>> void saveTemplateForRelation(
-			TemplateDescriptorEntity template, Integer relationId, boolean resourceEdit)
-			throws AMWException {
+	public <T extends HasContexts<?>> void saveTemplateForRelation(TemplateDescriptorEntity template,
+																   Integer relationId,
+																   boolean resourceEdit) throws AMWException {
 		HasContexts<?> resourceRelation = null;
 		if (relationId != null) {
 			if (resourceEdit) {
@@ -218,8 +217,7 @@ public class TemplateEditor {
 		}
 
 
-		ContextDependency<?> globalContext = hasContext.getOrCreateContext(contextService
-																				   .getGlobalResourceContextEntity());
+		ContextDependency<?> globalContext = hasContext.getOrCreateContext(contextService.getGlobalResourceContextEntity());
 		if (template.getId() == null) {
 			entityManager.persist(template);
 			globalContext.addTemplate(template);
@@ -236,8 +234,7 @@ public class TemplateEditor {
 	 * @throws TemplateNotDeletableException
 	 */
 	public void removeTemplate(Integer templateId) throws TemplateNotDeletableException {
-		TemplateDescriptorEntity templateDescriptor = entityManager.find(TemplateDescriptorEntity.class,
-				templateId);
+		TemplateDescriptorEntity templateDescriptor = entityManager.find(TemplateDescriptorEntity.class, templateId);
 		if (templateDescriptor != null && templateDescriptor.getName() != null
 				&& SystemCallTemplate.getName().equals(templateDescriptor.getName())) {
 			String message = SystemCallTemplate.getName() + " Template can't be deleted since it is a system template!";
@@ -246,14 +243,29 @@ public class TemplateEditor {
 		}
 		AbstractContext owner = getOwnerOfTemplate(templateDescriptor);
 		if (owner != null) {
-			if (owner instanceof ResourceContextEntity && !permissionService.hasPermission(Permission.RESOURCE_TEMPLATE, null,
-					Action.DELETE, ((ResourceContextEntity) owner).getContextualizedObject().getResourceGroup(), null)) {
+			if (owner instanceof ResourceContextEntity && !permissionService.hasPermission(Permission.RESOURCE_TEMPLATE,
+																						   null,
+																						   Action.DELETE,
+																						   ((ResourceContextEntity) owner)
+																								   .getContextualizedObject()
+																								   .getResourceGroup(),
+																						   null)) {
 				throw new NotAuthorizedException("Not authorized to remove the template of a resource");
-			} else if (owner instanceof ResourceRelationContextEntity && !permissionService.hasPermission(Permission.RESOURCE_TEMPLATE, null,
-					Action.DELETE, ((ResourceRelationContextEntity) owner).getContextualizedObject().getMasterResource().getResourceGroup(), null)) {
+			} else if (owner instanceof ResourceRelationContextEntity && !permissionService.hasPermission(Permission.RESOURCE_TEMPLATE,
+																										  null,
+																										  Action.DELETE,
+																										  ((ResourceRelationContextEntity) owner)
+																												  .getContextualizedObject()
+																												  .getMasterResource()
+																												  .getResourceGroup(),
+																										  null)) {
 				throw new NotAuthorizedException("Not authorized to remove the template of a resource");
-			} else if (owner instanceof ResourceTypeContextEntity && !permissionService.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null,
-					Action.DELETE, null, ((ResourceTypeContextEntity) owner).getContextualizedObject())) {
+			} else if (owner instanceof ResourceTypeContextEntity && !permissionService.hasPermission(Permission.RESOURCETYPE_TEMPLATE,
+																									  null,
+																									  Action.DELETE,
+																									  null,
+																									  ((ResourceTypeContextEntity) owner)
+																											  .getContextualizedObject())) {
 				throw new NotAuthorizedException("Not authorized to remove the template of a resource type");
 			}
 			auditService.storeIdInThreadLocalForAuditLog(owner);
