@@ -36,6 +36,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationC
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
@@ -143,6 +144,7 @@ public class TemplateEditor {
 		return false;
 	}
 
+
 	public <T extends HasContexts<?>> void saveTemplateForRelation(TemplateDescriptorEntity template,
 																   Integer relationId,
 																   boolean resourceEdit) throws AMWException {
@@ -165,6 +167,7 @@ public class TemplateEditor {
 		}
 	}
 
+	@HasPermission(permission = Permission.RESOURCE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
 	public void saveTemplateForResource(TemplateDescriptorEntity template, Integer resourceId,
 										boolean testingMode) throws AMWException {
 		permissionService.assertHasPermissionShakedownTestMode(testingMode);
@@ -176,6 +179,7 @@ public class TemplateEditor {
 		saveTemplate(template, resourceEntity);
 	}
 
+	@HasPermission(permission = Permission.RESOURCETYPE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
 	public void saveTemplateForResourceType(TemplateDescriptorEntity template, Integer resourceTypeId,
 											boolean testingMode) throws AMWException {
 		permissionService.assertHasPermissionShakedownTestMode(testingMode);
