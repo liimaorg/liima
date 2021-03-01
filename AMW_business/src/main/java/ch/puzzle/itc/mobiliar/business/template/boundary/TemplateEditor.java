@@ -195,10 +195,24 @@ public class TemplateEditor {
 		return permissionService.hasPermissionToUpdateResourceTemplate(res, testingMode);
 	}
 
-    void saveTemplate(TemplateDescriptorEntity template, HasContexts<?> hasContext) throws AMWException {
-		if (StringUtils.isEmpty(template.getName())) {
+	void validateTemplate(TemplateDescriptorEntity templateDescriptorEntity) throws AMWException {
+		if (StringUtils.isEmpty(templateDescriptorEntity.getName())) {
 			throw new AMWException("The template name must not be empty");
 		}
+
+		if (templateDescriptorEntity.getTargetPath() != null && templateDescriptorEntity.getTargetPath()
+																						.startsWith("/")) {
+			throw new AMWException("Absolute paths are not allowed for file path");
+		}
+
+		if (templateDescriptorEntity.getTargetPath() != null && templateDescriptorEntity.getTargetPath()
+																						.contains("../")) {
+			throw new AMWException("No path traversals like '../' allowed in file path");
+		}
+	}
+
+	void saveTemplate(TemplateDescriptorEntity template, HasContexts<?> hasContext) throws AMWException {
+		validateTemplate(template);
 		freemarkerValidator.validateFreemarkerSyntax(template.getFileContent());
 		hasContext = entityManager.find(hasContext.getClass(), hasContext.getId());
 		auditService.storeIdInThreadLocalForAuditLog(hasContext);
@@ -209,14 +223,15 @@ public class TemplateEditor {
 				&& hasTemplateWithSameName(template, ((HasTypeContext<?>) hasContext).getTypeContext())) {
 			throw new AMWException("The defined template name is already in use");
 		}
+
+
 		ContextDependency<?> globalContext = hasContext.getOrCreateContext(contextService
-				.getGlobalResourceContextEntity());
+																				   .getGlobalResourceContextEntity());
 		if (template.getId() == null) {
 			entityManager.persist(template);
 			globalContext.addTemplate(template);
 			entityManager.persist(globalContext);
-		}
-		else {
+		} else {
 			entityManager.merge(template);
 		}
 	}
@@ -305,10 +320,10 @@ public class TemplateEditor {
 	Object getSingleObjectOrNull(Query q) {
 		try {
 			return q.getSingleResult();
-		}
-		catch (NoResultException e) {
+		} catch (NoResultException e) {
 			return null;
 		}
 	}
+
 
 }

@@ -253,7 +253,7 @@ public class EditTemplateView implements Serializable {
         String errorMessage = "Was not able to save the template: ";
         try {
             setTemplateName();
-            validateInput();
+            checkPermissions();
             saveTemplate();
         } catch (ResourceNotFoundException | ResourceTypeNotFoundException e) {
             success = fail(errorMessage + e.getMessage());
@@ -287,18 +287,11 @@ public class EditTemplateView implements Serializable {
         }
     }
 
-    private void validateInput() throws AMWException {
+    private void checkPermissions() throws AMWException {
         if (template.getId() == null && !canAdd()) {
             throwError("No permission to create template!");
         } else if (!canModifyTemplates()) {
             throwError("No permission to modify templates!");
-        }
-        if (template.getTargetPath() != null && template.getTargetPath().startsWith("/")) {
-            throwError("Absolute paths are not allowed for file path");
-        }
-
-        if (template.getTargetPath() != null && template.getTargetPath().contains("../")) {
-            throwError("No path traversals like '../' allowed in file path");
         }
     }
 

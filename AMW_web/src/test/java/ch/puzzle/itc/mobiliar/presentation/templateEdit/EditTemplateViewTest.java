@@ -73,45 +73,6 @@ public class EditTemplateViewTest {
     }
 
     @Test
-    public void shouldRejectAbsoluteTemplatePath() throws AMWException {
-        // given
-        template.setTargetPath("/absolute/path/is/not/allowed");
-
-        // when
-        editTemplateView.save();
-
-        // then
-        verify(editTemplateView).throwError("Absolute paths are not allowed for file path");
-        verify(editTemplateView, never()).succeed();
-    }
-
-    @Test
-    public void shouldRejectTemplatePathStartsWithPathTraversals() throws AMWException {
-        // given
-        template.setTargetPath("../../path/traversals/not/allowed");
-
-        // when
-        editTemplateView.save();
-
-        // then
-        verify(editTemplateView).throwError("No path traversals like '../' allowed in file path");
-        verify(editTemplateView, never()).succeed();
-    }
-
-    @Test
-    public void shouldRejectTemplatePathWithPathTraversalsInsidePath() throws AMWException {
-        // given
-        template.setTargetPath("you/can/../../../../traverse/paths/like/this");
-
-        // when
-        editTemplateView.save();
-
-        // then
-        verify(editTemplateView).throwError("No path traversals like '../' allowed in file path");
-        verify(editTemplateView, never()).succeed();
-    }
-
-    @Test
     public void shouldRejectTemplateInTestingModeWihtoutSelectedSTP() throws AMWException {
         // given
         doReturn(true).when(settings).isTestingMode();
