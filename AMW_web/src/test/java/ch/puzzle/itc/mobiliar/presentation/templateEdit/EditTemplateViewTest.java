@@ -37,39 +37,11 @@ public class EditTemplateViewTest {
     @Before
     public void setUp() {
         doReturn(false).when(settings).isTestingMode();
-        doReturn(true).when(editTemplateView).canModifyTemplates();
         doReturn(false).when(editTemplateView).fail(any(AMWException.class));
         doNothing().when(editTemplateView).succeed();
 
         template = editTemplateView.getTemplate();
         template.setId(1);
-    }
-
-    @Test
-    public void shouldRejectTemplateCreateIfNotAllowed() throws AMWException {
-        // given
-        template.setId(null);
-        doReturn(false).when(editTemplateView).canModifyTemplates();
-
-        // when
-        editTemplateView.save();
-
-        // then
-        verify(editTemplateView, never()).succeed();
-        verify(editTemplateView).throwError("No permission to create template!");
-    }
-
-    @Test
-    public void shouldRejectTemplateModifyIfNotAllowed() throws AMWException {
-        // given
-        doReturn(false).when(editTemplateView).canModifyTemplates();
-
-        //when
-        editTemplateView.save();
-
-        //then
-        verify(editTemplateView, never()).succeed();
-        verify(editTemplateView).throwError("No permission to modify templates!");
     }
 
     @Test
@@ -93,7 +65,7 @@ public class EditTemplateViewTest {
         doReturn("name-of-selected-stp").when(selectedStp).getStpName();
 
         editTemplateView.setResourceTypeId(10);
-        doNothing().when(templateEditor).saveTemplateForResourceType(template, 10, settings.isTestingMode());
+        doNothing().when(templateEditor).saveTemplateForResourceType(template, 10, true);
 
         // when
         editTemplateView.save();
@@ -104,7 +76,7 @@ public class EditTemplateViewTest {
     }
 
     @Test
-    public void shouldSaveTemplateForRelationWithRousourceIdNull() throws AMWException {
+    public void shouldSaveTemplateForRelationWithResourceIdNull() throws AMWException {
         // given
         editTemplateView.setRelationIdForTemplate(1);
         editTemplateView.setResourceId(null);
@@ -139,7 +111,7 @@ public class EditTemplateViewTest {
         editTemplateView.setRelationIdForTemplate(null);
         editTemplateView.setResourceId(null);
         editTemplateView.setResourceTypeId(99);
-        doNothing().when(templateEditor).saveTemplateForResourceType(template, 99, settings.isTestingMode());
+        doNothing().when(templateEditor).saveTemplateForResourceType(template, 99, false);
 
         // when
         editTemplateView.save();
@@ -155,7 +127,7 @@ public class EditTemplateViewTest {
         editTemplateView.setResourceTypeId(null);
         editTemplateView.setRelationIdForTemplate(null);
         editTemplateView.setResourceId(10);
-        doNothing().when(templateEditor).saveTemplateForResource(template, 10, settings.isTestingMode());
+        doNothing().when(templateEditor).saveTemplateForResource(template, 10, false);
 
         // when
         editTemplateView.save();

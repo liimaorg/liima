@@ -22,6 +22,8 @@ package ch.puzzle.itc.mobiliar.presentation.templateEdit;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownStpService;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownStpEntity;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
@@ -58,10 +60,10 @@ public class EditTemplateView implements Serializable {
     UserSettings settings;
 
     @Inject
-    PermissionService permissions;
+    ShakedownStpService stpService;
 
     @Inject
-    ShakedownStpService stpService;
+    PermissionService permissionService;
 
     @Inject
     @Getter
@@ -253,7 +255,6 @@ public class EditTemplateView implements Serializable {
         String errorMessage = "Was not able to save the template: ";
         try {
             setTemplateName();
-            checkPermissions();
             saveTemplate();
         } catch (ResourceNotFoundException | ResourceTypeNotFoundException e) {
             success = fail(errorMessage + e.getMessage());
@@ -279,7 +280,7 @@ public class EditTemplateView implements Serializable {
     private void saveTemplate() throws AMWException {
         if (relationIdForTemplate != null) {
             templateEditor.saveTemplateForRelation(template, relationIdForTemplate,
-                    resourceId != null);
+                                                   resourceId != null);
         } else if (resourceId == null) {
             templateEditor.saveTemplateForResourceType(template, resourceTypeId, settings.isTestingMode());
         } else {
@@ -287,24 +288,34 @@ public class EditTemplateView implements Serializable {
         }
     }
 
-    private void checkPermissions() throws AMWException {
-        if (template.getId() == null && !canAdd()) {
-            throwError("No permission to create template!");
-        } else if (!canModifyTemplates()) {
-            throwError("No permission to modify templates!");
-        }
-    }
-
 
     public boolean canModifyTemplates() {
-        // Resource (Instance)
-        if (isEditResource()) {
-            return isNewTemplate() ? templateEditor.hasPermissionToAddResourceTemplate(resourceId, settings.isTestingMode())
-                    : templateEditor.hasPermissionToUpdateResourceTemplate(resourceId, settings.isTestingMode());
+        if (settings.isTestingMode()) {
+            return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE);
         }
-        // ResourceType
-        return isNewTemplate() ? templateEditor.hasPermissionToAddResourceTypeTemplate(resourceTypeId, settings.isTestingMode())
-                : templateEditor.hasPermissionToUpdateResourceTypeTemplate(resourceTypeId, settings.isTestingMode());
+        Permission permission = getPermission();
+        Action action = getAction();
+        return permissionService.hasPermission(permission, action);
+    }
+
+    private Permission getPermission() {
+        Permission permission;
+        if (isEditResource()) {
+            permission = Permission.RESOURCE_TEMPLATE;
+        } else {
+            permission = Permission.RESOURCETYPE_TEMPLATE;
+        }
+        return permission;
+    }
+
+    private Action getAction() {
+        Action action;
+        if (isNewTemplate()) {
+            action = Action.CREATE;
+        } else {
+            action = Action.UPDATE;
+        }
+        return action;
     }
 
     private boolean canAdd() {
