@@ -93,7 +93,7 @@ public class EditTemplateViewTest {
         doReturn("name-of-selected-stp").when(selectedStp).getStpName();
 
         editTemplateView.setResourceTypeId(10);
-        doNothing().when(templateEditor).saveTemplateForResourceType(template, 10);
+        doNothing().when(templateEditor).saveTemplateForResourceType(template, 10, settings.isTestingMode());
 
         // when
         editTemplateView.save();
@@ -139,13 +139,13 @@ public class EditTemplateViewTest {
         editTemplateView.setRelationIdForTemplate(null);
         editTemplateView.setResourceId(null);
         editTemplateView.setResourceTypeId(99);
-        doNothing().when(templateEditor).saveTemplateForResourceType(template, 99);
+        doNothing().when(templateEditor).saveTemplateForResourceType(template, 99, settings.isTestingMode());
 
         // when
         editTemplateView.save();
 
         // then
-        verify(templateEditor).saveTemplateForResourceType(template, 99);
+        verify(templateEditor).saveTemplateForResourceType(template, 99, settings.isTestingMode());
         verify(editTemplateView).succeed();
     }
 
@@ -155,13 +155,13 @@ public class EditTemplateViewTest {
         editTemplateView.setResourceTypeId(null);
         editTemplateView.setRelationIdForTemplate(null);
         editTemplateView.setResourceId(10);
-        doNothing().when(templateEditor).saveTemplateForResource(template, 10);
+        doNothing().when(templateEditor).saveTemplateForResource(template, 10, settings.isTestingMode());
 
         // when
         editTemplateView.save();
 
         // then
-        verify(templateEditor).saveTemplateForResource(template, 10);
+        verify(templateEditor).saveTemplateForResource(template, 10, settings.isTestingMode());
         verify(editTemplateView).succeed();
     }
 }

@@ -122,8 +122,7 @@ public class TemplateEditor {
 			public int compare(TemplateDescriptorEntity t1, TemplateDescriptorEntity t2) {
 				if (t1 == null || t1.getName() == null) {
 					return t2 == null || t2.getName() == null ? 0 : -1;
-				}
-				else {
+				} else {
 					return t2 == null ? 1 : t1.getName().compareTo(t2.getName());
 				}
 			}
@@ -131,30 +130,11 @@ public class TemplateEditor {
 		return templates;
 	}
 
-	public <T extends HasContexts<?>> void saveTemplateForRelation(
-			TemplateDescriptorEntity template, Integer relationId, boolean resourceEdit)
-					throws AMWException{
-		HasContexts<?> resourceRelation = null;
-		if (relationId != null) {
-			if (resourceEdit) {
-			     permissionService.checkPermissionAndFireException(Permission.RESOURCE_TEMPLATE, Action.UPDATE, "save resource templates");
-				resourceRelation = relationService.getResourceRelation(relationId);
-			}
-			else {
-			    permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE_TEMPLATE, Action.UPDATE, "save resource type templates");
-			    resourceRelation = relationService.getResourceTypeRelation(relationId);
-			}
-		}
-		if (resourceRelation != null) {
-			saveTemplate(template, resourceRelation);
-		}
-	}
-
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	boolean hasTemplateWithSameName(TemplateDescriptorEntity template, HasContexts<?> hasContext) {
 		for (ContextDependency<?> c : hasContext.getContextsByLowestContext(contextService
-				.getGlobalResourceContextEntity())) {
+																					.getGlobalResourceContextEntity())) {
 			for (TemplateDescriptorEntity t : c.getTemplates()) {
 				// If the template doesn't exist but has the same name, we return true
 				if (!t.getId().equals(template.getId()) && t.getName().equals(template.getName())) {
@@ -165,15 +145,54 @@ public class TemplateEditor {
 		return false;
 	}
 
-	@HasPermission(permission = Permission.RESOURCE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
-    public void saveTemplateForResource(TemplateDescriptorEntity template, Integer resourceId) throws AMWException {
-		saveTemplate(template, entityManager.find(ResourceEntity.class, resourceId));
-    }
+	public <T extends HasContexts<?>> void saveTemplateForRelation(
+			TemplateDescriptorEntity template, Integer relationId, boolean resourceEdit)
+			throws AMWException {
+		HasContexts<?> resourceRelation = null;
+		if (relationId != null) {
+			if (resourceEdit) {
+				permissionService.checkPermissionAndFireException(Permission.RESOURCE_TEMPLATE,
+																  Action.UPDATE,
+																  "save resource templates");
+				resourceRelation = relationService.getResourceRelation(relationId);
+			} else {
+				permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE_TEMPLATE,
+																  Action.UPDATE,
+																  "save resource type templates");
+				resourceRelation = relationService.getResourceTypeRelation(relationId);
+			}
+		}
+		if (resourceRelation != null) {
+			saveTemplate(template, resourceRelation);
+		}
+	}
 
-    @HasPermission(permission = Permission.RESOURCETYPE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
-    public void saveTemplateForResourceType(TemplateDescriptorEntity template, Integer resourceTypeId) throws AMWException {
+	@HasPermission(permission = Permission.RESOURCE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
+	public void saveTemplateForResource(TemplateDescriptorEntity template, Integer resourceId,
+										boolean testingMode) throws AMWException {
+
+		boolean hasPermission = template.getId() == null
+				? this.hasPermissionToAddResourceTemplate(resourceId, testingMode)
+				: this.hasPermissionToUpdateResourceTemplate(resourceId, testingMode);
+
+		if (!hasPermission) {
+			throw new AMWException("no permission to add/ update template for resource");
+		}
+		saveTemplate(template, entityManager.find(ResourceEntity.class, resourceId));
+	}
+
+	@HasPermission(permission = Permission.RESOURCETYPE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
+	public void saveTemplateForResourceType(TemplateDescriptorEntity template, Integer resourceTypeId,
+											boolean testingMode) throws AMWException {
+		boolean hasPermission = template.getId() == null ?
+				this.hasPermissionToAddResourceTypeTemplate(resourceTypeId, testingMode) :
+				this.hasPermissionToUpdateResourceTypeTemplate(resourceTypeId, testingMode);
+
+		if (!hasPermission) {
+			throw new AMWException("no permission to add/ update template for resource type!");
+		}
 		saveTemplate(template, entityManager.find(ResourceTypeEntity.class, resourceTypeId));
-    }
+	}
 
 	public boolean hasPermissionToAddResourceTypeTemplate(Integer resourceTypeId, boolean testingMode) {
 		ResourceTypeEntity type = entityManager.find(ResourceTypeEntity.class, resourceTypeId);

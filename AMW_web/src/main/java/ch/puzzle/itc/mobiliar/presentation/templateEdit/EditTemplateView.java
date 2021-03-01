@@ -281,9 +281,9 @@ public class EditTemplateView implements Serializable {
             templateEditor.saveTemplateForRelation(template, relationIdForTemplate,
                     resourceId != null);
         } else if (resourceId == null) {
-            templateEditor.saveTemplateForResourceType(template, resourceTypeId);
+            templateEditor.saveTemplateForResourceType(template, resourceTypeId, settings.isTestingMode());
         } else {
-            templateEditor.saveTemplateForResource(template, resourceId);
+            templateEditor.saveTemplateForResource(template, resourceId, settings.isTestingMode());
         }
     }
 
