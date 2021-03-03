@@ -171,10 +171,12 @@ public class TemplateEditor {
 	public void saveTemplateForResource(TemplateDescriptorEntity template, Integer resourceId,
 										boolean testingMode) throws AMWException {
 		permissionService.assertHasPermissionShakedownTestMode(testingMode);
-		Action action = getAction(template);
-		permissionService.checkPermissionAndFireException(Permission.RESOURCE_TEMPLATE,
-														  action,
-														  "create/ modify resource templates");
+		if (!testingMode) {
+			Action action = getAction(template);
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE_TEMPLATE,
+															  action,
+															  "create/ modify resource templates");
+		}
 		ResourceEntity resourceEntity = entityManager.find(ResourceEntity.class, resourceId);
 		saveTemplate(template, resourceEntity);
 	}
@@ -183,10 +185,12 @@ public class TemplateEditor {
 	public void saveTemplateForResourceType(TemplateDescriptorEntity template, Integer resourceTypeId,
 											boolean testingMode) throws AMWException {
 		permissionService.assertHasPermissionShakedownTestMode(testingMode);
-		Action action = getAction(template);
-		permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE_TEMPLATE,
-														  action,
-														  "create/ modify resource type templates");
+		if (!testingMode) {
+			Action action = getAction(template);
+			permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE_TEMPLATE,
+															  action,
+															  "create/ modify resource type templates");
+		}
 		ResourceTypeEntity resourceTypeEntity = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 		saveTemplate(template, resourceTypeEntity);
 	}
