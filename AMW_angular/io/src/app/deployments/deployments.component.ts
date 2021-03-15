@@ -3,7 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
-import * as moment from 'moment';
+import * as datefns from 'date-fns';
 import { Subscription, timer } from 'rxjs';
 import { ResourceService } from '../resource/resource.service';
 import { DeploymentFilter } from '../deployment/deployment-filter';
@@ -364,7 +364,7 @@ export class DeploymentsComponent implements OnInit {
   private pushDownload(prefix: string) {
     this.isLoading = false;
     const docName: string =
-      prefix + '_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
+      prefix + '_' + datefns.format(new Date(), 'yyyy-MM-dd_HHmm').toString() + '.csv';
     const blob = new Blob([this.csvDocument], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     if (navigator.msSaveOrOpenBlob) {

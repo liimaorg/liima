@@ -1,5 +1,5 @@
 export const AMW_LOGOUT_URL = 'amw.logoutUrl';
 // used for moment.js
-export const DATE_FORMAT = 'DD.MM.yyyy HH:mm';
+export const DATE_FORMAT = 'yyyy-MM-dd_HHmm';
 // use by angular date pipes (unicode): https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
 export const DATE_FORMAT_ANGULAR = 'dd.MM.yyyy HH:mm';
