@@ -299,7 +299,7 @@ describe('DeploymentComponent (create deployment)', () => {
       requestOnly: true,
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,
-      deploymentDate: DateTimeModel.fromLocalString('02.01.2017 12:00').toEpoch(),
+      deploymentDate: DateTimeModel.fromLocalString('2017, 2, 1, 12, 0, 0').toEpoch(),
       deploymentParameters: component.transDeploymentParameters,
     } as DeploymentRequest;
     spyOn(deploymentService, 'createDeployment').and.returnValue(of({ trackingId: 910 } as Deployment));
