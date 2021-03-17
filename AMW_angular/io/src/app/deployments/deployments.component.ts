@@ -365,7 +365,7 @@ export class DeploymentsComponent implements OnInit {
   private pushDownload(prefix: string) {
     this.isLoading = false;
     const docName: string =
-      prefix + '_' + datefns.format(new Date(), DATE_FORMAT).toString() + '.csv';
+      prefix + '_' + datefns.format(new Date(), 'yyyy-MM-dd_HHmm').toString() + '.csv';
     const blob = new Blob([this.csvDocument], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     if (navigator.msSaveOrOpenBlob) {
