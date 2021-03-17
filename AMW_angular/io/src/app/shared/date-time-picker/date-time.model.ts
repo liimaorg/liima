@@ -18,7 +18,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
     Object.assign(this, init);
   }
 
-  private static fromMoment(date: Date): DateTimeModel {
+  private static fromDate(date: Date): DateTimeModel {
     if (!datefns.isValid(date)) {
       return null;
     }
@@ -44,12 +44,12 @@ export class DateTimeModel implements NgbDateTimeStruct {
     else {
       date = datefns.parse(dateString, format, new Date());
     }
-    return this.fromMoment(date);
+    return this.fromDate(date);
   }
 
   public static fromEpoch(epoch: number) {
     const date = datefns.toDate(epoch);
-    return this.fromMoment(date);
+    return this.fromDate(date);
   }
 
   private thisToDate(): Date {

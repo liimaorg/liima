@@ -11,7 +11,7 @@ import { AuditLogEntry } from '../auditview-entry';
 import { AuditviewService } from '../auditview.service';
 import { AuditviewTableService } from './auditview-table.service';
 import { SortEvent, SortableHeader } from './sortable.directive';
-import { DATE_FORMAT_ANGULAR } from '../../core/amw-constants';
+import { DATE_FORMAT } from '../../core/amw-constants';
 
 @Component({
   selector: 'app-auditview-table',
@@ -26,7 +26,7 @@ export class AuditviewTableComponent implements OnChanges {
   total$: Observable<number>;
   @ViewChildren(SortableHeader) headers: QueryList<SortableHeader>;
 
-  dateFormat = DATE_FORMAT_ANGULAR;
+  dateFormat = DATE_FORMAT;
 
   constructor(public service: AuditviewTableService) {
     this.auditlogEntries$ = service.result$;
