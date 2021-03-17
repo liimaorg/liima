@@ -5,7 +5,7 @@ import { ResourceService } from '../resource/resource.service';
 import * as _ from 'lodash';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DATE_FORMAT_ANGULAR } from '../core/amw-constants';
+import { DATE_FORMAT } from '../core/amw-constants';
 
 @Component({
   selector: 'amw-deployments-list',
@@ -29,7 +29,7 @@ export class DeploymentsListComponent {
   allSelected: boolean = false;
   // TODO: show this error somewhere?
   errorMessage = ""
-  dateFormat = DATE_FORMAT_ANGULAR;
+  dateFormat = DATE_FORMAT;
 
   failureReason: { [key: string]: string } = {
     PRE_DEPLOYMENT_GENERATION: 'pre deployment generation failed',

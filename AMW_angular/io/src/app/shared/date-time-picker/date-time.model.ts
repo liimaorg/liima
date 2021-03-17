@@ -1,5 +1,5 @@
 import { NgbTimeStruct, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
-import * as moment from 'moment';
+import * as datefns from 'date-fns';
 import { DATE_FORMAT } from 'src/app/core/amw-constants';
 
 export interface NgbDateTimeStruct extends NgbDateStruct, NgbTimeStruct {}
@@ -18,60 +18,61 @@ export class DateTimeModel implements NgbDateTimeStruct {
     Object.assign(this, init);
   }
 
-  private static fromMoment(m: moment.Moment): DateTimeModel {
-    if (!m.isValid()) {
+  private static fromDate(date: Date): DateTimeModel {
+    if (!datefns.isValid(date)) {
       return null;
     }
     return new DateTimeModel({
-      year: m.year(),
+      year: date.getFullYear(),
       // months start at 0
-      month: m.month() + 1,
-      // date is the day of month
-      day: m.date(),
-      hour: m.hour(),
-      minute: m.minute(),
-      second: m.second(),
-      timeZoneOffset: m.utcOffset(),
+      month: date.getMonth() + 1,
+      // getDate is the day of month
+      // getDay is the day of the week
+      day: date.getDate(),
+      hour: date.getHours(),
+      minute: date.getMinutes(),
+      second: date.getSeconds(),
+      timeZoneOffset: date.getTimezoneOffset(),
     });
   }
 
   public static fromLocalString(dateString: string, format?: string): DateTimeModel {
-    var m: moment.Moment;
-    if(typeof format == "undefined") {
-      m = moment(dateString, DATE_FORMAT);
+    let date: Date;
+    if (typeof format === 'undefined') {
+      date = datefns.parse(dateString, DATE_FORMAT, new Date());
     }
     else {
-      m = moment(dateString, format);
+      date = datefns.parse(dateString, format, new Date());
     }
-    return this.fromMoment(m);
+    return this.fromDate(date);
   }
 
   public static fromEpoch(epoch: number) {
-    const m = moment(epoch);
-    return this.fromMoment(m);
+    const date = datefns.toDate(epoch);
+    return this.fromDate(date);
   }
 
-  private toMoment(): moment.Moment {
-    return moment({ year: this.year, month: this.month - 1, date: this.day, hour: this.hour, minute: this.minute, second: this.second});;
+  private thisToDate(): Date {
+    return new Date( this.year, this.month - 1, this.day, this.hour, this.minute, this.second);
   }
 
   public toString(format?: string): string {
-    const m = this.toMoment();
-    if (!m.isValid()) {
+    const date = datefns.toDate(this.thisToDate());
+    if (!datefns.isValid(date)) {
       return null;
     }
-    if(typeof format == "undefined") {
-      return m.format(DATE_FORMAT);
+    if (typeof format === 'undefined') {
+      return datefns.format(date, DATE_FORMAT);
     }
-    return m.format(format);
+    return datefns.format(date, format);
   }
 
   public toEpoch(): number {
-    const m = this.toMoment();
-    if (!m.isValid()) {
+    const date = datefns.toDate(this.thisToDate());
+    if (!datefns.isValid(date)) {
       return null;
     }
-    return m.valueOf();
+    return date.getTime();
   }
 
   public toJSON(): string {

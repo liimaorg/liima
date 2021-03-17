@@ -4,7 +4,7 @@ import { tap, debounceTime, map } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { AuditLogEntry } from '../auditview-entry';
 import { SortDirection } from './sortable.directive';
-import { DATE_FORMAT_ANGULAR } from '../../core/amw-constants';
+import { DATE_FORMAT } from '../../core/amw-constants';
 
 interface State {
   searchTerm: string;
@@ -30,7 +30,7 @@ function sort(
 function matches(entry: AuditLogEntry, term: string, pipe: DatePipe): boolean {
   const lowerCaseTerm = term.toLowerCase();
   return (
-    pipe.transform(entry.timestamp, DATE_FORMAT_ANGULAR).includes(term) ||
+    pipe.transform(entry.timestamp, DATE_FORMAT).includes(term) ||
     nullSafeToLowerCase(entry.mode).includes(lowerCaseTerm) ||
     nullSafeToLowerCase(entry.editContextName).includes(lowerCaseTerm) ||
     nullSafeToLowerCase(entry.name).includes(lowerCaseTerm) ||
