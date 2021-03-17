@@ -7,17 +7,17 @@ describe('DateTimeModel', () => {
   it('should convert dates correctly', () => {
     var fixture = TestBed.createComponent(DateTimePickerComponent);
     var component = fixture.componentInstance;
-    var testDate = '02.01.2017 12:00';
+    var testDate = '02.01.2017 10:00';
 
     var m = datefns.parse(testDate, component.dateStringFormat, new Date());
     var dateTimeFromString = DateTimeModel.fromLocalString(testDate, component.dateStringFormat);
-    var dateTimeFromEpoch = DateTimeModel.fromEpoch(m.valueOf());
+    var dateTimeFromEpoch = DateTimeModel.fromEpoch(m.getTime());
 
-    expect(dateTimeFromString.day).toEqual(m.getDay());
+    expect(dateTimeFromString.day).toEqual(m.getDate());
     expect(dateTimeFromString.month).toEqual(m.getMonth() + 1);
 
     expect(dateTimeFromString).toEqual(dateTimeFromEpoch);
 
-    expect(dateTimeFromString.toEpoch()).toEqual(m.valueOf());
+    expect(dateTimeFromString.toEpoch()).toEqual(m.getTime());
   });
 });

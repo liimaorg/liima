@@ -26,8 +26,9 @@ export class DateTimeModel implements NgbDateTimeStruct {
       year: date.getFullYear(),
       // months start at 0
       month: date.getMonth() + 1,
-      // date is the day of month
-      day: date.getDay(),
+      // getDate is the day of month
+      // getDay is the day of the week
+      day: date.getDate(),
       hour: date.getHours(),
       minute: date.getMinutes(),
       second: date.getSeconds(),
@@ -71,7 +72,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
     if (!datefns.isValid(date)) {
       return null;
     }
-    return date.valueOf();
+    return date.getTime();
   }
 
   public toJSON(): string {
