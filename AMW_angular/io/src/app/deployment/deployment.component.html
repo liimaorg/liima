@@ -20,16 +20,15 @@
           >Applicationserver</label
         >
         <div class="col-sm-10 col-md-5">
-          <select
+          <ng-select
             id="selectApplicationserver"
-            class="form-control input-sm"
+            [items]="appservers"
+            bindLabel="name"
+            placeholder=""
             [(ngModel)]="selectedAppserver"
             (ngModelChange)="onChangeAppserver()"
           >
-            <option [ngValue]="server" *ngFor="let server of appservers">{{
-              server.name
-            }}</option>
-          </select>
+          </ng-select>
         </div>
       </div>
 
@@ -52,17 +51,16 @@
           >Release</label
         >
         <div class="col-sm-10 col-md-5">
-          <select
+          <ng-select
             *ngIf="selectedAppserver"
             id="selectRelease"
-            class="form-control input-sm"
+            [items]="releases"
+            bindLabel="release"
+            placeholder=""
             [(ngModel)]="selectedRelease"
             (ngModelChange)="onChangeRelease()"
           >
-            <option [ngValue]="release" *ngFor="let release of releases">{{
-              release.release
-            }}</option>
-          </select>
+          </ng-select>
         </div>
       </div>
 
