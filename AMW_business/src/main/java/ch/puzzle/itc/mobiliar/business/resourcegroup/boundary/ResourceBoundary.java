@@ -303,16 +303,14 @@ public class ResourceBoundary {
     }
 
     private void doRemoveResourceEntity(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-
         ResourceEntity resourceEntity = commonService.getResourceEntityById(resourceId);
-
-        foreignableService.verifyDeletableByOwner(deletingOwner, resourceEntity);
-
         if (resourceEntity == null) {
             String message = "The resource to be removed was not found";
             log.info(message);
             throw new ResourceNotFoundException(message);
         }
+
+        foreignableService.verifyDeletableByOwner(deletingOwner, resourceEntity);
 
         if ( !permissionBoundary.hasPermission(Permission.RESOURCE, contextDomainService.getGlobalResourceContextEntity(),
                 Action.DELETE, resourceEntity, resourceEntity.getResourceType())) {
