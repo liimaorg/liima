@@ -1,6 +1,14 @@
 # v1.17.23
 * The Deployment log view was migrated to Angular. Log lines container errors or warnings are now highlited: [#443](https://github.com/liimaorg/liima/issues/443) and [#450](https://github.com/liimaorg/liima/issues/450)
+* Implement Rest DELETE resource: [#602](https://github.com/liimaorg/liima/issues/602)
+* Add environmentNameAlias to the deployment excel export: [#527](https://github.com/liimaorg/liima/issues/527)
+* Angular deployment view: use ng-select for appserver and release :[#606](https://github.com/liimaorg/liima/pull/606)
+* Prevent that templates can be writen outside of generation directory: [#434](https://github.com/liimaorg/liima/issues/434)
+* editResourceView: UI doesn't update correctly after removing runtime: [#479](https://github.com/liimaorg/liima/issues/479)
 * Switch from TravisCI to GitHub Actions: [#585](https://github.com/liimaorg/liima/pull/585)
+* Replace Moment.js with data-fns: [#589](https://github.com/liimaorg/liima/issues/589)
+* Convert modals to Ngb: [#587](https://github.com/liimaorg/liima/pull/587)
+* JavaScript dependency updates: [#593](https://github.com/liimaorg/liima/pull/593) and [#610](https://github.com/liimaorg/liima/pull/610)
 
 # v1.17.22
 * Fix copyFrom in REST: [#584](https://github.com/liimaorg/liima/pull/584)
