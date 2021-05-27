@@ -48,6 +48,8 @@ import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -160,6 +162,7 @@ public class ResourcesRest {
         return result;
     }
 
+    // TODO: better GET /{resourceId}/properties/name?
     @Path("/name/{resourceId}")
     @GET
     @ApiOperation(value = "Get resource name by id")
@@ -225,6 +228,7 @@ public class ResourcesRest {
         return resourceDTOs;
     }
 
+    // TODO: should be removed and instead handeled with a 404
     @Path("/exists/{resourceId}")
     @GET
     @ApiOperation(value = "Checks if a specific Resource still exists - used by Angular")
@@ -255,6 +259,15 @@ public class ResourcesRest {
             }
         }
         return new ResourceDTO(resource, resourceRelationDTOs);
+    }
+
+    @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}")
+    @DELETE
+    @ApiOperation(value = "Delete a specific resource release")
+    public Response deleteResourceRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
+                                                            @PathParam("releaseId") Integer releaseId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+        resourceBoundary.removeResource(ForeignableOwner.getSystemOwner(), resourceGroupId);
+        return Response.ok().build();
     }
 
     @Path("/resourceGroups/{resourceGroupId}/releases/{releaseId}/appWithVersions/")
