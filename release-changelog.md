@@ -1,3 +1,7 @@
+# v1.17.24
+* Fix Rest DELETE of resource, update JS deps, update Wildfly Docker Image: [#613](https://github.com/liimaorg/liima/pull/613)
+* Fix NullPointer when resource to delete doesn't exit: [#612](https://github.com/liimaorg/liima/pull/612)
+
 # v1.17.23
 * The Deployment log view was migrated to Angular. Log lines container errors or warnings are now highlited: [#443](https://github.com/liimaorg/liima/issues/443) and [#450](https://github.com/liimaorg/liima/issues/450)
 * Implement Rest DELETE resource: [#602](https://github.com/liimaorg/liima/issues/602)

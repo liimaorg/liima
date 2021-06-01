@@ -31,6 +31,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CopyResource;
@@ -104,6 +105,9 @@ public class ResourcesRestTest {
 
     @Mock
     DeploymentBoundary deploymentBoundaryMock;
+
+    @Mock
+    ResourceDependencyResolverService resourceDependencyResolverServiceMock;
 
     @Before
     public void configure() {
@@ -519,6 +523,38 @@ public class ResourcesRestTest {
         // then
         assertThat(filteredGroups.size(), is(1));
         assertThat(filteredGroups.get(0).getName(), is(wanted.getName()));
+    }
+
+    @Test
+    public void shouldDeleteResource() throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+        // given
+        Integer resourceGroupId = 8;
+        Integer resourceId = 9;
+        Integer releaseId = 10;
+        ResourceEntity resource = new ResourceEntity();
+        resource.setId(resourceId);
+        when(resourceDependencyResolverServiceMock.getResourceEntityForRelease(resourceGroupId, releaseId)).thenReturn(resource);
+
+        // when
+        rest.deleteResourceRelease(resourceGroupId, releaseId);
+
+        // then
+        verify(resourceBoundaryMock, times(1)).removeResource(ForeignableOwner.getSystemOwner(), resourceId);
+    }
+
+    @Test
+    public void shouldReturnNotFoundWhenDeleteResource() throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+        // given
+        Integer resourceGroupId = 8;
+        Integer releaseId = 10;
+        when(resourceDependencyResolverServiceMock.getResourceEntityForRelease(resourceGroupId, releaseId)).thenReturn(null);
+
+        // when
+        final Response response = rest.deleteResourceRelease(resourceGroupId, releaseId);
+
+        // then
+        assertThat(response.getStatus(), is(NOT_FOUND.getStatusCode()));
+        assertThat(((ExceptionDto) response.getEntity()).getMessage(), is("Resource not found"));
     }
 
 }
