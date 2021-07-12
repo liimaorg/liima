@@ -29,17 +29,14 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
-import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * Rest boundary for Resource-Templates
@@ -53,29 +50,22 @@ public class ResourceTemplatesRest {
     ResourceLocator resourceLocator;
 
     @Inject
-    ResourceRelationLocator resourceRelationLocator;
-
-    @Inject
-    TemplateEditor templateEditor;
-
-    @Inject
     TemplatesScreenDomainService templateService;
 
     @GET
-    @ApiOperation(value = "Get one or all templates for a resource in a specific release")
-    public List<TemplateDTO> getResourceTemplates( //
-                                                   @PathParam("resourceGroupName") String resourceGroupName,
-                                                   @PathParam("releaseName") String releaseName) throws ValidationException {
-        return getResourceTemplates(resourceGroupName, releaseName, "");
+    @ApiOperation(value = "Get all templates for a resource in a specific release")
+    public List<TemplateDTO> getResourceTemplates(@PathParam("resourceGroupName") String resourceGroupName,
+                                                @PathParam("releaseName") String releaseName) throws ValidationException {
+        return getResourceTemplate(resourceGroupName, releaseName, "");
     }
 
+    //TODO: should only return one object and not a list
     @GET
     @Path("/{templateName}")
-    @ApiOperation(value = "Get one or all templates for a resource in a specific release")
-    public List<TemplateDTO> getResourceTemplates( //
-                                                   @PathParam("resourceGroupName") String resourceGroupName,
-                                                   @PathParam("releaseName") String releaseName,
-                                                   @PathParam("templateName") String templateName) throws ValidationException {
+    @ApiOperation(value = "Get a template for a resource in a specific release")
+    public List<TemplateDTO> getResourceTemplate(@PathParam("resourceGroupName") String resourceGroupName,
+                                                 @PathParam("releaseName") String releaseName,
+                                                 @PathParam("templateName") String templateName) throws ValidationException {
 
         ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithConsumedRelations(resourceGroupName,
                 releaseName);

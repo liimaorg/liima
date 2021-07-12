@@ -356,7 +356,7 @@ public class ResourcesRestTest {
         // then
         verify(resourceRelationsMock).getResourceRelations(resourceGroupName, closestRelease.getName(), resourceTypeName);
         verify(resourcePropertiesMock).getResourceProperties(resourceGroupName, closestRelease.getName(), env);
-        verify(resourceTemplatesRestMock).getResourceTemplates(resourceGroupName, closestRelease.getName(), "");
+        verify(resourceTemplatesRestMock).getResourceTemplate(resourceGroupName, closestRelease.getName(), "");
     }
 
     @Test

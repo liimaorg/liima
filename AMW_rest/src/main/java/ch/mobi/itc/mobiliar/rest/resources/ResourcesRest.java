@@ -192,7 +192,7 @@ public class ResourcesRest {
         ResourceEntity resourceByRelease = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
         return new ResourceDTO(resourceByRelease, resourceRelations.getResourceRelations(resourceGroupName,
                 releaseName, resourceType), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
-                environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName, ""));
+                environment), resourceTemplatesRest.getResourceTemplate(resourceGroupName, releaseName, ""));
     }
 
     @Path("/{resourceGroupName}/lte/{releaseName}")
@@ -205,7 +205,7 @@ public class ResourcesRest {
         ReleaseEntity release = resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName);
         return new ResourceDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
                 release.getName(), resourceType), resourceProperties.getResourceProperties(resourceGroupName, release.getName(),
-                environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, release.getName(), ""));
+                environment), resourceTemplatesRest.getResourceTemplate(resourceGroupName, release.getName(), ""));
     }
 
     @Path("/resourceGroups")
