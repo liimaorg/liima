@@ -108,28 +108,6 @@ public class TemplateEditor {
 		return result;
 	}
 
-	public List<TemplateDescriptorEntity> loadTemplateDescriptors(HasContexts<?> hasContext) {
-		hasContext = entityManager.find(hasContext.getClass(), hasContext.getId());
-		List<? extends ContextDependency<?>> dependencies = hasContext.getContextsByLowestContext(contextService.getGlobalResourceContextEntity());
-		List<TemplateDescriptorEntity> templates = new ArrayList<>();
-		for (ContextDependency<?> dep : dependencies) {
-			templates.addAll(dep.getTemplates());
-		}
-		Collections.sort(templates, new Comparator<TemplateDescriptorEntity>() {
-
-			@Override
-			public int compare(TemplateDescriptorEntity t1, TemplateDescriptorEntity t2) {
-				if (t1 == null || t1.getName() == null) {
-					return t2 == null || t2.getName() == null ? 0 : -1;
-				} else {
-					return t2 == null ? 1 : t1.getName().compareTo(t2.getName());
-				}
-			}
-		});
-		return templates;
-	}
-
-
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	boolean hasTemplateWithSameName(TemplateDescriptorEntity template, HasContexts<?> hasContext) {
 		for (ContextDependency<?> c : hasContext.getContextsByLowestContext(contextService.getGlobalResourceContextEntity())) {
