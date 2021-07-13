@@ -72,6 +72,7 @@ public class RESTApplication extends Application {
         resources.add(NotAuthorizedExceptionMapper.class);
         resources.add(ValidationExceptionMapper.class);
         resources.add(UncaughtExceptionMapper.class);
+        resources.add(ResourceNotFoundExceptionMapper.class);
         resources.add(ServerTupleCSVBodyWriter.class);
         resources.add(HealthCheck.class);
         resources.add(SettingsRest.class);

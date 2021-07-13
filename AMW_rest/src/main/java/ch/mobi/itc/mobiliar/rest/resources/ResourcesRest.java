@@ -643,21 +643,10 @@ public class ResourcesRest {
                                      @ApiParam(value = "The origin ResourceGroup (from)") @QueryParam("originResourceGroupName") String originResourceGroupName,
                                      @ApiParam(value = "The origin ReleaseName (from)") @QueryParam("originReleaseName") String originReleaseName) throws ValidationException {
 
-        ResourceEntity targetResourceEntity = resourceLocator.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName);
-        if (targetResourceEntity == null) {
-            return Response.status(NOT_FOUND).entity(new ExceptionDto("Target Resource not found")).build();
-        }
-        ResourceEntity originResourceEntity = resourceLocator.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName);
-        if (originResourceEntity == null) {
-            return Response.status(NOT_FOUND).entity(new ExceptionDto("Origin Resource not found")).build();
-        }
-
         try {
-            // don't pass the entity directly or elese an exception is thrown: 
-            // failed to lazily initialize a collection of role: ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity.consumedMasterRelations, could not initialize proxy - no Session
-            CopyResourceResult copyResourceResult = copyResource.doCopyResource(targetResourceEntity.getId(), originResourceEntity.getId(), ForeignableOwner.getSystemOwner());
+            CopyResourceResult copyResourceResult = copyResource.doCopyResource(targetResourceGroupName, targetReleaseName, originResourceGroupName, originReleaseName);
             if (!copyResourceResult.isSuccess()) {
-                return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from " + originResourceEntity.getName() + " failed")).build();
+                return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from Origin failed")).build();
             }
             return Response.ok().build();
         } catch (ForeignableOwnerViolationException | AMWException e) {
