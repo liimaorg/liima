@@ -2,7 +2,6 @@ FROM jboss/wildfly:23.0.1.Final
 LABEL MAINTAINER="liimaorg <amw-dev@puzzle.ch>"
 
 ARG DB_CLI_SCRIPT=wildfly_h2.cli 
-ENV DB_CLI_SCRIPT=$DB_CLI_SCRIPT
 
 WORKDIR $JBOSS_HOME
 # deploy oracle driver
@@ -10,8 +9,6 @@ WORKDIR $JBOSS_HOME
 
 # add configuration
 COPY --chown=jboss:jboss configuration $JBOSS_HOME/standalone/configuration
-COPY --chown=jboss:jboss tmp/AMW.ear $JBOSS_HOME/standalone/deployments/AMW.ear
-COPY --chown=jboss:jboss tmp/amwFileDbIntegrationEmpty.mv.db $JBOSS_HOME/standalone/data/amw/amwFileDbIntegrationEmpty.mv.db
 
 RUN $JBOSS_HOME/bin/jboss-cli.sh --file=$JBOSS_HOME/standalone/configuration/wildfly_base.cli && \
     $JBOSS_HOME/bin/jboss-cli.sh --file=$JBOSS_HOME/standalone/configuration/$DB_CLI_SCRIPT && \
@@ -29,5 +26,8 @@ RUN mkdir -p $JBOSS_HOME/modules/com/sun/jsf-impl/mojarra-2.2 && \
 COPY jsf/impl_module.xml $JBOSS_HOME/modules/com/sun/jsf-impl/mojarra-2.2/module.xml
 COPY jsf/api_module.xml $JBOSS_HOME/modules/javax/faces/api/mojarra-2.2/module.xml
 COPY jsf/injection_module.xml $JBOSS_HOME/modules/org/jboss/as/jsf-injection/mojarra-2.2/module.xml
+
+COPY --chown=jboss:jboss tmp/AMW.ear $JBOSS_HOME/standalone/deployments/AMW.ear
+COPY --chown=jboss:jboss tmp/amwFileDbIntegrationEmpty.mv.db $JBOSS_HOME/standalone/data/amw/amwFileDbIntegrationEmpty.mv.db
 
 CMD ["bin/standalone.sh", "-P", "standalone/configuration/props/amw-system.properties", "-b=0.0.0.0", "-bmanagement=0.0.0.0", "--debug", "*:8787"]
