@@ -30,8 +30,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationC
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.HashMap;
@@ -39,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class ResourceActivationService {
 
     @Inject

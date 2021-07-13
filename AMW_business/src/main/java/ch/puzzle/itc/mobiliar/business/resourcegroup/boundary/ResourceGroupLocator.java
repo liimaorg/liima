@@ -27,8 +27,6 @@ import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,7 +35,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class ResourceGroupLocator {
 
 	// TODO check permissions
