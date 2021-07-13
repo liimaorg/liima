@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Set;
 
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class ResourceRelations {
 
     @Inject

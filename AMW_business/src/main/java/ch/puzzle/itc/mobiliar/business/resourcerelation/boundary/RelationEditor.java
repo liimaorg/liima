@@ -20,15 +20,22 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcerelation.boundary;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+
+import com.google.common.base.Enums;
+
+import org.apache.commons.lang3.StringUtils;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -50,8 +57,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import com.google.common.base.Enums;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * A boundary for relation editing
@@ -59,7 +64,6 @@ import org.apache.commons.lang3.StringUtils;
  * @author cweber
  */
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class RelationEditor {
 
 	@Inject

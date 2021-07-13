@@ -379,45 +379,11 @@ public class ResourcesRestTest {
     }
 
     @Test
-    public void shouldNotAllowCopyFromWhenTargetNotFound() throws ValidationException {
-        // given
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease(anyString(), anyString())).thenReturn(null);
-
-        // when
-        final Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
-
-        // then
-        assertThat(response.getStatus(), is(NOT_FOUND.getStatusCode()));
-        assertThat(((ExceptionDto) response.getEntity()).getMessage(), is("Target Resource not found"));
-    }
-
-    @Test
-    public void shouldNotAllowCopyFromWhenOriginNotFound() throws ValidationException {
-        // given
-        ResourceEntity targetResourceEntity = mock(ResourceEntity.class);
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease("targetResourceGroupName", "targetReleaseName")).thenReturn(targetResourceEntity);
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease("originResourceGroupName", "originReleaseName")).thenReturn(null);
-
-        // when
-        final Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
-
-        // then
-        assertThat(response.getStatus(), is(NOT_FOUND.getStatusCode()));
-        assertThat(((ExceptionDto) response.getEntity()).getMessage(), is("Origin Resource not found"));
-    }
-
-    @Test
     public void shouldReturnBadRequestWhenCopyFromDoesNotSucceed() throws ValidationException, ForeignableOwnerViolationException, AMWException {
         // given
-        ResourceEntity targetResourceEntity = mock(ResourceEntity.class);
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease("targetResourceGroupName", "targetReleaseName")).thenReturn(targetResourceEntity);
-        ResourceEntity originResourceEntity = mock(ResourceEntity.class);
-        when(originResourceEntity.getName()).thenReturn("Origin");
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease("originResourceGroupName", "originReleaseName")).thenReturn(originResourceEntity);
-
         CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
         when(copyResourceResult.isSuccess()).thenReturn(false);
-        when(copyResourceMock.doCopyResource(targetResourceEntity.getId(), originResourceEntity.getId(), ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
+        when(copyResourceMock.doCopyResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName")).thenReturn(copyResourceResult);
 
         // when
         final Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
@@ -428,79 +394,25 @@ public class ResourcesRestTest {
     }
 
     @Test
-    public void shouldNotAllowCopyFromResourceOfDifferentTypes() throws ValidationException, ForeignableOwnerViolationException, AMWException {
-        // given
-        String originResourceGroupName = "Origin";
-        String originReleaseName = "From";
-        String targetResourceGroupName = "Target";
-        String targetReleaseName = "To";
-
-        ResourceGroupEntity originResourceGroup = new ResourceGroupEntity();
-        originResourceGroup.setName("Origin");
-        ResourceEntity origin = new ResourceEntity();
-        origin.setResourceGroup(originResourceGroup);
-        origin.setName(originResourceGroupName);
-        origin.setId(1);
-        ResourceTypeEntity asType = new ResourceTypeEntity();
-        asType.setName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
-        origin.setResourceType(asType);
-
-        ResourceGroupEntity targetResourceGroup = new ResourceGroupEntity();
-        originResourceGroup.setName("Target");
-        ResourceEntity target = new ResourceEntity();
-        target.setResourceGroup(targetResourceGroup);
-        target.setName(targetResourceGroupName);
-        target.setId(2);
-        ResourceTypeEntity appType = new ResourceTypeEntity();
-        appType.setName(DefaultResourceTypeDefinition.APPLICATION.name());
-        target.setResourceType(appType);
-
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName)).thenReturn(target);
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName)).thenReturn(origin);
-        when(copyResourceMock.doCopyResource(target.getId(), origin.getId(), ForeignableOwner.getSystemOwner())).thenThrow(new AMWException("Target and origin Resource are not of the same ResourceType"));
+    public void shouldReturnBadRequestWhenResourcesOfDifferentTypes() throws ValidationException, ForeignableOwnerViolationException, AMWException {
+        when(copyResourceMock.doCopyResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName")).thenThrow(new AMWException("Target and origin Resource are not of the same ResourceType"));
 
         // when
-        Response response = rest.copyFromResource(targetResourceGroupName, targetReleaseName, originResourceGroupName, originReleaseName);
+        Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
-
     }
 
     @Test
-    public void shouldAllowCopyFromResourceOfNodeType() throws ValidationException, ForeignableOwnerViolationException, AMWException {
+    public void shouldAllowCopy() throws ValidationException, ForeignableOwnerViolationException, AMWException {
         // given
-        String originResourceGroupName = "Origin";
-        String originReleaseName = "From";
-        String targetResourceGroupName = "Target";
-        String targetReleaseName = "To";
-
-        ResourceGroupEntity originResourceGroup = new ResourceGroupEntity();
-        originResourceGroup.setName("Origin");
-        ResourceEntity origin = new ResourceEntity();
-        origin.setResourceGroup(originResourceGroup);
-        origin.setName(originResourceGroupName);
-        ResourceTypeEntity nodeType = new ResourceTypeEntity();
-        nodeType.setName(DefaultResourceTypeDefinition.NODE.name());
-        origin.setResourceType(nodeType);
-
-        ResourceGroupEntity targetResourceGroup = new ResourceGroupEntity();
-        originResourceGroup.setName("Target");
-        ResourceEntity target = new ResourceEntity();
-        target.setResourceGroup(targetResourceGroup);
-        target.setName(targetResourceGroupName);
-        ResourceTypeEntity appType = new ResourceTypeEntity();
-        appType.setName(DefaultResourceTypeDefinition.NODE.name());
-        target.setResourceType(nodeType);
-
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName)).thenReturn(target);
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName)).thenReturn(origin);
         CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
         when(copyResourceResult.isSuccess()).thenReturn(true);
-        when(copyResourceMock.doCopyResource(target.getId(), origin.getId(), ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
+        when(copyResourceMock.doCopyResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName")).thenReturn(copyResourceResult);
 
         // when
-        Response response = rest.copyFromResource(targetResourceGroupName, targetReleaseName, originResourceGroupName, originReleaseName);
+        Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
 
         // then
         assertEquals(OK.getStatusCode(), response.getStatus());

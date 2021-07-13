@@ -26,13 +26,17 @@ import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntityBuilder;
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -42,6 +46,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -58,6 +63,9 @@ public class CopyResourceTest {
 
     @Mock
     PermissionBoundary permissionBoundary;
+
+    @Mock
+    ResourceLocator resourceLocatorMock;
 
     @Before
     public void before() {
@@ -107,7 +115,6 @@ public class CopyResourceTest {
 
     @Test
     public void shouldInvokePermissionServiceAndCopyResourceDomainServiceWithCorrectParams() throws Exception {
-
         //given
         String targetResourceName = "target";
         Integer targetResourceId = 2;
@@ -134,6 +141,36 @@ public class CopyResourceTest {
         // then
         verify(permissionBoundary, times(1)).canCopyFromSpecificResource(originResource, targetGroup);
         verify(copyResourceDomainService, times(1)).copyFromOriginToTargetResource(originResource, targetResource, ForeignableOwner.getSystemOwner());
+    }
+
+    @Test
+    public void shouldNotAllowCopyFromWhenTargetNotFound() throws ValidationException {
+        // given
+        when(resourceLocatorMock.getResourceByGroupNameAndRelease(anyString(), anyString())).thenReturn(null);
+
+        // when
+        Throwable exception = assertThrows(ResourceNotFoundException.class, () -> {
+            copyResource.doCopyResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
+        });
+
+        // then
+        assertEquals(exception.getMessage(), "Target Resource not found");
+    }
+
+    @Test
+    public void shouldNotAllowCopyFromWhenOriginNotFound() throws ValidationException {
+        // given
+        ResourceEntity targetResourceEntity = mock(ResourceEntity.class);
+        when(resourceLocatorMock.getResourceByGroupNameAndRelease("targetResourceGroupName", "targetReleaseName")).thenReturn(targetResourceEntity);
+        when(resourceLocatorMock.getResourceByGroupNameAndRelease("originResourceGroupName", "originReleaseName")).thenReturn(null);
+
+        // when
+        Throwable exception = assertThrows(ResourceNotFoundException.class, () -> {
+            copyResource.doCopyResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
+        });
+
+        // then
+        assertEquals(exception.getMessage(), "Origin Resource not found");
     }
 
 }

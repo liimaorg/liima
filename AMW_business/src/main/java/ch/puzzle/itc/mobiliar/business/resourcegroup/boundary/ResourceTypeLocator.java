@@ -23,15 +23,12 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 import java.util.List;
 
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class ResourceTypeLocator {
 
     @Inject

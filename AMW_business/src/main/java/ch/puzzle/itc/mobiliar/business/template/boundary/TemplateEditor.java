@@ -60,7 +60,6 @@ import java.util.*;
 import java.util.logging.Logger;
 
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class TemplateEditor {
 
 	@Inject

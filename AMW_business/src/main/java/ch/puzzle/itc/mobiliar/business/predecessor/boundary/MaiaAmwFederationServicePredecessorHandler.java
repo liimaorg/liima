@@ -47,8 +47,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +57,6 @@ import java.util.logging.Logger;
 
 
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class MaiaAmwFederationServicePredecessorHandler {
 
     @Inject

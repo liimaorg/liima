@@ -18,30 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary;
+package ch.mobi.itc.mobiliar.rest.exceptions;
 
-import java.util.List;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.control.SoftlinkRelationService;
 
-@Stateless
-public class DisplaySoftlinkDependencies {
-
-    @Inject
-    private SoftlinkRelationService softlinkService;
-
-    /**
-     * Returns cpi resources which reference (consume) a given ppi resource
-     * @param resource
-     * @return
-     */
-    public List<ResourceEntity> loadConsumingResources(ResourceEntity resource) {
-
-        return softlinkService.getConsumingResources(resource);
+@Provider
+public class ResourceNotFoundExceptionMapper implements ExceptionMapper<ResourceNotFoundException> {
+    @Override
+    public Response toResponse(ResourceNotFoundException exception) {
+        return Response.status(Response.Status.NOT_FOUND).entity(new ExceptionDto(exception)).build();
     }
-
 }
