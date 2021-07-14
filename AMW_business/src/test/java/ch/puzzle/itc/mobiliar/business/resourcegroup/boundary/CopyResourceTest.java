@@ -32,10 +32,10 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 import org.junit.Before;
 import org.junit.Test;

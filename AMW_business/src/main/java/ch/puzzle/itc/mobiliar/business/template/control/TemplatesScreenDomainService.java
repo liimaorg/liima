@@ -32,7 +32,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelation
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.SystemCallTemplate;
 
@@ -93,7 +92,7 @@ public class TemplatesScreenDomainService {
 		return getTemplateDescriptorsForResourceRelationTypeContext(contextService.getGlobalResourceContextEntity(), resRelType, new ArrayList<TemplateDescriptorEntity>(), testing);
 	}
 
-	public List<TemplateDescriptorEntity> getTemplatesForResourceRelation(AbstractResourceRelationEntity relation, boolean testing) throws ResourceNotFoundException, GeneralDBException {
+	public List<TemplateDescriptorEntity> getTemplatesForResourceRelation(AbstractResourceRelationEntity relation, boolean testing) throws ResourceNotFoundException {
 		return getTemplateDescriptorsForResourceRelationContext(contextService.getGlobalResourceContextEntity(), resourceRelationService.getResourceRelation(relation.getId()), new ArrayList<TemplateDescriptorEntity>(), testing);
 	}
 
@@ -235,7 +234,6 @@ public class TemplatesScreenDomainService {
      * @param templateName
      * @throws ResourceTypeNotFoundException
      * @throws TemplateNotDeletableException
-     * @throws GeneralDBException
      */
 	public void deleteSTPTemplate(String templateName) throws TemplateNotDeletableException {
 		for(TemplateDescriptorEntity template : getTemplateListByName(templateName)){
@@ -249,7 +247,6 @@ public class TemplatesScreenDomainService {
 	 * Löscht die Template von eine ResourceType.
 	 *
 	 * @param selectedTemplateId
-	 * @throws GeneralDBException
 	 * @throws ResourceTypeNotFoundException
 	 * @throws TemplateNotDeletableException
 	 */

@@ -29,7 +29,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationT
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.apache.commons.lang3.time.DateUtils;
@@ -80,7 +79,7 @@ public class ResourceRelationsIntegrationTest {
     ResourceEntity appRel2;
 
     	@Before
-    	public void before() throws GeneralDBException {
+    	public void before() {
 	   MockitoAnnotations.openMocks(this);
 	   release1 = new ReleaseEntity();
 	   release1.setName("Release 1");
@@ -127,10 +126,9 @@ public class ResourceRelationsIntegrationTest {
 	}
 
 	@Test
-	public void testGetAppServersWithApplications() throws GeneralDBException {
+	public void testGetAppServersWithApplications() {
 	    Mockito.when(userSettingsEntity.isMyAmwEnabled()).thenReturn(false);
-	    List<ResourceWithRelations> result = service.getAppServersWithApplications("app", null, release1);
-
+	    service.getAppServersWithApplications("app", null, release1);
 	}
 
 }

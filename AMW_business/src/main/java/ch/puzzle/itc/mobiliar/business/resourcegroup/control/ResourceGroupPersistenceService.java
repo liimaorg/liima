@@ -161,7 +161,6 @@ public class ResourceGroupPersistenceService {
 	 * Listet Applications auf alphabetic sorted
 	 *
 	 * @return
-	 * @throws ch.puzzle.itc.mobiliar.common.exception.GeneralDBException
 	 */
 	public List<Application> getAllApplicationsNotBelongingToAServer() {
 		List<Application> allApplications = new ArrayList<>();

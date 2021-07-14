@@ -38,7 +38,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelation
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.common.exception.GeneralDBException;
 import ch.puzzle.itc.mobiliar.presentation.resourceDependencies.DependencyModel;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 
