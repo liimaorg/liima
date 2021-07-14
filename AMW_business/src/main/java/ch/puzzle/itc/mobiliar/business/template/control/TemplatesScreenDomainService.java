@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.template.control;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.property.entity.*;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.*;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
@@ -31,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelation
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
+import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.SystemCallTemplate;
 
@@ -60,6 +62,9 @@ public class TemplatesScreenDomainService {
 	private ContextDomainService contextService;
 
 	@Inject
+	ResourceLocator resourceLocator;
+
+	@Inject
 	ResourceRelationService resourceRelationService;
 
 	public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResourceType(ResourceTypeEntity resourceType, boolean testing) {
@@ -70,6 +75,11 @@ public class TemplatesScreenDomainService {
 
 	public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResource(ResourceEntity resource, boolean testing) {
 		resource = entityManager.find(ResourceEntity.class, resource.getId());
+		return getTemplateDescriptorsForResourceContext(contextService.getGlobalResourceContextEntity(), resource, new ArrayList<TemplateDescriptorEntity>(), testing);
+	}
+
+	public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResource(String resourceGroupName, String releaseName, boolean testing) throws ValidationException {
+		ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
 		return getTemplateDescriptorsForResourceContext(contextService.getGlobalResourceContextEntity(), resource, new ArrayList<TemplateDescriptorEntity>(), testing);
 	}
 
@@ -258,35 +268,44 @@ public class TemplatesScreenDomainService {
 		log.info("Template Id: " + selectedTemplateId + " was deleted successfully.");
 	}
 
-	private AbstractContext getOwnerOfTemplate(TemplateDescriptorEntity templateDescriptor) {
+	public AbstractContext getOwnerOfTemplate(TemplateDescriptorEntity templateDescriptor) {
 		// ContextEntity
 		AbstractContext c;
-		c = (AbstractContext) getSingleObjectOrNull(entityManager.createQuery("select distinct n from ContextEntity n where :templ member of n.templates").setParameter("templ", templateDescriptor));
+		c = (AbstractContext) getSingleObjectOrNull(
+				entityManager.createQuery("select distinct n from ContextEntity n where :templ member of n.templates")
+						.setParameter("templ", templateDescriptor));
 		if (c != null) {
 			return c;
 		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager.createQuery("select distinct n from ContextTypeEntity n where :templ member of n.templates")
+		c = (AbstractContext) getSingleObjectOrNull(entityManager
+				.createQuery("select distinct n from ContextTypeEntity n where :templ member of n.templates")
 				.setParameter("templ", templateDescriptor));
 		if (c != null) {
 			return c;
 		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager.createQuery("select distinct n from ResourceContextEntity n where :templ member of n.templates").setParameter("templ",
-				templateDescriptor));
+		c = (AbstractContext) getSingleObjectOrNull(entityManager
+				.createQuery("select distinct n from ResourceContextEntity n where :templ member of n.templates")
+				.setParameter("templ", templateDescriptor));
 		if (c != null) {
 			return c;
 		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager.createQuery("select distinct n from ResourceRelationContextEntity n where :templ member of n.templates").setParameter("templ",
-				templateDescriptor));
+		c = (AbstractContext) getSingleObjectOrNull(entityManager
+				.createQuery(
+						"select distinct n from ResourceRelationContextEntity n where :templ member of n.templates")
+				.setParameter("templ", templateDescriptor));
 		if (c != null) {
 			return c;
 		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager.createQuery("select distinct n from ResourceRelationTypeContextEntity n where :templ member of n.templates").setParameter("templ",
-				templateDescriptor));
+		c = (AbstractContext) getSingleObjectOrNull(entityManager
+				.createQuery(
+						"select distinct n from ResourceRelationTypeContextEntity n where :templ member of n.templates")
+				.setParameter("templ", templateDescriptor));
 		if (c != null) {
 			return c;
 		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager.createQuery("select distinct n from ResourceTypeContextEntity n where :templ member of n.templates").setParameter("templ",
-				templateDescriptor));
+		c = (AbstractContext) getSingleObjectOrNull(entityManager
+				.createQuery("select distinct n from ResourceTypeContextEntity n where :templ member of n.templates")
+				.setParameter("templ", templateDescriptor));
 		return c;
 	}
 

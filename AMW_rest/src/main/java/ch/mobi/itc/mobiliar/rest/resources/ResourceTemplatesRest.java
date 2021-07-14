@@ -21,20 +21,29 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -50,7 +59,13 @@ public class ResourceTemplatesRest {
     ResourceLocator resourceLocator;
 
     @Inject
+    ResourceGroupLocator resourceGroupLocator;
+
+    @Inject
     TemplatesScreenDomainService templateService;
+
+    @Inject
+    TemplateEditor templateEditor;
 
     @GET
     @ApiOperation(value = "Get all templates for a resource in a specific release")
@@ -66,13 +81,7 @@ public class ResourceTemplatesRest {
     public List<TemplateDTO> getResourceTemplate(@PathParam("resourceGroupName") String resourceGroupName,
                                                  @PathParam("releaseName") String releaseName,
                                                  @PathParam("templateName") String templateName) throws ValidationException {
-
-        ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithConsumedRelations(resourceGroupName,
-                releaseName);
-
-        List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resource,
-                false);
-
+        List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resourceGroupName, releaseName, false);
         return getTemplateDTOs(templateName, templates);
     }
 
@@ -94,5 +103,43 @@ public class ResourceTemplatesRest {
             }
         }
         return result;
+    }
+
+    @DELETE
+    @Path("/{templateName}")
+    @ApiOperation(value = "Delete a template for a resource in a specific release")
+    public Response deleteResourceTemplate(@PathParam("resourceGroupName") String resourceGroupName,
+                                           @PathParam("releaseName") String releaseName,
+                                           @PathParam("templateName") String templateName) throws ValidationException, AMWException {
+        try {
+            templateEditor.removeTemplate(resourceGroupName, releaseName, templateName);
+        } catch (TemplateNotDeletableException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        return Response.status(Response.Status.OK).build();
+    }
+
+    @POST
+    @ApiOperation(value = "Create a template for a resource in a specific release")
+    public Response createResourceTemplates(@PathParam("resourceGroupName") String resourceGroupName,
+                                            @PathParam("releaseName") String releaseName,
+                                            TemplateDTO templateDTO) throws ValidationException, AMWException {
+
+        ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
+
+        boolean testingMode = false;
+        TemplateDescriptorEntity template = new TemplateDescriptorEntity();
+        template.setTesting(testingMode);
+        template.setFileContent(templateDTO.getFileContent());
+        template.setName(templateDTO.getName());
+        template.setTargetPath(templateDTO.getTargetPath());
+        HashSet<ResourceGroupEntity> platformEntities = new HashSet<>();
+        for(String platform : templateDTO.getTargetPlatforms()) {
+            ResourceGroupEntity platformEntity = resourceGroupLocator.getResourceGroupByName(platform);
+            platformEntities.add(platformEntity);
+        }
+
+        templateEditor.saveTemplateForResource(template, resource.getId(), testingMode);
+        return Response.status(Response.Status.OK).build();
     }
 }

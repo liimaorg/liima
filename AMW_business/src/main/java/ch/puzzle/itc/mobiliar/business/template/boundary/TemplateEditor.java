@@ -27,6 +27,7 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasTypeContext;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
@@ -38,8 +39,10 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
+import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
+import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
@@ -77,8 +80,14 @@ public class TemplateEditor {
 	@Inject
 	FreemarkerSyntaxValidator freemarkerValidator;
 
-    @Inject
-    AuditService auditService;
+	@Inject
+	AuditService auditService;
+
+	@Inject
+	ResourceLocator resourceLocator;
+
+	@Inject
+	TemplatesScreenDomainService templateService;
 
 	@Inject
 	private Logger log;
@@ -90,9 +99,9 @@ public class TemplateEditor {
 	public TemplateDescriptorEntity getTemplateByIdAndRevision(Integer templateId, Number revisionId) {
 		TemplateDescriptorEntity templateDescriptorEntity = AuditReaderFactory.get(entityManager).find(
 				TemplateDescriptorEntity.class, templateId, revisionId);
-	     //We have to ensure, that the target platforms are loaded. To make sure, that the compiler doesn't optimize the access to the target platforms away, we have to do this ugly hack.
-	    	templateDescriptorEntity.getTargetPlatforms().size();
-	    	return templateDescriptorEntity;
+		//We have to ensure, that the target platforms are loaded. To make sure, that the compiler doesn't optimize the access to the target platforms away, we have to do this ugly hack.
+		templateDescriptorEntity.getTargetPlatforms().size();
+		return templateDescriptorEntity;
 	}
 
 	public List<RevisionInformation> getTemplateRevisions(Integer templateId) {
@@ -220,13 +229,17 @@ public class TemplateEditor {
 	 */
 	public void removeTemplate(Integer templateId) throws TemplateNotDeletableException {
 		TemplateDescriptorEntity templateDescriptor = entityManager.find(TemplateDescriptorEntity.class, templateId);
+		this.removeTemplate(templateDescriptor);
+	}
+
+	private void removeTemplate(TemplateDescriptorEntity templateDescriptor) throws TemplateNotDeletableException {
 		if (templateDescriptor != null && templateDescriptor.getName() != null
 				&& SystemCallTemplate.getName().equals(templateDescriptor.getName())) {
 			String message = SystemCallTemplate.getName() + " Template can't be deleted since it is a system template!";
 			log.info(message);
 			throw new TemplateNotDeletableException(message);
 		}
-		AbstractContext owner = getOwnerOfTemplate(templateDescriptor);
+		AbstractContext owner = templateService.getOwnerOfTemplate(templateDescriptor);
 		if (owner != null) {
 			if (owner instanceof ResourceContextEntity && !permissionService.hasPermission(Permission.RESOURCE_TEMPLATE,
 																						   null,
@@ -257,53 +270,28 @@ public class TemplateEditor {
 			owner.removeTemplate(templateDescriptor);
 		}
 		entityManager.remove(templateDescriptor);
-		log.info("Template " + templateId + " has been deleted successfully.");
+		log.info("Template " + templateDescriptor.getId() + " has been deleted successfully.");
 	}
 
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	AbstractContext getOwnerOfTemplate(TemplateDescriptorEntity templateDescriptor) {
-		// ContextEntity
-		AbstractContext c;
-		c = (AbstractContext) getSingleObjectOrNull(entityManager.createQuery(
-				"select distinct n from ContextEntity n where :templ member of n.templates")
-				.setParameter("templ", templateDescriptor));
-		if (c != null) {
-			return c;
-		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager.createQuery(
-				"select distinct n from ContextTypeEntity n where :templ member of n.templates")
-				.setParameter("templ", templateDescriptor));
-		if (c != null) {
-			return c;
-		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager.createQuery(
-				"select distinct n from ResourceContextEntity n where :templ member of n.templates")
-				.setParameter("templ", templateDescriptor));
-		if (c != null) {
-			return c;
-		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager
-				.createQuery(
-						"select distinct n from ResourceRelationContextEntity n where :templ member of n.templates")
-						.setParameter("templ", templateDescriptor));
-		if (c != null) {
-			return c;
-		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager
-				.createQuery(
-						"select distinct n from ResourceRelationTypeContextEntity n where :templ member of n.templates")
-						.setParameter("templ", templateDescriptor));
-		if (c != null) {
-			return c;
-		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager.createQuery(
-				"select distinct n from ResourceTypeContextEntity n where :templ member of n.templates")
-				.setParameter("templ", templateDescriptor));
-		if (c != null) {
-			return c;
-		}
-		return null;
+	public void removeTemplate(String resourceGroupName, String releaseName, String templateName)
+			throws ValidationException, AMWException {
+		ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithConsumedRelations(resourceGroupName,
+				releaseName);
+		List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resource,
+				false);
 
+		TemplateDescriptorEntity temp = null;
+		for (TemplateDescriptorEntity template : templates) {
+			if (templateName.equals(template.getName())) {
+				temp = template;
+				break;
+			}
+		}
+
+		if (temp == null) {
+			throw new AMWException("Template not found");
+		}
+		this.removeTemplate(temp);
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)

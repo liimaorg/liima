@@ -183,19 +183,6 @@ public class ResourceLocator {
     }
 
     /**
-     * @param name
-     * @param releaseName
-     * @return
-     * @throws ValidationException thrown if one of the arguments is either empty or null
-     */
-    public ResourceEntity getResourceByNameAndReleaseWithTemplates(String name, String releaseName)
-            throws ValidationException {
-        ValidationHelper.validateNotNullOrEmptyChecked(name, releaseName);
-        ReleaseEntity release = releaseLocator.getReleaseByName(releaseName);
-        return resourceRepository.getResourceByNameAndReleaseWithTemplates(name, release);
-    }
-
-    /**
      * @return resource for id with resourceGroup and other resources
      */
     public ResourceEntity getResourceWithGroupAndRelatedResources(Integer resourceId) {
