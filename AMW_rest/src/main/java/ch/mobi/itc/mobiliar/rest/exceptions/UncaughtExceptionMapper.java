@@ -19,7 +19,7 @@
  */
 
 package ch.mobi.itc.mobiliar.rest.exceptions;
- 
+
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

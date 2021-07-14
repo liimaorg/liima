@@ -42,11 +42,13 @@ import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidato
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.SystemCallTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.AuditReader;
@@ -154,7 +156,7 @@ public class TemplateEditor {
 	}
 
 	@HasPermission(permission = Permission.RESOURCE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
-	public void saveTemplateForResource(TemplateDescriptorEntity template, Integer resourceId,
+	public void saveTemplateForResource(TemplateDescriptorEntity template, ResourceEntity resourceEntity,
 										boolean testingMode) throws AMWException {
 		permissionService.assertHasPermissionShakedownTestMode(testingMode);
 		if (!testingMode) {
@@ -163,8 +165,22 @@ public class TemplateEditor {
 															  action,
 															  "create/ modify resource templates");
 		}
-		ResourceEntity resourceEntity = entityManager.find(ResourceEntity.class, resourceId);
 		saveTemplate(template, resourceEntity);
+	}
+
+	public void saveTemplateForResource(TemplateDescriptorEntity template, Integer resourceId,
+										boolean testingMode) throws AMWException {
+		ResourceEntity resourceEntity = entityManager.find(ResourceEntity.class, resourceId);
+		this.saveTemplateForResource(template, resourceEntity, testingMode);
+	}
+
+	public void saveTemplateForResource(TemplateDescriptorEntity template, String resourceGroupName, String releaseName,
+			boolean testingMode) throws AMWException {
+		ResourceEntity resourceEntity = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
+		if (resourceEntity == null) {
+			throw new ResourceNotFoundException("Resource not found");
+		}
+		this.saveTemplateForResource(template, resourceEntity, testingMode);
 	}
 
 	@HasPermission(permission = Permission.RESOURCETYPE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
@@ -181,33 +197,33 @@ public class TemplateEditor {
 		saveTemplate(template, resourceTypeEntity);
 	}
 
-	void validateTemplate(TemplateDescriptorEntity templateDescriptorEntity) throws AMWException {
+	void validateTemplate(TemplateDescriptorEntity templateDescriptorEntity) throws ValidationException {
 		if (StringUtils.isEmpty(templateDescriptorEntity.getName())) {
-			throw new AMWException("The template name must not be empty");
+			throw new ValidationException("The template name must not be empty");
 		}
 
 		if (templateDescriptorEntity.getTargetPath() != null && templateDescriptorEntity.getTargetPath()
 																						.startsWith("/")) {
-			throw new AMWException("Absolute paths are not allowed for file path");
+			throw new ValidationException("Absolute paths are not allowed for file path");
 		}
 
 		if (templateDescriptorEntity.getTargetPath() != null && templateDescriptorEntity.getTargetPath()
 																						.contains("../")) {
-			throw new AMWException("No path traversals like '../' allowed in file path");
+			throw new ValidationException("No path traversals like '../' allowed in file path");
 		}
 	}
 
-	void saveTemplate(TemplateDescriptorEntity template, HasContexts<?> hasContext) throws AMWException {
+	void saveTemplate(TemplateDescriptorEntity template, HasContexts<?> hasContext) throws ValidationException, AMWException {
 		validateTemplate(template);
 		freemarkerValidator.validateFreemarkerSyntax(template.getFileContent());
 		hasContext = entityManager.find(hasContext.getClass(), hasContext.getId());
 		auditService.storeIdInThreadLocalForAuditLog(hasContext);
 		if (hasTemplateWithSameName(template, hasContext)) {
-			throw new AMWException("The defined template name is already in use");
+			throw new ValidationException("The defined template name is already in use");
 		}
 		if (hasContext instanceof HasTypeContext
 				&& hasTemplateWithSameName(template, ((HasTypeContext<?>) hasContext).getTypeContext())) {
-			throw new AMWException("The defined template name is already in use");
+			throw new ValidationException("The defined template name is already in use");
 		}
 
 
@@ -273,12 +289,13 @@ public class TemplateEditor {
 		log.info("Template " + templateDescriptor.getId() + " has been deleted successfully.");
 	}
 
-	public void removeTemplate(String resourceGroupName, String releaseName, String templateName)
-			throws ValidationException, AMWException {
-		ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithConsumedRelations(resourceGroupName,
-				releaseName);
-		List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resource,
-				false);
+	public void removeTemplate(String resourceGroupName, String releaseName, String templateName, boolean testingMode)
+			throws ValidationException, TemplateNotDeletableException, NotFoundException {
+		ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
+		if (resource == null) {
+			throw new ResourceNotFoundException("Resource not found");
+		}
+		List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resource, testingMode);
 
 		TemplateDescriptorEntity temp = null;
 		for (TemplateDescriptorEntity template : templates) {
@@ -289,7 +306,7 @@ public class TemplateEditor {
 		}
 
 		if (temp == null) {
-			throw new AMWException("Template not found");
+			throw new NotFoundException("Template not found");
 		}
 		this.removeTemplate(temp);
 	}
