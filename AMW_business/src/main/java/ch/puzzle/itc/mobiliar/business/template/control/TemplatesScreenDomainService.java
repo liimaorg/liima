@@ -71,7 +71,6 @@ public class TemplatesScreenDomainService {
 		return getTemplateDescriptorsForResourceTypeContext(contextService.getGlobalResourceContextEntity(), resourceType, new ArrayList<TemplateDescriptorEntity>(), testing);
 	}
 
-
 	public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResource(ResourceEntity resource, boolean testing) {
 		resource = entityManager.find(ResourceEntity.class, resource.getId());
 		return getTemplateDescriptorsForResourceContext(contextService.getGlobalResourceContextEntity(), resource, new ArrayList<TemplateDescriptorEntity>(), testing);

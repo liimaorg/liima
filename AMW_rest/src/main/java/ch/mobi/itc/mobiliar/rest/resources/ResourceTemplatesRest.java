@@ -35,10 +35,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
-import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
@@ -91,13 +89,11 @@ public class ResourceTemplatesRest {
     public TemplateDTO getResourceTemplate(@PathParam("resourceGroupName") String resourceGroupName,
                                                  @PathParam("releaseName") String releaseName,
                                                  @PathParam("templateName") String templateName) throws ValidationException, NotFoundException {
-        List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resourceGroupName, releaseName, false);
-        for (TemplateDescriptorEntity template : templates) {
-            if (templateName.equals(template.getName())) {
-                return new TemplateDTO(template);
-            }
+        TemplateDescriptorEntity template = getTemplate(resourceGroupName, releaseName, templateName);
+        if (template == null) {
+            throw new NotFoundException("Template not found");
         }
-        throw new NotFoundException("Template not found");
+        return new TemplateDTO(template);
     }
 
     @DELETE
@@ -119,15 +115,14 @@ public class ResourceTemplatesRest {
     public Response createResourceTemplates(@PathParam("resourceGroupName") String resourceGroupName,
                                             @PathParam("releaseName") String releaseName,
                                             TemplateDTO templateDTO) throws ValidationException, AMWException {
-        TemplateDescriptorEntity template = toTemplateDescriptorEntity(templateDTO);
-        // make sure id isn't set
+        // make sure id isn't set or save will try to update the template
         templateDTO.setId(null);
+        TemplateDescriptorEntity template = toTemplateDescriptorEntity(templateDTO, null);
 
         templateEditor.saveTemplateForResource(template, resourceGroupName, releaseName, false);
         return Response.status(Response.Status.OK).build();
     }
 
-    // templateName is ignored...
     @PUT
     @Path("/{templateName}")
     @ApiOperation(value = "Update a template for a resource in a specific release")
@@ -135,17 +130,30 @@ public class ResourceTemplatesRest {
                                             @PathParam("releaseName") String releaseName,
                                             @PathParam("templateName") String templateName,
                                             TemplateDTO templateDTO) throws ValidationException, AMWException {
-        if(templateDTO.getId() == null) {
-            throw new ValidationException("Id can't be 0");
+        TemplateDescriptorEntity template = getTemplate(resourceGroupName, releaseName, templateName);
+        if (template == null) {
+            throw new NotFoundException("Template not found");
         }
-        TemplateDescriptorEntity template = toTemplateDescriptorEntity(templateDTO);
+        template = toTemplateDescriptorEntity(templateDTO, template);
 
         templateEditor.saveTemplateForResource(template, resourceGroupName, releaseName, false);
         return Response.status(Response.Status.OK).build();
     }
 
-    private TemplateDescriptorEntity toTemplateDescriptorEntity(TemplateDTO templateDTO) {
-        TemplateDescriptorEntity template = new TemplateDescriptorEntity();
+    private TemplateDescriptorEntity getTemplate(String resourceGroupName, String releaseName, String templateName) throws ValidationException {
+        List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resourceGroupName, releaseName, false);
+        for (TemplateDescriptorEntity template : templates) {
+            if (templateName.equals(template.getName())) {
+                return template;
+            }
+        }
+        return null;
+    }
+
+    private TemplateDescriptorEntity toTemplateDescriptorEntity(TemplateDTO templateDTO, TemplateDescriptorEntity template) {
+        if (template == null) {
+            template = new TemplateDescriptorEntity();
+        }
         template.setId(templateDTO.getId());
         template.setTesting(false);
         template.setFileContent(templateDTO.getFileContent());
