@@ -120,7 +120,7 @@ public class ResourceTemplatesRest {
         TemplateDescriptorEntity template = toTemplateDescriptorEntity(templateDTO, null);
 
         templateEditor.saveTemplateForResource(template, resourceGroupName, releaseName, false);
-        return Response.status(Response.Status.OK).build();
+        return Response.ok(new TemplateDTO(template)).build();
     }
 
     @PUT
@@ -137,7 +137,7 @@ public class ResourceTemplatesRest {
         template = toTemplateDescriptorEntity(templateDTO, template);
 
         templateEditor.saveTemplateForResource(template, resourceGroupName, releaseName, false);
-        return Response.status(Response.Status.OK).build();
+        return Response.ok(new TemplateDTO(template)).build();
     }
 
     private TemplateDescriptorEntity getTemplate(String resourceGroupName, String releaseName, String templateName) throws ValidationException {
