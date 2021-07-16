@@ -36,7 +36,6 @@ import javax.ws.rs.core.Response;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
@@ -54,10 +53,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestScoped
 @Path("/resources/{resourceGroupName}/{releaseName}/templates")
 @Api(value = "/resources/{resourceGroupName}/{releaseName}/templates", description = "Resource templates")
-public class ResourceTemplatesRest {
-
-    @Inject
-    ResourceLocator resourceLocator;
+public class ResourceTemplatesRest {;
 
     @Inject
     ResourceGroupLocator resourceGroupLocator;
@@ -77,7 +73,7 @@ public class ResourceTemplatesRest {
 
         for (TemplateDescriptorEntity template : templates) {
             TemplateDTO temp = new TemplateDTO(template);
-            temp.setFileContent("");
+            temp.setFileContent(null);
             templateDTOs.add(temp);
         }
         return templateDTOs;

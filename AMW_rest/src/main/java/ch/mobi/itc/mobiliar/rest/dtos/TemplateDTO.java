@@ -51,8 +51,10 @@ public class TemplateDTO {
         this.name = template.getName();
         this.targetPath = template.getTargetPath();
         targetPlatforms = new HashSet<>();
-        for (ResourceGroupEntity pf : template.getTargetPlatforms()) {
-            targetPlatforms.add(pf.getName());
+        if(template.getTargetPlatforms() != null) {
+            for (ResourceGroupEntity pf : template.getTargetPlatforms()) {
+                targetPlatforms.add(pf.getName());
+            }
         }
         this.fileContent = template.getFileContent();
     }

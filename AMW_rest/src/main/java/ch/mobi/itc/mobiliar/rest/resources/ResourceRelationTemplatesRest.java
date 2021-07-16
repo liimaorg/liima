@@ -78,7 +78,7 @@ public class ResourceRelationTemplatesRest {
         List<TemplateDTO> templateDTOs = new ArrayList<>();
         for (TemplateDescriptorEntity template : templates) {
             TemplateDTO temp = new TemplateDTO(template);
-            temp.setFileContent("");
+            temp.setFileContent(null);
             templateDTOs.add(temp);
         }
         return templateDTOs;
