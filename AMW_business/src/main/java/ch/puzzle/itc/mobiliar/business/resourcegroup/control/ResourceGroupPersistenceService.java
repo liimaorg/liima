@@ -22,7 +22,6 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -48,9 +47,6 @@ public class ResourceGroupPersistenceService {
 
 	@Inject
 	EntityManager entityManager;
-
-	@Inject
-	private Logger log;
 
 	@Inject
 	ResourceTypeProvider resourceTypeProvider;

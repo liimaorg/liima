@@ -35,7 +35,6 @@ import javax.inject.Named;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
@@ -117,7 +116,6 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 
 	private ReleaseEntity currentRelease;
 	private SortedMap<ResourceTypeEntity, SortedSet<ResourceEntity>> resourcesForCurrentRelease;
-	private List<DeploymentEntity> deploymentsForCurrentRelease;
 
 	public void remove(){
 		releaseLocator.delete(currentRelease);
@@ -158,8 +156,6 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 			}
 			resourcesForCurrentRelease.get(r.getResourceType()).add(r);
 		}
-		deploymentsForCurrentRelease = deploymentBoundary
-				.getDeploymentsForRelease(releaseId);
 	}
 
 	public boolean hasResourcesForCurrentRelease() {

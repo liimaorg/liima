@@ -36,7 +36,6 @@ import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.presentation.common.ResourceTypeDataProvider;
-import ch.puzzle.itc.mobiliar.presentation.propertyEdit.PropertyEditDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
@@ -63,9 +62,6 @@ public class CopyResourceDataProvider implements Serializable {
 
 	@Inject
 	private CopyResource copyResource;
-
-	@Inject
-	private PropertyEditDataProvider propertyEditDataProvider;
 
 	@Inject
 	private MaiaAmwFederationServicePredecessorHandler maiaAmwFederationServicePredecessorHandler;

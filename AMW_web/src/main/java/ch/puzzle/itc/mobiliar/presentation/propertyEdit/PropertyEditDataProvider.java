@@ -331,10 +331,6 @@ public class PropertyEditDataProvider implements Serializable {
         }
     }
 
-    private String getSoftlinkIdIfResource() {
-        return isCurrentFocusOnResource() ? ((ResourceEntity) resourceOrResourceType).getSoftlinkId() : null;
-    }
-
     private String getNameOfResourceOrResourceType() {
         return resourceOrResourceType != null ? resourceOrResourceType.getName() : null;
     }
