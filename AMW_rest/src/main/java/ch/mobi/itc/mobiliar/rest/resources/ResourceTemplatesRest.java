@@ -73,7 +73,6 @@ public class ResourceTemplatesRest {;
 
         for (TemplateDescriptorEntity template : templates) {
             TemplateDTO temp = new TemplateDTO(template);
-            temp.setFileContent(null);
             templateDTOs.add(temp);
         }
         return templateDTOs;

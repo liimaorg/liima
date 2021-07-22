@@ -40,6 +40,7 @@ public class TemplateDTO {
 
     private Integer id;
     private String relatedResourceIdentifier;
+    private Integer ownerResourceId;
     private String name;
     private String targetPath;
     private Set<String> targetPlatforms;
@@ -48,10 +49,13 @@ public class TemplateDTO {
     public TemplateDTO(TemplateDescriptorEntity template){
         this.id = template.getId();
         this.relatedResourceIdentifier = template.getRelatedResourceIdentifier();
+        if (template.getOwnerResource() != null) {
+            this.ownerResourceId = template.getOwnerResource().getId();
+        }
         this.name = template.getName();
         this.targetPath = template.getTargetPath();
         targetPlatforms = new HashSet<>();
-        if(template.getTargetPlatforms() != null) {
+        if (template.getTargetPlatforms() != null) {
             for (ResourceGroupEntity pf : template.getTargetPlatforms()) {
                 targetPlatforms.add(pf.getName());
             }
