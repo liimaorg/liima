@@ -18,7 +18,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- dependency versions -->
-		<version.h2>1.4.196</version.h2>
+		<version.h2>2.0.206</version.h2>
 		<version.pg>9.4-1200-jdbc41</version.pg>
 		<version.ora>11.2.0.3</version.ora>
 		
