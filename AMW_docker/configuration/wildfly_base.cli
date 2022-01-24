@@ -8,9 +8,17 @@ embed-server --std-out=echo
 /subsystem=mail/mail-session=amw:add(from=amw@amw.ch,jndi-name="java:/AutomationMiddlewareMail")
 /subsystem=mail/mail-session=amw/server=smtp:add(outbound-socket-binding-ref="mail-smtp-amw",ssl=true)
 
-# Login Module
-/subsystem=security/security-domain=jboss-secure:add()
-/subsystem=security/security-domain=jboss-secure/authentication=classic:add(login-modules=[{"code"=>"UsersRoles","flag"=>"required","module-options"=>["usersProperties"=>"${jboss.server.config.dir}/props/application-users.properties","rolesProperties"=>"${jboss.server.config.dir}/props/application-roles.properties"]}])
+# security
+/subsystem=elytron/properties-realm=jboss-secure:add(groups-attribute=groups,groups-properties={path=props/application-roles.properties,relative-to=jboss.server.config.dir},users-properties={path=props/application-users.properties,relative-to=jboss.server.config.dir,plain-text=true})
+/subsystem=elytron/security-domain=jboss-secure:add(realms=[{realm=jboss-secure,role-decoder=groups-to-roles}],default-realm=jboss-secure,permission-mapper=default-permission-mapper)
+/subsystem=elytron/http-authentication-factory=jboss-secure:add(http-server-mechanism-factory=global,security-domain=jboss-secure,mechanism-configurations=[{mechanism-name=BASIC,mechanism-realm-configurations=[{realm-name=jboss-secure}]}])
+
+/subsystem=undertow/application-security-domain=jboss-secure:add(http-authentication-factory=jboss-secure)
+/subsystem=undertow:write-attribute(name=default-security-domain, value="jboss-secure")
+
+/subsystem=ejb3/application-security-domain=jboss-secure:add(security-domain=jboss-secure)
+# avoids that sessionContext.getCallerPrincipal().getName() returns anonymous
+/subsystem=ejb3:write-attribute(name=default-security-domain,value=jboss-secure)
 
 stop-embedded-server
 quit
