@@ -1,4 +1,4 @@
-FROM jboss/wildfly:23.0.1.Final
+FROM quay.io/wildfly/wildfly:26.0.0.Final
 LABEL MAINTAINER="liimaorg <amw-dev@puzzle.ch>"
 
 ARG DB_CLI_SCRIPT=wildfly_h2.cli 
