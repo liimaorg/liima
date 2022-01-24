@@ -74,7 +74,7 @@
 
 	<login-config>
 		<auth-method>BASIC</auth-method>
-		<realm-name>AMW login</realm-name>
+		<realm-name>jboss-secure</realm-name>
 	</login-config>
 
 </web-app>

@@ -368,17 +368,13 @@ export class DeploymentsComponent implements OnInit {
       prefix + '_' + datefns.format(new Date(), 'yyyy-MM-dd_HHmm').toString() + '.csv';
     const blob = new Blob([this.csvDocument], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
-    if (navigator.msSaveOrOpenBlob) {
-      navigator.msSaveBlob(blob, docName);
-    } else {
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = docName;
-      a.setAttribute('style', 'display:none;');
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = docName;
+    a.setAttribute('style', 'display:none;');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
     this.errorMessage = null;
   }
