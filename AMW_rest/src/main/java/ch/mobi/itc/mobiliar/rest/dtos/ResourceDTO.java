@@ -38,8 +38,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ResourceDTO {
-
-    private Integer id;
+    private Integer id; // Release id
     private String release;
     private List<ResourceRelationDTO> relations;
     private List<PropertyDTO> properties;

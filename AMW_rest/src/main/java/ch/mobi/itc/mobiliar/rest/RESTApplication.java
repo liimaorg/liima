@@ -48,8 +48,11 @@ public class RESTApplication extends Application {
     }
 
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(ReleasesRest.class);
+        resources.add(BatchJobRest.class);
         resources.add(ResourcesRest.class);
+        resources.add(ResourceGroupsRest.class);
+        resources.add(ResourceTypesRest.class);
+        resources.add(ReleasesRest.class);
         resources.add(ResourcePropertiesRest.class);
         resources.add(ResourceTemplatesRest.class);
         resources.add(ResourceRelationsRest.class);
