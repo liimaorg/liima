@@ -292,13 +292,9 @@ public class ResourceGroupsRest {
         if (resource == null) {
             return null;
         }
-        List<String> uniqueNames = new ArrayList<>();
         List<ResourceRelationDTO> resourceRelationDTOs = new ArrayList<>();
         for (ConsumedResourceRelationEntity consumedResourceRelationEntity : resource.getConsumedMasterRelations()) {
-            if (!uniqueNames.contains(consumedResourceRelationEntity.getSlaveResource().getName())) {
-                uniqueNames.add(consumedResourceRelationEntity.getSlaveResource().getName());
-                resourceRelationDTOs.add(new ResourceRelationDTO(consumedResourceRelationEntity));
-            }
+            resourceRelationDTOs.add(new ResourceRelationDTO(consumedResourceRelationEntity));
         }
         return new ResourceDTO(resource, resourceRelationDTOs);
     }
