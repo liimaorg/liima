@@ -1,3 +1,19 @@
+# v1.17.26
+* Update to angular 13 and wildfly 26 [#634](https://github.com/liimaorg/liima/pull/634)
+* Properties sometimes missing in test generation/deployment [#550](https://github.com/liimaorg/liima/issues/550)
+  * This adds a unique constraint to avoid the problem and violations have to cleanup up manually before the update can be applied. Find violations:
+    ```
+    select res1.resource_id, res.name, res1.context_id, res1.id from TAMW_RESOURCECONTEXT res1
+    inner join
+    (select context_id, resource_id from TAMW_RESOURCECONTEXT group by (context_id, resource_id) having count(*) > 1) res2
+    on res1.context_id = res2.context_id and res1.resource_id = res2.resource_id
+    join TAMW_RESOURCE res on res1.resource_id = res.id;
+    ```
+  * To clean them up you have to delete the affected resources and recreate them manually via UI.
+  * Sometimes I was able to fix it by creating a new release of the resource, deleting the old release and changing the release of the new release. You have to check that all properties were copied to the new release before deleting because they can be missing.
+* getResourceRelationListForRelease should always return same release of relation [#626](https://github.com/liimaorg/liima/issues/626)
+* Implement REST GET /resources/{resourceId} [#627](https://github.com/liimaorg/liima/issues/627)
+
 # v1.17.25
 * Implement update (put) and delete for Resource templates via Rest [#597](https://github.com/liimaorg/liima/issues/597)
   * Breaking change: `/resources/{resourceGroupName}/{releaseName}/templates/{templateName}` no longer returns an array
