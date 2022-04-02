@@ -63,7 +63,7 @@ public class ResourceDependencyResolverService {
 
     public Set<ConsumedResourceRelationEntity> getConsumedMasterRelationsForRelease(ResourceEntity resource, ReleaseEntity release) {
         Set<ConsumedResourceRelationEntity> relations = resource.getConsumedMasterRelations();
-        Set<ConsumedResourceRelationEntity> result = new HashSet<ConsumedResourceRelationEntity>();
+        Set<ConsumedResourceRelationEntity> result = new HashSet<>();
         if (relations != null) {
             for (ConsumedResourceRelationEntity r : relations) {
                 if (isBestResource(r.getSlaveResource(), release)) {
@@ -76,7 +76,7 @@ public class ResourceDependencyResolverService {
 
     public Set<ProvidedResourceRelationEntity> getProvidedSlaveRelationsForRelease(ResourceEntity resource, ReleaseEntity release) {
         Set<ProvidedResourceRelationEntity> relations = resource.getProvidedSlaveRelations();
-        Set<ProvidedResourceRelationEntity> result = new HashSet<ProvidedResourceRelationEntity>();
+        Set<ProvidedResourceRelationEntity> result = new HashSet<>();
         for (ProvidedResourceRelationEntity r : relations) {
             if (isBestResource(r.getMasterResource(), release)) {
                 result.add(r);
@@ -87,7 +87,7 @@ public class ResourceDependencyResolverService {
 
     public Set<ProvidedResourceRelationEntity> getProvidedMasterRelationsForRelease(ResourceEntity resource, ReleaseEntity release) {
         Set<ProvidedResourceRelationEntity> relations = resource.getProvidedMasterRelations();
-        Set<ProvidedResourceRelationEntity> result = new HashSet<ProvidedResourceRelationEntity>();
+        Set<ProvidedResourceRelationEntity> result = new HashSet<>();
         for (ProvidedResourceRelationEntity r : relations) {
             if (isBestResource(r.getSlaveResource(), release)) {
                 result.add(r);
@@ -224,7 +224,7 @@ public class ResourceDependencyResolverService {
 
 
     public ResourceEntity getResourceEntityForRelease(@NotNull ResourceGroupEntity resourceGroup, @NotNull ReleaseEntity release) {
-        return getResourceEntityForRelease(resourceGroup.getResources(), release);
+        return getResourceEntityForRelease(resourceGroup.getResources(), release, false);
     }
 
     /**
@@ -235,10 +235,15 @@ public class ResourceDependencyResolverService {
      */
     public ResourceEntity getResourceEntityForRelease(@NotNull Integer resourceGroupId, @NotNull Integer releaseId) {
         ResourceGroupEntity resourceGroup = resourceGroupLocator.getResourceGroupForCreateDeploy(resourceGroupId);
-        return getResourceEntityForRelease(resourceGroup.getResources(), releaseLocator.getReleaseById(releaseId));
+        return getResourceEntityForRelease(resourceGroup.getResources(), releaseLocator.getReleaseById(releaseId), false);
     }
 
-    public ResourceEntity getResourceEntityForRelease(@NotNull Collection<ResourceEntity> resources, @NotNull ReleaseEntity release) {
+    public ResourceEntity getResourceEntityForSpecificRelease(@NotNull Integer resourceGroupId, @NotNull Integer releaseId) {
+        ResourceGroupEntity resourceGroup = resourceGroupLocator.getResourceGroupForCreateDeploy(resourceGroupId);
+        return getResourceEntityForRelease(resourceGroup.getResources(), releaseLocator.getReleaseById(releaseId), true);
+    }
+
+    public ResourceEntity getResourceEntityForRelease(@NotNull Collection<ResourceEntity> resources, @NotNull ReleaseEntity release, boolean onlySpecificRelease) {
         ReleaseComparator comparator = new ReleaseComparator();
         ResourceEntity bestResource = null;
         for (ResourceEntity resource : resources) {
@@ -248,7 +253,7 @@ public class ResourceDependencyResolverService {
                 return resource;
             }
             //Otherwise, we're only interested in earlier releases than the requested one
-            else if (compareValue < 0) {
+            else if (!onlySpecificRelease && compareValue < 0) {
                 if (comparator.compare(resource.getRelease(), bestResource == null ? null : bestResource.getRelease()) > 0) {
                     //If the release date of the current resource is later than the the best release we've found yet, it is better suited and is our new "best resource"
                     bestResource = resource;
@@ -267,8 +272,8 @@ public class ResourceDependencyResolverService {
      * @return
      */
     public Set<ResourceEntity> getResourceEntitiesByRelease(Collection<ResourceEntity> resourceEntities, ReleaseEntity release) {
-        Set<ResourceGroupEntity> handledResourceGroups = new HashSet<ResourceGroupEntity>();
-        Set<ResourceEntity> result = new HashSet<ResourceEntity>();
+        Set<ResourceGroupEntity> handledResourceGroups = new HashSet<>();
+        Set<ResourceEntity> result = new HashSet<>();
         if (resourceEntities != null) {
             for (ResourceEntity r : resourceEntities) {
                 if (!handledResourceGroups.contains(r.getResourceGroup())) {
@@ -290,7 +295,7 @@ public class ResourceDependencyResolverService {
         if (resources == null) {
             return null;
         }
-        Set<ResourceEntity> result = new LinkedHashSet<ResourceEntity>();
+        Set<ResourceEntity> result = new LinkedHashSet<>();
         for (ResourceEntity r : resources) {
             ResourceEntity resourceEntityForRelease = getResourceEntityForRelease(r.getResourceGroup(), release);
             if (resourceEntityForRelease != null) {

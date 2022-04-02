@@ -99,7 +99,7 @@ public class SoftlinkRelationService implements Serializable{
                     .createQuery(
                             "select r from ResourceEntity r " +
                                     "where LOWER(r.softlinkId)=:softlinkId", ResourceEntity.class).setParameter("softlinkId", softlinkIdRef.toLowerCase()).getResultList();
-			return dependencyResolverService.getResourceEntityForRelease(ppiList, release);
+			return dependencyResolverService.getResourceEntityForRelease(ppiList, release, false);
     }
 
 

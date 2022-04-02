@@ -304,7 +304,7 @@ public class ResourceGroupsRest {
     @ApiOperation(value = "Delete a specific resource release")
     public Response deleteResourceRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
                                                             @PathParam("releaseId") Integer releaseId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-        ResourceEntity resource = resourceDependencyResolverService.getResourceEntityForRelease(resourceGroupId, releaseId);
+        ResourceEntity resource = resourceDependencyResolverService.getResourceEntityForSpecificRelease(resourceGroupId, releaseId);
         if (resource == null) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
         }

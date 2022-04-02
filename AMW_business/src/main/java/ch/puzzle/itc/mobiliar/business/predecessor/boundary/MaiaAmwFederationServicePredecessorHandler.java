@@ -219,7 +219,7 @@ public class MaiaAmwFederationServicePredecessorHandler {
     }
 
     private ResourceEntity findPredecessor(List<ResourceEntity> predecessorCandidates, ResourceEntity successorResource, PredecessorResult predecessorResult) {
-        ResourceEntity predecessorResource = dependencyResolverService.getResourceEntityForRelease(predecessorCandidates, successorResource.getRelease());
+        ResourceEntity predecessorResource = dependencyResolverService.getResourceEntityForRelease(predecessorCandidates, successorResource.getRelease(), false);
 
         if (predecessorResource == null) {
             predecessorResult.addMessage(new PredecessorResultMessage(MessageSeverity.WARNING, "no suitable release for predecessor application " + (predecessorCandidates.isEmpty() ? "" : predecessorCandidates.get(0).getName()) + " found"));
@@ -323,7 +323,7 @@ public class MaiaAmwFederationServicePredecessorHandler {
             }
         }
         // create AS because it does not exist
-        ResourceEntity originAs = dependencyResolverService.getResourceEntityForRelease(asPredecessorGroup.getResources(), successorResource.getRelease());
+        ResourceEntity originAs = dependencyResolverService.getResourceEntityForRelease(asPredecessorGroup.getResources(), successorResource.getRelease(), false);
 
         CopyResourceResult releaseFromOriginResource = copyService.createReleaseFromOriginResource(originAs, successorResource.getRelease(), ForeignableOwner.getSystemOwner());
         if (releaseFromOriginResource.isSuccess()) {

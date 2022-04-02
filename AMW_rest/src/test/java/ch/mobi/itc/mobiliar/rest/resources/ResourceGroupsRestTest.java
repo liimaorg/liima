@@ -419,7 +419,7 @@ public class ResourceGroupsRestTest {
         Integer releaseId = 10;
         ResourceEntity resource = new ResourceEntity();
         resource.setId(resourceId);
-        when(resourceDependencyResolverServiceMock.getResourceEntityForRelease(resourceGroupId, releaseId)).thenReturn(resource);
+        when(resourceDependencyResolverServiceMock.getResourceEntityForSpecificRelease(resourceGroupId, releaseId)).thenReturn(resource);
 
         // when
         rest.deleteResourceRelease(resourceGroupId, releaseId);
@@ -433,7 +433,7 @@ public class ResourceGroupsRestTest {
         // given
         Integer resourceGroupId = 8;
         Integer releaseId = 10;
-        when(resourceDependencyResolverServiceMock.getResourceEntityForRelease(resourceGroupId, releaseId)).thenReturn(null);
+        when(resourceDependencyResolverServiceMock.getResourceEntityForSpecificRelease(resourceGroupId, releaseId)).thenReturn(null);
 
         // when
         final Response response = rest.deleteResourceRelease(resourceGroupId, releaseId);

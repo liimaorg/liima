@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -29,6 +30,7 @@ import java.util.*;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceReleaseComparator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -116,7 +118,7 @@ public class ResourceDependencyResolverServiceTest {
 		cal.set(2014, Calendar.NOVEMBER, 10);
 		ReleaseEntity release6 = createRelease(6, new Date(cal.getTimeInMillis()));
 
-		SortedSet<ReleaseEntity> releases = new TreeSet<ReleaseEntity>();
+		SortedSet<ReleaseEntity> releases = new TreeSet<>();
 
 		// when only past release exists
 		releases.add(release1);
@@ -156,13 +158,13 @@ public class ResourceDependencyResolverServiceTest {
 	@Test
 	public void findMostRelevantResource_null(){
 		assertNull(service.findMostRelevantResource(null, null));
-		assertNull(service.findMostRelevantResource(new ArrayList<ResourceEntity>(), null));
+		assertNull(service.findMostRelevantResource(new ArrayList<>(), null));
 		assertNull(service.findMostRelevantResource(null, new Date()));
 	}
 
 	@Test
 	public void findMostRelevantResource_emptyList(){
-		assertNull(service.findMostRelevantResource(new ArrayList<ResourceEntity>(), new Date()));
+		assertNull(service.findMostRelevantResource(new ArrayList<>(), new Date()));
 	}
 
 	@Test
@@ -332,7 +334,7 @@ public class ResourceDependencyResolverServiceTest {
 	public void testGetResourceEntityForRelease() {
 		
 		ResourceEntity firstReleaseResource = ResourceFactory.createNewResource();
-		firstReleaseResource.getResourceGroup().setResources(new HashSet<ResourceEntity>());	
+		firstReleaseResource.getResourceGroup().setResources(new HashSet<>());
 		firstReleaseResource.getResourceGroup().getResources().add(firstReleaseResource);
 		
 		//release one year ago
@@ -379,6 +381,38 @@ public class ResourceDependencyResolverServiceTest {
 		Assert.assertEquals("We ask for the first release - so the first resource should be returned", firstReleaseResource, resource);
 		
 	}
+
+	@Test
+	public void testGetResourceEntityForSpecificRelease() {
+
+		ResourceGroupEntity resourceGroup = new ResourceGroupEntity();
+		resourceGroup.setId(1);
+		ResourceEntity firstReleaseResource = ResourceFactory.createNewResource();
+		firstReleaseResource.setResourceGroup(resourceGroup);
+		firstReleaseResource.getResourceGroup().setResources(new HashSet<>());
+		firstReleaseResource.getResourceGroup().getResources().add(firstReleaseResource);
+
+		//first release
+		ReleaseEntity firstRelease = new ReleaseEntity();
+		firstRelease.setInstallationInProductionAt(DateUtils.addYears(new Date(), -1));
+		firstReleaseResource.setRelease(firstRelease);
+
+		//current release
+		ReleaseEntity currentRelease = new ReleaseEntity();
+		currentRelease.setInstallationInProductionAt(new Date());
+
+		ResourceDependencyResolverService service = new ResourceDependencyResolverService();
+		ResourceEntity resource = service.getResourceEntityForRelease(asList(firstReleaseResource), currentRelease, true);
+		Assert.assertNull("Should not return previous release", resource);
+
+		//Add current release
+		ResourceEntity currentReleaseResource = ResourceFactory.createNewResource(firstReleaseResource.getResourceGroup());
+		currentReleaseResource.setRelease(currentRelease);
+		currentReleaseResource.getResourceGroup().getResources().add(currentReleaseResource);
+
+		resource = service.getResourceEntityForRelease(asList(currentReleaseResource), currentRelease, true);
+		Assert.assertEquals(currentReleaseResource, resource);
+	}
 	
 	@Test
 	public void testGetResourceEntitiesByRelease() {
@@ -389,7 +423,7 @@ public class ResourceDependencyResolverServiceTest {
 		 */
 		
 		ResourceEntity firstReleaseResource = ResourceFactory.createNewResource();
-		firstReleaseResource.getResourceGroup().setResources(new HashSet<ResourceEntity>());	
+		firstReleaseResource.getResourceGroup().setResources(new HashSet<>());
 		firstReleaseResource.getResourceGroup().getResources().add(firstReleaseResource);
 		
 		ReleaseEntity firstRelease = new ReleaseEntity();
@@ -405,7 +439,7 @@ public class ResourceDependencyResolverServiceTest {
 		
 		ResourceDependencyResolverService service = new ResourceDependencyResolverService();
 		
-		Collection<ResourceEntity> resources = Arrays.asList(firstReleaseResource, secondReleaseResource);
+		Collection<ResourceEntity> resources = asList(firstReleaseResource, secondReleaseResource);
 		
 		//when	
 		/**

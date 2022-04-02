@@ -196,7 +196,7 @@ public class MaiaAmwFederationServicePredecessorHandlerTest {
 
         Mockito.when(resourceRepositoryMock.getResourcesByGroupNameWithAllRelationsOrderedByRelease(APPNAME_S)).thenReturn(successorResources);
         Mockito.when(resourceRepositoryMock.getResourcesByGroupNameWithAllRelationsOrderedByRelease(APPNAME_P)).thenReturn(predecessorResources);
-        Mockito.when(dependencyResolverServiceMock.getResourceEntityForRelease(predecessorResources, successorResources.get(0).getRelease())).thenReturn(predecessorResource);
+        Mockito.when(dependencyResolverServiceMock.getResourceEntityForRelease(predecessorResources, successorResources.get(0).getRelease(), false)).thenReturn(predecessorResource);
 
 
         // when
