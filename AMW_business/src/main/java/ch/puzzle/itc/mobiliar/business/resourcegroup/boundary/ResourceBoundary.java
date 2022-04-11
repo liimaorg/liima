@@ -41,8 +41,6 @@ import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -50,7 +48,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class ResourceBoundary {
 
     @Inject
@@ -303,16 +300,14 @@ public class ResourceBoundary {
     }
 
     private void doRemoveResourceEntity(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-
         ResourceEntity resourceEntity = commonService.getResourceEntityById(resourceId);
-
-        foreignableService.verifyDeletableByOwner(deletingOwner, resourceEntity);
-
         if (resourceEntity == null) {
             String message = "The resource to be removed was not found";
             log.info(message);
             throw new ResourceNotFoundException(message);
         }
+
+        foreignableService.verifyDeletableByOwner(deletingOwner, resourceEntity);
 
         if ( !permissionBoundary.hasPermission(Permission.RESOURCE, contextDomainService.getGlobalResourceContextEntity(),
                 Action.DELETE, resourceEntity, resourceEntity.getResourceType())) {

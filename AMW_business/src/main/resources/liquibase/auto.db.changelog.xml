@@ -100,4 +100,7 @@
     <!--1.17.13-->
     <include file="changesets/model/addIndexes/addDeploymentIndex_03.xml" relativeToChangelogFile="true"/>
 
+    <!--1.17.26-->
+    <include file="changesets/model/refactoring/#550_add_resourcecontext_unique_constraint.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

@@ -22,6 +22,8 @@ package ch.puzzle.itc.mobiliar.presentation.templateEdit;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownStpService;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownStpEntity;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
@@ -58,7 +60,7 @@ public class EditTemplateView implements Serializable {
     UserSettings settings;
 
     @Inject
-    PermissionService permissions;
+    PermissionService permissionService;
 
     @Inject
     ShakedownStpService stpService;
@@ -119,7 +121,7 @@ public class EditTemplateView implements Serializable {
     }
 
     /**
-     * @return true if testing is tue and initialized, otherwise false
+     * @return true if testing is true and initialized, otherwise false
      */
     public boolean isTesting() {
         return testing != null && testing;
@@ -252,61 +254,55 @@ public class EditTemplateView implements Serializable {
         boolean success = true;
         String errorMessage = "Was not able to save the template: ";
         try {
-            // set the template to testing mode...
-            template.setTesting(settings.isTestingMode());
-            if (template.isTesting()) {
-                if (selectedStp != null) {
-                    template.setName(selectedStp.getStpName());
-                }
-                else {
-                    throw new AMWException("No STP-name selected!");
-                }
-            }
-
-            if (template.getId() == null && !canAdd()) {
-                throw new AMWException("No permission to create template!");
-            }
-            else if (!canModifyTemplates()) {
-                throw new AMWException("No permission to modify templates!");
-            }
-            if (relationIdForTemplate != null) {
-                templateEditor.saveTemplateForRelation(template, relationIdForTemplate,
-                        resourceId != null);
-            }
-            else if (resourceId == null) {
-                templateEditor.saveTemplateForResourceType(template, resourceTypeId);
-            }
-            else {
-                templateEditor.saveTemplateForResource(template, resourceId);
-            }
-        }
-        catch (ResourceNotFoundException | ResourceTypeNotFoundException e) {
-            GlobalMessageAppender.addErrorMessage(errorMessage + e.getMessage());
-            success = false;
-        }
-        catch (AMWException e) {
-            GlobalMessageAppender.addErrorMessage(e);
-            success = false;
+            setTemplateName();
+            saveTemplate();
+        } catch (ResourceNotFoundException | ResourceTypeNotFoundException e) {
+            success = fail(errorMessage + e.getMessage());
+        } catch (AMWException e) {
+            success = fail(e);
         }
         if (success) {
-            GlobalMessageAppender.addSuccessMessage("Template successfully saved.");
-            revisionInformations = Lists.reverse(templateEditor.getTemplateRevisions(template.getId()));
+            succeed();
+        }
+    }
+
+    private void setTemplateName() throws AMWException {
+        template.setTesting(settings.isTestingMode());
+        if (template.isTesting()) {
+            if (selectedStp != null) {
+                template.setName(selectedStp.getStpName());
+            } else {
+                throwError("No STP-name selected!");
+            }
+        }
+    }
+
+    private void saveTemplate() throws AMWException {
+        if (relationIdForTemplate != null) {
+            templateEditor.saveTemplateForRelation(template, relationIdForTemplate,
+                                                   resourceId != null);
+        } else if (resourceId == null) {
+            templateEditor.saveTemplateForResourceType(template, resourceTypeId, settings.isTestingMode());
+        } else {
+            templateEditor.saveTemplateForResource(template, resourceId, settings.isTestingMode());
         }
     }
 
     public boolean canModifyTemplates() {
-        // Resource (Instance)
-        if (isEditResource()) {
-            return isNewTemplate() ? templateEditor.hasPermissionToAddResourceTemplate(resourceId, settings.isTestingMode())
-                    : templateEditor.hasPermissionToUpdateResourceTemplate(resourceId, settings.isTestingMode());
+        if (settings.isTestingMode()) {
+            return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE);
         }
-        // ResourceType
-        return isNewTemplate() ? templateEditor.hasPermissionToAddResourceTypeTemplate(resourceTypeId, settings.isTestingMode())
-                : templateEditor.hasPermissionToUpdateResourceTypeTemplate(resourceTypeId, settings.isTestingMode());
+        Permission permission = getPermission();
+        Action action = getAction();
+        return permissionService.hasPermission(permission, action);
     }
 
-    private boolean canAdd() {
-        return canModifyTemplates();
+    private Permission getPermission() {
+        return isEditResource() ? Permission.RESOURCE_TEMPLATE : Permission.RESOURCETYPE_TEMPLATE;
+    }
+
+    private Action getAction() {
+        return isNewTemplate() ? Action.CREATE : Action.UPDATE;
     }
 
     public boolean isRelation() {
@@ -315,5 +311,25 @@ public class EditTemplateView implements Serializable {
 
     public boolean isEditResource() {
         return resourceId != null;
+    }
+
+    // helper methods for testing below
+    void throwError(String msg) throws AMWException {
+        throw new AMWException(msg);
+    }
+
+    void succeed() {
+        GlobalMessageAppender.addSuccessMessage("Template successfully saved.");
+        revisionInformations = Lists.reverse(templateEditor.getTemplateRevisions(template.getId()));
+    }
+
+    boolean fail(AMWException e) {
+        GlobalMessageAppender.addErrorMessage(e);
+        return false;
+    }
+
+    boolean fail(String errorMessage) {
+        GlobalMessageAppender.addErrorMessage(errorMessage);
+        return false;
     }
 }

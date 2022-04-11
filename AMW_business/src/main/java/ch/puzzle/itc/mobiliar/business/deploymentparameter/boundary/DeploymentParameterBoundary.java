@@ -20,28 +20,26 @@
 
 package ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary;
 
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.DELETE;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Logger;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.DeploymentParameterRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Logger;
-
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.DELETE;
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class DeploymentParameterBoundary {
 
     @Inject

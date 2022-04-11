@@ -18,29 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.puzzle.itc.mobiliar.business.utils;
+package ch.mobi.itc.mobiliar.rest.exceptions;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 
 
-import lombok.Getter;
-
-public class ValidationException extends Exception {
-
-    /**
-     * Use the causing object to pass information of failure
-     */
-    @Getter
-    private Object causingObject;
-
-    public ValidationException(String message) {
-        this(message, null);
-    }
-
-    public ValidationException(String message, Object causingObject) {
-        super(message);
-        this.causingObject = causingObject;
-    }
-
-    public boolean hasCausingObject(){
-        return causingObject != null;
+@Provider
+public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundException> {
+    @Override
+    public Response toResponse(NotFoundException exception) {
+        return Response.status(Response.Status.NOT_FOUND).entity(new ExceptionDto(exception)).build();
     }
 }

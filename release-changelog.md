@@ -1,6 +1,43 @@
+# v1.17.26
+* Update to angular 13 and wildfly 26 [#634](https://github.com/liimaorg/liima/pull/634)
+* Properties sometimes missing in test generation/deployment [#550](https://github.com/liimaorg/liima/issues/550)
+  * This adds a unique constraint to avoid the problem and violations have to cleanup up manually before the update can be applied. Find violations:
+    ```
+    select res1.resource_id, res.name, res1.context_id, res1.id from TAMW_RESOURCECONTEXT res1
+    inner join
+    (select context_id, resource_id from TAMW_RESOURCECONTEXT group by (context_id, resource_id) having count(*) > 1) res2
+    on res1.context_id = res2.context_id and res1.resource_id = res2.resource_id
+    join TAMW_RESOURCE res on res1.resource_id = res.id;
+    ```
+  * To clean them up you have to delete the affected resources and recreate them manually via UI.
+  * Sometimes I was able to fix it by creating a new release of the resource, deleting the old release and changing the release of the new release. You have to check that all properties were copied to the new release before deleting because they can be missing.
+* getResourceRelationListForRelease should always return same release of relation [#626](https://github.com/liimaorg/liima/issues/626)
+* Implement REST GET /resources/{resourceId} [#627](https://github.com/liimaorg/liima/issues/627)
+
+# v1.17.25
+* Implement update (put) and delete for Resource templates via Rest [#597](https://github.com/liimaorg/liima/issues/597)
+  * Breaking change: `/resources/{resourceGroupName}/{releaseName}/templates/{templateName}` no longer returns an array
+  * Code cleanup and refactoring
+  * Fix REST exception mapping
+* Rest copy cleanup, Dockerfile cleanup, remove REQUIRES_NEW transaction for boundaries [#617](https://github.com/liimaorg/liima/pull/617)
+  * Don't log freemarker template exceptions in application server log
+* Java Script updates
+
+# v1.17.24
+* Fix Rest DELETE of resource, update JS deps, update Wildfly Docker Image: [#613](https://github.com/liimaorg/liima/pull/613)
+* Fix NullPointer when resource to delete doesn't exit: [#612](https://github.com/liimaorg/liima/pull/612)
+
 # v1.17.23
 * The Deployment log view was migrated to Angular. Log lines container errors or warnings are now highlited: [#443](https://github.com/liimaorg/liima/issues/443) and [#450](https://github.com/liimaorg/liima/issues/450)
+* Implement Rest DELETE resource: [#602](https://github.com/liimaorg/liima/issues/602)
+* Add environmentNameAlias to the deployment excel export: [#527](https://github.com/liimaorg/liima/issues/527)
+* Angular deployment view: use ng-select for appserver and release :[#606](https://github.com/liimaorg/liima/pull/606)
+* Prevent that templates can be writen outside of generation directory: [#434](https://github.com/liimaorg/liima/issues/434)
+* editResourceView: UI doesn't update correctly after removing runtime: [#479](https://github.com/liimaorg/liima/issues/479)
 * Switch from TravisCI to GitHub Actions: [#585](https://github.com/liimaorg/liima/pull/585)
+* Replace Moment.js with data-fns: [#589](https://github.com/liimaorg/liima/issues/589)
+* Convert modals to Ngb: [#587](https://github.com/liimaorg/liima/pull/587)
+* JavaScript dependency updates: [#593](https://github.com/liimaorg/liima/pull/593) and [#610](https://github.com/liimaorg/liima/pull/610)
 
 # v1.17.22
 * Fix copyFrom in REST: [#584](https://github.com/liimaorg/liima/pull/584)

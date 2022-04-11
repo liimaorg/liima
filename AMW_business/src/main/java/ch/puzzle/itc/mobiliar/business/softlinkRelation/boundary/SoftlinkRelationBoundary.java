@@ -24,8 +24,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
@@ -41,7 +39,6 @@ import ch.puzzle.itc.mobiliar.business.softlinkRelation.control.SoftlinkRelation
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class SoftlinkRelationBoundary implements Serializable {
 
     @Inject
@@ -60,43 +57,30 @@ public class SoftlinkRelationBoundary implements Serializable {
         ResourceEntity cpiResource = entityManager.find(ResourceEntity.class, cpiResourceId);
         permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, cpiResource.getResourceGroup(), null, null);
 
-        if (cpiResource != null) {
-
-            SoftlinkRelationEntity softlinkRelation = cpiResource.getSoftlinkRelation();
-
-            if (softlinkRelation == null){
-                softlinkRelation = new SoftlinkRelationEntity();
-                softlinkRelation.setOwner(creatingOwner);
-                softlinkRelation.setCpiResource(cpiResource);
-                softlinkRelation.setSoftlinkRef(softlinkReference);
-
-            } else {
-                int beforeChangeForeignableFieldHashCode = softlinkRelation.foreignableFieldHashCode();
-                softlinkRelation.setSoftlinkRef(softlinkReference);
-                foreignableService.verifyEditableByOwner(creatingOwner, beforeChangeForeignableFieldHashCode, softlinkRelation);
-            }
-
-            softlinkRelationService.setSoftlinkRelation(cpiResource, softlinkRelation);
-
+        SoftlinkRelationEntity softlinkRelation = cpiResource.getSoftlinkRelation();
+        if (softlinkRelation == null){
+            softlinkRelation = new SoftlinkRelationEntity();
+            softlinkRelation.setOwner(creatingOwner);
+            softlinkRelation.setCpiResource(cpiResource);
+            softlinkRelation.setSoftlinkRef(softlinkReference);
         } else {
-            throw new RuntimeException("No resource found for id "+ cpiResourceId);
+            int beforeChangeForeignableFieldHashCode = softlinkRelation.foreignableFieldHashCode();
+            softlinkRelation.setSoftlinkRef(softlinkReference);
+            foreignableService.verifyEditableByOwner(creatingOwner, beforeChangeForeignableFieldHashCode, softlinkRelation);
         }
+
+        softlinkRelationService.setSoftlinkRelation(cpiResource, softlinkRelation);
     }
 
     public void removeRelationForResource(ForeignableOwner deletingOwner, Integer resourceId) throws ForeignableOwnerViolationException {
         ResourceEntity cpiResource = entityManager.find(ResourceEntity.class, resourceId);
         permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, cpiResource.getResourceGroup(), null, null);
 
-        if (cpiResource != null) {
-            SoftlinkRelationEntity softlinkRelation = cpiResource.getSoftlinkRelation();
-            if (softlinkRelation != null){
-                foreignableService.verifyDeletableByOwner(deletingOwner, softlinkRelation);
+        SoftlinkRelationEntity softlinkRelation = cpiResource.getSoftlinkRelation();
+        if (softlinkRelation != null){
+            foreignableService.verifyDeletableByOwner(deletingOwner, softlinkRelation);
 
-                softlinkRelationService.removeSoftlinkRelation(cpiResource);
-            }
-
-        } else {
-            throw new RuntimeException("No resource found for id "+ resourceId);
+            softlinkRelationService.removeSoftlinkRelation(cpiResource);
         }
     }
 
@@ -104,14 +88,9 @@ public class SoftlinkRelationBoundary implements Serializable {
         SoftlinkRelationEntity softlinkRelation = entityManager.find(SoftlinkRelationEntity.class, Objects.requireNonNull(editedSoftlinkRelation, "editedSoftlinkRelation must not be null!").getId());
         permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, softlinkRelation.getCpiResource().getResourceGroup(), null, null);
 
-        if (softlinkRelation != null) {
-            int beforeChangeForeignableFieldHashCode = softlinkRelation.foreignableFieldHashCode();
-            SoftlinkRelationEntity mergedSoftlinkRelation = entityManager.merge(editedSoftlinkRelation);
-            foreignableService.verifyEditableByOwner(editingUser, beforeChangeForeignableFieldHashCode, mergedSoftlinkRelation);
-
-        } else {
-            throw new RuntimeException("No softlink relation found for "+ editedSoftlinkRelation);
-        }
+        int beforeChangeForeignableFieldHashCode = softlinkRelation.foreignableFieldHashCode();
+        SoftlinkRelationEntity mergedSoftlinkRelation = entityManager.merge(editedSoftlinkRelation);
+        foreignableService.verifyEditableByOwner(editingUser, beforeChangeForeignableFieldHashCode, mergedSoftlinkRelation);
     }
     
     public ResourceEntity getSoftlinkResolvableSlaveResource(SoftlinkRelationEntity softlinkRelation, ReleaseEntity release){

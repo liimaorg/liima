@@ -7,6 +7,7 @@ import { EnvironmentService } from './environment.service';
 import { DeploymentRoutingModule } from './deployment-routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
     DeploymentRoutingModule,
     SharedModule,
     NgbDatepickerModule,
+    NgSelectModule
   ],
   declarations: [DeploymentComponent],
   providers: [DeploymentService, EnvironmentService],

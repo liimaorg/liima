@@ -20,7 +20,6 @@ import { DATE_FORMAT } from 'src/app/core/amw-constants';
   ],
 })
 export class DateTimePickerComponent implements ControlValueAccessor, OnInit, AfterViewInit {
-  // moment js format
   @Input()
   dateStringFormat = DATE_FORMAT;
   @Input()

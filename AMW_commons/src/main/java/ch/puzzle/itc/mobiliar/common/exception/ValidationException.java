@@ -20,30 +20,30 @@
 
 package ch.puzzle.itc.mobiliar.common.exception;
 
-import javax.ejb.ApplicationException;
 
-@ApplicationException(rollback=true)
-public class GeneralDBException extends Exception{
+import lombok.Getter;
 
-	// Diese Exception dient zum Markieren, falls ein command/Manipulation auf der DB fehlgeschlagen hat
+/**
+ * Thrown it validation of an object/resource fails (string validation, business logic validation, etc.).
+ */
+public class ValidationException extends AMWException {
 
-	public static final String ERRORMESSAGE = "Something went wrong with the database access. Please contact your application administrator.";
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * Use the causing object to pass information of failure
+     */
+    @Getter
+    private Object causingObject;
 
-	public GeneralDBException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	public GeneralDBException(String message) {
-		this(message, null);
-	}
-	
-	public String getErrorMessage(){
-		return ERRORMESSAGE;
-	}
+    public ValidationException(String message) {
+        this(message, null);
+    }
 
+    public ValidationException(String message, Object causingObject) {
+        super(message);
+        this.causingObject = causingObject;
+    }
+
+    public boolean hasCausingObject(){
+        return causingObject != null;
+    }
 }

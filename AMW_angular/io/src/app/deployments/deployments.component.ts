@@ -3,7 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
-import * as moment from 'moment';
+import * as datefns from 'date-fns';
 import { Subscription, timer } from 'rxjs';
 import { ResourceService } from '../resource/resource.service';
 import { DeploymentFilter } from '../deployment/deployment-filter';
@@ -15,6 +15,7 @@ import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
+import { DATE_FORMAT } from "../core/amw-constants";
 
 declare var $: any;
 
@@ -80,7 +81,7 @@ export class DeploymentsComponent implements OnInit {
   successMessage: string = '';
   isLoading: boolean = true;
 
-  @ViewChild('selectModel')
+  @ViewChild('selectModel', { static: true })
   selectModel: NgModel;
 
   constructor(
@@ -364,20 +365,16 @@ export class DeploymentsComponent implements OnInit {
   private pushDownload(prefix: string) {
     this.isLoading = false;
     const docName: string =
-      prefix + '_' + moment().format('YYYY-MM-DD_HHmm').toString() + '.csv';
+      prefix + '_' + datefns.format(new Date(), 'yyyy-MM-dd_HHmm').toString() + '.csv';
     const blob = new Blob([this.csvDocument], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
-    if (navigator.msSaveOrOpenBlob) {
-      navigator.msSaveBlob(blob, docName);
-    } else {
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = docName;
-      a.setAttribute('style', 'display:none;');
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = docName;
+    a.setAttribute('style', 'display:none;');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
     this.errorMessage = null;
   }

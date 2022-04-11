@@ -44,7 +44,8 @@ public class SequencesService {
 	Logger log;
 
 	/**
-	 * Returns the nextValue for the sequence with the given name and increments the value on db.
+	 * Returns the nextValue for the sequence with the given name and increments the
+	 * value on db.
 	 * 
 	 * @param sequenceName
 	 * @return
@@ -52,10 +53,10 @@ public class SequencesService {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public Integer getNextValueAndUpdate(String sequenceName) {
 
-	    SequencesEntity lockedSeq = em.find(SequencesEntity.class, sequenceName, LockModeType.PESSIMISTIC_WRITE);
-	    Integer nextVal = lockedSeq.getNextValue();
-	    lockedSeq.setNextValue(nextVal + 1);
-         return nextVal;
+		SequencesEntity lockedSeq = em.find(SequencesEntity.class, sequenceName, LockModeType.PESSIMISTIC_WRITE);
+		Integer nextVal = lockedSeq.getNextValue();
+		lockedSeq.setNextValue(nextVal + 1);
+		return nextVal;
 	}
 
 }

@@ -30,8 +30,8 @@ import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.ejb.SessionContext;
 import javax.ejb.Schedule;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -967,4 +967,10 @@ public class PermissionService implements Serializable {
         return true;
     }
 
+    public void assertHasPermissionShakedownTestMode(boolean testingMode) {
+        if (testingMode) {
+            checkPermissionAndFireException(Permission.SHAKEDOWN_TEST_MODE,
+                                            "execute shakedown test mode");
+        }
+    }
 }

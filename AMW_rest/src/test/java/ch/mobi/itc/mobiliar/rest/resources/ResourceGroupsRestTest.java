@@ -20,29 +20,26 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
+import static ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer.APPSERVERCONTAINER;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import ch.mobi.itc.mobiliar.rest.dtos.*;
-import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
-import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CopyResource;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+import javax.ws.rs.core.Response;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,28 +49,38 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import ch.mobi.itc.mobiliar.rest.dtos.ResourceGroupDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseCopyDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseDTO;
+import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CopyResource;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
-import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
-import ch.puzzle.itc.mobiliar.business.utils.ValidationException;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
-import javax.ws.rs.core.Response;
-
-import static ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer.APPSERVERCONTAINER;
-import static javax.ws.rs.core.Response.Status.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
-
-public class ResourcesRestTest {
+public class ResourceGroupsRestTest {
 
     @InjectMocks
-    ResourcesRest rest;
+    ResourceGroupsRest rest;
 
     @Mock
     ResourceGroupLocator resourceGroupLocatorMock;
@@ -104,6 +111,9 @@ public class ResourcesRestTest {
 
     @Mock
     DeploymentBoundary deploymentBoundaryMock;
+
+    @Mock
+    ResourceDependencyResolverService resourceDependencyResolverServiceMock;
 
     @Before
     public void configure() {
@@ -186,38 +196,6 @@ public class ResourcesRestTest {
             resourceGroupEntity.setResourceType(resourceType);
         }
         return resourceGroupEntity;
-    }
-
-    @Test
-    public void getBatchJobResources() throws ValidationException {
-        // given
-        BatchResourceDTO d = Mockito.mock(BatchResourceDTO.class);
-        List<BatchResourceDTO> list = new ArrayList<>();
-        list.add(d);
-        String app = "app";
-
-        // when
-        List<BatchResourceDTO> result = rest.getBatchJobResources(app);
-
-        // then
-        assertTrue(result != null && result.size() == 0);
-
-    }
-
-    @Test
-    public void getBatchJobInventoryEmpty() {
-        // given
-        String env = "V";
-        Integer type = 2305;
-        List<ServerTuple> list = new ArrayList<>();
-        when(serverViewMock.getServers(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(list);
-
-        // when
-        BatchJobInventoryDTO result = rest.getBatchJobInventar(env, type, null, null, null, null, null);
-
-        // then
-        assertTrue(result != null);
-
     }
 
     @Test
@@ -336,7 +314,7 @@ public class ResourcesRestTest {
     }
 
     @Test
-    public void shouldInvokeResourcesWithRightArgumentsOnGetClosestPastRelease() throws ValidationException {
+    public void shouldInvokeResourcesWithRightArgumentsOnGetClosestPastRelease() throws ValidationException, NotFoundException {
         // given
         String resourceGroupName = "TEST";
         String releaseName = "RL-17.10";
@@ -352,7 +330,7 @@ public class ResourcesRestTest {
         // then
         verify(resourceRelationsMock).getResourceRelations(resourceGroupName, closestRelease.getName(), resourceTypeName);
         verify(resourcePropertiesMock).getResourceProperties(resourceGroupName, closestRelease.getName(), env);
-        verify(resourceTemplatesRestMock).getResourceTemplates(resourceGroupName, closestRelease.getName(), "");
+        verify(resourceTemplatesRestMock).getResourceTemplates(resourceGroupName, closestRelease.getName());
     }
 
     @Test
@@ -375,45 +353,11 @@ public class ResourcesRestTest {
     }
 
     @Test
-    public void shouldNotAllowCopyFromWhenTargetNotFound() throws ValidationException {
-        // given
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease(anyString(), anyString())).thenReturn(null);
-
-        // when
-        final Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
-
-        // then
-        assertThat(response.getStatus(), is(NOT_FOUND.getStatusCode()));
-        assertThat(((ExceptionDto) response.getEntity()).getMessage(), is("Target Resource not found"));
-    }
-
-    @Test
-    public void shouldNotAllowCopyFromWhenOriginNotFound() throws ValidationException {
-        // given
-        ResourceEntity targetResourceEntity = mock(ResourceEntity.class);
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease("targetResourceGroupName", "targetReleaseName")).thenReturn(targetResourceEntity);
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease("originResourceGroupName", "originReleaseName")).thenReturn(null);
-
-        // when
-        final Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
-
-        // then
-        assertThat(response.getStatus(), is(NOT_FOUND.getStatusCode()));
-        assertThat(((ExceptionDto) response.getEntity()).getMessage(), is("Origin Resource not found"));
-    }
-
-    @Test
     public void shouldReturnBadRequestWhenCopyFromDoesNotSucceed() throws ValidationException, ForeignableOwnerViolationException, AMWException {
         // given
-        ResourceEntity targetResourceEntity = mock(ResourceEntity.class);
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease("targetResourceGroupName", "targetReleaseName")).thenReturn(targetResourceEntity);
-        ResourceEntity originResourceEntity = mock(ResourceEntity.class);
-        when(originResourceEntity.getName()).thenReturn("Origin");
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease("originResourceGroupName", "originReleaseName")).thenReturn(originResourceEntity);
-
         CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
         when(copyResourceResult.isSuccess()).thenReturn(false);
-        when(copyResourceMock.doCopyResource(targetResourceEntity.getId(), originResourceEntity.getId(), ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
+        when(copyResourceMock.doCopyResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName")).thenReturn(copyResourceResult);
 
         // when
         final Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
@@ -424,79 +368,25 @@ public class ResourcesRestTest {
     }
 
     @Test
-    public void shouldNotAllowCopyFromResourceOfDifferentTypes() throws ValidationException, ForeignableOwnerViolationException, AMWException {
-        // given
-        String originResourceGroupName = "Origin";
-        String originReleaseName = "From";
-        String targetResourceGroupName = "Target";
-        String targetReleaseName = "To";
-
-        ResourceGroupEntity originResourceGroup = new ResourceGroupEntity();
-        originResourceGroup.setName("Origin");
-        ResourceEntity origin = new ResourceEntity();
-        origin.setResourceGroup(originResourceGroup);
-        origin.setName(originResourceGroupName);
-        origin.setId(1);
-        ResourceTypeEntity asType = new ResourceTypeEntity();
-        asType.setName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
-        origin.setResourceType(asType);
-
-        ResourceGroupEntity targetResourceGroup = new ResourceGroupEntity();
-        originResourceGroup.setName("Target");
-        ResourceEntity target = new ResourceEntity();
-        target.setResourceGroup(targetResourceGroup);
-        target.setName(targetResourceGroupName);
-        target.setId(2);
-        ResourceTypeEntity appType = new ResourceTypeEntity();
-        appType.setName(DefaultResourceTypeDefinition.APPLICATION.name());
-        target.setResourceType(appType);
-
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName)).thenReturn(target);
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName)).thenReturn(origin);
-        when(copyResourceMock.doCopyResource(target.getId(), origin.getId(), ForeignableOwner.getSystemOwner())).thenThrow(new AMWException("Target and origin Resource are not of the same ResourceType"));
+    public void shouldReturnBadRequestWhenResourcesOfDifferentTypes() throws ValidationException, ForeignableOwnerViolationException, AMWException {
+        when(copyResourceMock.doCopyResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName")).thenThrow(new AMWException("Target and origin Resource are not of the same ResourceType"));
 
         // when
-        Response response = rest.copyFromResource(targetResourceGroupName, targetReleaseName, originResourceGroupName, originReleaseName);
+        Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
-
     }
 
     @Test
-    public void shouldAllowCopyFromResourceOfNodeType() throws ValidationException, ForeignableOwnerViolationException, AMWException {
+    public void shouldAllowCopy() throws ValidationException, ForeignableOwnerViolationException, AMWException {
         // given
-        String originResourceGroupName = "Origin";
-        String originReleaseName = "From";
-        String targetResourceGroupName = "Target";
-        String targetReleaseName = "To";
-
-        ResourceGroupEntity originResourceGroup = new ResourceGroupEntity();
-        originResourceGroup.setName("Origin");
-        ResourceEntity origin = new ResourceEntity();
-        origin.setResourceGroup(originResourceGroup);
-        origin.setName(originResourceGroupName);
-        ResourceTypeEntity nodeType = new ResourceTypeEntity();
-        nodeType.setName(DefaultResourceTypeDefinition.NODE.name());
-        origin.setResourceType(nodeType);
-
-        ResourceGroupEntity targetResourceGroup = new ResourceGroupEntity();
-        originResourceGroup.setName("Target");
-        ResourceEntity target = new ResourceEntity();
-        target.setResourceGroup(targetResourceGroup);
-        target.setName(targetResourceGroupName);
-        ResourceTypeEntity appType = new ResourceTypeEntity();
-        appType.setName(DefaultResourceTypeDefinition.NODE.name());
-        target.setResourceType(nodeType);
-
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName)).thenReturn(target);
-        when(resourceLocatorMock.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName)).thenReturn(origin);
         CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
         when(copyResourceResult.isSuccess()).thenReturn(true);
-        when(copyResourceMock.doCopyResource(target.getId(), origin.getId(), ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
+        when(copyResourceMock.doCopyResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName")).thenReturn(copyResourceResult);
 
         // when
-        Response response = rest.copyFromResource(targetResourceGroupName, targetReleaseName, originResourceGroupName, originReleaseName);
+        Response response = rest.copyFromResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName");
 
         // then
         assertEquals(OK.getStatusCode(), response.getStatus());
@@ -519,6 +409,38 @@ public class ResourcesRestTest {
         // then
         assertThat(filteredGroups.size(), is(1));
         assertThat(filteredGroups.get(0).getName(), is(wanted.getName()));
+    }
+
+    @Test
+    public void shouldDeleteResource() throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+        // given
+        Integer resourceGroupId = 8;
+        Integer resourceId = 9;
+        Integer releaseId = 10;
+        ResourceEntity resource = new ResourceEntity();
+        resource.setId(resourceId);
+        when(resourceLocatorMock.getResourceByGroupIdAndRelease(resourceGroupId, releaseId)).thenReturn(resource);
+
+        // when
+        rest.deleteResourceRelease(resourceGroupId, releaseId);
+
+        // then
+        verify(resourceBoundaryMock, times(1)).removeResource(ForeignableOwner.getSystemOwner(), resourceId);
+    }
+
+    @Test
+    public void shouldReturnNotFoundWhenDeleteResource() throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+        // given
+        Integer resourceGroupId = 8;
+        Integer releaseId = 10;
+        when(resourceLocatorMock.getResourceByGroupIdAndRelease(resourceGroupId, releaseId)).thenReturn(null);
+
+        // when
+        final Response response = rest.deleteResourceRelease(resourceGroupId, releaseId);
+
+        // then
+        assertThat(response.getStatus(), is(NOT_FOUND.getStatusCode()));
+        assertThat(((ExceptionDto) response.getEntity()).getMessage(), is("Resource not found"));
     }
 
 }

@@ -1,0 +1,10 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/refactoring/#550_add_resourcecontext_unique_constraint.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <!-- prevent https://github.com/liimaorg/liima/issues/550 -->
+    <changeSet author="yvespp" id="#550_add_resourcecontext_unique_constraint.xml">
+        <addUniqueConstraint tableName="TAMW_RESOURCECONTEXT" columnNames="CONTEXT_ID, RESOURCE_ID"/>
+    </changeSet>
+
+</databaseChangeLog>

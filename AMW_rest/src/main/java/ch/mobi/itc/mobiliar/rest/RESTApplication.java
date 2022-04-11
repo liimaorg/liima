@@ -48,8 +48,11 @@ public class RESTApplication extends Application {
     }
 
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(ReleasesRest.class);
+        resources.add(BatchJobRest.class);
         resources.add(ResourcesRest.class);
+        resources.add(ResourceGroupsRest.class);
+        resources.add(ResourceTypesRest.class);
+        resources.add(ReleasesRest.class);
         resources.add(ResourcePropertiesRest.class);
         resources.add(ResourceTemplatesRest.class);
         resources.add(ResourceRelationsRest.class);
@@ -71,6 +74,7 @@ public class RESTApplication extends Application {
         resources.add(NoResultExceptionMapper.class);
         resources.add(NotAuthorizedExceptionMapper.class);
         resources.add(ValidationExceptionMapper.class);
+        resources.add(NotFoundExceptionMapper.class);
         resources.add(UncaughtExceptionMapper.class);
         resources.add(ServerTupleCSVBodyWriter.class);
         resources.add(HealthCheck.class);

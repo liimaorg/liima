@@ -32,8 +32,6 @@ import java.util.List;
 
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
@@ -53,6 +51,7 @@ import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 /**
  * A boundary for copy resourcess
@@ -60,7 +59,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
  * @author cweber
  */
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class CopyResource {
 
     @Inject
@@ -83,6 +81,9 @@ public class CopyResource {
 
 	@Inject
 	CommonDomainService commonDomainService;
+
+	@Inject
+	ResourceLocator resourceLocator;
 
 	/**
 	 * @param typeId
@@ -135,6 +136,21 @@ public class CopyResource {
 		return copyResourceDomainService.copyFromOriginToTargetResource(originResourceEntity, targetResourceEntity, actingOwner);
 	}
 
+
+	public CopyResourceResult doCopyResource(String targetResourceGroupName, String targetReleaseName,
+			String originResourceGroupName, String originReleaseName) throws ValidationException, ForeignableOwnerViolationException, AMWException {
+
+        ResourceEntity targetResourceEntity = resourceLocator.getResourceByGroupNameAndRelease(targetResourceGroupName, targetReleaseName);
+        if (targetResourceEntity == null) {
+            throw new ResourceNotFoundException("Target Resource not found");
+        }
+        ResourceEntity originResourceEntity = resourceLocator.getResourceByGroupNameAndRelease(originResourceGroupName, originReleaseName);
+        if (originResourceEntity == null) {
+            throw new ResourceNotFoundException("Origin Resource not found");
+        }
+
+		return this.doCopyResource(targetResourceEntity, originResourceEntity, ForeignableOwner.getSystemOwner());
+    }
 
 	/**
 	 * Creates a new Release of an existing Resource

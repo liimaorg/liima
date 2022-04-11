@@ -35,8 +35,6 @@ import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException.CAUSE;
 
-import com.google.gson.GsonBuilder;
-
 import freemarker.cache.StringTemplateLoader;
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
@@ -216,6 +214,7 @@ public class BaseTemplateProcessor {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
         cfg.setTemplateExceptionHandler(templateExceptionHandler);
         cfg.setShowErrorTips(false);
+        cfg.setLogTemplateExceptions(false);
         // because otherwise freemarker renders numbers by default like 1,000,000 http://freemarker.org/docs/app_faq.html#faq_number_grouping
         cfg.setNumberFormat("0.######");
         return cfg;
@@ -293,12 +292,6 @@ public class BaseTemplateProcessor {
 
     private void logStartTemplateGeneration(TemplateDescriptorEntity template) {
         log.finest("started: " + template.toString());
-    }
-
-    private void logBeforeException(TemplateException te, Map<String, Object> contextualizedMap) {
-        log.info("Template Fehler: ");
-        log.severe(te.getLocalizedMessage());
-        log.severe(new GsonBuilder().setPrettyPrinting().create().toJson(contextualizedMap));
     }
 
     private void logBeforeException(ParseException pe) {
