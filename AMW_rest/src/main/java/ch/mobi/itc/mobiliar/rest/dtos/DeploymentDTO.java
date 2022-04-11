@@ -21,7 +21,7 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
@@ -89,8 +89,8 @@ public class DeploymentDTO {
 		this.appServerId = properties.getAppServerId() != null ? properties.getAppServerId() : entity.getResourceGroup().getId();
 		// this is not a typo
 		this.resourceId = properties.getResourceId() != null ? null : entity.getResource().getId();
-		for (ApplicationWithVersion app : entity.getApplicationsWithVersion()) {
-			this.appsWithVersion.add(new AppWithVersionDTO(app.getApplicationName(), app.getApplicationId(), app.getVersion()));
+		for (ApplicationWithVersionEntity app : entity.getApplicationsWithVersion()) {
+			this.appsWithVersion.add(new AppWithVersionDTO(app.getApplication().getName(), app.getApplication().getId(), app.getVersion()));
 		}
 		for (DeploymentParameter param : entity.getDeploymentParameters()) {
 			this.deploymentParameters.add(new DeploymentParameterDTO(param.getKey(), param.getValue()));

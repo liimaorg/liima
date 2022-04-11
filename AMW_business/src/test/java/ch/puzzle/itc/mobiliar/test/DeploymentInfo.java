@@ -21,7 +21,7 @@
 package ch.puzzle.itc.mobiliar.test;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -42,10 +42,10 @@ import java.util.Set;
 
 public class DeploymentInfo implements Comparable<DeploymentInfo> {
 	private Gson gson = new GsonBuilder().create();
-	private Type collectionType = new TypeToken<List<ApplicationWithVersion>>() {
+	private Type collectionType = new TypeToken<List<ApplicationWithVersionEntity>>() {
 	}.getType();
 
-	public List<ApplicationWithVersion> apps;
+	public List<ApplicationWithVersionEntity> apps;
 	public ContextEntity context;
 	public ResourceEntity appServer;
 
@@ -57,9 +57,9 @@ public class DeploymentInfo implements Comparable<DeploymentInfo> {
 	}
 
 	private void sortApps() {
-		Collections.sort(this.apps, new Comparator<ApplicationWithVersion>() {
+		Collections.sort(this.apps, new Comparator<ApplicationWithVersionEntity>() {
 			@Override
-			public int compare(ApplicationWithVersion arg0, ApplicationWithVersion arg1) {
+			public int compare(ApplicationWithVersionEntity arg0, ApplicationWithVersionEntity arg1) {
 				return new DefaultArtifactVersion(arg0.getVersion()).compareTo(new DefaultArtifactVersion(arg1.getVersion()));
 			}
 

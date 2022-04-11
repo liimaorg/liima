@@ -21,7 +21,7 @@
 package ch.puzzle.itc.mobiliar.presentation.deploy;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
@@ -119,16 +119,13 @@ public class DeploymentCSVExport extends HttpServlet{
 		}
 	}
 
-	private String formatAppsWithVersion(List<ApplicationWithVersion> appsWithVersion) {
+	private String formatAppsWithVersion(Set<ApplicationWithVersionEntity> appsWithVersion) {
 		StringBuilder buffer = new StringBuilder();
 
-		for (int index=0; index < appsWithVersion.size(); index++){
-			ApplicationWithVersion app = appsWithVersion.get(index);
-			buffer.append(app.getApplicationName()).append(' ').append(app.getVersion());
-			if (index+1 != appsWithVersion.size()) {
-				buffer.append('\n');
-			}
+		for (ApplicationWithVersionEntity app : appsWithVersion){
+			buffer.append(app.getApplication().getName()).append(' ').append(app.getVersion());
 		}
+		buffer.append('\n');
 
 		return buffer.toString();
 	}

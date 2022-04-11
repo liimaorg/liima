@@ -258,10 +258,10 @@
                                                       value="#{deployScreenDataProvider.getResourceName(deployment)}" />
 
                                         <ui:repeat var="appToShow"
-                                                   value="${deployment.applicationsWithVersion}">
+                                                   value="${deployment.applicationsWithVersion.toArray()}">
                                             <h:panelGroup styleClass="paddingLeft20" layout="block">
-                                                <mobi:editResourceLink resId="#{appToShow.applicationId}"
-                                                                       linkLabel="#{appToShow.applicationName}"
+                                                <mobi:editResourceLink resId="#{appToShow.application.id}"
+                                                                       linkLabel="#{appToShow.application.name}"
                                                                        editPermission="RESOURCE" resourceType="APPLICATION"/>
                                                 <h:outputText rendered="${appToShow.version != ''}"
                                                               value=" (${appToShow.version})"

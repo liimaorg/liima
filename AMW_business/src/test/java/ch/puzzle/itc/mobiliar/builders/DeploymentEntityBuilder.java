@@ -23,11 +23,11 @@ package ch.puzzle.itc.mobiliar.builders;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -62,7 +62,7 @@ public class DeploymentEntityBuilder extends BaseEntityBuilder {
 		entity.setResource(appServer);
 		entity.setBuildSuccess(isBuildSuccess);
 		entity.setContext(context);
-		entity.setApplicationsWithVersion(new ArrayList<ApplicationWithVersion>());
+		entity.setApplicationsWithVersion(new HashSet<ApplicationWithVersionEntity>());
 
 		return entity;
 	}

@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 import javax.persistence.EntityManager;
@@ -37,6 +37,7 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
@@ -82,7 +83,7 @@ public class Issue5959AppServerRelationsTemplateProcessorProvidedConsumedTest ex
 	protected GenerationOptions createOptions() {
 		DeploymentEntity d = new DeploymentEntity();
 		d.setRuntime(builder.platform);
-		d.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
+		d.setApplicationsWithVersion(new HashSet<ApplicationWithVersionEntity>());
 		
 		GenerationContext generationContext = new GenerationContext(context, builder.as, d, null,
 				GenerationModus.SIMULATE, dependencyResolverService);

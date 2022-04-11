@@ -71,8 +71,6 @@ public class DeploymentEntity implements Serializable {
     @ManyToOne
     private ReleaseEntity release;
 
-
-
     // TODO: Redundant to deploymentState?
     // results in getDeploymentConfirmed not isDeploymentConfirmed
     @Getter
@@ -175,13 +173,17 @@ public class DeploymentEntity implements Serializable {
     @JoinColumn(name = "runtime_resource_id")
     private ResourceEntity runtime;
 
-    @Column(length = 65536)
-    @Lob
-    private String applicationsWithVersion;
+    @Getter
+    @Setter
+    @OneToMany(mappedBy = "deployment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<ApplicationWithVersionEntity> applicationsWithVersion;
 
-    // cache for the converted applicationsWithVersion
-    @Transient
-    private List<ApplicationWithVersion> applicationsWithVersionList;
+    // no longer updated, only used for migration
+    @Getter
+    @Setter
+    @Column(length = 65536, name = "APPLICATIONSWITHVERSION")
+    @Lob
+    private String applicationsWithVersionOld;
 
     @Getter
     @Setter
@@ -316,10 +318,8 @@ public class DeploymentEntity implements Serializable {
         deploymentDate = newDate;
     }
 
-    public List<ApplicationWithVersion> getApplicationsWithVersion() {
-        if (applicationsWithVersionList != null) {
-            return applicationsWithVersionList;
-        }
+    // Remove after ApplicationWithVersion migration
+    public List<ApplicationWithVersion> getApplicationsWithVersionOldAsList() {
         List<ApplicationWithVersion> result = new ArrayList<>();
         if(applicationsWithVersion !=  null) {
             JSONArray o1 = JSONArray.fromObject(applicationsWithVersion);
@@ -339,14 +339,7 @@ public class DeploymentEntity implements Serializable {
             });
         }
 
-        applicationsWithVersionList = result;
         return result;
-    }
-
-    public void setApplicationsWithVersion(List<ApplicationWithVersion> applicationsWithVersion) {
-        JSON json = JSONSerializer.toJSON(applicationsWithVersion);
-        this.applicationsWithVersion = json.toString();
-        applicationsWithVersionList = null;
     }
 
     public static class ApplicationWithVersion {

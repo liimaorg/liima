@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.business.generator.control;
 
 import ch.puzzle.itc.mobiliar.business.database.control.AmwAuditReader;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
@@ -362,7 +363,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
     public DeploymentEntity createFakeDeployment(Integer id, ReleaseEntity release, ResourceEntity runtime, Date stateToDeploy) {
         DeploymentEntity fakeDeplyoment = new DeploymentEntity();
         fakeDeplyoment
-                .setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
+                .setApplicationsWithVersion(new HashSet<ApplicationWithVersionEntity>());
         fakeDeplyoment.setRelease(release);
         fakeDeplyoment.setRuntime(runtime);
         fakeDeplyoment.setId(id);

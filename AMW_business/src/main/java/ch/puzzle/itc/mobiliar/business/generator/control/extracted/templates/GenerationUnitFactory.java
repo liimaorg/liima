@@ -21,7 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 
 import ch.puzzle.itc.mobiliar.business.database.control.AmwAuditReader;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.function.control.FunctionService;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
@@ -422,7 +422,7 @@ public class GenerationUnitFactory {
 		}
 	}
 
-	private void decorateVersion(Map<Integer, ApplicationWithVersion> appsWithVersion,
+	private void decorateVersion(Map<Integer, ApplicationWithVersionEntity> appsWithVersion,
 			AppServerRelationProperties properties) {
 
 		if(properties.getProperties().containsKey(VERSION)) {
@@ -433,7 +433,7 @@ public class GenerationUnitFactory {
 		}
 
 		if (appsWithVersion.containsKey(properties.getOwner().getId())) {
-			ApplicationWithVersion applicationWithVersion = appsWithVersion.get(properties.getOwner()
+			ApplicationWithVersionEntity applicationWithVersion = appsWithVersion.get(properties.getOwner()
 					.getId());
 			if (StringUtils.isNotBlank(applicationWithVersion.getVersion())) {
 				properties.getProperties().put(VERSION,

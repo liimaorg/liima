@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -42,6 +43,7 @@ import org.mockito.Spy;
 
 import com.google.common.collect.Lists;
 
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -121,7 +123,7 @@ public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 		
 		DeploymentEntity d = new DeploymentEntity();
 		d.setRuntime(builder.platform);
-		d.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
+		d.setApplicationsWithVersion(new HashSet<ApplicationWithVersionEntity>());
 		
 		ReleaseEntity release = new ReleaseEntity();
 		Calendar cal = new GregorianCalendar();

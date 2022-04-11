@@ -24,7 +24,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.*;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
@@ -406,7 +406,7 @@ public class DeploymentsRest {
         ResourceEntity appServer;
         Set<ResourceEntity> apps;
         ContextEntity environment = null;
-        List<ApplicationWithVersion> applicationsWithVersion = new ArrayList<>();
+        Set<ApplicationWithVersionEntity> applicationsWithVersion = new HashSet<>();
         LinkedList<CustomFilter> filters = new LinkedList<>();
         ReleaseEntity release;
         ResourceGroupEntity group;
@@ -495,6 +495,7 @@ public class DeploymentsRest {
                     .build();
         }
 
+        log.info("applicationsWithVersion: " + applicationsWithVersion);
         trackingId = deploymentBoundary.createDeploymentReturnTrackingId(group.getId(), release.getId(), request.getDeploymentDate(),
                 request.getStateToDeploy(), contexts,
                 applicationsWithVersion, deployParams, request.getSendEmail(), request.getRequestOnly(), request.getSimulate(), request.getExecuteShakedownTest(),
@@ -713,9 +714,9 @@ public class DeploymentsRest {
      * Convert AppWithVersion to ApplicationWithVersion. Checks if
      * AppWithVersion contains all the Applications and adds the Application id.
      **/
-    private List<ApplicationWithVersion> convertToApplicationWithVersion(List<AppWithVersionDTO> requestedApps, Set<ResourceEntity> apps)
+    private Set<ApplicationWithVersionEntity> convertToApplicationWithVersion(List<AppWithVersionDTO> requestedApps, Set<ResourceEntity> apps)
             throws ValidationException {
-        LinkedList<ApplicationWithVersion> result = new LinkedList<>();
+        HashSet<ApplicationWithVersionEntity> result = new HashSet<>();
         List<AppWithVersionDTO> requestedAppsCopy = new LinkedList<>(requestedApps);
 
         // copy the collections as we don't want to modify the originals
@@ -731,9 +732,7 @@ public class DeploymentsRest {
                     String appVersion = (requestedApp.getVersion() != null && !requestedApp.getVersion().isEmpty())
                             ? requestedApp.getVersion() : requestedApp.getVersion();
                     //convert
-                    result.add(
-                            new ApplicationWithVersion(
-                                    requestedApp.getApplicationName(), app.getId(), appVersion));
+                    result.add(new ApplicationWithVersionEntity(app, appVersion));
                     //scratch off
                     requestedAppsCopy.remove(requestedApp);
                     appsCopy.remove(app);

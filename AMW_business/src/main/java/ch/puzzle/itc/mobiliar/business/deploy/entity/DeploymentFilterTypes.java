@@ -38,7 +38,7 @@ public enum DeploymentFilterTypes {
     ENVIRONMENT_NAME("Environment", ENV_QL + ".name", FilterType.StringType, true),
     APPSERVER_NAME("Application server", GROUP_QL + ".name", FilterType.StringType, true),
     RELEASE("Release", RELEASE_QL + ".installationInProductionAt", FilterType.LabeledDateType, true),
-    APPLICATION_NAME("Application", DEPLOYMENT_QL_ALIAS + ".applicationsWithVersion", FilterType.StringType, true),
+    APPLICATION_NAME("Application", "apps.applicationName", "join d.applicationsWithVersion apps", FilterType.StringType, true),
     TARGETPLATFORM("Targetplatform", TARGET_PLATFORM_QL + ".name", FilterType.StringType, true),
     LASTDEPLOYJOBFORASENV("Latest deployment job for App Server and Env", "", FilterType.SpecialFilterType, true),
     TRACKING_ID("Tracking Id", DEPLOYMENT_QL_ALIAS + ".trackingId", FilterType.IntegerType, true),

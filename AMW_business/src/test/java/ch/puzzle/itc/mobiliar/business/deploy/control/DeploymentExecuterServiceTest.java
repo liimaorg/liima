@@ -22,7 +22,7 @@ package ch.puzzle.itc.mobiliar.business.deploy.control;
 
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
@@ -31,6 +31,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.LockingService;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -39,9 +40,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,6 +106,9 @@ public class DeploymentExecuterServiceTest {
 		applicationServer =  ResourceFactory.createNewResource("testAppserver");
 		applicationServer.setId(Integer.valueOf(5));
 
+		ResourceEntity app = ResourceFactory.createNewResource("testAppname");
+		app.setId(Integer.valueOf(1));
+
 		deployment = new DeploymentEntity();
 		deployment.setResourceGroup(deploymentResource.getResourceGroup());
 		deployment.setId(Integer.valueOf(100));
@@ -113,9 +117,9 @@ public class DeploymentExecuterServiceTest {
 		deployment.setDeploymentDate(deploymentDate);
 		deployment.setRuntime(targetPlatformEntity);
 
-		List<ApplicationWithVersion> applicationsWithVersion = new ArrayList<DeploymentEntity.ApplicationWithVersion>();
+		Set<ApplicationWithVersionEntity> applicationsWithVersion = new HashSet<ApplicationWithVersionEntity>();
 
-		ApplicationWithVersion applicationWithVersion = new ApplicationWithVersion("testAppname", Integer.valueOf(1), "1.1.1");
+		ApplicationWithVersionEntity applicationWithVersion = new ApplicationWithVersionEntity(deployment, app, "1.1.1");
 		applicationsWithVersion.add(applicationWithVersion);
 
 		deployment.setApplicationsWithVersion(applicationsWithVersion);

@@ -103,4 +103,6 @@
     <!--1.17.26-->
     <include file="changesets/model/refactoring/#550_add_resourcecontext_unique_constraint.xml" relativeToChangelogFile="true"/>
 
+    <!--1.17.27-->
+    <include file="changesets/model/refactoring/#525_applicationWithVersion.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -24,6 +24,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDepen
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -127,10 +128,10 @@ public class DeploymentNotificationService {
 	private String getApplicationWithVersionsString(DeploymentEntity deploymentEntity){
 		StringBuffer result = new StringBuffer();
 		if(deploymentEntity != null){
-			List<DeploymentEntity.ApplicationWithVersion> applicationsWithVersions = deploymentEntity.getApplicationsWithVersion();
-			for (DeploymentEntity.ApplicationWithVersion applicationsWithVersion : applicationsWithVersions ){
+			Set<ApplicationWithVersionEntity> applicationsWithVersions = deploymentEntity.getApplicationsWithVersion();
+			for (ApplicationWithVersionEntity applicationsWithVersion : applicationsWithVersions ){
 				result.append("- ");
-				result.append(applicationsWithVersion.getApplicationName());
+				result.append(applicationsWithVersion.getApplication().getName());
 				result.append(" ");
 				result.append(applicationsWithVersion.getVersion());
 				result.append("\n");

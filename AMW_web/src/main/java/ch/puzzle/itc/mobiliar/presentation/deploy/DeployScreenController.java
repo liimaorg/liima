@@ -23,7 +23,7 @@ package ch.puzzle.itc.mobiliar.presentation.deploy;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary.DeploymentParameterBoundary;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
@@ -142,18 +142,19 @@ public class DeployScreenController {
         return deploymentParameterBoundary.findAllDeploymentParameterFor(deployment.getId());
     }
 
-    public List<ApplicationWithVersion> getAppsWithVersion(ResourceEntity appServer, List<Integer> contexts, ReleaseEntity release) {
-        List<ApplicationWithVersion> apps = deploymentBoundary.getVersions(appServer, contexts, release);
+    public List<ApplicationWithVersionEntity> getAppsWithVersion(ResourceEntity appServer, List<Integer> contexts, ReleaseEntity release) {
+        Set<ApplicationWithVersionEntity> apps = deploymentBoundary.getVersions(appServer, contexts, release);
+        LinkedList<ApplicationWithVersionEntity> appList = new LinkedList<>(apps);
 
-        Collections.sort(apps, new Comparator<ApplicationWithVersion>() {
+        Collections.sort(appList, new Comparator<ApplicationWithVersionEntity>() {
             @Override
-            public int compare(ApplicationWithVersion app1, ApplicationWithVersion app2) {
-                return app1.getApplicationName().toLowerCase().
-                        compareTo(app2.getApplicationName().toLowerCase());
+            public int compare(ApplicationWithVersionEntity app1, ApplicationWithVersionEntity app2) {
+                return app1.getApplication().getName().toLowerCase().
+                        compareTo(app2.getApplication().getName().toLowerCase());
             }
         });
 
-        return apps;
+        return appList;
     }
 
     public ResourceGroupEntity getResourceGroupWithResourceRelations(int groupId) {
@@ -163,7 +164,7 @@ public class DeployScreenController {
     public Integer createDeploymentReturnTrackingId(Integer appServerGroupId, Integer releaseId,
                                                     List<Integer> contextIds, Date stateDate,
                                                     Date executionDate,
-                                                    List<ApplicationWithVersion> appsWithVersion,
+                                                    Set<ApplicationWithVersionEntity> appsWithVersion,
                                                     List<DeploymentParameter> deployParams,
                                                     boolean sendEmail, boolean requestOnly,
                                                     boolean doSimulate, boolean doExecuteShakedownTest,

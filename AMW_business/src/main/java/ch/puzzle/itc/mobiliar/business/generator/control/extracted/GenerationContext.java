@@ -25,14 +25,16 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties.container.DeploymentProperties;
 import ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GenerationContext {
 
@@ -45,7 +47,7 @@ public class GenerationContext {
 	private Integer deploymentId;
 	private ResourceEntity targetPlatform;
 	private GenerationModus generationModus;
-	private List<ApplicationWithVersion> applicationsWithVersion;
+	private Set<ApplicationWithVersionEntity> applicationsWithVersion;
 	private ResourceEntity node;
 	private boolean testing;
 	private ResourceDependencyResolverService resourceDependencyResolver;
@@ -71,12 +73,12 @@ public class GenerationContext {
 		if (deployment != null) {
 			this.targetRelease = deployment.getRelease();
 			this.deploymentId = deployment.getId();
-			this.applicationsWithVersion = deployment.getApplicationsWithVersion() == null ? new ArrayList<ApplicationWithVersion>()
+			this.applicationsWithVersion = deployment.getApplicationsWithVersion() == null ? new HashSet<ApplicationWithVersionEntity>()
 					: deployment.getApplicationsWithVersion();
 			this.targetPlatform = deployment.getRuntime();
 		}
 		else {
-			this.applicationsWithVersion = new ArrayList<>();
+			this.applicationsWithVersion = new HashSet<>();
 		}
 
 		this.deploymentDate = deploymentDate;
@@ -129,7 +131,7 @@ public class GenerationContext {
 		this.node = node;
 	}
 
-	public List<ApplicationWithVersion> getApplicationsWithVersion() {
+	public Set<ApplicationWithVersionEntity> getApplicationsWithVersion() {
 		return applicationsWithVersion;
 	}
 

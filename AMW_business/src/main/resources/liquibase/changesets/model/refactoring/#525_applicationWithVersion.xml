@@ -1,0 +1,34 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/deploymentparameter/#525_applicationWithVersion.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet author="yvespp" id="#525_applicationWithVersion">
+
+        <!-- create application with version table-->
+        <createTable tableName="TAMW_APPLICATIONWITHVERSION">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="apllicationwithversionkey_PK"/>
+            </column>
+            <column name="deployment_id" type="INTEGER">
+                <constraints nullable="true" foreignKeyName="TAMW_APPWITHVERSION_DEPLOYMENT_FK" referencedColumnNames="ID" referencedTableName="TAMW_DEPLOYMENT"/>
+            </column>
+            <!-- no foreignKey to be able to delete apps without deleting deployments -->
+            <column name="application_id" type="INTEGER">
+                <constraints nullable="true"/>
+            </column>
+            <column name="applicationname" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="version" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <insert tableName="SAMW_SEQUENCES">
+            <column name="seq_name" value="applicationWithVersionId"></column>
+            <column name="next_val" valueNumeric="1"></column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

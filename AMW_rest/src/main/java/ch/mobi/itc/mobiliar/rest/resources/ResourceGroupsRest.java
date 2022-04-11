@@ -23,7 +23,7 @@ package ch.mobi.itc.mobiliar.rest.resources;
 import ch.mobi.itc.mobiliar.rest.dtos.*;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
@@ -325,9 +325,9 @@ public class ResourceGroupsRest {
         }
         ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
         List<AppWithVersionDTO> apps = new ArrayList<>();
-        List<DeploymentEntity.ApplicationWithVersion> appVersions = deploymentBoundary.getVersions(appServer, contextIds, release);
-        for (DeploymentEntity.ApplicationWithVersion appVersion : appVersions) {
-            apps.add(new AppWithVersionDTO(appVersion.getApplicationName(), appVersion.getApplicationId(), appVersion.getVersion()));
+        Set<ApplicationWithVersionEntity> appVersions = deploymentBoundary.getVersions(appServer, contextIds, release);
+        for (ApplicationWithVersionEntity appVersion : appVersions) {
+            apps.add(new AppWithVersionDTO(appVersion.getApplication().getName(), appVersion.getApplication().getId(), appVersion.getVersion()));
         }
         return Response.ok(apps).build();
 

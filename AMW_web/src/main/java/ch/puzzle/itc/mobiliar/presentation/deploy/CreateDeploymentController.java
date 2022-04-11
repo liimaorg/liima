@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.presentation.deploy;
 
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary.DeploymentParameterBoundary;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
@@ -114,18 +115,18 @@ public class CreateDeploymentController {
         return deploymentParameterBoundary.findAllKeys();
     }
 
-    public List<DeploymentEntity.ApplicationWithVersion> getAppsWithVersion(ResourceEntity appServer, List<String> contexts, ReleaseEntity release) {
-        List<DeploymentEntity.ApplicationWithVersion> apps = deploymentBoundary.getVersions(appServer, stringToIntegerList(contexts), release);
-
-        Collections.sort(apps, new Comparator<DeploymentEntity.ApplicationWithVersion>() {
+    public List<ApplicationWithVersionEntity> getAppsWithVersion(ResourceEntity appServer, List<String> contexts, ReleaseEntity release) {
+        Set<ApplicationWithVersionEntity> apps = deploymentBoundary.getVersions(appServer, stringToIntegerList(contexts), release);
+        LinkedList<ApplicationWithVersionEntity> appList = new LinkedList<>(apps);
+        Collections.sort(appList, new Comparator<ApplicationWithVersionEntity>() {
             @Override
-            public int compare(DeploymentEntity.ApplicationWithVersion app1, DeploymentEntity.ApplicationWithVersion app2) {
-                return app1.getApplicationName().toLowerCase().
-                        compareTo(app2.getApplicationName().toLowerCase());
+            public int compare(ApplicationWithVersionEntity app1, ApplicationWithVersionEntity app2) {
+                return app1.getApplication().getName().toLowerCase().
+                        compareTo(app2.getApplication().getName().toLowerCase());
             }
         });
 
-        return apps;
+        return appList;
     }
 
 
@@ -151,7 +152,7 @@ public class CreateDeploymentController {
     public Integer createDeploymentReturnTrackingId(Integer appServerGroupId, Integer releaseId,
                                                     List<String> contextIds, Date stateDate,
                                                     Date executionDate,
-                                                    List<DeploymentEntity.ApplicationWithVersion> appsWithVersion,
+                                                    Set<ApplicationWithVersionEntity> appsWithVersion,
                                                     List<DeploymentParameter> deployParams,
                                                     boolean sendEmail, boolean requestOnly,
                                                     boolean doSimulate, boolean doExecuteShakedownTest,

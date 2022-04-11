@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.factory;
 
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.function.control.FunctionService;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
@@ -44,7 +45,7 @@ import org.mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -108,7 +109,7 @@ public class GenerationUnitFactoryBaseTest<T extends EntityBuilder> {
 		AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
 		DeploymentEntity d = new DeploymentEntity();
 		d.setRuntime(builder.platform);
-		d.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
+		d.setApplicationsWithVersion(new HashSet<ApplicationWithVersionEntity>());
 
 	    GenerationContext context = new GenerationContext(builder.context,
 			    builder.as, d, null, GenerationModus.SIMULATE, null);

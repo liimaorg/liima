@@ -20,13 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties.BasePropertyCollector;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
@@ -38,7 +38,7 @@ import com.google.common.collect.Maps;
 public class GenerationOptions{
 
 	private final GenerationContext context;
-	private final Map<Integer, ApplicationWithVersion> versions;
+	private final Map<Integer, ApplicationWithVersionEntity> versions;
 	private Map<String, AmwResourceTemplateModel> applications;
 	private Map<String, FreeMarkerProperty> contextProperties;
 	private Map<String, GeneratedTemplate> templateFiles;
@@ -58,13 +58,13 @@ public class GenerationOptions{
 		contextProperties.putAll(new BasePropertyCollector().propertiesForContext(context.getContext()));
 	}
 
-	private void populateVersions(List<ApplicationWithVersion> versions) {
-		for (ApplicationWithVersion applicationWithVersion : versions) {
-			this.versions.put(applicationWithVersion.getApplicationId(), applicationWithVersion);
+	private void populateVersions(Set<ApplicationWithVersionEntity> versions) {
+		for (ApplicationWithVersionEntity applicationWithVersion : versions) {
+			this.versions.put(applicationWithVersion.getApplication().getId(), applicationWithVersion);
 		}
 	}
 
-	public Map<Integer, ApplicationWithVersion> getVersions() {
+	public Map<Integer, ApplicationWithVersionEntity> getVersions() {
 		return versions;
 	}
 

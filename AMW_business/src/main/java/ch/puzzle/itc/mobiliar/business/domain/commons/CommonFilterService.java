@@ -134,16 +134,7 @@ public class CommonFilterService {
 				q.setParameter(parameter, f.getIntegerValue());
 				log.fine("name: " + parameter + " value: " + f.getIntegerValue());
 			} else if (f.isStringType()) {
-				if (DeploymentFilterTypes.APPLICATION_NAME.getFilterDisplayName().equals(f.getFilterDisplayName())) {
-					//all app names are in a json structure so we have to search with %
-					if (f.getStringValue().equals("*")) {
-						q.setParameter(parameter, "%%");
-					} else {
-						q.setParameter(parameter, "%" + f.getStringValue() + "%");
-					}
-				} else {
-					q.setParameter(parameter, JpaWildcardConverter.convertWildCards(f.getStringValue()));
-				}
+				q.setParameter(parameter, JpaWildcardConverter.convertWildCards(f.getStringValue()));
 				log.fine("name: " + parameter + " value: " + f.getStringValue());
 			} else if (f.isEnumType()){
                 q.setParameter(parameter, f.getEnumValue());

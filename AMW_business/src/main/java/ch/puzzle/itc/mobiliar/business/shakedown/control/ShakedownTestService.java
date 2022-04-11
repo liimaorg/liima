@@ -23,7 +23,7 @@ package ch.puzzle.itc.mobiliar.business.shakedown.control;
 import ch.puzzle.itc.mobiliar.business.database.control.SequencesService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
@@ -255,10 +255,10 @@ public class ShakedownTestService{
 		if (appServerEntity != null) {
 			ContextEntity contextEntity = deployment.getContext();
 
-			List<ApplicationWithVersion> applicationsWithVersion = deployment.getApplicationsWithVersion();
+			Set<ApplicationWithVersionEntity> applicationsWithVersion = deployment.getApplicationsWithVersion();
 			Map<Integer, String> appIdWithAppNameMap = new HashMap<>();
-			for (ApplicationWithVersion applicationWithVersion : applicationsWithVersion) {
-				appIdWithAppNameMap.put(applicationWithVersion.getApplicationId(), applicationWithVersion.getApplicationName());
+			for (ApplicationWithVersionEntity applicationWithVersion : applicationsWithVersion) {
+				appIdWithAppNameMap.put(applicationWithVersion.getApplication().getId(), applicationWithVersion.getApplication().getName());
 			}
 
 			createShakedownEntity(deployment.getTrackingId(), contextEntity, appServerEntity, deployment, appIdWithAppNameMap, deployment.getRelease(),

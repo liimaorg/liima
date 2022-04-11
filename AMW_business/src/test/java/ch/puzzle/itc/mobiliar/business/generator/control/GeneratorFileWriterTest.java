@@ -24,8 +24,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -40,6 +40,7 @@ import org.mockito.MockitoAnnotations;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
@@ -215,7 +216,7 @@ public class GeneratorFileWriterTest {
 		
 		DeploymentEntity d = new DeploymentEntity();
 		d.setId(Integer.valueOf(12));
-		d.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
+		d.setApplicationsWithVersion(new HashSet<ApplicationWithVersionEntity>());
 		
 		GenerationContext context = new GenerationContext(c, as, d, null, GenerationModus.DEPLOY, null);
 		context.setNode(node);
@@ -245,7 +246,7 @@ public class GeneratorFileWriterTest {
 		
 		DeploymentEntity d = new DeploymentEntity();
 		d.setId(Integer.valueOf(12));
-		d.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
+		d.setApplicationsWithVersion(new HashSet<ApplicationWithVersionEntity>());
 		Date deploymentDate = new Date();
 		
 		GenerationContext context = new GenerationContext(c, as, d, deploymentDate, GenerationModus.TEST, null);
@@ -275,7 +276,7 @@ public class GeneratorFileWriterTest {
 		node.setName("node");
 		
 		DeploymentEntity d = new DeploymentEntity();
-		d.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
+		d.setApplicationsWithVersion(new HashSet<ApplicationWithVersionEntity>());
 		d.setId(Integer.valueOf(12));
 		
 		GenerationContext context = new GenerationContext(c, as, d, null, GenerationModus.TEST, null);

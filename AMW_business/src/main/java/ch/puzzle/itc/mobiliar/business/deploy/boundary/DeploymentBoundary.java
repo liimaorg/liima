@@ -23,7 +23,7 @@ package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 import ch.puzzle.itc.mobiliar.business.database.control.SequencesService;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent.DeploymentEventType;
@@ -529,7 +529,7 @@ public class DeploymentBoundary {
     public Integer createDeploymentReturnTrackingId(Integer appServerGroupId, Integer releaseId,
                                                     Date deploymentDate, Date stateToDeploy,
                                                     List<Integer> contextIds,
-                                                    List<ApplicationWithVersion> applicationWithVersion,
+                                                    Set<ApplicationWithVersionEntity> applicationWithVersion,
                                                     List<DeploymentParameter> deployParams,
                                                     boolean sendEmail, boolean requestOnly, boolean doSimulate,
                                                     boolean isExecuteShakedownTest, boolean isNeighbourhoodTest) {
@@ -567,7 +567,7 @@ public class DeploymentBoundary {
 
         for (DeploymentEntity selectedDeployment : selectedDeployments) {
 
-            List<ApplicationWithVersion> applicationWithVersion = selectedDeployment.getApplicationsWithVersion();
+            Set<ApplicationWithVersionEntity> applicationWithVersion = selectedDeployment.getApplicationsWithVersion();
 
             Integer appServerGroupId = selectedDeployment.getResourceGroup().getId();
             Integer releaseId = selectedDeployment.getRelease().getId();
@@ -602,7 +602,7 @@ public class DeploymentBoundary {
      * @param trackingId
      * @return boolean true if deployment request only
      */
-    private boolean createDeploymentForAppserver(Integer appServerGroupId, Integer releaseId, Date deploymentDate, Date stateToDeploy, List<Integer> contextIds, List<ApplicationWithVersion>
+    private boolean createDeploymentForAppserver(Integer appServerGroupId, Integer releaseId, Date deploymentDate, Date stateToDeploy, List<Integer> contextIds, Set<ApplicationWithVersionEntity>
             applicationWithVersion, List<DeploymentParameter> deployParams, boolean sendEmail, boolean requestOnly, boolean doSimulate, boolean isExecuteShakedownTest, boolean
                                                          isNeighbourhoodTest, Integer trackingId) {
         ResourceGroupEntity group = em.find(ResourceGroupEntity.class, appServerGroupId);
@@ -664,6 +664,7 @@ public class DeploymentBoundary {
             deployment.setRelease(release);
 
             createAndAddDeploymentParameterForDeployment(deployment, deployParams);
+            createAndAddApplicationsWithVersion(deployment, applicationWithVersion);
 
             em.persist(deployment);
             log.info("Deployment for appServer " + group.getName() + " env " + contextId + " created");
@@ -679,10 +680,17 @@ public class DeploymentBoundary {
         }
     }
 
-
     public DeploymentParameter createPersistDeploymentParameter(String key, String value) {
         Objects.requireNonNull(key, "Must not be null");
         return new DeploymentParameter(key, value);
+    }
+
+    private void createAndAddApplicationsWithVersion(DeploymentEntity deployment, Set<ApplicationWithVersionEntity> applicationWithVersion) {
+        HashSet<ApplicationWithVersionEntity> appsCopy = new HashSet<>();
+        for(ApplicationWithVersionEntity app : applicationWithVersion) {
+            appsCopy.add(new ApplicationWithVersionEntity(deployment, app.getApplication(), app.getVersion()));
+        }
+        deployment.setApplicationsWithVersion(appsCopy);
     }
 
     /**
@@ -787,8 +795,8 @@ public class DeploymentBoundary {
         return currentValue;
     }
 
-    public List<ApplicationWithVersion> getVersions(ResourceEntity appServer, List<Integer> contextIds, ReleaseEntity release) {
-        List<ApplicationWithVersion> appsWithVersion = new LinkedList<>();
+    public Set<ApplicationWithVersionEntity> getVersions(ResourceEntity appServer, List<Integer> contextIds, ReleaseEntity release) {
+        Set<ApplicationWithVersionEntity> appsWithVersion = new HashSet<>();
 
         //attache the appserver. without it getConsumedRelatedResourcesByResourceType
         //throws lazy load exception even if all relations of the appServer were loaded
@@ -805,7 +813,7 @@ public class DeploymentBoundary {
                 log.log(Level.WARNING, "Error getting Version for Resource", e);
             }
 
-            appsWithVersion.add(new ApplicationWithVersion(app.getName(), app.getId(), version));
+            appsWithVersion.add(new ApplicationWithVersionEntity(app, version));
         }
 
         return appsWithVersion;

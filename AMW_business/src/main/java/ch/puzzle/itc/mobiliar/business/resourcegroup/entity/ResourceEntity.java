@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasTypeContext;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.Foreignable;
@@ -135,6 +136,13 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	@Getter
 	@Setter
 	private Set<DeploymentEntity> deployments;
+
+	@OneToMany(cascade = {PERSIST, MERGE}, mappedBy = "application")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@NotAudited
+	@Getter
+	@Setter
+	private Set<ApplicationWithVersion> applicationWithVersion;
 
 	@OneToMany(cascade = ALL, mappedBy = "applicationServer")
 	@NotAudited

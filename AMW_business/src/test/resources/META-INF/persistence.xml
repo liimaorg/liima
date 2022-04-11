@@ -16,6 +16,7 @@
                <class>ch.puzzle.itc.mobiliar.business.environment.entity.ContextTypeEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity</class>
+               <class>ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.usersettings.entity.FavoriteResourceEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity</class>

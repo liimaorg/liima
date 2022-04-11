@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.presentation.deploy;
 
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -71,7 +72,7 @@ public class CreateDeploymentView implements Serializable {
     @Getter
     List<Key> allKeys = new LinkedList<>();
     @Getter
-    private List<DeploymentEntity.ApplicationWithVersion> appsWithVersion = new LinkedList<>();
+    private List<ApplicationWithVersionEntity> appsWithVersion = new LinkedList<>();
     @Getter
     private ResourceEntity selectedAppServer;
     @Getter
@@ -354,7 +355,7 @@ public class CreateDeploymentView implements Serializable {
         else {
             trackingId = controller.createDeploymentReturnTrackingId(selectedApplicationServerGroup.getId(),
                     selectedRelease.getId(), getSelectedContextIds(), getSelectedStateDateAsDate(), deploymentDate,
-                    appsWithVersion, allSelectedDeploymentParameters, sendEmail, isRequest, simulateGeneration,
+                    new HashSet<>(appsWithVersion), allSelectedDeploymentParameters, sendEmail, isRequest, simulateGeneration,
                     executeShakedownTest, neighbourhoodTest);
         }
 

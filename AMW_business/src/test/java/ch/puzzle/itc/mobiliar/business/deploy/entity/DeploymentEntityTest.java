@@ -20,14 +20,14 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -42,22 +42,24 @@ public class DeploymentEntityTest {
 		// given
 		DeploymentEntity deploymentEntity = new DeploymentEntity();
 
-		List<ApplicationWithVersion> applicationsWithVersion = new ArrayList<DeploymentEntity.ApplicationWithVersion>();
+		Set<ApplicationWithVersionEntity> applicationsWithVersion = new HashSet<ApplicationWithVersionEntity>();
+		ResourceEntity app = ResourceFactory.createNewResource("testAppname");
+		app.setId(Integer.valueOf(1));
 
-		ApplicationWithVersion applicationWithVersion = new ApplicationWithVersion("testAppname", Integer.valueOf(1), "1.1.1");
+		ApplicationWithVersionEntity applicationWithVersion = new ApplicationWithVersionEntity(deploymentEntity, app, "1.1.1");
 		applicationsWithVersion.add(applicationWithVersion);
 
 		deploymentEntity.setApplicationsWithVersion(applicationsWithVersion);
 
 		// when
-		List<ApplicationWithVersion> applicationsWithVersionResult = deploymentEntity.getApplicationsWithVersion();
+		Set<ApplicationWithVersionEntity> applicationsWithVersionResult = deploymentEntity.getApplicationsWithVersion();
 
 		// then
 		assertNotNull(applicationsWithVersionResult);
 		assertEquals(1, applicationsWithVersionResult.size());
-		assertEquals("testAppname", applicationsWithVersionResult.get(0).getApplicationName());
-		assertEquals(Integer.valueOf(1), applicationsWithVersionResult.get(0).getApplicationId());
-		assertEquals("1.1.1", applicationsWithVersionResult.get(0).getVersion());
+		assertEquals("testAppname", applicationsWithVersionResult.iterator().next().getApplication().getName());
+		assertEquals(Integer.valueOf(1), applicationsWithVersionResult.iterator().next().getApplication().getId());
+		assertEquals("1.1.1", applicationsWithVersionResult.iterator().next().getVersion());
 	}
 
 	@Test
@@ -65,11 +67,11 @@ public class DeploymentEntityTest {
 		// given
 		DeploymentEntity deploymentEntity = new DeploymentEntity();
 
-		List<ApplicationWithVersion> applicationsWithVersion = new ArrayList<DeploymentEntity.ApplicationWithVersion>();
+		Set<ApplicationWithVersionEntity> applicationsWithVersion = new HashSet<ApplicationWithVersionEntity>();
 		deploymentEntity.setApplicationsWithVersion(applicationsWithVersion);
 
 		// when
-		List<ApplicationWithVersion> applicationsWithVersionResult = deploymentEntity.getApplicationsWithVersion();
+		Set<ApplicationWithVersionEntity> applicationsWithVersionResult = deploymentEntity.getApplicationsWithVersion();
 
 		// then
 		assertNotNull(applicationsWithVersionResult);

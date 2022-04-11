@@ -25,14 +25,15 @@ import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationCon
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.test.PersistingEntityBuilder;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.*;
 
@@ -77,7 +78,7 @@ public class ApplicationResolverEntityBuilder extends PersistingEntityBuilder {
 		buildProvidedRelation(app2, ws, ForeignableOwner.AMW);
 
 		DeploymentEntity d = new DeploymentEntity();
-		d.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
+		d.setApplicationsWithVersion(new HashSet<ApplicationWithVersionEntity>());
 		d.setRuntime(platform);
 		GenerationContext generationContext = new GenerationContext(context, null, d , new Date(),
 				GenerationModus.SIMULATE, new ResourceDependencyResolverService());

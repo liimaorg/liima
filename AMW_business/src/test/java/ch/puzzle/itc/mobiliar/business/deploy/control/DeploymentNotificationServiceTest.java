@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ApplicationWithVersionEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -40,6 +41,7 @@ import org.mockito.MockitoAnnotations;
 import javax.mail.Address;
 import javax.mail.MessagingException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -120,6 +122,7 @@ public class DeploymentNotificationServiceTest {
 		deployment.setTrackingId(Integer.valueOf(12));
 		deployment.setDeploymentState(DeploymentState.success);
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
+		deployment.setApplicationsWithVersion(new HashSet<>());
 		deployment.setContext(context);
 		deployments.add(deployment);
 		
@@ -143,6 +146,7 @@ public class DeploymentNotificationServiceTest {
 		deployment.setDeploymentState(DeploymentState.success);
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
 		deployment.setContext(context);
+		deployment.setApplicationsWithVersion(new HashSet<>());
 		deployments.add(deployment);
 		
 		when(notificationService.createAndSendMail(anyString(), anyString(), any(Address[].class))).thenReturn(false);
@@ -166,6 +170,7 @@ public class DeploymentNotificationServiceTest {
 		deployment.setTrackingId(Integer.valueOf(12));
 		deployment.setDeploymentState(DeploymentState.success);
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
+		deployment.setApplicationsWithVersion(new HashSet<>());
 		deployment.setContext(context);
 		deployment.setRelease(defaultRelease);
 		deployments.add(deployment);
@@ -189,6 +194,7 @@ public class DeploymentNotificationServiceTest {
 		ArrayList<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 		
 		DeploymentEntity deployment = new DeploymentEntity();
+		deployment.setApplicationsWithVersion(new HashSet<>());
 		deployment.setTrackingId(Integer.valueOf(12));
 		deployment.setDeploymentState(DeploymentState.success);
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
@@ -216,7 +222,7 @@ public class DeploymentNotificationServiceTest {
 		deployment.setTrackingId(Integer.valueOf(12));
 		deployment.setDeploymentState(DeploymentState.success);
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
-		deployment.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
+		deployment.setApplicationsWithVersion(new HashSet<ApplicationWithVersionEntity>());
 		deployment.setContext(context);
 		deployments.add(deployment);
 		
