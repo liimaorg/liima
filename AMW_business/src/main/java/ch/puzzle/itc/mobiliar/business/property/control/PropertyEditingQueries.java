@@ -55,7 +55,7 @@ public class PropertyEditingQueries {
     private static final String PROVIDEDRESRELFK = "PROVIDEDRESOURCERELATION_ID";
     /* Switch back to unoptimized query for oracle, see: https://github.com/liimaorg/liima/issues/484
        original: LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE_OPTIMIZED = "loadPropertyDescriptorsForResourceOptimized.sql"; */
-    private static final String LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE_OPTIMIZED = "loadPropertyDescriptorsForResource.sql";
+    private static final String LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE_OPTIMIZED = "loadPropertyDescriptorsForResourceOptimized.sql";
     private static final String LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE = "loadPropertyDescriptorsForResource.sql";
 
     public Query getPropertyValueForResource(int resourceId, List<Integer> resourceTypeIds, List<Integer> contextIds) {

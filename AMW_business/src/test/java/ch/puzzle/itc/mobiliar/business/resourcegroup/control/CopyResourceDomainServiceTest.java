@@ -20,27 +20,49 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import ch.puzzle.itc.mobiliar.builders.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.EntityManager;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+
+import ch.puzzle.itc.mobiliar.builders.ContextEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.PropertyEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.ResourceRelationContextEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.ResourceRelationEntityBuilder;
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService.CopyMode;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 /**
  */
 public class CopyResourceDomainServiceTest {
 
+    @InjectMocks
     CopyResourceDomainService copyResourceDomainService;
     ForeignableService foreignableService;
 
@@ -174,7 +196,77 @@ public class CopyResourceDomainServiceTest {
         assertEquals("amwws", targetResource.getProvidedMasterRelations().iterator().next().getSlaveResource().getName());
     }
 
-    // TODO add also values on relations (AMW owned)
+    @Test
+    public void shouldCopySlaveRelPropWithDescriptor() throws AMWException, ForeignableOwnerViolationException {
+        // given
+        // app (master) -> ws (slave)
+        // create descriptor and property on slave
+        ResourceContextEntity slaveResCtx = new ResourceContextEntity();
+        slaveResCtx.setContext(globalContextMock);
+
+        PropertyEntity slaveProp = new PropertyEntityBuilder().buildPropertyEntity("abc", null);
+        Set<PropertyEntity> slaveProps = new HashSet<>();
+        slaveProps.add(slaveProp);
+        PropertyDescriptorEntity slavePropDes = new PropertyDescriptorEntityBuilder().withPropertyName("propDesc").withProperties(slaveProps).build();
+        slaveResCtx.addPropertyDescriptor(slavePropDes);
+        slaveResCtx.addProperty(slaveProp);
+
+        ResourceEntity slaveResource = new ResourceEntityBuilder().withName("ws1").withTypeOfName("ws").withContexts(Collections.singleton(slaveResCtx)).build();
+        ResourceEntity masterResource = new ResourceEntityBuilder().withName("app1").withTypeOfName("app").withContexts(Collections.singleton(slaveResCtx)).build();
+
+        // add a resource relation prop, overwriting prop on origin
+        PropertyEntity masterRelProp = new PropertyEntityBuilder().buildPropertyEntity("xyz", slavePropDes);
+        ResourceRelationContextEntity masterResRelCtx = new ResourceRelationContextEntityBuilder().mockResourceRelationContextEntity(globalContextMock);
+        when(masterResRelCtx.getProperties()).thenReturn(Collections.singleton(masterRelProp));
+
+        AbstractResourceRelationEntity slaveResRel = new ResourceRelationEntityBuilder().buildConsumedResRelEntity(masterResource, slaveResource, "foo", 2);
+        slaveResRel.setContexts(Collections.singleton(masterResRelCtx));
+
+        ResourceEntity targetRes = new ResourceEntityBuilder().withName("ws1Copy").build();
+        CopyUnit copyUnit = new CopyUnit(slaveResource, targetRes, CopyMode.RELEASE, ForeignableOwner.AMW);
+
+        // when copy slave
+        copyResourceDomainService.doCopy(copyUnit);
+
+        // then
+        // target should have new descriptor
+        PropertyDescriptorEntity targetDesc = targetRes.getContexts().iterator().next().getPropertyDescriptors().iterator().next();
+        assertNotEquals(System.identityHashCode(slavePropDes), System.identityHashCode(targetDesc));
+
+        // relation and prop on relation should be copied
+        Set<ConsumedResourceRelationEntity> targetConsResRels = targetRes.getConsumedSlaveRelations();
+        assertEquals(1, targetConsResRels.size());
+        ConsumedResourceRelationEntity  targetConsResRel = targetConsResRels.iterator().next();
+        Set<PropertyEntity> targetRelProps = targetConsResRel.getContexts().iterator().next().getProperties();
+        assertEquals(1, targetRelProps.size());
+        PropertyEntity targetRelProp = targetRelProps.iterator().next();
+        assertNotEquals(System.identityHashCode(masterRelProp), System.identityHashCode(targetRelProp));
+        assertEquals(masterRelProp.getValue(), targetRelProp.getValue());
+
+        // relation prop should use copied descriptor
+        assertEquals(System.identityHashCode(targetRelProp.getDescriptor()), System.identityHashCode(targetDesc));
+
+        // give
+        targetRes = new ResourceEntityBuilder().withName("app1Copy").build();
+        copyUnit = new CopyUnit(masterResource, targetRes, CopyMode.RELEASE, ForeignableOwner.AMW);
+
+        // when copy master
+        copyResourceDomainService.doCopy(copyUnit);
+
+        // then
+        // relation and prop on relation should be copied
+        targetConsResRels = targetRes.getConsumedMasterRelations();
+        assertEquals(1, targetConsResRels.size());
+        targetConsResRel = targetConsResRels.iterator().next();
+        targetRelProps = targetConsResRel.getContexts().iterator().next().getProperties();
+        assertEquals(1, targetRelProps.size());
+        targetRelProp = targetRelProps.iterator().next();
+        assertNotEquals(System.identityHashCode(masterRelProp), System.identityHashCode(targetRelProp));
+        assertEquals(masterRelProp.getValue(), targetRelProp.getValue());
+
+        // relation prop should use descriptor of slave
+        assertEquals(System.identityHashCode(targetRelProp.getDescriptor()), System.identityHashCode(slavePropDes));
+    }
 
     private void addPropertyDescriptor(ResourceEntity resource, PropertyDescriptorEntity propertyDescriptor) {
         ResourceContextEntity context = resource.getOrCreateContext(globalContextMock);

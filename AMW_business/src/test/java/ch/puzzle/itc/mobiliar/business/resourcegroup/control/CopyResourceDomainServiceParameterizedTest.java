@@ -744,7 +744,7 @@ public class CopyResourceDomainServiceParameterizedTest {
 		CopyUnit copyUnit = new CopyUnit(originCpi, targetCpi, copyMode, actingOwner);
 
 		// when
-		copyDomainService.copyResourceRelationContexts(origins, targetResRel, copyUnit);
+		copyDomainService.copyResourceRelationContexts(origins, targetResRel, copyUnit, false);
 
 		// then
         if (copyMode.equals(CopyMode.MAIA_PREDECESSOR) && targetResRel.getContexts().iterator().next().getProperties() != null) {
