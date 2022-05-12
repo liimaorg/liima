@@ -1,4 +1,4 @@
--- this ist the performance optimized version of loadPropertyDescriptorsForResource.sql for Oracle, not H2 compatible!
+-- this is the performance optimized version of loadPropertyDescriptorsForResource.sql for Oracle, not H2 compatible!
 WITH descr_with
      AS (SELECT descr.PROPERTYNAME propertyName,
                 descr.DISPLAYNAME displayName,
