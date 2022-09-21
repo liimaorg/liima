@@ -5,6 +5,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="rgalante" id="newPermissions_migrationTemplatePermissions" >
+        <validCheckSum>8:fb2aff7139d310573f28b4bfa8ab0b94</validCheckSum>
         <comment>
             migrating existing TEMPLATE permissions to restrictions
         </comment>
@@ -67,12 +68,12 @@
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="RESOURCE_TEMPLATE" />
+            <column name="VALUE" value="RESOURCE_TEMPLATE" />
             <where>value = 'INSTANCE_TEMP_LIST'</where>
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="RESOURCETYPE_TEMPLATE" />
+            <column name="VALUE" value="RESOURCETYPE_TEMPLATE" />
             <where>value = 'RES_RESTYPE_TEMPLATE_LIST'</where>
         </update>
 

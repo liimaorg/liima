@@ -5,6 +5,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="rgalante" id="newPermissions_migrationResourceTypePermissions" >
+        <validCheckSum>8:a73ccd8ac27706d34f8ee9e361b0d546</validCheckSum>
         <comment>
             migrating existing RESTYPE permissions to restrictions
         </comment>
@@ -56,7 +57,7 @@
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="RESOURCETYPE" />
+            <column name="VALUE" value="RESOURCETYPE" />
             <where>value = 'NEW_RESTYPE'</where>
         </update>
 
