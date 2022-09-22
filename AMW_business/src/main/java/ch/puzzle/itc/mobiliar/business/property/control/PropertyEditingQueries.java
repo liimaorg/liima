@@ -25,6 +25,8 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty.Orig
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -229,16 +231,23 @@ public class PropertyEditingQueries {
     }
 
     private String loadPropertyDescriptorQuery() {
-        String template = dbUtil.isOracle() ? loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE_OPTIMIZED) : loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE);
+        String template = getPropertyDescriptorsForResourceQuery();
         //We use consumed rel table as a default (for this case, no relation ids will be provided, therefore property descriptors on relations are not considered)
         template = String.format(template, CONSUMEDRESRELTABLE, CONSUMEDRESRELFK, loadPropertyValueQuery());
         return template;
     }
 
     private String loadRelationPropertyDescriptorQuery(String resourceRelationTableName, String resourceRelationFKName) {
-        String template = dbUtil.isOracle() ? loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE_OPTIMIZED) : loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE);
+        String template = getPropertyDescriptorsForResourceQuery();
         template = String.format(template, resourceRelationTableName, resourceRelationFKName, loadPropertyValuesForRelation(resourceRelationTableName, resourceRelationFKName));
         return template;
+    }
+
+    private String getPropertyDescriptorsForResourceQuery() {
+        if (ConfigurationService.getPropertyAsBoolean(ConfigKey.DISABLE_OPTIMIZED_PROPERTY_DESCRIPTORS_FOR_RESOURCE_QUERY) || !dbUtil.isOracle()) {
+            return loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE);
+        }
+        return loadSQLFile(LOAD_PROPERTY_DESCRIPTORS_FOR_RESOURCE_OPTIMIZED);
     }
 
     private String loadRelationPropertyValueQuery(String resourceRelationTableName, String resourceRelationFKName) {
