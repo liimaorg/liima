@@ -43,3 +43,19 @@ Connected to the target VM, address: 'localhost:8787', transport: 'socket'
 ```
 
 
+## Connect to the h2 database
+
+Download the h2.jar (https://mvnrepository.com/artifact/com.h2database/h2) and start it:
+```
+java -jar h2-1.4.197.jar
+```
+
+Start the Docker container and mount the folder with the h2 database:
+```
+docker run -it -p 8080:8080 -v $PWD/AMW_business/src/test/resources/integration-test/testdb/:/opt/jboss/wildfly/standalone/data/amw/ -v $PWD/AMW_ear/target/AMW.ear:/opt/jboss/wildfly/standalone/deployments/AMW.ear liimaorg/liima:snapshot
+```
+
+Connect to the h2 database:
+* H2 console: http://localhost:8082/login.jsp
+* H2 JDBC url: jdbc:h2:<path to liima folder>/AMW_business/src/test/resources/integration-test/testdb/amwFileDbIntegrationEmpty;AUTO_SERVER=TRUE;
+

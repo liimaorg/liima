@@ -96,9 +96,6 @@ public class JpaSqlResultMapper {
 			result.add(obj);
 		}
 		catch (Exception e) {
-			System.out.println("Constructor: " + ctor);
-			System.out.println("args: " + Arrays.toString(normalizeArgs(args, ctor.getParameterTypes())));
-			System.out.println("result: " + Arrays.toString(result.toArray()));
 			throw new RuntimeException(e);
 		}
 	}

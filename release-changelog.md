@@ -1,3 +1,18 @@
+# v1.17.27
+* **BREAKING CHANGE** New release of relation uses old prop descriptor for copied instance property [#487](https://github.com/liimaorg/liima/issues/487)
+  * This fixes a long-standing bug in Liima and requires manual database cleanup before the updated can be deployed. Instructions can be found [here](./AMW_db_scripts/v1.17.27_property_cleanup.md)
+* REST DELETE: /resources/resourceGroups/{resourceGroupId}/releases/{releaseId} deletes non matching releases [#623](https://github.com/liimaorg/liima/issues/623)
+* Update Angular and other JavaScript dependencies:
+  * update angular [#656](https://github.com/liimaorg/liima/pull/656)
+  * Bump async from 2.6.3 to 2.6.4 in /AMW_angular/io [#654](https://github.com/liimaorg/liima/pull/654)
+  * Bump minimist from 1.2.5 to 1.2.6 in /AMW_angular/io [#649](https://github.com/liimaorg/liima/pull/649)
+  * Bump karma from 6.3.14 to 6.3.16 in /AMW_angular/io [#648](https://github.com/liimaorg/liima/pull/648)
+* Update java dependencies:
+  * Bump jackson-databind from 2.11.2 to 2.12.6.1 [#655](https://github.com/liimaorg/liima/pull/655)
+  * Bump junit from 4.11 to 4.13.1 in /AMW_shakedown/AMW_stp_archetype/src/main/resources/archetype-resources [#645](https://github.com/liimaorg/liima/pull/645)
+  * Bump postgresql from 9.4-1200-jdbc41 to 42.2.25 in /AMW_db_scripts [643](https://github.com/liimaorg/liima/pull/643)
+  * Update liquibase [658](https://github.com/liimaorg/liima/issues/658)
+
 # v1.17.26
 * Update to angular 13 and wildfly 26 [#634](https://github.com/liimaorg/liima/pull/634)
 * Properties sometimes missing in test generation/deployment [#550](https://github.com/liimaorg/liima/issues/550)
