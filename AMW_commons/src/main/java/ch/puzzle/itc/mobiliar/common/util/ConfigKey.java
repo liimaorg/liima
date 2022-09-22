@@ -47,6 +47,7 @@ public enum ConfigKey {
     EXTERNAL_RESOURCE_BACKLINK_HOST("amw.externalResourceBacklinkHost", "AMW_EXTERNALRESOURCEBACKLINKHOST", false),
     /** Create not Existent Directory Structure */
     CREATE_NOT_EXISTING_DIRECTORIES_ON_STARTUP("amw.createNotExistingDirectoriesOnStartUp", "AMW_CREATENOTEXISTINGDIRECTORIESONSTARTUP", "false", false),
+    DISABLE_OPTIMIZED_PROPERTY_DESCRIPTORS_FOR_RESOURCE_QUERY("amw.disableOptimizedPropertyDescriptorsForResourceQuery", "AMW_DISABLE_OPTIMIZED_PROPERTY_DESCRIPTORS_FOR_RESOURCE_QUERY", "false", false),
     /** Feature toggles */
     FEATURE_DISABLE_ANGULAR_GUI("amw.feature.disableAngularGui","AMW_FEATURE_DISABLEANGULARGUI","false", false),
     FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI("amw.feature.disableAngularDeploymentGui", "AMW_FEATURE_DISABLEANGULARDEPLOYMENTGUI", "false", false),
