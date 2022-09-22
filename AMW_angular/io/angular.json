@@ -32,12 +32,9 @@
               }
             ],
             "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/bootstrap/dist/js/bootstrap.js",
               "node_modules/codemirror/lib/codemirror.js",
               "node_modules/codemirror/addon/mode/simple.js",
               "node_modules/codemirror/addon/dialog/dialog.js",
@@ -110,10 +107,6 @@
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.scss"
-            ],
-            "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/bootstrap/dist/js/bootstrap.js"
             ]
           }
         },
@@ -131,6 +124,5 @@
         }
       }
     }
-  },
-  "defaultProject": "liima"
+  }
 }
