@@ -5,7 +5,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="rgalante" id="permissionMerge_decrypt_properties" >
-
+        <validCheckSum>8:aef2fd17bfdee3b06fbd6934fcb45b9e</validCheckSum>
         <!-- DECRYPT_PROPERTIES("When the properties is encrypt without this permission you can not see the not encrypt value", true) > RESOURCE_PROPERTY_DECRYPT / RESOURCETYPE_PROPERTY_DECRYPT -->
 
         <sql>INSERT INTO TAMW_restriction (id, role_id, permission_id, action, v) SELECT CONCAT(ABS(TAMW_permission.id-1000), ABS(TAMW_role.id-1000)) AS id, TAMW_role.id AS role_id, TAMW_permission.id AS permission_id, 'ALL', 0 FROM TAMW_role JOIN TAMW_role_permission ON TAMW_role.id = TAMW_role_permission.roles_id JOIN TAMW_permission ON TAMW_role_permission.permissions_id = TAMW_permission.id WHERE TAMW_permission.value = 'DECRYPT_PROPERTIES' AND TAMW_role_permission.roles_id = TAMW_role.id;</sql>
@@ -18,7 +18,7 @@
 
         <insert tableName="TAMW_permission">
             <column name="id" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
-            <column name="value" value="RESOURCETYPE_PROPERTY_DECRYPT"></column>
+            <column name="VALUE" value="RESOURCETYPE_PROPERTY_DECRYPT"></column>
             <column name="v" valueNumeric="0" />
         </insert>
 
@@ -34,7 +34,7 @@
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="RESOURCE_PROPERTY_DECRYPT" />
+            <column name="VALUE" value="RESOURCE_PROPERTY_DECRYPT" />
             <where>value = 'DECRYPT_PROPERTIES'</where>
         </update>
 

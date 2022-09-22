@@ -5,6 +5,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="rgalante" id="newPermissions_migrationCopyFromResource" >
+        <validCheckSum>8:eee0ed807dbd1af55586ea1f48728465</validCheckSum>
         <comment>
             migrating existing COPY_FROM_RESOURCE permissions to restrictions
         </comment>
@@ -46,7 +47,7 @@
         </delete>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="RESOURCE_RELEASE_COPY_FROM_RESOURCE" />
+            <column name="VALUE" value="RESOURCE_RELEASE_COPY_FROM_RESOURCE" />
             <where>value = 'COPY_FROM_RESOURCE'</where>
         </update>
 

@@ -37,6 +37,7 @@
     </changeSet>
 
     <changeSet author="rgalante" id="newPermissions_migrationManageRelease" >
+        <validCheckSum>8:f2bb1f6aaf1a411e5cbdd21f6e64141f</validCheckSum>
         <comment>
             migrating existing CRUD_RELEASE permissions to restrictions
         </comment>
@@ -67,7 +68,7 @@
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="RELEASE" />
+            <column name="VALUE" value="RELEASE" />
             <where>value = 'CREATE_RELEASE'</where>
         </update>
 
@@ -84,6 +85,7 @@
 
 
     <changeSet author="rgalante" id="newPermissions_migrationManageShakedownTest" >
+        <validCheckSum>8:28cbfbf0b7ff4f8d72f6789e327940d7</validCheckSum>
         <comment>
             migrating existing CRUD_STP permissions to restrictions
         </comment>
@@ -114,7 +116,7 @@
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="SHAKEDOWNTEST" />
+            <column name="VALUE" value="SHAKEDOWNTEST" />
             <where>value = 'ADD_STP'</where>
         </update>
 

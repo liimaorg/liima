@@ -5,10 +5,11 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="rgalante" id="addPermission_addAdminPermissionsOnCreatedResource.xml">
+        <validCheckSum>8:4e88fb049a752ed21645c2680236894e</validCheckSum>
 
         <insert tableName="TAMW_permission">
             <column name="id" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
-            <column name="value" value="ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE"></column>
+            <column name="VALUE" value="ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE"></column>
             <column name="v" valueNumeric="0" />
         </insert>
 

@@ -5,6 +5,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="rgalante" id="newPermissions_migrationResourcePermissions" >
+        <validCheckSum>8:5437df783757c0f4cbc7cef716f6471d</validCheckSum>
         <comment>
             migrating existing CRUD_RESOURCE permissions to restrictions (ADD_APP => RESOURCE)
         </comment>
@@ -65,7 +66,7 @@
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="RESOURCE" />
+            <column name="VALUE" value="RESOURCE" />
             <where>value = 'ADD_APP'</where>
         </update>
 

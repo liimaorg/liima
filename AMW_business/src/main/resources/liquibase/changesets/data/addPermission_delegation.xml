@@ -5,10 +5,11 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="rgalante" id="addPermission_delegation.xml">
+        <validCheckSum>8:f96d4f5e5315d2f05314e6a277639bf3</validCheckSum>
 
         <insert tableName="TAMW_permission">
             <column name="id" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
-            <column name="value" value="PERMISSION_DELEGATION"></column>
+            <column name="VALUE" value="PERMISSION_DELEGATION"></column>
             <column name="v" valueNumeric="0" />
         </insert>
 

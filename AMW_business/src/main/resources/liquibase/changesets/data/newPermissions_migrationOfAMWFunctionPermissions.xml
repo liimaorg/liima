@@ -5,6 +5,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="rgalante" id="newPermissions_migrationAMWFunctionPermissions" >
+        <validCheckSum>8:7bdf55f391b351e3f88152671b8b09de</validCheckSum>
         <comment>
             migrating existing AMW_FUNCTIONS permissions to restrictions
         </comment>
@@ -37,7 +38,7 @@
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="RESOURCE_AMWFUNCTION" />
+            <column name="VALUE" value="RESOURCE_AMWFUNCTION" />
             <where>value = 'MANAGE_AMW_FUNCTIONS'</where>
         </update>
 
@@ -47,7 +48,7 @@
         </update>
 
         <update tableName="TAMW_permission">
-            <column name="value" value="RESOURCETYPE_AMWFUNCTION" />
+            <column name="VALUE" value="RESOURCETYPE_AMWFUNCTION" />
             <where>value = 'VIEW_AMW_FUNCTIONS'</where>
         </update>
 
