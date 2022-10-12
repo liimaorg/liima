@@ -1,8 +1,11 @@
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
 import com.google.common.collect.ImmutableList;
+import lombok.Builder;
+import lombok.Singular;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -12,25 +15,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 
+@Builder
 public final class Sort implements Iterable<Sort.Order>, Serializable {
     public static final SortingDirectionType DEFAULT_DIRECTION = SortingDirectionType.ASC;
 
+    @Singular
     private final List<Order> orders;
 
-
-    public static Sort of(Order... orders) {
-        return of(ImmutableList.copyOf(orders));
-    }
-
-
-    public static Sort of(List<Order> orders) {
-        return new Sort(orders);
-    }
-
-
-    public static Sort of(SortingDirectionType direction, String... properties) {
-        return new Sort(ImmutableList.copyOf(properties), direction);
-    }
 
     public static Sort asc(String... properties) {
         return new Sort(ImmutableList.copyOf(properties), SortingDirectionType.ASC);
@@ -58,10 +49,8 @@ public final class Sort implements Iterable<Sort.Order>, Serializable {
         this.orders = ImmutableList.copyOf(orders);
     }
 
-    public Sort copyOfWithAdditional(Order order) {
-        ImmutableList.Builder<Order> listBuilder = ImmutableList.builder();
-        listBuilder.addAll(orders).add(order);
-        return new Sort(listBuilder.build());
+    public static Sort nothing() {
+        return new Sort(Collections.emptyList());
     }
 
     @Override

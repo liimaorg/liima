@@ -236,13 +236,15 @@ public class DeploymentBoundary {
         if (setOptimizer) {
             em.createNativeQuery("ALTER SESSION SET optimizer_mode = FIRST_ROWS").executeUpdate();
         }
-        Sort sort = Sort.of();
-        if (colToSort != null) {
-            sort = sort.copyOfWithAdditional(Sort.Order.of(sortingDirection, colToSort, lowerSortCol));
-        }
-        sort = sort.copyOfWithAdditional(Sort.Order.of(Sort.SortingDirectionType.DESC, DEPLOYMENT_QL_ALIAS + ".id"));
 
-        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, sort, hasLastDeploymentForAsEnvFilterSet, false);
+        Sort.SortBuilder builder = Sort.builder();
+
+        if (colToSort != null) {
+            builder.order(Sort.Order.of(sortingDirection, colToSort, lowerSortCol));
+        }
+        builder.order(Sort.Order.of(Sort.SortingDirectionType.DESC, DEPLOYMENT_QL_ALIAS + ".id"));
+
+        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, builder.build(), hasLastDeploymentForAsEnvFilterSet, false);
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
 
         Set<DeploymentEntity> deployments = new LinkedHashSet<>();
@@ -267,7 +269,7 @@ public class DeploymentBoundary {
         if (doPaging) {
             String countQueryString = baseQuery.replace("select " + DEPLOYMENT_QL_ALIAS, "select count(" + DEPLOYMENT_QL_ALIAS + ".id)");
             // last param needs to be true if we are dealing with a combination of "State" and "Latest deployment job for App Server and Env"
-            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filters, Sort.of(), hasLastDeploymentForAsEnvFilterSet, lastDeploymentState != null);
+            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filters, Sort.nothing(), hasLastDeploymentForAsEnvFilterSet, lastDeploymentState != null);
 
             commonFilterService.setParameterToQuery(null, null, myAmw, countQuery);
             totalItemsForCurrentFilter = (lastDeploymentState == null) ? ((Long) countQuery.getSingleResult()).intValue() : countQuery.getResultList().size();

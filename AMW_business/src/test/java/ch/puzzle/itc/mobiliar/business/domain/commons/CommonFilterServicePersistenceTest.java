@@ -82,7 +82,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         // when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), false, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.builder().order(Sort.Order.asc(colToSort)).order(Sort.Order.desc(uniqueCol)).build(), false, false);
 
         // then
         assertThat(query.getParameters().size(), is(1));
@@ -112,7 +112,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         // when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), false, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.builder().order(Sort.Order.asc(colToSort)).order(Sort.Order.desc(uniqueCol)).build(), false, false);
 
         // then
         assertThat(query.getParameters().size(), is(2));
@@ -140,7 +140,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         // when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), true, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters,Sort.builder().order(Sort.Order.asc(colToSort)).order(Sort.Order.desc(uniqueCol)).build(), true, false);
 
         // then
         assertThat(query.getParameters().iterator().next().getName(), is("Deploymentparameter0"));
@@ -157,7 +157,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         //when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), true, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.builder().order(Sort.Order.asc(colToSort)).order(Sort.Order.desc(uniqueCol)).build(), true, false);
 
         //then
         assertThat(query.getResultList().size(), is(1));
@@ -173,7 +173,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         //when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), true, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.builder().order(Sort.Order.asc(colToSort)).order(Sort.Order.desc(uniqueCol)).build(), true, false);
 
         //then
         assertThat(query.getResultList().size(), is(1));
@@ -187,7 +187,9 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         //when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.of(SortingDirectionType.ASC, colToSort, true), Sort.Order.desc(uniqueCol)), true, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters,
+                Sort.builder().order(Sort.Order.of(SortingDirectionType.ASC, colToSort, true)).order(Sort.Order.desc(uniqueCol)).build(),
+                true, false);
 
         //then
         assertThat(query.unwrap(QueryImpl.class), is(not(nullValue())));
@@ -203,7 +205,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         //when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), true, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.builder().order(Sort.Order.asc(colToSort)).order(Sort.Order.desc(uniqueCol)).build(), true, false);
 
         //then
         assertThat(query.unwrap(QueryImpl.class), is(not(nullValue())));
