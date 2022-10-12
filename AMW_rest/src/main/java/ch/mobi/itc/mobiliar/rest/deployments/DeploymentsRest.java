@@ -29,7 +29,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
-import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
+import ch.puzzle.itc.mobiliar.business.domain.commons.Sort;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.EnvironmentsScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -122,17 +122,17 @@ public class DeploymentsRest {
         if (filterDTOs == null) {
             return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto("at least one filter must be set")).build();
         }
-        CommonFilterService.SortingDirectionType sortingDirectionType = getSortingDirectionType(sortDirection);
+        Sort.SortingDirectionType sortingDirectionType = getSortingDirectionType(sortDirection);
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
         Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, colToSort, sortingDirectionType, null);
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
         return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(new GenericEntity<List<DeploymentDTO>>(deploymentDTOs) {}).build();
     }
 
-    private CommonFilterService.SortingDirectionType getSortingDirectionType(String sortDirection) {
-        CommonFilterService.SortingDirectionType sortingDirectionType = null;
+    private Sort.SortingDirectionType getSortingDirectionType(String sortDirection) {
+        Sort.SortingDirectionType sortingDirectionType = null;
         if (sortDirection != null) {
-            sortingDirectionType = CommonFilterService.SortingDirectionType.valueOf(sortDirection);
+            sortingDirectionType = Sort.SortingDirectionType.valueOf(sortDirection);
         }
         return sortingDirectionType;
     }

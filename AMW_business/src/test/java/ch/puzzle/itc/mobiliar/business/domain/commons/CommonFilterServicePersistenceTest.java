@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.domain.commons;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.domain.commons.Sort.SortingDirectionType;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
@@ -40,12 +41,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
-import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.QLConstants.DEPLOYMENT_QL_ALIAS;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -188,7 +187,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         //when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.of(CommonFilterService.SortingDirectionType.ASC, colToSort, true), Sort.Order.desc(uniqueCol)), true, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.of(SortingDirectionType.ASC, colToSort, true), Sort.Order.desc(uniqueCol)), true, false);
 
         //then
         assertThat(query.unwrap(QueryImpl.class), is(not(nullValue())));

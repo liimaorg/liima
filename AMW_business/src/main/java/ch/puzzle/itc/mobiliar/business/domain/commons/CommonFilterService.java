@@ -35,10 +35,6 @@ import java.util.logging.Logger;
 @Stateless
 public class CommonFilterService {
 
-	public enum SortingDirectionType {
-		ASC, DESC
-	}
-
 	@Inject
 	private EntityManager em;
 

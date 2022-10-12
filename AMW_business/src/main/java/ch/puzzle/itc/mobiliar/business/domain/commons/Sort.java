@@ -13,7 +13,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 
 
 public final class Sort implements Iterable<Sort.Order>, Serializable {
-    public static final CommonFilterService.SortingDirectionType DEFAULT_DIRECTION = CommonFilterService.SortingDirectionType.ASC;
+    public static final SortingDirectionType DEFAULT_DIRECTION = SortingDirectionType.ASC;
 
     private final List<Order> orders;
 
@@ -28,20 +28,20 @@ public final class Sort implements Iterable<Sort.Order>, Serializable {
     }
 
 
-    public static Sort of(CommonFilterService.SortingDirectionType direction, String... properties) {
+    public static Sort of(SortingDirectionType direction, String... properties) {
         return new Sort(ImmutableList.copyOf(properties), direction);
     }
 
     public static Sort asc(String... properties) {
-        return new Sort(ImmutableList.copyOf(properties), CommonFilterService.SortingDirectionType.ASC);
+        return new Sort(ImmutableList.copyOf(properties), SortingDirectionType.ASC);
     }
 
 
     public static Sort desc(String... properties) {
-        return new Sort(ImmutableList.copyOf(properties), CommonFilterService.SortingDirectionType.DESC);
+        return new Sort(ImmutableList.copyOf(properties), SortingDirectionType.DESC);
     }
 
-    private Sort(List<String> properties, CommonFilterService.SortingDirectionType direction) {
+    private Sort(List<String> properties, SortingDirectionType direction) {
         checkArgument(properties != null && !properties.isEmpty(), "You must provide at least one sort property to sort by");
 
         ImmutableList.Builder<Order> listBuilder = ImmutableList.builder();
@@ -91,36 +91,39 @@ public final class Sort implements Iterable<Sort.Order>, Serializable {
         return orders.toString();
     }
 
+    public enum SortingDirectionType {
+        ASC, DESC
+    }
 
     public static final class Order implements Serializable {
-        private final CommonFilterService.SortingDirectionType direction;
+        private final SortingDirectionType direction;
         private final String property;
         private final boolean ignoreCase;
 
 
         public static Order asc(String property) {
-            return new Order(CommonFilterService.SortingDirectionType.ASC, property);
+            return new Order(SortingDirectionType.ASC, property);
         }
 
 
         public static Order desc(String property) {
-            return new Order(CommonFilterService.SortingDirectionType.DESC, property);
+            return new Order(SortingDirectionType.DESC, property);
         }
 
 
-        public static Order of(CommonFilterService.SortingDirectionType direction, String property) {
+        public static Order of(SortingDirectionType direction, String property) {
             return new Order(direction, property);
         }
 
-        public static Order of(CommonFilterService.SortingDirectionType direction, String property, boolean ignoreCase) {
+        public static Order of(SortingDirectionType direction, String property, boolean ignoreCase) {
             return new Order(direction, property, ignoreCase);
         }
 
-        private Order(CommonFilterService.SortingDirectionType direction, String property) {
+        private Order(SortingDirectionType direction, String property) {
             this(direction, property, false);
         }
 
-        private Order(CommonFilterService.SortingDirectionType direction, String property, boolean ignoreCase) {
+        private Order(SortingDirectionType direction, String property, boolean ignoreCase) {
             checkArgument(!isNullOrEmpty(property), "Property must not be null or empty!");
 
             this.direction = direction == null ? DEFAULT_DIRECTION : direction;
@@ -129,7 +132,7 @@ public final class Sort implements Iterable<Sort.Order>, Serializable {
         }
 
 
-        public CommonFilterService.SortingDirectionType getDirection() {
+        public SortingDirectionType getDirection() {
             return direction;
         }
 

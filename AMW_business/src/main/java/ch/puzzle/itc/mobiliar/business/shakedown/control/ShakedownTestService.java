@@ -103,7 +103,7 @@ public class ShakedownTestService{
 
 
 	public Tuple<Set<ShakedownTestEntity>, Integer> getFilteredShakedownTests(boolean doPageingCalculation, Integer startIndex, Integer maxResults,
-			List<CustomFilter> filter, String colToSort, CommonFilterService.SortingDirectionType sortingDirection, List<Integer> myAMWFilter) {
+																			  List<CustomFilter> filter, String colToSort, Sort.SortingDirectionType sortingDirection, List<Integer> myAMWFilter) {
 
 		Integer totalItemsForCurrentFilter = null;
 		StringBuilder stringQuery = new StringBuilder();
@@ -120,7 +120,7 @@ public class ShakedownTestService{
 		if (colToSort != null) {
 			sort = sort.copyOfWithAdditional(Sort.Order.of(sortingDirection, colToSort, lowerSortCol));
 		}
-		sort = sort.copyOfWithAdditional(Sort.Order.of(CommonFilterService.SortingDirectionType.DESC, SHAKEDOWN_TEST_QL_ALIAS + ".id"));
+		sort = sort.copyOfWithAdditional(Sort.Order.of(Sort.SortingDirectionType.DESC, SHAKEDOWN_TEST_QL_ALIAS + ".id"));
 
 		Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, sort, false, false);
 

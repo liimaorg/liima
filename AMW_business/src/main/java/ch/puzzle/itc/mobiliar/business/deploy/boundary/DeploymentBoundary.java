@@ -188,7 +188,7 @@ public class DeploymentBoundary {
      */
     public Tuple<Set<DeploymentEntity>, Integer> getFilteredDeployments(Integer startIndex,
                                                                         Integer maxResults, List<CustomFilter> filters, String colToSort,
-                                                                        CommonFilterService.SortingDirectionType sortingDirection, List<Integer> myAmw) {
+                                                                        Sort.SortingDirectionType sortingDirection, List<Integer> myAmw) {
         Integer totalItemsForCurrentFilter;
         boolean doPaging = maxResults != null && (maxResults > 0);
 
@@ -240,7 +240,7 @@ public class DeploymentBoundary {
         if (colToSort != null) {
             sort = sort.copyOfWithAdditional(Sort.Order.of(sortingDirection, colToSort, lowerSortCol));
         }
-        sort = sort.copyOfWithAdditional(Sort.Order.of(CommonFilterService.SortingDirectionType.DESC, DEPLOYMENT_QL_ALIAS + ".id"));
+        sort = sort.copyOfWithAdditional(Sort.Order.of(Sort.SortingDirectionType.DESC, DEPLOYMENT_QL_ALIAS + ".id"));
 
         Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, sort, hasLastDeploymentForAsEnvFilterSet, false);
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
@@ -388,7 +388,7 @@ public class DeploymentBoundary {
         return latestList;
     }
 
-    private List<DeploymentEntity> specialSort(List<DeploymentEntity> deploymentsList, String colToSort, CommonFilterService.SortingDirectionType sortingDirection) {
+    private List<DeploymentEntity> specialSort(List<DeploymentEntity> deploymentsList, String colToSort, Sort.SortingDirectionType sortingDirection) {
         if (colToSort != null) {
             switch (colToSort) {
                 case "d.trackingId":
@@ -442,7 +442,7 @@ public class DeploymentBoundary {
                 default:
             }
 
-            if (sortingDirection.equals(CommonFilterService.SortingDirectionType.DESC)) {
+            if (sortingDirection.equals(Sort.SortingDirectionType.DESC)) {
                 Collections.reverse(deploymentsList);
             }
         }

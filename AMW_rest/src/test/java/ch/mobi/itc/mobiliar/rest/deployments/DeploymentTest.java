@@ -31,7 +31,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.Applicatio
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
-import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
+import ch.puzzle.itc.mobiliar.business.domain.commons.Sort;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.control.EnvironmentsScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -411,7 +411,7 @@ public class DeploymentTest {
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
         when(
                 deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), any(LinkedList.class), anyString(),
-                        any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
+                        any(Sort.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
                 new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
         when(releaseService.findByName(anyString())).thenReturn(release);
 
@@ -463,7 +463,7 @@ public class DeploymentTest {
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
         when(
                 deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), any(LinkedList.class), anyString(),
-                        any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
+                        any(Sort.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
                 new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
         when(releaseService.findByName(anyString())).thenReturn(release);
 
@@ -485,7 +485,7 @@ public class DeploymentTest {
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
         when(
                 deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), any(LinkedList.class), anyString(),
-                        any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
+                        any(Sort.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
                 new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
         //the as has no apps
         when(applicationServer.getAMWApplications()).thenReturn(new LinkedList<Application>());
@@ -515,7 +515,7 @@ public class DeploymentTest {
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
         when(
                 deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), any(LinkedList.class), anyString(),
-                        any(CommonFilterService.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
+                        any(Sort.SortingDirectionType.class), any(LinkedList.class))).thenReturn(
                 new Tuple<Set<DeploymentEntity>, Integer>(entities, entities.size()));
         when(releaseService.findByName(anyString())).thenReturn(release);
 
