@@ -26,6 +26,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
+import ch.puzzle.itc.mobiliar.business.domain.commons.Sort;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
@@ -115,7 +116,13 @@ public class ShakedownTestService{
 		
 		boolean lowerSortCol = ShakedownTestFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-		Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, colToSort, sortingDirection, SHAKEDOWN_TEST_QL_ALIAS + ".id", lowerSortCol, false, false);
+		Sort sort = Sort.of();
+		if (colToSort != null) {
+			sort = sort.copyOfWithAdditional(Sort.Order.of(sortingDirection, colToSort, lowerSortCol));
+		}
+		sort = sort.copyOfWithAdditional(Sort.Order.of(CommonFilterService.SortingDirectionType.DESC, SHAKEDOWN_TEST_QL_ALIAS + ".id"));
+
+		Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, sort, false, false);
 
 		query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAMWFilter, query);
 
@@ -127,7 +134,7 @@ public class ShakedownTestService{
 
 		if (doPageingCalculation) {
 			String countQueryString = "select count(" + SHAKEDOWN_TEST_QL_ALIAS + ".id) " + baseQuery;
-			Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, false, false);
+			Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, Sort.of(), false, false);
 
 			commonFilterService.setParameterToQuery(null, null, myAMWFilter, countQuery);
 			totalItemsForCurrentFilter = ((Long) countQuery.getSingleResult()).intValue();

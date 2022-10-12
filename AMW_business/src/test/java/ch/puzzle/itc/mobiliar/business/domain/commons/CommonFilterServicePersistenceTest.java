@@ -27,6 +27,7 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 
+import org.hibernate.internal.QueryImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,10 +40,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.QLConstants.DEPLOYMENT_QL_ALIAS;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -79,7 +83,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         // when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, false, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), false, false);
 
         // then
         assertThat(query.getParameters().size(), is(1));
@@ -109,7 +113,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         // when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, false, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), false, false);
 
         // then
         assertThat(query.getParameters().size(), is(2));
@@ -137,7 +141,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         // when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, true, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), true, false);
 
         // then
         assertThat(query.getParameters().iterator().next().getName(), is("Deploymentparameter0"));
@@ -154,7 +158,7 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         //when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, true, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), true, false);
 
         //then
         assertThat(query.getResultList().size(), is(1));
@@ -170,10 +174,42 @@ public class CommonFilterServicePersistenceTest {
         String uniqueCol ="d.id";
 
         //when
-        Query query = service.addFilterAndCreateQuery(stringQuery, filters, colToSort, CommonFilterService.SortingDirectionType.ASC,uniqueCol, false, true, false);
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), true, false);
 
         //then
         assertThat(query.getResultList().size(), is(1));
+    }
+    @Test
+    public void orderByClauseShouldContainLowerIfIgnoreCaseIsTrue(){
+        //Given
+        StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ");
+        List<CustomFilter> filters = createEnvFilters("x");
+        String colToSort = "d.deploymentDate";
+        String uniqueCol ="d.id";
+
+        //when
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.of(CommonFilterService.SortingDirectionType.ASC, colToSort, true), Sort.Order.desc(uniqueCol)), true, false);
+
+        //then
+        assertThat(query.unwrap(QueryImpl.class), is(not(nullValue())));
+        assertThat(query.unwrap(QueryImpl.class).getQueryString(), containsString("LOWER(d.deploymentDate)"));
+
+    }
+    @Test
+    public void orderByClauseShouldNotContainLower(){
+        //Given
+        StringBuilder stringQuery = new StringBuilder("select d from DeploymentEntity d ");
+        List<CustomFilter> filters = createEnvFilters("x");
+        String colToSort = "d.deploymentDate";
+        String uniqueCol ="d.id";
+
+        //when
+        Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.of(Sort.Order.asc(colToSort), Sort.Order.desc(uniqueCol)), true, false);
+
+        //then
+        assertThat(query.unwrap(QueryImpl.class), is(not(nullValue())));
+        assertThat(query.unwrap(QueryImpl.class).getQueryString(), not(containsString("LOWER(")));
+
     }
 
     private void persistTestEnvironment(String envName){
