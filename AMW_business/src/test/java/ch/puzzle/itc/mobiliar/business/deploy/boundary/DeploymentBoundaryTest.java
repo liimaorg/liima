@@ -24,6 +24,8 @@ import ch.puzzle.itc.mobiliar.builders.DeploymentEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
+import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
+import ch.puzzle.itc.mobiliar.business.domain.commons.Sort;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -32,19 +34,18 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
+import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
+import javax.persistence.Query;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributeView;
@@ -53,14 +54,17 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import static org.hamcrest.CoreMatchers.is;
+import static ch.puzzle.itc.mobiliar.business.domain.commons.Sort.SortingDirectionType.DESC;
+import static java.util.Collections.emptyList;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeploymentBoundaryTest
@@ -72,6 +76,12 @@ public class DeploymentBoundaryTest
 
 	@Mock
 	private PermissionService permissionService;
+
+	@Mock
+	private CommonFilterService commonFilterService;
+
+	@Mock
+	private DatabaseUtil databaseUtil;
 
 	@Mock
 	private Logger log;
@@ -249,6 +259,53 @@ public class DeploymentBoundaryTest
 		// then
 		assertThat(deploymentEntity.getReason(), is(DeploymentFailureReason.NODE_MISSING));
 
+	}
+
+	@Test
+	public void shouldSetSortColumnIfColumnKnown() {
+		// given
+		Query query = mock(Query.class);
+		when(commonFilterService.addFilterAndCreateQuery(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(query);
+		when(commonFilterService.setParameterToQuery(any(), any(), any(), any())).thenReturn(query);
+
+		// when
+		deploymentBoundary.getFilteredDeployments(0, null, emptyList(), "d.trackingId", DESC, emptyList() );
+
+		// then
+		ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
+		verify(commonFilterService).addFilterAndCreateQuery(any(), any(), sortCaptor.capture(), anyBoolean(), anyBoolean());
+		assertThat(sortCaptor.getValue().toString(), containsString("d.trackingId"));
+	}
+
+	@Test
+	public void shouldIgnoreSortColumnIfNull() {
+		// given
+		Query query = mock(Query.class);
+		when(commonFilterService.addFilterAndCreateQuery(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(query);
+		when(commonFilterService.setParameterToQuery(any(), any(), any(), any())).thenReturn(query);
+
+		// when
+		deploymentBoundary.getFilteredDeployments(0, null, emptyList(), null, DESC, emptyList() );
+
+		// then
+		ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
+		verify(commonFilterService).addFilterAndCreateQuery(any(), any(), sortCaptor.capture(), anyBoolean(), anyBoolean());
+		Iterator<Sort.Order> iterator = sortCaptor.getValue().iterator();
+		assertThat(iterator.hasNext(), is(true));
+		assertThat(iterator.next(), is(Sort.Order.desc("d.id")));
+		assertThat(iterator.hasNext(), is(false));
+	}
+
+	@Test
+	public void shouldThrowIfSortColumnUnknown() {
+		try {
+			// when
+			deploymentBoundary.getFilteredDeployments(0, null, emptyList(), "unknown.column", DESC, emptyList());
+			fail("IllegalArgumentException should have been thrown");
+		} catch (IllegalArgumentException ex) {
+			// then
+			assertThat(ex.getMessage(), containsString("colToSort not found"));
+		}
 	}
 
 }

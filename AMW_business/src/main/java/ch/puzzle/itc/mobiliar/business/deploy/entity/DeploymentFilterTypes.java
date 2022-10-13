@@ -20,6 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
+import java.util.Set;
+
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.QLConstants.*;
 
 public enum DeploymentFilterTypes {
@@ -46,6 +48,9 @@ public enum DeploymentFilterTypes {
     DEPLOYMENT_PARAMETER_VALUE("Deployment parameter value", "p.value", "join d.deploymentParameters p", FilterType.StringType, true),
     DEPLOYMENT_REASON("Reason", DEPLOYMENT_QL_ALIAS + ".reason", FilterType.ENUM_TYPE, true),
     ENVIRONMENT_EX("ExEnvironment", DEPLOYMENT_QL_ALIAS + ".exContextId", FilterType.IntegerType, false);
+
+
+    public final static Set<DeploymentFilterTypes> DEPLOYMENT_FILTER_TYPES_FOR_ORDER = Set.of(TRACKING_ID, DEPLOYMENT_STATE, APPSERVER_NAME, RELEASE, ENVIRONMENT_NAME, DEPLOYMENT_DATE);
 
     public static class QLConstants {
         public static final String DEPLOYMENT_QL_ALIAS = "d";
