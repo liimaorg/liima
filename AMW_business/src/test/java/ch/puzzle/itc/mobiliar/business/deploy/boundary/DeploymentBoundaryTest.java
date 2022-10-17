@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 import ch.puzzle.itc.mobiliar.builders.DeploymentEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentOrder;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.domain.commons.Sort;
@@ -292,7 +293,7 @@ public class DeploymentBoundaryTest
 		verify(commonFilterService).addFilterAndCreateQuery(any(), any(), sortCaptor.capture(), anyBoolean(), anyBoolean());
 		Iterator<Sort.Order> iterator = sortCaptor.getValue().iterator();
 		assertThat(iterator.hasNext(), is(true));
-		assertThat(iterator.next(), is(Sort.Order.desc("d.id")));
+		assertThat(iterator.next(), is(DeploymentOrder.of("d.id", DESC, false)));
 		assertThat(iterator.hasNext(), is(false));
 	}
 

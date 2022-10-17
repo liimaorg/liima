@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.Singular;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -16,33 +15,11 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 
 
 @Builder
-public final class Sort implements Iterable<Sort.Order>, Serializable {
+public final class Sort implements Iterable<Sort.Order> {
     public static final SortingDirectionType DEFAULT_DIRECTION = SortingDirectionType.ASC;
 
     @Singular
     private final List<Order> orders;
-
-
-    public static Sort asc(String... properties) {
-        return new Sort(ImmutableList.copyOf(properties), SortingDirectionType.ASC);
-    }
-
-
-    public static Sort desc(String... properties) {
-        return new Sort(ImmutableList.copyOf(properties), SortingDirectionType.DESC);
-    }
-
-    private Sort(List<String> properties, SortingDirectionType direction) {
-        checkArgument(properties != null && !properties.isEmpty(), "You must provide at least one sort property to sort by");
-
-        ImmutableList.Builder<Order> listBuilder = ImmutableList.builder();
-
-        for (String property : properties) {
-            listBuilder.add(new Order(direction, property));
-        }
-
-        this.orders = listBuilder.build();
-    }
 
     private Sort(List<Order> orders) {
         checkNotNull(orders, "orders may not be null");
@@ -84,39 +61,17 @@ public final class Sort implements Iterable<Sort.Order>, Serializable {
         ASC, DESC
     }
 
-    public static final class Order implements Serializable {
+    public static abstract class Order {
         private final SortingDirectionType direction;
         private final String property;
         private final boolean ignoreCase;
 
 
-        public static Order asc(String property) {
-            return new Order(SortingDirectionType.ASC, property);
-        }
-
-
-        public static Order desc(String property) {
-            return new Order(SortingDirectionType.DESC, property);
-        }
-
-
-        public static Order of(SortingDirectionType direction, String property) {
-            return new Order(direction, property);
-        }
-
-        public static Order of(SortingDirectionType direction, String property, boolean ignoreCase) {
-            return new Order(direction, property, ignoreCase);
-        }
-
-        private Order(SortingDirectionType direction, String property) {
-            this(direction, property, false);
-        }
-
-        private Order(SortingDirectionType direction, String property, boolean ignoreCase) {
+        protected Order(String property, SortingDirectionType direction, boolean ignoreCase) {
             checkArgument(!isNullOrEmpty(property), "Property must not be null or empty!");
 
-            this.direction = direction == null ? DEFAULT_DIRECTION : direction;
             this.property = property;
+            this.direction = direction == null ? DEFAULT_DIRECTION : direction;
             this.ignoreCase = ignoreCase;
         }
 

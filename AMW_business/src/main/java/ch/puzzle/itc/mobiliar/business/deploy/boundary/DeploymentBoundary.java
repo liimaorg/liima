@@ -236,10 +236,13 @@ public class DeploymentBoundary {
         if (setOptimizer) {
             em.createNativeQuery("ALTER SESSION SET optimizer_mode = FIRST_ROWS").executeUpdate();
         }
+        Sort.SortBuilder sortBuilder = Sort.builder();
+        if (colToSort != null) {
+            sortBuilder.order(DeploymentOrder.of(colToSort, sortingDirection, lowerSortCol));
+        }
+        sortBuilder.order(DeploymentOrder.of(DeploymentFilterTypes.ID.getFilterTabColumnName(), Sort.SortingDirectionType.DESC, false));
 
-        Sort sort = createSort(colToSort, sortingDirection, lowerSortCol);
-
-        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, sort, hasLastDeploymentForAsEnvFilterSet, false);
+        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, sortBuilder.build(), hasLastDeploymentForAsEnvFilterSet, false);
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
 
         Set<DeploymentEntity> deployments = new LinkedHashSet<>();
@@ -1553,18 +1556,5 @@ public class DeploymentBoundary {
                 throw e;
             }
         }
-    }
-    private Sort createSort(String colToSort, Sort.SortingDirectionType sortingDirection, boolean lowerSortCol) {
-        Sort.SortBuilder sortBuilder = Sort.builder();
-        if (colToSort != null) {
-            DeploymentFilterTypes.DEPLOYMENT_FILTER_TYPES_FOR_ORDER.stream()
-                    .map(DeploymentFilterTypes::getFilterTabColumnName)
-                    .filter(c -> Objects.equals(c, colToSort))
-                    .findFirst()
-                    .map(c -> sortBuilder.order(Sort.Order.of(sortingDirection, c, lowerSortCol)))
-                    .orElseThrow(() -> new IllegalArgumentException("colToSort not found"));
-        }
-        sortBuilder.order(Sort.Order.of(Sort.SortingDirectionType.DESC, DeploymentFilterTypes.ID.getFilterTabColumnName()));
-        return sortBuilder.build();
     }
 }

@@ -2,6 +2,8 @@ package ch.puzzle.itc.mobiliar.business.shakedown.entity;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.FilterType;
 
+import java.util.Set;
+
 public enum ShakedownTestFilterTypes {
     ID("Test Id", QLConstants.SHAKEDOWN_TEST_QL_ALIAS + ".id", FilterType.IntegerType),
     TRACKING_ID("Test tracking Id", QLConstants.SHAKEDOWN_TEST_QL_ALIAS + ".trackingId", FilterType.IntegerType),

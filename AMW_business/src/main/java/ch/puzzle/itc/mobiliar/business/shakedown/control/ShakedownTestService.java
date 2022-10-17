@@ -38,6 +38,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownOrder;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.ApplicationsFromApplicationServer;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
@@ -118,9 +119,9 @@ public class ShakedownTestService{
 
 		Sort.SortBuilder builder = Sort.builder();
 		if (colToSort != null) {
-			builder.order(Sort.Order.of(sortingDirection, colToSort, lowerSortCol));
+			builder.order(ShakedownOrder.of(colToSort, sortingDirection, lowerSortCol));
 		}
-		builder.order(Sort.Order.of(Sort.SortingDirectionType.DESC, SHAKEDOWN_TEST_QL_ALIAS + ".id"));
+		builder.order(ShakedownOrder.of(SHAKEDOWN_TEST_QL_ALIAS + ".id", Sort.SortingDirectionType.DESC, false));
 
 		Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, builder.build(), false, false);
 
