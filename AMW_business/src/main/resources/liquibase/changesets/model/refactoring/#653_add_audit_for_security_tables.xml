@@ -1,0 +1,110 @@
+<databaseChangeLog
+        logicalFilePath="liquibase/changesets/model/refactoring/#550_add_resourcecontext_unique_constraint.xml"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="mzaugg" id="#653_add_audit_for_security_tables.xml">
+
+
+        <!-- ############# TAMW_PERMISSION_AUD ############# -->
+
+        <createTable tableName="TAMW_PERMISSION_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="VALUE" type="varchar(255)"/>
+        </createTable>
+
+        <addPrimaryKey tableName="TAMW_PERMISSION_AUD" columnNames="id, rev" constraintName="TAMW_PERMISSION_AUD_PK"/>
+
+        <addForeignKeyConstraint baseColumnNames="rev"
+                                 baseTableName="TAMW_PERMISSION_aud" constraintName="TAMW_PERMISSION_REVINFO_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_REVINFO"/>
+
+
+        <!-- ############# TAMW_RESTRICTION_AUD ############# -->
+
+        <createTable tableName="TAMW_RESTRICTION_AUD">
+            <column name="id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="context_id" type="INTEGER"/>
+            <column name="permission_id" type="INTEGER"/>
+            <column name="role_id" type="INTEGER"/>
+            <column name="action" type="VARCHAR(255)"/>
+            <column name="resourceTypePermission" type="VARCHAR(255)" defaultValue="ANY">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resourcegroup_id" type="INTEGER">
+                <constraints nullable="true"/>
+            </column>
+            <column name="resourcetype_id" type="INTEGER">
+                <constraints nullable="true"/>
+            </column>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="TAMW_RESTRICTION_AUD" columnNames="id, rev" constraintName="TAMW_RESTRICTION_AUD_PK"/>
+
+        <addForeignKeyConstraint baseColumnNames="rev"
+                                 baseTableName="TAMW_RESTRICTION_AUD" constraintName="TAMW_RESTRICTION_REVINFO_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_REVINFO"/>
+
+        <!-- ############# TAMW_ROLE_AUD ############# -->
+
+
+        <createTable tableName="TAMW_ROLE_AUD">
+            <column name="ID" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="NAME" type="VARCHAR(255)"/>
+
+            <column name="DELETABLE" type="BOOLEAN"/>
+        </createTable>
+
+
+        <addPrimaryKey tableName="TAMW_ROLE_AUD" columnNames="id, rev" constraintName="TAMW_ROLE_AUD_PK"/>
+
+        <addForeignKeyConstraint baseColumnNames="rev"
+                                 baseTableName="TAMW_ROLE_AUD" constraintName="TAMW_ROLE_REVINFO_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_REVINFO"/>
+
+
+
+        <!-- ############# TAMW_USERRESTRICTION_AUD ############# -->
+
+        <createTable tableName="TAMW_USERRESTRICTION_AUD">
+            <column name="id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REV" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVTYPE" type="tinyint"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+
+        <addPrimaryKey tableName="TAMW_USERRESTRICTION_AUD" columnNames="id, rev"
+                       constraintName="TAMW_USERRESTRICTION_AUD_PK"/>
+
+        <addForeignKeyConstraint baseColumnNames="rev"
+                                 baseTableName="TAMW_USERRESTRICTION_AUD" constraintName="TAMW_USERRESTRICTION_REVINFO_FK"
+                                 referencedColumnNames="ID" referencedTableName="TAMW_REVINFO"/>
+
+    </changeSet>
+
+</databaseChangeLog>

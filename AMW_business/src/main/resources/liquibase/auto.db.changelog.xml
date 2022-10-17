@@ -103,4 +103,7 @@
     <!--1.17.26-->
     <include file="changesets/model/refactoring/#550_add_resourcecontext_unique_constraint.xml" relativeToChangelogFile="true"/>
 
+    <!--1.17.28-->
+    <include file="changesets/model/refactoring/#653_add_audit_for_security_tables.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

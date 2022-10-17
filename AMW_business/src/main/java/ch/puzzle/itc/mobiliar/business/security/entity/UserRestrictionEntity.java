@@ -23,11 +23,13 @@ package ch.puzzle.itc.mobiliar.business.security.entity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
+@Audited
 @Table(name = "TAMW_userRestriction")
 public class UserRestrictionEntity implements Serializable
 {
