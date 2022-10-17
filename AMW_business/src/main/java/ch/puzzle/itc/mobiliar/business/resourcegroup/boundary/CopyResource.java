@@ -189,11 +189,11 @@ public class CopyResource {
 			ForeignableOwnerViolationException {
 		targetResourceGroup = entityManager.find(ResourceGroupEntity.class, targetResourceGroup.getId());
 		// Do not overwrite existing release
-		if (targetResourceGroup.getReleases() != null && targetResourceGroup.getReleases().contains(targetRelease)) {
+		if (targetResourceGroup.getReleases().contains(targetRelease)) {
 			throw new AMWException("Release " + targetRelease.getName() + " already exists");
 		}
 		// Can not copy from inexisting release
-		if (targetResourceGroup.getReleases() != null && !targetResourceGroup.getReleases().contains(originRelease)) {
+		if (!targetResourceGroup.getReleases().contains(originRelease)) {
 			throw new AMWException("Release " + originRelease.getName() + " must exist");
 		}
 
