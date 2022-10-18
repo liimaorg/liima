@@ -20,9 +20,12 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcerelation.control;
 
+import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntityBuilder;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
@@ -43,6 +46,7 @@ import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -186,6 +190,97 @@ public class ResourceRelationServicePersistenceTest {
 		}
 		assertTrue(ids.contains(slave1.getId()));
 		assertTrue(ids.contains(slave2.getId()));
+	}
+
+	@Test
+	public void shouldSortConsumedSlaveRelationsByResourceTypeThenByNameAndFinallyByRelease() {
+		// given
+		ResourceEntity master0 = ResourceFactory.createNewResource("C");
+		master0.setResourceType(new ResourceTypeEntityBuilder().name("rt_c").build());
+		ReleaseEntity release0 = new ReleaseEntityBuilder().buildReleaseEntity("2", new Date(), false);
+		master0.setRelease(release0);
+
+		ResourceEntity master1 = ResourceFactory.createNewResource("D");
+		master1.setResourceType(new ResourceTypeEntityBuilder().name("rt_b").build());
+		ReleaseEntity release1 = new ReleaseEntityBuilder().buildReleaseEntity("2", new Date(), false);
+		master1.setRelease(release1);
+
+		ResourceEntity master2 = ResourceFactory.createNewResource("B");
+		master2.setResourceType(new ResourceTypeEntityBuilder().name("rt_a").build());
+		ReleaseEntity release2 = new ReleaseEntityBuilder().buildReleaseEntity("2", new Date(), false);
+		master2.setRelease(release2);
+
+		ResourceEntity master3 = ResourceFactory.createNewResource("A");
+		master3.setResourceType(new ResourceTypeEntityBuilder().name("rt_a").build());
+		ReleaseEntity release3 = new ReleaseEntityBuilder().buildReleaseEntity("2", new Date(), false);
+		master3.setRelease(release3);
+
+		ResourceEntity master4 = ResourceFactory.createNewResource("A");
+		master4.setResourceGroup(master3.getResourceGroup());
+		master4.setResourceType(new ResourceTypeEntityBuilder().name("rt_a").build());
+		ReleaseEntity release4 = new ReleaseEntityBuilder().buildReleaseEntity("1", new Date(), false);
+		master4.setRelease(release4);
+
+		ResourceEntity slave = ResourceFactory.createNewResource("slave");
+
+		ConsumedResourceRelationEntity relation0 = new ConsumedResourceRelationEntity();
+		relation0.setMasterResource(master0);
+		relation0.setSlaveResource(slave);
+		relation0.setIdentifier("1");
+		master0.addConsumedRelation(relation0);
+
+		ConsumedResourceRelationEntity relation1 = new ConsumedResourceRelationEntity();
+		relation1.setMasterResource(master1);
+		relation1.setSlaveResource(slave);
+		relation1.setIdentifier("1");
+		master1.addConsumedRelation(relation1);
+
+		ConsumedResourceRelationEntity relation2 = new ConsumedResourceRelationEntity();
+		relation2.setMasterResource(master2);
+		relation2.setSlaveResource(slave);
+		relation2.setIdentifier("2");
+		master2.addConsumedRelation(relation2);
+
+		ConsumedResourceRelationEntity relation3 = new ConsumedResourceRelationEntity();
+		relation3.setMasterResource(master3);
+		relation3.setSlaveResource(slave);
+		relation3.setIdentifier("3");
+		master3.addConsumedRelation(relation3);
+
+		ConsumedResourceRelationEntity relation4 = new ConsumedResourceRelationEntity();
+		relation4.setMasterResource(master4);
+		relation4.setSlaveResource(slave);
+		relation4.setIdentifier("4");
+		master4.addConsumedRelation(relation4);
+
+
+		entityManager.persist(release0);
+		entityManager.persist(release1);
+		entityManager.persist(release2);
+		entityManager.persist(release3);
+		entityManager.persist(release4);
+		entityManager.persist(master0);
+		entityManager.persist(master1);
+		entityManager.persist(master2);
+		entityManager.persist(master3);
+		entityManager.persist(master4);
+		entityManager.persist(slave);
+		entityManager.persist(relation0);
+		entityManager.persist(relation1);
+		entityManager.persist(relation2);
+		entityManager.persist(relation3);
+		entityManager.persist(relation4);
+
+		// when
+		List<ConsumedResourceRelationEntity> consumedSlaveRelations = service.getConsumedSlaveRelations(slave);
+
+		// then
+		assertEquals(5, consumedSlaveRelations.size());
+		assertEquals(master4, consumedSlaveRelations.get(0).getMasterResource());
+		assertEquals(master3, consumedSlaveRelations.get(1).getMasterResource());
+		assertEquals(master2, consumedSlaveRelations.get(2).getMasterResource());
+		assertEquals(master1, consumedSlaveRelations.get(3).getMasterResource());
+		assertEquals(master0, consumedSlaveRelations.get(4).getMasterResource());
 	}
 
 	@Test
