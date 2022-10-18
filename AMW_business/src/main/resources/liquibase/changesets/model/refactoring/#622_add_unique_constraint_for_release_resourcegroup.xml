@@ -1,0 +1,14 @@
+<databaseChangeLog
+        logicalFilePath="liquibase/changesets/model/refactoring/#550_add_resourcecontext_unique_constraint.xml"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="mzaugg" id="#622_add_unique_constraint_for_release_resourcegroup.xml">
+
+        <addUniqueConstraint tableName="TAMW_RESOURCE"
+                             columnNames="RELEASE_ID, RESOURCEGROUP_ID"
+                             constraintName="TAMW_RESOURCE_UNIQUE_RELEASE_RESOURCEGROUP" />
+
+    </changeSet>
+
+</databaseChangeLog>
