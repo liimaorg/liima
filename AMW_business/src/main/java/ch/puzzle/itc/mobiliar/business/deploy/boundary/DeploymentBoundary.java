@@ -31,6 +31,7 @@ import ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary.DeploymentPa
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
+import ch.puzzle.itc.mobiliar.business.domain.commons.Sort;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -187,7 +188,7 @@ public class DeploymentBoundary {
      */
     public Tuple<Set<DeploymentEntity>, Integer> getFilteredDeployments(Integer startIndex,
                                                                         Integer maxResults, List<CustomFilter> filters, String colToSort,
-                                                                        CommonFilterService.SortingDirectionType sortingDirection, List<Integer> myAmw) {
+                                                                        Sort.SortingDirectionType sortingDirection, List<Integer> myAmw) {
         Integer totalItemsForCurrentFilter;
         boolean doPaging = maxResults != null && (maxResults > 0);
 
@@ -235,8 +236,13 @@ public class DeploymentBoundary {
         if (setOptimizer) {
             em.createNativeQuery("ALTER SESSION SET optimizer_mode = FIRST_ROWS").executeUpdate();
         }
+        Sort.SortBuilder sortBuilder = Sort.builder();
+        if (colToSort != null) {
+            sortBuilder.order(DeploymentOrder.of(colToSort, sortingDirection, lowerSortCol));
+        }
+        sortBuilder.order(DeploymentOrder.of(DeploymentFilterTypes.ID.getFilterTabColumnName(), Sort.SortingDirectionType.DESC, false));
 
-        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, colToSort, sortingDirection, DEPLOYMENT_QL_ALIAS + ".id", lowerSortCol, hasLastDeploymentForAsEnvFilterSet, false);
+        Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, sortBuilder.build(), hasLastDeploymentForAsEnvFilterSet, false);
         query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
 
         Set<DeploymentEntity> deployments = new LinkedHashSet<>();
@@ -261,7 +267,7 @@ public class DeploymentBoundary {
         if (doPaging) {
             String countQueryString = baseQuery.replace("select " + DEPLOYMENT_QL_ALIAS, "select count(" + DEPLOYMENT_QL_ALIAS + ".id)");
             // last param needs to be true if we are dealing with a combination of "State" and "Latest deployment job for App Server and Env"
-            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filters, null, null, null, lowerSortCol, hasLastDeploymentForAsEnvFilterSet, lastDeploymentState != null);
+            Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filters, Sort.nothing(), hasLastDeploymentForAsEnvFilterSet, lastDeploymentState != null);
 
             commonFilterService.setParameterToQuery(null, null, myAmw, countQuery);
             totalItemsForCurrentFilter = (lastDeploymentState == null) ? ((Long) countQuery.getSingleResult()).intValue() : countQuery.getResultList().size();
@@ -382,7 +388,7 @@ public class DeploymentBoundary {
         return latestList;
     }
 
-    private List<DeploymentEntity> specialSort(List<DeploymentEntity> deploymentsList, String colToSort, CommonFilterService.SortingDirectionType sortingDirection) {
+    private List<DeploymentEntity> specialSort(List<DeploymentEntity> deploymentsList, String colToSort, Sort.SortingDirectionType sortingDirection) {
         if (colToSort != null) {
             switch (colToSort) {
                 case "d.trackingId":
@@ -436,7 +442,7 @@ public class DeploymentBoundary {
                 default:
             }
 
-            if (sortingDirection.equals(CommonFilterService.SortingDirectionType.DESC)) {
+            if (sortingDirection.equals(Sort.SortingDirectionType.DESC)) {
                 Collections.reverse(deploymentsList);
             }
         }

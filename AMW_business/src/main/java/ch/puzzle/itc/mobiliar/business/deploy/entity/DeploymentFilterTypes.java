@@ -20,9 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
+import java.util.Set;
+
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.QLConstants.*;
 
-public enum DeploymentFilterTypes {
+public enum DeploymentFilterTypes implements SortableColumn {
     ID("Id", DEPLOYMENT_QL_ALIAS + ".id", FilterType.IntegerType, true),
     BUILD_SUCCESS("Build success", DEPLOYMENT_QL_ALIAS + ".buildSuccess", FilterType.booleanType, true),
     CONFIRMATION_DATE("Confirmed on", DEPLOYMENT_QL_ALIAS + ".deploymentConfirmationDate", FilterType.DateType, true),

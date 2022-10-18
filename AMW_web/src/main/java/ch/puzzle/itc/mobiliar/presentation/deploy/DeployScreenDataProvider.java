@@ -23,7 +23,8 @@ package ch.puzzle.itc.mobiliar.presentation.deploy;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
-import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService.SortingDirectionType;
+import ch.puzzle.itc.mobiliar.business.domain.commons.Sort.SortingDirectionType;
+import ch.puzzle.itc.mobiliar.business.domain.commons.Sort;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -145,7 +146,7 @@ public class DeployScreenDataProvider implements Serializable {
 
     // defaultmässig soll nach deployment datum absteigend sortiert werden
     // solange nichts anderes gewählt wird vom user
-    private SortingDirectionType sortingDirection = SortingDirectionType.DESC;
+    private SortingDirectionType sortingDirection = Sort.SortingDirectionType.DESC;
     private deployscreenColDescriptor sortingColumn = deployscreenColDescriptor.DEPLOY_TIME;
 
     private static final boolean useAngular = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigKey.FEATURE_DISABLE_ANGULAR_GUI));
@@ -420,18 +421,18 @@ public class DeployScreenDataProvider implements Serializable {
                     switch (sortingDirection) {
                         case ASC:
                             // set to desc
-                            sortingDirection = SortingDirectionType.DESC;
+                            sortingDirection = Sort.SortingDirectionType.DESC;
                             break;
                         case DESC:
                             // set to asc
-                            sortingDirection = SortingDirectionType.ASC;
+                            sortingDirection = Sort.SortingDirectionType.ASC;
                             break;
                     }
                 }
             } else {
                 // auswahl einer neuen spalte beginnt immer mit asc sortierung
                 sortingColumn = col;
-                sortingDirection = SortingDirectionType.ASC;
+                sortingDirection = Sort.SortingDirectionType.ASC;
             }
         }
         // do sorting
@@ -696,7 +697,7 @@ public class DeployScreenDataProvider implements Serializable {
 
         if (col != null) {
             if (sortingDirection != null && sortingColumn != null && sortingColumn.equals(col)) {
-                if (sortingDirection.equals(SortingDirectionType.ASC)) {
+                if (sortingDirection.equals(Sort.SortingDirectionType.ASC)) {
                     result = "icon icon-sortasc";
                 } else {
                     result = "icon icon-sortdesc";

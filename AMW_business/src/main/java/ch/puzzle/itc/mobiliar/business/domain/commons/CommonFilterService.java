@@ -35,10 +35,6 @@ import java.util.logging.Logger;
 @Stateless
 public class CommonFilterService {
 
-	public enum SortingDirectionType {
-		ASC, DESC
-	}
-
 	@Inject
 	private EntityManager em;
 
@@ -70,17 +66,13 @@ public class CommonFilterService {
 	 *
 	 * @param stringQuery
 	 * @param filter
-	 * @param colToSort
-	 * @param sortingDirection
-	 * @param uniqueCol Oracle needs to sort by a unique column for pagination to work correctly
-	 * @param lowerSortColumn
 	 * @param hasSpecialFilter must be set to true if the filters list contains a FilterType.SpecialFilterType
 	 * @param groupByContext must be set to true when used for pagination count if filters list contains a FilterType.SpecialFilterType AND State filter
 	 * @return
 	 */
-	public Query addFilterAndCreateQuery(StringBuilder stringQuery, List<CustomFilter> filter, String colToSort, SortingDirectionType sortingDirection, String uniqueCol, boolean lowerSortColumn, boolean hasSpecialFilter, boolean groupByContext) {
+	public Query addFilterAndCreateQuery(StringBuilder stringQuery, List<CustomFilter> filter, Sort sort, boolean hasSpecialFilter, boolean groupByContext) {
+
 		Map<String, CustomFilter> parameterMap = new HashMap<>();
-		String uniqueColSortString = SPACE_STRING + uniqueCol + SPACE_STRING + "desc" + SPACE_STRING;
 		if (filter != null && !filter.isEmpty()) {
 			int[] mutableIndex = {0};
 
@@ -100,16 +92,15 @@ public class CommonFilterService {
 				stringQuery.append('(').append(filterQuery).append(')');
 			}
 		}
+		String orderBy = " order by ";
+		for (Sort.Order order : sort) {
+			stringQuery.append(orderBy)
+					.append(order.isIgnoreCase() ? "LOWER(" : "")
+					.append(order.getProperty())
+					.append(order.isIgnoreCase() ? ") " : " ")
+					.append(order.getDirection());
 
-		if (lowerSortColumn) {
-			colToSort = "LOWER("+colToSort+")";
-		}
-
-		if (colToSort != null && sortingDirection != null) {
-			stringQuery.append(" order by ").append(colToSort).append(" ").append(sortingDirection.name()).append(",").append(uniqueColSortString);
-		}
-		else if (uniqueCol != null){
-			stringQuery.append(" order by ").append(uniqueColSortString);
+			orderBy = ", ";
 		}
 
 		if (groupByContext) {

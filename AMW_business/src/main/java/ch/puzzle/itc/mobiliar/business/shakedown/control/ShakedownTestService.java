@@ -26,6 +26,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
+import ch.puzzle.itc.mobiliar.business.domain.commons.Sort;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
@@ -37,6 +38,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownOrder;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.ApplicationsFromApplicationServer;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
@@ -102,7 +104,7 @@ public class ShakedownTestService{
 
 
 	public Tuple<Set<ShakedownTestEntity>, Integer> getFilteredShakedownTests(boolean doPageingCalculation, Integer startIndex, Integer maxResults,
-			List<CustomFilter> filter, String colToSort, CommonFilterService.SortingDirectionType sortingDirection, List<Integer> myAMWFilter) {
+																			  List<CustomFilter> filter, String colToSort, Sort.SortingDirectionType sortingDirection, List<Integer> myAMWFilter) {
 
 		Integer totalItemsForCurrentFilter = null;
 		StringBuilder stringQuery = new StringBuilder();
@@ -115,7 +117,13 @@ public class ShakedownTestService{
 		
 		boolean lowerSortCol = ShakedownTestFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
-		Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, colToSort, sortingDirection, SHAKEDOWN_TEST_QL_ALIAS + ".id", lowerSortCol, false, false);
+		Sort.SortBuilder builder = Sort.builder();
+		if (colToSort != null) {
+			builder.order(ShakedownOrder.of(colToSort, sortingDirection, lowerSortCol));
+		}
+		builder.order(ShakedownOrder.of(SHAKEDOWN_TEST_QL_ALIAS + ".id", Sort.SortingDirectionType.DESC, false));
+
+		Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, builder.build(), false, false);
 
 		query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAMWFilter, query);
 
@@ -127,7 +135,7 @@ public class ShakedownTestService{
 
 		if (doPageingCalculation) {
 			String countQueryString = "select count(" + SHAKEDOWN_TEST_QL_ALIAS + ".id) " + baseQuery;
-			Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, null, null, null, lowerSortCol, false, false);
+			Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, Sort.nothing(), false, false);
 
 			commonFilterService.setParameterToQuery(null, null, myAMWFilter, countQuery);
 			totalItemsForCurrentFilter = ((Long) countQuery.getSingleResult()).intValue();

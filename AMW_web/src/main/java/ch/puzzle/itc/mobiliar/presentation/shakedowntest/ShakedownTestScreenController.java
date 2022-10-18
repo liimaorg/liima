@@ -23,7 +23,7 @@ package ch.puzzle.itc.mobiliar.presentation.shakedowntest;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService.SortingDirectionType;
+import ch.puzzle.itc.mobiliar.business.domain.commons.Sort.SortingDirectionType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
