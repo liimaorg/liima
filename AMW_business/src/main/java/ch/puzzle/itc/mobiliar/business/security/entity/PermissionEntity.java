@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.security.entity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -32,6 +33,7 @@ import java.util.Set;
 import static javax.persistence.CascadeType.ALL;
 
 @Entity
+@Audited
 @Table(name = "TAMW_permission")
 public class PermissionEntity implements Serializable
 {

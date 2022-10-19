@@ -27,6 +27,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
@@ -35,6 +36,7 @@ import java.io.Serializable;
 import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
 @Entity
+@Audited
 @Table(name="TAMW_restriction")
 public class RestrictionEntity implements Serializable {
 
