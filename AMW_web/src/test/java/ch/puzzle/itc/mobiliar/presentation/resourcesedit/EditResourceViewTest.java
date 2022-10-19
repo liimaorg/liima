@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.presentation.resourcesedit;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextTypeEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
@@ -192,6 +193,25 @@ public class EditResourceViewTest {
 			verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCETYPE, Action.READ);
 			verify(permissionBoundary, times(1)).hasPermission(Permission.RESOURCE_TEST_GENERATION, sessionContext.getCurrentContext(), Action.READ, r, null);
 		}
+	}
+	@Test
+	public void shouldGetDeploymentLinkAngular() {
+		// given
+		ContextEntity ce = new ContextEntity();
+		ce.setContextType(new ContextTypeEntity());
+		when(sessionContext.getCurrentContext()).thenReturn(ce);
+		context.resource = new ResourceEntity();
+		context.resource.setResourceGroup(new ResourceGroupEntity());
+		context.resource.setName("resourceName");
+		context.resource.setResourceType(new ResourceTypeEntity());
+		context.resource.getResourceType().setName(DefaultResourceTypeDefinition.APPLICATION.name());
+
+		//when
+		String result = context.getDeploymentLinkAngular();
+
+		// then
+		Assert.assertEquals("[{\"name\":\"Application\",\"val\":\"resourceName\"}]", result);
+
 	}
 
 }
