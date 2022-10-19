@@ -476,7 +476,11 @@ public class ResourceRelationService implements Serializable{
 				.createQuery(ConsumedResourceRelationEntity.class);
 		Root<ConsumedResourceRelationEntity> r = q.from(ConsumedResourceRelationEntity.class);
 		Join<ConsumedResourceRelationEntity, ResourceEntity> slaveResourceJoin = r.join("slaveResource");
+		Join<ConsumedResourceRelationEntity, ResourceEntity> masterResourceJoin = r.join("masterResource");
+		Join<ConsumedResourceRelationEntity, ResourceEntity> resourceTypeJoin = masterResourceJoin.join("resourceType");
+		Join<ConsumedResourceRelationEntity, ResourceEntity> releaseJoin = masterResourceJoin.join("release");
 		q.where(cb.equal(slaveResourceJoin.get("id"), slaveResource.getId()));
+		q.orderBy(cb.asc(resourceTypeJoin.get("name")), cb.asc(masterResourceJoin.get("name")), cb.asc(releaseJoin.get("name")));
 
 		TypedQuery<ConsumedResourceRelationEntity> query = entityManager.createQuery(q);
 		return query.getResultList();
