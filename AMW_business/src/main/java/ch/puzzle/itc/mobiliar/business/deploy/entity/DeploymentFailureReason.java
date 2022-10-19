@@ -23,7 +23,7 @@ package ch.puzzle.itc.mobiliar.business.deploy.entity;
 import lombok.Getter;
 
 @Getter
-public enum DeploymentFailureReason {
+public enum DeploymentFailureReason implements HasDisplayName {
 
     PRE_DEPLOYMENT_GENERATION("pre deployment generation"),
     DEPLOYMENT_GENERATION("deployment generation"),

@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public enum DeploymentState {
+public enum DeploymentState implements HasDisplayName{
     // the names of the enums are used in the database
     success("success"),
     failed("failed"),

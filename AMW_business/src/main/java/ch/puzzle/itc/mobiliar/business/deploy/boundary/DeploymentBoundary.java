@@ -81,6 +81,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.QLConstants.DEPLOYMENT_QL_ALIAS;
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.QLConstants.GROUP_QL;
@@ -1448,6 +1449,11 @@ public class DeploymentBoundary {
             return releases;
         } else if (filterName.equals(DeploymentFilterTypes.DEPLOYMENT_PARAMETER.getFilterDisplayName())) {
             return converToStringList(getAllDeployParamKeys());
+        } else if (filterName.equals(DeploymentFilterTypes.DEPLOYMENT_REASON.getFilterDisplayName())) {
+            return Arrays.stream(DeploymentFailureReason.values())
+                    .map(DeploymentFailureReason::getDisplayName)
+                    .sorted()
+                    .collect(Collectors.toList());
         }
         return Collections.EMPTY_LIST;
     }
