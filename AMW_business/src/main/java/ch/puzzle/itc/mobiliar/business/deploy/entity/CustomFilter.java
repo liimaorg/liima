@@ -217,6 +217,8 @@ public class CustomFilter {
                 case ENUM_TYPE:
                     if (this.getFilterDisplayName().equals(DeploymentFilterTypes.DEPLOYMENT_STATE.getFilterDisplayName())) {
                         this.enumType = DeploymentState.class;
+                    } else if (this.getFilterDisplayName().equals(DeploymentFilterTypes.DEPLOYMENT_REASON.getFilterDisplayName())) {
+                        this.enumType = DeploymentFailureReason.class;
                     }
                     this.value = filterValue;
                     break;
@@ -328,11 +330,10 @@ public class CustomFilter {
         try {
             return valueOf(enumType, value.toString());
         } catch (IllegalArgumentException e) {
-            if (enumType.getSimpleName().equals(DeploymentState.class.getSimpleName())) {
-                DeploymentState[] deploymentStates = (DeploymentState[]) enumType.getEnumConstants();
-                for (DeploymentState deploymentState : deploymentStates) {
-                    if (deploymentState.getDisplayName().equals(value.toString())) {
-                        return deploymentState;
+            if (HasDisplayName.class.isAssignableFrom(enumType)) {
+                for (Object enumConstant : enumType.getEnumConstants()) {
+                    if (((HasDisplayName) enumConstant).getDisplayName().equals(value.toString())) {
+                        return (Enum<?>) enumConstant;
                     }
                 }
             }
