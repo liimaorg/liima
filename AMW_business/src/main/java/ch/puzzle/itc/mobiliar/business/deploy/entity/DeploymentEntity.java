@@ -28,16 +28,19 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+
+import lombok.SneakyThrows;
 import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.util.*;
 
 /**
@@ -316,20 +319,14 @@ public class DeploymentEntity implements Serializable {
         deploymentDate = newDate;
     }
 
+    @SneakyThrows
     public List<ApplicationWithVersion> getApplicationsWithVersion() {
         if (applicationsWithVersionList != null) {
             return applicationsWithVersionList;
         }
         List<ApplicationWithVersion> result = new ArrayList<>();
         if(applicationsWithVersion !=  null) {
-            JSONArray o1 = JSONArray.fromObject(applicationsWithVersion);
-            for (Object object : o1) {
-                JSONObject o = JSONObject.fromObject(object);
-                Object appName = o.get("applicationName");
-                Object appId = o.get("applicationId");
-                Object version = o.get("version");
-                result.add(new ApplicationWithVersion(appName.toString(), (Integer) appId, version.toString()));
-            }
+            result = new ObjectMapper().readValue(new StringReader(applicationsWithVersion), new TypeReference<List<ApplicationWithVersion>>(){});
             // sort the apps
             Collections.sort(result, new Comparator<ApplicationWithVersion>() {
                 @Override
@@ -343,9 +340,9 @@ public class DeploymentEntity implements Serializable {
         return result;
     }
 
+    @SneakyThrows
     public void setApplicationsWithVersion(List<ApplicationWithVersion> applicationsWithVersion) {
-        JSON json = JSONSerializer.toJSON(applicationsWithVersion);
-        this.applicationsWithVersion = json.toString();
+        this.applicationsWithVersion = new ObjectMapper().writeValueAsString(applicationsWithVersion);
         applicationsWithVersionList = null;
     }
 
@@ -363,7 +360,10 @@ public class DeploymentEntity implements Serializable {
         @Setter
         private String version;
 
-        public ApplicationWithVersion(String applicationName, Integer applicationId, String version) {
+        @JsonCreator
+        public ApplicationWithVersion(@JsonProperty("applicationName") String applicationName,
+                                      @JsonProperty("applicationId") Integer applicationId,
+                                      @JsonProperty("version") String version) {
             this.applicationId = applicationId;
             this.applicationName = applicationName;
             this.version = version;

@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.resourcesedit;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -41,19 +40,20 @@ import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.events.SelectedRelationId;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.APPLICATION_NAME;
-import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.APPSERVER_NAME;
-import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.ENVIRONMENT_NAME;
+import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
 
 @ViewBackingBean
 public class EditResourceView implements Serializable {
@@ -393,24 +393,29 @@ public class EditResourceView implements Serializable {
         return null;
     }
 
+    @SneakyThrows
     public String getDeploymentLinkAngular() {
-        JSONArray jsonArray = new JSONArray();
-        addFilterToJsonArray(jsonArray, APPLICATION_NAME, getApplicationName());
-        addFilterToJsonArray(jsonArray, APPSERVER_NAME, getApplicationServerName());
-        addFilterToJsonArray(jsonArray, ENVIRONMENT_NAME, getEnvironmentName());
-        return jsonArray.toString();
+        List<DeploymentLinkAngular> deploymentLinkAngular = Stream.of(
+                        new DeploymentLinkAngular(APPLICATION_NAME.getFilterDisplayName(), getApplicationName()),
+                        new DeploymentLinkAngular(APPSERVER_NAME.getFilterDisplayName(), getApplicationServerName()),
+                        new DeploymentLinkAngular(ENVIRONMENT_NAME.getFilterDisplayName(), getEnvironmentName())
+
+                ).filter(f -> StringUtils.isNotEmpty(f.getVal()))
+                .collect(Collectors.toList());
+        return new ObjectMapper().writeValueAsString(deploymentLinkAngular);
     }
 
     public String getUserName() {
         return permissionBoundary.getUserName();
     }
 
-    private void addFilterToJsonArray(JSONArray jsonArray, DeploymentFilterTypes filterName, String filterValue) {
-        if (StringUtils.isNotEmpty(filterValue)) {
-            JSONObject appFilter = new JSONObject();
-            appFilter.put("name", filterName.getFilterDisplayName());
-            appFilter.put("val", filterValue);
-            jsonArray.add(appFilter);
+    private static class DeploymentLinkAngular {
+        @Getter
+        final String name, val;
+
+        public DeploymentLinkAngular(String name, String val) {
+            this.name = name;
+            this.val = val;
         }
     }
 }

@@ -20,22 +20,23 @@
 
 package ch.puzzle.itc.mobiliar.business.shakedown.entity;
 
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+import lombok.SneakyThrows;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
 
@@ -139,7 +140,9 @@ public class ShakedownTestEntity implements Serializable {
 		@Setter
 		private Integer applicationId;
 
-		public ApplicationsFromApplicationServer(String applicationName, Integer applicationId) {
+		@JsonCreator
+		public ApplicationsFromApplicationServer(@JsonProperty("applicationName") String applicationName,
+												 @JsonProperty("applicationId") Integer applicationId) {
 			this.applicationId = applicationId;
 			this.applicationName = applicationName;
 		}
@@ -153,21 +156,14 @@ public class ShakedownTestEntity implements Serializable {
 	}
 
 
+	@SneakyThrows
 	public List<ApplicationsFromApplicationServer> getApplicationsFromApplicationServer() {
-		List<ApplicationsFromApplicationServer> result = new ArrayList<ApplicationsFromApplicationServer>();
-		JSONArray o1 = JSONArray.fromObject(appsFromAppServer);
-		for (Object object : o1) {
-			JSONObject o = JSONObject.fromObject(object);
-			Object appName = o.get("applicationName");
-			Object appId = o.get("applicationId");
-			result.add(new ApplicationsFromApplicationServer(appName.toString(), (Integer) appId));
-		}
-		return result;
+		return new ObjectMapper().readValue(new StringReader(appsFromAppServer), new TypeReference<List<ApplicationsFromApplicationServer>>() {});
 	}
 
+	@SneakyThrows
 	public void setApplicationsFromApplicationServer(List<ApplicationsFromApplicationServer> applicationsFromApplicationServer) {
-		JSON json = JSONSerializer.toJSON(applicationsFromApplicationServer);
-		this.appsFromAppServer = json.toString();
+		this.appsFromAppServer = new ObjectMapper().writeValueAsString(applicationsFromApplicationServer);
 	}
 
 	public shakedownTest_state getShakedownTestState() {
