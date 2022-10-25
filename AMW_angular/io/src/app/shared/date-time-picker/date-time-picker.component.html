@@ -1,10 +1,9 @@
 <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible" role="alert">
   <span [innerHTML]="errorMessage"></span>
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
   </button>
 </div>
-<div class="input-group mr-2">
+<div class="input-group me-2">
   <input
     [ngClass]="ngControl?.valid ? 'ng-valid' : 'ng-invalid'"
     class="form-control"
@@ -29,14 +28,14 @@
 
 <ng-template #calendarContent>
   <div>
-    <div *ngIf="!showTimePickerToggle">
+    <div class="d-grid" *ngIf="!showTimePickerToggle">
       <ngb-datepicker
         name="datepicker"
         [ngModel]="datetime"
         (ngModelChange)="onDateChange($event)"
       ></ngb-datepicker>
       <button
-        class="btn btn-block btn-secondary"
+        class="btn btn-secondary m-0"
         [disabled]="!datetime?.day"
         [ngbPopover]="timePickerContent"
         type="button"
@@ -45,9 +44,9 @@
         <app-icon icon="clock"></app-icon>
       </button>
     </div>
-    <div *ngIf="showTimePickerToggle">
+    <div class="d-grid" *ngIf="showTimePickerToggle">
       <button
-        class="btn btn-block btn-secondary"
+        class="btn btn-secondary m-0"
         [ngbPopover]="calendarContent"
         type="button"
         (click)="toggleDateTimeState($event)"

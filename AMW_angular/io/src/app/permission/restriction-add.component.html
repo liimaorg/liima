@@ -4,7 +4,7 @@
     <div class="form-group row" *ngIf="permissions.length > 0">
       <label
         for="selectPermissions"
-        class="col-sm-3 text-right font-weight-bold"
+        class="col-sm-3 text-end fw-bold"
         >Permission</label
       >
       <div class="col-sm-9">
@@ -24,10 +24,10 @@
 
     <ng-container *ngIf="selectedPermissionNames.length > 0 && !onlyGlobal">
       <div class="form-group row">
-        <label class="col-sm-3 text-right font-weight-bold">Action</label>
+        <label class="col-sm-3 text-end fw-bold">Action</label>
         <div class="col-sm-9">
           <ng-container *ngFor="let action of getAvailableActions()">
-            <label class="checkbox-inline mr-3"
+            <label class="checkbox-inline me-3"
               ><input
                 type="checkbox"
                 [attr.disabled]="action.disabled ? '' : null"
@@ -41,14 +41,14 @@
 
       <ng-container *ngIf="hasSelectedActions()">
         <div class="form-group row">
-          <label class="col-sm-3 text-right font-weight-bold"
+          <label class="col-sm-3 text-end fw-bold"
             >Environment</label
           >
           <div class="col-sm-9">
             <ng-container *ngFor="let group of getEnvironmentGroups()">
               <h5 class="environments-title">{{ group }}:</h5>
               <ng-container *ngFor="let env of groupedEnvironments[group]">
-                <label class="checkbox-inline mr-3"
+                <label class="checkbox-inline me-3"
                   ><input
                     type="checkbox"
                     [attr.disabled]="env.disabled ? '' : null"
@@ -68,7 +68,7 @@
             isResourceTypePermissionAssignable()
           "
         >
-          <label for="selectRTP" class="col-sm-3 text-right font-weight-bold"
+          <label for="selectRTP" class="col-sm-3 text-end fw-bold"
             >Resource Type Categories</label
           >
           <div class="col-sm-9">
@@ -98,7 +98,7 @@
         >
           <label
             for="selectResourceTypes"
-            class="col-sm-3 text-right font-weight-bold"
+            class="col-sm-3 text-end fw-bold"
             >Resource Type</label
           >
           <div class="col-sm-9">
@@ -124,7 +124,7 @@
         >
           <label
             for="selectResourceGroup"
-            class="col-sm-3 text-right font-weight-bold"
+            class="col-sm-3 text-end fw-bold"
             >Resource Group</label
           >
           <div class="col-sm-9">
@@ -154,7 +154,7 @@
     </ng-container>
 
     <div class="form-group row">
-      <label class="col-sm-3 text-right font-weight-bold"></label>
+      <label class="col-sm-3 text-end fw-bold"></label>
       <div class="offset-3 col-sm-9">
         <button
           type="button"

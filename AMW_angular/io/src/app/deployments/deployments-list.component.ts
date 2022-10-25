@@ -14,7 +14,7 @@ import { DATE_FORMAT } from '../core/amw-constants';
 export class DeploymentsListComponent {
   @Input() deployments: Deployment[] = [];
   @Input() sortCol: string;
-  @Input() sortDirection: string;
+  @Input() sortDirection: 'ASC';
   @Input() filtersForParam: DeploymentFilter[];
   @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();

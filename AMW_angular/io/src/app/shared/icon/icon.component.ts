@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnChanges} from '@angular/core';
 
 @Component({
   selector: 'app-icon',
@@ -7,14 +7,14 @@ import { Component, Input, OnInit } from '@angular/core';
   </svg>`,
   styles: [],
 })
-export class IconComponent implements OnInit {
+export class IconComponent implements OnChanges {
   @Input()
   icon: string;
 
   iconPath: string;
   constructor() {}
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
     this.iconPath = 'bootstrap-icons.svg#' + this.icon;
   }
 }
