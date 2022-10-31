@@ -20,7 +20,7 @@
           <select
             id="selectFilterType"
             #selectModel="ngModel"
-            class="form-control"
+            class="form-select"
             [(ngModel)]="selectedFilterType"
             (change)="addFilter()"
           >
@@ -175,19 +175,23 @@
 
       <div class="form-group row">
         <label class="col-sm-1">Auto refresh</label>
-        <div class="col-sm-11">
-          <select
-            class="form-control col-sm-1 d-inline"
-            id="selectInterval"
-            [(ngModel)]="refreshInterval"
-            (change)="autoRefresh()"
-          >
-            <option *ngFor="let interval of refreshIntervals">{{
-              interval
-            }}</option>
-          </select>
-          <span class="col-sm-2 d-inline">Seconds</span>
+        <div class="col-auto">
+          <div class="input-group">
+            <select
+              class="form-select"
+              id="selectInterval"
+              aria-describedby="seconds" required
+              [(ngModel)]="refreshInterval"
+              (change)="autoRefresh()"
+            >
+              <option *ngFor="let interval of refreshIntervals">{{
+                interval
+                }}</option>
+            </select>
+            <span class="input-group-text" id="seconds">Seconds</span>
+          </div>
         </div>
+
       </div>
 
       <div class="form-group row" *ngIf="deployments.length > 0">

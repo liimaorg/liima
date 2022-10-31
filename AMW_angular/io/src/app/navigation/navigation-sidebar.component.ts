@@ -12,7 +12,7 @@ import { Navigation } from './navigation-store.service';
       <ng-container *ngIf="!navigation.items">
         <li class="nav-item active">
           <a class="nav-link" href="#"
-            >{{ navigation.current }}<span class="sr-only">(current)</span></a
+            >{{ navigation.current }}<span class="visually-hidden">(current)</span></a
           >
         </li>
       </ng-container>

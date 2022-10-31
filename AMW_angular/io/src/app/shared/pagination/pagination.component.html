@@ -21,7 +21,7 @@
           class="page-item {{ currentPage === page ? 'active' : '' }}"
         >
           <a class="page-link" (click)="toPage(page)"
-            >{{ page }}<span class="sr-only">(current)</span></a
+            >{{ page }}<span *ngIf="currentPage === page" class="visually-hidden">(current)</span></a
           >
         </li>
         <li
@@ -45,7 +45,7 @@
   </ng-container>
   <div class="btn-group justify-content-end" role="group">
     <select
-      class="pagination form-control m-1"
+      class="form-select m-1"
       [(ngModel)]="maxResults"
       (change)="setMax()"
     >

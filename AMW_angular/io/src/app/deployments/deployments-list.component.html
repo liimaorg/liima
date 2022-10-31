@@ -164,28 +164,28 @@
               (click)="showConfirm(deploymentConfirmation, deployment.id)"
             >
               <app-icon icon="check-circle"></app-icon>
-              <span class="ml-1">confirm</span>
+              <span class="ms-1">confirm</span>
             </span>
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.rejectPossible">
             <span class="text-danger cursor-pointer" (click)="showReject(deploymentRejection, deployment.id)">
               <app-icon icon="x-circle"></app-icon>
-              <span class="ml-1">reject</span>
+              <span class="ms-1">reject</span>
             </span>
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.cancelPossible">
             <span (click)="showCancel(deploymentCancelation, deployment.id)" class="cursor-pointer">
               <app-icon icon="slash-circle"></app-icon>
-              <span class="ml-1">cancel</span>
+              <span class="ms-1">cancel</span>
             </span>
             <br />
           </ng-container>
           <ng-container *ngIf="deployment.actions.redeployPossible">
             <a class="action" href="#/deployment/{{ deployment.id }}">
               <app-icon icon="arrow-clockwise"></app-icon>
-              <span class="ml-1">redeploy</span>
+              <span class="ms-1">redeploy</span>
             </a>
             <br />
           </ng-container>
@@ -195,7 +195,7 @@
               class="cursor-pointer"
             >
               <app-icon icon="journal-text"></app-icon>
-              <span class="ml-1">logs</span>
+              <span class="ms-1">logs</span>
             </a>
             <br />
           </ng-container>
@@ -211,8 +211,7 @@
       Details for deployment #{{ deployment.id }} [tracking id:
       {{ deployment.trackingId }}] for app server: {{ deployment.appServerName }}
     </h6>
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
+    <button type="button" class="btn-close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
     </button>
   </div>
   <div class="modal-body">
@@ -271,8 +270,7 @@
       Change deployment date of deployment #{{ deployment.id }} for app
       server {{ deployment.appServerName }}
     </h6>
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
+    <button type="button" class="btn-close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
     </button>
   </div>
   <div class="modal-body">
@@ -294,8 +292,7 @@
       Confirm deployment #{{ deployment.id }} for app server
       {{ deployment.appServerName }}
     </h6>
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
+    <button type="button" class="btn-close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
     </button>
   </div>
   <div class="modal-body">
@@ -340,8 +337,7 @@
     <h6 class="modal-title">
       Reject deployment #{{ deployment.id }} for app server {{ deployment.appServerName }}
     </h6>
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
+    <button type="button" class="btn-close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
     </button>
   </div>
   <div class="modal-body">
@@ -361,8 +357,7 @@
     <h6 class="modal-title">
       Cancel deployment #{{ deployment.id }} for app server {{ deployment.appServerName }}
     </h6>
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
+    <button type="button" class="btn-close" data-dismiss="modal" aria-hidden="true" (click)="modal.dismiss('Cross click')">
     </button>
   </div>
   <div class="modal-body">

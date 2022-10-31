@@ -2,7 +2,7 @@
   <div class="card-header">{{ getTitle() }}</div>
   <div class="card-body">
     <div class="form-group row" *ngIf="permissions.length > 0">
-      <label for="selectPermission" class="col-sm-3 font-weight-bold text-right"
+      <label for="selectPermission" class="col-sm-3 fw-bold text-end"
         >Permission</label
       >
       <div class="col-sm-9">
@@ -26,7 +26,7 @@
       *ngIf="restriction.permission.name && !restriction.permission.old"
     >
       <div class="form-group row">
-        <label for="selectAction" class="col-sm-3 font-weight-bold text-right"
+        <label for="selectAction" class="col-sm-3 fw-bold text-end"
           >Action</label
         >
         <div class="col-sm-9">
@@ -47,7 +47,7 @@
       </div>
 
       <div class="form-group row">
-        <label class="col-sm-3 font-weight-bold text-right">Environment</label>
+        <label class="col-sm-3 fw-bold text-end">Environment</label>
         <div class="col-sm-9">
           <ng-container *ngFor="let group of getEnvironmentGroups()">
             <span class="d-block">{{ group }}:</span>
@@ -76,7 +76,7 @@
           isResourceTypePermissionAssignable()
         "
       >
-        <label for="selectRTP" class="col-sm-3 font-weight-bold text-right"
+        <label for="selectRTP" class="col-sm-3 fw-bold text-end"
           >Resource Type Categories</label
         >
         <div class="col-sm-9">
@@ -103,7 +103,7 @@
       >
         <label
           for="selectResourceType"
-          class="col-sm-3 font-weight-bold text-right"
+          class="col-sm-3 fw-bold text-end"
           >Resource Type</label
         >
         <div class="col-sm-9">
@@ -133,7 +133,7 @@
       >
         <label
           for="selectResourceGroup"
-          class="col-sm-3 font-weight-bold text-right"
+          class="col-sm-3 fw-bold text-end"
           >Resource Group</label
         >
         <div class="col-sm-9">
@@ -170,7 +170,7 @@
 
     <ng-container *ngIf="restriction.permission.name">
       <div class="form-group row">
-        <label class="col-sm-3 font-weight-bold text-right"></label>
+        <label class="col-sm-3 fw-bold text-end"></label>
         <div class="col-sm-9">
           <button
             *ngIf="restriction.permission"

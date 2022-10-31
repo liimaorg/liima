@@ -9,10 +9,12 @@
   </div>
   <main class="h-100">
     <div class="row h-100">
+      <div class="col-auto p-0">
       <app-navigation-sidebar
         [navigation]="navigationStore.navigation$ | async"
         (itemSelected)="navigateTo($event)"
       ></app-navigation-sidebar>
+      </div>
       <div class="col h-100">
         <router-outlet></router-outlet>
       </div>

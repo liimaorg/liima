@@ -1,22 +1,21 @@
 <div class="modal-header">
   <h6 class="modal-title">Edit deployments</h6>
-  <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="activeModal.dismiss('Cross click')">
-    <span aria-hidden="true">&times;</span>
+  <button type="button" class="btn-close" data-dismiss="modal" aria-hidden="true" (click)="activeModal.dismiss('Cross click')">
   </button>
 </div>
 <div class="modal-body">
   <span class="form-horizontal">
-    <div class="form-group">
-      <label for="selectEditAction" class="col-sm-2 control-label">Action</label>
+    <label for="selectEditAction" class="col-sm-2 form-label">Action</label>
+    <div class="input-group mb-3">
       <div class="col-sm-9">
-        <select id="selectEditAction" class="form-control input-sm" [(ngModel)]="selectedEditAction">
+        <select id="selectEditAction" ngbAutoFocus class="form-select input-sm" [(ngModel)]="selectedEditAction">
           <option *ngFor="let editAction of editActions" [ngValue]="editAction">{{ editAction }}</option>
         </select>
       </div>
     </div>
     <ng-container *ngIf="selectedEditAction === 'Change date' || selectedEditAction === 'Confirm'">
-      <div class="form-group">
-        <label for="selectEditAction" class="col-sm-2 control-label">Date</label>
+      <label for="datetimepicker" class="col-sm-2 form-label">Date</label>
+      <div class="input-group mb-3">
         <div class="col-sm-9">
           <div class="input-group date">
             <app-date-time-picker [(ngModel)]="deploymentDate" name="dateDeployment" id="datetimepicker" class="w-100">
@@ -28,31 +27,23 @@
 
     <!-- Confirm Options -->
     <ng-container *ngIf="selectedEditAction === 'Confirm' && confirmationAttributes">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" [(ngModel)]="confirmationAttributes.sendEmailWhenDeployed" />
-          send an email when deployed
-        </label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="email" [(ngModel)]="confirmationAttributes.sendEmailWhenDeployed" />
+        <label for="email">send an email when deployed</label>
       </div>
 
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" [(ngModel)]="confirmationAttributes.simulateBeforeDeployment" />
-          simulate before deployment
-        </label>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="simulate" [(ngModel)]="confirmationAttributes.simulateBeforeDeployment" />
+        <label for="simulate">simulate before deployment</label>
       </div>
 
-      <div class="checkbox" *ngIf="hasPermissionShakedownTest">
-        <label>
-          <input type="checkbox" [(ngModel)]="confirmationAttributes.shakedownTestsWhenDeployed" />
-          execute shakedown tests when deployed
-        </label>
+      <div class="form-check" *ngIf="hasPermissionShakedownTest">
+        <input type="checkbox" class="form-check-input" id="shakedownTestsWhenDeployed" [(ngModel)]="confirmationAttributes.shakedownTestsWhenDeployed" />
+        <label for="shakedownTestsWhenDeployed">execute shakedown tests when deployed</label>
       </div>
-      <div class="checkbox" *ngIf="confirmationAttributes.shakedownTestsWhenDeployed">
-        <label>
-          <input type="checkbox" [(ngModel)]="confirmationAttributes.neighbourhoodTest" />
-          test neighbourhood
-        </label>
+      <div class="form-check" *ngIf="confirmationAttributes.shakedownTestsWhenDeployed">
+        <input type="checkbox" class="form-check-input" id="neighbourhoodTest" [(ngModel)]="confirmationAttributes.neighbourhoodTest" />
+        <label for="neighbourhoodTest">test neighbourhood</label>
       </div>
     </ng-container>
   </span>

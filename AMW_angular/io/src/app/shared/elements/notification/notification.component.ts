@@ -7,11 +7,10 @@ import { Component, OnInit, Input } from '@angular/core';
       <span [innerHTML]="message"></span
       ><button
         type="button"
-        class="close"
+        class="btn-close float-end"
         (click)="message = ''"
         aria-label="Close"
       >
-        <span aria-hidden="true">&times;</span>
       </button>
     </div>
   `,

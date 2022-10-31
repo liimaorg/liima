@@ -8,7 +8,7 @@ import { Component, Input } from '@angular/core';
       class="d-flex justify-content-center align-items-center overlay"
     >
       <div class="spinner-border text-light" role="status">
-        <span class="sr-only">Loading...</span>
+        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
     <div class=""></div>
