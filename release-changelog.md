@@ -1,3 +1,9 @@
+# v1.17.28
+* Due to a new unique constraint for issue [#622](https://github.com/liimaorg/liima/issues/622), `TAMW_RESOURCE` needs to be free of duplicate `RELEASE_ID, RESOURCEGROUP_ID` pairs **before** applying the change-set. Duplicates can be found using following sql statement:
+  ```
+  select count(*), RELEASE_ID, RESOURCEGROUP_ID from TAMW_RESOURCE group by RELEASE_ID, RESOURCEGROUP_ID having count(*) > 1;
+  ```
+
 # v1.17.27
 * **BREAKING CHANGE** New release of relation uses old prop descriptor for copied instance property [#487](https://github.com/liimaorg/liima/issues/487)
   * This fixes a long-standing bug in Liima and requires manual database cleanup before the updated can be deployed. Instructions can be found [here](./AMW_db_scripts/v1.17.27_property_cleanup.md)
