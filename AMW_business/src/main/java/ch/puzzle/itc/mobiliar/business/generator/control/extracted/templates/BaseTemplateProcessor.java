@@ -37,6 +37,7 @@ import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException.CAUSE;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.core.ParseException;
+import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 
@@ -212,6 +213,9 @@ public class BaseTemplateProcessor {
 
     public static Configuration getConfiguration(AMWTemplateExceptionHandler templateExceptionHandler) {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
+        // prevents Server-Side Template Injection
+        cfg.setNewBuiltinClassResolver(TemplateClassResolver.ALLOWS_NOTHING_RESOLVER);
+        cfg.setAPIBuiltinEnabled(false);
         cfg.setTemplateExceptionHandler(templateExceptionHandler);
         cfg.setShowErrorTips(false);
         cfg.setLogTemplateExceptions(false);
