@@ -631,6 +631,45 @@ public class BaseTemplateProcessorTest {
         assertTrue(result.isSuccess());
     }
 
+    @Test
+    public void shouldFailCallingNewBuiltIn() throws IOException {
+        // given
+        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+
+        TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#assign ex = \"freemarker.template.utility.Execute\"?new()>${ex(\"id\")}");
+
+        templates.add(templateDescriptorEntity);
+
+        GenerationUnit unit = new GenerationUnit(null, null, templates, null);
+
+        // when
+        GenerationUnitGenerationResult result = processor.generateResourceTemplates(unit, getAmwTemplateModel(null, null));
+
+        //then
+        GeneratedTemplate generatedTemplate = result.getGeneratedTemplates().get(0);
+        assertFalse(result.isSuccess());
+        assertTrue(generatedTemplate.getErrorMessages().size() > 0);
+    }
+
+    @Test
+    public void shouldFailCallingApiBuiltIn() throws IOException {
+        // given
+        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+
+        TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#assign uri=object?api.class.getResource(\"/\").toURI()>${uri}");
+
+        templates.add(templateDescriptorEntity);
+
+        GenerationUnit unit = new GenerationUnit(null, null, templates, null);
+
+        // when
+        GenerationUnitGenerationResult result = processor.generateResourceTemplates(unit, getAmwTemplateModel(null, null));
+
+        //then
+        GeneratedTemplate generatedTemplate = result.getGeneratedTemplates().get(0);
+        assertFalse(result.isSuccess());
+        assertTrue(generatedTemplate.getErrorMessages().size() > 0);
+    }
 
 	private TemplateDescriptorEntity createTemplate(String templateContent) {
 		TemplateDescriptorEntity templateDescriptorEntity = new TemplateDescriptorEntity();
