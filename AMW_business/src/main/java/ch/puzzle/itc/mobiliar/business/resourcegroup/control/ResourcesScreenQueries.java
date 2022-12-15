@@ -40,7 +40,8 @@ public class ResourcesScreenQueries {
 	}
 	
 	public Query searchResourceByName(String resourceName) {
-		return entityManager.createQuery("from ResourceEntity as res where res.name like '" + resourceName + "'");
+		return entityManager.createQuery("from ResourceEntity as res where res.name like :resourceName")
+				.setParameter("resourceName", resourceName);
 	}
 
 	public Query searchResourceBySoftlinkIdAndHasNotResourceGroupId(String softlinkId, Integer resourceGroupId){
