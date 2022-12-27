@@ -1,15 +1,12 @@
 /**
  * Trims long names on the left side when marked with class 'ellipsisLeft'
  * Elements marked with class 'ellipsisRight' are trimmed with css.
- *
- * Returns array with all left or right trimmed elements.
- */
+**/
 var trim = function(clipped) {
     var clippedLeft = $(".ellipsisLeft").trimLeft();
     var clippedRight = $(".ellipsisRight").markRightTrimmed();
 
-    var clipped = $.merge(clippedLeft, clippedRight);
-    return clipped;
+    $.merge(clippedLeft, clippedRight);
 }
 
 /**
