@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.presentation.util;
 
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import org.apache.commons.text.StringEscapeUtils;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
@@ -91,7 +92,7 @@ public class GlobalMessageAppender {
 			}
 		}
 
-		htmlMessage += "<li>" + message + "</li>";
+		htmlMessage += "<li>" + StringEscapeUtils.escapeHtml4(message) + "</li>";
 
 		if (facesMessage == null) {
 			facesMessage = new FacesMessage(severity, htmlMessage, htmlMessage);
