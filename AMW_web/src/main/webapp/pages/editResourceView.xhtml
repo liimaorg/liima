@@ -48,21 +48,19 @@
                                      styleClass="btn primary right"
                                      action="#{propertyEditController.save()}"
                                      execute="@form"
-                                     rendered="#{editResourceView.canSaveChanges()}" value="Save changes" />
+                                     rendered="#{editResourceView.canSaveChanges()}" value="Save changes"/>
                 </li>
                 <li class="dropdown">
-                    <a class="btn light dropdown-toggle" data-toggle="dropdown">
+                    <button class="btn light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         More
-                        <b class="caret" />
-                    </a>
+                    </button>
                     <ul class="dropdown-menu">
                         <li>
                             <h:commandLink id="tagCurrentState"
-                                render="tagConfigurationPopup"
-                                rendered="#{taggingDataProvider.canTagCurrentState and propertyEditDataProvider.applicationServer}"
-                                onclick="showLoader();"
-                                type="button"
-                                styleClass="btn light">
+                                           render="tagConfigurationPopup"
+                                           rendered="#{taggingDataProvider.canTagCurrentState and propertyEditDataProvider.applicationServer}"
+                                           onclick="showLoader();"
+                                           styleClass="dropdown-item">
                                 Tag Current State
                                 <a4j:ajax oncomplete="hideLoader();#{rich:component('tagConfigurationPopup')}.show();"/>
                             </h:commandLink>
@@ -70,7 +68,7 @@
                         <li>
                             <h:commandLink id="copyFromResource"
                                            rendered="#{copyResourceDataProvider.canCopyResource}"
-                                           styleClass="btn light">
+                                           styleClass="dropdown-item">
                                 Copy from resource
                                 <a4j:ajax render="copyFromResourcePopup"
                                           listener="#{copyResourceDataProvider.enableLoadList()}"
@@ -81,7 +79,7 @@
                         <li>
                             <h:commandLink id="copyFromPredecessor"
                                            rendered="#{copyResourceDataProvider.canCopyFromPredecessorResource and editResourceView.resourceType.applicationResourceType}"
-                                           styleClass="btn light">
+                                           styleClass="dropdown-item">
                                 Copy from Predecessor
                                 <a4j:ajax render="copyFromPredecessorPopup"
                                           listener="#{copyResourceDataProvider.enableLoadList()}"
@@ -91,33 +89,31 @@
                         </li>
                         <li>
                             <h:panelGroup id="testingModeButton"
-                                          styleClass="control-group ${editResourceView.testing ? 'testing' : ''}"
+                                          styleClass="control-group  ${editResourceView.testing ? 'testing' : ''}"
                                           rendered="#{editResourceView.hasShakedownTestPermission()}">
 
-                                <label class="btn light"> <h:selectBooleanCheckbox
-                                        onclick="return confirmLeave(event);"
-                                        value="#{editResourceView.testing}">
-                                    <a4j:ajax oncomplete="window.location.reload();"
-                                              onbegin="showLoader();" onerror="hideLoader();"/>
-                                </h:selectBooleanCheckbox> Testing mode
+                                <label class="dropdown-item">
+                                    <h:selectBooleanCheckbox
+                                            onclick="return confirmLeave(event);"
+                                            value="#{editResourceView.testing}">
+                                        <a4j:ajax oncomplete="window.location.reload();"
+                                                  onbegin="showLoader();" onerror="hideLoader();"/>
+                                    </h:selectBooleanCheckbox>
+                                    Testing mode
                                 </label>
                             </h:panelGroup>
                         </li>
                     </ul>
                 </li>
-
-
                 <li class="dropdown">
-                    <a class="btn light dropdown-toggle" data-toggle="dropdown">
+                    <button class="btn light dropdown-toggle" data-bs-toggle="dropdown">
                         Analyze
-                        <b class="caret" />
-                    </a>
+                    </button>
                     <ul class="dropdown-menu">
-
                         <li>
                             <h:link outcome="generationTest" value="Test Generation"
                                     rendered="${editResourceView.testGenerationAvailable and editResourceView.canGenerateTestConfiguration}"
-                                    styleClass="btn light"
+                                    styleClass="dropdown-item"
                                     onclick="showLoader();confirmLeave(event);">
                                 <f:param name="id" value="${editResourceView.relativeApplicationServerId ne null ? editResourceView.relativeApplicationServerId : editResourceView.resourceId}"/>
                                 <f:param name="release" value="#{editResourceView.releaseId}" />
@@ -129,7 +125,7 @@
                         </li>
                         <li>
                             <h:link outcome="resourceDependenciesView" value="Show dependencies"
-                                    styleClass="btn light"
+                                    styleClass="dropdown-item"
                                     onclick="showLoader();confirmLeave(event);">
                                 <f:param name="rel" value="#{editResourceView.relationIdViewParam}"/>
                                 <f:param name="resTypId" value="#{editResourceView.resourceTypeId}"/>
@@ -141,39 +137,42 @@
                 </li>
                 <h:panelGroup rendered="${releasingDataProvider.canCreateNewRelease or releasingDataProvider.canChangeRelease or releasingDataProvider.canRemoveRelease}">
                 <li class="dropdown">
-                    <a class="btn light dropdown-toggle" data-toggle="dropdown">
+                    <button class="btn light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         Release
-                        <b class="caret" />
-                    </a>
+                    </button>
                     <ul class="dropdown-menu">
                         <li>
                             <h:commandLink id="newReleaseButton" render="createNewReleasePopup"
                                            onclick="showLoader();"
                                            rendered="${releasingDataProvider.canCreateNewRelease}"
-                                           styleClass="btn light"><i class="icon icon-add"/>New
+                                           styleClass="btn light dropdown-item"><i class="icon icon-add"/>New
                                 <a4j:ajax
                                         oncomplete="hideLoader();#{rich:component('createNewReleasePopup')}.show();"/>
                             </h:commandLink>
                         </li>
-                        <li><h:commandLink id="changeReleaseButton" render="changeReleasePopup"
+                        <li>
+                            <h:commandLink id="changeReleaseButton" render="changeReleasePopup"
                                            onclick="showLoader();"
                                            rendered="${releasingDataProvider.canChangeRelease}"
-                                           styleClass="btn light">
-                            <i class="icon icon-edit"/>Change
-                            <a4j:ajax
-                                    oncomplete="hideLoader();#{rich:component('changeReleasePopup')}.show();"/>
-                        </h:commandLink></li>
-                        <li><a4j:commandLink id="removeReleaseButton" execute="@this"
+                                           styleClass="btn light dropdown-item">
+                                <i class="icon icon-edit"/>Change
+                                <a4j:ajax
+                                        oncomplete="hideLoader();#{rich:component('changeReleasePopup')}.show();"/>
+                            </h:commandLink>
+                        </li>
+                        <li>
+                            <a4j:commandLink id="removeReleaseButton" execute="@this"
                                              render="removeReleasePopup deleteResourceRelationsOverview"
                                              onclick="showLoader();"
-                                             styleClass="btn light"
+                                             styleClass="btn light dropdown-item"
                                              rendered="${releasingDataProvider.canRemoveRelease}"
                                              oncomplete="hideLoader();#{rich:component('removeReleasePopup')}.show();">
-                            <i class="icon icon-delete"/>Remove
-                            <a4j:param assignTo="#{resourceDependenciesView.resourceIdViewParam}"
-                                       value="${editResourceView.resourceId}" name="x"/>
+                                <i class="icon icon-delete"/>Remove
+                                <a4j:param assignTo="#{resourceDependenciesView.resourceIdViewParam}"
+                                           value="${editResourceView.resourceId}" name="x"/>
 
-                        </a4j:commandLink></li>
+                            </a4j:commandLink>
+                        </li>
                     </ul>
                 </li>
                 </h:panelGroup>
@@ -182,16 +181,15 @@
                     or editResourceView.canShowDeploymentLink
                     or editResourceView.canDelegatePermissions}">
                 <li class="dropdown">
-                    <a class="btn light dropdown-toggle" data-toggle="dropdown">
+                    <button class="btn light dropdown-toggle" data-bs-toggle="dropdown">
                         Go to
-                        <b class="caret" />
-                    </a>
+                    </button>
                     <ul class="dropdown-menu">
                         <li>
                             <h:link outcome="editResourceView"
                                     includeViewParams="false"
                                     value="Resource type"
-                                    styleClass="btn light"
+                                    styleClass="dropdown-item"
                                     rendered="${editResourceView.canEditResourceType}">
                                 <f:param name="id" value="${null}"/>
                                 <f:param name="rel" value="${null}"/>
@@ -203,7 +201,7 @@
                             <h:link outcome="editResourceView"
                                     includeViewParams="false"
                                     value="Application server"
-                                    styleClass="btn light"
+                                    styleClass="dropdown-item"
                                     rendered="${editResourceView.relativeApplicationServerId ne null}">
                                 <f:param name="id" value="${editResourceView.relativeApplicationServerId}"/>
                                 <f:param name="rel" value="${null}"/>
@@ -214,31 +212,35 @@
                         <li>
                             <h:link outcome="deploy"
                                     value="Deployments"
-                                    styleClass="btn light"
+                                    styleClass="dropdown-item"
                                     rendered="${editResourceView.canShowDeploymentLink and not editResourceView.angularDeploymentLink}">
                                 <f:param name="application_name" value="${editResourceView.applicationName}"/>
                                 <f:param name="appserver_name" value="${editResourceView.applicationServerName}"/>
                                 <f:param name="environment_name" value="${editResourceView.environmentName}"/>
                             </h:link>
-                            <ui:fragment rendered="${editResourceView.canShowDeploymentLink and editResourceView.angularDeploymentLink}">
-                                <a class="btn light" href="/AMW_angular/#/deployments?filters=${editResourceView.deploymentLinkAngular}">
+                            <ui:fragment
+                                    rendered="${editResourceView.canShowDeploymentLink and editResourceView.angularDeploymentLink}">
+                                <a class="dropdown-item"
+                                   href="/AMW_angular/#/deployments?filters=${editResourceView.deploymentLinkAngular}">
                                     Deployments
                                 </a>
                             </ui:fragment>
                         </li>
                         <li>
                             <ui:fragment rendered="${editResourceView.canDelegatePermissions}">
-                                <a class="btn light" href="/AMW_angular/#/permission/delegation/${editResourceView.userName}">
+                                <a class="dropdown-item"
+                                   href="/AMW_angular/#/permission/delegation/${editResourceView.userName}">
                                     Permissions
                                 </a>
                             </ui:fragment>
                         </li>
                         <ui:fragment rendered="${editResourceView.resourceId ne null}">
-                        <li>
-                            <a class="btn light" href="/AMW_angular/#/auditview?resourceId=${editResourceView.resourceId}">
-                                Audit view
-                            </a>
-                        </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   href="/AMW_angular/#/auditview?resourceId=${editResourceView.resourceId}">
+                                    Audit view
+                                </a>
+                            </li>
                         </ui:fragment>
                     </ul>
                 </li>
