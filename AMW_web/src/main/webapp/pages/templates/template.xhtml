@@ -5,25 +5,30 @@
     xmlns:a4j="http://richfaces.org/a4j" >
 
 <h:head>
-    <title><ui:insert name="title" /> - Liima</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>
+        <ui:insert name="title"/>
+        - Liima
+    </title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
     <meta name="viewport"
-        content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+          content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"/>
 
-    <h:outputScript name="jsf.js" library="javax.faces" />
+    <h:outputScript name="jsf.js" library="javax.faces"/>
 
     <link href="../${buildNumber}/stylesheets/jquery-ui.min.css"
-          media="screen, projection" rel="stylesheet" type="text/css" />
+          media="screen, projection" rel="stylesheet" type="text/css"/>
+    <link href="../${buildNumber}/stylesheets/bootstrap.min.css"
+          media="screen, projection" rel="stylesheet" type="text/css"/>
     <link href="../${buildNumber}/stylesheets/bootstrap-tokenfield.min.css"
-          media="screen, projection" rel="stylesheet" type="text/css" />
-    <h:outputText value="&lt;!--[if lt IE 10]&gt;" escape="false" />
+          media="screen, projection" rel="stylesheet" type="text/css"/>
+    <h:outputText value="&lt;!--[if lt IE 10]&gt;" escape="false"/>
     <link href="../${buildNumber}/stylesheets/ie.css" media="screen, projection"
-          rel="stylesheet" type="text/css" />
-    <h:outputText value="&lt;![endif]--&gt;" escape="false" />
-    <h:outputText value="&lt;!--[if lt IE 9]&gt;" escape="false" />
-    <h:outputScript name="js/html5shiv.js" />
-    <h:outputText value="&lt;![endif]--&gt;" escape="false" />
+          rel="stylesheet" type="text/css"/>
+    <h:outputText value="&lt;![endif]--&gt;" escape="false"/>
+    <h:outputText value="&lt;!--[if lt IE 9]&gt;" escape="false"/>
+    <h:outputScript name="js/html5shiv.js"/>
+    <h:outputText value="&lt;![endif]--&gt;" escape="false"/>
 
 </h:head>
 
@@ -33,7 +38,7 @@
     <link href="../${buildNumber}/stylesheets/customized-screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
     <link href="../${buildNumber}/stylesheets/fixed.css" media="screen, projection" rel="stylesheet" type="text/css" />
 
-    <h:outputScript name="js/bootstrap.min.js" target="head" />
+    <h:outputScript name="js/bootstrap.bundle.min.js" target="head"/>
     <h:outputScript name="js/bootstrap-tokenfield.min.js" target="head" />
     <h:outputScript name="js/scrollspy.js" target="head" />
     <h:outputScript name="js/tags.js" target="head" />
