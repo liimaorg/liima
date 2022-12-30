@@ -64,46 +64,50 @@
 					</div>
 					<hr />
 					<h:dataTable id="applicationServers" var="appServer"
-						styleClass="well"
-						rowClasses="odd-row,even-row"
-						value="#{applistView.appServerList}"
-						style="width:100%; margin-top:10px;"
-						columnClasses=" ,release,last,last">
+								 styleClass="well caption-top"
+								 rowClasses="odd-row,even-row"
+								 value="#{applistView.appServerList}"
+								 style="width:100%; margin-top:10px;"
+								 columnClasses=" ,release,last,last">
 						<f:facet name="caption">
 							<h2>
-								<h:outputText value="Application servers and applications" />
+								<h:outputText value="Application servers and applications"/>
 							</h2>
 							<nav class="actionbar">
-							<ul>
-								<li>
-									<div class="control-group">
-										<label class="control-label">Max results</label>
-										<div class="controls">
-											<h:selectOneRadio value="#{applistView.maxResults}"
-												styleClass="radioButtonList">
-												<f:selectItem itemLabel="20" itemValue="20" />
-												<f:selectItem itemLabel="100" itemValue="100" />
-												<f:selectItem itemLabel="All" itemValue="0" />
-												<a4j:ajax render="applicationServers" />
-											</h:selectOneRadio>
+								<ul>
+									<li>
+										<div class="control-group">
+											<label class="control-label">Max results</label>
+											<div class="controls">
+												<h:selectOneRadio value="#{applistView.maxResults}"
+																  styleClass="radioButtonList">
+													<f:selectItem itemLabel="20" itemValue="20"/>
+													<f:selectItem itemLabel="100" itemValue="100"/>
+													<f:selectItem itemLabel="All" itemValue="0"/>
+													<a4j:ajax render="applicationServers"/>
+												</h:selectOneRadio>
+											</div>
 										</div>
-									</div>
-								</li>
-								<li><a4j:commandLink styleClass="btn light"
-													 rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'CREATE', 'APPLICATIONSERVER')}"
-										onclick="#{rich:component('addAppServerPopupPanel')}.show();">
-										<i class="icon icon-add"></i>
-										<h:outputText value="New Application Server" />
-									</a4j:commandLink></li>
-								<li><h:commandLink id="createAppButton" type="button"
-										styleClass="btn light right"
-										rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'CREATE', 'APPLICATION')}"
-										onclick="showLoader();">
-										<i class="icon icon-add" /> New Application
-									<a4j:ajax render="createApplicationForAsPopup"
-											oncomplete="hideLoader();#{rich:component('createApplicationForAsPopup')}.show();"/>
-									</h:commandLink></li>
-							</ul>
+									</li>
+									<li>
+										<a4j:commandLink styleClass="btn light"
+														 rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'CREATE', 'APPLICATIONSERVER')}"
+														 onclick="#{rich:component('addAppServerPopupPanel')}.show();">
+											<i class="icon icon-add"></i>
+											<h:outputText value="New Application Server"/>
+										</a4j:commandLink>
+									</li>
+									<li>
+										<h:commandLink id="createAppButton" type="button"
+													   styleClass="btn light right"
+													   rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'CREATE', 'APPLICATION')}"
+													   onclick="showLoader();">
+											<i class="icon icon-add"/> New Application
+											<a4j:ajax render="createApplicationForAsPopup"
+													  oncomplete="hideLoader();#{rich:component('createApplicationForAsPopup')}.show();"/>
+										</h:commandLink>
+									</li>
+								</ul>
 							</nav>
 						</f:facet>
 
