@@ -150,9 +150,11 @@
                                     <label class="control-label"><h:outputText value="MIK"/></label>
 
                                     <div class="controls">
-                                        <h:inputTextarea styleClass="propertyInputField changeAware${editPropertyView.isLongDefaultValue() ? '' : ' oneLine'}"
-                                                         disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
-                                                         value="#{editPropertyView.propertyDescriptor.machineInterpretationKey}"><a4j:ajax/>
+                                        <h:inputTextarea
+                                                styleClass="form-control propertyInputField changeAware${editPropertyView.isLongDefaultValue() ? '' : ' oneLine'}"
+                                                disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                value="#{editPropertyView.propertyDescriptor.machineInterpretationKey}">
+                                            <a4j:ajax/>
                                         </h:inputTextarea>
                                     </div>
                                 </div>
@@ -160,9 +162,11 @@
                                     <label class="control-label"><h:outputText value="Default value"/></label>
 
                                     <div class="controls">
-                                        <h:inputTextarea styleClass="propertyInputField changeAware${editPropertyView.isLongDefaultValue() ? '' : ' oneLine'}"
-                                                     disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
-                                                     value="#{editPropertyView.propertyDescriptor.defaultValue}"><a4j:ajax/>
+                                        <h:inputTextarea
+                                                styleClass="form-control propertyInputField changeAware${editPropertyView.isLongDefaultValue() ? '' : ' oneLine'}"
+                                                disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                value="#{editPropertyView.propertyDescriptor.defaultValue}">
+                                            <a4j:ajax/>
                                         </h:inputTextarea>
                                     </div>
                                 </div>
@@ -170,9 +174,11 @@
                                     <label class="control-label"><h:outputText value="Example value"/></label>
 
                                     <div class="controls">
-                                        <h:inputTextarea styleClass="propertyInputField changeAware${editPropertyView.isLongExampleValue() ? '' : ' oneLine'}"
-                                                     disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
-                                                     value="#{editPropertyView.propertyDescriptor.exampleValue}"><a4j:ajax/>
+                                        <h:inputTextarea
+                                                styleClass="form-control propertyInputField changeAware${editPropertyView.isLongExampleValue() ? '' : ' oneLine'}"
+                                                disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                value="#{editPropertyView.propertyDescriptor.exampleValue}">
+                                            <a4j:ajax/>
                                         </h:inputTextarea>
                                     </div>
                                 </div>
@@ -180,9 +186,10 @@
                                     <label class="control-label"><h:outputText value="Comment"/></label>
 
                                     <div class="controls">
-                                        <h:inputTextarea styleClass="propertyInputField changeAware"
+                                        <h:inputTextarea styleClass="form-control propertyInputField changeAware"
                                                          disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
-                                                         value="#{editPropertyView.propertyDescriptor.propertyComment}"><a4j:ajax/>
+                                                         value="#{editPropertyView.propertyDescriptor.propertyComment}">
+                                            <a4j:ajax/>
                                         </h:inputTextarea>
                                     </div>
                                 </div>
