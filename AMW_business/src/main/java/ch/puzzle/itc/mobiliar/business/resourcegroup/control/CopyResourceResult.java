@@ -20,18 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import lombok.Getter;
-
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+
+import java.util.*;
 
 /**
  * Exceptions for the {@link CopyResourceDomainService}
@@ -156,10 +151,10 @@ public class CopyResourceResult {
 
     private String getResultInfosAsHtml(String title, List<String> infos) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<b>").append(title).append("</b>");
+        sb.append("<b>").append(StringEscapeUtils.escapeHtml4(title)).append("</b>");
         sb.append("<ul>");
         for (String info : infos) {
-            sb.append("<li>").append(info).append("</li>");
+            sb.append("<li>").append(StringEscapeUtils.escapeHtml4(info)).append("</li>");
         }
         sb.append("</ul>");
         return sb.toString();
