@@ -1,8 +1,22 @@
 # v1.17.28
-* Due to a new unique constraint for issue [#622](https://github.com/liimaorg/liima/issues/622), `TAMW_RESOURCE` needs to be free of duplicate `RELEASE_ID, RESOURCEGROUP_ID` pairs **before** applying the change-set. Duplicates can be found using following sql statement:
+* **BREAKING CHANGE** Due to a new unique constraint for issue [#622](https://github.com/liimaorg/liima/issues/622), `TAMW_RESOURCE` needs to be free of duplicate `RELEASE_ID, RESOURCEGROUP_ID` pairs **before** applying the change-set. Duplicates can be found using following sql statement:
   ```
   select count(*), RELEASE_ID, RESOURCEGROUP_ID from TAMW_RESOURCE group by RELEASE_ID, RESOURCEGROUP_ID having count(*) > 1;
+  select * from TAMW_RESOURCEGROUP where id = <found id>
   ```
+  You can delete the duplicate release via UI. The UI will only show one release and when you delete it the hidden release will surface. Copy the currently visible release to a backup resource and the delete the visible release.
+* Fixed security issues:
+  * Fix HQL Injection via application name: [#679](https://github.com/liimaorg/liima/pull/679)
+  * Fix possible XSS vulnerabilities in Tooltips and Notifications: [#680](https://github.com/liimaorg/liima/pull/680)
+  * Fix server side template injection: [#678](https://github.com/liimaorg/liima/pull/678)
+  * Remove stacktrace from jsf error.xhtml and embed jquery-ui.min.css: [#671](https://github.com/liimaorg/liima/pull/671)
+  * Fix HQL injection via deployment filter: [#663](https://github.com/liimaorg/liima/pull/663)
+* Update to Angular 14 and Bootstrap 5: [#661](https://github.com/liimaorg/liima/issues/661)
+* Deployment filter Reason has no values: [#594](https://github.com/liimaorg/liima/issues/594)
+* resourceDependenciesView.xhtml sort: [#607](https://github.com/liimaorg/liima/issues/607)
+* Add audit tables for permissions entities: [#653](https://github.com/liimaorg/liima/issues/653)
+* Replace net.sf.json-lib with another JSON library: [#566](https://github.com/liimaorg/liima/issues/566)
+* Various JS and Java lib updates
 
 # v1.17.27
 * **BREAKING CHANGE** New release of relation uses old prop descriptor for copied instance property [#487](https://github.com/liimaorg/liima/issues/487)
