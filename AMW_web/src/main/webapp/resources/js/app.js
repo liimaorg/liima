@@ -1,8 +1,7 @@
 
 /* Update long names and tooltips*/
 var updateElements = function(){
-	var clipped = trim();
-	trimmedTooltips(clipped);
+	trim();
 	propertyTooltips();
 };
 
