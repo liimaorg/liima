@@ -7,14 +7,10 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.List;
 
 @WebFilter(filterName = "CspNonceFilter", urlPatterns = {"/*"})
 public class CspNonceFilter implements Filter {
 
-    private static final int NONCE_SIZE = 32;
     //TODO remove -Report-Only to enforce policy
     private static final String CSP_HEADER_KEY = "Content-Security-Policy-Report-Only";
     private static final String HASHES = "'sha256-56Xl7F05vDGrlZ0zsrpH5ur8snvD2VXeGJW6hJvvbxU=' 'sha256-JnUQNzIwUQpUTIqGq+F8FFSf1//vhdKJyY/8LSNVWh0='";
@@ -34,7 +30,7 @@ public class CspNonceFilter implements Filter {
                 httpResponse.setHeader(name, value);
             }
         };
-        String nonce = getNonce();
+        String nonce = Nonce.next().toString();
         httpResponse.setHeader(CSP_HEADER_KEY, getCspHeader(nonce));
 
         filterChain.doFilter(servletRequest, charResponseWrapper);
@@ -53,13 +49,6 @@ public class CspNonceFilter implements Filter {
         return String.format("default-src 'self'; script-src 'self' 'nonce-%s' %s 'unsafe-eval'; ", nonce, HASHES) +
                 "connect-src 'self'; script-src-attr 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none';" +
                 " style-src 'self' 'unsafe-inline';";
-    }
-
-    private String getNonce() {
-        byte[] nonce = new byte[NONCE_SIZE];
-        new SecureRandom().nextBytes(nonce);
-
-        return Base64.getEncoder().encodeToString(nonce);
     }
 
     @Override
