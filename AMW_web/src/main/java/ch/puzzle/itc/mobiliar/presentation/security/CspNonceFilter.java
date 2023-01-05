@@ -51,8 +51,7 @@ public class CspNonceFilter implements Filter {
 
     private String getCspHeader(String nonce) {
         return String.format("default-src 'self'; script-src 'self' 'nonce-%s' %s 'unsafe-eval'; ", nonce, HASHES) +
-                "connect-src 'self'; script-src-attr 'unsafe-inline';" +
-                //TODO frame-anchestors base-uri
+                "connect-src 'self'; script-src-attr 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none';" +
                 " style-src 'self' 'unsafe-inline';";
     }
 
