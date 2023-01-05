@@ -17,6 +17,7 @@ public class CspNonceFilter implements Filter {
     private static final int NONCE_SIZE = 32;
     //TODO remove -Report-Only to enforce policy
     private static final String CSP_HEADER_KEY = "Content-Security-Policy-Report-Only";
+    private static final String HASHES = "'sha256-56Xl7F05vDGrlZ0zsrpH5ur8snvD2VXeGJW6hJvvbxU=' 'sha256-JnUQNzIwUQpUTIqGq+F8FFSf1//vhdKJyY/8LSNVWh0='";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -49,19 +50,10 @@ public class CspNonceFilter implements Filter {
     }
 
     private String getCspHeader(String nonce) {
-        String hashes = String.join(" ", getHashes());
-        StringBuilder sb =  new StringBuilder();
-        sb.append(String.format("default-src 'self'; script-src 'self' 'nonce-%s' %s 'unsafe-eval'; ", nonce, hashes))
-                .append("connect-src 'self'; script-src-attr 'unsafe-inline';")
-                .append(" style-src 'self' 'unsafe-inline';");
-        return sb.toString();
-    }
-
-    private List<String> getHashes() {
-        return List.of(
-                "'sha256-56Xl7F05vDGrlZ0zsrpH5ur8snvD2VXeGJW6hJvvbxU='",
-                "'sha256-JnUQNzIwUQpUTIqGq+F8FFSf1//vhdKJyY/8LSNVWh0='"
-        );
+        return String.format("default-src 'self'; script-src 'self' 'nonce-%s' %s 'unsafe-eval'; ", nonce, HASHES) +
+                "connect-src 'self'; script-src-attr 'unsafe-inline';" +
+                //TODO frame-anchestors base-uri
+                " style-src 'self' 'unsafe-inline';";
     }
 
     private String getNonce() {
@@ -73,10 +65,9 @@ public class CspNonceFilter implements Filter {
 
     @Override
     public void destroy() {
-
     }
 
-    public class CharResponseWrapper extends
+    public static class CharResponseWrapper extends
             HttpServletResponseWrapper {
         private CharArrayWriter output;
 
@@ -93,7 +84,5 @@ public class CspNonceFilter implements Filter {
         public PrintWriter getWriter() {
             return new PrintWriter(output);
         }
-
-
     }
 }
