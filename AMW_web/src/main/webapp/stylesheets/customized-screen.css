@@ -1207,6 +1207,7 @@ table.permissionAssigned {
     -ms-border-radius: 6px;
     -o-border-radius: 6px;
     border-radius: 6px;
+    border: none;
     position: relative;
     margin: 0px 0px 10px 20px;
     overflow: hidden;
