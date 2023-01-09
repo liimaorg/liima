@@ -183,16 +183,16 @@
             <h:panelGroup rendered="${settingsDataProvider.mode=='myAmw'}">
                 <h:panelGroup id="myAmw" layout="block">
                     <h:dataTable var="favorit" value="${userSettings.myAMWObjects}"
-                        styleClass="well width100" rowClasses="odd-row,even-row"
-                        id="amwlist">
+                                 styleClass="well width100 caption-top" rowClasses="odd-row,even-row"
+                                 id="amwlist">
                         <f:facet name="caption">
                             <h2>My favorites</h2>
                         </f:facet>
                         <h:column>
                             <f:facet name="header">
                                 <h:panelGroup>
-                                    <h:outputText value="Resource Name" />
-                                    <br />
+                                    <h:outputText value="Resource Name"/>
+                                    <br/>
                                 </h:panelGroup>
                             </f:facet>
                             <div>
@@ -236,8 +236,8 @@
                 <h:panelGroup rendered="${settingsDataProvider.mode=='STP'}">
                     <h:panelGroup id="STP_panel" layout="block">
                         <h:dataTable id="stpDataTable"
-                            value="#{shakedownStpDataProvider.stp}" var="s" styleClass="well"
-                            rowClasses="odd-row,even-row">
+                                     value="#{shakedownStpDataProvider.stp}" var="s" styleClass="well caption-top"
+                                     rowClasses="odd-row,even-row">
                             <f:facet name="caption">
                                 <nav class="actionbar">
                                     <h:commandLink
@@ -245,7 +245,7 @@
                                             onclick="#{rich:component('addNewSTPPopupPanel')}.show(); return false;"
                                             rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
                                         <!--action="#{shakedownStpDataProvider.clearArguments()}"-->
-                                        <i class="icon icon-add" /> Add new STP
+                                        <i class="icon icon-add"/> Add new STP
                                     </h:commandLink>
                                 </nav>
                                 <h2>STP Management</h2>

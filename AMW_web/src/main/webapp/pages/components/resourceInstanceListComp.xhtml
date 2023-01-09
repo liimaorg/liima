@@ -8,17 +8,18 @@
 
 <h:body>
 	<h:panelGroup id="resourceInstanceListWrapper">
-		<h:dataTable id="resourceInstanceListComp" styleClass="well" var="group"
-			value="${resourceInstanceListImpl.resourceGroupsForSelectedResourceType}"
-			columnClasses=" ,release,last,last,last" rowClasses="odd-row,even-row">
+		<h:dataTable id="resourceInstanceListComp" styleClass="well caption-top" var="group"
+					 value="${resourceInstanceListImpl.resourceGroupsForSelectedResourceType}"
+					 columnClasses=" ,release,last,last,last" rowClasses="odd-row,even-row">
 			<f:facet name="caption">
 				<nav class="actionbar">
-				<ul>
-					<li><a4j:commandLink styleClass="btn light" id="newResourceButton"
-							rendered="#{!resourceInstanceListImpl.selectedResourceType.isApplicationResourceType() and resourceInstanceListImpl.canCreateResourceInstance}"
-							onclick="#{rich:component('addResourcePopupPanel')}.show();"
-							render="addResourcePopupPanelGroup, addResourcePopupPanelHeader">
-							<i class="icon icon-add"></i>
+					<ul>
+						<li>
+							<a4j:commandLink styleClass="btn light" id="newResourceButton"
+											 rendered="#{!resourceInstanceListImpl.selectedResourceType.isApplicationResourceType() and resourceInstanceListImpl.canCreateResourceInstance}"
+											 onclick="#{rich:component('addResourcePopupPanel')}.show();"
+											 render="addResourcePopupPanelGroup, addResourcePopupPanelHeader">
+								<i class="icon icon-add"></i>
 							<h:outputText value="New Resource" />
 						</a4j:commandLink></li> 
 					<li><a4j:commandLink id="createAppButton" type="button" styleClass="btn light right"

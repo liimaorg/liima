@@ -1,23 +1,25 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich">
-<h:form id="tagForm">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+>
+    <h:form id="tagForm">
 
-    <a4j:outputPanel id="tagsPanel" ajaxRendered="true">
-        <h:dataTable id="tagsTable" styleClass="well" var="propTag"
-                     value="${editPropertyTagView.allPropertyTags}"
-                     columnClasses=" ,last" rowClasses="odd-row,even-row">
+        <a4j:outputPanel id="tagsPanel" ajaxRendered="true">
+            <h:dataTable id="tagsTable" styleClass="well caption-top" var="propTag"
+                         value="${editPropertyTagView.allPropertyTags}"
+                         columnClasses=" ,last" rowClasses="odd-row,even-row">
 
-            <f:facet name="caption">
-                <nav class="width300px actionbar">
-                    <ul>
-                        <li><h:inputText id="newPropertyTagName" value="#{editPropertyTagView.propertyTagName}" rendered="#{editPropertyTagView.canManageGlobalTags}"/>
-                            <a4j:commandLink styleClass="btn light"
-                                             action="#{editPropertyTagView.addPropertyTag()}"
-                                             render="tagsTable"
+                <f:facet name="caption">
+                    <nav class="width300px actionbar">
+                        <ul>
+                            <li>
+                                <h:inputText id="newPropertyTagName" value="#{editPropertyTagView.propertyTagName}"
+                                             rendered="#{editPropertyTagView.canManageGlobalTags}"/>
+                                <a4j:commandLink styleClass="btn light"
+                                                 action="#{editPropertyTagView.addPropertyTag()}"
+                                                 render="tagsTable"
                                              rendered="#{editPropertyTagView.canManageGlobalTags}">
                                 <i class="icon icon-add"></i>
                                 <h:outputText value="Add"/>

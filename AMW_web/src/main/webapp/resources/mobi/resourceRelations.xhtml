@@ -16,13 +16,13 @@
 		<h:panelGroup id="consumedTable"
 			rendered="#{!resourceRelations.consumedRelations.isEmpty()}">
 			<h:dataTable var="consumed"
-				value="#{resourceRelations.consumedRelations}"
-				styleClass="deployTable well" rowClasses="odd-row,even-row">
+						 value="#{resourceRelations.consumedRelations}"
+						 styleClass="deployTable well caption-top" rowClasses="odd-row,even-row">
 
 				<f:facet name="caption">
 					<h2>
 						<h:outputText
-							value="Resources consuming #{resourceRelations.resourceName}" />
+								value="Resources consuming #{resourceRelations.resourceName}"/>
 					</h2>
 				</f:facet>
 
@@ -81,13 +81,13 @@
 		<h:panelGroup id="providedTable"
 			rendered="#{!resourceRelations.providedRelations.isEmpty()}">
 			<h:dataTable var="provided"
-				value="#{resourceRelations.providedRelations}"
-				styleClass="deployTable well" rowClasses="odd-row,even-row">
+						 value="#{resourceRelations.providedRelations}"
+						 styleClass="deployTable well caption-top" rowClasses="odd-row,even-row">
 
 				<f:facet name="caption">
 					<h2>
 						<h:outputText
-							value="Resources providing #{resourceRelations.resourceName}" />
+								value="Resources providing #{resourceRelations.resourceName}"/>
 					</h2>
 				</f:facet>
 
@@ -147,19 +147,19 @@
     <h:panelGroup id="consumingSoftlink"
                   rendered="#{!resourceRelations.consumingSoftlinkResources.isEmpty()}">
 
-        <h:dataTable var="soft"
-                     value="#{resourceRelations.consumingSoftlinkResources}"
-                     styleClass="deployTable well" rowClasses="odd-row,even-row">
+		<h:dataTable var="soft"
+					 value="#{resourceRelations.consumingSoftlinkResources}"
+					 styleClass="deployTable well caption-top" rowClasses="odd-row,even-row">
 
-            <f:facet name="caption">
-                <h2>
-                    <h:outputText
-                            value="Resources referencing softlink #{resourceRelations.softlinkId}"/>
-                </h2>
-            </f:facet>
+			<f:facet name="caption">
+				<h2>
+					<h:outputText
+							value="Resources referencing softlink #{resourceRelations.softlinkId}"/>
+				</h2>
+			</f:facet>
 
-            <h:column index="index">
-                <f:facet name="header">
+			<h:column index="index">
+				<f:facet name="header">
                     <h:panelGroup>
                         <div style="white-space: nowrap;">
                             <h:outputText value="ResourceType"/>
