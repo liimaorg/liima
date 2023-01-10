@@ -13,7 +13,6 @@ public class CspNonceFilter implements Filter {
 
     //TODO remove -Report-Only to enforce policy
     private static final String CSP_HEADER_KEY = "Content-Security-Policy-Report-Only";
-    private static final String HASHES = "'sha256-56Xl7F05vDGrlZ0zsrpH5ur8snvD2VXeGJW6hJvvbxU=' 'sha256-JnUQNzIwUQpUTIqGq+F8FFSf1//vhdKJyY/8LSNVWh0='";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -46,8 +45,11 @@ public class CspNonceFilter implements Filter {
     }
 
     private String getCspHeader(String nonce) {
-        return String.format("default-src 'self'; script-src 'self' 'nonce-%s' %s 'unsafe-eval'; ", nonce, HASHES) +
-                "connect-src 'self'; script-src-attr 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none';" +
+        return String.format("default-src 'self';" +
+                " script-src 'strict-dynamic' 'nonce-%s' 'unsafe-eval';", nonce) +
+                " connect-src 'self';" +
+                " script-src-attr 'unsafe-inline';" +
+                " frame-ancestors 'none'; base-uri 'self'; object-src 'none';" +
                 " style-src 'self' 'unsafe-inline';";
     }
 
