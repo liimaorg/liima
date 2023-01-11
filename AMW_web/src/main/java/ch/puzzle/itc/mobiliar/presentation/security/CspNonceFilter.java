@@ -11,8 +11,7 @@ import java.io.PrintWriter;
 @WebFilter(filterName = "CspNonceFilter", urlPatterns = {"/*"})
 public class CspNonceFilter implements Filter {
 
-    //TODO remove -Report-Only to enforce policy
-    private static final String CSP_HEADER_KEY = "Content-Security-Policy-Report-Only";
+    private static final String CSP_HEADER_KEY = "Content-Security-Policy";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
