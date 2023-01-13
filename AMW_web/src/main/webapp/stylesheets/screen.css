@@ -2024,7 +2024,7 @@ aside {
 .container {
   *zoom: 1;
   max-width: 127em;
-  _width: 127em;
+  width: auto;
   margin-left: auto;
   margin-right: auto;
   padding-left: 3em;
