@@ -143,8 +143,8 @@
 							<h:outputText value="#{appServer.resource.release.name}" />
 							<ui:repeat var="app"
 								value="${appServer.relatedResources}">
-								<h:panelGroup style="padding-left: 20px;" layout="block">
-									<h:outputText value="${app.release.name}" />
+								<h:panelGroup style="padding-left: 20px; white-space: nowrap" layout="block">
+									<h:outputText value="${app.release.name}"/>
 								</h:panelGroup>
 							</ui:repeat>
 						</h:column>
