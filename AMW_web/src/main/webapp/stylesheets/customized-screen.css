@@ -1867,6 +1867,7 @@ table.propertyTable textarea.propertyInputField {
 
 input.rf-au-inp {
     width: 70%;
+    height: unset;
 }
 
 .rf-au-lst-scrl {
