@@ -6,12 +6,12 @@
 	<h:panelGroup id="applicationVersion_panel" layout="block" rendered="#{securityDataProvider.hasPermission('RELEASE','READ')}">
 
 		<!-- Application Info Table-->
-			<h:dataTable id="appInfoTable" styleClass="well" var="configItem"
-				value="${applicationVersionInfo.applicationBuildInfo.asList}"
-				columnClasses=" , , ,last,last" rowClasses="odd-row,even-row">
+			<h:dataTable id="appInfoTable" styleClass="well caption-top" var="configItem"
+						 value="${applicationVersionInfo.applicationBuildInfo.asList}"
+						 columnClasses=" , , ,last,last" rowClasses="odd-row,even-row">
 				<f:facet name="caption">
 					<h2>
-						<h:outputText value="Application Information" />
+						<h:outputText value="Application Information"/>
 					</h2>
 				</f:facet>
 				<h:column>
@@ -37,17 +37,17 @@
 		
 		
 		<!-- Application Configuration Table-->
-			<h:dataTable id="appConfigTable" styleClass="well" var="configItem"
-				value="${applicationVersionInfo.applicationConfigurationInfo.configurationKeyValuePairs}"
-				columnClasses=" , , ,last,last" rowClasses="odd-row,even-row">
-				<f:facet name="caption">
-					<h2>
-						<h:outputText value="Application Configuration" />
-					</h2>
-				</f:facet>
-				<h:column>
-					<f:facet name="header">
-						<h:panelGroup>
+		<h:dataTable id="appConfigTable" styleClass="well caption-top" var="configItem"
+					 value="${applicationVersionInfo.applicationConfigurationInfo.configurationKeyValuePairs}"
+					 columnClasses=" , , ,last,last" rowClasses="odd-row,even-row">
+			<f:facet name="caption">
+				<h2>
+					<h:outputText value="Application Configuration"/>
+				</h2>
+			</f:facet>
+			<h:column>
+				<f:facet name="header">
+					<h:panelGroup>
 							<h:outputText value="Key" />
 							<br />
 						</h:panelGroup>

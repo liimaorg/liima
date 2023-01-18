@@ -55,17 +55,19 @@
                             <h:panelGroup id="shakedowntest">
                                 <h:dataTable var="sdtest"
                                              value="#{shakedownTestScreenDataProvider.shakedownTests}"
-                                             styleClass="well" rowClasses="odd-row,even-row">
+                                             styleClass="well caption-top" rowClasses="odd-row,even-row">
 
                                     <f:facet name="caption">
                                         <nav class="actionbar">
                                             <ul>
-                                                <li><h:commandLink type="submit" styleClass="btn light"
+                                                <li>
+                                                    <h:commandLink type="submit" styleClass="btn light"
                                                                    onclick="showLoader();"
                                                                    actionListener="#{shakedownTestScreenDataProvider.reloadShakedownTests(true)}">
-                                                    <i class="icon icon-reload"></i>
-                                                    <h:outputText value="Apply filter / Refresh"/>
-                                                </h:commandLink></li>
+                                                        <i class="icon icon-reload"></i>
+                                                        <h:outputText value="Apply filter / Refresh"/>
+                                                    </h:commandLink>
+                                                </li>
 
                                                 <li><a4j:commandLink styleClass="btn light"
                                                                      rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE') and shakedownTestScreenDataProvider.shakedownTestViewSelected}"
@@ -333,7 +335,7 @@
                     <h:dataTable var="sdtestOrder"
                                  value="#{shakedownTestScreenDataProvider.shakedownTestOrder}"
                                  rowClasses="odd-row,even-row"
-                                 class="well width_1100"
+                                 class="well caption-top width_1100"
                                  rendered="#{shakedownTestScreenDataProvider.renderCreateOrderDialog}">
 
                         <f:facet name="caption">

@@ -6,14 +6,17 @@
 
     <h:form id="deployParamForm">
         <a4j:outputPanel id="deployParamPanel" ajaxRendered="true">
-            <h:dataTable id="deployParamTable" styleClass="well" var="deployParamKey"
+            <h:dataTable id="deployParamTable" styleClass="well caption-top" var="deployParamKey"
                          value="${deploymentParameterView.allKeys}"
                          columnClasses=" ,last" rowClasses="odd-row,even-row">
 
                 <f:facet name="caption">
                     <nav class="width430 actionbar">
                         <ul>
-                            <li><h:inputText id="newDeployParamName" value="#{deploymentParameterView.deployParameterKeyName}" rendered="#{deploymentParameterView.canManageDeploymentPropertyKeys()}"/>
+                            <li>
+                                <h:inputText id="newDeployParamName"
+                                             value="#{deploymentParameterView.deployParameterKeyName}"
+                                             rendered="#{deploymentParameterView.canManageDeploymentPropertyKeys()}"/>
                                 <a4j:commandLink styleClass="btn light"
                                                  action="#{deploymentParameterView.createNewKey()}"
                                                  render="deployParamTable"
