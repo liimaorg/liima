@@ -1,3 +1,11 @@
+# v1.17.29
+* Fixed security issues:
+  * no restrictive csp [#684](https://github.com/liimaorg/liima/pull/684)
+  * update bootstrap js in JSF UI [#685](https://github.com/liimaorg/liima/pull/685)
+  * missing hsts header [#686](https://github.com/liimaorg/liima/pull/686)
+  * download allows content sniffing [#687](https://github.com/liimaorg/liima/pull/687)
+* Update Java Script dependencies [#688](https://github.com/liimaorg/liima/pull/688)
+
 # v1.17.28
 * **BREAKING CHANGE** Due to a new unique constraint for issue [#622](https://github.com/liimaorg/liima/issues/622), `TAMW_RESOURCE` needs to be free of duplicate `RELEASE_ID, RESOURCEGROUP_ID` pairs **before** applying the change-set. Duplicates can be found using following sql statement:
   ```
