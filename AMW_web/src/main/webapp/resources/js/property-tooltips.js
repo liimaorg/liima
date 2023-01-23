@@ -3,7 +3,7 @@
  */
 var propertyTooltips = function() {
     // hide all tooltips
-    $('.tooltip').hide();
+    $('--property--info-box').hide();
 
     // create jquerytools tooltip
     $(".info").tooltip({

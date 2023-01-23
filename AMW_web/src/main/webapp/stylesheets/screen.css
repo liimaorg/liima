@@ -987,8 +987,7 @@ aside nav > ul > li ul li a {
   background-color: #2060a0;
 }
 
-/* line 8, ../sass/_tooltip.scss */
-.tooltip {
+.--property--info-box {
   display: none;
   padding: 20px;
   background: white;
@@ -1006,28 +1005,7 @@ aside nav > ul > li ul li a {
   box-shadow: 1px 1px 6px #d6d6d6;
   margin-left: -5px;
 }
-/* line 18, ../sass/_tooltip.scss */
-.tooltip:before {
-  content: ' ';
-  position: absolute;
-  width: 0;
-  height: 0;
-  left: -1px;
-  top: -12px;
-  border: 6px solid;
-  border-color: #eaeaea transparent transparent #f8f8f8;
-}
-/* line 31, ../sass/_tooltip.scss */
-.tooltip:after {
-  content: ' ';
-  position: absolute;
-  width: 0;
-  height: 0;
-  left: 0px;
-  top: -14px;
-  border: 7px solid;
-  border-color: #fff transparent transparent #fff;
-}
+
 
 /* line 5, ../sass/_alerts.scss */
 .alert {
