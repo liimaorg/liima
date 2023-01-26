@@ -1,3 +1,6 @@
+# v1.17.30
+* editResourceView.xhtml: info popup of property doesn't work [#689](https://github.com/liimaorg/liima/issues/689)
+
 # v1.17.29
 * Fixed security issues:
   * no restrictive csp [#684](https://github.com/liimaorg/liima/pull/684)
