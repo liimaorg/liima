@@ -1,4 +1,4 @@
-FROM quay.io/wildfly/wildfly:26.0.0.Final
+FROM quay.io/wildfly/wildfly:26.1.3.Final-jdk11
 LABEL MAINTAINER="liimaorg <amw-dev@puzzle.ch>"
 
 ARG DB_CLI_SCRIPT=wildfly_h2.cli 
@@ -21,8 +21,9 @@ RUN mkdir -p $JBOSS_HOME/modules/com/sun/jsf-impl/mojarra-2.2 && \
     mkdir -p $JBOSS_HOME/modules/javax/faces/api/mojarra-2.2 && \
     curl https://repo1.maven.org/maven2/com/sun/faces/jsf-api/2.2.20/jsf-api-2.2.20.jar> $JBOSS_HOME/modules/javax/faces/api/mojarra-2.2/jsf-api.jar && \
     mkdir -p $JBOSS_HOME/modules/org/jboss/as/jsf-injection/mojarra-2.2 && \
-    cp $JBOSS_HOME/modules/system/layers/base/org/jboss/as/jsf-injection/main/wildfly-jsf-injection*.jar $JBOSS_HOME/modules/org/jboss/as/jsf-injection/mojarra-2.2/wildfly-jsf-injection.jar && \
-    cp $JBOSS_HOME/modules/system/layers/base/org/jboss/as/jsf-injection/main/weld-jsf*.jar $JBOSS_HOME/modules/org/jboss/as/jsf-injection/mojarra-2.2/weld-jsf.jar
+    INJECTION=$(find $JBOSS_HOME/modules/system/layers/base -name jsf-injection | sort | head -n 1) && \
+    cp $INJECTION/main/wildfly-jsf-injection*.jar $JBOSS_HOME/modules/org/jboss/as/jsf-injection/mojarra-2.2/wildfly-jsf-injection.jar && \
+    cp $INJECTION/main/weld-jsf*.jar $JBOSS_HOME/modules/org/jboss/as/jsf-injection/mojarra-2.2/weld-jsf.jar
 COPY jsf/impl_module.xml $JBOSS_HOME/modules/com/sun/jsf-impl/mojarra-2.2/module.xml
 COPY jsf/api_module.xml $JBOSS_HOME/modules/javax/faces/api/mojarra-2.2/module.xml
 COPY jsf/injection_module.xml $JBOSS_HOME/modules/org/jboss/as/jsf-injection/mojarra-2.2/module.xml
