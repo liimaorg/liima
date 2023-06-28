@@ -41,10 +41,10 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.11.0</version>
+                <version>1.13.3</version>
                 <configuration>
-                    <nodeVersion>v16.17.0</nodeVersion>
-                    <npmVersion>8.15.0</npmVersion>
+                    <nodeVersion>v18.16.1</nodeVersion>
+                    <npmVersion>9.7.2</npmVersion>
                     <workingDirectory>io</workingDirectory>
                     <installDirectory>${user.home}/.node</installDirectory>
                 </configuration>
