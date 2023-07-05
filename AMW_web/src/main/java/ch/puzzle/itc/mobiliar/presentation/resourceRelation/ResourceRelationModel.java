@@ -481,7 +481,7 @@ public class ResourceRelationModel implements Serializable {
                         }
                         consumedApplications.add(resourceRelationService.getBestMatchingRelationRelease(applications, (ResourceEntity) currentSelectedResourceOrType));
                     }
-                } else if (key.equals(ResourceTypeEntity.RUNTIME)) {
+                } else if (key.equals(DefaultResourceTypeDefinition.RUNTIME.name())) {
                     if (runtimeRelations == null) {
                         runtimeRelations = new TreeMap(String.CASE_INSENSITIVE_ORDER);
                     }
@@ -498,7 +498,7 @@ public class ResourceRelationModel implements Serializable {
                 consumedGroupIdentifierMap = groupIdentifierMap;
                 consumedRelations = new TreeMap(String.CASE_INSENSITIVE_ORDER);
                 for (String key : mapForNavigation.keySet()) {
-                    if (!key.equals(DefaultResourceTypeDefinition.APPLICATION.name()) && !key.equals(ResourceTypeEntity.RUNTIME)) {
+                    if (!key.equals(DefaultResourceTypeDefinition.APPLICATION.name()) && !key.equals(DefaultResourceTypeDefinition.RUNTIME.name())) {
                         consumedRelations.put(key, findBestMatchingOrSelectedReleaseRelationsForType(mapForNavigation.get(key).values()));
                     }
                 }
@@ -666,7 +666,7 @@ public class ResourceRelationModel implements Serializable {
     }
 
     public void doRemoveRelation() {
-        if (ResourceTypeEntity.RUNTIME.equals(this.getRemoveResourceRelation().getSlaveTypeName())) {
+        if (DefaultResourceTypeDefinition.RUNTIME.name().equals(this.getRemoveResourceRelation().getSlaveTypeName())) {
             this.runtimeRelations = new TreeMap<>();
             this.setResourceRelationForRemoval(null);
         }

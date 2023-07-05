@@ -21,7 +21,7 @@
 package ch.puzzle.itc.mobiliar.builders;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,7 +39,7 @@ public class TargetPlatformEntityBuilder extends BaseEntityBuilder {
 	public ResourceGroupEntity mockTargetPlatformEntity(String platformName) {
 		ResourceGroupEntity mock = mock(ResourceGroupEntity.class);
 		when(mock.getId()).thenReturn(getNextId());
-		when(mock.getName()).thenReturn(ResourceTypeEntity.RUNTIME);
+		when(mock.getName()).thenReturn(DefaultResourceTypeDefinition.RUNTIME.name());
 		return mock;
 	}
 
@@ -50,7 +50,7 @@ public class TargetPlatformEntityBuilder extends BaseEntityBuilder {
 	public ResourceGroupEntity buildTargetPlatformEntity(String platformName) {
 		ResourceGroupEntity targetPlatform = new ResourceGroupEntity();
 		targetPlatform.setId(getNextId());
-		targetPlatform.setName(ResourceTypeEntity.RUNTIME);
+		targetPlatform.setName(DefaultResourceTypeDefinition.RUNTIME.name());
 		return targetPlatform;
 	}
 

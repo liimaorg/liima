@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.presentation.templateEdit;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
@@ -61,6 +62,9 @@ public class EditTemplateView implements Serializable {
 
     @Inject
     PermissionService permissionService;
+
+    @Inject
+    PermissionBoundary permissionBoundary;
 
     @Inject
     ShakedownStpService stpService;
@@ -289,20 +293,7 @@ public class EditTemplateView implements Serializable {
     }
 
     public boolean canModifyTemplates() {
-        if (settings.isTestingMode()) {
-            return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE);
-        }
-        Permission permission = getPermission();
-        Action action = getAction();
-        return permissionService.hasPermission(permission, action);
-    }
-
-    private Permission getPermission() {
-        return isEditResource() ? Permission.RESOURCE_TEMPLATE : Permission.RESOURCETYPE_TEMPLATE;
-    }
-
-    private Action getAction() {
-        return isNewTemplate() ? Action.CREATE : Action.UPDATE;
+        return permissionBoundary.canModifyTemplateOfResourceOrResourceType(resourceId, resourceTypeId, Action.UPDATE, settings.isTestingMode());
     }
 
     public boolean isRelation() {

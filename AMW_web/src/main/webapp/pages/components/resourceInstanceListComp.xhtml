@@ -40,7 +40,7 @@
                             </h:link>
 					</li>
 					<li><a4j:commandLink type="button"
-							rendered="#{!resourceInstanceListImpl.defaultResourceType and !resourceInstanceListImpl.runtimeResourceType and securityDataProvider.hasPermissionForResourceType('RESOURCETYPE', 'DELETE', resourceInstanceListImpl.selectedResourceType.name)}"
+							rendered="#{!resourceInstanceListImpl.defaultResourceType and securityDataProvider.hasPermissionForResourceType('RESOURCETYPE', 'DELETE', resourceInstanceListImpl.selectedResourceType.name)}"
 							styleClass="btn light" id="deleteResourceTypeButton"
 							render="deleteResourceTypePopupPanelHeader"
 							onclick="#{rich:component('confirmResourceTypeDeletePopupPanel')}.show();">
@@ -63,9 +63,9 @@
 				<f:facet name="header">
 					<h:outputText value="Release" />
 				</f:facet>
-				<h:outputText value="#{group.selectedResource.release.name}" />
+				<mobi:editResourceLink resId="#{group.selectedResourceId}" linkLabel="#{group.selectedResource.release.name}" editPermission="RESOURCE" resourceType="#{resourceInstanceListImpl.selectedResourceType.name}"/>
 			</h:column>
-			<h:column>
+			<h:column rendered="#{securityDataProvider.hasPermission('RESOURCE_LIST')}">
 				<f:facet name="header">
 					<h:outputText value="Favorite" />
 				</f:facet>
@@ -73,34 +73,6 @@
 					<a4j:ajax execute="#{userSettings.setFavorite(group.id, group.name, resourceInstanceListImpl.selectedResourceType.name)}">						
 					</a4j:ajax>
 				</h:selectBooleanCheckbox>
-			</h:column>
-			<h:column rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'READ', resourceInstanceListImpl.selectedResourceType.name)}">
-				<f:facet name="header">
-					<h:outputText value="Edit" />
-				</f:facet>
-
-				<h:link id="editLink"
-					outcome="${resourceInstanceListImpl.outcomePageForResourceEdit}" onclick="showLoader();"
-					value="Edit">
-					<f:param name="id" value="#{group.selectedResourceId}" />
-					<f:param name="ctx" value="#{contextDataProvider.globalContextId}" />
-				</h:link>
-			</h:column>
-
-			<h:column rendered="${resourceInstanceListImpl.canRemoveDefaultInstanceOfResType}">
-				<f:facet name="header">
-					<h:outputText value="Delete" />
-				</f:facet>
-
-				<a4j:commandLink execute="@this" id="deleteLink"
-					render="deleteResourcePopupPanelHeader deleteResourceRelationsOverview" value="Delete"
-					rendered="${resourceInstanceListImpl.isAmwOnly(group,group.selectedReleaseId)}"
-					onclick="showLoader();"
-					oncomplete="#{rich:component('confirmResourceDeletePopupPanel')}.show();hideLoader();">
-					<a4j:param assignTo="#{resourceDependenciesView.resourceIdViewParam}" value="${group.selectedResourceId}" name="x" />
-					
-					<f:setPropertyActionListener target="#{resourceInstanceListImpl.selectedResourceGroup}" value="#{group}"/>
-				</a4j:commandLink>
 			</h:column>
 		</h:dataTable>
 	</h:panelGroup>

@@ -49,8 +49,6 @@ public class ResourceTypeEntity extends HasContexts<ResourceTypeContextEntity>
 		implements Serializable, NamedIdentifiable,
 Comparable<ResourceTypeEntity> {
 
-	public final static String RUNTIME = "RUNTIME";
-
 	@Getter
 	@Setter
 	@TableGenerator(name = "resourceTypeIdGen", table = Constants.GENERATORTABLE, pkColumnName = Constants.GENERATORPKCOLUMNNAME, valueColumnName = Constants.GENERATORVALUECOLUMNNAME, pkColumnValue = "resourceTypeId")
@@ -165,38 +163,25 @@ Comparable<ResourceTypeEntity> {
 	 *         {@link DefaultResourceTypeDefinition#APPLICATION}
 	 */
 	public boolean isApplicationResourceType(){
-		try{
-			return DefaultResourceTypeDefinition.APPLICATION.name().equals(getName());
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
-
+		return isResourceType(DefaultResourceTypeDefinition.APPLICATION);
 	}
 
 	/**
 	 * @return true if type is {@link DefaultResourceTypeDefinition#APPLICATIONSERVER}
 	 */
 	public boolean isApplicationServerResourceType() {
-		try {
-			return DefaultResourceTypeDefinition.APPLICATIONSERVER.name().equals(getName());
-		}
-		catch (IllegalArgumentException e) {
-			return false;
-		}
-
+		return isResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER);
 	}
 
 	/**
 	 * @return true if type is {@link DefaultResourceTypeDefinition#NODE}
 	 */
 	public boolean isNodeResourceType() {
-		try {
-			return DefaultResourceTypeDefinition.NODE.name().equals(
-					getName());
-		}
-		catch (IllegalArgumentException e) {
-			return false;
-		}
+		return isResourceType(DefaultResourceTypeDefinition.NODE);
+	}
+
+	public boolean isRuntimeType() {
+		return isResourceType(DefaultResourceTypeDefinition.RUNTIME);
 	}
 
 	/**
@@ -217,10 +202,6 @@ Comparable<ResourceTypeEntity> {
 		}
 
 		return false;
-	}
-
-	public boolean isRuntimeType() {
-		return RUNTIME.equals(name);
 	}
 
      public boolean hasChildren(){

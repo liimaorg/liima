@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.builders;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -101,11 +101,11 @@ public class ResourceTypeEntityBuilder extends BaseEntityBuilder {
 	}
 
     public ResourceTypeEntity mockRuntimeResourceTypeEntity(Set<ResourceEntity> resources) {
-        ResourceTypeEntity mock = mockResourceTypeEntity(ResourceTypeEntity.RUNTIME, resources);
+        ResourceTypeEntity mock = mockResourceTypeEntity(DefaultResourceTypeDefinition.RUNTIME.getDisplayName(), resources);
         when(mock.isNodeResourceType()).thenReturn(false);
         when(mock.isDefaultResourceType()).thenReturn(false);
-        when(mock.isResourceType(any(DefaultResourceTypeDefinition.class))).thenReturn(false);
         when(mock.isRuntimeType()).thenReturn(true);
+        when(mock.isResourceType(any(DefaultResourceTypeDefinition.class))).thenReturn(false);
         when(mock.getId()).thenReturn(NODE_TYPE_ID);
         return mock;
     }

@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.test;
 
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
@@ -30,7 +29,7 @@ public enum EntityBuilderType {
 
 	AS("APPLICATIONSERVER", "amw"), APP("APPLICATION", "ch_puzzle_itc_mobi_amw"), NODE1("NODE", "node_01"), NODE2("NODE", "node_02"), AD("ActiveDirectory", "adIntern"), CERT("CertLoginModule",
 			"certAdIntern"), DB2("DB2", "db2Host"), JBOSS7MANAGEMENT("JBoss7Management", "jboss7Management_Ldap"), KEYSTORE("Keystore", "jspCertJKS"), MAIL("Mail", "mailrelay"), CLUSTER("ModCluster",
-			"proxy01"), TRUSTSTORE("Truststore", "mobiTrustJKS"), ZUSER("Zuser", "user001"), WS("Webservice", "ws1"), LB("LoadBalancer", "lb"), RUNTIME(ResourceTypeEntity.RUNTIME, "eap 6");
+			"proxy01"), TRUSTSTORE("Truststore", "mobiTrustJKS"), ZUSER("Zuser", "user001"), WS("Webservice", "ws1"), LB("LoadBalancer", "lb"), RUNTIME("RUNTIME", "eap 6");
 
 	public String type;
 	public String name;

@@ -21,15 +21,6 @@
 						</a4j:commandLink>
 					</li>
 				</ui:repeat>
-				<h:panelGroup rendered="${selectEditResourceTypeImpl.runtimeResourceType ne null}"><li
-						class="${selectEditResourceTypeImpl.isSelectedResourceType(selectEditResourceTypeImpl.runtimeResourceType.id) ? 'current' : ''}">
-					<a4j:commandLink value="#{selectEditResourceTypeImpl.runtimeResourceType.name}" execute="@this"
-									 render="selectEditResourceTypeComp ${renderItemsList}" id="runtimeResType">
-						<a4j:param
-								assignTo="#{selectEditResourceTypeImpl.selectedResourceTypeId}"
-								value="${selectEditResourceTypeImpl.runtimeResourceType.id}" />
-					</a4j:commandLink>
-				</li></h:panelGroup>
 			</ul>
 			</nav> <nav id="customResTypes" class="ajaxScroll">
 			<ul>

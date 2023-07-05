@@ -107,4 +107,7 @@
     <include file="changesets/model/refactoring/#653_add_audit_for_security_tables.xml" relativeToChangelogFile="true"/>
     <include file="changesets/model/refactoring/#622_add_unique_constraint_for_release_resourcegroup.xml" relativeToChangelogFile="true"/>
 
+    <!--1.17.31-->
+    <include file="changesets/data/config_admin_add_template_restriction.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

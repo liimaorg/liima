@@ -22,7 +22,7 @@ package ch.puzzle.itc.mobiliar.common.util;
 
 /**
  * Definiert ResourceType, welche im Bezug mit einer Applikation stehen. Diese
- * Resourcentypen werden NIE in einer Aufzälung von ResourcenTypen in einem
+ * Resourcentypen werden NIE in einer Aufzählung von ResourcenTypen in einem
  * Screen angezeigt.
  * 
  * @author bschwaller
@@ -30,7 +30,10 @@ package ch.puzzle.itc.mobiliar.common.util;
  */
 public enum DefaultResourceTypeDefinition {
 	//Runtime is defined on ResourceTypeEntity for some reason
-	APPLICATIONSERVER("Applicationserver", true), APPLICATION("Application", true), NODE("Node", false);
+	APPLICATIONSERVER("Applicationserver", true),
+	APPLICATION("Application", true),
+	NODE("Node", false),
+	RUNTIME("Runtime", false);
 
 	private final String displayName;
 	private final boolean exclude;

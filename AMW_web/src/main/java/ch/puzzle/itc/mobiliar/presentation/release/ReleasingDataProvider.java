@@ -122,11 +122,13 @@ public class ReleasingDataProvider implements Serializable {
 	public void onChangedResource(@Observes ResourceEntity resourceEntity) {
 		notDefinedReleases = releasing.getNotDefinedReleasesForResource(resourceEntity);
 		currentSelectedResource = resourceEntity;
-		canCreateNewRelease = permissionBoundary.hasPermission(Permission.RESOURCE, context.getCurrentContext(),
+		canCreateNewRelease = permissionBoundary.hasPermission(Permission.RESOURCE, null,
 				Action.CREATE, currentSelectedResource, null);
-		canChangeRelease = permissionBoundary.hasPermission(Permission.RELEASE, Action.UPDATE)
+		canChangeRelease = permissionBoundary.hasPermission(Permission.RELEASE, null,
+				Action.UPDATE, currentSelectedResource, null)
 				&& foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource);
-		canRemoveRelease = permissionBoundary.hasPermissionToRemoveInstanceOfResType(currentSelectedResource.getResourceType())
+		canRemoveRelease = permissionBoundary.hasPermission(Permission.RESOURCE, null,
+				Action.DELETE, currentSelectedResource, null)
 				&& foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource);
 
 	}

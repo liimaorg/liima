@@ -140,68 +140,11 @@
 							<f:facet name="header">
 								<h:outputText value="Release" />
 							</f:facet>
-							<h:outputText value="#{appServer.resource.release.name}" />
+							<mobi:editResourceLink resId="#{appServer.resource.id}" linkLabel="#{appServer.resource.release.name}" editPermission="RESOURCE" resourceType="APPLICATIONSERVER"/>
 							<ui:repeat var="app"
 								value="${appServer.relatedResources}">
 								<h:panelGroup style="padding-left: 20px; white-space: nowrap" layout="block">
-									<h:outputText value="${app.release.name}"/>
-								</h:panelGroup>
-							</ui:repeat>
-						</h:column>
-
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="Edit" />
-							</f:facet>
-
-							<h:panelGroup rendered="#{appServer.resource.deletable}">
-								<h:link outcome="editResourceView" value="Edit"
-									onclick="showLoader();"
-									rendered="${securityDataProvider.hasPermissionForResourceType('RESOURCE', 'READ', 'APPLICATIONSERVER')}">
-									<f:param name="id" value="#{appServer.resource.id}" />
-									<f:param name="ctx"
-										value="${contextDataProvider.globalContextId}" />
-								</h:link>
-							</h:panelGroup>
-							<ui:repeat var="app"
-								value="${appServer.relatedResources}">
-								<h:panelGroup>
-									<br />
-									<h:link outcome="editResourceView" value="Edit"
-										onclick="showLoader();"
-										rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'READ', 'APPLICATION')}">
-										<f:param name="id" value="${app.id}" />
-										<f:param name="ctx"
-											value="${contextDataProvider.globalContextId}" />
-									</h:link>
-								</h:panelGroup>
-							</ui:repeat>
-						</h:column>
-						<h:column
-							rendered="#{securityDataProvider.hasPermissionForResourceType('RESOURCE', 'DELETE', 'APPLICATION') or securityDataProvider.hasPermissionForResourceType('RESOURCE', 'DELETE', 'APPLICATIONSERVER')}">
-							<f:facet name="header">
-								<h:outputText value="Delete" />
-							</f:facet>
-
-							<a4j:commandLink value="Delete"
-								rendered="#{applistView.canShowDeleteAppServer(appServer)}"
-								onclick="showLoader();"
-								render="appServerDeleteRelationOverview"
-								oncomplete="$('#removeSelectedAppServerId').val(${appServer.resource.id});${rich:component('confirmAppServerDeletePopupPanel')}.show();hideLoader();">
-								<a4j:param assignTo="#{resourceDependenciesView.resourceIdViewParam}" value="${appServer.resource.id}" name="x" />
-							</a4j:commandLink>
-							<ui:repeat var="app"
-								value="${appServer.relatedResources}">
-								<h:panelGroup>
-									<br />
-									<a4j:commandLink value="Delete"
-										rendered="#{applistView.canShowDeleteApp(app)}"
-										onclick="showLoader();"
-										render="appDeleteRelationOverview"
-										oncomplete="$('#removeSelectedAppId').val(${app.id});${rich:component('confirmAppDeletePopupPanel')}.show();hideLoader();">
-										<a4j:param assignTo="#{resourceDependenciesView.resourceIdViewParam}"
-											value="${app.id}" name="x" />
-									</a4j:commandLink>
+									<mobi:editResourceLink resId="#{app.id}" linkLabel="${app.release.name}" editPermission="RESOURCE" resourceType="APPLICATION"/>
 								</h:panelGroup>
 							</ui:repeat>
 						</h:column>

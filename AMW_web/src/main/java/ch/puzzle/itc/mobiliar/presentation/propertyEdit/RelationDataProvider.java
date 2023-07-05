@@ -277,7 +277,7 @@ public class RelationDataProvider implements Serializable {
         addApplicationToAppServerMode = false;
         addRuntimeToAppServerMode = true;
 
-        ResourceType t = resourceTypeDataProvider.getByName(ResourceTypeEntity.RUNTIME);
+        ResourceType t = resourceTypeDataProvider.getByName(DefaultResourceTypeDefinition.RUNTIME.name());
         resourceTypes = Collections.emptyList();
         currentResourceType = t != null ? t.getEntity() : null;
 
@@ -297,7 +297,7 @@ public class RelationDataProvider implements Serializable {
     public List<NamedIdentifiable> loadAllRuntimeEnvironments() {
         List<NamedIdentifiable> result = new ArrayList<>();
         result.addAll(resourceGroupPersistenceService.loadGroupsForTypeName(
-                ResourceTypeEntity.RUNTIME, null));
+                DefaultResourceTypeDefinition.RUNTIME.name(), null));
         Collections.sort(result, nameComparator);
 
         return result;

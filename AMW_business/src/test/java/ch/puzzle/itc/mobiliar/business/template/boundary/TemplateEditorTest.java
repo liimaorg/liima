@@ -2,6 +2,7 @@ package ch.puzzle.itc.mobiliar.business.template.boundary;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
@@ -25,6 +26,7 @@ import javax.persistence.EntityManager;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,6 +52,8 @@ public class TemplateEditorTest {
         templateDescriptorEntity = new TemplateDescriptorEntity();
         templateDescriptorEntity.setName("template-name");
         templateDescriptorEntity.setName("a/valid/target-path");
+        templateDescriptorEntity.getOwnerResource();
+        //templateDescriptorEntity.setMaste
     }
 
     @Test
@@ -147,7 +151,9 @@ public class TemplateEditorTest {
     @Test
     public void shouldRejectSaveTemplateForResourceType_missingPermissionForActionCreate() {
         // given
-        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, Action.CREATE);
+        ResourceTypeEntity resourceTypeEntity = new ResourceTypeEntity();
+        doReturn(resourceTypeEntity).when(entityManager).find(ResourceTypeEntity.class, 1);
+        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.CREATE, null, resourceTypeEntity);
 
         // when
         NotAuthorizedException exception = assertThrows(NotAuthorizedException.class,
@@ -158,14 +164,16 @@ public class TemplateEditorTest {
 
         // then
         assertThat(exception.getMessage(),
-                   is("Not Authorized! You're not allowed to create/ modify resource type templates!"));
+                   is("Not Authorized! You're not allowed to create/modify resource type templates!"));
     }
 
     @Test
     public void shouldRejectSaveTemplateForResourceType_missingPermissionForActionUpdate() {
         // given
+        ResourceTypeEntity resourceTypeEntity = new ResourceTypeEntity();
+        doReturn(resourceTypeEntity).when(entityManager).find(ResourceTypeEntity.class, 1);
         templateDescriptorEntity.setId(1);
-        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, Action.UPDATE);
+        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.UPDATE, null, resourceTypeEntity);
 
         // when
         NotAuthorizedException exception = assertThrows(NotAuthorizedException.class,
@@ -176,14 +184,14 @@ public class TemplateEditorTest {
 
         // then
         assertThat(exception.getMessage(),
-                   is("Not Authorized! You're not allowed to create/ modify resource type templates!"));
+                   is("Not Authorized! You're not allowed to create/modify resource type templates!"));
     }
 
     @Test
     public void shouldAllowSaveTemplateForResourceType_actionAdd() throws AMWException {
         // given
-        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, Action.CREATE);
         ResourceTypeEntity resourceTypeEntity = new ResourceTypeEntity();
+        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.CREATE, null, resourceTypeEntity);
         doReturn(resourceTypeEntity).when(entityManager).find(ResourceTypeEntity.class, 1);
         doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceTypeEntity);
 
@@ -197,10 +205,10 @@ public class TemplateEditorTest {
     @Test
     public void shouldAllowSaveTemplateForResourceType_actionUpdate() throws AMWException {
         // given
-        templateDescriptorEntity.setId(1);
-        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, Action.UPDATE);
         ResourceTypeEntity resourceTypeEntity = new ResourceTypeEntity();
         doReturn(resourceTypeEntity).when(entityManager).find(ResourceTypeEntity.class, 1);
+        templateDescriptorEntity.setId(1);
+        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.UPDATE, null, resourceTypeEntity);
         doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceTypeEntity);
 
         // when
@@ -241,8 +249,11 @@ public class TemplateEditorTest {
 
     @Test
     public void shouldRejectSaveTemplateForResource_missingPermissionForActionCreate() {
-        // given
-        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, Action.CREATE);
+        // given        
+        ResourceEntity resourceEntity = new ResourceEntity();
+        resourceEntity.setResourceGroup(new ResourceGroupEntity());
+        doReturn(resourceEntity).when(entityManager).find(ResourceEntity.class, 1);
+        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.CREATE, resourceEntity.getResourceGroup(), null);
 
         // when
         NotAuthorizedException exception = assertThrows(NotAuthorizedException.class,
@@ -253,14 +264,17 @@ public class TemplateEditorTest {
 
         // then
         assertThat(exception.getMessage(),
-                   is("Not Authorized! You're not allowed to create/ modify resource templates!"));
+                   is("Not Authorized! You're not allowed to create/modify resource templates!"));
     }
 
     @Test
     public void shouldRejectSaveTemplateForResource_missingPermissionForActionUpdate() {
         // given
+        ResourceEntity resourceEntity = new ResourceEntity();
+        resourceEntity.setResourceGroup(new ResourceGroupEntity());
+        doReturn(resourceEntity).when(entityManager).find(ResourceEntity.class, 1);
         templateDescriptorEntity.setId(1);
-        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, Action.UPDATE);
+        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
 
         // when
         NotAuthorizedException exception = assertThrows(NotAuthorizedException.class,
@@ -271,14 +285,15 @@ public class TemplateEditorTest {
 
         // then
         assertThat(exception.getMessage(),
-                   is("Not Authorized! You're not allowed to create/ modify resource templates!"));
+                   is("Not Authorized! You're not allowed to create/modify resource templates!"));
     }
 
     @Test
     public void shouldAllowSaveTemplateForResource_actionAdd() throws AMWException {
         // given
-        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, Action.CREATE);
         ResourceEntity resourceEntity = new ResourceEntity();
+        resourceEntity.setResourceGroup(new ResourceGroupEntity());
+        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.CREATE, resourceEntity.getResourceGroup(), null);
         doReturn(resourceEntity).when(entityManager).find(ResourceEntity.class, 1);
         doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceEntity);
 
@@ -292,9 +307,10 @@ public class TemplateEditorTest {
     @Test
     public void shouldAllowSaveTemplateForResource_actionUpdate() throws AMWException {
         // given
-        templateDescriptorEntity.setId(1);
-        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, Action.UPDATE);
         ResourceEntity resourceEntity = new ResourceEntity();
+        resourceEntity.setResourceGroup(new ResourceGroupEntity());
+        templateDescriptorEntity.setId(1);
+        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
         doReturn(resourceEntity).when(entityManager).find(ResourceEntity.class, 1);
         doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceEntity);
 
@@ -308,7 +324,6 @@ public class TemplateEditorTest {
     @Test
     public void shouldDoNothingSaveTemplateForRelation_relationIdIsNull() throws AMWException {
         // given
-
         // when
         templateEditor.saveTemplateForRelation(templateDescriptorEntity, null, true);
 
@@ -319,7 +334,13 @@ public class TemplateEditorTest {
     @Test
     public void shouldRejectSaveTemplateForRelation_noPermissionForResource() throws AMWException {
         // given
-        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, Action.UPDATE);
+        AbstractResourceRelationEntity resourceRelation = mock(AbstractResourceRelationEntity.class);
+        ResourceEntity resourceEntity = new ResourceEntity();
+        resourceEntity.setResourceGroup(new ResourceGroupEntity());
+
+        doReturn(resourceRelation).when(relationService).getResourceRelation(1);
+        doReturn(resourceEntity).when(resourceRelation).getMasterResource();
+        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
 
         // when
         NotAuthorizedException exception = assertThrows(NotAuthorizedException.class, () ->
@@ -333,10 +354,13 @@ public class TemplateEditorTest {
     @Test
     public void shouldAllowSaveTemplateForRelation_isResourceEdit() throws AMWException {
         // given
-        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, Action.UPDATE);
         AbstractResourceRelationEntity resourceRelation = mock(AbstractResourceRelationEntity.class);
+        ResourceEntity resourceEntity = new ResourceEntity();
+        resourceEntity.setResourceGroup(new ResourceGroupEntity());
 
         doReturn(resourceRelation).when(relationService).getResourceRelation(1);
+        doReturn(resourceEntity).when(resourceRelation).getMasterResource();
+        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
         doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceRelation);
 
         // when
@@ -349,7 +373,12 @@ public class TemplateEditorTest {
     @Test
     public void shouldRejectSaveTemplateForRelation_noPermissionForResourceType() throws AMWException {
         // given
-        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, Action.UPDATE);
+        ResourceRelationTypeEntity resourceTypeRelation = mock(ResourceRelationTypeEntity.class);
+        ResourceTypeEntity resourceTypeEntity = new ResourceTypeEntity();
+        doReturn(resourceTypeRelation).when(relationService).getResourceTypeRelation(1);
+        doReturn(resourceTypeEntity).when(resourceTypeRelation).getResourceTypeA();
+
+        doReturn(false).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.UPDATE, null, resourceTypeEntity);
 
         // when
         NotAuthorizedException exception = assertThrows(NotAuthorizedException.class, () ->
@@ -363,9 +392,12 @@ public class TemplateEditorTest {
     @Test
     public void shouldAllowSaveTemplateForRelation_notResourceEdit() throws AMWException {
         // given
-        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, Action.UPDATE);
-        ResourceRelationTypeEntity resourceTypeRelation = new ResourceRelationTypeEntity();
+        ResourceRelationTypeEntity resourceTypeRelation = mock(ResourceRelationTypeEntity.class);
+        ResourceTypeEntity resourceTypeEntity = new ResourceTypeEntity();
         doReturn(resourceTypeRelation).when(relationService).getResourceTypeRelation(1);
+        doReturn(resourceTypeEntity).when(resourceTypeRelation).getResourceTypeA();
+        
+        doReturn(true).when(permissionService).hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.UPDATE, null, resourceTypeEntity);
         doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceTypeRelation);
 
         // when

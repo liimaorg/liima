@@ -130,7 +130,7 @@ public class DeployScreenController {
 
     public List<ResourceGroupEntity> loadRuntimesGroups() {
         return resourceGroupLocator.getGroupsForType(
-                ResourceTypeEntity.RUNTIME,
+                DefaultResourceTypeDefinition.RUNTIME.name(),
                 userSettings.getMyAMWFilter(), false, true);
     }
 
