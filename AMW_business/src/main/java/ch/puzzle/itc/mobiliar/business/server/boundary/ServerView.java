@@ -167,7 +167,7 @@ public class ServerView {
 						cb.isNull(asType.get("name")) //nodes without appServer
 					),
 				cb.or(
-						cb.equal(runtimeType.get("name"), ResourceTypeEntity.RUNTIME),
+						cb.equal(runtimeType.get("name"), DefaultResourceTypeDefinition.RUNTIME.name()),
 						cb.isNull(runtimeType.get("name"))
 					),
 				cb.isNotNull(nodeProp.get("value")), 
@@ -242,7 +242,7 @@ public class ServerView {
 					cb.equal(nodeType.get("name"), DefaultResourceTypeDefinition.NODE.name()),
 					cb.equal(asType.get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name()),
 					cb.or(
-							cb.equal(runtimeType.get("name"), ResourceTypeEntity.RUNTIME),
+							cb.equal(runtimeType.get("name"), DefaultResourceTypeDefinition.RUNTIME.name()),
 							cb.isNull(runtimeType.get("name"))
 						),
 					cb.isNotNull(asProp.get("value")), 

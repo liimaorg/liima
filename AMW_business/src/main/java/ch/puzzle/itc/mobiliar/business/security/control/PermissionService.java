@@ -421,12 +421,13 @@ public class PermissionService implements Serializable {
             if (restrictionEntity.getPermission().getValue().equals(permissionName)) {
                 // context null means no check on context required - so any context is ok
                 if (context == null) {
-                		if(hasRequiredUserRestriction(action, resourceGroup, resourceType, restrictionEntity)) {
-                			return true;
-                		}
+                    if (hasRequiredUserRestriction(action, resourceGroup, resourceType, restrictionEntity)) {
+                        return true;
+                    }
                 }
-                if(hasRequiredUserRestrictionOnAllContext(context, action, resourceGroup, resourceType, restrictionEntity)) {
-                		return true;
+                if (hasRequiredUserRestrictionOnAllContext(context, action, resourceGroup, resourceType,
+                        restrictionEntity)) {
+                    return true;
                 }
             }
         }
@@ -448,12 +449,12 @@ public class PermissionService implements Serializable {
         if (sessionContext == null) {
             return false;
         }
-        getUserRestrictions(getCurrentUserName());
-        if (!userRestrictions.get(getCurrentUserName()).isEmpty()) {
-            for (RestrictionEntity restrictionEntity : userRestrictions.get(getCurrentUserName())) {
-                if (restrictionEntity.getPermission().getValue().equals(permissionName)) {
-                    return hasRequiredUserRestrictionOnAllContext(null, action, resourceGroup, resourceType, restrictionEntity);
-                }
+        for (RestrictionEntity restrictionEntity : getUserRestrictionsForLoggedInUser()) {
+            if (!restrictionEntity.getPermission().getValue().equals(permissionName)) {
+                continue;
+            }
+            if (hasRequiredUserRestrictionOnAllContext(null, action, resourceGroup, resourceType, restrictionEntity)) {
+                return true;
             }
         }
         return false;
@@ -465,16 +466,17 @@ public class PermissionService implements Serializable {
      *
      * @param permissionName
      * @param action
-     * @param resourceGroup
+     * @param resource
      * @param resourceType
      * @param allowedRoles
      * @param entry
      */
-    private void matchPermissions(String permissionName, Action action, ResourceGroupEntity resourceGroup, ResourceTypeEntity resourceType, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
+    private void matchPermissions(String permissionName, Action action, ResourceGroupEntity resource, ResourceTypeEntity resourceType, List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry) {
+        boolean allowNull = resource == null && resourceType == null;
         String roleName = entry.getKey();
         for (RestrictionDTO restrictionDTO : entry.getValue()) {
             if (restrictionDTO.getPermissionName().equals(permissionName) && hasPermissionForAction(restrictionDTO.getRestriction(), action)
-                    && hasPermissionForResource(restrictionDTO.getRestriction(), resourceGroup) && hasPermissionForResourceType(restrictionDTO.getRestriction(), resourceType)
+                    && hasPermissionForResource(restrictionDTO.getRestriction(), resource, allowNull) && hasPermissionForResourceType(restrictionDTO.getRestriction(), resourceType, allowNull)
                     && hasPermissionForDefaultResourceType(restrictionDTO.getRestriction(), resourceType)) {
                 allowedRoles.add(roleName);
             }
@@ -516,8 +518,9 @@ public class PermissionService implements Serializable {
     private void checkContextAndActionAndResource(ContextEntity context, Action action, ResourceGroupEntity resource, ResourceTypeEntity resourceType,
                                                   List<String> allowedRoles, Map.Entry<String, List<RestrictionDTO>> entry,
                                                   RestrictionEntity restriction) {
+        boolean allowNull = resource == null && resourceType == null;
         if (hasPermissionForContext(restriction, context) && hasPermissionForAction(restriction, action) &&
-                hasPermissionForResource(restriction, resource) && hasPermissionForResourceType(restriction, resourceType)
+                hasPermissionForResource(restriction, resource, allowNull) && hasPermissionForResourceType(restriction, resourceType, allowNull)
                 && hasPermissionForDefaultResourceType(restriction, resourceType)) {
             allowedRoles.add(entry.getKey());
         } else if (context != null && context.getParent() != null) {
@@ -536,8 +539,9 @@ public class PermissionService implements Serializable {
      */
     private boolean hasRequiredUserRestrictionOnAllContext(ContextEntity context, Action action, ResourceGroupEntity resource,
                                                            ResourceTypeEntity resourceType, RestrictionEntity restriction) {
+        boolean allowNull = resource == null && resourceType == null;
         if (hasPermissionForContext(restriction, context) && hasPermissionForAction(restriction, action) &&
-                hasPermissionForResource(restriction, resource) && hasPermissionForResourceType(restriction, resourceType)
+                hasPermissionForResource(restriction, resource, allowNull) && hasPermissionForResourceType(restriction, resourceType, allowNull)
                 && hasPermissionForDefaultResourceType(restriction, resourceType)) {
             return true;
         } else if (context != null && context.getParent() != null) {
@@ -558,8 +562,9 @@ public class PermissionService implements Serializable {
      */
     private boolean hasRequiredUserRestriction(Action action, ResourceGroupEntity resource,
                                                ResourceTypeEntity resourceType, RestrictionEntity restriction) {
-        return (hasPermissionForAction(restriction, action) && hasPermissionForResource(restriction, resource)
-                && hasPermissionForResourceType(restriction, resourceType)
+        boolean allowNull = resource == null && resourceType == null;
+        return (hasPermissionForAction(restriction, action) && hasPermissionForResource(restriction, resource, allowNull)
+                && hasPermissionForResourceType(restriction, resourceType, allowNull)
                 && hasPermissionForDefaultResourceType(restriction, resourceType));
     }
 
@@ -605,10 +610,16 @@ public class PermissionService implements Serializable {
      *
      * @param restriction
      * @param resourceGroup
+     * @param allowNull: Allow the resourceType to be null. allowNull should only be set if res and res type are null.
      */
-    private boolean hasPermissionForResource(RestrictionEntity restriction, ResourceGroupEntity resourceGroup) {
-        return resourceGroup == null || restriction.getResourceGroup() == null ||
-                restriction.getResourceGroup().getId().equals(resourceGroup.getId());
+    private boolean hasPermissionForResource(RestrictionEntity restriction, ResourceGroupEntity resourceGroup, boolean allowNull) {
+        if (restriction.getResourceGroup() == null) {
+            return true;
+        }
+        if (resourceGroup == null) {
+            return allowNull;
+        }
+        return restriction.getResourceGroup().getId().equals(resourceGroup.getId());
     }
 
     /**
@@ -617,10 +628,14 @@ public class PermissionService implements Serializable {
      *
      * @param restriction
      * @param resourceType
+     * @param allowNull: Allow the resourceType to be null. allowNull should only be set if res and res type are null.
      */
-    private boolean hasPermissionForResourceType(RestrictionEntity restriction, ResourceTypeEntity resourceType) {
-        if (resourceType == null || restriction.getResourceType() == null) {
+    private boolean hasPermissionForResourceType(RestrictionEntity restriction, ResourceTypeEntity resourceType, boolean allowNull) {
+        if (restriction.getResourceType() == null) {
             return true;
+        }
+        if (resourceType == null) {
+            return allowNull;
         }
         if (restriction.getResourceType().getId().equals(resourceType.getId())) {
             return true;
@@ -649,15 +664,6 @@ public class PermissionService implements Serializable {
         // Only non DefaultTypes are allowed
         return restriction.getResourceTypePermission().equals(ResourceTypePermission.NON_DEFAULT_ONLY)
                 && !DefaultResourceTypeDefinition.contains(resourceType.getName());
-    }
-
-    /**
-     * Check if the user can delete instances of ResourceTypes
-     *
-     * @param resourceType
-     */
-    public boolean hasPermissionToRemoveInstanceOfResType(ResourceTypeEntity resourceType) {
-        return hasPermission(Permission.RESOURCE, Action.DELETE, resourceType);
     }
 
     /**
@@ -773,7 +779,7 @@ public class PermissionService implements Serializable {
                 }
             }
         }
-        List<RestrictionEntity> userRestrictions = getUserRestrictions(getCurrentUserName());
+        List<RestrictionEntity> userRestrictions = getUserRestrictionsForLoggedInUser();
         restrictions.addAll(userRestrictions);
         return restrictions;
     }
@@ -914,8 +920,9 @@ public class PermissionService implements Serializable {
      */
     private void similarByContextAndActionAndResource(ContextEntity context, Action action, ResourceGroupEntity resource, ResourceTypeEntity resourceType,
                                                       List<RestrictionEntity> similarRestrictions, RestrictionEntity existingRestriction) {
+        boolean allowNull = resource == null && resourceType == null;
         if (hasPermissionForContext(existingRestriction, context) && hasPermissionForAction(existingRestriction, action) &&
-                hasPermissionForResource(existingRestriction, resource) && hasPermissionForResourceType(existingRestriction, resourceType)
+                hasPermissionForResource(existingRestriction, resource, allowNull) && hasPermissionForResourceType(existingRestriction, resourceType, allowNull)
                 && hasPermissionForDefaultResourceType(existingRestriction, resourceType)) {
             similarRestrictions.add(existingRestriction);
         } else if (context != null && context.getParent() != null) {

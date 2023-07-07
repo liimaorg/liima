@@ -26,6 +26,9 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 import ch.puzzle.itc.mobiliar.business.utils.BaseRepository;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -36,6 +39,9 @@ public class RestrictionRepository extends BaseRepository<RestrictionEntity> {
     @Inject
     EntityManager entityManager;
 
+    @Inject
+    protected Logger log;
+
     /**
      * Persists a new RestrictionEntity and returns its id
      *
@@ -43,6 +49,9 @@ public class RestrictionRepository extends BaseRepository<RestrictionEntity> {
      * @return Id of the newly created RestrictionEntity
      */
     public Integer create(RestrictionEntity restriction) {
+        if (log.isLoggable(Level.FINE)) {
+            log.info("Creating restriction: " + restriction.toString());
+        }
         entityManager.persist(restriction);
         entityManager.flush();
         return restriction.getId();

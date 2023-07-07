@@ -1492,7 +1492,7 @@ public class DeploymentBoundary {
 
     private List<ResourceGroupEntity> getRuntimesGroups() {
         return resourceGroupLocator.getGroupsForType(
-                ResourceTypeEntity.RUNTIME, Collections.EMPTY_LIST, false, true);
+                DefaultResourceTypeDefinition.RUNTIME.name(), Collections.EMPTY_LIST, false, true);
     }
 
     private <K extends NamedIdentifiable> List<String> converToStringList(List<K> namedIdentifiables) {

@@ -32,6 +32,8 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
@@ -105,5 +107,28 @@ public class RestrictionEntity implements Serializable {
 
     public RestrictionEntity() {
         resourceTypePermission = ResourceTypePermission.ANY;
+    }
+
+    @Override
+    public String toString() {
+        ArrayList<String> params = new ArrayList<>();
+        params.add("id: " + id);
+        params.add(format("role", role, () -> role.getName()));
+        params.add(format("user", user, () -> user.getName()));
+        params.add(format("permission", permission, () -> permission.getValue()));
+        params.add("action: " + action);
+        params.add("resourceTypePermission: " + resourceTypePermission);
+        params.add(format("context", context, () -> context.getName()));
+        params.add(format("resourceType", resourceType, () -> resourceType.getName()));
+        params.add(format("resourceGroup", resourceGroup, () -> resourceGroup.getName()));
+
+        return String.join(", ", params);
+    }
+
+    private String format(String key, Object object, Supplier<String> value) {
+        if (object == null) {
+            return key + ": null";
+        }
+        return key + ": " + value.get();
     }
 }

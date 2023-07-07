@@ -29,21 +29,11 @@ import java.util.List;
 
 public abstract class SelectEditResourceType {
 
-	// -----------------------------------
-
 	private Integer selectedResourceTypeId;
 	private String newResourceTypeName;
 	private Integer newResourceTypeParentId;
 
 	protected abstract ResourceTypeDataProvider getResourceTypeDataProvider();
-
-	// -----------------------------------
-
-	// ---------------------------------------------
-
-	public ResourceType getRuntimeResourceType() {
-		return getResourceTypeDataProvider().getRuntimeResourceType();
-	}
 
 	public List<ResourceType> getPredefinedResourceTypes() {
 		return getResourceTypeDataProvider().getPredefinedResourceTypes();

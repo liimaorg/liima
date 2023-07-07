@@ -57,8 +57,6 @@ public class ResourceTypeDataProvider implements Serializable {
 	private List<ResourceType> rootResourceTypes = new ArrayList<ResourceType>();
 	private List<ResourceType> predefinedResourceTypes = new ArrayList<ResourceType>();
 	private List<ResourceType> allResourceTypes = new ArrayList<ResourceType>();
-     private ResourceType runtimeType;
-
 
 	@PostConstruct
 	public void load(){
@@ -72,16 +70,12 @@ public class ResourceTypeDataProvider implements Serializable {
 				if (r.isDefaultResourceType()) {
 					predefinedResourceTypes.add(r);
 				}
-				else if (r.getEntity().isRuntimeType()) {
-					runtimeType = r;
-				}
 				else {
 					rootResourceTypes.add(r);
 				}
 			}
 			allResourceTypes.add(r);
 		}
-
 	}
 
 
@@ -92,10 +86,6 @@ public class ResourceTypeDataProvider implements Serializable {
 			}
 		}
 		return null;
-	}
-
-     public ResourceType getRuntimeResourceType(){
-	    return runtimeType;
 	}
 
     /**
@@ -127,9 +117,8 @@ public class ResourceTypeDataProvider implements Serializable {
 
 	public List<ResourceType> getAllMainResourceTypes(){
 		List<ResourceType> result = new ArrayList<ResourceType>();
-	     result.addAll(getRootResourceTypes());
-		result.add(runtimeType);
-	     result.addAll(predefinedResourceTypes);
+	    result.addAll(getRootResourceTypes());
+	    result.addAll(predefinedResourceTypes);
 		return Collections.unmodifiableList(result);
 	}
 

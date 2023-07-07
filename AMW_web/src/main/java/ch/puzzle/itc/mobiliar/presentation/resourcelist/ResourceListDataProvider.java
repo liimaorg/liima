@@ -201,11 +201,6 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 		return (getSelectedResourceType() != null && getSelectedResourceType().isDefaultResourceType());
 	}
 
-	public boolean isRuntimeResourceType() {
-		return (getSelectedResourceType() != null && getSelectedResourceType().getEntity() != null && getSelectedResourceType()
-				.getEntity().isRuntimeType());
-	}
-
 	protected void removeResourceTypeAction() {
 		selectEditResourceTypeComp.removeResourceType();
 		selectEditResourceTypeComp.setSelectedResourceTypeId(null);
@@ -236,13 +231,6 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 	public boolean getCanCreateResourceInstance() {
 		return permissionBoundary.canCreateResourceInstance(getSelectedResourceType().getEntity());
 
-	}
-
-	public boolean getCanRemoveDefaultInstanceOfResType() {
-		if (getSelectedResourceType() != null) {
-			return permissionService.hasPermissionToRemoveInstanceOfResType(getSelectedResourceType().getEntity());
-		}
-		return false;
 	}
 
 	public SelectEditResourceType getSelectEditResourceTypeComp() {

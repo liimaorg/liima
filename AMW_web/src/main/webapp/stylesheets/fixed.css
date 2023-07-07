@@ -90,7 +90,7 @@ header{
 
 #main aside nav {
     background-color:transparent;
-    width:320px;
+    width:270px;
     flex: 1;
     -ms-flex: 1 1 auto;
     direction:rtl;
@@ -129,7 +129,7 @@ aside.popupNavigationComponent nav{
     background-color:#434343;
     width:250px;
     direction:ltr;
-    margin-right:70px; /*nav width - own width*/
+    margin-right:20px; /*nav width - own width*/
     padding-top:0px;
     padding-bottom:0px;
 }

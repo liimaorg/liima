@@ -169,7 +169,7 @@ public class CopyResource {
 		ReleaseEntity originRelease;
 		ResourceGroupEntity resourceGroup = resourceGroupRepository.getResourceGroupByName(resourceGroupName);
 		if (resourceGroup == null) {
-			throw new ResourceNotFoundException("No ResourceGroup with name " +resourceGroupName + " found");
+			throw new ResourceNotFoundException("No ResourceGroup with name " + resourceGroupName + " found");
 		}
 		try {
 			targetRelease = releaseLocator.getReleaseByName(targetReleaseName);

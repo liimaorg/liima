@@ -20,6 +20,24 @@
 
 package ch.puzzle.itc.mobiliar.business.template.boundary;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
+
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
@@ -33,11 +51,12 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
@@ -50,19 +69,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.SystemCallTemplate;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import java.util.*;
-import java.util.logging.Logger;
 
 @Stateless
 public class TemplateEditor {
@@ -139,15 +145,23 @@ public class TemplateEditor {
 		HasContexts<?> resourceRelation = null;
 		if (relationId != null) {
 			if (resourceEdit) {
+				AbstractResourceRelationEntity resRel = relationService.getResourceRelation(relationId);
+				resourceRelation = resRel;
 				permissionService.checkPermissionAndFireException(Permission.RESOURCE_TEMPLATE,
-																  Action.UPDATE,
-																  "update templates for resource relations");
-				resourceRelation = relationService.getResourceRelation(relationId);
+						null,
+						Action.UPDATE,
+						resRel.getMasterResource().getResourceGroup(),
+						null,
+						"update templates for resource relations");
 			} else {
+				ResourceRelationTypeEntity resTypRel = relationService.getResourceTypeRelation(relationId);
+				resourceRelation = resTypRel;
 				permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE_TEMPLATE,
-																  Action.UPDATE,
-																  "update templates for resource type relations");
-				resourceRelation = relationService.getResourceTypeRelation(relationId);
+						null,
+						Action.UPDATE,
+						null,
+						resTypRel.getResourceTypeA(),
+						"update templates for resource type relations");
 			}
 		}
 		if (resourceRelation != null) {
@@ -155,15 +169,18 @@ public class TemplateEditor {
 		}
 	}
 
-	@HasPermission(permission = Permission.RESOURCE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
 	public void saveTemplateForResource(TemplateDescriptorEntity template, ResourceEntity resourceEntity,
-										boolean testingMode) throws AMWException {
+			boolean testingMode) throws AMWException {
 		permissionService.assertHasPermissionShakedownTestMode(testingMode);
 		if (!testingMode) {
 			Action action = getAction(template);
-			permissionService.checkPermissionAndFireException(Permission.RESOURCE_TEMPLATE,
-															  action,
-															  "create/ modify resource templates");
+			permissionService.checkPermissionAndFireException(
+					Permission.RESOURCE_TEMPLATE,
+					null,
+					action,
+					resourceEntity.getResourceGroup(),
+					null,
+					"create/modify resource templates");
 		}
 		saveTemplate(template, resourceEntity);
 	}
@@ -171,6 +188,7 @@ public class TemplateEditor {
 	public void saveTemplateForResource(TemplateDescriptorEntity template, Integer resourceId,
 										boolean testingMode) throws AMWException {
 		ResourceEntity resourceEntity = entityManager.find(ResourceEntity.class, resourceId);
+		entityManager.find(ResourceEntity.class, resourceId);
 		this.saveTemplateForResource(template, resourceEntity, testingMode);
 	}
 
@@ -183,17 +201,20 @@ public class TemplateEditor {
 		this.saveTemplateForResource(template, resourceEntity, testingMode);
 	}
 
-	@HasPermission(permission = Permission.RESOURCETYPE_TEMPLATE, oneOfAction = {Action.UPDATE, Action.CREATE})
 	public void saveTemplateForResourceType(TemplateDescriptorEntity template, Integer resourceTypeId,
 											boolean testingMode) throws AMWException {
 		permissionService.assertHasPermissionShakedownTestMode(testingMode);
+		ResourceTypeEntity resourceTypeEntity = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 		if (!testingMode) {
 			Action action = getAction(template);
-			permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE_TEMPLATE,
-															  action,
-															  "create/ modify resource type templates");
+			permissionService.checkPermissionAndFireException(
+					Permission.RESOURCETYPE_TEMPLATE,
+					null,
+					action,
+					null,
+					resourceTypeEntity,
+					"create/modify resource type templates");
 		}
-		ResourceTypeEntity resourceTypeEntity = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 		saveTemplate(template, resourceTypeEntity);
 	}
 

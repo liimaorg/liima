@@ -45,7 +45,7 @@ public class CommonQueries {
 	}
 
 	public Query fetchAllRuntimes() {
-		return entityManager.createNamedQuery(ResourceGroupEntity.ALLRESOURCESBYTYPE_QUERY, ResourceGroupEntity.class).setParameter("restype", ResourceTypeEntity.RUNTIME);
+		return entityManager.createNamedQuery(ResourceGroupEntity.ALLRESOURCESBYTYPE_QUERY, ResourceGroupEntity.class).setParameter("restype", DefaultResourceTypeDefinition.RUNTIME.name());
 	}
 
 	public Query fetchAllNodes() {

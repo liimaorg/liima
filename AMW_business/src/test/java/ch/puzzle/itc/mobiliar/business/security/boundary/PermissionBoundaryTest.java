@@ -538,16 +538,6 @@ public class PermissionBoundaryTest {
     }
 
     @Test
-    public void shouldInvokeTheRightMethodOnPermissionServiceToCheckIfHasPermissionToRemoveInstanceOfResType() {
-        // given
-        ResourceTypeEntity resType = new ResourceTypeEntity();
-        // when
-        permissionBoundary.hasPermissionToRemoveInstanceOfResType(resType);
-        // then
-        verify(permissionService).hasPermissionToRemoveInstanceOfResType(resType);
-    }
-
-    @Test
     public void shouldInvokePermissionServiceWithCorrectParametersOnCanCopyFromResource() {
         // given
         ResourceEntity resource = new ResourceEntityBuilder().build();

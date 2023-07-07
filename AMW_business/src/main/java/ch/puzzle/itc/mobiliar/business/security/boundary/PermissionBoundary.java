@@ -279,10 +279,6 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermissionToAddRelatedResourceType(mergedResource);
     }
 
-    public boolean hasPermissionToRemoveInstanceOfResType(ResourceTypeEntity resourceType) {
-        return permissionService.hasPermissionToRemoveInstanceOfResType(resourceType);
-    }
-
     /**
      * Check that the user is config_admin, app_developer or shakedown_admin : shakedown_admin: can
      * modify(add/edit/delete) all testing templates config_admin: can modify(add/edit/delete) all templates
@@ -324,14 +320,23 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, action, null, type);
     }
 
+    public boolean canModifyTemplateOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId, Action action, boolean testingMode) {
+        if (testingMode) {
+            return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE);
+        }
+        // context is always global
+        if (resourceEntityId != null) {
+            ResourceEntity resource = resourceRepository.find(resourceEntityId);
+            return permissionService.hasPermission(Permission.RESOURCE_TEMPLATE, null, action, resource.getResourceGroup(), null);
+        }
+        ResourceTypeEntity type = resourceTypeRepository.find(resourceTypeEntityId);
+        return permissionService.hasPermission(Permission.RESOURCE_TEMPLATE, null, action, null, type);
+    }
+
     public boolean canCreateResourceInstance(DefaultResourceTypeDefinition type) {
         return canCreateResourceInstance(resourceTypeProvider.getOrCreateDefaultResourceType(type));
     }
 
-    /**
-     * @param type
-     * @return
-     */
     public boolean canCreateResourceInstance(ResourceTypeEntity type) {
         return permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, type);
     }
@@ -341,10 +346,6 @@ public class PermissionBoundary implements Serializable {
                 permissionService.hasPermission(Permission.RESOURCE, Action.UPDATE, resourceTypeProvider.getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER));
     }
 
-    /**
-     * @param resourceEntity
-     * @return
-     */
     public boolean canCopyFromResource(ResourceEntity resourceEntity) {
         return !(resourceEntity == null || resourceEntity.getResourceType() == null) &&
                 permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.ALL, resourceEntity.getResourceGroup(), resourceEntity.getResourceType());
