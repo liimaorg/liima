@@ -1230,6 +1230,47 @@ public class PermissionServiceTest {
 		Assert.assertTrue(result);
 	}
 
+	// Test for a bug where only the first restriction with the correct permissions name was checked
+	@Test
+	public void shouldSucceedIfAPermissionIsRequiredOnAllContextsAndGrantedToUserOnAllContextMulti() {
+		// given
+		ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().id(7).build();
+		ResourceGroupEntity resourceGroup1 = new ResourceGroupEntity();
+		resourceGroup1.setId(22);
+		resourceGroup1.setResourceType(resourceType);
+
+		ResourceGroupEntity resourceGroup2 = new ResourceGroupEntity();
+		resourceGroup2.setId(23);
+		resourceGroup2.setResourceType(resourceType);
+
+		when(sessionContext.isCallerInRole(CONFIG_ADMIN)).thenReturn(true);
+		when(sessionContext.getCallerPrincipal()).thenReturn(principal);
+
+		RestrictionEntity res1 = new RestrictionEntity();
+		res1.setAction(Action.ALL);
+		res1.setResourceGroup(resourceGroup1);
+		PermissionEntity perm1 = new PermissionEntity();
+		perm1.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res1.setPermission(perm1);
+
+		RestrictionEntity res2 = new RestrictionEntity();
+		res2.setAction(Action.ALL);
+		PermissionEntity perm = new PermissionEntity();
+		perm.setValue(Permission.RESOURCE_PROPERTY_DECRYPT.name());
+		res2.setPermission(perm);
+
+		myRoles = new HashMap<>();
+		permissionService.rolesWithRestrictions = myRoles;
+
+		when(permissionRepository.getUserWithRestrictions(anyString())).thenReturn(Arrays.asList(res1, res2));
+
+		// when
+		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup2, null);
+
+		// then
+		Assert.assertTrue(result);
+	}
+
 	@Test
 	public void shouldReturnFalseIfCallerHasNoDelegationPermission() {
 		// given

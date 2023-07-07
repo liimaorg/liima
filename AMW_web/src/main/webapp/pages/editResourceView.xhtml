@@ -50,6 +50,9 @@
                                      execute="@form"
                                      rendered="#{editResourceView.canSaveChanges()}" value="Save changes"/>
                 </li>
+                <h:panelGroup rendered="${(taggingDataProvider.canTagCurrentState and propertyEditDataProvider.applicationServer)
+                    or copyResourceDataProvider.canCopyResource
+                    or (copyResourceDataProvider.canCopyFromPredecessorResource and editResourceView.resourceType.applicationResourceType)}">
                 <li class="dropdown">
                     <button class="btn light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         More
@@ -105,6 +108,7 @@
                         </li>
                     </ul>
                 </li>
+                </h:panelGroup>
                 <li class="dropdown">
                     <button class="btn light dropdown-toggle" data-bs-toggle="dropdown">
                         Analyze

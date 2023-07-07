@@ -123,7 +123,8 @@ public class ReleasingDataProvider implements Serializable {
 		notDefinedReleases = releasing.getNotDefinedReleasesForResource(resourceEntity);
 		currentSelectedResource = resourceEntity;
 		canCreateNewRelease = permissionBoundary.hasPermission(Permission.RESOURCE, null,
-				Action.CREATE, currentSelectedResource, null);
+				Action.CREATE, currentSelectedResource, null) 
+				&& permissionBoundary.canCopyFromSpecificResource(currentSelectedResource, currentSelectedResource.getResourceGroup());
 		canChangeRelease = permissionBoundary.hasPermission(Permission.RELEASE, null,
 				Action.UPDATE, currentSelectedResource, null)
 				&& foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource);
