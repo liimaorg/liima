@@ -1,3 +1,18 @@
+# v1.17.31
+* fix several permission related issues [#701](https://github.com/liimaorg/liima/pull/701)
+  * runtime resource type is now an normal default resource type. Permissions for default resource types now apply to runtimes also.
+  * fix a bug where resource create permission on one resource would allow the creation of other resources: https://github.com/liimaorg/liima/security/advisories/GHSA-q4hh-r2m7-3c22
+  * the jsf views apps and resource list now don't have an edit and remove column. As a replacement the release column is now also a link to the resource. Adjusted the with of the side bar.
+  * fix several permissions bugs on the edit resource view and related screens:
+    * toggling of property encryption
+    * permissions on templates
+    * permission on add application to app server
+  * added missing permission RESOURCE_TEMPLATE to config_admin role in test database
+  * added several test to the permissionService
+* Update Angular, js deps and wildfly [#700](https://github.com/liimaorg/liima/pull/700)
+* AMW_web: set secure and http-only flags for cookie, make sure cookie isn't sent via url param [#694](https://github.com/liimaorg/liima/pull/694)
+* Bump guava from 30.1.1-jre to 32.0.0-jre [#693](https://github.com/liimaorg/liima/pull/693)
+
 # v1.17.30
 * editResourceView.xhtml: info popup of property doesn't work [#689](https://github.com/liimaorg/liima/issues/689)
 
