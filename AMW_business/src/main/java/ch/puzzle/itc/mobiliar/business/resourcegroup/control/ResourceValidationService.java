@@ -29,7 +29,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Validation logic for resources, resource groups and resource types
