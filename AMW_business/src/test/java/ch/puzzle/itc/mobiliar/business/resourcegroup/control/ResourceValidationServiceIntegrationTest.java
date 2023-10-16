@@ -67,14 +67,29 @@ public class ResourceValidationServiceIntegrationTest {
     @Test(expected = AMWException.class)
     public void testValidateResourceName() throws Exception {
         // given
-        String resourceName = "amw";
-        ResourceEntity resourceA = new ResourceEntityBuilder().withName(resourceName).build();
+        ResourceEntity resourceA = new ResourceEntityBuilder().withName("test").build();
+        ResourceEntity resourceB = new ResourceEntityBuilder().withName("amw").build();
+
+        entityManager.persist(resourceA);
+        entityManager.persist(resourceB);
+
+        assertNotNull(entityManager.find(ResourceEntity.class, resourceA.getId()));
+
+        // when
+        service.validateResourceName("amw", resourceA.getId());
+    }
+
+    @Test
+    public void testRenameResourceNameToSame() throws Exception {
+        // given
+        ResourceEntity resourceA = new ResourceEntityBuilder().withName("test").build();
+
         entityManager.persist(resourceA);
 
         assertNotNull(entityManager.find(ResourceEntity.class, resourceA.getId()));
 
         // when
-        service.validateResourceName(resourceName);
+        service.validateResourceName("test", resourceA.getId());
     }
 
     @Test
@@ -88,11 +103,11 @@ public class ResourceValidationServiceIntegrationTest {
         assertNotNull(entityManager.find(ResourceEntity.class, resourceA.getId()));
 
         // when
-        service.validateResourceName(newResourceName);
+        service.validateResourceName(newResourceName, resourceA.getId());
     }
 
     @Test
-    public void shouldAllowToAlterCaseOfResourceName() throws Exception {
+    public void shouldAllowToAlterCaseOfSameResource() throws Exception {
         // given
         String resourceName = "amw";
         String newResourceName = "AMW";
@@ -102,13 +117,32 @@ public class ResourceValidationServiceIntegrationTest {
         assertNotNull(entityManager.find(ResourceEntity.class, resourceA.getId()));
 
         // when
-        service.validateResourceName(newResourceName);
+        service.validateResourceName(newResourceName, resourceA.getId());
+    }
+
+    @Test(expected = AMWException.class)
+    public void shouldNotAllowToAlterCaseOfDifferentResource() throws AMWException {
+        // given
+
+        ResourceEntity resourceA = new ResourceEntityBuilder().withName("myapp").build();
+        entityManager.persist(resourceA);
+
+        ResourceEntity resourceB = new ResourceEntityBuilder().withName("myapp1").build();
+        entityManager.persist(resourceB);
+
+        service.validateResourceName("myApp", resourceB.getId());
     }
 
     @Test(expected = AMWException.class)
     public void testValidateResourceName_emptyName() throws Exception {
         // when
-        service.validateResourceName(null);
+        service.validateResourceName(null, null);
+    }
+
+    @Test(expected = AMWException.class)
+    public void testValidateResourceName_emptyId() throws Exception {
+        // when
+        service.validateResourceName("test", null);
     }
 
     @Test(expected = AMWException.class)
