@@ -369,7 +369,7 @@ public class PropertyEditor {
 
     private void verifyAndSetResourceName(String resourceName, ResourceEntity resource) throws AMWException {
         if (resourceName == null || !resourceName.equals(resource.getName())) {
-            resourceValidationService.validateResourceName(resourceName);
+            resourceValidationService.validateResourceName(resourceName, resource.getId());
             resource.setName(resourceName);
         }
     }

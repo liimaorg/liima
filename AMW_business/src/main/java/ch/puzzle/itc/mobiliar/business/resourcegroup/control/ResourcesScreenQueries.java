@@ -39,9 +39,10 @@ public class ResourcesScreenQueries {
 				.setParameter("resourceTypeName", resourceTypeName);
 	}
 	
-	public Query searchResourceByName(String resourceName) {
-		return entityManager.createQuery("from ResourceEntity as res where res.name like :resourceName")
-				.setParameter("resourceName", resourceName);
+	public Query searchOtherResourcesWithName(String resourceName, Integer id) {
+		return entityManager.createQuery("from ResourceEntity as res where lower(res.name) like lower(:resourceName) and res.id != :id")
+				.setParameter("resourceName", resourceName)
+				.setParameter("id", id);
 	}
 
 	public Query searchResourceBySoftlinkIdAndHasNotResourceGroupId(String softlinkId, Integer resourceGroupId){

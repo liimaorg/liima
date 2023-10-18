@@ -40,15 +40,19 @@ public class ResourceValidationService {
 
     /**
      * @param resourceName - the resource name to be validated
+     * @param id - the id of the resource
      * @throws AMWException - if the name is invalid, an AMW exception is thrown
      */
-    public void validateResourceName(String resourceName) throws AMWException {
+    public void validateResourceName(String resourceName, Integer id) throws AMWException {
         if (resourceName == null || resourceName.trim().isEmpty()) {
             throw new AMWException("The resource name must not be empty!");
         }
+        if (id == null) {
+            throw new AMWException("The resource id must not be empty!");
+        }
         // Check if a resource with the same name already exists...
         List<ResourceEntity> resourceEntities = QueryUtils.fetch(ResourceEntity.class,
-                  queries.searchResourceByName(resourceName), 0, -1);
+                  queries.searchOtherResourcesWithName(resourceName, id), 0, -1);
         if (resourceEntities != null) {
             for (ResourceEntity resourceEntity : resourceEntities) {
                 if (resourceEntity.getName().equalsIgnoreCase(resourceName)) {
