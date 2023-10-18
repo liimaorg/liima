@@ -52,7 +52,7 @@ public class ResourceValidationService {
         }
         // Check if a resource with the same name already exists...
         List<ResourceEntity> resourceEntities = QueryUtils.fetch(ResourceEntity.class,
-                  queries.searchResourceByName(resourceName, id), 0, -1);
+                  queries.searchOtherResourcesWithName(resourceName, id), 0, -1);
         if (resourceEntities != null) {
             for (ResourceEntity resourceEntity : resourceEntities) {
                 if (resourceEntity.getName().equalsIgnoreCase(resourceName)) {
