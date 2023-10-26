@@ -282,8 +282,7 @@ public class EditTemplateView implements Serializable {
 
     private void saveTemplate() throws AMWException {
         if (relationIdForTemplate != null) {
-            templateEditor.saveTemplateForRelation(template, relationIdForTemplate,
-                    resourceId != null);
+            templateEditor.saveTemplateForRelation(template, relationIdForTemplate, resourceId != null);
             return;
         }
         if (resourceId == null) {
