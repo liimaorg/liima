@@ -36,10 +36,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Application;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ApplicationServer;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.*;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
@@ -362,60 +359,16 @@ public class ResourceRelationService implements Serializable{
 
 	private void doRemoveResourceRelationForAllReleases(Integer relationId) throws ResourceNotFoundException {
 
-		// check for Consumed and ProvidedRelations
 		AbstractResourceRelationEntity relation = getResourceRelation(relationId);
 
 		if (relation != null) {
-			boolean provided = (relation instanceof ProvidedResourceRelationEntity);
-			Set<ResourceEntity> slaveResources = relation.getSlaveResource().getResourceGroup()
-					.getResources();
-
-			List<AbstractResourceRelationEntity> relations;
-			if (provided) {
-				relations = getProvidedRelationsByMasterAndSlave(relation.getMasterResource(),
-						slaveResources, relation.getIdentifier());
-			}
-			else {
-				relations = getConsumedRelationsByMasterAndSlave(relation.getMasterResource(),
-						slaveResources, relation.getIdentifier());
-			}
-
-			boolean hasResourceIdentifier = !StringUtils.isEmpty(relation.getIdentifier());
-			boolean hasResourceTypeIdentifier = !StringUtils.isEmpty(relation.getResourceRelationType()
-					.getIdentifier());
-
-			for (AbstractResourceRelationEntity rel : relations) {
-				if (isMatchingRelation(relation, hasResourceIdentifier, hasResourceTypeIdentifier, rel)) {
-					relation.getMasterResource().removeRelation(rel);
-					relation.getSlaveResource().removeSlaveRelation(rel);
-					entityManager.remove(rel);
-					log.info("Relation between resourceId: " + relation.getMasterResource().getId()
-							+ " and resourceId: " + rel.getSlaveResource().getId() + " removed");
-				}
-			}
+			entityManager.remove(relation);
+			log.info("Relation between resourceId: " + relation.getMasterResource().getId()
+					+ " and resourceId: " + relation.getSlaveResource().getId() + " removed");
 		}
 		else {
 			throw new ResourceNotFoundException("Relation not found");
 		}
-	}
-
-	private boolean isMatchingRelation(AbstractResourceRelationEntity relation, boolean hasResourceIdentifier,
-									   boolean hasResourceTypeIdentifier, AbstractResourceRelationEntity rel) {
-		if (hasResourceIdentifier && relation.getIdentifier().equals(rel.getIdentifier())) {
-            return true;
-        }
-        else if (hasResourceTypeIdentifier
-                && rel.getResourceRelationType() != null
-                && relation.getResourceRelationType().getIdentifierOrTypeBName()
-                .equals(rel.getResourceRelationType().getIdentifierOrTypeBName())) {
-            return true;
-        }
-        else if (rel.getIdentifier() == null
-                && (rel.getResourceRelationType() == null || rel.getResourceRelationType()
-                .getIdentifier() == null)) {
-            return true;
-        }
-		return false;
 	}
 
 	protected List<AbstractResourceRelationEntity> getConsumedRelationsByMasterAndSlave(
