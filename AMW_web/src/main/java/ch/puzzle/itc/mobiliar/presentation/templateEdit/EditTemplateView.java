@@ -24,7 +24,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownStpService;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownStpEntity;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
@@ -283,13 +282,14 @@ public class EditTemplateView implements Serializable {
 
     private void saveTemplate() throws AMWException {
         if (relationIdForTemplate != null) {
-            templateEditor.saveTemplateForRelation(template, relationIdForTemplate,
-                                                   resourceId != null);
-        } else if (resourceId == null) {
-            templateEditor.saveTemplateForResourceType(template, resourceTypeId, settings.isTestingMode());
-        } else {
-            templateEditor.saveTemplateForResource(template, resourceId, settings.isTestingMode());
+            templateEditor.saveTemplateForRelation(template, relationIdForTemplate, resourceId != null);
+            return;
         }
+        if (resourceId == null) {
+            templateEditor.saveTemplateForResourceType(template, resourceTypeId, settings.isTestingMode());
+            return;
+        }
+        templateEditor.saveTemplateForResource(template, resourceId, settings.isTestingMode());
     }
 
     public boolean canModifyTemplates() {

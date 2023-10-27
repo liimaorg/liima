@@ -55,9 +55,11 @@
                                 <span class="meta ellipsisRight inlineBlock width100" title="#{instanceTemplate.targetPath}">#{instanceTemplate.targetPath}</span>
                             </h:column>
                             <h:column rendered="#{templateEditDataProvider.canRead}">
-                                <h:link outcome="editTemplateView" includeViewParams="true">
+                                <h:link outcome="editTemplateView" includeViewParams="false">
                                     <f:param name="rel" value="#{!cc.attrs.isRelation ? null : editResourceView.relationIdViewParam}"/>
+                                    <f:param name="id" value="#{editResourceView.resourceIdFromParam}" />
                                     <f:param name="templ" value="${instanceTemplate.id}" />
+                                    <f:viewParam name="lnWrap" value="#{editTemplateView.lineWrapping}" />
                                 Edit
                             </h:link>
                             </h:column>

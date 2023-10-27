@@ -142,31 +142,37 @@ public class TemplateEditor {
 	public <T extends HasContexts<?>> void saveTemplateForRelation(TemplateDescriptorEntity template,
 																   Integer relationId,
 																   boolean resourceEdit) throws AMWException {
-		HasContexts<?> resourceRelation = null;
-		if (relationId != null) {
-			if (resourceEdit) {
-				AbstractResourceRelationEntity resRel = relationService.getResourceRelation(relationId);
-				resourceRelation = resRel;
-				permissionService.checkPermissionAndFireException(Permission.RESOURCE_TEMPLATE,
-						null,
-						Action.UPDATE,
-						resRel.getMasterResource().getResourceGroup(),
-						null,
-						"update templates for resource relations");
-			} else {
-				ResourceRelationTypeEntity resTypRel = relationService.getResourceTypeRelation(relationId);
-				resourceRelation = resTypRel;
-				permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE_TEMPLATE,
-						null,
-						Action.UPDATE,
-						null,
-						resTypRel.getResourceTypeA(),
-						"update templates for resource type relations");
-			}
+		if (relationId == null) {
+			return;
 		}
+		HasContexts<?> resourceRelation = getResourceRelationAndCheckPermission(relationId, resourceEdit);
 		if (resourceRelation != null) {
 			saveTemplate(template, resourceRelation);
 		}
+	}
+
+	private HasContexts<?> getResourceRelationAndCheckPermission(Integer relationId, boolean resourceEdit) {
+		HasContexts<?> resourceRelation;
+		if (resourceEdit) {
+			AbstractResourceRelationEntity resRel = relationService.getResourceRelation(relationId);
+			resourceRelation = resRel;
+			permissionService.checkPermissionAndFireException(Permission.RESOURCE_TEMPLATE,
+					null,
+					Action.UPDATE,
+					resRel.getMasterResource().getResourceGroup(),
+					null,
+					"update templates for resource relations");
+		} else {
+			ResourceRelationTypeEntity resTypRel = relationService.getResourceTypeRelation(relationId);
+			resourceRelation = resTypRel;
+			permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE_TEMPLATE,
+					null,
+					Action.UPDATE,
+					null,
+					resTypRel.getResourceTypeA(),
+					"update templates for resource type relations");
+		}
+		return resourceRelation;
 	}
 
 	public void saveTemplateForResource(TemplateDescriptorEntity template, ResourceEntity resourceEntity,
