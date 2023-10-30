@@ -101,7 +101,7 @@ Comparable<ResourceTypeEntity> {
 	@OneToMany(mappedBy = "resourceTypeB", cascade = REMOVE)
 	Set<ResourceRelationTypeEntity> resourceRelationTypesB;
 
-	@OneToMany(mappedBy = "resourceType", cascade = PERSIST)
+	@OneToMany(mappedBy = "resourceType", cascade = ALL)
 	@Setter
 	private Set<AmwFunctionEntity> functions;
 

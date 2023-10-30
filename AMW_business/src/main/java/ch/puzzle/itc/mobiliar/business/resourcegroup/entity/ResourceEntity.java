@@ -54,6 +54,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -167,7 +168,7 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	private Set<DeploymentEntity> deploymentsOfRuntime;
 
 
-	@OneToMany(mappedBy = "resource", cascade = PERSIST)
+	@OneToMany(mappedBy = "resource", cascade = ALL)
 	@Setter
 	private Set<AmwFunctionEntity> functions;
 
