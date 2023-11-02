@@ -289,22 +289,15 @@ export class DeploymentsComponent implements OnInit {
     );
   }
 
-  copyURL() {
+  async copyURL() {
     const url: string = decodeURIComponent(window.location.href);
-    $('body')
-      .append(
-        $(
-          '<input type="text" name="fname" class="textToCopyInput" style="opacity:0"/>'
-        ).val(url)
-      )
-      .find('.textToCopyInput')
-      .select();
     try {
-      document.execCommand('copy');
-    } catch (e) {
+      await navigator.clipboard.writeText(url);
+      console.log('URL copied to clipboard');
+    } catch (err) {
+      console.error('Failed to copy: ', err);
       window.prompt('Press Ctrl + C, then Enter to copy to clipboard', url);
     }
-    $('.textToCopyInput').remove();
   }
 
   sortDeploymentsBy(col: string) {
