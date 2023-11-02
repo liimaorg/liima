@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
@@ -22,6 +22,13 @@ declare var $: any;
 @Component({
   selector: 'amw-deployments',
   templateUrl: './deployments.component.html',
+  styles: [`
+    .toast {
+      z-index: 1050;
+      display: block !important;
+      width: auto;
+    }
+  `]
 })
 export class DeploymentsComponent implements OnInit {
   defaultComparator: string = 'eq';
@@ -289,11 +296,18 @@ export class DeploymentsComponent implements OnInit {
     );
   }
 
+  showToast: boolean = false;
+
   async copyURL() {
     const url: string = decodeURIComponent(window.location.href);
     try {
       await navigator.clipboard.writeText(url);
       console.log('URL copied to clipboard');
+      this.showToast = true;
+      setTimeout(() => {
+        this.showToast = false;
+      }, 3000);
+
     } catch (err) {
       console.error('Failed to copy: ', err);
       window.prompt('Press Ctrl + C, then Enter to copy to clipboard', url);
