@@ -15,19 +15,13 @@ import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
+import { ToastComponent } from 'src/app/shared/elements/toast/toast.component';
 
 declare var $: any;
 
 @Component({
   selector: 'amw-deployments',
   templateUrl: './deployments.component.html',
-  styles: [`
-    .toast {
-      z-index: 1050;
-      display: block !important;
-      width: auto;
-    }
-  `]
 })
 export class DeploymentsComponent implements OnInit {
   defaultComparator: string = 'eq';
@@ -89,6 +83,7 @@ export class DeploymentsComponent implements OnInit {
 
   @ViewChild('selectModel', { static: true })
   selectModel: NgModel;
+  @ViewChild(ToastComponent) toast: ToastComponent;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -295,21 +290,13 @@ export class DeploymentsComponent implements OnInit {
     );
   }
 
-  showToast: boolean = false;
-
   async copyURL() {
     const url: string = decodeURIComponent(window.location.href);
     try {
       await navigator.clipboard.writeText(url);
-      console.log('URL copied to clipboard');
-      this.showToast = true;
-      setTimeout(() => {
-        this.showToast = false;
-      }, 3000);
-
+      this.toast.display('URL copied to clipboard');
     } catch (err) {
-      console.error('Failed to copy: ', err);
-      window.prompt('Press Ctrl + C, then Enter to copy to clipboard', url);
+      this.toast.display('Failed to copy URL. Please try again.');
     }
   }
 
