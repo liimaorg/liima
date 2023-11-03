@@ -10,6 +10,7 @@ import { NotificationComponent } from './elements/notification/notification.comp
 import { DateTimePickerComponent } from './date-time-picker/date-time-picker.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { IconComponent } from './icon/icon.component';
+import { ToastComponent } from './elements/toast/toast.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { IconComponent } from './icon/icon.component';
     NotificationComponent,
     DateTimePickerComponent,
     IconComponent,
+    ToastComponent,
   ],
   imports: [CommonModule, FormsModule, NgbModule],
   exports: [
@@ -30,6 +32,7 @@ import { IconComponent } from './icon/icon.component';
     NotificationComponent,
     DateTimePickerComponent,
     IconComponent,
+    ToastComponent,
   ],
 })
 export class SharedModule {}
