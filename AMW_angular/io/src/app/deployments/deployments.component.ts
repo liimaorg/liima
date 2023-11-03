@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
@@ -15,7 +15,6 @@ import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
-import { DATE_FORMAT } from "../core/amw-constants";
 
 declare var $: any;
 
