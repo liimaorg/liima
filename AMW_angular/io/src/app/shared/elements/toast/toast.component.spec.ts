@@ -56,6 +56,16 @@ describe('ToastComponent', () => {
       const toastElement = fixture.nativeElement.querySelector('.toast');
       expect(toastElement).toBeNull();
       done();
-    }, duration + 100); // adding a bit of extra time to ensure toast is gone
+    }, duration + 100); // adding extra time to ensure toast is gone
+  });
+
+  it('should close when close button is clicked', () => {
+    component.show = true;
+    fixture.detectChanges();
+    const closeButton = fixture.nativeElement.querySelector('.close');
+    closeButton.click();
+    fixture.detectChanges();
+    const toastElement = fixture.nativeElement.querySelector('.toast');
+    expect(toastElement).toBeNull();
   });
 });
