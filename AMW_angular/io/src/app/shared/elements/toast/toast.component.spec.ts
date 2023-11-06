@@ -31,7 +31,7 @@ describe('ToastComponent', () => {
     expect(toastElement).not.toBeNull();
   });
 
-  it('should display toast if show is false', () => {
+  it('should not display toast if show is false', () => {
     component.show = false;
     fixture.detectChanges();
     const toastElement = fixture.nativeElement.querySelector('.toast');
