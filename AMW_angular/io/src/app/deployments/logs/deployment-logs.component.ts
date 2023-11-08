@@ -76,7 +76,7 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     )
   );
 
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
   ngOnInit(): void {
     this.currentDeploymentLog$
       .pipe(takeUntil(this.destroy$))
@@ -98,7 +98,7 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
+    this.destroy$.next(undefined);
   }
 
   selectFile(deploymentLogMetaData: DeploymentLog) {
