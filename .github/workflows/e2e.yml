@@ -37,10 +37,12 @@ jobs:
         java-version: 11
 
     - name: Build docker image
-      run: cd AMW_e2e
-           npm install
-           npm run docker:build
+      run: |
+        cd AMW_e2e
+        npm install
+        npm run docker:build
 
     - name: Run e2e tests
-      run: cd AMW_e2e
-           npm run test:ci
+      run: | 
+          cd AMW_e2e
+          npm run test:ci
