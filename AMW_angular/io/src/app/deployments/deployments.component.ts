@@ -15,7 +15,7 @@ import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
-import { DATE_FORMAT } from "../core/amw-constants";
+import { ToastComponent } from 'src/app/shared/elements/toast/toast.component';
 
 declare var $: any;
 
@@ -83,6 +83,7 @@ export class DeploymentsComponent implements OnInit {
 
   @ViewChild('selectModel', { static: true })
   selectModel: NgModel;
+  @ViewChild(ToastComponent) toast: ToastComponent;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -289,22 +290,14 @@ export class DeploymentsComponent implements OnInit {
     );
   }
 
-  copyURL() {
+  async copyURL() {
     const url: string = decodeURIComponent(window.location.href);
-    $('body')
-      .append(
-        $(
-          '<input type="text" name="fname" class="textToCopyInput" style="opacity:0"/>'
-        ).val(url)
-      )
-      .find('.textToCopyInput')
-      .select();
     try {
-      document.execCommand('copy');
-    } catch (e) {
-      window.prompt('Press Ctrl + C, then Enter to copy to clipboard', url);
+      await navigator.clipboard.writeText(url);
+      this.toast.display('URL copied to clipboard');
+    } catch (err) {
+      this.toast.display('Failed to copy URL. Please try again.');
     }
-    $('.textToCopyInput').remove();
   }
 
   sortDeploymentsBy(col: string) {
