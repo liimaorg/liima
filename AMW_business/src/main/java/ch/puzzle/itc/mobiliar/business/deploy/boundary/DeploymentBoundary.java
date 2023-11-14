@@ -49,7 +49,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
@@ -69,10 +68,6 @@ import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributeView;
@@ -318,14 +313,6 @@ public class DeploymentBoundary {
         return deployment.getContext().getNameAlias();
     }
 
-    public String getDeletedResourceName(DeploymentEntity deployment) {
-        if (deployment.getResource() == null) {
-            ResourceEntity res = (ResourceEntity) auditService.getDeletedEntity(new ResourceEntity(), deployment.getExResourceId());
-            return res.getName();
-        }
-        return deployment.getResource().getName();
-    }
-
     public String getDeletedResourceGroupName(DeploymentEntity deployment) {
         if (deployment.getResourceGroup() == null) {
             ResourceGroupEntity resGrp = (ResourceGroupEntity) auditService.getDeletedEntity(new ResourceGroupEntity(), deployment.getExResourcegroupId());
@@ -549,40 +536,6 @@ public class DeploymentBoundary {
         }
         requestOnly = createDeploymentForAppserver(appServerGroupId, releaseId, deploymentDate, stateToDeploy, contextIds, applicationWithVersion, deployParams, sendEmail, requestOnly, doSimulate,
                 isExecuteShakedownTest, isNeighbourhoodTest, trackingId);
-
-        if (deploymentDate == now && !requestOnly) {
-            deploymentEvent.fire(new DeploymentEvent(DeploymentEventType.NEW, DeploymentState.scheduled));
-        }
-
-        return trackingId;
-    }
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public Integer createDeploymentsReturnTrackingId(List<DeploymentEntity> selectedDeployments,
-                                                     Date deploymentDate, Date stateToDeploy,
-                                                     List<DeploymentParameter> deployParams,
-                                                     List<Integer> contextIds,
-                                                     boolean sendEmail, boolean requestOnly, boolean doSimulate,
-                                                     boolean isExecuteShakedownTest, boolean isNeighbourhoodTest) {
-
-        Integer trackingId = sequencesService.getNextValueAndUpdate(DeploymentEntity.SEQ_NAME);
-
-        Date now = new Date();
-        if (deploymentDate == null || deploymentDate.before(now)) {
-            deploymentDate = now;
-        }
-
-        for (DeploymentEntity selectedDeployment : selectedDeployments) {
-
-            List<ApplicationWithVersion> applicationWithVersion = selectedDeployment.getApplicationsWithVersion();
-
-            Integer appServerGroupId = selectedDeployment.getResourceGroup().getId();
-            Integer releaseId = selectedDeployment.getRelease().getId();
-
-            requestOnly = createDeploymentForAppserver(appServerGroupId, releaseId, deploymentDate, stateToDeploy, contextIds, applicationWithVersion, deployParams, sendEmail, requestOnly, doSimulate,
-                    isExecuteShakedownTest, isNeighbourhoodTest, trackingId);
-        }
-
 
         if (deploymentDate == now && !requestOnly) {
             deploymentEvent.fire(new DeploymentEvent(DeploymentEventType.NEW, DeploymentState.scheduled));
@@ -1212,18 +1165,6 @@ public class DeploymentBoundary {
             String message = deploymentNotificationService.createAndSendMailForDeplyoments(deployments);
             updateDeploymentStatusMessage(deployments, message);
         }
-    }
-
-    public List<DeploymentEntity> getDeploymentsForRelease(Integer releaseId) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<DeploymentEntity> q = cb
-                .createQuery(DeploymentEntity.class);
-        Root<DeploymentEntity> r = q.from(DeploymentEntity.class);
-        Predicate releasePred = cb.equal(r.<Integer>get("release"), releaseId);
-        q.where(releasePred);
-
-        TypedQuery<DeploymentEntity> query = em.createQuery(q);
-        return query.getResultList();
     }
 
     public DeploymentEntity confirmDeployment(DeploymentEntity deployment) throws DeploymentStateException {
