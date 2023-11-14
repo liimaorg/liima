@@ -429,13 +429,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private composeSuccessMessage() {
-    let link: string;
-    // TODO: clean this up
-    link =
-        '<a href="#/deployments?filters=[{%22name%22:%22Tracking%20Id%22,%22val%22:%22' +
-        this.deploymentResponse.trackingId +
-        '%22}]">';
-    link += 'Tracking Id ' + this.deploymentResponse.trackingId + '</a>';
+    const link = `<a href="#/deployments?filters=[{%22name%22:%22Tracking%20Id%22,%22val%22:%22${this.deploymentResponse.trackingId}%22}]">Tracking Id ${this.deploymentResponse.trackingId}</a>`;
     this.successMessage = 'Deployment created: <strong>' + link + '</strong>';
   }
 
