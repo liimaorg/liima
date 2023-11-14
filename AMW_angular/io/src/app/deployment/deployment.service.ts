@@ -225,15 +225,6 @@ export class DeploymentService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  isAngularDeploymentsGuiActive(): Observable<boolean> {
-    return this.http
-      .get<boolean>(
-        `${this.getBaseUrl()}/deployments/isAngularDeploymentsGuiActive/`,
-        { headers: this.getHeaders() }
-      )
-      .pipe(catchError(this.handleError));
-  }
-
   private csvHeaders() {
     return new HttpHeaders().append('Accept', 'text/csv');
   }
