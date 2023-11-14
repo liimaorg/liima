@@ -50,7 +50,6 @@ public enum ConfigKey {
     DISABLE_OPTIMIZED_PROPERTY_DESCRIPTORS_FOR_RESOURCE_QUERY("amw.disableOptimizedPropertyDescriptorsForResourceQuery", "AMW_DISABLE_OPTIMIZED_PROPERTY_DESCRIPTORS_FOR_RESOURCE_QUERY", "false", false),
     /** Feature toggles */
     FEATURE_DISABLE_ANGULAR_GUI("amw.feature.disableAngularGui","AMW_FEATURE_DISABLEANGULARGUI","false", false),
-    FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI("amw.feature.disableAngularDeploymentGui", "AMW_FEATURE_DISABLEANGULARDEPLOYMENTGUI", "true", false),
     LIQUIBASE_DATASOURCE_JNDI("amw.liquibaseDatasourceJndi", "AMW_LIQUIBASE_DATASOURCE_JNDI", "java:jboss/datasources/amwLiquibaseDS", false);
 
     @Getter
