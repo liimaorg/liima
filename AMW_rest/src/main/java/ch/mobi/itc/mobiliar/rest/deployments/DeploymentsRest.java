@@ -70,7 +70,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
-import static ch.puzzle.itc.mobiliar.common.util.ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI;
 
 @Stateless
 @Path("/deployments")
@@ -699,14 +698,6 @@ public class DeploymentsRest {
     public Response canRequestDeployment() {
 
         return Response.ok(permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.CREATE)).build();
-    }
-
-    @GET
-    @Path("/isAngularDeploymentsGuiActive/")
-    @ApiOperation(value = "Check if angular deployments gui is active - used by Angular")
-    public Response isAngularDeploymentsGuiActive() {
-        boolean isActive = ! ConfigurationService.getPropertyAsBoolean(FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI);
-        return Response.ok(isActive).build();
     }
 
     /**

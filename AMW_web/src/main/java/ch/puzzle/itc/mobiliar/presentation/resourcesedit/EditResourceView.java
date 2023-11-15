@@ -118,8 +118,6 @@ public class EditResourceView implements Serializable {
     @Getter
     private boolean canDelegatePermissions;
 
-    private final boolean useAngularDeploymentLink = !Boolean.parseBoolean(ConfigurationService.getProperty(ConfigKey.FEATURE_DISABLE_ANGULAR_DEPLOYMENT_GUI));
-
     public void setContextIdViewParam(Integer contextIdViewParam) {
         this.contextIdViewParam = contextIdViewParam;
         // initialize context
@@ -206,10 +204,6 @@ public class EditResourceView implements Serializable {
 
             resourceTypeEvent.fire(resourceType);
         }
-    }
-
-    public boolean isAngularDeploymentLink() {
-        return this.useAngularDeploymentLink;
     }
 
     /**
