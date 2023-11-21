@@ -32,7 +32,8 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "./node_modules/bootstrap-icons/font/bootstrap-icons.scss"
             ],
             "scripts": [
               "node_modules/codemirror/lib/codemirror.js",
