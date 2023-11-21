@@ -19,7 +19,7 @@ export class TagsComponent {
     }
   }
 
-  deleteTag(index: number): void {
-    this.tags.splice(index, 1);
+  deleteTag(tagId: number): void {
+    this.tags = this.tags.filter(tag => tag.id !== tagId)
   }
 }
