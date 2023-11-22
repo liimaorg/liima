@@ -17,7 +17,7 @@ export class TagsComponent {
   private tagId = 0;
 
   constructor(private http: HttpClient) {
-    http.get<Tag[]>('AMW_rest/resources/settings/tags').subscribe((data) => {
+    http.get<Tag[]>('/AMW_rest/resources/settings/tags').subscribe((data) => {
       this.tags = data;
     });
   }
