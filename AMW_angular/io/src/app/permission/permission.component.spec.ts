@@ -17,7 +17,6 @@ import { RestrictionEditComponent } from './restriction-edit.component';
 import { RestrictionListComponent } from './restriction-list.component';
 import { Restriction } from './restriction';
 import { Tag } from './tag';
-import { SharedModule } from '../shared/shared.module';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
 
 describe('PermissionComponent without any params (default: type Role)', () => {
@@ -39,6 +38,10 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
+        PermissionComponent,
+        RestrictionEditComponent,
+        RestrictionAddComponent,
+        RestrictionListComponent,
       ],
       providers: [
         EnvironmentService,
@@ -48,12 +51,6 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      declarations: [
-        PermissionComponent,
-        RestrictionEditComponent,
-        RestrictionAddComponent,
-        RestrictionListComponent,
-      ],
     });
 
     fixture = TestBed.createComponent(PermissionComponent);
@@ -95,12 +92,8 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       { id: 2, name: 'V', parent: 'Dev' } as Environment,
       { id: 3, name: 'T', parent: 'Test' } as Environment,
     ];
-    spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(
-      of(permissions)
-    );
-    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(
-      of(environments)
-    );
+    spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(of(permissions));
+    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
     spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
     spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
     // when
@@ -124,7 +117,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     } as Environment);
     expect(component.groupedEnvironments['Dev']).toContain(
       { id: 1, name: 'U', parent: 'Dev', selected: false } as Environment,
-      { id: 2, name: 'V', parent: 'Dev', selected: false } as Environment
+      { id: 2, name: 'V', parent: 'Dev', selected: false } as Environment,
     );
     expect(component.groupedEnvironments['Test']).toContain({
       id: 3,
@@ -155,15 +148,11 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     ];
     component.selectedRoleName = 'TESTER';
     component.roleNames = ['tester', 'role'];
-    spyOn(permissionService, 'getRoleWithRestrictions').and.returnValue(
-      of(restrictions)
-    );
+    spyOn(permissionService, 'getRoleWithRestrictions').and.returnValue(of(restrictions));
     // when
     component.onChangeRole();
     // then
-    expect(permissionService.getRoleWithRestrictions).toHaveBeenCalledWith(
-      'TESTER'
-    );
+    expect(permissionService.getRoleWithRestrictions).toHaveBeenCalledWith('TESTER');
     expect(component.assignedRestrictions.length).toBe(3);
     expect(component.assignedRestrictions[0].id).toBe(22);
     expect(component.assignedRestrictions[1].id).toBe(21);
@@ -181,10 +170,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
 
   it('should not invoke PermissionService on changeRole if selected Role does not exist', () => {
     // given
-    component.assignedRestrictions = [
-      { id: 31 } as Restriction,
-      { id: 32 } as Restriction,
-    ];
+    component.assignedRestrictions = [{ id: 31 } as Restriction, { id: 32 } as Restriction];
     component.selectedRoleName = 'TESTER';
     component.roleNames = ['role'];
     spyOn(permissionService, 'getRoleWithRestrictions').and.callThrough();
@@ -197,11 +183,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
 
   it('should convert and trim users (provided as string or Tag) to selectedUserNames on changeUser', () => {
     // given // when
-    component.onChangeUser([
-      'stringToBeTrimmed ',
-      ' stringToBeTrimmedToo',
-      { label: ' tagToBeTrimmed ' } as Tag,
-    ]);
+    component.onChangeUser(['stringToBeTrimmed ', ' stringToBeTrimmedToo', { label: ' tagToBeTrimmed ' } as Tag]);
     // then
     expect(component.selectedUserNames[0]).toBe('stringToBeTrimmed');
     expect(component.selectedUserNames[1]).toBe('stringToBeTrimmedToo');
@@ -224,15 +206,11 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     ];
     component.selectedUserNames = ['Tester'];
     component.userNames = ['tester', 'user'];
-    spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(
-      of(restrictions)
-    );
+    spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(of(restrictions));
     // when
     component.onChangeUser(['Tester']);
     // then
-    expect(permissionService.getUserWithRestrictions).toHaveBeenCalledWith(
-      'Tester'
-    );
+    expect(permissionService.getUserWithRestrictions).toHaveBeenCalledWith('Tester');
     expect(component.assignedRestrictions.length).toBe(2);
     expect(component.assignedRestrictions[0].id).toBe(42);
     expect(component.assignedRestrictions[1].id).toBe(41);
@@ -253,15 +231,11 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     ];
     component.selectedUserNames = ['Tester'];
     component.userNames = ['tester', 'user'];
-    spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(
-      of(restrictions)
-    );
+    spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(of(restrictions));
     // when
     component.onChangeUser([{ label: 'Tester' } as Tag]);
     // then
-    expect(permissionService.getUserWithRestrictions).toHaveBeenCalledWith(
-      'Tester'
-    );
+    expect(permissionService.getUserWithRestrictions).toHaveBeenCalledWith('Tester');
     expect(component.assignedRestrictions.length).toBe(2);
     expect(component.assignedRestrictions[0].id).toBe(42);
     expect(component.assignedRestrictions[1].id).toBe(41);
@@ -269,10 +243,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
 
   it('should not invoke PermissionService on changeUser if selected User does not exist', () => {
     // given
-    component.assignedRestrictions = [
-      { id: 51 } as Restriction,
-      { id: 52 } as Restriction,
-    ];
+    component.assignedRestrictions = [{ id: 51 } as Restriction, { id: 52 } as Restriction];
     component.selectedUserNames = ['Tester'];
     component.userNames = ['user'];
     spyOn(permissionService, 'getUserWithRestrictions').and.callThrough();
@@ -285,10 +256,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
 
   it('should not invoke PermissionService on changeUser if selected User (provided as Tag) does not exist', () => {
     // given
-    component.assignedRestrictions = [
-      { id: 51 } as Restriction,
-      { id: 52 } as Restriction,
-    ];
+    component.assignedRestrictions = [{ id: 51 } as Restriction, { id: 52 } as Restriction];
     component.selectedUserNames = ['Tester'];
     component.userNames = ['user'];
     spyOn(permissionService, 'getUserWithRestrictions').and.callThrough();
@@ -364,9 +332,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     // when
     component.persistRestriction();
     // then
-    expect(permissionService.updateRestriction).toHaveBeenCalledWith(
-      component.restriction
-    );
+    expect(permissionService.updateRestriction).toHaveBeenCalledWith(component.restriction);
   });
 
   it('should invoke PermissionService.createPermission on persistRestriction for a new Restriction', () => {
@@ -379,10 +345,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     // when
     component.persistRestriction();
     // then
-    expect(permissionService.createRestriction).toHaveBeenCalledWith(
-      component.restriction,
-      false
-    );
+    expect(permissionService.createRestriction).toHaveBeenCalledWith(component.restriction, false);
   });
 
   it('should not set create to true and not initialize a Restriction on addRestriction if no User or Role is selected', () => {
@@ -440,7 +403,10 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule,
+        PermissionComponent,
+        RestrictionEditComponent,
+        RestrictionAddComponent,
+        RestrictionListComponent,
       ],
       providers: [
         EnvironmentService,
@@ -450,12 +416,6 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      declarations: [
-        PermissionComponent,
-        RestrictionEditComponent,
-        RestrictionAddComponent,
-        RestrictionListComponent,
-      ],
     });
     fixture = TestBed.createComponent(PermissionComponent);
     component = fixture.componentInstance;
@@ -477,12 +437,8 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
       { id: 2, name: 'V', parent: 'Dev' } as Environment,
       { id: 3, name: 'T', parent: 'Test' } as Environment,
     ];
-    spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(
-      of(permissions)
-    );
-    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(
-      of(environments)
-    );
+    spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(of(permissions));
+    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
     spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
     spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
     spyOn(permissionService, 'getAllUserRestrictionNames').and.callThrough();
@@ -508,7 +464,7 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
     } as Environment);
     expect(component.groupedEnvironments['Dev']).toContain(
       { id: 1, name: 'U', parent: 'Dev', selected: false } as Environment,
-      { id: 2, name: 'V', parent: 'Dev', selected: false } as Environment
+      { id: 2, name: 'V', parent: 'Dev', selected: false } as Environment,
     );
     expect(component.groupedEnvironments['Test']).toContain({
       id: 3,
@@ -538,7 +494,10 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule,
+        PermissionComponent,
+        RestrictionEditComponent,
+        RestrictionAddComponent,
+        RestrictionListComponent,
       ],
       providers: [
         EnvironmentService,
@@ -548,12 +507,6 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      declarations: [
-        PermissionComponent,
-        RestrictionEditComponent,
-        RestrictionAddComponent,
-        RestrictionListComponent,
-      ],
     });
     fixture = TestBed.createComponent(PermissionComponent);
     component = fixture.componentInstance;
@@ -587,15 +540,9 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
       { id: 2, name: 'V', parent: 'Dev' } as Environment,
       { id: 3, name: 'T', parent: 'Test' } as Environment,
     ];
-    spyOn(permissionService, 'getAllUserRestrictionNames').and.returnValue(
-      of(userNames)
-    );
-    spyOn(permissionService, 'getOwnUserAndRoleRestrictions').and.returnValue(
-      of(restrictions)
-    );
-    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(
-      of(environments)
-    );
+    spyOn(permissionService, 'getAllUserRestrictionNames').and.returnValue(of(userNames));
+    spyOn(permissionService, 'getOwnUserAndRoleRestrictions').and.returnValue(of(restrictions));
+    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
     spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
     spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
     // when

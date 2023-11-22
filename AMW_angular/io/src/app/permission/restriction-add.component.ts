@@ -7,10 +7,16 @@ import { Environment } from '../deployment/environment';
 import { Resource } from '../resource/resource';
 import { ResourceType } from '../resource/resource-type';
 import * as _ from 'lodash';
+import { IconComponent } from '../shared/icon/icon.component';
+import { FormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
-  selector: 'amw-restriction-add',
-  templateUrl: './restriction-add.component.html'
+    selector: 'amw-restriction-add',
+    templateUrl: './restriction-add.component.html',
+    standalone: true,
+    imports: [NgIf, NgSelectModule, FormsModule, NgFor, IconComponent]
 })
 
 export class RestrictionAddComponent implements OnChanges, AfterViewChecked {

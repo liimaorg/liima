@@ -8,22 +8,19 @@ import { PermissionRoutingModule } from './permission-routing.module';
 import { RestrictionEditComponent } from './restriction-edit.component';
 import { RestrictionListComponent } from './restriction-list.component';
 import { RestrictionAddComponent } from './restriction-add.component';
-import { SharedModule } from '../shared/shared.module';
+
 
 @NgModule({
-  imports: [
+    imports: [
     CommonModule,
     FormsModule,
     NgSelectModule,
     PermissionRoutingModule,
-    SharedModule
-  ],
-  declarations: [
     PermissionComponent,
     RestrictionEditComponent,
     RestrictionListComponent,
     RestrictionAddComponent
-  ],
-  providers: [PermissionService]
+],
+    providers: [PermissionService]
 })
 export class PermissionModule {}

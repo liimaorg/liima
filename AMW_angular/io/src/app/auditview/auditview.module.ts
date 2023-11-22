@@ -7,25 +7,22 @@ import { AuditviewService } from './auditview.service';
 import { AuditviewTableComponent } from './auditview-table/auditview-table.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BaseModule } from '../base/base.module';
-import { SharedModule } from '../shared/shared.module';
+
 import { NewlineFilterPipe } from './auditview-table/newlineFilterPipe';
 import { SortableHeader } from './auditview-table/sortable.directive';
 
 @NgModule({
-  imports: [
+    imports: [
     CommonModule,
-    SharedModule,
     FormsModule,
     AuditviewRoutingModule,
     NgbModule,
-    BaseModule
-  ],
-  declarations: [
+    BaseModule,
     AuditviewComponent,
     NewlineFilterPipe,
     AuditviewTableComponent,
     SortableHeader
-  ],
-  providers: [AuditviewService, DatePipe]
+],
+    providers: [AuditviewService, DatePipe]
 })
 export class AuditviewModule {}

@@ -1,6 +1,6 @@
-import { Location } from '@angular/common';
+import { Location, NgIf, NgFor } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgModel } from '@angular/forms';
+import { NgModel, FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
 import * as datefns from 'date-fns';
@@ -16,12 +16,32 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { ToastComponent } from 'src/app/shared/elements/toast/toast.component';
+import { PaginationComponent } from '../shared/pagination/pagination.component';
+import { DeploymentsListComponent } from './deployments-list.component';
+import { IconComponent } from '../shared/icon/icon.component';
+import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-picker.component';
+import { ToastComponent as ToastComponent_1 } from '../shared/elements/toast/toast.component';
+import { NotificationComponent } from '../shared/elements/notification/notification.component';
+import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 
 declare var $: any;
 
 @Component({
-  selector: 'amw-deployments',
-  templateUrl: './deployments.component.html',
+    selector: 'amw-deployments',
+    templateUrl: './deployments.component.html',
+    standalone: true,
+    imports: [
+        LoadingIndicatorComponent,
+        NgIf,
+        NotificationComponent,
+        ToastComponent_1,
+        FormsModule,
+        NgFor,
+        DateTimePickerComponent,
+        IconComponent,
+        DeploymentsListComponent,
+        PaginationComponent,
+    ],
 })
 export class DeploymentsComponent implements OnInit {
   defaultComparator: string = 'eq';

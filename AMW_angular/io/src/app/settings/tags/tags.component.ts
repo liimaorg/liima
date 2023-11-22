@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 type Tag = { id: number; name: string };
 
@@ -7,6 +8,8 @@ type Tag = { id: number; name: string };
   selector: 'amw-tags',
   templateUrl: './tags.component.html',
   styleUrl: './tags.component.scss',
+  standalone: true,
+  imports: [FormsModule],
 })
 export class TagsComponent {
   tagName: string = '';

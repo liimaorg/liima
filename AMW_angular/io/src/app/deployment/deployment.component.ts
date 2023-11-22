@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { Location } from '@angular/common';
+import { Location, NgIf, NgFor } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ResourceService } from '../resource/resource.service';
 import { ResourceTag } from '../resource/resource-tag';
@@ -17,10 +17,27 @@ import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
+import { IconComponent } from '../shared/icon/icon.component';
+import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-picker.component';
+import { FormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { NotificationComponent } from '../shared/elements/notification/notification.component';
+import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 
 @Component({
-  selector: 'amw-deployment',
-  templateUrl: './deployment.component.html',
+    selector: 'amw-deployment',
+    templateUrl: './deployment.component.html',
+    standalone: true,
+    imports: [
+        LoadingIndicatorComponent,
+        NgIf,
+        NotificationComponent,
+        NgSelectModule,
+        FormsModule,
+        NgFor,
+        DateTimePickerComponent,
+        IconComponent,
+    ],
 })
 export class DeploymentComponent implements OnInit, AfterViewInit {
   // from url

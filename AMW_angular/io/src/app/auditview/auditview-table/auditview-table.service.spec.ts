@@ -5,10 +5,9 @@ import { AuditviewTableService } from './auditview-table.service';
 describe('AuditviewTableService', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [],
-      providers: [DatePipe]
-    })
+    imports: [CommonModule],
+    providers: [DatePipe]
+})
   );
 
   it('should be created', () => {

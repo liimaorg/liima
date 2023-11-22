@@ -1,4 +1,4 @@
-import { Location } from '@angular/common';
+import { Location, NgIf, NgFor, AsyncPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
@@ -8,6 +8,11 @@ import { DeploymentService } from 'src/app/deployment/deployment.service';
 import { NavigationStoreService } from 'src/app/navigation/navigation-store.service';
 import { DeploymentLog, DeploymentLogContent } from './deployment-log';
 import { DeploymentLogsService } from './deployment-logs.service';
+import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
+import { FormsModule } from '@angular/forms';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownButtonItem, NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
+import { NotificationComponent } from '../../shared/elements/notification/notification.component';
 
 declare var CodeMirror: any;
 
@@ -18,10 +23,25 @@ function failed(): Observable<Failed> {
 }
 
 @Component({
-  selector: 'app-logs',
-  styleUrls: ['./deployment-logs.component.scss'],
-  templateUrl: './deployment-logs.component.html',
-  encapsulation: ViewEncapsulation.None,
+    selector: 'app-logs',
+    styleUrls: ['./deployment-logs.component.scss'],
+    templateUrl: './deployment-logs.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: true,
+    imports: [
+        NgIf,
+        NotificationComponent,
+        NgbDropdown,
+        NgbDropdownToggle,
+        NgbDropdownMenu,
+        NgFor,
+        NgbDropdownButtonItem,
+        NgbDropdownItem,
+        CodemirrorModule,
+        FormsModule,
+        LoadingIndicatorComponent,
+        AsyncPipe,
+    ],
 })
 export class DeploymentLogsComponent implements OnInit, OnDestroy {
   constructor(

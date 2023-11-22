@@ -1,10 +1,11 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { NavigationItem } from './navigation-item';
 import { Navigation } from './navigation-store.service';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-navigation-sidebar',
-  template: `
+    selector: 'app-navigation-sidebar',
+    template: `
     <ul
       *ngIf="navigation.visible"
       class="nav flex-column pt-4 d-none d-sm-block"
@@ -33,7 +34,13 @@ import { Navigation } from './navigation-store.service';
       </ng-container>
     </ul>
   `,
-  styleUrls: ['./navigation-sidebar.component.scss'],
+    styleUrls: ['./navigation-sidebar.component.scss'],
+    standalone: true,
+    imports: [
+        NgIf,
+        NgFor,
+        NgClass,
+    ],
 })
 export class NavigationSidebarComponent {
   @Input()

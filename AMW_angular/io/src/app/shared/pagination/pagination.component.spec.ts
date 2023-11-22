@@ -5,7 +5,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { PaginationComponent } from './pagination.component';
 
 @Component({
-  template: ''
+    template: '',
+    standalone: true,
+    imports: [CommonModule]
 })
 class DummyComponent {}
 
@@ -13,15 +15,15 @@ describe('PaginationComponent', () => {
   // provide our implementations or mocks to the dependency injector
   beforeEach(() =>
     TestBed.configureTestingModule({
-      imports: [
+    imports: [
         CommonModule,
         RouterTestingModule.withRoutes([
-          { path: 'deployments', component: DummyComponent }
-        ])
-      ],
-      providers: [PaginationComponent],
-      declarations: [DummyComponent]
-    })
+            { path: 'deployments', component: DummyComponent }
+        ]),
+        DummyComponent
+    ],
+    providers: [PaginationComponent]
+})
   );
 
   it('should return no page numbers if there is just one page', inject(

@@ -4,10 +4,21 @@ import { AuditviewService } from './auditview.service';
 import { ResourceService } from '../resource/resource.service';
 import { AuditLogEntry } from './auditview-entry';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
+import { AuditviewTableComponent } from './auditview-table/auditview-table.component';
+import { NotificationComponent } from '../shared/elements/notification/notification.component';
+import { NgIf } from '@angular/common';
+import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 
 @Component({
-  selector: 'amw-auditview',
-  templateUrl: './auditview.component.html',
+    selector: 'amw-auditview',
+    templateUrl: './auditview.component.html',
+    standalone: true,
+    imports: [
+        LoadingIndicatorComponent,
+        NgIf,
+        NotificationComponent,
+        AuditviewTableComponent,
+    ],
 })
 export class AuditviewComponent implements OnInit {
   name: string;

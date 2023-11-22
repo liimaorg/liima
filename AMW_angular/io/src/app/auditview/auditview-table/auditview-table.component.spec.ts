@@ -11,10 +11,9 @@ describe('AuditviewTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule, NgbModule],
-      declarations: [AuditviewTableComponent, NewlineFilterPipe],
-      providers: [DatePipe]
-    }).compileComponents();
+    imports: [FormsModule, NgbModule, AuditviewTableComponent, NewlineFilterPipe],
+    providers: [DatePipe]
+}).compileComponents();
   }));
 
   beforeEach(() => {

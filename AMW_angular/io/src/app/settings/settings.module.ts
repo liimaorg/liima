@@ -8,12 +8,12 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 
 @NgModule({
-  declarations: [SettingsComponent, TagsComponent],
     imports: [
         CommonModule,
         SettingsRoutingModule,
         ReactiveFormsModule,
-        FormsModule
+        FormsModule,
+        SettingsComponent, TagsComponent
     ]
 })
 export class SettingsModule { }

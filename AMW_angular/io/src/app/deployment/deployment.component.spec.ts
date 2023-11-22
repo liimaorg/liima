@@ -17,11 +17,12 @@ import { DeploymentComponent } from './deployment.component';
 import { DeploymentService } from './deployment.service';
 import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
-import { SharedModule } from '../shared/shared.module';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 @Component({
   template: '',
+  standalone: true,
+  imports: [FormsModule, RouterTestingModule, HttpClientTestingModule],
 })
 class DummyComponent {}
 
@@ -33,8 +34,7 @@ describe('DeploymentComponent (create deployment)', () => {
   let deploymentService: DeploymentService;
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DeploymentComponent, DummyComponent],
-      imports: [FormsModule, RouterTestingModule, HttpClientTestingModule, SharedModule],
+      imports: [FormsModule, RouterTestingModule, HttpClientTestingModule, DeploymentComponent, DummyComponent],
       providers: [ResourceService, EnvironmentService, DeploymentService, NavigationStoreService],
     });
     fixture = TestBed.createComponent(DeploymentComponent);
@@ -109,7 +109,7 @@ describe('DeploymentComponent (create deployment)', () => {
           name: 'testServer',
           releases: testReleases,
         } as Resource,
-      ])
+      ]),
     );
     spyOn(resourceService, 'getDeployableReleases').and.returnValue(of(testReleases));
     // when
@@ -129,7 +129,7 @@ describe('DeploymentComponent (create deployment)', () => {
           name: 'testServer',
           releases: testReleases,
         } as Resource,
-      ])
+      ]),
     );
     // when
     component.initAppservers();
@@ -372,8 +372,13 @@ describe('DeploymentComponent (create deployment with params)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DeploymentComponent, DummyComponent],
-      imports: [FormsModule, HttpClientTestingModule, RouterTestingModule.withRoutes([]), SharedModule],
+      imports: [
+        FormsModule,
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([]),
+        DeploymentComponent,
+        DummyComponent,
+      ],
       providers: [
         ResourceService,
         EnvironmentService,
@@ -426,8 +431,13 @@ describe('DeploymentComponent (redeployment)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DeploymentComponent, DummyComponent],
-      imports: [FormsModule, RouterTestingModule.withRoutes([]), HttpClientTestingModule, SharedModule],
+      imports: [
+        FormsModule,
+        RouterTestingModule.withRoutes([]),
+        HttpClientTestingModule,
+        DeploymentComponent,
+        DummyComponent,
+      ],
       providers: [
         { provide: ActivatedRoute, useValue: mockRoute },
         ResourceService,
@@ -501,7 +511,7 @@ describe('DeploymentComponent (redeployment)', () => {
           applicationName: 'testAPP',
           version: '1.2.3.4',
         } as AppWithVersion,
-      ])
+      ]),
     );
     // when
     component.ngOnInit();
@@ -558,7 +568,7 @@ describe('DeploymentComponent (redeployment)', () => {
           applicationName: 'testApp',
           version: '1.2.3',
         } as AppWithVersion,
-      ])
+      ]),
     );
     // when
     component.ngOnInit();

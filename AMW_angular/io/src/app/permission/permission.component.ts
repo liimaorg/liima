@@ -11,10 +11,32 @@ import { RestrictionsCreation } from './restrictions-creation';
 import { Permission } from './permission';
 import * as _ from 'lodash';
 import { NavigationStoreService } from '../navigation/navigation-store.service';
+import { RestrictionListComponent } from './restriction-list.component';
+import { RestrictionAddComponent } from './restriction-add.component';
+import { RestrictionEditComponent } from './restriction-edit.component';
+import { IconComponent } from '../shared/icon/icon.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { FormsModule } from '@angular/forms';
+import { NotificationComponent } from '../shared/elements/notification/notification.component';
+import { NgIf, NgFor } from '@angular/common';
+import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 
 @Component({
-  selector: 'amw-permission',
-  templateUrl: './permission.component.html',
+    selector: 'amw-permission',
+    templateUrl: './permission.component.html',
+    standalone: true,
+    imports: [
+        LoadingIndicatorComponent,
+        NgIf,
+        NotificationComponent,
+        FormsModule,
+        NgFor,
+        NgSelectModule,
+        IconComponent,
+        RestrictionEditComponent,
+        RestrictionAddComponent,
+        RestrictionListComponent,
+    ],
 })
 export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
   // loaded only once

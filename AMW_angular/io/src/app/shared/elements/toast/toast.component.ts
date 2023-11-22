@@ -1,8 +1,9 @@
 import {Component, Input} from '@angular/core';
+import { NgIf } from '@angular/common';
 
 @Component({
-  selector: 'app-toast',
-  template: `
+    selector: 'app-toast',
+    template: `
     <div *ngIf="show" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="toast-image">
       </div>
@@ -21,7 +22,9 @@ import {Component, Input} from '@angular/core';
       </div>
     </div>
   `,
-  styleUrls: ['./toast.component.scss']
+    styleUrls: ['./toast.component.scss'],
+    standalone: true,
+    imports: [NgIf]
 })
 export class ToastComponent {
   @Input() message: string = '';
