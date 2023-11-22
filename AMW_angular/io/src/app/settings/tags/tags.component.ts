@@ -1,25 +1,32 @@
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+type Tag = { id: number; name: string };
 
 @Component({
   selector: 'amw-tags',
   templateUrl: './tags.component.html',
-  styleUrl: './tags.component.scss'
+  styleUrl: './tags.component.scss',
 })
 export class TagsComponent {
   tagName: string = '';
-  tags: { id: number, name: string }[] = [];
+  tags: Tag[] = [];
   private tagId = 0;
+
+  constructor(private http: HttpClient) {
+    http.get<Tag[]>('AMW_rest/resources/settings/tags').subscribe((data) => {
+      this.tags = data;
+    });
+  }
 
   addTag(): void {
     if (this.tagName.trim().length > 0) {
-      console.log('Tag added:', this.tagName);
       this.tags.push({ id: this.tagId++, name: this.tagName.trim() });
-      console.log(this.tags);
       this.tagName = '';
     }
   }
 
   deleteTag(tagId: number): void {
-    this.tags = this.tags.filter(tag => tag.id !== tagId)
+    this.tags = this.tags.filter((tag) => tag.id !== tagId);
   }
 }

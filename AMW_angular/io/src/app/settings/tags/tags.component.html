@@ -15,8 +15,8 @@
     </tr>
     @for (tag of tags; track tag) {
       <tr>
-      <td>{{ tag.name }}</td>
-      <td><button class="btn" (click)="deleteTag(tag.id)"><i class="bi bi-trash"></i></button></td>
+        <td>{{ tag.name }}</td>
+        <td><button class="btn" (click)="deleteTag(tag.id)"><i class="bi bi-trash"></i></button></td>
       </tr>
     }
   </table>
