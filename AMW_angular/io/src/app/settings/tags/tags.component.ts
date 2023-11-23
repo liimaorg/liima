@@ -21,8 +21,9 @@ export class TagsComponent {
 
   addTag(): void {
     if (this.tagName.trim().length > 0) {
-      this.tags.push({ id: this.tagId++, name: this.tagName.trim() });
-      this.tagName = '';
+      this.http.post<Tag>('AMW_rest/resources/settings/tags', { name: this.tagName }).subscribe((newTag) => {
+        this.tags.push(newTag);
+      });
     }
   }
 
