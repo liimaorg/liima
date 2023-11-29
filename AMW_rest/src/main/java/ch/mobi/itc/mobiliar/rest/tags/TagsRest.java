@@ -36,27 +36,19 @@ public class TagsRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Adds one tag")
     public Response addOneTag(TagDTO tagDTO) {
-        String tagName = tagDTO.getName();
-        PropertyTagEntity newTag = new PropertyTagEntity();
-        newTag.setName(tagName);
-        newTag.setTagType(PropertyTagType.GLOBAL);
-        propertyTagEditingService.addPropertyTag(newTag);
+        //todo:validate request (tagDTO null and tagName null)
+
+        propertyTagEditingService.addPropertyTag(propertyTagEditingService.createPropertyTagEntity(tagDTO.getName(), PropertyTagType.GLOBAL));
         return Response.status(CREATED).build();
     }
 
     @DELETE
+    @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Deletes one tag")
-    public Response deleteOneTag(TagDTO tagDTO) {
-        String tagName = tagDTO.getName();
-        List<PropertyTagEntity> propertyTags=  propertyTagEditingService.loadAllGlobalPropertyTagEntities(false);
-        for (PropertyTagEntity tag : propertyTags) {
-            if (tag.getName().equals(tagName)) {
-                propertyTagEditingService.deletePropertyTagById(tag.getId());
-                return Response.status(OK).build();
-            }
-        }
-        return Response.status(NOT_FOUND).entity("Tag not found").build();
+    public Response deleteOneTag(@PathParam("id") int id) {
+        propertyTagEditingService.deletePropertyTagById(id);
+        return Response.status(OK).build();
     }
-
 }
+

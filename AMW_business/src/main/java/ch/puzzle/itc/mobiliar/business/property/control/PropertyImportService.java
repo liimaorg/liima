@@ -111,18 +111,4 @@ public class PropertyImportService {
             throw new AMWRuntimeException("Failed to delete property " + propertyDescriptor.getPropertyDescriptorDisplayName() + " which has still assigned values");
         }
     }
-
-    public void savePropertyDescriptorWithTags(PropertyDescriptorEntity propDesc, List<String> tags, ResourceEntity resourceEntity, ForeignableOwner owner) throws AMWException {
-        ResourceContextEntity resourceContext = resourceEntity.getOrCreateContext(globalContext);
-        List<PropertyTagEntity> propertyTags = createPropertyTags(tags);
-        descriptorService.savePropertyDescriptorForOwner(owner, resourceContext, propDesc, propertyTags, resourceEntity);
-    }
-
-    private List<PropertyTagEntity> createPropertyTags(List<String> tags) {
-        List<PropertyTagEntity> propertyTagEntities = new LinkedList<>();
-        for (String tag : tags) {
-            propertyTagEntities.add(propertyTagService.addPropertyTag((propertyTagService.createPropertyTagEntity(tag.trim()))));
-        }
-        return propertyTagEntities;
-    }
 }
