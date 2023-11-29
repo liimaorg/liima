@@ -13,8 +13,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.OK;
+import java.util.List;
+
+import static javax.ws.rs.core.Response.Status.*;
 
 @Stateless
 @Path("/settings/tags")
@@ -41,7 +42,21 @@ public class TagsRest {
         newTag.setTagType(PropertyTagType.GLOBAL);
         propertyTagEditingService.addPropertyTag(newTag);
         return Response.status(CREATED).build();
+    }
 
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Deletes one tag")
+    public Response deleteOneTag(TagDTO tagDTO) {
+        String tagName = tagDTO.getName();
+        List<PropertyTagEntity> propertyTags=  propertyTagEditingService.loadAllGlobalPropertyTagEntities(false);
+        for (PropertyTagEntity tag : propertyTags) {
+            if (tag.getName().equals(tagName)) {
+                propertyTagEditingService.deletePropertyTagById(tag.getId());
+                return Response.status(OK).build();
+            }
+        }
+        return Response.status(NOT_FOUND).entity("Tag not found").build();
     }
 
 }
