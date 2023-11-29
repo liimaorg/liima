@@ -47,7 +47,7 @@ export class ToastComponent {
 
     setTimeout(() => {
       this.show = false;
-    }, 10000);
+    }, 3000);
   }
 
   close() {
