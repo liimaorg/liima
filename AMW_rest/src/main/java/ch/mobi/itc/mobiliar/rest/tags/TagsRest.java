@@ -34,7 +34,12 @@ public class TagsRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Adds one tag")
     public Response addOneTag(TagDTO tagDTO) {
-        //todo:validate request (tagDTO null and tagName null)
+        if (tagDTO == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("TagDTO must not be null").build();
+        }
+        if (tagDTO.getName() == null || tagDTO.getName().trim().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Tag name must not be null or empty").build();
+        }
         propertyTagEditingService.addPropertyTag(propertyTagEditingService.createPropertyTagEntity(tagDTO.getName(), PropertyTagType.GLOBAL));
         return Response.status(CREATED).build();
     }
