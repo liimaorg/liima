@@ -2,7 +2,6 @@ package ch.mobi.itc.mobiliar.rest.tags;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TagDTO;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTagEditingService;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,9 +12,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.util.List;
-
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.OK;
 
 @Stateless
 @Path("/settings/tags")
@@ -37,7 +35,6 @@ public class TagsRest {
     @ApiOperation(value = "Adds one tag")
     public Response addOneTag(TagDTO tagDTO) {
         //todo:validate request (tagDTO null and tagName null)
-
         propertyTagEditingService.addPropertyTag(propertyTagEditingService.createPropertyTagEntity(tagDTO.getName(), PropertyTagType.GLOBAL));
         return Response.status(CREATED).build();
     }

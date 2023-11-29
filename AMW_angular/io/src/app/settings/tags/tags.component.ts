@@ -11,7 +11,6 @@ type Tag = { id: number; name: string };
 export class TagsComponent {
   tagName: string = '';
   tags: Tag[] = [];
-  private tagId = 0;
 
   constructor(private http: HttpClient) {
     http.get<Tag[]>('AMW_rest/resources/settings/tags').subscribe({
