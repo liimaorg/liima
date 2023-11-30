@@ -1,7 +1,7 @@
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import {TagsComponent} from "./tags/tags.component";
-import {SettingsComponent} from "./settings.component";
+import { TagsComponent } from './tags/tags.component';
+import { SettingsComponent } from './settings.component';
 
 @NgModule({
   imports: [
@@ -9,9 +9,8 @@ import {SettingsComponent} from "./settings.component";
       {
         path: 'settings',
         component: SettingsComponent,
-        children: [
-          { path: '', component: TagsComponent },
-        ],
+        title: 'Settings',
+        children: [{ title: 'Settings - Tags', path: '', component: TagsComponent }],
       },
     ]),
   ],
