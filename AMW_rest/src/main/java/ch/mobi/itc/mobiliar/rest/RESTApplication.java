@@ -49,6 +49,8 @@ public class RESTApplication extends Application {
     }
 
     private void addRestResourceClasses(Set<Class<?>> resources) {
+
+        // Endpoints
         resources.add(BatchJobRest.class);
         resources.add(ResourcesRest.class);
         resources.add(ResourceGroupsRest.class);
@@ -65,10 +67,19 @@ public class RESTApplication extends Application {
         resources.add(EnvironmentsRest.class);
         resources.add(AuditViewRest.class);
         resources.add(RestrictionsRest.class);
+        resources.add(SettingsRest.class);
+        resources.add(TestGenerationRest.class);
+        resources.add(TagsRest.class);
+
+        // writers
+        resources.add(ExceptionDtoBodyWriter.class);
+        resources.add(ServerTupleCSVBodyWriter.class);
+
+        // exception mappers
+        resources.add(ObjectMapperConfig.class);
         resources.add(ClientErrorExceptionMapper.class);
         resources.add(EJBExceptionMapper.class);
         resources.add(EJBTransactionRolledbackExceptionMapper.class);
-        resources.add(ExceptionDtoBodyWriter.class);
         resources.add(IllegalStateExceptionMapper.class);
         resources.add(IllegalArgumentExceptionMapper.class);
         resources.add(IOExceptionMapper.class);
@@ -77,11 +88,8 @@ public class RESTApplication extends Application {
         resources.add(ValidationExceptionMapper.class);
         resources.add(NotFoundExceptionMapper.class);
         resources.add(UncaughtExceptionMapper.class);
-        resources.add(ServerTupleCSVBodyWriter.class);
+
+        // health
         resources.add(HealthCheck.class);
-        resources.add(SettingsRest.class);
-        resources.add(TestGenerationRest.class);
-        resources.add(ObjectMapperConfig.class);
-        resources.add(TagsRest.class);
     }
 }
