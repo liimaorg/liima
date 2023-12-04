@@ -2,12 +2,16 @@ package ch.mobi.itc.mobiliar.rest.tags;
 
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTagEditingService;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 
 @Stateless
+@AllArgsConstructor
+@NoArgsConstructor
 class RemoveTagUseCase {
 
     @Inject

@@ -34,9 +34,13 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntityHolder;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagType;
 import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import static ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagType.LOCAL;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public class PropertyTagEditingService {
 
     @Inject
