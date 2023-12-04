@@ -5,9 +5,24 @@ import { SettingsRoutingModule } from './settings-routing.module';
 import { SettingsComponent } from './settings.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
+import { NgSelectModule } from '@ng-select/ng-select';
+
+import { PermissionComponent } from './permission/permission.component';
+import { RestrictionEditComponent } from './permission/restriction-edit.component';
+import { RestrictionListComponent } from './permission/restriction-list.component';
+import { RestrictionAddComponent } from './permission/restriction-add.component';
+import { PermissionService } from './permission/permission.service';
 
 @NgModule({
-  declarations: [SettingsComponent, TagsComponent],
-  imports: [CommonModule, SettingsRoutingModule, ReactiveFormsModule, FormsModule, SharedModule],
+  declarations: [
+    SettingsComponent,
+    TagsComponent,
+    PermissionComponent,
+    RestrictionEditComponent,
+    RestrictionListComponent,
+    RestrictionAddComponent,
+  ],
+  imports: [CommonModule, SettingsRoutingModule, ReactiveFormsModule, FormsModule, SharedModule, NgSelectModule],
+  providers: [PermissionService],
 })
 export class SettingsModule {}

@@ -3,10 +3,10 @@ import { Action } from './action';
 import { Restriction } from './restriction';
 import { RestrictionsCreation } from './restrictions-creation';
 import { Permission } from './permission';
-import { Environment } from '../deployment/environment';
-import { Resource } from '../resource/resource';
-import { ResourceType } from '../resource/resource-type';
 import * as _ from 'lodash';
+import { Environment } from 'src/app/deployment/environment';
+import { Resource } from 'src/app/resource/resource';
+import { ResourceType } from 'src/app/resource/resource-type';
 
 @Component({
   selector: 'amw-restriction-add',

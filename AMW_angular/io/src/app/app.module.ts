@@ -26,7 +26,7 @@ import { DeploymentsModule } from './deployments/deployments.module';
 import { NavigationStoreService } from './navigation/navigation-store.service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import {SettingsModule} from "./settings/settings.module";
+import { SettingsModule } from './settings/settings.module';
 
 // Application wide providers
 const APP_PROVIDERS = [NavigationStoreService];
@@ -44,7 +44,6 @@ const APP_PROVIDERS = [NavigationStoreService];
     DeploymentModule,
     DeploymentsModule,
     AuditviewModule,
-    PermissionModule,
     SettingModule,
     BaseModule,
     SharedModule,
