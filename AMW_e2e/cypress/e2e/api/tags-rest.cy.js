@@ -11,7 +11,7 @@ describe("tags-rest integration test", () => {
         failOnStatusCode: false,
       }).then((response) => {
         expect(response.status).eq(400);
-        expect(response.body).eq("TagDTO must not be null");
+        expect(response.body.message).eq("Tag must not be null.");
         const body = response.body;
       });
     });
@@ -24,7 +24,7 @@ describe("tags-rest integration test", () => {
         failOnStatusCode: false,
       }).then((response) => {
         expect(response.status).eq(400);
-        expect(response.body).eq("Tag name must not be null or empty");
+        expect(response.body.message).eq("Tag name must not be null or empty.");
       });
     });
 
@@ -36,7 +36,7 @@ describe("tags-rest integration test", () => {
         failOnStatusCode: false,
       }).then((response) => {
         expect(response.status).eq(400);
-        expect(response.body).eq("Tag name must not be null or empty");
+        expect(response.body.message).eq("Tag name must not be null or empty.");
       });
     });
   });
