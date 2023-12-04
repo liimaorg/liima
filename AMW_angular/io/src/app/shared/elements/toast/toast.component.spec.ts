@@ -46,14 +46,15 @@ describe('ToastComponent', () => {
 
   it('should hide toast', (done) => {
     const testMessage = 'Test message';
-    component.display(testMessage);
+    const duration = 1000;
+    component.display(testMessage, 'success', duration);
     fixture.detectChanges();
     setTimeout(() => {
       fixture.detectChanges();
       const toastElement = fixture.nativeElement.querySelector('.toast');
       expect(toastElement).toBeNull();
       done();
-    }, 3100);
+    }, duration + 100); // adding extra time to ensure toast is gone
   });
 
   it('should close when close button is clicked', () => {

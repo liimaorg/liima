@@ -28,18 +28,18 @@ type SuccessOrError = 'success' | 'error';
   styleUrls: ['./toast.component.scss'],
 })
 export class ToastComponent {
-  @Input() message: string = '';
+  @Input() message = '';
   @Input() type: SuccessOrError;
-  show: boolean = false;
+  show = false;
 
-  public display(message: string, type: SuccessOrError = 'success') {
+  public display(message: string, type: SuccessOrError = 'success', duration = 3000) {
     this.message = message;
     this.type = type;
     this.show = true;
 
     setTimeout(() => {
       this.show = false;
-    }, 3000);
+    }, duration);
   }
 
   close() {
