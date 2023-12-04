@@ -1,9 +1,11 @@
 package ch.mobi.itc.mobiliar.rest.tags;
 
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTagEditingService;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 
 @Stateless
 class RemoveTagUseCase {
@@ -17,9 +19,7 @@ class RemoveTagUseCase {
         } catch (Exception e) {
             // this is a workaround since {@link PropertyTagEditingService#deletePropertyTagById} does not handle
             // the case where removing a tag fails
-            e.printStackTrace();
-            throw new IllegalArgumentException("Unable to remove tag with with id " + id);
+            throw new NoResultException("Unable to remove tag");
         }
-
     }
 }

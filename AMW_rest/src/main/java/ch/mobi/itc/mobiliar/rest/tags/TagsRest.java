@@ -9,7 +9,6 @@ import io.swagger.annotations.ApiOperation;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 
@@ -20,6 +19,8 @@ import static javax.ws.rs.core.Response.Status.OK;
 @Stateless
 @Path("/settings/tags")
 @Api(value = "/settings/tags")
+@Consumes(APPLICATION_JSON)
+@Produces({APPLICATION_JSON})
 public class TagsRest {
 
     @Inject
@@ -32,7 +33,7 @@ public class TagsRest {
     private RemoveTagUseCase removeTagUseCase;
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON})
+
     @ApiOperation(value = "Gets all tags")
     public Response getAllTags() {
         return Response
@@ -42,8 +43,6 @@ public class TagsRest {
     }
 
     @POST
-    @Consumes(APPLICATION_JSON)
-    @Produces(APPLICATION_JSON)
     @ApiOperation(value = "Adds one tag")
     public Response addOneTag(TagDTO tagDTO) throws ValidationException {
         TagCommand tagCommand = new TagCommand(tagDTO);
@@ -57,7 +56,6 @@ public class TagsRest {
 
     @DELETE
     @Path("/{id}")
-    @Consumes(APPLICATION_JSON)
     @ApiOperation(value = "Deletes one tag")
     public Response deleteOneTag(@PathParam("id") int id) {
         removeTagUseCase.removeTag(id);

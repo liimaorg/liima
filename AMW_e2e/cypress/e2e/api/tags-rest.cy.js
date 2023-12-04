@@ -52,7 +52,7 @@ describe("tags-rest integration test", () => {
         url: "http://admin:admin@localhost:8080/AMW_rest/resources/settings/tags/-1",
         failOnStatusCode: false,
       }).then((response) => {
-        expect(response.status).eq(400);
+        expect(response.status).eq(404);
       });
     });
   });
