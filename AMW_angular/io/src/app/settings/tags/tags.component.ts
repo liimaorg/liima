@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ToastComponent } from 'src/app/shared/elements/toast/toast.component';
 
 type Tag = { id: number; name: string };
 
@@ -11,6 +12,8 @@ type Tag = { id: number; name: string };
 export class TagsComponent {
   tagName: string = '';
   tags: Tag[] = [];
+
+  @ViewChild(ToastComponent) toast: ToastComponent;
 
   constructor(private http: HttpClient) {
     http.get<Tag[]>('AMW_rest/resources/settings/tags').subscribe({
@@ -25,8 +28,12 @@ export class TagsComponent {
       this.http.post<Tag>('AMW_rest/resources/settings/tags', { name: this.tagName }).subscribe({
         next: (newTag) => {
           this.tags.push(newTag);
+          this.toast.display('Tag added.');
         },
-        error: (error) => console.log(error),
+        error: (error) => {
+          console.log(error);
+          this.toast.display('Failed to add tag.', 'error');
+        },
       });
     }
   }
@@ -35,6 +42,11 @@ export class TagsComponent {
     this.http.delete<Tag>(`AMW_rest/resources/settings/tags/${tagId}`).subscribe({
       next: (response) => {
         this.tags = this.tags.filter((tag) => tag.id !== tagId);
+        this.toast.display('Tag deleted.');
+      },
+      error: (error) => {
+        console.log(error);
+        this.toast.display('Failed to delete tag.', 'error');
       },
     });
   }
