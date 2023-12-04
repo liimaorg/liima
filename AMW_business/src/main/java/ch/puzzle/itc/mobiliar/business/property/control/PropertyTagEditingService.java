@@ -157,6 +157,12 @@ public class PropertyTagEditingService {
         return createPropertyTagEntity(tagString, LOCAL);
     }
 
+    /**
+     * @deprecated just use the constructor to create an instance of {@link PropertyTagEntity}
+     * @param tagString
+     * @param type
+     * @return
+     */
     public PropertyTagEntity createPropertyTagEntity(String tagString, PropertyTagType type) {
         PropertyTagEntity pte = new PropertyTagEntity();
         pte.setName(tagString);

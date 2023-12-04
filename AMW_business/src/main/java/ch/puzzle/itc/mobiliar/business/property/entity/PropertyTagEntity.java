@@ -20,19 +20,17 @@
 
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
-import java.io.Serializable;
-
-import javax.persistence.*;
-
+import ch.puzzle.itc.mobiliar.business.database.control.Constants;
+import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.envers.Audited;
 
-import ch.puzzle.itc.mobiliar.business.database.control.Constants;
-import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
+import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Entity implementation class for Entity: PropertyTag
@@ -40,7 +38,13 @@ import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 @Entity
 @Audited
 @Table(name = "TAMW_propertyTag")
+@NoArgsConstructor
 public class PropertyTagEntity implements Identifiable, Serializable {
+
+    public PropertyTagEntity(String name, PropertyTagType tagType) {
+        this.name = name;
+        this.tagType = tagType;
+    }
 
     @Getter
     @Setter
