@@ -1,7 +1,6 @@
-package ch.mobi.itc.mobiliar.rest.tags;
+package ch.mobi.itc.mobiliar.rest.tags.usecases;
 
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTagEditingService;
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -12,12 +11,12 @@ import javax.persistence.NoResultException;
 @Stateless
 @AllArgsConstructor
 @NoArgsConstructor
-class RemoveTagUseCase {
+public class RemoveTagUseCase {
 
     @Inject
     private PropertyTagEditingService propertyTagEditingService;
 
-    void removeTag(int id) {
+    public void removeTag(int id) {
         try {
             propertyTagEditingService.deletePropertyTagById(id);
         } catch (Exception e) {

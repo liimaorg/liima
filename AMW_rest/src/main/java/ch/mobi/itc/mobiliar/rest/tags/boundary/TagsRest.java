@@ -1,6 +1,10 @@
-package ch.mobi.itc.mobiliar.rest.tags;
+package ch.mobi.itc.mobiliar.rest.tags.boundary;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TagDTO;
+import ch.mobi.itc.mobiliar.rest.tags.usecases.AddTagUseCase;
+import ch.mobi.itc.mobiliar.rest.tags.usecases.ListTagsUseCase;
+import ch.mobi.itc.mobiliar.rest.tags.usecases.RemoveTagUseCase;
+import ch.mobi.itc.mobiliar.rest.tags.usecases.TagCommand;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.annotations.Api;

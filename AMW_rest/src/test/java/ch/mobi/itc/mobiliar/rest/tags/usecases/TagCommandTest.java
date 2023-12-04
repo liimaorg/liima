@@ -1,4 +1,4 @@
-package ch.mobi.itc.mobiliar.rest.tags;
+package ch.mobi.itc.mobiliar.rest.tags.usecases;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TagDTO;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;

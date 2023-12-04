@@ -31,7 +31,7 @@ import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
 import ch.mobi.itc.mobiliar.rest.resources.*;
 import ch.mobi.itc.mobiliar.rest.releases.ReleasesRest;
 import ch.mobi.itc.mobiliar.rest.settings.SettingsRest;
-import ch.mobi.itc.mobiliar.rest.tags.TagsRest;
+import ch.mobi.itc.mobiliar.rest.tags.boundary.TagsRest;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

@@ -1,4 +1,4 @@
-package ch.mobi.itc.mobiliar.rest.tags;
+package ch.mobi.itc.mobiliar.rest.tags.usecases;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TagDTO;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.validation.constraints.NotNull;
 
 @Getter
-class TagCommand {
+public class TagCommand {
 
     @NotNull
     private String name;

@@ -1,4 +1,4 @@
-package ch.mobi.itc.mobiliar.rest.tags;
+package ch.mobi.itc.mobiliar.rest.tags.usecases;
 
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTagEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
@@ -16,12 +16,12 @@ import javax.inject.Inject;
 @Stateless
 @AllArgsConstructor
 @NoArgsConstructor
-class AddTagUseCase {
+public class AddTagUseCase {
 
     @Inject
     PropertyTagEditingService propertyTagEditingService;
 
-    PropertyTagEntity addTag(@NonNull TagCommand tagCommand) throws ValidationException {
+    public PropertyTagEntity addTag(@NonNull TagCommand tagCommand) throws ValidationException {
         PropertyTagEntity propertyTagEntity = new PropertyTagEntity(tagCommand.getName(), PropertyTagType.GLOBAL);
         try {
             return propertyTagEditingService.addPropertyTag(propertyTagEntity);

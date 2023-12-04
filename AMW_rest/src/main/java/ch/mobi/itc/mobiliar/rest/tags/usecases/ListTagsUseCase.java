@@ -1,4 +1,4 @@
-package ch.mobi.itc.mobiliar.rest.tags;
+package ch.mobi.itc.mobiliar.rest.tags.usecases;
 
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTagEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
@@ -12,7 +12,7 @@ import java.util.List;
 @Stateless
 @AllArgsConstructor
 @NoArgsConstructor
-class ListTagsUseCase {
+public class ListTagsUseCase {
 
     @Inject
     private PropertyTagEditingService propertyTagEditingService;
