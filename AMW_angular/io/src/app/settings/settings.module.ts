@@ -12,6 +12,7 @@ import { RestrictionEditComponent } from './permission/restriction-edit.componen
 import { RestrictionListComponent } from './permission/restriction-list.component';
 import { RestrictionAddComponent } from './permission/restriction-add.component';
 import { PermissionService } from './permission/permission.service';
+import { NgbNav, NgbNavItem, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,17 @@ import { PermissionService } from './permission/permission.service';
     RestrictionListComponent,
     RestrictionAddComponent,
   ],
-  imports: [CommonModule, SettingsRoutingModule, ReactiveFormsModule, FormsModule, SharedModule, NgSelectModule],
+  imports: [
+    CommonModule,
+    SettingsRoutingModule,
+    ReactiveFormsModule,
+    FormsModule,
+    SharedModule,
+    NgSelectModule,
+    NgbNavModule,
+    NgbNav,
+    NgbNavItem,
+  ],
   providers: [PermissionService],
 })
 export class SettingsModule {}

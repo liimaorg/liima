@@ -1,118 +1,105 @@
 <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
 
-<div class="col main-full">
-  <div>
-    <app-notification
-      *ngIf="successMessage"
-      [message]="successMessage"
-      [messageType]="'success'"
-    ></app-notification>
-    <app-notification
-      *ngIf="errorMessage"
-      [message]="errorMessage"
-      [messageType]="'warning'"
-    ></app-notification>
-    <div class="form-group row" *ngIf="restrictionType == 'role'">
-      <label
-        for="selectRole"
-        class="col-sm-1 fw-bold text-end align-middle"
-        >Role</label
-      >
-      <div class="col-6">
-        <input
-          id="selectRole"
-          class="form-control input-sm"
-          list="roleList"
-          type="text"
-          [(ngModel)]="selectedRoleName"
-          (ngModelChange)="onChangeRole()"
-        />
-        <datalist id="roleList">
-          <ng-container *ngIf="roleNames.length > 0">
-            <option [ngValue]="roleName" *ngFor="let roleName of roleNames">{{
-              roleName
-            }}</option>
-          </ng-container>
-        </datalist>
-      </div>
-    </div>
-
-    <div class="form-group row" *ngIf="restrictionType == 'user'">
-      <label for="selectUsers" class="col-sm-1 fw-bold text-end"
-        >User</label
-      >
-      <div class="col-6">
-        <ng-select
-          id="selectUsers"
-          [items]="userNames"
-          multiple="true"
-          [addTag]="true"
-          placeholder=""
-          addTagText="add user"
-          [(ngModel)]="selectedUserNames"
-          (change)="onChangeUser($event)"
-        >
-        </ng-select>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="col-sm-1"></label>
-      <div class="col">
-        <ng-container *ngIf="selectedRoleName || selectedUserNames.length > 0">
-          <ng-container *ngIf="!restriction && !create">
-            <button
-              type="button"
-              class="btn btn-primary offset-1"
-              (click)="addRestriction()"
+<div class="container">
+  <ul ngbNav #nav="ngbNav" [(activeId)]="restrictionType" class="nav-tabs">
+    <li [ngbNavItem]="'role'">
+      <button ngbNavLink>Role</button>
+      <ng-template ngbNavContent>
+        <div class="form-group row">
+          <label for="selectRole" class="col-sm-1 fw-bold text-end align-middle">Role</label>
+          <div class="col-6">
+            <input
+              id="selectRole"
+              class="form-control input-sm"
+              list="roleList"
+              type="text"
+              [(ngModel)]="selectedRoleName"
+              (ngModelChange)="onChangeRole()"
+            />
+            <datalist id="roleList">
+              <ng-container *ngIf="roleNames.length > 0">
+                <option [ngValue]="roleName" *ngFor="let roleName of roleNames">{{ roleName }}</option>
+              </ng-container>
+            </datalist>
+          </div>
+        </div>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="'user'">
+      <button ngbNavLink>User</button>
+      <ng-template ngbNavContent>
+        <div class="form-group row">
+          <label for="selectUsers" class="col-sm-1 fw-bold text-end">User</label>
+          <div class="col-6">
+            <ng-select
+              id="selectUsers"
+              [items]="userNames"
+              multiple="true"
+              [addTag]="true"
+              placeholder=""
+              addTagText="add user"
+              [(ngModel)]="selectedUserNames"
+              (change)="onChangeUser($event)"
             >
-              <app-icon icon="plus-circle"></app-icon>
-              Add permission
-            </button>
-          </ng-container>
-          <ng-container *ngIf="restriction">
-            <amw-restriction-edit
-              class="bg-light"
-              [restriction]="restriction"
-              [groupedEnvironments]="groupedEnvironments"
-              [permissions]="getPermissions()"
-              [resourceGroups]="resourceGroups"
-              [resourceTypes]="resourceTypes"
-              [availableRestrictions]="assignableRestrictions"
-              [delegationMode]="delegationMode"
-              (cancelEdit)="cancel()"
-              (saveRestriction)="persistRestriction()"
-            ></amw-restriction-edit>
-          </ng-container>
-          <ng-container *ngIf="create">
-            <amw-restriction-add
-              [roleName]="selectedRoleName"
-              [userNames]="selectedUserNames"
-              [groupedEnvironments]="groupedEnvironments"
-              [permissions]="getPermissions()"
-              [resourceGroups]="resourceGroups"
-              [resourceTypes]="resourceTypes"
-              [availableRestrictions]="assignableRestrictions"
-              [delegationMode]="delegationMode"
-              (cancelEdit)="cancel()"
-              (saveRestrictions)="createRestrictions($event)"
-            ></amw-restriction-add>
-          </ng-container>
+            </ng-select>
+          </div>
+        </div>
+      </ng-template>
+    </li>
+  </ul>
+  <div [ngbNavOutlet]="nav" class="mt-4"></div>
+  <div class="form-group">
+    <label class="col-sm-1"></label>
+    <div class="col">
+      <ng-container *ngIf="selectedRoleName || selectedUserNames.length > 0">
+        <ng-container *ngIf="!restriction && !create">
+          <button type="button" class="btn btn-primary offset-1" (click)="addRestriction()">
+            <app-icon icon="plus-circle"></app-icon>
+            Add permission
+          </button>
         </ng-container>
-      </div>
+        <ng-container *ngIf="restriction">
+          <amw-restriction-edit
+            class="bg-light"
+            [restriction]="restriction"
+            [groupedEnvironments]="groupedEnvironments"
+            [permissions]="getPermissions()"
+            [resourceGroups]="resourceGroups"
+            [resourceTypes]="resourceTypes"
+            [availableRestrictions]="assignableRestrictions"
+            [delegationMode]="delegationMode"
+            (cancelEdit)="cancel()"
+            (saveRestriction)="persistRestriction()"
+          ></amw-restriction-edit>
+        </ng-container>
+        <ng-container *ngIf="create">
+          <amw-restriction-add
+            [roleName]="selectedRoleName"
+            [userNames]="selectedUserNames"
+            [groupedEnvironments]="groupedEnvironments"
+            [permissions]="getPermissions()"
+            [resourceGroups]="resourceGroups"
+            [resourceTypes]="resourceTypes"
+            [availableRestrictions]="assignableRestrictions"
+            [delegationMode]="delegationMode"
+            (cancelEdit)="cancel()"
+            (saveRestrictions)="createRestrictions($event)"
+          ></amw-restriction-add>
+        </ng-container>
+      </ng-container>
     </div>
+  </div>
 
-    <div class="form-group" *ngIf="assignedRestrictions.length > 0">
-      <label class="col-sm-1"></label>
-      <div class="col">
-        <amw-restriction-list
-          [restrictions]="assignedRestrictions"
-          [resourceGroups]="resourceGroups"
-          [delegationMode]="delegationMode"
-          (deleteRestriction)="removeRestriction($event)"
-          (editRestriction)="modifyRestriction($event)"
-        ></amw-restriction-list>
-      </div>
+  <div class="form-group" *ngIf="assignedRestrictions.length > 0">
+    <label class="col-sm-1"></label>
+    <div class="col">
+      <amw-restriction-list
+        [restrictions]="assignedRestrictions"
+        [resourceGroups]="resourceGroups"
+        [delegationMode]="delegationMode"
+        (deleteRestriction)="removeRestriction($event)"
+        (editRestriction)="modifyRestriction($event)"
+      ></amw-restriction-list>
     </div>
   </div>
 </div>

@@ -10,7 +10,6 @@ import { Resource } from 'src/app/resource/resource';
 import { ResourceType } from '../../resource/resource-type';
 import { EnvironmentService } from '../../deployment/environment.service';
 import { ResourceService } from 'src/app/resource/resource.service';
-import { NavigationStoreService } from 'src/app/navigation/navigation-store.service';
 
 @Component({
   selector: 'amw-permission',
@@ -56,19 +55,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     private environmentService: EnvironmentService,
     private resourceService: ResourceService,
     private activatedRoute: ActivatedRoute,
-    public navigationStore: NavigationStoreService,
   ) {
-    this.navigationStore.setPageTitle('Permissions');
-    this.navigationStore.setVisible(true);
-    this.navigationStore.setItems([
-      { title: 'Roles', target: '/permission/role' },
-      { title: 'Users', target: '/permission/user' },
-    ]);
-
-    if (!['Roles', 'Users'].includes(this.navigationStore.navigation.current)) {
-      this.navigationStore.setCurrent(this.defaultNavItem);
-    }
-
     this.activatedRoute.params.subscribe((param: any) => {
       if (param['actingUser']) {
         this.delegationMode = true;
@@ -82,7 +69,6 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.getAllPermissions();
         this.onChangeType(this.restrictionType);
       }
-      this.navigationStore.setCurrent(this.restrictionType === 'user' ? 'Users' : 'Roles');
     });
   }
 
@@ -94,9 +80,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {}
 
-  ngOnDestroy() {
-    this.navigationStore.setItems([]);
-  }
+  ngOnDestroy() {}
 
   onChangeRole() {
     this.selectedRoleName = this.selectedRoleName.trim();
@@ -276,13 +260,6 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.clearMessages();
     this.assignedRestrictions = [];
     this.actingUserName = userName;
-    this.navigationStore.setItems([
-      {
-        title: this.actingUserName,
-        target: '/permission/delegation/' + this.actingUserName,
-      },
-    ]);
-    this.navigationStore.setCurrent(this.actingUserName);
     this.selectedUserNames = [];
     this.selectedRoleName = null;
     this.getAllAssignableUserNames();
