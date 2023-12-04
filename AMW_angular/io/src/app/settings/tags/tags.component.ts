@@ -31,8 +31,7 @@ export class TagsComponent {
           this.toast.display('Tag added.');
         },
         error: (error) => {
-          console.log(error);
-          this.toast.display('Failed to add tag.', 'error');
+          this.toast.display(error.error.message, 'error');
         },
       });
     }
@@ -45,8 +44,7 @@ export class TagsComponent {
         this.toast.display('Tag deleted.');
       },
       error: (error) => {
-        console.log(error);
-        this.toast.display('Failed to delete tag.', 'error');
+        this.toast.display(error.error.message, 'error');
       },
     });
   }
