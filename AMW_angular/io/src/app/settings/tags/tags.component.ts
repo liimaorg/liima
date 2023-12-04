@@ -10,7 +10,7 @@ type Tag = { id: number; name: string };
   styleUrl: './tags.component.scss',
 })
 export class TagsComponent {
-  tagName: string = '';
+  tagName = '';
   tags: Tag[] = [];
 
   @ViewChild(ToastComponent) toast: ToastComponent;
