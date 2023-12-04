@@ -15,15 +15,7 @@ type SuccessOrError = 'success' | 'error';
           [ngClass]="{ 'header-success': type === 'success', 'header-error': type === 'error' }"
         >
           <strong class="mr-auto">Information</strong>
-          <button
-            type="button"
-            class="close"
-            aria-label="Close"
-            (click)="close()"
-            [ngClass]="{ 'close-success': type === 'success', 'close-error': type === 'error' }"
-          >
-            &times;
-          </button>
+          <i (click)="close()" class="close bi bi-x-circle"></i>
         </div>
         <div class="toast-body" [ngClass]="{ 'body-success': type === 'success', 'body-error': type === 'error' }">
           <ul class="toast-list">

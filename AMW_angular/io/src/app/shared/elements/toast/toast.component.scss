@@ -58,33 +58,6 @@
   color: darkred;
 }
 
-.close {
-  font-size: 24px;
-  line-height: 16px;
-  color: steelblue;
-  background-color: transparent;
-  border-radius: 50%;
-  border: 2px solid steelblue;
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+.close:hover {
+  cursor: pointer;
 }
-
-.close-success {
-  color: steelblue;
-  border: 2px solid steelblue;
-}
-
-.close-error {
-  color: darkred;
-  border: 2px solid darkred;
-}
-
-
-
-
-
-
