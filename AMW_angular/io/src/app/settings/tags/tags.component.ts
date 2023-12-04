@@ -16,7 +16,7 @@ export class TagsComponent {
   @ViewChild(ToastComponent) toast: ToastComponent;
 
   constructor(private http: HttpClient) {
-    http.get<Tag[]>('AMW_rest/resources/settings/tags').subscribe({
+    http.get<Tag[]>('/AMW_rest/resources/settings/tags').subscribe({
       next: (data) => {
         this.tags = data;
       },
@@ -25,7 +25,7 @@ export class TagsComponent {
 
   addTag(): void {
     if (this.tagName.trim().length > 0) {
-      this.http.post<Tag>('AMW_rest/resources/settings/tags', { name: this.tagName }).subscribe({
+      this.http.post<Tag>('/AMW_rest/resources/settings/tags', { name: this.tagName }).subscribe({
         next: (newTag) => {
           this.tags.push(newTag);
           this.toast.display('Tag added.');
@@ -39,7 +39,7 @@ export class TagsComponent {
   }
 
   deleteTag(tagId: number): void {
-    this.http.delete<Tag>(`AMW_rest/resources/settings/tags/${tagId}`).subscribe({
+    this.http.delete<Tag>(`/AMW_rest/resources/settings/tags/${tagId}`).subscribe({
       next: (response) => {
         this.tags = this.tags.filter((tag) => tag.id !== tagId);
         this.toast.display('Tag deleted.');
