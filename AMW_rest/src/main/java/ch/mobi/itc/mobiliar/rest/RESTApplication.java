@@ -63,7 +63,6 @@ public class RESTApplication extends Application {
         resources.add(ResourceRelationTemplatesRest.class);
         resources.add(HostNamesRest.class);
         resources.add(DeploymentsRest.class);
-        resources.add(DeploymentDtoCsvBodyWriter.class);
         resources.add(EnvironmentsRest.class);
         resources.add(AuditViewRest.class);
         resources.add(RestrictionsRest.class);
@@ -72,6 +71,7 @@ public class RESTApplication extends Application {
         resources.add(TagsRest.class);
 
         // writers
+        resources.add(DeploymentDtoCsvBodyWriter.class);
         resources.add(ExceptionDtoBodyWriter.class);
         resources.add(ServerTupleCSVBodyWriter.class);
 
