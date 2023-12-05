@@ -10,6 +10,7 @@ import { Resource } from 'src/app/resource/resource';
 import { ResourceType } from '../../resource/resource-type';
 import { EnvironmentService } from '../../deployment/environment.service';
 import { ResourceService } from 'src/app/resource/resource.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'amw-permission',
@@ -55,6 +56,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     private environmentService: EnvironmentService,
     private resourceService: ResourceService,
     private activatedRoute: ActivatedRoute,
+    private location: Location,
   ) {
     this.activatedRoute.params.subscribe((param: any) => {
       if (param['actingUser']) {
@@ -423,5 +425,9 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
   private clearMessages() {
     this.errorMessage = null;
     this.successMessage = null;
+  }
+
+  changeRoute(url: string) {
+    this.location.replaceState(url);
   }
 }

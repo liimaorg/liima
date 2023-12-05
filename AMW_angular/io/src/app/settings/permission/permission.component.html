@@ -3,7 +3,7 @@
 <div class="container">
   <ul ngbNav #nav="ngbNav" [(activeId)]="restrictionType" class="nav-tabs">
     <li [ngbNavItem]="'role'">
-      <button ngbNavLink>Role</button>
+      <button ngbNavLink (click)="changeRoute('/settings/permission/role')">Role</button>
       <ng-template ngbNavContent>
         <div class="form-group row">
           <label for="selectRole" class="col-sm-1 fw-bold text-end align-middle">Role</label>
@@ -26,7 +26,7 @@
       </ng-template>
     </li>
     <li [ngbNavItem]="'user'">
-      <button ngbNavLink>User</button>
+      <button ngbNavLink (click)="changeRoute('/settings/permission/user')">User</button>
       <ng-template ngbNavContent>
         <div class="form-group row">
           <label for="selectUsers" class="col-sm-1 fw-bold text-end">User</label>
