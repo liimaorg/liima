@@ -81,19 +81,19 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "liima:build",
-            "proxyConfig": "proxy.conf.json"
+            "proxyConfig": "proxy.conf.json",
+            "buildTarget": "liima:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "liima:build:production"
+              "buildTarget": "liima:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "liima:build"
+            "buildTarget": "liima:build"
           }
         },
         "test": {
