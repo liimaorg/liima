@@ -1,3 +1,10 @@
+# v1.17.32
+* Update to Angular 17 and update JS deps [#705](https://github.com/liimaorg/liima/issues/705) [#715](https://github.com/liimaorg/liima/pull/715)
+* Angular deployments page: Clipboard button doesn't work [#699](https://github.com/liimaorg/liima/issues/699)
+* Exception when deleting resources with functions [#681](https://github.com/liimaorg/liima/issues/681)
+* NullPointerException on editTemplateView.xhtml after remove of relation [#704](https://github.com/liimaorg/liima/issues/704)
+* Duplicate resource names via renaming [#682](https://github.com/liimaorg/liima/issues/682)
+
 # v1.17.31
 * fix several permission related issues [#701](https://github.com/liimaorg/liima/pull/701)
   * runtime resource type is now an normal default resource type. Permissions for default resource types now apply to runtimes also.
