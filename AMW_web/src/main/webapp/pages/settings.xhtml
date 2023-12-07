@@ -48,9 +48,10 @@
                     </h:link>
                 </li>
                 <li class="${settingsDataProvider.mode=='tags' ? 'current' : ''}">
-                    <h:link value="Tags">
-                        <f:param name="mode" value="tags" />
-                    </h:link>
+                    <h:outputLink value="/AMW_angular/#/settings/tags"
+                                  rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
+                       Tags
+                    </h:outputLink>
                 </li>
                 <li class="${settingsDataProvider.mode=='functions' ? 'current' : ''}">
                     <h:link value="Functions">
@@ -78,7 +79,7 @@
                     </h:link>
                 </li>
                 <li class="${settingsDataProvider.mode=='rolePerm' ? 'current': ''}">
-                    <h:outputLink value="/AMW_angular/#/permission"
+                    <h:outputLink value="/AMW_angular/#/settings/permission/role"
                                   rendered="#{securityDataProvider.hasPermission('ROLES_AND_PERMISSIONS_TAB')}">
                         Roles and Permissions
                     </h:outputLink>
