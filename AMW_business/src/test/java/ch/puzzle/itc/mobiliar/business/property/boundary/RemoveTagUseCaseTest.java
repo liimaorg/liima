@@ -1,5 +1,6 @@
-package ch.mobi.itc.mobiliar.rest.tags.usecases;
+package ch.puzzle.itc.mobiliar.business.property.boundary;
 
+import ch.puzzle.itc.mobiliar.business.property.boundary.RemoveTagUseCase;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTagEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagType;

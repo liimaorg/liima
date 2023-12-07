@@ -1,6 +1,5 @@
-package ch.mobi.itc.mobiliar.rest.tags.usecases;
+package ch.puzzle.itc.mobiliar.business.property.boundary;
 
-import ch.mobi.itc.mobiliar.rest.dtos.TagDTO;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTagEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
@@ -35,7 +34,7 @@ public class AddTagUseCaseTest {
         // given
 
         // when
-        PropertyTagEntity tag = useCase.addTag(new TagCommand(new TagDTO("test-tag")));
+        PropertyTagEntity tag = useCase.addTag(new TagCommand("test-tag"));
 
         // then
         assertEquals(tag, em.find(PropertyTagEntity.class, tag.getId()));
@@ -47,7 +46,7 @@ public class AddTagUseCaseTest {
         em.persist(new PropertyTagEntity("test-tag", GLOBAL));
 
         // when
-        useCase.addTag(new TagCommand(new TagDTO("test-tag")));
+        useCase.addTag(new TagCommand("test-tag"));
 
         // then
         fail("should have thrown exception");

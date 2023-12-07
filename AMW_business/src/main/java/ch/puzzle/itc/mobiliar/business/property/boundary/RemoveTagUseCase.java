@@ -1,4 +1,4 @@
-package ch.mobi.itc.mobiliar.rest.tags.usecases;
+package ch.puzzle.itc.mobiliar.business.property.boundary;
 
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTagEditingService;
 import lombok.AllArgsConstructor;

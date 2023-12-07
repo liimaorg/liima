@@ -1,6 +1,6 @@
-package ch.mobi.itc.mobiliar.rest.tags.usecases;
+package ch.puzzle.itc.mobiliar.business.property.boundary;
 
-import ch.mobi.itc.mobiliar.rest.dtos.TagDTO;
+import ch.puzzle.itc.mobiliar.business.property.boundary.TagCommand;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ public class TagCommandTest {
 
 
     @Test(expected = ValidationException.class)
-    public void shouldNotValidateIfTagDtoIsNull() throws ValidationException {
+    public void shouldNotValidateIfTagNameIsNull() throws ValidationException {
         // given
 
         // when
@@ -21,22 +21,11 @@ public class TagCommandTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldNotValidateIfTagNameIsNull() throws ValidationException {
-        // given
-
-        // when
-        new TagCommand(new TagDTO(null));
-
-        // then
-        fail("should have thrown exception");
-    }
-
-    @Test(expected = ValidationException.class)
     public void shouldNotValidateIfTagNameIsBlank() throws ValidationException {
         // given
 
         // when
-        new TagCommand(new TagDTO(""));
+        new TagCommand("");
 
         // then
         fail("should have thrown exception");
@@ -47,7 +36,7 @@ public class TagCommandTest {
         // given
 
         // when
-        new TagCommand(new TagDTO("  "));
+        new TagCommand("    ");
 
         // then
     }
@@ -57,7 +46,7 @@ public class TagCommandTest {
         // given
 
         // when
-        TagCommand tagCommand = new TagCommand(new TagDTO("tagName"));
+        TagCommand tagCommand = new TagCommand("tagName");
 
         // then
         assertEquals("tagName", tagCommand.getName());
