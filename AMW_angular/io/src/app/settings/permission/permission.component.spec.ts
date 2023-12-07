@@ -14,11 +14,11 @@ import { RestrictionEditComponent } from './restriction-edit.component';
 import { RestrictionListComponent } from './restriction-list.component';
 import { Restriction } from './restriction';
 import { Tag } from './tag';
-import { SharedModule } from '../shared/shared.module';
-import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { EnvironmentService } from '../../deployment/environment.service';
-import { ResourceService } from 'src/app/resource/resource.service';
-import {Environment} from "../../deployment/environment";
+import { ResourceService } from '../../resource/resource.service';
+import { Environment } from 'src/app/deployment/environment';
+import { SharedModule } from '../../shared/shared.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 describe('PermissionComponent without any params (default: type Role)', () => {
   let fixture: ComponentFixture<PermissionComponent>;
@@ -34,12 +34,11 @@ describe('PermissionComponent without any params (default: type Role)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [CommonModule, FormsModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [CommonModule, FormsModule, HttpClientTestingModule, RouterTestingModule.withRoutes([]), NgbModule],
       providers: [
         EnvironmentService,
         PermissionService,
         ResourceService,
-        NavigationStoreService,
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -391,12 +390,18 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [CommonModule, FormsModule, HttpClientTestingModule, RouterTestingModule.withRoutes([]), SharedModule],
+      imports: [
+        CommonModule,
+        FormsModule,
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([]),
+        SharedModule,
+        NgbModule,
+      ],
       providers: [
         EnvironmentService,
         PermissionService,
         ResourceService,
-        NavigationStoreService,
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -474,12 +479,18 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [CommonModule, FormsModule, HttpClientTestingModule, RouterTestingModule.withRoutes([]), SharedModule],
+      imports: [
+        CommonModule,
+        FormsModule,
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([]),
+        SharedModule,
+        NgbModule,
+      ],
       providers: [
         EnvironmentService,
         PermissionService,
         ResourceService,
-        NavigationStoreService,
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
