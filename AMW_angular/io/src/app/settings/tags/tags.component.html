@@ -1,26 +1,38 @@
 <div class="container mt-4">
+  <h1>Tags</h1>
+  <div class="row mt-2 py-4">
+    <div class="col-6 ms-auto">
+      <div class="input-group">
+        <input
+          id="tagName"
+          type="text"
+          class="form-control"
+          [(ngModel)]="tagName"
+          placeholder="Enter tag"
+          (keyup.enter)="addTag()"
+        />
+        <button class="btn btn-primary" (click)="addTag()">Add</button>
+      </div>
+    </div>
+  </div>
+
   <table class="table table-bordered">
-    <tr>
-      <td>Tags</td>
-      <td>
-        <div class="input-group">
-          <input id="tagName" type="text" class="form-control" [(ngModel)]="tagName" placeholder="Enter tag" (keyup.enter)="addTag()">
-          <button class="btn btn-primary" (click)="addTag()">Add</button>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Name</td>
-      <td>Delete</td>
-    </tr>
-    @for (tag of tags; track tag) {
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (tag of tags; track tag) {
       <tr>
         <td>{{ tag.name }}</td>
-        <td><button class="btn" (click)="deleteTag(tag.id)"><i class="bi bi-trash"></i></button></td>
+        <td>
+          <button class="btn" (click)="deleteTag(tag.id)"><i class="bi bi-trash"></i></button>
+        </td>
       </tr>
-    }
+      }
+    </tbody>
   </table>
   <app-toast></app-toast>
 </div>
-
-

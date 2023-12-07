@@ -29,6 +29,7 @@ export class TagsComponent {
         next: (newTag) => {
           this.tags.push(newTag);
           this.toast.display('Tag added.');
+          this.tagName = '';
         },
         error: (error) => {
           this.toast.display(error.error.message, 'error');
