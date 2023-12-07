@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter, OnChanges, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { Restriction } from './restriction';
 import { Permission } from './permission';
-import { Environment } from '../deployment/environment';
-import { Resource } from '../resource/resource';
-import { ResourceType } from '../resource/resource-type';
 import * as _ from 'lodash';
+import {Resource} from "../../resource/resource";
+import {Environment} from "../../deployment/environment";
+import {ResourceType} from "../../resource/resource-type";
 
 @Component({
   selector: 'amw-restriction-edit',

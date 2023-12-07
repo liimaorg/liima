@@ -1,10 +1,10 @@
 import { inject, TestBed } from '@angular/core/testing';
 import { RestrictionEditComponent } from './restriction-edit.component';
 import { Restriction } from './restriction';
-import { Environment } from '../deployment/environment';
-import { Resource } from '../resource/resource';
 import { Permission } from './permission';
 import { ChangeDetectorRef } from '@angular/core';
+import {Environment} from "../../deployment/environment";
+import {Resource} from "../../resource/resource";
 
 describe('RestrictionEditComponent', () => {
   // provide our implementations or mocks to the dependency injector
