@@ -427,7 +427,9 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.successMessage = null;
   }
 
-  changeRoute(url: string) {
-    this.location.replaceState(url);
+  changeType(restrictionType: string) {
+    this.restrictionType = restrictionType;
+    this.onChangeType(this.restrictionType);
+    this.location.replaceState(`/settings/permission/${restrictionType}`);
   }
 }

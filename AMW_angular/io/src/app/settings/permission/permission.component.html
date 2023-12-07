@@ -1,9 +1,10 @@
 <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
 
-<div class="container">
-  <ul ngbNav #nav="ngbNav" [(activeId)]="restrictionType" class="nav-tabs">
+<div class="container mt-4">
+  <h1>Roles and Permissions</h1>
+  <ul ngbNav #nav="ngbNav" [(activeId)]="restrictionType" class="nav-tabs mt-2 pt-4">
     <li [ngbNavItem]="'role'">
-      <button ngbNavLink (click)="changeRoute('/settings/permission/role')">Role</button>
+      <button ngbNavLink (click)="changeType('role')">Role</button>
       <ng-template ngbNavContent>
         <div class="form-group row">
           <label for="selectRole" class="col-sm-1 fw-bold text-end align-middle">Role</label>
@@ -26,7 +27,7 @@
       </ng-template>
     </li>
     <li [ngbNavItem]="'user'">
-      <button ngbNavLink (click)="changeRoute('/settings/permission/user')">User</button>
+      <button ngbNavLink (click)="changeType('user')">User</button>
       <ng-template ngbNavContent>
         <div class="form-group row">
           <label for="selectUsers" class="col-sm-1 fw-bold text-end">User</label>
