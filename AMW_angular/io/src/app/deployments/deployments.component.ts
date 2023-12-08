@@ -23,7 +23,7 @@ import { ToastComponent as ToastComponent_1 } from '../shared/elements/toast/toa
 import { NotificationComponent } from '../shared/elements/notification/notification.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 
-declare var $: any;
+declare let $: any;
 
 @Component({
   selector: 'amw-deployments',

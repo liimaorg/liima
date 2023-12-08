@@ -2,20 +2,17 @@ import { Component, Input } from '@angular/core';
 import { NgIf } from '@angular/common';
 
 @Component({
-    selector: 'app-loading-indicator',
-    template: `
-    <div
-      *ngIf="isLoading"
-      class="d-flex justify-content-center align-items-center overlay"
-    >
+  selector: 'app-loading-indicator',
+  template: `
+    <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center overlay">
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
     <div class=""></div>
   `,
-    styles: [
-        `
+  styles: [
+    `
       .overlay {
         opacity: 0.5;
         background: #000;
@@ -27,9 +24,9 @@ import { NgIf } from '@angular/common';
         position: fixed !important;
       }
     `,
-    ],
-    standalone: true,
-    imports: [NgIf],
+  ],
+  standalone: true,
+  imports: [NgIf],
 })
 export class LoadingIndicatorComponent {
   @Input()

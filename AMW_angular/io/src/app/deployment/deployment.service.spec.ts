@@ -1,8 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-} from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Deployment } from './deployment';
 import { DeploymentService } from './deployment.service';
@@ -37,15 +34,11 @@ describe('DeploymentService', () => {
       value: 'value',
     };
 
-    service
-      .getAllDeploymentParameterKeys()
-      .subscribe((deploymentParameters) => {
-        expect(deploymentParameters).toEqual([deploymentParamter]);
-      });
+    service.getAllDeploymentParameterKeys().subscribe((deploymentParameters) => {
+      expect(deploymentParameters).toEqual([deploymentParamter]);
+    });
 
-    const req = httpTestingController.expectOne(
-      '/AMW_rest/resources/deployments/deploymentParameterKeys/'
-    );
+    const req = httpTestingController.expectOne('/AMW_rest/resources/deployments/deploymentParameterKeys/');
 
     expect(req.request.method).toEqual('GET');
 
@@ -57,9 +50,7 @@ describe('DeploymentService', () => {
       expect(deployment).toEqual(mockDeployment);
     });
 
-    const req = httpTestingController.expectOne(
-      '/AMW_rest/resources/deployments/123'
-    );
+    const req = httpTestingController.expectOne('/AMW_rest/resources/deployments/123');
 
     expect(req.request.method).toEqual('GET');
     req.flush(mockDeployment);

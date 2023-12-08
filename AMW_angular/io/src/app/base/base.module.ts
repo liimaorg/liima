@@ -6,6 +6,6 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   declarations: [],
   exports: [],
-  providers: [BaseService]
+  providers: [BaseService],
 })
 export class BaseModule {}

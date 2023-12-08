@@ -19,7 +19,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationComponent } from '../../shared/elements/notification/notification.component';
 
-declare var CodeMirror: any;
+declare let CodeMirror: any;
 
 type Failed = 'failed';
 

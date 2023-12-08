@@ -5,13 +5,13 @@ import * as datefns from 'date-fns';
 
 describe('DateTimeModel', () => {
   it('should convert dates correctly', () => {
-    var fixture = TestBed.createComponent(DateTimePickerComponent);
-    var component = fixture.componentInstance;
-    var testDate = '02.01.2017 10:00';
+    const fixture = TestBed.createComponent(DateTimePickerComponent);
+    const component = fixture.componentInstance;
+    const testDate = '02.01.2017 10:00';
 
-    var m = datefns.parse(testDate, component.dateStringFormat, new Date());
-    var dateTimeFromString = DateTimeModel.fromLocalString(testDate, component.dateStringFormat);
-    var dateTimeFromEpoch = DateTimeModel.fromEpoch(m.getTime());
+    const m = datefns.parse(testDate, component.dateStringFormat, new Date());
+    const dateTimeFromString = DateTimeModel.fromLocalString(testDate, component.dateStringFormat);
+    const dateTimeFromEpoch = DateTimeModel.fromEpoch(m.getTime());
 
     expect(dateTimeFromString.day).toEqual(m.getDate());
     expect(dateTimeFromString.month).toEqual(m.getMonth() + 1);

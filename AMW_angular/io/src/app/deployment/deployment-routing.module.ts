@@ -10,10 +10,10 @@ import { NgModule } from '@angular/core';
       { path: 'deployment/:deploymentId', component: DeploymentComponent },
       {
         path: 'deployment/:appserverName/:releaseName',
-        component: DeploymentComponent
-      }
-    ])
+        component: DeploymentComponent,
+      },
+    ]),
   ],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class DeploymentRoutingModule {}

@@ -27,7 +27,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
   let environmentService: EnvironmentService;
   let resourceService: ResourceService;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();
 
@@ -392,7 +392,7 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
   let environmentService: EnvironmentService;
   let resourceService: ResourceService;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();
 
@@ -483,7 +483,7 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
   let environmentService: EnvironmentService;
   let resourceService: ResourceService;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();
 

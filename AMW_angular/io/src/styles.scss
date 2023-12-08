@@ -11,7 +11,7 @@ $container-max-widths: (
 );
 
 @import 'bootstrap/scss/bootstrap';
-@import "~@ng-select/ng-select/themes/default.theme.css";
+@import '~@ng-select/ng-select/themes/default.theme.css';
 @import 'codemirror/lib/codemirror';
 @import 'codemirror/addon/dialog/dialog.css';
 

@@ -15,13 +15,13 @@ import { DeploymentFilter } from '../deployment/deployment-filter';
 import { Deployment } from '../deployment/deployment';
 import { PaginationComponent } from '../shared/pagination/pagination.component';
 
-declare var $: any;
+declare let $: any;
 
 describe('DeploymentsComponent (with query params)', () => {
   let component: DeploymentsComponent;
   let fixture: ComponentFixture<DeploymentsComponent>;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
 
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();
@@ -147,7 +147,7 @@ describe('DeploymentsComponent (with query params)', () => {
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
     ];
-    var buffer = new ArrayBuffer(8);
+    const buffer = new ArrayBuffer(8);
     spyOn(deploymentService, 'getFilteredDeploymentsForCsvExport').and.returnValue(of(buffer));
 
     // when
@@ -166,7 +166,7 @@ describe('DeploymentsComponent (with illegal query params)', () => {
   let component: DeploymentsComponent;
   let fixture: ComponentFixture<DeploymentsComponent>;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
 
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();
@@ -220,7 +220,7 @@ describe('DeploymentsComponent (without query params)', () => {
   let component: DeploymentsComponent;
   let fixture: ComponentFixture<DeploymentsComponent>;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
   mockRoute.queryParams = new Subject<any>();
 
   const filter: string = JSON.stringify([

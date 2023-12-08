@@ -364,7 +364,7 @@ describe('DeploymentComponent (create deployment)', () => {
 describe('DeploymentComponent (create deployment with params)', () => {
   let component: DeploymentComponent;
   let fixture: ComponentFixture<DeploymentComponent>;
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
 
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();
@@ -422,7 +422,7 @@ describe('DeploymentComponent (redeployment)', () => {
   let environmentService: EnvironmentService;
   let deploymentService: DeploymentService;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
 
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();

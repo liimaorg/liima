@@ -38,7 +38,7 @@ describe('DeploymentLogService', () => {
       .getLogFileMetaData(1)
       .subscribe(
         (deploymentLogs) => expect(deploymentLogs).toEqual(expectedDeploymentLogs, 'expected deploymentLogs'),
-        fail
+        fail,
       );
 
     expect(httpClientSpy.get.calls.count()).toBe(1, 'called once');
@@ -55,7 +55,7 @@ describe('DeploymentLogService', () => {
 
     service.getLogFileMetaData(1).subscribe(
       (_) => fail('expected an error, not a list of deploymentLogs'),
-      (error) => expect(error).toContain('no deployment logs found')
+      (error) => expect(error).toContain('no deployment logs found'),
     );
   });
 });

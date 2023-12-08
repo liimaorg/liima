@@ -7,15 +7,10 @@ import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'amw-deployments-edit-modal',
-    templateUrl: './deployments-edit-modal.component.html',
-    standalone: true,
-    imports: [
-        FormsModule,
-        NgFor,
-        NgIf,
-        DateTimePickerComponent,
-    ],
+  selector: 'amw-deployments-edit-modal',
+  templateUrl: './deployments-edit-modal.component.html',
+  standalone: true,
+  imports: [FormsModule, NgFor, NgIf, DateTimePickerComponent],
 })
 export class DeploymentsEditModalComponent {
   @Input() deployments: Deployment[] = [];
@@ -60,7 +55,7 @@ export class DeploymentsEditModalComponent {
         break;
     }
     this.clear();
-    this.activeModal.close('Close click')
+    this.activeModal.close('Close click');
   }
 
   private clear() {

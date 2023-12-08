@@ -29,7 +29,7 @@ export class EnvironmentService extends BaseService {
     return this.http
       .get<Environment[]>(`${this.getBaseUrl()}/environments`, {
         params,
-        headers
+        headers,
       })
       .pipe(catchError(this.handleError));
   }

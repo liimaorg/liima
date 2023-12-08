@@ -17,31 +17,39 @@ import { RestrictionEditComponent } from './restriction-edit.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
-import { NgbNav, NgbNavItem, NgbNavItemRole, NgbNavLinkButton, NgbNavLinkBase, NgbNavContent, NgbNavOutlet } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbNav,
+  NgbNavItem,
+  NgbNavItemRole,
+  NgbNavLinkButton,
+  NgbNavLinkBase,
+  NgbNavContent,
+  NgbNavOutlet,
+} from '@ng-bootstrap/ng-bootstrap';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 
 @Component({
-    selector: 'amw-permission',
-    templateUrl: './permission.component.html',
-    standalone: true,
-    imports: [
-        LoadingIndicatorComponent,
-        NgbNav,
-        NgbNavItem,
-        NgbNavItemRole,
-        NgbNavLinkButton,
-        NgbNavLinkBase,
-        NgbNavContent,
-        FormsModule,
-        NgIf,
-        NgFor,
-        NgSelectModule,
-        NgbNavOutlet,
-        IconComponent,
-        RestrictionEditComponent,
-        RestrictionAddComponent,
-        RestrictionListComponent,
-    ],
+  selector: 'amw-permission',
+  templateUrl: './permission.component.html',
+  standalone: true,
+  imports: [
+    LoadingIndicatorComponent,
+    NgbNav,
+    NgbNavItem,
+    NgbNavItemRole,
+    NgbNavLinkButton,
+    NgbNavLinkBase,
+    NgbNavContent,
+    FormsModule,
+    NgIf,
+    NgFor,
+    NgSelectModule,
+    NgbNavOutlet,
+    IconComponent,
+    RestrictionEditComponent,
+    RestrictionAddComponent,
+    RestrictionListComponent,
+  ],
 })
 export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
   // loaded only once

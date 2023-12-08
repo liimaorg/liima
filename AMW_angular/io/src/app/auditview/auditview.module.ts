@@ -12,7 +12,7 @@ import { NewlineFilterPipe } from './auditview-table/newlineFilterPipe';
 import { SortableHeader } from './auditview-table/sortable.directive';
 
 @NgModule({
-    imports: [
+  imports: [
     CommonModule,
     FormsModule,
     AuditviewRoutingModule,
@@ -21,8 +21,8 @@ import { SortableHeader } from './auditview-table/sortable.directive';
     AuditviewComponent,
     NewlineFilterPipe,
     AuditviewTableComponent,
-    SortableHeader
-],
-    providers: [AuditviewService, DatePipe]
+    SortableHeader,
+  ],
+  providers: [AuditviewService, DatePipe],
 })
 export class AuditviewModule {}

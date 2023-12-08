@@ -12,11 +12,7 @@ interface State {
   sortDirection: SortDirection;
 }
 
-function sort(
-  entries: AuditLogEntry[],
-  column: string,
-  direction: string
-): AuditLogEntry[] {
+function sort(entries: AuditLogEntry[], column: string, direction: string): AuditLogEntry[] {
   if (direction === '') {
     return entries;
   } else {
@@ -63,26 +59,16 @@ export class AuditviewTableService {
   private sortDirection$ = new BehaviorSubject<SortDirection>('');
   private auditlogEntries$: Subject<AuditLogEntry[]> = new Subject();
 
-  private _search$ = combineLatest(
-    this.searchTerm$,
-    this.sortColumn$,
-    this.sortDirection$,
-    this.auditlogEntries$
-  );
+  private _search$ = combineLatest(this.searchTerm$, this.sortColumn$, this.sortDirection$, this.auditlogEntries$);
 
   constructor(private pipe: DatePipe) {
     this._result$ = this._search$.pipe(
       tap(() => this._loading$.next(true)),
       debounceTime(200),
       map(([searchTerm, sortColumn, sortDirection, auditlogEntries]) => {
-        return this._search(
-          searchTerm,
-          sortColumn,
-          sortDirection,
-          auditlogEntries
-        );
+        return this._search(searchTerm, sortColumn, sortDirection, auditlogEntries);
       }),
-      tap(() => this._loading$.next(false))
+      tap(() => this._loading$.next(false)),
     );
   }
 
@@ -108,13 +94,11 @@ export class AuditviewTableService {
     searchTerm: string,
     sortColumn: string,
     sortDirection: SortDirection,
-    auditlogEntries: AuditLogEntry[]
+    auditlogEntries: AuditLogEntry[],
   ): AuditLogEntry[] {
-    let auditviewEntries = sort(auditlogEntries, sortColumn, sortDirection);
+    const auditviewEntries = sort(auditlogEntries, sortColumn, sortDirection);
 
-    let result = auditviewEntries.filter((entry) =>
-      matches(entry, searchTerm, this.pipe)
-    );
+    const result = auditviewEntries.filter((entry) => matches(entry, searchTerm, this.pipe));
     return result;
   }
 }

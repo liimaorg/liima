@@ -1,11 +1,4 @@
-import {
-  Component,
-  QueryList,
-  ViewChildren,
-  OnChanges,
-  SimpleChanges,
-  Input
-} from '@angular/core';
+import { Component, QueryList, ViewChildren, OnChanges, SimpleChanges, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuditLogEntry } from '../auditview-entry';
 import { AuditviewService } from '../auditview.service';
@@ -18,12 +11,12 @@ import { NgFor, AsyncPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-auditview-table',
-    templateUrl: './auditview-table.component.html',
-    styleUrls: ['./auditview-table.component.scss'],
-    providers: [AuditviewService],
-    standalone: true,
-    imports: [FormsModule, SortableHeader, NgFor, NgbHighlight, AsyncPipe, DatePipe, NewlineFilterPipe]
+  selector: 'app-auditview-table',
+  templateUrl: './auditview-table.component.html',
+  styleUrls: ['./auditview-table.component.scss'],
+  providers: [AuditviewService],
+  standalone: true,
+  imports: [FormsModule, SortableHeader, NgFor, NgbHighlight, AsyncPipe, DatePipe, NewlineFilterPipe],
 })
 export class AuditviewTableComponent implements OnChanges {
   @Input() auditlogEntries;
@@ -45,7 +38,7 @@ export class AuditviewTableComponent implements OnChanges {
   }
 
   onSort({ column, direction }: SortEvent) {
-    this.headers.forEach(header => {
+    this.headers.forEach((header) => {
       if (header.sortable !== column) {
         header.direction = '';
       }

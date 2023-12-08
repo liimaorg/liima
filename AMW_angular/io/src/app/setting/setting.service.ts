@@ -14,7 +14,7 @@ export class SettingService extends BaseService {
   getAllAppSettings(): Observable<AppConfiguration[]> {
     return this.http
       .get<AppConfiguration[]>(`${this.getBaseUrl()}/settings`, {
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
   }

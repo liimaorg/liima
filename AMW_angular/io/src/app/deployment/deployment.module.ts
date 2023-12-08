@@ -10,14 +10,14 @@ import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
-    imports: [
+  imports: [
     CommonModule,
     FormsModule,
     DeploymentRoutingModule,
     NgbDatepickerModule,
     NgSelectModule,
-    DeploymentComponent
-],
-    providers: [DeploymentService, EnvironmentService],
+    DeploymentComponent,
+  ],
+  providers: [DeploymentService, EnvironmentService],
 })
 export class DeploymentModule {}

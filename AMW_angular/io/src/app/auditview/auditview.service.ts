@@ -6,7 +6,7 @@ import { BaseService } from '../base/base.service';
 import { AuditLogEntry } from './auditview-entry';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuditviewService extends BaseService {
   constructor(private http: HttpClient) {
@@ -15,12 +15,9 @@ export class AuditviewService extends BaseService {
 
   getAuditLogForResource(resourceId: number): Observable<AuditLogEntry[]> {
     const resource$ = this.http
-      .get<AuditLogEntry[]>(
-        `${this.getBaseUrl()}/auditview/resource/${resourceId}`,
-        {
-          headers: this.getHeaders()
-        }
-      )
+      .get<AuditLogEntry[]>(`${this.getBaseUrl()}/auditview/resource/${resourceId}`, {
+        headers: this.getHeaders(),
+      })
       .pipe(catchError(this.handleError));
     return resource$;
   }

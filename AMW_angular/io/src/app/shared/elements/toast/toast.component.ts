@@ -3,8 +3,8 @@ import { NgIf, NgClass } from '@angular/common';
 
 type SuccessOrError = 'success' | 'error';
 @Component({
-    selector: 'app-toast',
-    template: `
+  selector: 'app-toast',
+  template: `
     <div *ngIf="show" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
       <div
         class="toast-image"
@@ -26,9 +26,9 @@ type SuccessOrError = 'success' | 'error';
       </div>
     </div>
   `,
-    styleUrls: ['./toast.component.scss'],
-    standalone: true,
-    imports: [NgIf, NgClass],
+  styleUrls: ['./toast.component.scss'],
+  standalone: true,
+  imports: [NgIf, NgClass],
 })
 export class ToastComponent {
   @Input() message = '';

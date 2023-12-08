@@ -3,11 +3,12 @@ import { AuditviewComponent } from './auditview.component';
 import { NgModule } from '@angular/core';
 
 @NgModule({
-  imports: [RouterModule.forChild([
-    {path: 'auditview', component: AuditviewComponent},
-    {path: 'auditview/:resourceId', component: AuditviewComponent},
-  ])],
-  exports: [RouterModule]
+  imports: [
+    RouterModule.forChild([
+      { path: 'auditview', component: AuditviewComponent },
+      { path: 'auditview/:resourceId', component: AuditviewComponent },
+    ]),
+  ],
+  exports: [RouterModule],
 })
-export class AuditviewRoutingModule {
-}
+export class AuditviewRoutingModule {}

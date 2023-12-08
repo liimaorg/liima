@@ -5,7 +5,7 @@ import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 
 describe('DeploymentsEditModalComponent (with query params)', () => {
   let component: DeploymentsEditModalComponent;
-  var activeModal = new NgbActiveModal();
+  const activeModal = new NgbActiveModal();
   beforeEach(() => {
     component = new DeploymentsEditModalComponent(activeModal);
   });

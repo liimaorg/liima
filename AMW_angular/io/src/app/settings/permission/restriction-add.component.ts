@@ -13,16 +13,19 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { NgIf, NgFor } from '@angular/common';
 
 @Component({
-    selector: 'amw-restriction-add',
-    templateUrl: './restriction-add.component.html',
-    standalone: true,
-    imports: [NgIf, NgSelectModule, FormsModule, NgFor, IconComponent]
+  selector: 'amw-restriction-add',
+  templateUrl: './restriction-add.component.html',
+  standalone: true,
+  imports: [NgIf, NgSelectModule, FormsModule, NgFor, IconComponent],
 })
-
 export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
-
-  actions: Action[] = [{name: 'ALL'} as Action, {name: 'CREATE'} as Action, {name: 'DELETE'} as Action,
-    {name: 'READ'} as Action, {name: 'UPDATE'} as Action];
+  actions: Action[] = [
+    { name: 'ALL' } as Action,
+    { name: 'CREATE' } as Action,
+    { name: 'DELETE' } as Action,
+    { name: 'READ' } as Action,
+    { name: 'UPDATE' } as Action,
+  ];
   resourceTypePermissions: string[] = ['ANY', 'DEFAULT_ONLY', 'NON_DEFAULT_ONLY'];
 
   selectedPermissionNames: string[] = [];
@@ -48,8 +51,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
 
   onlyGlobal: boolean = true;
 
-  constructor(private cdRef: ChangeDetectorRef) {
-  }
+  constructor(private cdRef: ChangeDetectorRef) {}
 
   ngAfterViewChecked() {
     // explicit change detection to avoid "expression-has-changed-after-it-was-checked-error"
@@ -71,10 +73,16 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   }
 
   persistRestriction() {
-    const restrictionsCreation: RestrictionsCreation = { roleName: this.roleName, userNames: this.getSelectedUserNames(),
-      permissionNames: this.selectedPermissionNames, resourceGroupIds: this.getSelectedGroupIds(),
-      resourceTypeNames: this.selectedResourceTypeNames, resourceTypePermission: this.selectedResourceTypePermission,
-      contextNames: this.getSelectedEnvNames(), actions: this.getSelectedActionNames() };
+    const restrictionsCreation: RestrictionsCreation = {
+      roleName: this.roleName,
+      userNames: this.getSelectedUserNames(),
+      permissionNames: this.selectedPermissionNames,
+      resourceGroupIds: this.getSelectedGroupIds(),
+      resourceTypeNames: this.selectedResourceTypeNames,
+      resourceTypePermission: this.selectedResourceTypePermission,
+      contextNames: this.getSelectedEnvNames(),
+      actions: this.getSelectedActionNames(),
+    };
     this.saveRestrictions.emit(restrictionsCreation);
     this.resetSelections();
   }
@@ -88,13 +96,17 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   }
 
   isResourceTypeAssignable(): boolean {
-    return (this.selectedResourceTypePermission === 'ANY' || !this.selectedResourceTypePermission)
-      && this.selectedResourceGroupNames.length < 1;
+    return (
+      (this.selectedResourceTypePermission === 'ANY' || !this.selectedResourceTypePermission) &&
+      this.selectedResourceGroupNames.length < 1
+    );
   }
 
   isResourceGroupAssignable(): boolean {
-    return (this.selectedResourceTypePermission === 'ANY' || !this.selectedResourceTypePermission)
-      && this.selectedResourceTypeNames.length < 1;
+    return (
+      (this.selectedResourceTypePermission === 'ANY' || !this.selectedResourceTypePermission) &&
+      this.selectedResourceTypeNames.length < 1
+    );
   }
 
   clearTypeAndGroup() {
@@ -168,7 +180,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   private populateSimilarRestrictions() {
     this.similarRestrictions = [];
     this.selectedPermissionNames.forEach((permissionName) => {
-      this.similarRestrictions.push(..._.filter(this.availableRestrictions, [ 'permission.name', permissionName ]));
+      this.similarRestrictions.push(..._.filter(this.availableRestrictions, ['permission.name', permissionName]));
     });
   }
 
@@ -179,12 +191,14 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
         if (restriction.action === 'ALL') {
           this.enableAllActions();
         } else if (!_.some(this.actions, { name: restriction.action, disabled: false })) {
-          this.actions[_.findIndex(this.actions, {name: restriction.action})].disabled = false;
+          this.actions[_.findIndex(this.actions, { name: restriction.action })].disabled = false;
         }
       });
     }
-    this.actions.forEach((action) => { if (action.disabled && action.selected) {
-      action.selected = false; }
+    this.actions.forEach((action) => {
+      if (action.disabled && action.selected) {
+        action.selected = false;
+      }
     });
     return this.actions;
   }
@@ -224,13 +238,17 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
     let addAll: boolean;
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
-        if (!addAll && (restriction.action === 'ALL' || _.some(this.actions, {name: restriction.action, selected: true})) &&
-          (restriction.contextName === null || this.selectedContextNames.indexOf(restriction.contextName) > -1
-          || this.isChildContextOf(restriction.contextName, this.selectedContextNames))) {
+        if (
+          !addAll &&
+          (restriction.action === 'ALL' || _.some(this.actions, { name: restriction.action, selected: true })) &&
+          (restriction.contextName === null ||
+            this.selectedContextNames.indexOf(restriction.contextName) > -1 ||
+            this.isChildContextOf(restriction.contextName, this.selectedContextNames))
+        ) {
           if (restriction.resourceGroupId === null) {
             addAll = true;
-          } else if (!_.some(groups, [ 'id', restriction.resourceGroupId ])) {
-            groups.push(_.find(this.resourceGroups, [ 'id', restriction.resourceGroupId ]));
+          } else if (!_.some(groups, ['id', restriction.resourceGroupId])) {
+            groups.push(_.find(this.resourceGroups, ['id', restriction.resourceGroupId]));
           }
         }
       });
@@ -249,9 +267,14 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
     let addAll: boolean;
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
-        if (restriction.action === 'ALL' || _.some(this.actions, {name: restriction.action, selected: true}) && restriction.resourceGroupId === null &&
-          (restriction.contextName === null || this.selectedContextNames.indexOf(restriction.contextName) > -1
-          || this.isChildContextOf(restriction.contextName, this.selectedContextNames))) {
+        if (
+          restriction.action === 'ALL' ||
+          (_.some(this.actions, { name: restriction.action, selected: true }) &&
+            restriction.resourceGroupId === null &&
+            (restriction.contextName === null ||
+              this.selectedContextNames.indexOf(restriction.contextName) > -1 ||
+              this.isChildContextOf(restriction.contextName, this.selectedContextNames)))
+        ) {
           if (!addAll && resourceTypePermissions.indexOf(restriction.resourceTypePermission) < 0) {
             if (restriction.resourceTypePermission === 'ANY') {
               addAll = true;
@@ -275,14 +298,19 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
     let addAll: boolean;
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
-        if (restriction.action === 'ALL' || _.some(this.actions, {name: restriction.action, selected: true}) && restriction.resourceGroupId === null &&
-          (restriction.contextName === null || this.selectedContextNames.indexOf(restriction.contextName) > -1
-          || this.isChildContextOf(restriction.contextName, this.selectedContextNames))) {
+        if (
+          restriction.action === 'ALL' ||
+          (_.some(this.actions, { name: restriction.action, selected: true }) &&
+            restriction.resourceGroupId === null &&
+            (restriction.contextName === null ||
+              this.selectedContextNames.indexOf(restriction.contextName) > -1 ||
+              this.isChildContextOf(restriction.contextName, this.selectedContextNames)))
+        ) {
           if (!addAll && restriction.resourceTypeName === null) {
             addAll = true;
           }
-          if (!addAll && !_.some(resourceTypes, [ 'name', restriction.resourceTypeName ])) {
-            resourceTypes.push(_.find(this.resourceTypes, [ 'name', restriction.resourceTypeName ]));
+          if (!addAll && !_.some(resourceTypes, ['name', restriction.resourceTypeName])) {
+            resourceTypes.push(_.find(this.resourceTypes, ['name', restriction.resourceTypeName]));
           }
         }
       });
@@ -295,7 +323,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
 
   private deSelectAllEnvironments() {
     this.getEnvironmentGroups().forEach((group) => {
-      this.groupedEnvironments[group].forEach((environment) => environment.selected = false);
+      this.groupedEnvironments[group].forEach((environment) => (environment.selected = false));
     });
   }
 
@@ -313,15 +341,15 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   }
 
   private deSelectAllActions() {
-    this.actions.forEach((action) => action.selected = false);
+    this.actions.forEach((action) => (action.selected = false));
   }
 
   private disableAllActions() {
-    this.actions.forEach((action) => action.disabled = true);
+    this.actions.forEach((action) => (action.disabled = true));
   }
 
   private enableAllActions() {
-    this.actions.forEach((action) => action.disabled = false);
+    this.actions.forEach((action) => (action.disabled = false));
   }
 
   private getSelectedUserNames(): string[] {
@@ -371,13 +399,13 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
 
   private disableAllEnvironments() {
     this.getEnvironmentGroups().forEach((group) => {
-      this.groupedEnvironments[group].forEach((environment) => environment.disabled = true);
+      this.groupedEnvironments[group].forEach((environment) => (environment.disabled = true));
     });
   }
 
   private enableAllEnvironments() {
     this.getEnvironmentGroups().forEach((group) => {
-      this.groupedEnvironments[group].forEach((environment) => environment.disabled = false);
+      this.groupedEnvironments[group].forEach((environment) => (environment.disabled = false));
     });
   }
 
@@ -412,5 +440,4 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
     }
     return null;
   }
-
 }

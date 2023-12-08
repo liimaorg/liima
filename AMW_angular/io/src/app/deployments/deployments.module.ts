@@ -15,7 +15,7 @@ import { DeploymentLogsComponent } from './logs/deployment-logs.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
-    imports: [
+  imports: [
     CommonModule,
     FormsModule,
     DeploymentsRoutingModule,
@@ -26,7 +26,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     DeploymentsEditModalComponent,
     DeploymentLogsComponent,
     DeploymentContainerComponent,
-],
-    providers: [DeploymentService, EnvironmentService, NgbActiveModal]
+  ],
+  providers: [DeploymentService, EnvironmentService, NgbActiveModal],
 })
 export class DeploymentsModule {}

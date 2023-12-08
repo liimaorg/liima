@@ -15,7 +15,7 @@ import { PermissionService } from './permission/permission.service';
 import { NgbNav, NgbNavItem, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
-    imports: [
+  imports: [
     CommonModule,
     SettingsRoutingModule,
     ReactiveFormsModule,
@@ -30,7 +30,7 @@ import { NgbNav, NgbNavItem, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
     RestrictionEditComponent,
     RestrictionListComponent,
     RestrictionAddComponent,
-],
-    providers: [PermissionService],
+  ],
+  providers: [PermissionService],
 })
 export class SettingsModule {}

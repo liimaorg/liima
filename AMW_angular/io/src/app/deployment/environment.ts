@@ -1,5 +1,5 @@
 export interface Environment {
-  id: number,
+  id: number;
   name: string;
   nameAlias: string;
   parent: string;

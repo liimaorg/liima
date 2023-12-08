@@ -5,15 +5,13 @@ import { AuditviewTableService } from './auditview-table.service';
 describe('AuditviewTableService', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
-    imports: [CommonModule],
-    providers: [DatePipe]
-})
+      imports: [CommonModule],
+      providers: [DatePipe],
+    }),
   );
 
   it('should be created', () => {
-    const service: AuditviewTableService = TestBed.inject(
-      AuditviewTableService
-    );
+    const service: AuditviewTableService = TestBed.inject(AuditviewTableService);
     expect(service).toBeTruthy();
   });
 });

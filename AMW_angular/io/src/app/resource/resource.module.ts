@@ -4,6 +4,6 @@ import { ResourceService } from './resource.service';
 @NgModule({
   imports: [],
   declarations: [],
-  providers: [ ResourceService ]
+  providers: [ResourceService],
 })
 export class ResourceModule {}

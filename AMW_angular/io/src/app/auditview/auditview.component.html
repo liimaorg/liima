@@ -3,18 +3,8 @@
 <div class="card mt-3">
   <div *ngIf="name" class="card-header">{{ name }}</div>
   <div class="card-body">
-    <app-notification
-      *ngIf="successMessage"
-      [message]="successMessage"
-      [messageType]="'success'"
-    ></app-notification>
-    <app-notification
-      *ngIf="errorMessage"
-      [message]="errorMessage"
-      [messageType]="'warning'"
-    ></app-notification>
-    <app-auditview-table
-      [auditlogEntries]="auditLogEntries"
-    ></app-auditview-table>
+    <app-notification *ngIf="successMessage" [message]="successMessage" [messageType]="'success'"></app-notification>
+    <app-notification *ngIf="errorMessage" [message]="errorMessage" [messageType]="'warning'"></app-notification>
+    <app-auditview-table [auditlogEntries]="auditLogEntries"></app-auditview-table>
   </div>
 </div>

@@ -4,7 +4,7 @@ export type SortDirection = 'asc' | 'desc' | '';
 const rotate: { [key: string]: SortDirection } = {
   asc: 'desc',
   desc: '',
-  '': 'asc'
+  '': 'asc',
 };
 
 export interface SortEvent {
@@ -13,13 +13,13 @@ export interface SortEvent {
 }
 
 @Directive({
-    selector: 'th[sortable]',
-    host: {
-        '[class.asc]': 'direction === "asc"',
-        '[class.desc]': 'direction === "desc"',
-        '(click)': 'rotate()'
-    },
-    standalone: true
+  selector: 'th[sortable]',
+  host: {
+    '[class.asc]': 'direction === "asc"',
+    '[class.desc]': 'direction === "desc"',
+    '(click)': 'rotate()',
+  },
+  standalone: true,
 })
 export class SortableHeader {
   @Input() sortable: string;
