@@ -1,23 +1,34 @@
 import { Component, OnInit, Input, forwardRef, ViewChild, AfterViewInit, Injector } from '@angular/core';
-import { NgbTimeStruct, NgbPopoverConfig, NgbPopover, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, NgControl } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { NgbTimeStruct, NgbPopoverConfig, NgbPopover, NgbDateStruct, NgbDatepicker, NgbTimepicker } from '@ng-bootstrap/ng-bootstrap';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, NgControl, FormsModule } from '@angular/forms';
+import { DatePipe, NgIf, NgClass } from '@angular/common';
 import { DateTimeModel } from './date-time.model';
 import { noop } from 'rxjs';
 import { DATE_FORMAT } from 'src/app/core/amw-constants';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
-  selector: 'app-date-time-picker',
-  templateUrl: './date-time-picker.component.html',
-  styleUrls: ['./date-time-picker.component.scss'],
-  providers: [
-    DatePipe,
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => DateTimePickerComponent),
-      multi: true,
-    },
-  ],
+    selector: 'app-date-time-picker',
+    templateUrl: './date-time-picker.component.html',
+    styleUrls: ['./date-time-picker.component.scss'],
+    providers: [
+        DatePipe,
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => DateTimePickerComponent),
+            multi: true,
+        },
+    ],
+    standalone: true,
+    imports: [
+        NgIf,
+        FormsModule,
+        NgClass,
+        NgbPopover,
+        IconComponent,
+        NgbDatepicker,
+        NgbTimepicker,
+    ],
 })
 export class DateTimePickerComponent implements ControlValueAccessor, OnInit, AfterViewInit {
   @Input()

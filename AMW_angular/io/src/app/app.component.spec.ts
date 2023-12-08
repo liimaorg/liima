@@ -27,20 +27,16 @@ describe('App', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent,
-        NavigationComponent,
-        NavigationSidebarComponent,
-      ],
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
+    imports: [RouterTestingModule, HttpClientTestingModule, NavigationComponent,
+        NavigationSidebarComponent, AppComponent],
+    providers: [
         NavigationStoreService,
         SettingService,
         ChangeDetectorRef,
         AppComponent,
         { provide: Router, useClass: RouterStub },
-      ],
-    }).compileComponents();
+    ],
+}).compileComponents();
     navigationStore = TestBed.inject(NavigationStoreService);
     router = TestBed.inject(Router);
     settingService = TestBed.inject(SettingService);

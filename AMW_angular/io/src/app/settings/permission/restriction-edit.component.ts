@@ -5,10 +5,15 @@ import * as _ from 'lodash';
 import {Resource} from "../../resource/resource";
 import {Environment} from "../../deployment/environment";
 import {ResourceType} from "../../resource/resource-type";
+import { IconComponent } from '../../shared/icon/icon.component';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 
 @Component({
-  selector: 'amw-restriction-edit',
-  templateUrl: './restriction-edit.component.html'
+    selector: 'amw-restriction-edit',
+    templateUrl: './restriction-edit.component.html',
+    standalone: true,
+    imports: [NgIf, FormsModule, NgFor, NgClass, IconComponent]
 })
 
 export class RestrictionEditComponent implements OnChanges, AfterViewChecked {

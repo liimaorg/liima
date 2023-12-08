@@ -8,8 +8,8 @@ describe('IconComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ IconComponent ]
-    })
+    imports: [IconComponent]
+})
     .compileComponents();
   }));
 

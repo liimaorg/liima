@@ -1,7 +1,8 @@
 import { Injectable, Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'newlineFilter'
+    name: 'newlineFilter',
+    standalone: true
 })
 
 @Injectable()

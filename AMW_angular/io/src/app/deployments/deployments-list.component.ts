@@ -6,10 +6,27 @@ import * as _ from 'lodash';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DATE_FORMAT } from '../core/amw-constants';
+import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-picker.component';
+import { RouterLink } from '@angular/router';
+import { IconComponent } from '../shared/icon/icon.component';
+import { FormsModule } from '@angular/forms';
+import { SortableIconComponent } from '../shared/sortable-icon/sortable-icon.component';
+import { NgIf, NgFor, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'amw-deployments-list',
-  templateUrl: './deployments-list.component.html',
+    selector: 'amw-deployments-list',
+    templateUrl: './deployments-list.component.html',
+    standalone: true,
+    imports: [
+        NgIf,
+        SortableIconComponent,
+        NgFor,
+        FormsModule,
+        IconComponent,
+        RouterLink,
+        DateTimePickerComponent,
+        DatePipe,
+    ],
 })
 export class DeploymentsListComponent {
   @Input() deployments: Deployment[] = [];

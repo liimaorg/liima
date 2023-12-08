@@ -1,8 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { NgIf } from '@angular/common';
 
 @Component({
-  selector: 'app-notification',
-  template: `
+    selector: 'app-notification',
+    template: `
     <div *ngIf="message" class="alert alert-{{ messageType }}" role="alert">
       <span [innerHTML]="message"></span
       ><button
@@ -14,6 +15,8 @@ import { Component, OnInit, Input } from '@angular/core';
       </button>
     </div>
   `,
+    standalone: true,
+    imports: [NgIf],
 })
 export class NotificationComponent implements OnInit {
   @Input()
