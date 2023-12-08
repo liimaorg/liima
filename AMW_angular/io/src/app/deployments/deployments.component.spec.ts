@@ -14,7 +14,6 @@ import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { Deployment } from '../deployment/deployment';
 import { PaginationComponent } from '../shared/pagination/pagination.component';
-import { NavigationStoreService } from '../navigation/navigation-store.service';
 
 declare var $: any;
 
@@ -43,12 +42,7 @@ describe('DeploymentsComponent (with query params)', () => {
         PaginationComponent,
         DeploymentsEditModalComponent,
       ],
-      providers: [
-        DeploymentService,
-        ResourceService,
-        NavigationStoreService,
-        { provide: ActivatedRoute, useValue: mockRoute },
-      ],
+      providers: [DeploymentService, ResourceService, { provide: ActivatedRoute, useValue: mockRoute }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);
@@ -193,12 +187,7 @@ describe('DeploymentsComponent (with illegal query params)', () => {
         PaginationComponent,
         DeploymentsEditModalComponent,
       ],
-      providers: [
-        DeploymentService,
-        ResourceService,
-        NavigationStoreService,
-        { provide: ActivatedRoute, useValue: mockRoute },
-      ],
+      providers: [DeploymentService, ResourceService, { provide: ActivatedRoute, useValue: mockRoute }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);
@@ -251,12 +240,7 @@ describe('DeploymentsComponent (without query params)', () => {
         PaginationComponent,
         DeploymentsEditModalComponent,
       ],
-      providers: [
-        DeploymentService,
-        ResourceService,
-        NavigationStoreService,
-        { provide: ActivatedRoute, useValue: mockRoute },
-      ],
+      providers: [DeploymentService, ResourceService, { provide: ActivatedRoute, useValue: mockRoute }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);

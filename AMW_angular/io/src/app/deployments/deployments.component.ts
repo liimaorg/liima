@@ -11,7 +11,6 @@ import { DeploymentFilterType } from '../deployment/deployment-filter-type';
 import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentService } from '../deployment/deployment.service';
-import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
@@ -27,21 +26,21 @@ import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.
 declare var $: any;
 
 @Component({
-    selector: 'amw-deployments',
-    templateUrl: './deployments.component.html',
-    standalone: true,
-    imports: [
-        LoadingIndicatorComponent,
-        NgIf,
-        NotificationComponent,
-        ToastComponent_1,
-        FormsModule,
-        NgFor,
-        DateTimePickerComponent,
-        IconComponent,
-        DeploymentsListComponent,
-        PaginationComponent,
-    ],
+  selector: 'amw-deployments',
+  templateUrl: './deployments.component.html',
+  standalone: true,
+  imports: [
+    LoadingIndicatorComponent,
+    NgIf,
+    NotificationComponent,
+    ToastComponent_1,
+    FormsModule,
+    NgFor,
+    DateTimePickerComponent,
+    IconComponent,
+    DeploymentsListComponent,
+    PaginationComponent,
+  ],
 })
 export class DeploymentsComponent implements OnInit {
   defaultComparator: string = 'eq';
@@ -110,11 +109,8 @@ export class DeploymentsComponent implements OnInit {
     private location: Location,
     private deploymentService: DeploymentService,
     private resourceService: ResourceService,
-    public navigationStore: NavigationStoreService,
     private modalService: NgbModal,
-  ) {
-    this.navigationStore.setVisible(false);
-  }
+  ) {}
 
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe((param: any) => {

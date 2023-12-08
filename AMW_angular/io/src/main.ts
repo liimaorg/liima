@@ -1,6 +1,4 @@
 import { enableProdMode, importProvidersFrom } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
 
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
@@ -19,22 +17,29 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
-import { NavigationStoreService } from './app/navigation/navigation-store.service';
-
-const APP_PROVIDERS = [NavigationStoreService];
-
-
 
 if (environment.production) {
   enableProdMode();
 }
 
 bootstrapApplication(AppComponent, {
-    providers: [
-        importProvidersFrom(BrowserModule, NgSelectModule, FormsModule, AppRoutingModule, ResourceModule, DeploymentModule, DeploymentsModule, AuditviewModule, SettingModule, BaseModule, NgbModule, CodemirrorModule, SettingsModule),
-        APP_PROVIDERS,
-        provideAnimations(),
-        provideHttpClient(withInterceptorsFromDi()),
-    ]
-})
-  .catch(err => console.error(err));
+  providers: [
+    importProvidersFrom(
+      BrowserModule,
+      NgSelectModule,
+      FormsModule,
+      AppRoutingModule,
+      ResourceModule,
+      DeploymentModule,
+      DeploymentsModule,
+      AuditviewModule,
+      SettingModule,
+      BaseModule,
+      NgbModule,
+      CodemirrorModule,
+      SettingsModule,
+    ),
+    provideAnimations(),
+    provideHttpClient(withInterceptorsFromDi()),
+  ],
+}).catch((err) => console.error(err));

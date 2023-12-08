@@ -17,7 +17,6 @@ import { DeploymentComponent } from './deployment.component';
 import { DeploymentService } from './deployment.service';
 import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
-import { NavigationStoreService } from '../navigation/navigation-store.service';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 @Component({
   template: '',
@@ -35,7 +34,7 @@ describe('DeploymentComponent (create deployment)', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [FormsModule, RouterTestingModule, HttpClientTestingModule, DeploymentComponent, DummyComponent],
-      providers: [ResourceService, EnvironmentService, DeploymentService, NavigationStoreService],
+      providers: [ResourceService, EnvironmentService, DeploymentService],
     });
     fixture = TestBed.createComponent(DeploymentComponent);
     component = fixture.componentInstance;
@@ -383,7 +382,6 @@ describe('DeploymentComponent (create deployment with params)', () => {
         ResourceService,
         EnvironmentService,
         DeploymentService,
-        NavigationStoreService,
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
     });
@@ -443,7 +441,6 @@ describe('DeploymentComponent (redeployment)', () => {
         ResourceService,
         EnvironmentService,
         DeploymentService,
-        NavigationStoreService,
       ],
     });
     fixture = TestBed.createComponent(DeploymentComponent);

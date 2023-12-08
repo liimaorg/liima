@@ -5,13 +5,18 @@ import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { Deployment } from 'src/app/deployment/deployment';
 import { DeploymentService } from 'src/app/deployment/deployment.service';
-import { NavigationStoreService } from 'src/app/navigation/navigation-store.service';
 import { DeploymentLog, DeploymentLogContent } from './deployment-log';
 import { DeploymentLogsService } from './deployment-logs.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { FormsModule } from '@angular/forms';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import { NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownButtonItem, NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbDropdown,
+  NgbDropdownToggle,
+  NgbDropdownMenu,
+  NgbDropdownButtonItem,
+  NgbDropdownItem,
+} from '@ng-bootstrap/ng-bootstrap';
 import { NotificationComponent } from '../../shared/elements/notification/notification.component';
 
 declare var CodeMirror: any;
@@ -23,25 +28,25 @@ function failed(): Observable<Failed> {
 }
 
 @Component({
-    selector: 'app-logs',
-    styleUrls: ['./deployment-logs.component.scss'],
-    templateUrl: './deployment-logs.component.html',
-    encapsulation: ViewEncapsulation.None,
-    standalone: true,
-    imports: [
-        NgIf,
-        NotificationComponent,
-        NgbDropdown,
-        NgbDropdownToggle,
-        NgbDropdownMenu,
-        NgFor,
-        NgbDropdownButtonItem,
-        NgbDropdownItem,
-        CodemirrorModule,
-        FormsModule,
-        LoadingIndicatorComponent,
-        AsyncPipe,
-    ],
+  selector: 'app-logs',
+  styleUrls: ['./deployment-logs.component.scss'],
+  templateUrl: './deployment-logs.component.html',
+  encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
+    NgIf,
+    NotificationComponent,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgFor,
+    NgbDropdownButtonItem,
+    NgbDropdownItem,
+    CodemirrorModule,
+    FormsModule,
+    LoadingIndicatorComponent,
+    AsyncPipe,
+  ],
 })
 export class DeploymentLogsComponent implements OnInit, OnDestroy {
   constructor(
@@ -49,42 +54,39 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     private deploymentService: DeploymentService,
     private route: ActivatedRoute,
     private location: Location,
-    private navigationStore: NavigationStoreService
-  ) {
-    this.pagetitle$.subscribe((title) => this.navigationStore.setPageTitle(title));
-  }
+  ) {}
 
   selectDeploymentLog$: Subject<DeploymentLog> = new Subject();
 
   deploymentId$: Observable<number> = this.route.paramMap.pipe(
     map((params) => +params.get('deploymentId')),
-    distinctUntilChanged()
+    distinctUntilChanged(),
   );
 
   fileName$: Observable<string> = this.route.paramMap.pipe(
     map((params) => params.get('fileName')),
-    distinctUntilChanged()
+    distinctUntilChanged(),
   );
 
   deployment$: Observable<Deployment | Failed> = this.deploymentId$.pipe(
     switchMap(this.loadDeployment.bind(this)),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   deploymentLogMetaData$: Observable<DeploymentLog[]> = this.deployment$.pipe(
     switchMap(this.loadDeploymentLogs.bind(this)),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   currentDeploymentLog$: Observable<DeploymentLog> = merge(
     combineLatest([this.fileName$, this.deploymentLogMetaData$]).pipe(
-      map(([filename, meta]) => (!filename ? meta[0] : meta.find((m) => m.filename === filename)))
+      map(([filename, meta]) => (!filename ? meta[0] : meta.find((m) => m.filename === filename))),
     ),
-    this.selectDeploymentLog$
+    this.selectDeploymentLog$,
   ).pipe(distinctUntilChanged());
 
   currentDeploymentLogContent$: Observable<DeploymentLogContent> = this.currentDeploymentLog$.pipe(
-    switchMap(this.loadDeploymentLogContent.bind(this))
+    switchMap(this.loadDeploymentLogContent.bind(this)),
   );
 
   pagetitle$: Observable<string> = this.deployment$.pipe(
@@ -92,8 +94,8 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
       deployment === 'failed'
         ? ``
         : `Log file for ${deployment.id} (${deployment.appServerName}
-          ${deployment.releaseName})`
-    )
+          ${deployment.releaseName})`,
+    ),
   );
 
   private destroy$ = new Subject<void>();
@@ -101,7 +103,7 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     this.currentDeploymentLog$
       .pipe(takeUntil(this.destroy$))
       .subscribe((current) =>
-        this.location.replaceState(`/deployments/${current.deploymentId}/logs/${current.filename}`)
+        this.location.replaceState(`/deployments/${current.deploymentId}/logs/${current.filename}`),
       );
     CodeMirror.defineSimpleMode('simplemode', {
       start: [
@@ -142,7 +144,7 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
           map((content) => {
             return { content };
           }),
-          catchError(() => failed())
+          catchError(() => failed()),
         );
   }
 }
