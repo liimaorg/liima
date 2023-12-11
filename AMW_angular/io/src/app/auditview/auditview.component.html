@@ -1,10 +1,23 @@
 <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+<div class="row">
+  <div class="col-12 bg-dark-subtle pt-2">
+    <h4>Audit View</h4>
+  </div>
+</div>
 
-<div class="card mt-3">
-  <div *ngIf="name" class="card-header">{{ name }}</div>
-  <div class="card-body">
-    <app-notification *ngIf="successMessage" [message]="successMessage" [messageType]="'success'"></app-notification>
-    <app-notification *ngIf="errorMessage" [message]="errorMessage" [messageType]="'warning'"></app-notification>
-    <app-auditview-table [auditlogEntries]="auditLogEntries"></app-auditview-table>
+<div class="container">
+  <div class="row pt-3">
+    <div class="card">
+      <div *ngIf="name" class="card-header">{{ name }}</div>
+      <div class="card-body">
+        <app-notification
+          *ngIf="successMessage"
+          [message]="successMessage"
+          [messageType]="'success'"
+        ></app-notification>
+        <app-notification *ngIf="errorMessage" [message]="errorMessage" [messageType]="'warning'"></app-notification>
+        <app-auditview-table [auditlogEntries]="auditLogEntries"></app-auditview-table>
+      </div>
+    </div>
   </div>
 </div>
