@@ -14,11 +14,10 @@ export class AuditviewService extends BaseService {
   }
 
   getAuditLogForResource(resourceId: number): Observable<AuditLogEntry[]> {
-    const resource$ = this.http
+    return this.http
       .get<AuditLogEntry[]>(`${this.getBaseUrl()}/auditview/resource/${resourceId}`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
-    return resource$;
   }
 }

@@ -22,9 +22,7 @@ export class AuditviewTableComponent implements OnChanges {
   @Input() auditlogEntries;
 
   auditlogEntries$: Observable<AuditLogEntry[]>;
-  total$: Observable<number>;
   @ViewChildren(SortableHeader) headers: QueryList<SortableHeader>;
-
   dateFormat = DATE_FORMAT;
 
   constructor(public service: AuditviewTableService) {

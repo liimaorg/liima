@@ -6,18 +6,11 @@
 </div>
 
 <div class="container">
-  <div class="row pt-3">
-    <div class="card">
-      <div *ngIf="name" class="card-header">{{ name }}</div>
-      <div class="card-body">
-        <app-notification
-          *ngIf="successMessage"
-          [message]="successMessage"
-          [messageType]="'success'"
-        ></app-notification>
-        <app-notification *ngIf="errorMessage" [message]="errorMessage" [messageType]="'warning'"></app-notification>
-        <app-auditview-table [auditlogEntries]="auditLogEntries"></app-auditview-table>
-      </div>
-    </div>
+  <div class="col pt-3">
+    <h5>{{ name }}</h5>
+
+    <app-notification *ngIf="successMessage" [message]="successMessage" [messageType]="'success'"></app-notification>
+    <app-notification *ngIf="errorMessage" [message]="errorMessage" [messageType]="'warning'"></app-notification>
+    <app-auditview-table [auditlogEntries]="auditLogEntries"></app-auditview-table>
   </div>
 </div>

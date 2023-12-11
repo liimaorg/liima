@@ -17,7 +17,6 @@ import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.
 export class AuditviewComponent implements OnInit {
   name: string;
   auditLogEntries: AuditLogEntry[] = [];
-  filterQuery: string = '';
   errorMessage: string;
   successMessage: string;
   resourceId: number;
@@ -35,23 +34,21 @@ export class AuditviewComponent implements OnInit {
         try {
           this.resourceId = JSON.parse(param['resourceId']);
         } catch (e) {
-          console.error(e);
           this.errorMessage = 'Error parsing resourceId';
         }
       }
     });
 
     if (this.resourceId) {
-      this.resourceService.getResourceName(this.resourceId).subscribe(
-        /* happy path */ (r) => (this.name = r.name),
-        /* error path */ (e) => (this.errorMessage = e),
-        /* onComplete */ () => {},
-      );
-      this.auditViewService.getAuditLogForResource(this.resourceId).subscribe(
-        /* happy path */ (r) => (this.auditLogEntries = r),
-        /* error path */ (e) => (this.errorMessage = e),
-        /* onComplete */ () => (this.isLoading = false),
-      );
+      this.resourceService.getResourceName(this.resourceId).subscribe({
+        next: (resource) => (this.name = resource.name),
+        error: (e) => (this.errorMessage = e),
+      });
+      this.auditViewService.getAuditLogForResource(this.resourceId).subscribe({
+        next: (auditLogEntries) => (this.auditLogEntries = auditLogEntries),
+        error: (e) => (this.errorMessage = e),
+        complete: () => (this.isLoading = false),
+      });
     } else {
       console.error('Resource Id must be set');
     }
