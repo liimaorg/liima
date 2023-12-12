@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -25,10 +25,10 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
 
         <div
           [ngbCollapse]="isMenuCollapsed"
-          class="collapse navbar-collapse bg-dark justify-content-end"
+          class="collapse navbar-collapse bg-dark justify-content-lg-end"
           id="navbarSupportedContent"
         >
-          <ul class="navbar-nav float-end">
+          <ul class="navbar-nav p-3 p-lg-0">
             <li class="nav-item">
               <form>
                 <div class="d-flex form-check ps-0">
