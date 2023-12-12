@@ -50,7 +50,8 @@ export class AuditviewComponent implements OnInit {
         complete: () => (this.isLoading = false),
       });
     } else {
-      console.error('Resource Id must be set');
+      this.errorMessage = 'Parameter resourceId must be set!';
+      this.isLoading = false;
     }
   }
 }
