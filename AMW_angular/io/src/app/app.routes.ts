@@ -1,8 +1,8 @@
-import { Routes, RouterModule } from '@angular/router';
-import { NgModule } from '@angular/core';
+import { Routes } from '@angular/router';
 import { DeploymentsComponent } from './deployments/deployments.component';
-import { TagsComponent } from './settings/tags/tags.component';
 import { SettingsComponent } from './settings/settings.component';
+import { TagsComponent } from './settings/tags/tags.component';
+import { auditviewRoutes } from './auditview/auditview.routes';
 
 export const routes: Routes = [
   // default route only, the rest is done in module routing
@@ -12,10 +12,5 @@ export const routes: Routes = [
     component: SettingsComponent,
     children: [{ path: 'tags', component: TagsComponent }],
   },
+  ...auditviewRoutes,
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true })],
-  exports: [RouterModule],
-})
-export class AppRoutingModule {}
