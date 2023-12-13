@@ -5,7 +5,6 @@ import { AppComponent } from './app/app.component';
 import { SettingsModule } from './app/settings/settings.module';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { BaseModule } from './app/base/base.module';
 import { SettingModule } from './app/setting/setting.module';
 import { AuditviewModule } from './app/auditview/auditview.module';
 import { DeploymentsModule } from './app/deployments/deployments.module';
@@ -35,7 +34,6 @@ bootstrapApplication(AppComponent, {
       DeploymentsModule,
       AuditviewModule,
       SettingModule,
-      BaseModule,
       NgbModule,
       CodemirrorModule,
       SettingsModule,

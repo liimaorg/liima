@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuditviewComponent } from './auditview.component';
 import { AuditviewService } from './auditview.service';
 import { AuditviewTableComponent } from './auditview-table/auditview-table.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { BaseModule } from '../base/base.module';
 
 import { NewlineFilterPipe } from './auditview-table/newlineFilterPipe';
 import { SortableHeader } from './auditview-table/sortable.directive';
@@ -15,7 +14,6 @@ import { SortableHeader } from './auditview-table/sortable.directive';
     CommonModule,
     FormsModule,
     NgbModule,
-    BaseModule,
     AuditviewComponent,
     NewlineFilterPipe,
     AuditviewTableComponent,
