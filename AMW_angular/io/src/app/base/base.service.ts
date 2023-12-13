@@ -33,6 +33,6 @@ export class BaseService {
     }
     console.error(response);
     // throw an application level error
-    return throwError(errorMsg);
+    return throwError(() => errorMsg);
   }
 }
