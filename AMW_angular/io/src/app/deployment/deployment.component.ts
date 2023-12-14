@@ -112,7 +112,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // we dont need this right away
+    // we don't need this right away
     this.loadDeploymentParameters();
   }
 
@@ -193,13 +193,11 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private getDeployment(): Subscription {
-    return this.deploymentService
-      .get(this.deploymentId)
-      .subscribe({
-        next: (r) => (this.selectedDeployment = r),
-        error: (e) => (this.errorMessage = e),
-        complete: () => this.initRedeploymentValues(),
-      });
+    return this.deploymentService.get(this.deploymentId).subscribe({
+      next: (r) => (this.selectedDeployment = r),
+      error: (e) => (this.errorMessage = e),
+      complete: () => this.initRedeploymentValues(),
+    });
   }
 
   private initRedeploymentValues() {
@@ -247,13 +245,11 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private setSelectedRelease(): Subscription {
-    return this.resourceService
-      .getMostRelevantRelease(this.selectedAppserver.id)
-      .subscribe({
-        next: (r) => (this.selectedRelease = this.releases.find((release) => release.release === r.release)),
-        error: (e) => (this.errorMessage = e),
-        complete: () => this.onChangeRelease(),
-      });
+    return this.resourceService.getMostRelevantRelease(this.selectedAppserver.id).subscribe({
+      next: (r) => (this.selectedRelease = this.releases.find((release) => release.release === r.release)),
+      error: (e) => (this.errorMessage = e),
+      complete: () => this.onChangeRelease(),
+    });
   }
 
   private setSelectedReleaseForRedeployment() {
@@ -263,23 +259,19 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private loadReleases(): Subscription {
-    return this.resourceService
-      .getDeployableReleases(this.selectedAppserver.id)
-      .subscribe({
-        next: (r) => (this.releases = r),
-        error: (e) => (this.errorMessage = e),
-        complete: () => (this.isRedeployment ? this.setSelectedReleaseForRedeployment() : this.setSelectedRelease()),
-      });
+    return this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe({
+      next: (r) => (this.releases = r),
+      error: (e) => (this.errorMessage = e),
+      complete: () => (this.isRedeployment ? this.setSelectedReleaseForRedeployment() : this.setSelectedRelease()),
+    });
   }
 
   private getRelatedForRelease() {
-    this.resourceService
-      .getLatestForRelease(this.selectedAppserver.id, this.selectedRelease.id)
-      .subscribe({
-        next: (r) => (this.bestForSelectedRelease = r),
-        error: (e) => (this.errorMessage = e),
-        complete: () => this.extractFromRelations(),
-      });
+    this.resourceService.getLatestForRelease(this.selectedAppserver.id, this.selectedRelease.id).subscribe({
+      next: (r) => (this.bestForSelectedRelease = r),
+      error: (e) => (this.errorMessage = e),
+      complete: () => this.extractFromRelations(),
+    });
   }
 
   private extractFromRelations() {
@@ -296,7 +288,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       .getAppsWithVersions(
         this.selectedAppserver.id,
         this.selectedRelease.id,
-        _.filter(this.environments, 'selected').map((val) => val.id),
+        _.filter(this.environments, 'selected').map((val: Environment) => val.id),
       )
       .subscribe({
         next: (r) => (this.isRedeployment ? (this.appsWithVersionForRedeployment = r) : (this.appsWithVersion = r)),
@@ -333,15 +325,13 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   private canDeploy() {
     if (this.selectedAppserver != null) {
       this.hasPermissionToDeploy = false;
-      const contextIds: number[] = _.filter(this.environments, 'selected').map((val) => val.id);
+      const contextIds: number[] = _.filter(this.environments, 'selected').map((val: Environment) => val.id);
       if (contextIds.length > 0) {
-        this.deploymentService
-          .canDeploy(this.selectedAppserver.id, contextIds)
-          .subscribe({
-            next: (r) => (this.hasPermissionToDeploy = r),
-            error: (e) => (this.errorMessage = e),
-            complete: () => this.canRequestDeployment(contextIds),
-          });
+        this.deploymentService.canDeploy(this.selectedAppserver.id, contextIds).subscribe({
+          next: (r) => (this.hasPermissionToDeploy = r),
+          error: (e) => (this.errorMessage = e),
+          complete: () => this.canRequestDeployment(contextIds),
+        });
       }
     }
   }
@@ -350,12 +340,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     if (this.selectedAppserver != null) {
       this.hasPermissionToRequestDeployment = false;
       if (contextIds.length > 0) {
-        this.deploymentService
-          .canRequestDeployment(this.selectedAppserver.id, contextIds)
-          .subscribe({
-            next: (r) => (this.hasPermissionToRequestDeployment = r),
-            error: (e) => (this.errorMessage = e),
-          });
+        this.deploymentService.canRequestDeployment(this.selectedAppserver.id, contextIds).subscribe({
+          next: (r) => (this.hasPermissionToRequestDeployment = r),
+          error: (e) => (this.errorMessage = e),
+        });
       }
     }
   }
@@ -377,7 +365,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private prepareDeployment() {
     if (this.isReadyForDeployment()) {
-      const contextIds: number[] = _.filter(this.environments, 'selected').map((val) => val.id);
+      const contextIds: number[] = _.filter(this.environments, 'selected').map((val: Environment) => val.id);
       this.createDeploymentRequest(contextIds);
     }
   }
