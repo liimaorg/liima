@@ -8,7 +8,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SettingModule } from './app/setting/setting.module';
 import { AuditviewModule } from './app/auditview/auditview.module';
 import { DeploymentsModule } from './app/deployments/deployments.module';
-import { DeploymentModule } from './app/deployment/deployment.module';
 import { ResourceModule } from './app/resource/resource.module';
 import { withInterceptorsFromDi, provideHttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -30,7 +29,6 @@ bootstrapApplication(AppComponent, {
       NgSelectModule,
       FormsModule,
       ResourceModule,
-      DeploymentModule,
       DeploymentsModule,
       AuditviewModule,
       SettingModule,
