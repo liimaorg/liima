@@ -14,7 +14,7 @@ interface Named {
   name: string;
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ResourceService extends BaseService {
   constructor(private http: HttpClient) {
     super();

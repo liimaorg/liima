@@ -4,8 +4,6 @@ import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { SettingModule } from './app/setting/setting.module';
-import { ResourceModule } from './app/resource/resource.module';
 import { withInterceptorsFromDi, provideHttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -20,15 +18,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(
-      BrowserModule,
-      NgSelectModule,
-      FormsModule,
-      ResourceModule,
-      SettingModule,
-      NgbModule,
-      CodemirrorModule,
-    ),
+    importProvidersFrom(BrowserModule, NgSelectModule, FormsModule, NgbModule, CodemirrorModule),
     provideRouter(routes, withHashLocation()),
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
