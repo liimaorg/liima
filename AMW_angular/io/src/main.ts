@@ -2,7 +2,6 @@ import { enableProdMode, importProvidersFrom } from '@angular/core';
 
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
-import { SettingsModule } from './app/settings/settings.module';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SettingModule } from './app/setting/setting.module';
@@ -29,7 +28,6 @@ bootstrapApplication(AppComponent, {
       SettingModule,
       NgbModule,
       CodemirrorModule,
-      SettingsModule,
     ),
     provideRouter(routes, withHashLocation()),
     provideAnimations(),

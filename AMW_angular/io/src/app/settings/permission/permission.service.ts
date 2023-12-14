@@ -7,7 +7,7 @@ import { Restriction } from './restriction';
 import { RestrictionsCreation } from './restrictions-creation';
 import { BaseService } from 'src/app/base/base.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class PermissionService extends BaseService {
   constructor(private http: HttpClient) {
     super();
