@@ -14,8 +14,8 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-auditview-table',
   templateUrl: './auditview-table.component.html',
   styleUrls: ['./auditview-table.component.scss'],
-  providers: [AuditviewService],
   standalone: true,
+
   imports: [FormsModule, SortableHeader, NgFor, NgbHighlight, AsyncPipe, DatePipe, NewlineFilterPipe],
 })
 export class AuditviewTableComponent implements OnChanges {

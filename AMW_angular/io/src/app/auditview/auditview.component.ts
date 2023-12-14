@@ -5,13 +5,15 @@ import { ResourceService } from '../resource/resource.service';
 import { AuditLogEntry } from './auditview-entry';
 import { AuditviewTableComponent } from './auditview-table/auditview-table.component';
 import { NotificationComponent } from '../shared/elements/notification/notification.component';
-import { NgIf } from '@angular/common';
+import { DatePipe, NgIf } from '@angular/common';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
+import { AuditviewTableService } from './auditview-table/auditview-table.service';
 
 @Component({
   selector: 'amw-auditview',
   templateUrl: './auditview.component.html',
   standalone: true,
+  providers: [AuditviewService, AuditviewTableService, DatePipe],
   imports: [LoadingIndicatorComponent, NgIf, NotificationComponent, AuditviewTableComponent],
 })
 export class AuditviewComponent implements OnInit {

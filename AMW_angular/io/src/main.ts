@@ -6,7 +6,6 @@ import { SettingsModule } from './app/settings/settings.module';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SettingModule } from './app/setting/setting.module';
-import { AuditviewModule } from './app/auditview/auditview.module';
 import { ResourceModule } from './app/resource/resource.module';
 import { withInterceptorsFromDi, provideHttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -27,7 +26,6 @@ bootstrapApplication(AppComponent, {
       NgSelectModule,
       FormsModule,
       ResourceModule,
-      AuditviewModule,
       SettingModule,
       NgbModule,
       CodemirrorModule,
