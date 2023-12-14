@@ -71,7 +71,7 @@ public enum GenerationModus {
 	 * @return
 	 */
 	public boolean isSendNotificationOnErrorGenerationModus(){
-		return (DEPLOY.equals(this) || PREDEPLOY.equals(this));
+		return DEPLOY == this || PREDEPLOY == this;
 	}
 
     /**
@@ -79,7 +79,7 @@ public enum GenerationModus {
      * @return
      */
     public boolean isSendNotificationOnSuccessGenerationModus(){
-        return (DEPLOY.equals(this));
+        return DEPLOY == this;
     }
 	
 }

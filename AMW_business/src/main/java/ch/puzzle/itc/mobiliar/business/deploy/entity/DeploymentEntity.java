@@ -28,25 +28,31 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.Getter;
 import lombok.Setter;
-
+import lombok.ToString;
 import lombok.SneakyThrows;
+
 import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
+
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.*;
+
 
 /**
  * Entity implementation class for Entity: Deployment
  */
 @Entity
+@ToString
 @Table(name = "TAMW_deployment")
 @NamedQuery(name = DeploymentEntity.LAST_SUCCESSFUL_DEPLOYMENT, query = "select d from DeploymentEntity d where d.deploymentDate=(select max(t.deploymentDate) from DeploymentEntity t where t.context=:context and t.resourceGroup=:resourceGroup and t.release=:release and t.deploymentState=:deploymentState)")
 public class DeploymentEntity implements Serializable {

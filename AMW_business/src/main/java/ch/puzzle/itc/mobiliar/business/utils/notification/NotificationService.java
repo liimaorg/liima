@@ -20,13 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.business.utils.notification;
 
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
-import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
-
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.mail.Address;
 import javax.mail.MessagingException;
+
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
 @Stateless
 public class NotificationService {
@@ -35,19 +35,19 @@ public class NotificationService {
 	private MailService mailService;
 	
 	/**
-	 * creates and sends an Email to the given emailReceipients
+	 * creates and sends an Email to the given emailRecipients
 	 * 
 	 * @param subject
 	 * @param content
-	 * @param emailReceipients
+	 * @param emailRecipients
 	 * @return
 	 * @throws MessagingException
 	 */
-	public boolean createAndSendMail(String subject, String content, Address[] emailReceipients) throws MessagingException{		
+	public boolean createAndSendMail(String subject, String content, Address[] emailRecipients) throws MessagingException{
 		boolean deliverEmails = ConfigurationService.getPropertyAsBoolean(ConfigKey.DELIVER_MAIL, true);
-		// deliverEmails is active and emailReceipients are available
-		if (deliverEmails && emailReceipients != null && emailReceipients.length > 0) {
-			return mailService.createMessageAndSend(subject, content, emailReceipients);
+		// deliverEmails is active and emailRecipients are available
+		if (deliverEmails && emailRecipients != null && emailRecipients.length > 0) {
+			return mailService.createMessageAndSend(subject, content, emailRecipients);
 		}
 		return false;
 	}

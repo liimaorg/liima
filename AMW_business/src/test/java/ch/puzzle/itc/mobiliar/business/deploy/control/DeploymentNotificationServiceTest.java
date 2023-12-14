@@ -80,9 +80,6 @@ public class DeploymentNotificationServiceTest {
 		MockitoAnnotations.openMocks(this);
 		
 		applicationServer =  ResourceFactory.createNewResource("appServer");
-		when(dependencyResolverService.getResourceEntityForRelease((ResourceGroupEntity) any(), (ReleaseEntity) any())).thenReturn(
-				applicationServer);
-		
 		context = new ContextEntity();
 		context.setName("dev");
 
@@ -119,6 +116,7 @@ public class DeploymentNotificationServiceTest {
 		DeploymentEntity deployment = new DeploymentEntity();
 		deployment.setTrackingId(Integer.valueOf(12));
 		deployment.setDeploymentState(DeploymentState.success);
+		deployment.setResource(applicationServer);
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
 		deployment.setContext(context);
 		deployments.add(deployment);
@@ -130,7 +128,7 @@ public class DeploymentNotificationServiceTest {
 		
 		// then
 		assertNotNull(result);
-		assertEquals("Notification email sent to following receipients: \n", result);
+		assertEquals("Notification email sent to following recipients: \n", result);
 	}
 	
 	@Test
@@ -141,6 +139,7 @@ public class DeploymentNotificationServiceTest {
 		DeploymentEntity deployment = new DeploymentEntity();
 		deployment.setTrackingId(Integer.valueOf(12));
 		deployment.setDeploymentState(DeploymentState.success);
+		deployment.setResource(applicationServer);
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
 		deployment.setContext(context);
 		deployments.add(deployment);
@@ -165,6 +164,7 @@ public class DeploymentNotificationServiceTest {
 		DeploymentEntity deployment = new DeploymentEntity();
 		deployment.setTrackingId(Integer.valueOf(12));
 		deployment.setDeploymentState(DeploymentState.success);
+		deployment.setResource(applicationServer);
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
 		deployment.setContext(context);
 		deployment.setRelease(defaultRelease);
@@ -172,7 +172,6 @@ public class DeploymentNotificationServiceTest {
 		
 		
 		when(notificationService.createAndSendMail(anyString(), anyString(), any(Address[].class))).thenReturn(false);
-		
 		
 		// when
 		String result = deploymentNotificationService.createAndSendMailForDeplyoments(deployments);
@@ -191,6 +190,7 @@ public class DeploymentNotificationServiceTest {
 		DeploymentEntity deployment = new DeploymentEntity();
 		deployment.setTrackingId(Integer.valueOf(12));
 		deployment.setDeploymentState(DeploymentState.success);
+		deployment.setResource(applicationServer);
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
 		deployment.setContext(context);
 		deployments.add(deployment);
@@ -208,13 +208,14 @@ public class DeploymentNotificationServiceTest {
 	
 	
 	@Test
-	public void createAndSendMailForDeplyoments_oneDeployment_noAddress_sending_Receipients() throws MessagingException {
+	public void createAndSendMailForDeplyoments_oneDeployment_noAddress_sending_Recipients() throws MessagingException {
 		// given
 		ArrayList<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 		
 		DeploymentEntity deployment = new DeploymentEntity();
 		deployment.setTrackingId(Integer.valueOf(12));
 		deployment.setDeploymentState(DeploymentState.success);
+		deployment.setResource(applicationServer);
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
 		deployment.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
 		deployment.setContext(context);
@@ -222,7 +223,7 @@ public class DeploymentNotificationServiceTest {
 		
 		when(notificationService.createAndSendMail(anyString(), anyString(), any(Address[].class))).thenReturn(true);
 		when(releaseMgmtService.getDefaultRelease()).thenReturn(defaultRelease);
-		List<String> value = new ArrayList<String>();
+		List<String> value = new ArrayList<>();
 		value.add("testuser1");
 		when(userSettingsService.getRegisteredUsernamesForResourcesIds(any(Set.class))).thenReturn(value );
 		
@@ -231,7 +232,7 @@ public class DeploymentNotificationServiceTest {
 		
 		// then
 		assertNotNull(result);
-		assertEquals("Notification email sent to following receipients: \ntestuser1@null\n", result);
+		assertEquals("Notification email sent to following recipients: \ntestuser1@null\n", result);
 	}
 
 }

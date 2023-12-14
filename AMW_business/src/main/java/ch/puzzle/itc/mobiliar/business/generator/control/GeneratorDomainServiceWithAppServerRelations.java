@@ -46,6 +46,7 @@ import ch.puzzle.itc.mobiliar.common.exception.GeneratorException;
 import ch.puzzle.itc.mobiliar.common.exception.GeneratorException.MISSING;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -425,24 +426,18 @@ public class GeneratorDomainServiceWithAppServerRelations {
      */
     private void handleException(GenerationModus generationModus, final Exception e,
                                  final DeploymentEntity deployment) {
-        log.log(Level.WARNING, "Deployment fehlgeschlagen", e);
-        String message = generationModus.getAction() + " failure at " + new Date() + ". Reason: " + e
-                .getMessage() + "\n";
+        log.log(Level.WARNING, String.format("Deployment %d failed ",deployment.getId()), e);
+        String message = generationModus.getAction() + " failure at " + new Date() + ". Reason: " + e.getMessage() + "\n";
         DeploymentFailureReason reason = (e instanceof GeneratorException && ((GeneratorException) e).getMissingObject().equals(MISSING.NODE)) ?
                 DeploymentFailureReason.NODE_MISSING : null;
-        deploymentBoundary.updateDeploymentInfo(generationModus, deployment.getId(), message,
-                deployment.getResource() != null ? deployment.getResource()
-                        .getId() : null, null, reason);
-        if (generationModus.isSendNotificationOnErrorGenerationModus()) {
-            deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
-        }
+        deploymentBoundary.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(), message,
+                deployment.getResource() != null ? deployment.getResource().getId() : null, null, reason);
     }
 
     /**
      * Handle exceptions in the preparation of the deployment.
      */
-    private void handleExceptions(GenerationModus generationModus, GenerationResult generationResult,
-                                  final DeploymentEntity deployment) {
+    private void handleExceptions(GenerationModus generationModus, GenerationResult generationResult, DeploymentEntity deployment) {
 
         StringBuilder message = new StringBuilder(generationModus.getAction() + " failure at " + new Date() + ". Reasons: ");
         if (generationResult.hasErrors()) {
@@ -457,12 +452,9 @@ public class GeneratorDomainServiceWithAppServerRelations {
             }
         }
 
-        log.log(Level.WARNING, "Deployment fehlgeschlagen \n" + message.toString());
-        deploymentBoundary.updateDeploymentInfo(generationModus, deployment.getId(), message.toString(),
+        log.log(Level.WARNING, String.format("Deployment %d failed: %s", deployment.getId(),  message));
+        deploymentBoundary.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(), message.toString(),
                 deployment.getResource() != null ? deployment.getResource().getId() : null, generationResult, reason);
-        if (generationModus.isSendNotificationOnErrorGenerationModus()) {
-            deploymentBoundary.sendOneNotificationForTrackingIdOfDeployment(deployment.getTrackingId());
-        }
     }
 
     /**

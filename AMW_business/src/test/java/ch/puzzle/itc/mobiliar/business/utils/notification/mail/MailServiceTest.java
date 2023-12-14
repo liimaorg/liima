@@ -20,21 +20,21 @@
 
 package ch.puzzle.itc.mobiliar.business.utils.notification.mail;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import java.util.logging.Logger;
 
 import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
-import ch.puzzle.itc.mobiliar.business.utils.notification.MailService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
+
+import ch.puzzle.itc.mobiliar.business.utils.notification.MailService;
 
 public class MailServiceTest {
 
@@ -59,7 +59,7 @@ public class MailServiceTest {
 		mailService.createMessageAndSend("subject", "content", null);
 		
 		// then
-		verify(log, times(1)).warning("Mail session not available, unable to send Mail(subject: subject, content: content ) to Receipients: ");
+		verify(log, times(1)).warning("Mail session not available, unable to send Mail(subject: subject, content: content ) to Recipients: ");
 	}
 	
 	@Test
@@ -72,7 +72,7 @@ public class MailServiceTest {
 		mailService.createMessageAndSend("subject", "content", to);
 		
 		// then
-		verify(log, times(1)).warning("Mail session not available, unable to send Mail(subject: subject, content: content ) to Receipients: ");
+		verify(log, times(1)).warning("Mail session not available, unable to send Mail(subject: subject, content: content ) to Recipients: ");
 	}
 	
 	@Test
@@ -86,7 +86,7 @@ public class MailServiceTest {
 		mailService.createMessageAndSend("subject", "content", to);
 		
 		// then
-		verify(log, times(1)).warning("Mail session not available, unable to send Mail(subject: subject, content: content ) to Receipients: test@test.ch, ");
+		verify(log, times(1)).warning("Mail session not available, unable to send Mail(subject: subject, content: content ) to Recipients: test@test.ch, ");
 	}
 
 }

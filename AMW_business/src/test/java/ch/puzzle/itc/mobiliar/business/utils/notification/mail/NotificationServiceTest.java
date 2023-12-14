@@ -59,7 +59,7 @@ public class NotificationServiceTest {
 	
 	
 	@Test
-	public void test_createAndSendMail_noEmailReceipients() throws MessagingException {
+	public void test_createAndSendMail_noEmailRecipients() throws MessagingException {
 		// given
 		
 		// when
@@ -70,7 +70,7 @@ public class NotificationServiceTest {
 	}
 	
 	@Test
-	public void test_createAndSendMail_noEmailReceipients_emptyList() throws MessagingException {
+	public void test_createAndSendMail_noEmailRecipients_emptyList() throws MessagingException {
 		// given
 		Address[] to = new InternetAddress[0];
 		// when
@@ -81,7 +81,7 @@ public class NotificationServiceTest {
 	}
 	
 	@Test
-	public void test_createAndSendMail_noEmailReceipients_DeliverEmailsFalse() throws MessagingException {
+	public void test_createAndSendMail_noEmailRecipients_DeliverEmailsFalse() throws MessagingException {
 		// given
 		Properties props = System.getProperties();
 		props.setProperty(ConfigKey.DELIVER_MAIL.getValue(), "false");

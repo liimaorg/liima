@@ -20,11 +20,16 @@
 
 package ch.puzzle.itc.mobiliar.business.utils.notification;
 
+import java.util.logging.Logger;
+
 import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.mail.*;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
-import java.util.logging.Logger;
 
 public class MailService {
 	
@@ -36,20 +41,20 @@ public class MailService {
 	@Inject
 	private Logger log;
 	
-	public boolean createMessageAndSend(String subject, String content, Address[] emailReceipients) throws MessagingException{
+	public boolean createMessageAndSend(String subject, String content, Address[] emailRecipients) throws MessagingException{
 		if (mailSession == null) {
 			String addresses = "";
-			if(emailReceipients != null) {
-				for (Address address : emailReceipients) {
+			if(emailRecipients != null) {
+				for (Address address : emailRecipients) {
 					addresses += address.toString() + ", ";
 				}
 			}
-			log.warning("Mail session not available, unable to send Mail(subject: " +subject+", content: "+content+" ) to Receipients: " + addresses);
+			log.warning("Mail session not available, unable to send Mail(subject: " +subject+", content: "+content+" ) to Recipients: " + addresses);
 			return false;
 		}
 		
 		final MimeMessage mail = new MimeMessage(mailSession);
-		mail.setRecipients(Message.RecipientType.TO, emailReceipients);
+		mail.setRecipients(Message.RecipientType.TO, emailRecipients);
 		mail.setSubject(subject);
 		mail.setContent(content, CONTENT_TYPE);
 		mail.setSentDate(new java.util.Date());
