@@ -7,14 +7,12 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SettingModule } from './app/setting/setting.module';
 import { AuditviewModule } from './app/auditview/auditview.module';
-import { DeploymentsModule } from './app/deployments/deployments.module';
 import { ResourceModule } from './app/resource/resource.module';
 import { withInterceptorsFromDi, provideHttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
-
 import { provideRouter, withHashLocation } from '@angular/router';
 import { routes } from './app/app.routes';
 
@@ -29,7 +27,6 @@ bootstrapApplication(AppComponent, {
       NgSelectModule,
       FormsModule,
       ResourceModule,
-      DeploymentsModule,
       AuditviewModule,
       SettingModule,
       NgbModule,

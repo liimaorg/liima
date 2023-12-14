@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { Environment } from './environment';
 import { BaseService } from '../base/base.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class EnvironmentService extends BaseService {
   constructor(private http: HttpClient) {
     super();

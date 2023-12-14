@@ -9,7 +9,7 @@ import { DeploymentRequest } from './deployment-request';
 import { DeploymentParameter } from './deployment-parameter';
 import { BaseService } from '../base/base.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DeploymentService extends BaseService {
   constructor(private http: HttpClient) {
     super();

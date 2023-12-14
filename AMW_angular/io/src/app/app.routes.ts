@@ -4,6 +4,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { TagsComponent } from './settings/tags/tags.component';
 import { auditviewRoutes } from './auditview/auditview.routes';
 import { deploymentRoutes } from './deployment/deployment-routes';
+import { deploymentsRoutes } from './deployments/deployments-routing.module';
 
 export const routes: Routes = [
   // default route only, the rest is done in module routing
@@ -15,4 +16,5 @@ export const routes: Routes = [
   },
   ...auditviewRoutes,
   ...deploymentRoutes,
+  ...deploymentsRoutes,
 ];
