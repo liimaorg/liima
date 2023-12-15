@@ -1,7 +1,7 @@
 $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 
-@import 'auditview/auditview.scss';
-@import 'deployments/deployments.scss';
+@import './auditview/auditview.scss';
+@import './deployments/deployments.scss';
 
 /* Move down content because we have a fixed navbar that is 50px tall */
 /*
