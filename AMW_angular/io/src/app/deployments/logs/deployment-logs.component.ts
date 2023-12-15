@@ -18,6 +18,7 @@ import {
   NgbDropdownItem,
 } from '@ng-bootstrap/ng-bootstrap';
 import { NotificationComponent } from '../../shared/elements/notification/notification.component';
+import { PageComponent } from '../../layout/page/page.component';
 
 declare let CodeMirror: any;
 
@@ -46,6 +47,7 @@ function failed(): Observable<Failed> {
     FormsModule,
     LoadingIndicatorComponent,
     AsyncPipe,
+    PageComponent,
   ],
 })
 export class DeploymentLogsComponent implements OnInit, OnDestroy {

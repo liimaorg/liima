@@ -8,13 +8,14 @@ import { NotificationComponent } from '../shared/elements/notification/notificat
 import { DatePipe, NgIf } from '@angular/common';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { AuditviewTableService } from './auditview-table/auditview-table.service';
+import { PageComponent } from '../layout/page/page.component';
 
 @Component({
   selector: 'amw-auditview',
   templateUrl: './auditview.component.html',
   standalone: true,
   providers: [AuditviewService, AuditviewTableService, DatePipe],
-  imports: [LoadingIndicatorComponent, NgIf, NotificationComponent, AuditviewTableComponent],
+  imports: [LoadingIndicatorComponent, NgIf, NotificationComponent, AuditviewTableComponent, PageComponent],
 })
 export class AuditviewComponent implements OnInit {
   name: string;

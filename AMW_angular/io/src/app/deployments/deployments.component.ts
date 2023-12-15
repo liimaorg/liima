@@ -22,6 +22,7 @@ import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-pi
 import { ToastComponent as ToastComponent_1 } from '../shared/elements/toast/toast.component';
 import { NotificationComponent } from '../shared/elements/notification/notification.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
+import { PageComponent } from '../layout/page/page.component';
 
 declare let $: any;
 
@@ -40,6 +41,7 @@ declare let $: any;
     IconComponent,
     DeploymentsListComponent,
     PaginationComponent,
+    PageComponent,
   ],
 })
 export class DeploymentsComponent implements OnInit {

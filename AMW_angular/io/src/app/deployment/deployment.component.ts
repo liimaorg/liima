@@ -22,6 +22,7 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NotificationComponent } from '../shared/elements/notification/notification.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
+import { PageComponent } from '../layout/page/page.component';
 
 @Component({
   selector: 'amw-deployment',
@@ -36,6 +37,7 @@ import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.
     NgFor,
     DateTimePickerComponent,
     IconComponent,
+    PageComponent,
   ],
 })
 export class DeploymentComponent implements OnInit, AfterViewInit {

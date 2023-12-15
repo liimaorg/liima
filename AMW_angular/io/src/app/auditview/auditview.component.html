@@ -1,16 +1,11 @@
 <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
-<div class="row">
-  <div class="col-12 bg-dark-subtle pt-2">
-    <h4>Audit View</h4>
-  </div>
-</div>
-
-<div class="container">
-  <div class="col pt-3">
-    <h5>{{ name }}</h5>
+<app-page>
+  <div class="page-title">Audit View</div>
+  <div class="page-content">
+    <h1>{{ name }}</h1>
 
     <app-notification *ngIf="successMessage" [message]="successMessage" [messageType]="'success'"></app-notification>
     <app-notification *ngIf="errorMessage" [message]="errorMessage" [messageType]="'warning'"></app-notification>
     <app-auditview-table [auditlogEntries]="auditLogEntries"></app-auditview-table>
   </div>
-</div>
+</app-page>
