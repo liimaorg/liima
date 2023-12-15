@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, Subject, of, combineLatest } from 'rxjs';
-import { tap, debounceTime, map } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { debounceTime, map, tap } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { AuditLogEntry } from '../auditview-entry';
 import { SortDirection } from './sortable.directive';
@@ -59,7 +59,7 @@ export class AuditviewTableService {
   private sortDirection$ = new BehaviorSubject<SortDirection>('');
   private auditlogEntries$: Subject<AuditLogEntry[]> = new Subject();
 
-  private _search$ = combineLatest(this.searchTerm$, this.sortColumn$, this.sortDirection$, this.auditlogEntries$);
+  private _search$ = combineLatest([this.searchTerm$, this.sortColumn$, this.sortDirection$, this.auditlogEntries$]);
 
   constructor(private pipe: DatePipe) {
     this._result$ = this._search$.pipe(

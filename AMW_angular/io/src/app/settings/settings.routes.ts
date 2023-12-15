@@ -1,5 +1,3 @@
-import { RouterModule } from '@angular/router';
-import { NgModule } from '@angular/core';
 import { TagsComponent } from './tags/tags.component';
 import { SettingsComponent } from './settings.component';
 import { PermissionComponent } from './permission/permission.component';

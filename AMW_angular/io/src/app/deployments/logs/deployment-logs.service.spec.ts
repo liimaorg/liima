@@ -34,14 +34,13 @@ describe('DeploymentLogService', () => {
 
     httpClientSpy.get.and.returnValue(asyncData(expectedDeploymentLogs));
 
-    service
-      .getLogFileMetaData(1)
-      .subscribe(
-        (deploymentLogs) => expect(deploymentLogs).toEqual(expectedDeploymentLogs, 'expected deploymentLogs'),
-        fail,
-      );
+    service.getLogFileMetaData(1).subscribe({
+      next: (deploymentLogs) =>
+        expect(deploymentLogs).withContext('expected deploymentLogs').toEqual(expectedDeploymentLogs),
+      error: fail,
+    });
 
-    expect(httpClientSpy.get.calls.count()).toBe(1, 'called once');
+    expect(httpClientSpy.get.calls.count()).withContext('called once').toBe(1);
   });
 
   it('should handle 404', () => {
@@ -53,9 +52,11 @@ describe('DeploymentLogService', () => {
 
     httpClientSpy.get.and.returnValue(asyncError(errorResponse));
 
-    service.getLogFileMetaData(1).subscribe(
-      (_) => fail('expected an error, not a list of deploymentLogs'),
-      (error) => expect(error).toContain('no deployment logs found'),
-    );
+    service
+      .getLogFileMetaData(1)
+      .subscribe({
+        next: (_) => fail('expected an error, not a list of deploymentLogs'),
+        error: (error) => expect(error).toContain('no deployment logs found'),
+      });
   });
 });

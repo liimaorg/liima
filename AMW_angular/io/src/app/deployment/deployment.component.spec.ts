@@ -149,7 +149,7 @@ describe('DeploymentComponent (create deployment)', () => {
     const groups: string[] = component.getEnvironmentGroups();
 
     expect(groups.length).toBe(2);
-    expect(groups).toContain('DEV', 'PROD');
+    expect(groups).withContext('PROD').toContain('DEV');
   });
 
   it('should keep environments selected on onChangeAppserver', () => {

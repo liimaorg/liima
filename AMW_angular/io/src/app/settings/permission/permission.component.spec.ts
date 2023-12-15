@@ -115,10 +115,18 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       parent: 'All',
       selected: false,
     } as Environment);
-    expect(component.groupedEnvironments['Dev']).toContain(
-      { id: 1, name: 'U', parent: 'Dev', selected: false } as Environment,
-      { id: 2, name: 'V', parent: 'Dev', selected: false } as Environment,
-    );
+    expect(component.groupedEnvironments['Dev']).toContain({
+      id: 1,
+      name: 'U',
+      parent: 'Dev',
+      selected: false,
+    } as Environment);
+    expect(component.groupedEnvironments['Dev']).toContain({
+      id: 2,
+      name: 'V',
+      parent: 'Dev',
+      selected: false,
+    } as Environment);
     expect(component.groupedEnvironments['Test']).toContain({
       id: 3,
       name: 'T',
@@ -462,10 +470,18 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
       parent: 'All',
       selected: false,
     } as Environment);
-    expect(component.groupedEnvironments['Dev']).toContain(
-      { id: 1, name: 'U', parent: 'Dev', selected: false } as Environment,
-      { id: 2, name: 'V', parent: 'Dev', selected: false } as Environment,
-    );
+    expect(component.groupedEnvironments['Dev']).toContain({
+      id: 1,
+      name: 'U',
+      parent: 'Dev',
+      selected: false,
+    } as Environment);
+    expect(component.groupedEnvironments['Dev']).toContain({
+      id: 2,
+      name: 'V',
+      parent: 'Dev',
+      selected: false,
+    } as Environment);
     expect(component.groupedEnvironments['Test']).toContain({
       id: 3,
       name: 'T',

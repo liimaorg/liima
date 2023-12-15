@@ -86,17 +86,17 @@ export class DeploymentsListComponent {
 
   showConfirm(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    this.resourceService.canCreateShakedownTest(this.deployment.appServerId).subscribe(
-      /* happy path */ (r) => (this.hasPermissionShakedownTest = r),
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () =>
+    this.resourceService.canCreateShakedownTest(this.deployment.appServerId).subscribe({
+      next: (r) => (this.hasPermissionShakedownTest = r),
+      error: (e) => (this.errorMessage = e),
+      complete: () =>
         this.modalService.open(content).result.then(
           (result) => {
             this.doConfirmDeployment.emit(this.deployment);
           },
           (reason) => {},
         ),
-    );
+    });
   }
 
   showReject(content, deploymentId: number) {
