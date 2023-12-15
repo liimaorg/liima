@@ -11,6 +11,7 @@
           <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end">Applicationserver</label>
           <div class="col-sm-10 col-md-5">
             <ng-select
+              daty-cy="app-server-select"
               id="selectApplicationserver"
               [items]="appservers"
               bindLabel="name"
@@ -55,6 +56,7 @@
                   ><input
                     class="me-2 form-check-input"
                     type="checkbox"
+                    [attr.data-cy]="env.name"
                     (change)="onChangeEnvironment()"
                     [(ngModel)]="env.selected"
                   />{{ env.name }}
@@ -185,6 +187,7 @@
             <button
               type="submit"
               class="btn btn-secondary btn-main"
+              [attr.data-cy]="'btn-request-deployment'"
               [attr.disabled]="hasPermissionToRequestDeployment ? null : ''"
               (click)="requestDeployment()"
             >
@@ -193,6 +196,7 @@
             <button
               type="submit"
               class="btn btn-primary btn-main"
+              [attr.data-cy]="'btn-deploy'"
               [attr.disabled]="hasPermissionToDeploy ? null : ''"
               (click)="createDeployment()"
             >

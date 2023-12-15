@@ -10,6 +10,7 @@
     [ngModel]="dateString"
     (change)="onDateStringChange($event)"
     [disabled]="disabled"
+    [attr.data-cy]="'date-picker'"
     placeholder="{{ dateStringFormat }}"
   />
 
