@@ -1,3 +1,9 @@
+# v1.17.33
+* Settings -> Tags migrated from Angular to JSF: [#719](https://github.com/liimaorg/liima/pull/719)
+* Angular deployments: missing colors of deployment entries [#718](https://github.com/liimaorg/liima/issues/718)
+* Fix error when sending mail for archived deployment, fix sending mail on predeploy failure [#721](https://github.com/liimaorg/liima/pull/721)
+* chore(deps): bump axios and wait-on in /AMW_e2e [#722](https://github.com/liimaorg/liima/pull/722)
+
 # v1.17.32
 * Update to Angular 17 and update JS deps [#705](https://github.com/liimaorg/liima/issues/705) [#715](https://github.com/liimaorg/liima/pull/715)
 * Angular deployments page: Clipboard button doesn't work [#699](https://github.com/liimaorg/liima/issues/699)
