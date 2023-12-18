@@ -20,6 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
+import java.util.ArrayList;
+
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
@@ -34,6 +36,7 @@ import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,10 +75,21 @@ public class DeploymentNotificationService {
 			return message;
 		}
 		String subjectMessage = "Liima-Deploy for tracking id: " + deployments.get(0).getTrackingId();
+		List<DeploymentEntity> filteredDeployments = new ArrayList<>();
+		// skip notification if deployment is preserved. Can happen if old deployments are stuck in progress that the scheduler tries to clean up.
+		for (DeploymentEntity deployment : deployments) {
+			if (!deployment.isPreserved()) {
+				log.log(Level.INFO, "Deployment notification for deployment %s will not be sent because it's preserved", deployment.getId());
+				filteredDeployments.add(deployment);
+			}
+		}
+		if (filteredDeployments.isEmpty()) {
+			return message;
+		}
 
 		try {
-			Address[] emailRecipients = getAllRecipients(deployments);
-			if (notificationService.createAndSendMail(subjectMessage, getMessageContentForDeployments(deployments), emailRecipients)) {
+			Address[] emailRecipients = getAllRecipients(filteredDeployments);
+			if (notificationService.createAndSendMail(subjectMessage, getMessageContentForDeployments(filteredDeployments), emailRecipients)) {
 				message = getSuccessfulSendMailToRecipientMessage(emailRecipients);
 			}
 		} catch (MessagingException e) {
@@ -146,10 +160,6 @@ public class DeploymentNotificationService {
 			}
 			if (deployment.isSendEmailConfirmation()) {
 				emailRecipients.add(deployment.getDeploymentConfirmationUser());
-			}
-			// skip notification of favorites if deployment is preserved
-			if (deployment.isPreserved()) {
-				continue;
 			}
 			groupIds.add(deployment.getResourceGroup().getId());
 			if (deployment.getResource().getConsumedMasterRelations() == null) {
