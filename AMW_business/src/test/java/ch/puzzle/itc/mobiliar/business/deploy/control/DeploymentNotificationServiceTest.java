@@ -235,4 +235,21 @@ public class DeploymentNotificationServiceTest {
 		assertEquals("Notification email sent to following recipients: \ntestuser1@null\n", result);
 	}
 
+	@Test
+	public void createAndSendMailForDeplyoments_archived() throws MessagingException {
+		// given
+		ArrayList<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
+
+		DeploymentEntity deployment = new DeploymentEntity();
+		deployment.setTrackingId(Integer.valueOf(12));
+		deployment.setExResourcegroupId(123);
+		deployments.add(deployment);
+
+		// when
+		String result = deploymentNotificationService.createAndSendMailForDeplyoments(deployments);
+
+		// then
+		assertNull(result);
+	}
+
 }
