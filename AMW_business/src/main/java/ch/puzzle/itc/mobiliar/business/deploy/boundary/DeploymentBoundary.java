@@ -1024,17 +1024,17 @@ public class DeploymentBoundary {
      * @param resourceId       - the ApplicationServe used for deployment
      * @param generationResult
      * @param reason           - the DeploymentFailureReason (if any)
+     * @return                 - the updated deployment
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public DeploymentEntity updateDeploymentInfo(GenerationModus generationModus, final Integer deploymentId, final String errorMessage, final Integer resourceId,
                                                  final GenerationResult generationResult, DeploymentFailureReason reason) {
         // don't lock a deployment for predeployment as there is no need to update the deployment.
-        if (GenerationModus.PREDEPLOY.equals(generationModus) && errorMessage == null) {
+        if (GenerationModus.PREDEPLOY == generationModus && errorMessage == null) {
             log.fine("Predeploy script finished at " + new Date());
             return em.find(DeploymentEntity.class, deploymentId);
         }
-        DeploymentEntity deployment = em.find(DeploymentEntity.class, deploymentId,
-                LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+        DeploymentEntity deployment = em.find(DeploymentEntity.class, deploymentId, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
 
         // set as used for deployment
         if (resourceId != null) {
@@ -1042,7 +1042,7 @@ public class DeploymentBoundary {
             deployment.setResource(as);
         }
 
-        if (GenerationModus.DEPLOY.equals(generationModus)) {
+        if (GenerationModus.DEPLOY == generationModus) {
             if (errorMessage == null) {
                 String nodeInfo = getNodeInfoForDeployment(generationResult);
                 deployment.appendStateMessage("Successfully deployed at " + new Date() + "\n" + nodeInfo);
@@ -1055,7 +1055,7 @@ public class DeploymentBoundary {
                 }
                 deployment.setReason(reason);
             }
-        } else if (GenerationModus.PREDEPLOY.equals(generationModus)) {
+        } else if (GenerationModus.PREDEPLOY == generationModus) {
             deployment.appendStateMessage(errorMessage);
             deployment.setDeploymentState(DeploymentState.failed);
             if (reason == null) {
@@ -1126,7 +1126,6 @@ public class DeploymentBoundary {
      * single email notification if all of them are executed (independent of their success state).
      */
     public void sendOneNotificationForTrackingIdOfDeployment(Integer trackingId) {
-        // hole alle deployments mit derselben trackingId
         List<DeploymentEntity> deploymentsWithSameTrackingId = getDeplyomentsWithSameTrackingId(trackingId);
 
         if (isAllDeploymentsWithSameTrackingIdExecuted(deploymentsWithSameTrackingId)) {
@@ -1136,8 +1135,7 @@ public class DeploymentBoundary {
 
     private boolean isAllDeploymentsWithSameTrackingIdExecuted(List<DeploymentEntity> deploymentsWithSameTrackingId) {
         for (final DeploymentEntity deploymentEntity : deploymentsWithSameTrackingId) {
-            // not executed and not failed, failed and executed Deployments are complete
-            if (!deploymentEntity.isExecuted() && !DeploymentState.failed.equals(deploymentEntity.getDeploymentState())) {
+            if (!deploymentEntity.isExecuted()) {
                 return false;
             }
         }
@@ -1160,7 +1158,6 @@ public class DeploymentBoundary {
      * @param deployments
      */
     private void sendsNotificationAndUpdatedStatusOfDeployments(final List<DeploymentEntity> deployments) {
-
         if (deployments != null && !deployments.isEmpty()) {
             String message = deploymentNotificationService.createAndSendMailForDeplyoments(deployments);
             updateDeploymentStatusMessage(deployments, message);

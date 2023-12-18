@@ -21,12 +21,9 @@
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
-import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.utils.notification.NotificationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
@@ -56,14 +53,11 @@ public class DeploymentNotificationService {
 	private ResourceDependencyResolverService resourceDependencyResolverService;
 
 	@Inject
-	private ReleaseMgmtService releaseMgmtService;
-
-	@Inject
 	private Logger log;
 
 	/**
 	 * Creates a notification email for deployment executions and sends them to
-	 * the given receipients
+	 * the given recipients
 	 *
 	 * @param deployments
 	 *            - the executed deployments
@@ -71,28 +65,22 @@ public class DeploymentNotificationService {
 	 * @throws AddressException
 	 * @throws MessagingException
 	 */
-	public String createAndSendMailForDeplyoments(
-			final List<DeploymentEntity> deployments) {
+	public String createAndSendMailForDeplyoments(final List<DeploymentEntity> deployments) {
 		String message = null;
-
 		// do nothing if no deployment is available
-		if (deployments != null && !deployments.isEmpty()) {
-			String subjectMessage = "AMW-Deploy for tracking id: "
-					+ deployments.get(0).getTrackingId();
+		if (deployments == null || deployments.isEmpty()) {
+			return message;
+		}
+		String subjectMessage = "Liima-Deploy for tracking id: " + deployments.get(0).getTrackingId();
 
-			try {
-				Address[] emailReceipients = getAllReceipients(deployments);
-
-				if (notificationService.createAndSendMail(subjectMessage,
-						getMessageContentForDeployments(deployments),
-						emailReceipients)) {
-					message = getSuccessfulSendMailToReceipientMessage(emailReceipients);
-				}
-			} catch (MessagingException e) {
-				message = getFailureSendMailMessage(e.getMessage());
-				log.log(Level.WARNING, "Deployment notification ("
-						+ subjectMessage + ") could not be sent", e);
+		try {
+			Address[] emailRecipients = getAllRecipients(deployments);
+			if (notificationService.createAndSendMail(subjectMessage, getMessageContentForDeployments(deployments), emailRecipients)) {
+				message = getSuccessfulSendMailToRecipientMessage(emailRecipients);
 			}
+		} catch (MessagingException e) {
+			message = getFailureSendMailMessage(e.getMessage());
+			log.log(Level.WARNING, "Deployment notification (" + subjectMessage + ") could not be sent", e);
 		}
 
 		return message;
@@ -105,8 +93,7 @@ public class DeploymentNotificationService {
 	 *            - the deployments for which the email shall be generated.
 	 * @return the e-mail content to be sent
 	 */
-	private String getMessageContentForDeployments(
-			final List<DeploymentEntity> deployments) {
+	private String getMessageContentForDeployments(final List<DeploymentEntity> deployments) {
 		final StringBuffer message = new StringBuffer();
 		for (final DeploymentEntity deployment : deployments) {
 			message.append("Application server: ").append(deployment.getResourceGroup().getName());
@@ -140,60 +127,47 @@ public class DeploymentNotificationService {
 	}
 
 	/**
-	 * Extracts the receipients interested in getting notifications about the
+	 * Extracts the recipients interested in getting notifications about the
 	 * deployment execution.
 	 * 
 	 * @param deployments
 	 * @return - an array of e-mail addresses
 	 * @throws AddressException
 	 */
-	private Address[] getAllReceipients(final List<DeploymentEntity> deployments)
+	private Address[] getAllRecipients(final List<DeploymentEntity> deployments)
 			throws AddressException {
 
-		final Set<String> emailReceipients = new HashSet<String>();
+		final Set<String> emailRecipients = new HashSet<String>();
 		final Set<Integer> groupIds = new HashSet<Integer>();
 
 		for (final DeploymentEntity deployment : deployments) {
 			if (deployment.isSendEmail()) {
-				emailReceipients.add(deployment.getDeploymentRequestUser());
+				emailRecipients.add(deployment.getDeploymentRequestUser());
 			}
 			if (deployment.isSendEmailConfirmation()) {
-				emailReceipients
-				.add(deployment.getDeploymentConfirmationUser());
+				emailRecipients.add(deployment.getDeploymentConfirmationUser());
 			}
-			ReleaseEntity release = deployment.getRelease();
-			if(release == null){
-				// get Past Release
-				release = releaseMgmtService.getDefaultRelease();
-
+			// skip notification of favorites if deployment is preserved
+			if (deployment.isPreserved()) {
+				continue;
 			}
-			// Find the resourceGroup ids for the deployment
-			final ResourceEntity resource = resourceDependencyResolverService.getResourceEntityForRelease(deployment.getResourceGroup(),
-					release);
-			if (resource != null) {
-				groupIds.add(resource.getResourceGroup().getId());
-				if (resource.getConsumedMasterRelations() != null) {
-					for (final ConsumedResourceRelationEntity rel : resourceDependencyResolverService
-							.getConsumedMasterRelationsForRelease(resource,
-									deployment.getRelease())) {
-						groupIds.add(rel.getSlaveResource().getResourceGroup().getId());
-					}
-				}
+			groupIds.add(deployment.getResourceGroup().getId());
+			if (deployment.getResource().getConsumedMasterRelations() == null) {
+				continue;
+			}
+			for (final ConsumedResourceRelationEntity rel : resourceDependencyResolverService.getConsumedMasterRelationsForRelease(deployment.getResource(), deployment.getRelease())) {
+				groupIds.add(rel.getSlaveResource().getResourceGroup().getId());
 			}
 		}
 
-		List<String> userNames = userSettingsService
-				.getRegisteredUsernamesForResourcesIds(groupIds);
-		emailReceipients.addAll(userNames);
+		emailRecipients.addAll(userSettingsService.getRegisteredUsernamesForResourcesIds(groupIds));
 
-		final Address[] to = new InternetAddress[emailReceipients.size()];
+
+		final Address[] to = new InternetAddress[emailRecipients.size()];
 		int i = 0;
-		for (final String user : emailReceipients) {
-			// TODO make configurable
-			to[i++] = new InternetAddress(user + "@"
-					+ ConfigurationService.getProperty(ConfigKey.MAIL_DOMAIN));
+		for (final String user : emailRecipients) {
+			to[i++] = new InternetAddress(user + "@" + ConfigurationService.getProperty(ConfigKey.MAIL_DOMAIN));
 		}
-
 		return to;
 	}
 
@@ -211,15 +185,15 @@ public class DeploymentNotificationService {
 	/**
 	 * Generates a success message for email sending process.
 	 * 
-	 * @param emailReceipients
-	 *            - the receipients to which the email was successfully sent
+	 * @param emailRecipients
+	 *            - the recipients to which the email was successfully sent
 	 * @return
 	 */
-	private String getSuccessfulSendMailToReceipientMessage(
-			final Address[] emailReceipients) {
+	private String getSuccessfulSendMailToRecipientMessage(
+			final Address[] emailRecipients) {
 		final StringBuffer result = new StringBuffer(
-				"Notification email sent to following receipients: \n");
-		for (final Address address : emailReceipients) {
+				"Notification email sent to following recipients: \n");
+		for (final Address address : emailRecipients) {
 			result.append(address.toString());
 			result.append("\n");
 		}
