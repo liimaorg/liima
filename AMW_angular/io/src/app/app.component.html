@@ -1,19 +1,13 @@
 <app-navigation [logoutUrl]="logoutUrl"></app-navigation>
 <div class="container-fluid h-100">
-  <div class="row bg-light" style="z-index: 9999;">
-    <div class="col">
-      <h4 class="pt-2 text-dark">
-        {{ (navigationStore.navigation$ | async).pageTitle }}
-      </h4>
-    </div>
-  </div>
+  <div class="row bg-light" style="z-index: 9999"></div>
   <main class="h-100">
     <div class="row h-100">
       <div class="col-auto p-0">
-      <app-navigation-sidebar
-        [navigation]="navigationStore.navigation$ | async"
-        (itemSelected)="navigateTo($event)"
-      ></app-navigation-sidebar>
+        <app-navigation-sidebar
+          [navigation]="navigationStore.navigation$ | async"
+          (itemSelected)="navigateTo($event)"
+        ></app-navigation-sidebar>
       </div>
       <div class="col h-100">
         <router-outlet></router-outlet>

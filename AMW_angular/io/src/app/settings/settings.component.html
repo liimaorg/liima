@@ -1,0 +1,26 @@
+<div class="row">
+  <div class="col-12 bg-dark-subtle pt-2">
+    <h4>Settings</h4>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-3 pt-3">
+      <nav class="nav nav-pills flex-column">
+        <a class="nav-link" href="/AMW_web/pages/settings.xhtml?mode=envs">Environments</a>
+        <a class="nav-link" href="/AMW_web/pages/settings.xhtml?mode=props">Property Types</a>
+        <a class="nav-link" routerLink="/settings/tags" routerLinkActive="active">Tags</a>
+        <a class="nav-link" href="/AMW_web/pages/settings.xhtml?mode=functions">Functions</a>
+        <a class="nav-link" href="/AMW_web/pages/settings.xhtml?mode=deployparam">Deployment Parameter</a>
+        <a class="nav-link" href="/AMW_web/pages/settings.xhtml?mode=myAmw">My favorites</a>
+        <a class="nav-link" href="/AMW_web/pages/settings.xhtml?mode=STP">STP Management</a>
+        <a class="nav-link" href="/AMW_web/pages/settings.xhtml?mode=releases">Releases</a>
+        <a class="nav-link" routerLink="/settings/permission" routerLinkActive="active">Roles and Permissions</a>
+        <a class="nav-link" href="/AMW_web/pages/settings.xhtml?mode=appVersion">Application Info</a>
+      </nav>
+    </div>
+    <div class="col-9">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

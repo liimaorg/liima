@@ -33,7 +33,14 @@ import javax.persistence.criteria.*;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntityHolder;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagType;
+import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+import static ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagType.LOCAL;
+
+@AllArgsConstructor
+@NoArgsConstructor
 public class PropertyTagEditingService {
 
     @Inject
@@ -57,7 +64,7 @@ public class PropertyTagEditingService {
      * @return
      */
     public List<PropertyTagEntity> loadAllLocalPropertyTagEntities(boolean sortDesc) {
-        return loadAllPropertyTagEntities(sortDesc, PropertyTagType.LOCAL);
+        return loadAllPropertyTagEntities(sortDesc, LOCAL);
     }
 
     /**
@@ -82,7 +89,7 @@ public class PropertyTagEditingService {
             if (result.isEmpty()) {
                 entityManager.persist(propertyTag);
             } else {
-                log.warning("A PropertyTag with name " + propertyTag.getName() + " exists already");
+                throw new AMWRuntimeException("Tag " + propertyTag.getName() + " already exists");
             }
         }
         else {
@@ -151,9 +158,19 @@ public class PropertyTagEditingService {
      * @return
      */
     public PropertyTagEntity createPropertyTagEntity(String tagString) {
+        return createPropertyTagEntity(tagString, LOCAL);
+    }
+
+    /**
+     * @deprecated just use the constructor to create an instance of {@link PropertyTagEntity}
+     * @param tagString
+     * @param type
+     * @return
+     */
+    public PropertyTagEntity createPropertyTagEntity(String tagString, PropertyTagType type) {
         PropertyTagEntity pte = new PropertyTagEntity();
         pte.setName(tagString);
-        pte.setTagType(PropertyTagType.LOCAL);
+        pte.setTagType(type);
         return pte;
     }
 

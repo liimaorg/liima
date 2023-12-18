@@ -3,9 +3,9 @@ import { ChangeDetectorRef } from '@angular/core';
 import { Permission } from './permission';
 import { RestrictionAddComponent } from './restriction-add.component';
 import { Restriction } from './restriction';
-import { Resource } from '../resource/resource';
-import { Environment } from '../deployment/environment';
 import * as _ from 'lodash';
+import {Resource} from "../../resource/resource";
+import {Environment} from "../../deployment/environment";
 
 describe('RestrictionAddComponent', () => {
   // provide our implementations or mocks to the dependency injector

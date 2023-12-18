@@ -31,6 +31,7 @@ import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
 import ch.mobi.itc.mobiliar.rest.resources.*;
 import ch.mobi.itc.mobiliar.rest.releases.ReleasesRest;
 import ch.mobi.itc.mobiliar.rest.settings.SettingsRest;
+import ch.mobi.itc.mobiliar.rest.tags.boundary.TagsRest;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -48,6 +49,8 @@ public class RESTApplication extends Application {
     }
 
     private void addRestResourceClasses(Set<Class<?>> resources) {
+
+        // Endpoints
         resources.add(BatchJobRest.class);
         resources.add(ResourcesRest.class);
         resources.add(ResourceGroupsRest.class);
@@ -60,14 +63,23 @@ public class RESTApplication extends Application {
         resources.add(ResourceRelationTemplatesRest.class);
         resources.add(HostNamesRest.class);
         resources.add(DeploymentsRest.class);
-        resources.add(DeploymentDtoCsvBodyWriter.class);
         resources.add(EnvironmentsRest.class);
         resources.add(AuditViewRest.class);
         resources.add(RestrictionsRest.class);
+        resources.add(SettingsRest.class);
+        resources.add(TestGenerationRest.class);
+        resources.add(TagsRest.class);
+
+        // writers
+        resources.add(DeploymentDtoCsvBodyWriter.class);
+        resources.add(ExceptionDtoBodyWriter.class);
+        resources.add(ServerTupleCSVBodyWriter.class);
+
+        // exception mappers
+        resources.add(ObjectMapperConfig.class);
         resources.add(ClientErrorExceptionMapper.class);
         resources.add(EJBExceptionMapper.class);
         resources.add(EJBTransactionRolledbackExceptionMapper.class);
-        resources.add(ExceptionDtoBodyWriter.class);
         resources.add(IllegalStateExceptionMapper.class);
         resources.add(IllegalArgumentExceptionMapper.class);
         resources.add(IOExceptionMapper.class);
@@ -76,10 +88,9 @@ public class RESTApplication extends Application {
         resources.add(ValidationExceptionMapper.class);
         resources.add(NotFoundExceptionMapper.class);
         resources.add(UncaughtExceptionMapper.class);
-        resources.add(ServerTupleCSVBodyWriter.class);
+        resources.add(ConstraintViolationExceptionMapper.class);
+
+        // health
         resources.add(HealthCheck.class);
-        resources.add(SettingsRest.class);
-        resources.add(TestGenerationRest.class);
-        resources.add(ObjectMapperConfig.class);
     }
 }

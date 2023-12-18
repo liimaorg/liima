@@ -23,10 +23,8 @@ package ch.puzzle.itc.mobiliar.business.property.control;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.GlobalContext;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceReleaseComparator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -38,7 +36,6 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -110,19 +107,5 @@ public class PropertyImportService {
         } catch (AMWException e) {
             throw new AMWRuntimeException("Failed to delete property " + propertyDescriptor.getPropertyDescriptorDisplayName() + " which has still assigned values");
         }
-    }
-
-    public void savePropertyDescriptorWithTags(PropertyDescriptorEntity propDesc, List<String> tags, ResourceEntity resourceEntity, ForeignableOwner owner) throws AMWException {
-        ResourceContextEntity resourceContext = resourceEntity.getOrCreateContext(globalContext);
-        List<PropertyTagEntity> propertyTags = createPropertyTags(tags);
-        descriptorService.savePropertyDescriptorForOwner(owner, resourceContext, propDesc, propertyTags, resourceEntity);
-    }
-
-    private List<PropertyTagEntity> createPropertyTags(List<String> tags) {
-        List<PropertyTagEntity> propertyTagEntities = new LinkedList<>();
-        for (String tag : tags) {
-            propertyTagEntities.add(propertyTagService.addPropertyTag((propertyTagService.createPropertyTagEntity(tag.trim()))));
-        }
-        return propertyTagEntities;
     }
 }

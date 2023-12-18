@@ -1,7 +1,6 @@
-import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import {ToastComponent} from './toast.component';
-
+import { ToastComponent } from './toast.component';
 
 describe('ToastComponent', () => {
   let component: ToastComponent;
@@ -9,9 +8,8 @@ describe('ToastComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ToastComponent]
-    })
-      .compileComponents();
+      declarations: [ToastComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -49,7 +47,7 @@ describe('ToastComponent', () => {
   it('should hide toast', (done) => {
     const testMessage = 'Test message';
     const duration = 1000;
-    component.display(testMessage, duration);
+    component.display(testMessage, 'success', duration);
     fixture.detectChanges();
     setTimeout(() => {
       fixture.detectChanges();
