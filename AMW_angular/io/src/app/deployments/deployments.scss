@@ -17,30 +17,30 @@ span.reject:hover {
 
 span.confirm,
 span.confirm:hover {
-  color: #008400;
+  color: var(--bs-success)
 }
 
 span.delayed,
 span.delayed:hover {
-  color: #db4a4a;
+  color: var(--bs-danger);
 }
 
 span.reject,
 span.reject:hover {
-  color: #db4a4a;
+  color: var(--bs-danger);
 }
 
 tr.deploy-pre_deploy,
-tr.deploy-progress {
-  background-color: #e9ecef;
+tr.deploy-progress > td {
+  background-color: var(--bs-light)
 }
 
-tr.deploy-failed {
-  background-color: #f2dede;
+tr.deploy-failed > td {
+  background-color: var(--bs-danger-bg-subtle);
 }
 
-tr.deploy-success {
-  background-color: #dff0d8;
+tr.deploy-success > td {
+  background-color: var(--bs-success-bg-subtle)
 }
 span.action,
 span.delayed,
