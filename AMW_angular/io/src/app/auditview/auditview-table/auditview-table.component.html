@@ -1,5 +1,5 @@
-<form>
-  <div class="form-group form-inline">
+<div class="col-6 ms-auto">
+  <div class="input-group">
     <input
       class="form-control ms-4"
       type="text"
@@ -8,83 +8,49 @@
       placeholder="search..."
     />
   </div>
+</div>
 
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th scope="col" sortable="timestamp" (sort)="onSort($event)">
-          Timestamp
-        </th>
-        <th scope="col" sortable="relation" (sort)="onSort($event)">Name</th>
-        <th scope="col" sortable="type" (sort)="onSort($event)">Type</th>
-        <th scope="col" sortable="name" (sort)="onSort($event)">
-          Name (Property Descriptor etc.)
-        </th>
-        <th scope="col" sortable="editContextName" (sort)="onSort($event)">
-          Context
-        </th>
-        <th scope="col" sortable="mode" (sort)="onSort($event)">Mode</th>
-        <th scope="col" sortable="oldValue" (sort)="onSort($event)">
-          Old Value
-        </th>
-        <th scope="col" sortbale="value" (sort)="onSort($event)">New Value</th>
-        <th scope="col" sortable="username" (sort)="onSort($event)">
-          Username
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let entry of auditlogEntries$ | async">
-        <td scope="row">{{ entry.timestamp | date: dateFormat }}</td>
-        <td>
-          <ngb-highlight
-            [result]="entry.relation"
-            [term]="service.searchTerm"
-          ></ngb-highlight>
-        </td>
-        <td>
-          <ngb-highlight
-            [result]="entry.type"
-            [term]="service.searchTerm"
-          ></ngb-highlight>
-        </td>
-        <td>
-          <ngb-highlight
-            [result]="entry.name"
-            [term]="service.searchTerm"
-          ></ngb-highlight>
-        </td>
-        <td>
-          <ngb-highlight
-            [result]="entry.editContextName"
-            [term]="service.searchTerm"
-          ></ngb-highlight>
-        </td>
-        <td>
-          <ngb-highlight
-            [result]="entry.mode"
-            [term]="service.searchTerm"
-          ></ngb-highlight>
-        </td>
-        <td>
-          <ngb-highlight
-            [result]="entry.oldValue"
-            [term]="service.searchTerm"
-          ></ngb-highlight>
-        </td>
-        <td>
-          <ngb-highlight
-            [result]="entry.value | newlineFilter"
-            [term]="service.searchTerm"
-          ></ngb-highlight>
-        </td>
-        <td>
-          <ngb-highlight
-            [result]="entry.username | newlineFilter"
-            [term]="service.searchTerm"
-          ></ngb-highlight>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</form>
+<table class="table table-striped mt-3">
+  <thead>
+    <tr>
+      <th scope="col" sortable="timestamp" (sort)="onSort($event)">Timestamp</th>
+      <th scope="col" sortable="relation" (sort)="onSort($event)">Name</th>
+      <th scope="col" sortable="type" (sort)="onSort($event)">Type</th>
+      <th scope="col" sortable="name" (sort)="onSort($event)">Name (Property Descriptor etc.)</th>
+      <th scope="col" sortable="editContextName" (sort)="onSort($event)">Context</th>
+      <th scope="col" sortable="mode" (sort)="onSort($event)">Mode</th>
+      <th scope="col" sortable="oldValue" (sort)="onSort($event)">Old Value</th>
+      <th scope="col" sortable="value" (sort)="onSort($event)">New Value</th>
+      <th scope="col" sortable="username" (sort)="onSort($event)">Username</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let entry of auditlogEntries$ | async">
+      <td>{{ entry.timestamp | date: dateFormat }}</td>
+      <td>
+        <ngb-highlight [result]="entry.relation" [term]="service.searchTerm"></ngb-highlight>
+      </td>
+      <td>
+        <ngb-highlight [result]="entry.type" [term]="service.searchTerm"></ngb-highlight>
+      </td>
+      <td>
+        <ngb-highlight [result]="entry.name" [term]="service.searchTerm"></ngb-highlight>
+      </td>
+      <td>
+        <ngb-highlight [result]="entry.editContextName" [term]="service.searchTerm"></ngb-highlight>
+      </td>
+      <td>
+        <ngb-highlight [result]="entry.mode" [term]="service.searchTerm"></ngb-highlight>
+      </td>
+      <td>
+        <ngb-highlight [result]="entry.oldValue" [term]="service.searchTerm"></ngb-highlight>
+      </td>
+      <td>
+        <ngb-highlight [result]="entry.value | newlineFilter" [term]="service.searchTerm"></ngb-highlight>
+      </td>
+      <td>
+        <ngb-highlight [result]="entry.username | newlineFilter" [term]="service.searchTerm"></ngb-highlight>
+      </td>
+    </tr>
+  </tbody>
+</table>

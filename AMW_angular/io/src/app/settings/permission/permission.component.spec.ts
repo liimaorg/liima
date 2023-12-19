@@ -17,7 +17,6 @@ import { Tag } from './tag';
 import { EnvironmentService } from '../../deployment/environment.service';
 import { ResourceService } from '../../resource/resource.service';
 import { Environment } from 'src/app/deployment/environment';
-import { SharedModule } from '../../shared/shared.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 describe('PermissionComponent without any params (default: type Role)', () => {
@@ -28,13 +27,23 @@ describe('PermissionComponent without any params (default: type Role)', () => {
   let environmentService: EnvironmentService;
   let resourceService: ResourceService;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [CommonModule, FormsModule, HttpClientTestingModule, RouterTestingModule.withRoutes([]), NgbModule],
+      imports: [
+        CommonModule,
+        FormsModule,
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([]),
+        NgbModule,
+        PermissionComponent,
+        RestrictionEditComponent,
+        RestrictionAddComponent,
+        RestrictionListComponent,
+      ],
       providers: [
         EnvironmentService,
         PermissionService,
@@ -42,7 +51,6 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      declarations: [PermissionComponent, RestrictionEditComponent, RestrictionAddComponent, RestrictionListComponent],
     });
 
     fixture = TestBed.createComponent(PermissionComponent);
@@ -107,10 +115,18 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       parent: 'All',
       selected: false,
     } as Environment);
-    expect(component.groupedEnvironments['Dev']).toContain(
-      { id: 1, name: 'U', parent: 'Dev', selected: false } as Environment,
-      { id: 2, name: 'V', parent: 'Dev', selected: false } as Environment,
-    );
+    expect(component.groupedEnvironments['Dev']).toContain({
+      id: 1,
+      name: 'U',
+      parent: 'Dev',
+      selected: false,
+    } as Environment);
+    expect(component.groupedEnvironments['Dev']).toContain({
+      id: 2,
+      name: 'V',
+      parent: 'Dev',
+      selected: false,
+    } as Environment);
     expect(component.groupedEnvironments['Test']).toContain({
       id: 3,
       name: 'T',
@@ -384,7 +400,7 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
   let environmentService: EnvironmentService;
   let resourceService: ResourceService;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();
 
@@ -395,8 +411,11 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule,
         NgbModule,
+        PermissionComponent,
+        RestrictionEditComponent,
+        RestrictionAddComponent,
+        RestrictionListComponent,
       ],
       providers: [
         EnvironmentService,
@@ -405,7 +424,6 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      declarations: [PermissionComponent, RestrictionEditComponent, RestrictionAddComponent, RestrictionListComponent],
     });
     fixture = TestBed.createComponent(PermissionComponent);
     component = fixture.componentInstance;
@@ -452,10 +470,18 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
       parent: 'All',
       selected: false,
     } as Environment);
-    expect(component.groupedEnvironments['Dev']).toContain(
-      { id: 1, name: 'U', parent: 'Dev', selected: false } as Environment,
-      { id: 2, name: 'V', parent: 'Dev', selected: false } as Environment,
-    );
+    expect(component.groupedEnvironments['Dev']).toContain({
+      id: 1,
+      name: 'U',
+      parent: 'Dev',
+      selected: false,
+    } as Environment);
+    expect(component.groupedEnvironments['Dev']).toContain({
+      id: 2,
+      name: 'V',
+      parent: 'Dev',
+      selected: false,
+    } as Environment);
     expect(component.groupedEnvironments['Test']).toContain({
       id: 3,
       name: 'T',
@@ -473,7 +499,7 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
   let environmentService: EnvironmentService;
   let resourceService: ResourceService;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();
 
@@ -484,8 +510,11 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule,
         NgbModule,
+        PermissionComponent,
+        RestrictionEditComponent,
+        RestrictionAddComponent,
+        RestrictionListComponent,
       ],
       providers: [
         EnvironmentService,
@@ -494,7 +523,6 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      declarations: [PermissionComponent, RestrictionEditComponent, RestrictionAddComponent, RestrictionListComponent],
     });
     fixture = TestBed.createComponent(PermissionComponent);
     component = fixture.componentInstance;

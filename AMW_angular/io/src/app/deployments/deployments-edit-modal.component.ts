@@ -2,10 +2,15 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
+import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-picker.component';
+import { NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'amw-deployments-edit-modal',
   templateUrl: './deployments-edit-modal.component.html',
+  standalone: true,
+  imports: [FormsModule, NgFor, NgIf, DateTimePickerComponent],
 })
 export class DeploymentsEditModalComponent {
   @Input() deployments: Deployment[] = [];
@@ -50,7 +55,7 @@ export class DeploymentsEditModalComponent {
         break;
     }
     this.clear();
-    this.activeModal.close('Close click')
+    this.activeModal.close('Close click');
   }
 
   private clear() {

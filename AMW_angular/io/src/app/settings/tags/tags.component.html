@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<div class="container">
   <h1>Tags</h1>
   <div class="row mt-2 py-4">
     <div class="col-6 ms-auto">
@@ -11,7 +11,7 @@
           placeholder="Enter tag"
           (keyup.enter)="addTag()"
         />
-        <button class="btn btn-primary" (click)="addTag()">Add</button>
+        <button class="btn btn-primary" (click)="addTag()" [attr.data-cy]="'button-add'">Add</button>
       </div>
     </div>
   </div>
@@ -20,7 +20,7 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>Delete</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -28,7 +28,9 @@
       <tr>
         <td>{{ tag.name }}</td>
         <td>
-          <button class="btn" (click)="deleteTag(tag.id)"><i class="bi bi-trash"></i></button>
+          <button class="btn" (click)="deleteTag(tag.id)" [attr.data-cy]="'delete-' + tag.name">
+            <i class="bi bi-trash"></i>
+          </button>
         </td>
       </tr>
       }

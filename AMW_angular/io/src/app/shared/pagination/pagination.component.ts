@@ -1,8 +1,12 @@
 import { Component, Input, EventEmitter, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'amw-pagination',
-  templateUrl: './pagination.component.html'
+  templateUrl: './pagination.component.html',
+  standalone: true,
+  imports: [NgIf, NgFor, FormsModule],
 })
 export class PaginationComponent {
   @Input() currentPage: number;
@@ -19,8 +23,7 @@ export class PaginationComponent {
   pages(): number[] {
     if (this.lastPage > 1) {
       const itemsBefore: number = Math.floor(this.paginatorItems / 2);
-      const start: number =
-        this.currentPage > itemsBefore ? this.currentPage - itemsBefore : 1;
+      const start: number = this.currentPage > itemsBefore ? this.currentPage - itemsBefore : 1;
       const end: number = start + this.paginatorItems - 1;
       return this.range(start, end < this.lastPage ? end : this.lastPage);
     }

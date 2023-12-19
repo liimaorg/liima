@@ -1,15 +1,17 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Restriction } from './restriction';
 import * as _ from 'lodash';
-import {Resource} from "../../resource/resource";
+import { Resource } from '../../resource/resource';
+import { IconComponent } from '../../shared/icon/icon.component';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'amw-restriction-list',
-  templateUrl: './restriction-list.component.html'
+  templateUrl: './restriction-list.component.html',
+  standalone: true,
+  imports: [NgIf, NgFor, IconComponent],
 })
-
 export class RestrictionListComponent {
-
   @Input() delegationMode: boolean;
   @Input() restrictions: Restriction[] = [];
   @Input() resourceGroups: Resource[] = [];
@@ -26,7 +28,7 @@ export class RestrictionListComponent {
 
   getGroupName(id: number): string {
     if (id) {
-      const resource = _.find(this.resourceGroups, {id});
+      const resource = _.find(this.resourceGroups, { id });
       if (resource) {
         return resource['name'];
       }

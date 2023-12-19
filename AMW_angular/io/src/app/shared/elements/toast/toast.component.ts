@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { NgIf, NgClass } from '@angular/common';
 
 type SuccessOrError = 'success' | 'error';
 @Component({
@@ -26,6 +27,8 @@ type SuccessOrError = 'success' | 'error';
     </div>
   `,
   styleUrls: ['./toast.component.scss'],
+  standalone: true,
+  imports: [NgIf, NgClass],
 })
 export class ToastComponent {
   @Input() message = '';

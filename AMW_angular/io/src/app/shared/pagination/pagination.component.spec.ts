@@ -5,7 +5,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { PaginationComponent } from './pagination.component';
 
 @Component({
-  template: ''
+  template: '',
+  standalone: true,
+  imports: [CommonModule],
 })
 class DummyComponent {}
 
@@ -15,13 +17,11 @@ describe('PaginationComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         CommonModule,
-        RouterTestingModule.withRoutes([
-          { path: 'deployments', component: DummyComponent }
-        ])
+        RouterTestingModule.withRoutes([{ path: 'deployments', component: DummyComponent }]),
+        DummyComponent,
       ],
       providers: [PaginationComponent],
-      declarations: [DummyComponent]
-    })
+    }),
   );
 
   it('should return no page numbers if there is just one page', inject(
@@ -36,7 +36,7 @@ describe('PaginationComponent', () => {
 
       // then
       expect(pages).toBeUndefined();
-    }
+    },
   ));
 
   it('should return two page numbers if last page is 2', inject(
@@ -52,25 +52,22 @@ describe('PaginationComponent', () => {
       // then
       expect(pages.length).toEqual(2);
       expect(pages).toEqual([1, 2]);
-    }
+    },
   ));
 
-  it('should not return the right pages', inject(
-    [PaginationComponent],
-    (paginationComponent: PaginationComponent) => {
-      // given
-      paginationComponent.currentPage = 5;
-      paginationComponent.paginatorItems = 5;
-      paginationComponent.lastPage = paginationComponent.paginatorItems + 10;
+  it('should not return the right pages', inject([PaginationComponent], (paginationComponent: PaginationComponent) => {
+    // given
+    paginationComponent.currentPage = 5;
+    paginationComponent.paginatorItems = 5;
+    paginationComponent.lastPage = paginationComponent.paginatorItems + 10;
 
-      // when
-      const pages = paginationComponent.pages();
+    // when
+    const pages = paginationComponent.pages();
 
-      // then
-      expect(pages.length).toEqual(paginationComponent.paginatorItems);
-      expect(pages).toEqual([3, 4, 5, 6, 7]);
-    }
-  ));
+    // then
+    expect(pages.length).toEqual(paginationComponent.paginatorItems);
+    expect(pages).toEqual([3, 4, 5, 6, 7]);
+  }));
 
   it('should emit the right offset on toPage', inject(
     [PaginationComponent],
@@ -85,7 +82,7 @@ describe('PaginationComponent', () => {
 
       // then
       expect(paginationComponent.doSetOffset.emit).toHaveBeenCalledWith(10);
-    }
+    },
   ));
 
   it('should emit the right results offset when navigating to first page', inject(
@@ -101,7 +98,7 @@ describe('PaginationComponent', () => {
 
       // then
       expect(paginationComponent.doSetOffset.emit).toHaveBeenCalledWith(0);
-    }
+    },
   ));
 
   it('should emit the right results offset when navigating to second page', inject(
@@ -117,7 +114,7 @@ describe('PaginationComponent', () => {
 
       // then
       expect(paginationComponent.doSetOffset.emit).toHaveBeenCalledWith(10);
-    }
+    },
   ));
 
   it('should emit the right results offset depending on maxResults when navigating to second page', inject(
@@ -134,7 +131,7 @@ describe('PaginationComponent', () => {
 
       // then
       expect(paginationComponent.doSetOffset.emit).toHaveBeenCalledWith(50);
-    }
+    },
   ));
 
   it('should emit the right results offset when navigating to last page', inject(
@@ -150,6 +147,6 @@ describe('PaginationComponent', () => {
 
       // then
       expect(paginationComponent.doSetOffset.emit).toHaveBeenCalledWith(90);
-    }
+    },
   ));
 });

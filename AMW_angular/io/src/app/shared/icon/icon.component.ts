@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges} from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'app-icon',
@@ -6,6 +6,7 @@ import {Component, Input, OnChanges} from '@angular/core';
     <use [attr.xlink:href]="iconPath" />
   </svg>`,
   styles: [],
+  standalone: true,
 })
 export class IconComponent implements OnChanges {
   @Input()

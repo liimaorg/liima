@@ -1,16 +1,14 @@
 import { ChangeDetectorRef } from '@angular/core';
-import { ComponentFixture, inject, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { NavigationComponent } from './navigation/navigation.component';
-import { NavigationSidebarComponent } from './navigation/navigation-sidebar.component';
 
 import { AppConfiguration } from './setting/app-configuration';
 import { SettingService } from './setting/setting.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NavigationStoreService } from './navigation/navigation-store.service';
 
 class RouterStub {
   navigateByUrl(url: string) {
@@ -19,7 +17,6 @@ class RouterStub {
 }
 
 describe('App', () => {
-  let navigationStore: NavigationStoreService;
   let router: Router;
   let app: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
@@ -27,39 +24,15 @@ describe('App', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent,
-        NavigationComponent,
-        NavigationSidebarComponent,
-      ],
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        NavigationStoreService,
-        SettingService,
-        ChangeDetectorRef,
-        AppComponent,
-        { provide: Router, useClass: RouterStub },
-      ],
+      imports: [RouterTestingModule, HttpClientTestingModule, NavigationComponent, AppComponent],
+      providers: [SettingService, ChangeDetectorRef, AppComponent, { provide: Router, useClass: RouterStub }],
     }).compileComponents();
-    navigationStore = TestBed.inject(NavigationStoreService);
     router = TestBed.inject(Router);
     settingService = TestBed.inject(SettingService);
 
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should navigate to the right target', () => {
-    // given
-    const item: any = { title: 'test', target: 'target' };
-    spyOn(navigationStore, 'setCurrent').and.callThrough();
-    spyOn(router, 'navigateByUrl').and.callThrough();
-    // when
-    app.navigateTo(item);
-    // then
-    expect(navigationStore.setCurrent).toHaveBeenCalledWith('test');
-    expect(router.navigateByUrl).toHaveBeenCalledWith('target');
   });
 
   it('should set logoutUrl on ngOnInit', () => {

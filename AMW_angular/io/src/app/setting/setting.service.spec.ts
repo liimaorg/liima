@@ -1,9 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { SettingService } from './setting.service';
-import {
-  HttpClientTestingModule,
-  HttpTestingController
-} from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClient } from '@angular/common/http';
 
 describe('SettingService', () => {
@@ -14,7 +11,7 @@ describe('SettingService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [SettingService]
+      providers: [SettingService],
     });
 
     httpTestingController = TestBed.inject(HttpTestingController);
@@ -34,13 +31,13 @@ describe('SettingService', () => {
     const settingsResponse = {
       key: {
         value: 'amw.logsPath',
-        env: 'AMW_LOGSPATH'
+        env: 'AMW_LOGSPATH',
       },
       value: '/tmp/amw/logs',
-      defaultValue: null
+      defaultValue: null,
     };
 
-    settingService.getAllAppSettings().subscribe(settingRes => {
+    settingService.getAllAppSettings().subscribe((settingRes) => {
       expect(settingRes).toEqual([settingsResponse]);
     });
 

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { flatMap, catchError } from 'rxjs/operators';
+import { mergeMap, Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Permission } from './permission';
 import { Restriction } from './restriction';
 import { RestrictionsCreation } from './restrictions-creation';
 import { BaseService } from 'src/app/base/base.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class PermissionService extends BaseService {
   constructor(private http: HttpClient) {
     super();
@@ -85,7 +85,7 @@ export class PermissionService extends BaseService {
         observe: 'response',
       })
       .pipe(
-        flatMap((res: HttpResponse<Restriction>) => {
+        mergeMap((res: HttpResponse<Restriction>) => {
           return this.http
             .get<Restriction>(this.getBaseUrl() + res.headers.get('Location'))
             .pipe(catchError(this.handleError));

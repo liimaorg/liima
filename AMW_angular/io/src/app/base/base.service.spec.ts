@@ -15,12 +15,12 @@ describe('BaseService', () => {
   });
 
   it('should return default headers for get requests', () => {
-    let headers: HttpHeaders = baseService.getHeaders();
+    const headers: HttpHeaders = baseService.getHeaders();
     expect(headers.get('Accept')).toBe('application/json');
   });
 
   it('should return default headers for post requests', () => {
-    let headers: HttpHeaders = baseService.postHeaders();
+    const headers: HttpHeaders = baseService.postHeaders();
     expect(headers.get('Content-Type')).toBe('application/json');
     expect(headers.get('Accept')).toBe('application/json');
   });

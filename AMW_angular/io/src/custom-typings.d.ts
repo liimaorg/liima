@@ -47,9 +47,9 @@ import * as _ from 'lodash'
 declare module '*';
 
 // Extra variables that live on Global that will be replaced by webpack DefinePlugin
-declare var ENV: string;
-declare var HMR: boolean;
-declare var System: SystemJS;
+declare let ENV: string;
+declare let HMR: boolean;
+declare let System: SystemJS;
 
 interface SystemJS {
   import: (path?: string) => Promise<any>;
@@ -70,22 +70,15 @@ type FactoryEs6PromiseLoader = () => Es6PromiseLoader;
 type FactoryPromise = () => Promise<any>;
 
 type AsyncRoutes = {
-  [component: string]: Es6PromiseLoader |
-                               Function |
-                FactoryEs6PromiseLoader |
-                         FactoryPromise
+  [component: string]: Es6PromiseLoader | Function | FactoryEs6PromiseLoader | FactoryPromise;
 };
 
-
-type IdleCallbacks = Es6PromiseLoader |
-                             Function |
-              FactoryEs6PromiseLoader |
-                       FactoryPromise ;
+type IdleCallbacks = Es6PromiseLoader | Function | FactoryEs6PromiseLoader | FactoryPromise;
 
 interface WebpackModule {
   hot: {
-    data?: any,
-    idle: any,
+    data?: any;
+    idle: any;
     accept(dependencies?: string | string[], callback?: (updatedDependencies?: any) => void): void;
     decline(deps?: any | string | string[]): void;
     dispose(callback?: (data?: any) => void): void;
@@ -98,33 +91,30 @@ interface WebpackModule {
   };
 }
 
-
 interface WebpackRequire {
-    (id: string): any;
-    (paths: string[], callback: (...modules: any[]) => void): void;
-    ensure(ids: string[], callback: (req: WebpackRequire) => void, chunkName?: string): void;
-    context(directory: string, useSubDirectories?: boolean, regExp?: RegExp): WebpackContext;
+  (id: string): any;
+  (paths: string[], callback: (...modules: any[]) => void): void;
+  ensure(ids: string[], callback: (req: WebpackRequire) => void, chunkName?: string): void;
+  context(directory: string, useSubDirectories?: boolean, regExp?: RegExp): WebpackContext;
 }
 
 interface WebpackContext extends WebpackRequire {
-    keys(): string[];
+  keys(): string[];
 }
 
 interface ErrorStackTraceLimit {
   stackTraceLimit: number;
 }
 
-
 // Extend typings
 interface NodeRequire extends WebpackRequire {}
 interface ErrorConstructor extends ErrorStackTraceLimit {}
-interface NodeRequireFunction extends Es6PromiseLoader  {}
+interface NodeRequireFunction extends Es6PromiseLoader {}
 interface NodeModule extends WebpackModule {}
-interface Global extends GlobalEnvironment  {}
-
+interface Global extends GlobalEnvironment {}
 
 // Custom jQuery Typings
 interface JQuery {
   modal(...any): any;
-  datetimepicker(...any): any; 
+  datetimepicker(...any): any;
 }

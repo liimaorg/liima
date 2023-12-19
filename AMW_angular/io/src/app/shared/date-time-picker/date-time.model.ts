@@ -40,8 +40,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
     let date: Date;
     if (typeof format === 'undefined') {
       date = datefns.parse(dateString, DATE_FORMAT, new Date());
-    }
-    else {
+    } else {
       date = datefns.parse(dateString, format, new Date());
     }
     return this.fromDate(date);
@@ -53,7 +52,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
   }
 
   private thisToDate(): Date {
-    return new Date( this.year, this.month - 1, this.day, this.hour, this.minute, this.second);
+    return new Date(this.year, this.month - 1, this.day, this.hour, this.minute, this.second);
   }
 
   public toString(format?: string): string {

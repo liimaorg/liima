@@ -2,11 +2,7 @@
   <ng-container *ngIf="pages()">
     <nav>
       <ul class="pagination pointer m-1">
-        <li
-          class="page-item {{ currentPage < 2 ? 'disabled' : '' }}"
-          aria-label="first"
-          (click)="toPage(1)"
-        >
+        <li class="page-item {{ currentPage < 2 ? 'disabled' : '' }}" aria-label="first" (click)="toPage(1)">
           <a class="page-link" aria-hidden="true" href="#">&laquo;</a>
         </li>
         <li
@@ -16,10 +12,7 @@
         >
           <a class="page-link" aria-hidden="true" href="#">&lt;</a>
         </li>
-        <li
-          *ngFor="let page of pages()"
-          class="page-item {{ currentPage === page ? 'active' : '' }}"
-        >
+        <li *ngFor="let page of pages()" class="page-item {{ currentPage === page ? 'active' : '' }}">
           <a class="page-link" (click)="toPage(page)"
             >{{ page }}<span *ngIf="currentPage === page" class="visually-hidden">(current)</span></a
           >
@@ -36,19 +29,13 @@
           aria-label="last"
           (click)="toPage(lastPage)"
         >
-          <a class="page-link" href="#"
-            ><span aria-hidden="true">&raquo;</span></a
-          >
+          <a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a>
         </li>
       </ul>
     </nav>
   </ng-container>
   <div class="btn-group justify-content-end" role="group">
-    <select
-      class="form-select m-1"
-      [(ngModel)]="maxResults"
-      (change)="setMax()"
-    >
+    <select class="form-select m-1" [(ngModel)]="maxResults" (change)="setMax()">
       <option>10</option>
       <option>20</option>
       <option>50</option>

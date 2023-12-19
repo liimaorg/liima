@@ -31,10 +31,7 @@
                 "output": "/"
               }
             ],
-            "styles": [
-              "src/styles.scss",
-              "./node_modules/bootstrap-icons/font/bootstrap-icons.scss"
-            ],
+            "styles": ["src/styles.scss", "./node_modules/bootstrap-icons/font/bootstrap-icons.scss"],
             "scripts": [
               "node_modules/codemirror/lib/codemirror.js",
               "node_modules/codemirror/addon/mode/simple.js",
@@ -105,16 +102,20 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/styles.scss"
-            ]
+            "styles": ["node_modules/bootstrap/dist/css/bootstrap.min.css", "src/styles.scss"]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "schematicCollections": ["@angular-eslint/schematics"]
   }
 }

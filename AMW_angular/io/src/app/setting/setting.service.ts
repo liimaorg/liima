@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { AppConfiguration } from './app-configuration';
 import { BaseService } from '../base/base.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class SettingService extends BaseService {
   constructor(private http: HttpClient) {
     super();
@@ -14,7 +14,7 @@ export class SettingService extends BaseService {
   getAllAppSettings(): Observable<AppConfiguration[]> {
     return this.http
       .get<AppConfiguration[]>(`${this.getBaseUrl()}/settings`, {
-        headers: this.getHeaders()
+        headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
   }

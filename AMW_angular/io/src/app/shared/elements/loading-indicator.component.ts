@@ -1,12 +1,10 @@
 import { Component, Input } from '@angular/core';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-loading-indicator',
   template: `
-    <div
-      *ngIf="isLoading"
-      class="d-flex justify-content-center align-items-center overlay"
-    >
+    <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center overlay">
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
@@ -27,6 +25,8 @@ import { Component, Input } from '@angular/core';
       }
     `,
   ],
+  standalone: true,
+  imports: [NgIf],
 })
 export class LoadingIndicatorComponent {
   @Input()

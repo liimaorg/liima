@@ -7,7 +7,6 @@ import { of, Subject } from 'rxjs';
 import { ResourceService } from '../resource/resource.service';
 import { DeploymentsComponent } from './deployments.component';
 import { DeploymentService } from '../deployment/deployment.service';
-import { SharedModule } from '../shared/shared.module';
 import { DeploymentsListComponent } from './deployments-list.component';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DeploymentFilterType } from '../deployment/deployment-filter-type';
@@ -15,15 +14,14 @@ import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { Deployment } from '../deployment/deployment';
 import { PaginationComponent } from '../shared/pagination/pagination.component';
-import { NavigationStoreService } from '../navigation/navigation-store.service';
 
-declare var $: any;
+declare let $: any;
 
 describe('DeploymentsComponent (with query params)', () => {
   let component: DeploymentsComponent;
   let fixture: ComponentFixture<DeploymentsComponent>;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
 
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();
@@ -39,20 +37,12 @@ describe('DeploymentsComponent (with query params)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule,
-      ],
-      providers: [
-        DeploymentService,
-        ResourceService,
-        NavigationStoreService,
-        { provide: ActivatedRoute, useValue: mockRoute },
-      ],
-      declarations: [
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
         DeploymentsEditModalComponent,
       ],
+      providers: [DeploymentService, ResourceService, { provide: ActivatedRoute, useValue: mockRoute }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);
@@ -66,12 +56,8 @@ describe('DeploymentsComponent (with query params)', () => {
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
-      of(deploymentFilters)
-    );
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(
-      of([])
-    );
+    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
+    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of([]));
     spyOn(deploymentService, 'canRequestDeployments').and.returnValue(of(true));
 
     // when
@@ -94,12 +80,8 @@ describe('DeploymentsComponent (with query params)', () => {
       { name: 'eq', displayName: 'is' },
       { name: 'neq', displayName: 'is not' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
-      of(deploymentFilters)
-    );
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(
-      of(comparatorOptions)
-    );
+    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
+    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
     spyOn(deploymentService, 'canRequestDeployments').and.returnValue(of(true));
 
     // when
@@ -119,21 +101,15 @@ describe('DeploymentsComponent (with query params)', () => {
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
-      of(deploymentFilters)
-    );
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(
-      of([])
-    );
-    spyOn(deploymentService, 'getFilterOptionValues').and.callFake(
-      (param: string) => {
-        const optionValues: { [key: string]: string[] } = {
-          Application: ['app1', 'app2'],
-          'Confirmed on': [],
-        };
-        return of(optionValues[param]);
-      }
-    );
+    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
+    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of([]));
+    spyOn(deploymentService, 'getFilterOptionValues').and.callFake((param: string) => {
+      const optionValues: { [key: string]: string[] } = {
+        Application: ['app1', 'app2'],
+        'Confirmed on': [],
+      };
+      return of(optionValues[param]);
+    });
     spyOn(deploymentService, 'canRequestDeployments').and.returnValue(of(true));
 
     // when
@@ -151,16 +127,10 @@ describe('DeploymentsComponent (with query params)', () => {
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
-      of(deploymentFilters)
-    );
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(
-      of([])
-    );
+    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
+    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of([]));
     spyOn(deploymentService, 'canRequestDeployments').and.returnValue(of(true));
-    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(
-      of({ deployments: [], total: 0 })
-    );
+    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({ deployments: [], total: 0 }));
 
     // when
     component.ngOnInit();
@@ -177,22 +147,17 @@ describe('DeploymentsComponent (with query params)', () => {
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
     ];
-    var buffer = new ArrayBuffer(8);
-    spyOn(
-      deploymentService,
-      'getFilteredDeploymentsForCsvExport'
-    ).and.returnValue(of(buffer));
+    const buffer = new ArrayBuffer(8);
+    spyOn(deploymentService, 'getFilteredDeploymentsForCsvExport').and.returnValue(of(buffer));
 
     // when
     component.exportCSV();
 
     // then
-    expect(
-      deploymentService.getFilteredDeploymentsForCsvExport
-    ).toHaveBeenCalledWith(
+    expect(deploymentService.getFilteredDeploymentsForCsvExport).toHaveBeenCalledWith(
       JSON.stringify(component.filtersForBackend),
       'd.deploymentDate',
-      'DESC'
+      'DESC',
     );
   });
 });
@@ -201,7 +166,7 @@ describe('DeploymentsComponent (with illegal query params)', () => {
   let component: DeploymentsComponent;
   let fixture: ComponentFixture<DeploymentsComponent>;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
 
   mockRoute.params = new Subject<any>();
   mockRoute.queryParams = new Subject<any>();
@@ -217,20 +182,12 @@ describe('DeploymentsComponent (with illegal query params)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule,
-      ],
-      providers: [
-        DeploymentService,
-        ResourceService,
-        NavigationStoreService,
-        { provide: ActivatedRoute, useValue: mockRoute },
-      ],
-      declarations: [
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
         DeploymentsEditModalComponent,
       ],
+      providers: [DeploymentService, ResourceService, { provide: ActivatedRoute, useValue: mockRoute }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);
@@ -244,12 +201,8 @@ describe('DeploymentsComponent (with illegal query params)', () => {
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
-      of(deploymentFilters)
-    );
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(
-      of([])
-    );
+    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
+    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of([]));
 
     // when
     component.ngOnInit();
@@ -267,7 +220,7 @@ describe('DeploymentsComponent (without query params)', () => {
   let component: DeploymentsComponent;
   let fixture: ComponentFixture<DeploymentsComponent>;
 
-  let mockRoute: any = { snapshot: {} };
+  const mockRoute: any = { snapshot: {} };
   mockRoute.queryParams = new Subject<any>();
 
   const filter: string = JSON.stringify([
@@ -282,20 +235,12 @@ describe('DeploymentsComponent (without query params)', () => {
         FormsModule,
         HttpClientTestingModule,
         RouterTestingModule.withRoutes([]),
-        SharedModule,
-      ],
-      providers: [
-        DeploymentService,
-        ResourceService,
-        NavigationStoreService,
-        { provide: ActivatedRoute, useValue: mockRoute },
-      ],
-      declarations: [
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
         DeploymentsEditModalComponent,
       ],
+      providers: [DeploymentService, ResourceService, { provide: ActivatedRoute, useValue: mockRoute }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);
@@ -423,12 +368,8 @@ describe('DeploymentsComponent (without query params)', () => {
       { name: 'eq', displayName: 'is' },
       { name: 'neq', displayName: 'is not' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
-      of(deploymentFilters)
-    );
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(
-      of(comparatorOptions)
-    );
+    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
+    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
 
     // when
     component.removeFilter(component.filters[0]);
@@ -525,15 +466,9 @@ describe('DeploymentsComponent (without query params)', () => {
       { name: 'eq', displayName: 'is' },
       { name: 'neq', displayName: 'is not' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
-      of(deploymentFilters)
-    );
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(
-      of(comparatorOptions)
-    );
-    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(
-      of({ deployments: [], total: 0 })
-    );
+    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
+    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
+    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({ deployments: [], total: 0 }));
 
     // given
     component.filters = [
@@ -555,15 +490,13 @@ describe('DeploymentsComponent (without query params)', () => {
     component.applyFilters();
 
     // then
-    expect(sessionStorage.getItem('deploymentFilters')).toEqual(
-      JSON.stringify(expectedFilters)
-    );
+    expect(sessionStorage.getItem('deploymentFilters')).toEqual(JSON.stringify(expectedFilters));
     expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(
       JSON.stringify(expectedFilters),
       'd.deploymentDate',
       'DESC',
       0,
-      10
+      10,
     );
   });
 
@@ -586,15 +519,9 @@ describe('DeploymentsComponent (without query params)', () => {
       { name: 'eq', displayName: 'is' },
       { name: 'neq', displayName: 'is not' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
-      of(deploymentFilters)
-    );
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(
-      of(comparatorOptions)
-    );
-    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(
-      of({ deployments: [], total: 0 })
-    );
+    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
+    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
+    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({ deployments: [], total: 0 }));
 
     component.filters = [
       {
@@ -628,24 +555,19 @@ describe('DeploymentsComponent (without query params)', () => {
 
     // then
     expect(component.filters.length).toEqual(3);
-    expect(sessionStorage.getItem('deploymentFilters')).toEqual(
-      JSON.stringify(expectedFilters)
-    );
+    expect(sessionStorage.getItem('deploymentFilters')).toEqual(JSON.stringify(expectedFilters));
     expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(
       JSON.stringify(expectedFilters),
       'd.deploymentDate',
       'DESC',
       0,
-      10
+      10,
     );
   });
 
   it('should clear filters and session storage', () => {
     // given
-    sessionStorage.setItem(
-      'deploymentFilters',
-      "{name: 'Confirmed', comp: 'eq', val: 'true'}"
-    );
+    sessionStorage.setItem('deploymentFilters', "{name: 'Confirmed', comp: 'eq', val: 'true'}");
 
     // when
     component.clearFilters();
@@ -683,15 +605,9 @@ describe('DeploymentsComponent (without query params)', () => {
       { name: 'eq', displayName: 'is' },
       { name: 'neq', displayName: 'is not' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(
-      of(deploymentFilters)
-    );
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(
-      of(comparatorOptions)
-    );
-    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(
-      of({ deployments: [], total: 0 })
-    );
+    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
+    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
+    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({ deployments: [], total: 0 }));
 
     // when
     component.sortDeploymentsBy('d.trackingId');
@@ -702,7 +618,7 @@ describe('DeploymentsComponent (without query params)', () => {
       'd.trackingId',
       'DESC',
       0,
-      10
+      10,
     );
 
     // when
@@ -714,7 +630,7 @@ describe('DeploymentsComponent (without query params)', () => {
       'd.trackingId',
       'ASC',
       0,
-      10
+      10,
     );
   });
 
@@ -743,12 +659,8 @@ describe('DeploymentsComponent (without query params)', () => {
     component.confirmDeployment(deployment);
 
     // then
-    expect(deploymentService.confirmDeployment).toHaveBeenCalledWith(
-      deployment
-    );
-    expect(deploymentService.getWithActions).toHaveBeenCalledWith(
-      deployment.id
-    );
+    expect(deploymentService.confirmDeployment).toHaveBeenCalledWith(deployment);
+    expect(deploymentService.getWithActions).toHaveBeenCalledWith(deployment.id);
   });
 
   it('should reject a deployment and reload it', () => {
@@ -761,12 +673,8 @@ describe('DeploymentsComponent (without query params)', () => {
     component.rejectDeployment(deployment);
 
     // then
-    expect(deploymentService.rejectDeployment).toHaveBeenCalledWith(
-      deployment.id
-    );
-    expect(deploymentService.getWithActions).toHaveBeenCalledWith(
-      deployment.id
-    );
+    expect(deploymentService.rejectDeployment).toHaveBeenCalledWith(deployment.id);
+    expect(deploymentService.getWithActions).toHaveBeenCalledWith(deployment.id);
   });
 
   it('should cancel a deployment and reload it', () => {
@@ -779,12 +687,8 @@ describe('DeploymentsComponent (without query params)', () => {
     component.cancelDeployment(deployment);
 
     // then
-    expect(deploymentService.cancelDeployment).toHaveBeenCalledWith(
-      deployment.id
-    );
-    expect(deploymentService.getWithActions).toHaveBeenCalledWith(
-      deployment.id
-    );
+    expect(deploymentService.cancelDeployment).toHaveBeenCalledWith(deployment.id);
+    expect(deploymentService.getWithActions).toHaveBeenCalledWith(deployment.id);
   });
 
   it('should invoke the right deploymentService methods with right arguments on changeDeploymentDate', () => {
@@ -806,15 +710,8 @@ describe('DeploymentsComponent (without query params)', () => {
     component.changeDeploymentDate(deployment);
 
     // then
-    expect(deploymentService.setDeploymentDate).toHaveBeenCalledWith(
-      deployment.id,
-      deployment.deploymentDate
-    );
-    expect(deploymentService.getWithActions).toHaveBeenCalledWith(
-      deployment.id
-    );
-    expect(component.deployments[1].deploymentDate).toEqual(
-      deployment.deploymentDate
-    );
+    expect(deploymentService.setDeploymentDate).toHaveBeenCalledWith(deployment.id, deployment.deploymentDate);
+    expect(deploymentService.getWithActions).toHaveBeenCalledWith(deployment.id);
+    expect(component.deployments[1].deploymentDate).toEqual(deployment.deploymentDate);
   });
 });

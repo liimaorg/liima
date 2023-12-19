@@ -2,9 +2,7 @@
   <div class="card-header">{{ getTitle() }}</div>
   <div class="card-body">
     <div class="form-group row" *ngIf="permissions.length > 0">
-      <label for="selectPermission" class="col-sm-3 fw-bold text-end"
-        >Permission</label
-      >
+      <label for="selectPermission" class="col-sm-3 fw-bold text-end">Permission</label>
       <div class="col-sm-9">
         <select
           id="selectPermission"
@@ -12,23 +10,17 @@
           [(ngModel)]="restriction.permission.name"
           (change)="defineAvailableOptions()"
         >
-          <option
-            [ngValue]="permission.name"
-            *ngFor="let permission of permissions"
-            >{{ permission.name }}
+          <option [ngValue]="permission.name" *ngFor="let permission of permissions">
+            {{ permission.name }}
             <ng-container *ngIf="permission.old"> (GLOBAL)</ng-container>
           </option>
         </select>
       </div>
     </div>
 
-    <ng-container
-      *ngIf="restriction.permission.name && !restriction.permission.old"
-    >
+    <ng-container *ngIf="restriction.permission.name && !restriction.permission.old">
       <div class="form-group row">
-        <label for="selectAction" class="col-sm-3 fw-bold text-end"
-          >Action</label
-        >
+        <label for="selectAction" class="col-sm-3 fw-bold text-end">Action</label>
         <div class="col-sm-9">
           <select
             id="selectAction"
@@ -37,11 +29,7 @@
             (change)="checkAvailableEnvironments()"
             [attr.disabled]="getAvailableActions().length === 1 ? '' : null"
           >
-            <option
-              [ngValue]="action"
-              *ngFor="let action of getAvailableActions()"
-              >{{ action }}</option
-            >
+            <option [ngValue]="action" *ngFor="let action of getAvailableActions()">{{ action }}</option>
           </select>
         </div>
       </div>
@@ -51,10 +39,7 @@
         <div class="col-sm-9">
           <ng-container *ngFor="let group of getEnvironmentGroups()">
             <span class="d-block">{{ group }}:</span>
-            <div
-              class="form-check form-check-inline"
-              *ngFor="let env of groupedEnvironments[group]"
-            >
+            <div class="form-check form-check-inline" *ngFor="let env of groupedEnvironments[group]">
               <label class="form-check-label"
                 ><input
                   class="form-check-input"
@@ -71,14 +56,9 @@
 
       <div
         class="form-group row"
-        *ngIf="
-          getAvailableResourceTypePermissions().length > 0 &&
-          isResourceTypePermissionAssignable()
-        "
+        *ngIf="getAvailableResourceTypePermissions().length > 0 && isResourceTypePermissionAssignable()"
       >
-        <label for="selectRTP" class="col-sm-3 fw-bold text-end"
-          >Resource Type Categories</label
-        >
+        <label for="selectRTP" class="col-sm-3 fw-bold text-end">Resource Type Categories</label>
         <div class="col-sm-9">
           <select
             id="selectRTP"
@@ -86,26 +66,13 @@
             [(ngModel)]="restriction.resourceTypePermission"
             (change)="clearTypeAndGroup()"
           >
-            <option
-              [ngValue]="rtp"
-              *ngFor="let rtp of getAvailableResourceTypePermissions()"
-              >{{ rtp }}</option
-            >
+            <option [ngValue]="rtp" *ngFor="let rtp of getAvailableResourceTypePermissions()">{{ rtp }}</option>
           </select>
         </div>
       </div>
 
-      <div
-        class="form-group row"
-        *ngIf="
-          getAvailableResourceTypes().length > 0 && isResourceTypeAssignable()
-        "
-      >
-        <label
-          for="selectResourceType"
-          class="col-sm-3 fw-bold text-end"
-          >Resource Type</label
-        >
+      <div class="form-group row" *ngIf="getAvailableResourceTypes().length > 0 && isResourceTypeAssignable()">
+        <label for="selectResourceType" class="col-sm-3 fw-bold text-end">Resource Type</label>
         <div class="col-sm-9">
           <input
             id="selectResourceType"
@@ -116,26 +83,15 @@
             [(ngModel)]="restriction.resourceTypeName"
           />
           <datalist id="resTypeList">
-            <option
-              [ngValue]="resType.name"
-              *ngFor="let resType of getAvailableResourceTypes()"
-              >{{ resType.name }}</option
-            >
+            <option [ngValue]="resType.name" *ngFor="let resType of getAvailableResourceTypes()">
+              {{ resType.name }}
+            </option>
           </datalist>
         </div>
       </div>
 
-      <div
-        class="form-group row"
-        *ngIf="
-          getAvailableResourceGroups().length > 0 && isResourceGroupAssignable()
-        "
-      >
-        <label
-          for="selectResourceGroup"
-          class="col-sm-3 fw-bold text-end"
-          >Resource Group</label
-        >
+      <div class="form-group row" *ngIf="getAvailableResourceGroups().length > 0 && isResourceGroupAssignable()">
+        <label for="selectResourceGroup" class="col-sm-3 fw-bold text-end">Resource Group</label>
         <div class="col-sm-9">
           <ng-container *ngIf="getAvailableResourceGroups().length > 1">
             <input
@@ -147,11 +103,9 @@
               [(ngModel)]="resourceGroup.name"
             />
             <datalist id="resGroupList">
-              <option
-                [ngValue]="resGroup.name"
-                *ngFor="let resGroup of getAvailableResourceGroups()"
-                >{{ resGroup.name }}</option
-              >
+              <option [ngValue]="resGroup.name" *ngFor="let resGroup of getAvailableResourceGroups()">
+                {{ resGroup.name }}
+              </option>
             </datalist>
           </ng-container>
           <ng-container *ngIf="getAvailableResourceGroups().length === 1">
@@ -181,9 +135,7 @@
           >
             <app-icon icon="cloud-arrow-down"></app-icon> Save
           </button>
-          <button type="button" class="btn btn-light" (click)="cancel()">
-            Cancel
-          </button>
+          <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
         </div>
       </div>
     </ng-container>

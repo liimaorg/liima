@@ -19,10 +19,7 @@
         <tr *ngFor="let restriction of restrictions">
           <td>{{ restriction.permission.name }}</td>
           <td>
-            <app-icon
-              *ngIf="restriction.permission.old"
-              icon="check"
-            ></app-icon>
+            <app-icon *ngIf="restriction.permission.old" icon="check"></app-icon>
           </td>
           <td>{{ restriction.action }}</td>
           <td>{{ restriction.contextName }}</td>
@@ -31,16 +28,10 @@
           <td>{{ restriction.resourceTypePermission }}</td>
           <td>
             <ng-container *ngIf="!delegationMode">
-              <button
-                class="btn btn-sm btn-primary"
-                (click)="modifyRestriction(restriction)"
-              >
+              <button class="btn btn-sm btn-primary" (click)="modifyRestriction(restriction)">
                 <app-icon icon="pencil"></app-icon>
               </button>
-              <button
-                class="btn btn-sm btn-danger"
-                (click)="removeRestriction(restriction.id)"
-              >
+              <button class="btn btn-sm btn-danger" (click)="removeRestriction(restriction.id)">
                 <app-icon icon="trash"></app-icon>
               </button>
             </ng-container>

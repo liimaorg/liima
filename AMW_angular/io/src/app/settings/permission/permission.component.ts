@@ -10,11 +10,46 @@ import { Resource } from 'src/app/resource/resource';
 import { ResourceType } from '../../resource/resource-type';
 import { EnvironmentService } from '../../deployment/environment.service';
 import { ResourceService } from 'src/app/resource/resource.service';
-import { Location } from '@angular/common';
+import { Location, NgIf, NgFor } from '@angular/common';
+import { RestrictionListComponent } from './restriction-list.component';
+import { RestrictionAddComponent } from './restriction-add.component';
+import { RestrictionEditComponent } from './restriction-edit.component';
+import { IconComponent } from '../../shared/icon/icon.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { FormsModule } from '@angular/forms';
+import {
+  NgbNav,
+  NgbNavItem,
+  NgbNavItemRole,
+  NgbNavLinkButton,
+  NgbNavLinkBase,
+  NgbNavContent,
+  NgbNavOutlet,
+} from '@ng-bootstrap/ng-bootstrap';
+import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 
 @Component({
   selector: 'amw-permission',
   templateUrl: './permission.component.html',
+  standalone: true,
+  imports: [
+    LoadingIndicatorComponent,
+    NgbNav,
+    NgbNavItem,
+    NgbNavItemRole,
+    NgbNavLinkButton,
+    NgbNavLinkBase,
+    NgbNavContent,
+    FormsModule,
+    NgIf,
+    NgFor,
+    NgSelectModule,
+    NgbNavOutlet,
+    IconComponent,
+    RestrictionEditComponent,
+    RestrictionAddComponent,
+    RestrictionListComponent,
+  ],
 })
 export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
   // loaded only once
@@ -107,11 +142,13 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
   removeRestriction(id: number) {
     this.clearMessages();
     if (id) {
-      this.permissionService.removeRestriction(id).subscribe(
-        /* happy path */ (r) => '',
-        /* error path */ (e) => (this.errorMessage = e),
-        /* onComplete */ () => _.remove(this.assignedRestrictions, { id }),
-      );
+      this.permissionService
+        .removeRestriction(id)
+        .subscribe({
+          next: (r) => '',
+          error: (e) => (this.errorMessage = e),
+          complete: () => _.remove(this.assignedRestrictions, { id }),
+        });
     } else {
       this.restriction = null;
     }
@@ -138,10 +175,10 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.clearMessages();
     this.isLoading = true;
     if (this.restriction.id != null) {
-      this.permissionService.updateRestriction(this.restriction).subscribe(
-        /* happy path */ (r) => '',
-        /* error path */ (e) => (this.errorMessage = e),
-        /* onComplete */ () => {
+      this.permissionService.updateRestriction(this.restriction).subscribe({
+        next: (r) => '',
+        error: (e) => (this.errorMessage = e),
+        complete: () => {
           this.updatePermissions(this.restriction);
           this.updateNamesLists();
           this.restriction = null;
@@ -149,36 +186,36 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
           this.isLoading = false;
           this.successMessage = 'Restriction updated successfully';
         },
-      );
+      });
     } else {
-      this.permissionService.createRestriction(this.restriction, this.delegationMode).subscribe(
-        /* happy path */ (r) => (this.restriction = r),
-        /* error path */ (e) => (this.errorMessage = e),
-        /* onComplete */ () => {
+      this.permissionService.createRestriction(this.restriction, this.delegationMode).subscribe({
+        next: (r) => (this.restriction = r),
+        error: (e) => (this.errorMessage = e),
+        complete: () => {
           this.updatePermissions(this.restriction);
           this.updateNamesLists();
           this.restriction = null;
           this.isLoading = false;
           this.successMessage = 'Restriction created successfully';
         },
-      );
+      });
     }
   }
 
   createRestrictions(restrictionsCreation: RestrictionsCreation) {
     this.clearMessages();
     this.isLoading = true;
-    this.permissionService.createRestrictions(restrictionsCreation, this.delegationMode).subscribe(
-      /* happy path */ (r) => '',
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () => {
+    this.permissionService.createRestrictions(restrictionsCreation, this.delegationMode).subscribe({
+      next: (r) => '',
+      error: (e) => (this.errorMessage = e),
+      complete: () => {
         this.create = false;
         this.updateExistingNamesLists(restrictionsCreation);
         this.reloadAssignedRestrictions(restrictionsCreation);
         this.isLoading = false;
         this.successMessage = 'Restriction(s) created successfully';
       },
-    );
+    });
   }
 
   addRestriction() {
@@ -270,35 +307,39 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private getAllRoleNames() {
     this.isLoading = true;
-    this.permissionService.getAllRoleNames().subscribe(
-      /* happy path */ (r) => (this.roleNames = r),
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () => (this.isLoading = false),
-    );
+    this.permissionService
+      .getAllRoleNames()
+      .subscribe({
+        next: (r) => (this.roleNames = r),
+        error: (e) => (this.errorMessage = e),
+        complete: () => (this.isLoading = false),
+      });
   }
 
   private getAllUserNames() {
     this.isLoading = true;
-    this.permissionService.getAllUserRestrictionNames().subscribe(
-      /* happy path */ (r) => (this.userNames = r),
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () => (this.isLoading = false),
-    );
+    this.permissionService
+      .getAllUserRestrictionNames()
+      .subscribe({
+        next: (r) => (this.userNames = r),
+        error: (e) => (this.errorMessage = e),
+        complete: () => (this.isLoading = false),
+      });
   }
 
   private getAllPermissions() {
     this.isLoading = true;
-    this.permissionService.getAllPermissionEnumValues().subscribe(
-      /* happy path */ (r) =>
+    this.permissionService.getAllPermissionEnumValues().subscribe({
+      next: (r) =>
         (this.permissions = _.sortBy(r, function (s: Permission) {
           return s.name.replace(/[_]/, '');
         })),
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () => {
+      error: (e) => (this.errorMessage = e),
+      complete: () => {
         this.markGlobalPermissions(this.permissions);
         this.isLoading = false;
       },
-    );
+    });
   }
 
   private markGlobalPermissions(permissions: Permission[]) {
@@ -309,33 +350,37 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private getAllEnvironments() {
     this.isLoading = true;
-    this.environmentService.getAllIncludingGroups().subscribe(
-      /* happy path */ (r) => (this.environments = this.environments.concat(r)),
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () => this.extractEnvironmentGroups(),
-    );
+    this.environmentService
+      .getAllIncludingGroups()
+      .subscribe({
+        next: (r) => (this.environments = this.environments.concat(r)),
+        error: (e) => (this.errorMessage = e),
+        complete: () => this.extractEnvironmentGroups(),
+      });
   }
 
   private getAllAssignableUserNames() {
     this.isLoading = true;
-    this.permissionService.getAllUserRestrictionNames().subscribe(
-      /* happy path */ (r) => (this.userNames = _.pull(r, this.actingUserName)),
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () => (this.isLoading = false),
-    );
+    this.permissionService
+      .getAllUserRestrictionNames()
+      .subscribe({
+        next: (r) => (this.userNames = _.pull(r, this.actingUserName)),
+        error: (e) => (this.errorMessage = e),
+        complete: () => (this.isLoading = false),
+      });
   }
 
   private getAllAssignableRestrictions() {
     this.isLoading = true;
-    this.permissionService.getOwnUserAndRoleRestrictions().subscribe(
-      /* happy path */ (r) => (this.assignableRestrictions = r),
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () => {
+    this.permissionService.getOwnUserAndRoleRestrictions().subscribe({
+      next: (r) => (this.assignableRestrictions = r),
+      error: (e) => (this.errorMessage = e),
+      complete: () => {
         this.extractAllAssignablePermissions();
         this.markGlobalPermissions(this.assignablePermissions);
         this.isLoading = false;
       },
-    );
+    });
   }
 
   private extractAllAssignablePermissions() {
@@ -352,38 +397,46 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private getAllResourceGroups() {
     this.isLoading = true;
-    this.resourceService.getAllResourceGroups().subscribe(
-      /* happy path */ (r) => (this.resourceGroups = r),
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () => (this.isLoading = false),
-    );
+    this.resourceService
+      .getAllResourceGroups()
+      .subscribe({
+        next: (r) => (this.resourceGroups = r),
+        error: (e) => (this.errorMessage = e),
+        complete: () => (this.isLoading = false),
+      });
   }
 
   private getAllResourceTypes() {
     this.isLoading = true;
-    this.resourceService.getAllResourceTypes().subscribe(
-      /* happy path */ (r) => (this.resourceTypes = this.resourceTypes.concat(r)),
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () => (this.isLoading = false),
-    );
+    this.resourceService
+      .getAllResourceTypes()
+      .subscribe({
+        next: (r) => (this.resourceTypes = this.resourceTypes.concat(r)),
+        error: (e) => (this.errorMessage = e),
+        complete: () => (this.isLoading = false),
+      });
   }
 
   private getRoleWithRestrictions(roleName: string) {
     this.isLoading = true;
-    this.permissionService.getRoleWithRestrictions(roleName).subscribe(
-      /* happy path */ (r) => this.reorderRestrictions(r),
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () => (this.isLoading = false),
-    );
+    this.permissionService
+      .getRoleWithRestrictions(roleName)
+      .subscribe({
+        next: (r) => this.reorderRestrictions(r),
+        error: (e) => (this.errorMessage = e),
+        complete: () => (this.isLoading = false),
+      });
   }
 
   private getUserWithRestrictions(userName: string) {
     this.isLoading = true;
-    this.permissionService.getUserWithRestrictions(userName).subscribe(
-      /* happy path */ (r) => this.reorderRestrictions(r),
-      /* error path */ (e) => (this.errorMessage = e),
-      /* onComplete */ () => (this.isLoading = false),
-    );
+    this.permissionService
+      .getUserWithRestrictions(userName)
+      .subscribe({
+        next: (r) => this.reorderRestrictions(r),
+        error: (e) => (this.errorMessage = e),
+        complete: () => (this.isLoading = false),
+      });
   }
 
   private resetPermissionList() {

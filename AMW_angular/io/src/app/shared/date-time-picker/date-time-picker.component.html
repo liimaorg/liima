@@ -1,7 +1,6 @@
 <div *ngIf="errorMessage" class="alert alert-warning alert-dismissible" role="alert">
   <span [innerHTML]="errorMessage"></span>
-  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
-  </button>
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
 </div>
 <div class="input-group me-2">
   <input
@@ -11,16 +10,12 @@
     [ngModel]="dateString"
     (change)="onDateStringChange($event)"
     [disabled]="disabled"
+    [attr.data-cy]="'date-picker'"
     placeholder="{{ dateStringFormat }}"
   />
 
   <div class="input-group-append">
-    <button
-      class="btn btn-secondary"
-      [ngbPopover]="calendarContent"
-      [disabled]="disabled"
-      type="button"
-    >
+    <button class="btn btn-secondary" [ngbPopover]="calendarContent" [disabled]="disabled" type="button">
       <app-icon icon="calendar3"></app-icon>
     </button>
   </div>
@@ -29,11 +24,7 @@
 <ng-template #calendarContent>
   <div>
     <div class="d-grid" *ngIf="!showTimePickerToggle">
-      <ngb-datepicker
-        name="datepicker"
-        [ngModel]="datetime"
-        (ngModelChange)="onDateChange($event)"
-      ></ngb-datepicker>
+      <ngb-datepicker name="datepicker" [ngModel]="datetime" (ngModelChange)="onDateChange($event)"></ngb-datepicker>
       <button
         class="btn btn-secondary m-0"
         [disabled]="!datetime?.day"

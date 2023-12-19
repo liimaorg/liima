@@ -1,10 +1,18 @@
 import { Component, OnInit, Input, forwardRef, ViewChild, AfterViewInit, Injector } from '@angular/core';
-import { NgbTimeStruct, NgbPopoverConfig, NgbPopover, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, NgControl } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import {
+  NgbTimeStruct,
+  NgbPopoverConfig,
+  NgbPopover,
+  NgbDateStruct,
+  NgbDatepicker,
+  NgbTimepicker,
+} from '@ng-bootstrap/ng-bootstrap';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, NgControl, FormsModule } from '@angular/forms';
+import { DatePipe, NgIf, NgClass } from '@angular/common';
 import { DateTimeModel } from './date-time.model';
 import { noop } from 'rxjs';
 import { DATE_FORMAT } from 'src/app/core/amw-constants';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'app-date-time-picker',
@@ -18,6 +26,8 @@ import { DATE_FORMAT } from 'src/app/core/amw-constants';
       multi: true,
     },
   ],
+  standalone: true,
+  imports: [NgIf, FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker, NgbTimepicker],
 })
 export class DateTimePickerComponent implements ControlValueAccessor, OnInit, AfterViewInit {
   @Input()
@@ -47,7 +57,10 @@ export class DateTimePickerComponent implements ControlValueAccessor, OnInit, Af
 
   ngControl: NgControl;
 
-  constructor(private config: NgbPopoverConfig, private inj: Injector) {
+  constructor(
+    private config: NgbPopoverConfig,
+    private inj: Injector,
+  ) {
     config.autoClose = 'outside';
     config.placement = 'auto';
   }

@@ -8,5 +8,6 @@ import { Component } from '@angular/core';
       <h3 class="text-center">Page not found</h3>
     </div>
   </div>`,
+  standalone: true,
 })
 export class PageNotFoundComponent {}

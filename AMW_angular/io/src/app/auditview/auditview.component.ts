@@ -3,30 +3,33 @@ import { ActivatedRoute } from '@angular/router';
 import { AuditviewService } from './auditview.service';
 import { ResourceService } from '../resource/resource.service';
 import { AuditLogEntry } from './auditview-entry';
-import { NavigationStoreService } from '../navigation/navigation-store.service';
+import { AuditviewTableComponent } from './auditview-table/auditview-table.component';
+import { NotificationComponent } from '../shared/elements/notification/notification.component';
+import { DatePipe, NgIf } from '@angular/common';
+import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
+import { AuditviewTableService } from './auditview-table/auditview-table.service';
+import { PageComponent } from '../layout/page/page.component';
 
 @Component({
   selector: 'amw-auditview',
   templateUrl: './auditview.component.html',
+  standalone: true,
+  providers: [AuditviewService, AuditviewTableService, DatePipe],
+  imports: [LoadingIndicatorComponent, NgIf, NotificationComponent, AuditviewTableComponent, PageComponent],
 })
 export class AuditviewComponent implements OnInit {
   name: string;
   auditLogEntries: AuditLogEntry[] = [];
-  filterQuery: string = '';
   errorMessage: string;
   successMessage: string;
   resourceId: number;
   isLoading: boolean = true;
 
   constructor(
-    public navigationStore: NavigationStoreService,
     private auditViewService: AuditviewService,
     private resourceService: ResourceService,
-    private activatedRoute: ActivatedRoute
-  ) {
-    this.navigationStore.setVisible(false);
-    this.navigationStore.setPageTitle('Audit View');
-  }
+    private activatedRoute: ActivatedRoute,
+  ) {}
 
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe((param: any) => {
@@ -34,25 +37,24 @@ export class AuditviewComponent implements OnInit {
         try {
           this.resourceId = JSON.parse(param['resourceId']);
         } catch (e) {
-          console.error(e);
           this.errorMessage = 'Error parsing resourceId';
         }
       }
     });
 
     if (this.resourceId) {
-      this.resourceService.getResourceName(this.resourceId).subscribe(
-        /* happy path */ (r) => (this.name = r.name),
-        /* error path */ (e) => (this.errorMessage = e),
-        /* onComplete */ () => {}
-      );
-      this.auditViewService.getAuditLogForResource(this.resourceId).subscribe(
-        /* happy path */ (r) => (this.auditLogEntries = r),
-        /* error path */ (e) => (this.errorMessage = e),
-        /* onComplete */ () => (this.isLoading = false)
-      );
+      this.resourceService.getResourceName(this.resourceId).subscribe({
+        next: (resource) => (this.name = resource.name),
+        error: (e) => (this.errorMessage = e),
+      });
+      this.auditViewService.getAuditLogForResource(this.resourceId).subscribe({
+        next: (auditLogEntries) => (this.auditLogEntries = auditLogEntries),
+        error: (e) => (this.errorMessage = e),
+        complete: () => (this.isLoading = false),
+      });
     } else {
-      console.error('Resource Id must be set');
+      this.errorMessage = 'Parameter resourceId must be set!';
+      this.isLoading = false;
     }
   }
 }

@@ -1,9 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ResourceService } from './resource.service';
-import {
-  HttpClientTestingModule,
-  HttpTestingController
-} from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClient } from '@angular/common/http';
 import { Resource } from './resource';
 import { Release } from './release';
@@ -16,7 +13,7 @@ describe('ResourceService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [ResourceService]
+      providers: [ResourceService],
     });
 
     httpClient = TestBed.inject(HttpClient);
@@ -39,17 +36,15 @@ describe('ResourceService', () => {
         release: 'release_2020',
         relations: [],
         properties: [],
-        resourceTags: []
+        resourceTags: [],
       },
-      releases: []
+      releases: [],
     };
-    resourceService.getAll().subscribe(resourcesRes => {
+    resourceService.getAll().subscribe((resourcesRes) => {
       expect(resourcesRes).toEqual([mockResource]);
     });
 
-    const req = httpTestingController.expectOne(
-      '/AMW_rest/resources/resources'
-    );
+    const req = httpTestingController.expectOne('/AMW_rest/resources/resources');
 
     expect(req.request.method).toEqual('GET');
 
@@ -65,8 +60,8 @@ describe('ResourceService', () => {
           relatedResourceName: 'relResName',
           relatedResourceRelease: 'relResRelease',
           identifier: 'id',
-          type: 'releasetype'
-        }
+          type: 'releasetype',
+        },
       ],
       properties: [
         {
@@ -75,18 +70,16 @@ describe('ResourceService', () => {
           replacedValue: 'replValue',
           generalComment: 'any comment',
           valueComment: 'comment',
-          context: 'context value'
-        }
+          context: 'context value',
+        },
       ],
-      resourceTags: []
+      resourceTags: [],
     };
-    resourceService.getLatestForRelease(1, 2).subscribe(response => {
+    resourceService.getLatestForRelease(1, 2).subscribe((response) => {
       expect(response).toEqual(mockRelease);
     });
 
-    const req = httpTestingController.expectOne(
-      '/AMW_rest/resources/resources/resourceGroups/1/releases/2'
-    );
+    const req = httpTestingController.expectOne('/AMW_rest/resources/resources/resourceGroups/1/releases/2');
 
     expect(req.request.method).toEqual('GET');
 
@@ -98,16 +91,14 @@ describe('ResourceService', () => {
       relatedResourceName: 'relResourceName',
       relatedResourceRelease: 'relResrourceRelease',
       identifier: 'adam_application_server',
-      type: 'applicationserver'
+      type: 'applicationserver',
     };
-    resourceService
-      .getRuntime('testGroup', 'testRelease')
-      .subscribe(response => {
-        expect(response).toEqual([mockRelation]);
-      });
+    resourceService.getRuntime('testGroup', 'testRelease').subscribe((response) => {
+      expect(response).toEqual([mockRelation]);
+    });
 
     const req = httpTestingController.expectOne(
-      '/AMW_rest/resources/resources/testGroup/testRelease/relations?type=RUNTIME'
+      '/AMW_rest/resources/resources/testGroup/testRelease/relations?type=RUNTIME',
     );
 
     expect(req.request.method).toEqual('GET');
@@ -119,17 +110,15 @@ describe('ResourceService', () => {
     const mockAppWithVersions = {
       applicationName: 'adam',
       applicationId: 211558,
-      version: '1.9'
+      version: '1.9',
     };
 
-    resourceService
-      .getAppsWithVersions(123, 321, [1, 2])
-      .subscribe(response => {
-        expect(response).toEqual([mockAppWithVersions]);
-      });
+    resourceService.getAppsWithVersions(123, 321, [1, 2]).subscribe((response) => {
+      expect(response).toEqual([mockAppWithVersions]);
+    });
 
     const req = httpTestingController.expectOne(
-      '/AMW_rest/resources/resources/resourceGroups/123/releases/321/appWithVersions/?context=1&context=2'
+      '/AMW_rest/resources/resources/resourceGroups/123/releases/321/appWithVersions/?context=1&context=2',
     );
 
     expect(req.request.method).toEqual('GET');
