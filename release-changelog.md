@@ -1,3 +1,7 @@
+# v1.17.34
+* Angular Cleanup and Consolidation [#723](https://github.com/liimaorg/liima/pull/723)
+* fix nullpointer in notification service with preserved deployments [#724](https://github.com/liimaorg/liima/pull/724)
+
 # v1.17.33
 * Settings -> Tags migrated from Angular to JSF: [#719](https://github.com/liimaorg/liima/pull/719)
 * Angular deployments: missing colors of deployment entries [#718](https://github.com/liimaorg/liima/issues/718)
