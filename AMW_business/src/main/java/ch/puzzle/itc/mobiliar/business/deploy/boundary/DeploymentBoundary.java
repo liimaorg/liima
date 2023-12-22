@@ -801,11 +801,8 @@ public class DeploymentBoundary {
     }
 
     // TODO test
-    public String getDeploymentLog(String logName) throws IllegalAccessException {
+    public String getDeploymentLog(String logName) {
         String logsPath = ConfigurationService.getProperty(ConfigKey.LOGS_PATH);
-        if (logName.contains(File.separator)) {
-            throw new IllegalAccessException("The log file contains a file separator (\"" + File.separator + "\"). For security reasons, this is not permitted!");
-        }
 
         String name = logsPath + File.separator + logName;
         File file = new File(name);
