@@ -801,11 +801,13 @@ public class DeploymentBoundary {
     }
 
     // TODO test
-    public String getDeploymentLog(String logName) {
+    public String getDeploymentLog(String logName) throws IOException {
         String logsPath = ConfigurationService.getProperty(ConfigKey.LOGS_PATH);
 
         String name = logsPath + File.separator + logName;
         File file = new File(name);
+
+        if (file.length() > 10_000_000) throw new IOException(String.format("The size of the file '%s' is %d bytes. Only file contents up to 10MB is allowed.", file.getName(), file.length()));
 
         StringBuilder content = new StringBuilder();
         Scanner scanner;

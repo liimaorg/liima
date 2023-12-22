@@ -7,6 +7,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class LogContentService implements DeploymentLogContentUseCase {
     private DeploymentBoundary deploymentBoundary;
 
     @Override
-    public String getContent(DeploymentLogContentCommand command) throws ValidationException {
+    public String getContent(DeploymentLogContentCommand command) throws ValidationException, IOException {
         List<String> availableLogFiles = Arrays.asList(deploymentBoundary.getLogFileNames(command.getId()));
         if (!availableLogFiles.contains(command.getFileName())) throw new ValidationException("filename not found");
 

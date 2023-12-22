@@ -16,6 +16,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 @Stateless
 @Path("/deployments")
@@ -33,7 +34,7 @@ public class DeploymentsLogRest {
     @ApiOperation(value = "get the log file content as plain text for a given deployment and file name")
     @Produces(MediaType.TEXT_PLAIN)
     public Response getDeploymentLogFileContent(@ApiParam("Deployment ID") @PathParam("id") Integer id,
-                                                @PathParam("fileName") String fileName) throws ValidationException {
+                                                @PathParam("fileName") String fileName) throws ValidationException, IOException {
 
         DeploymentLogContentCommand deploymentLogContentCommand = new DeploymentLogContentCommand(id, fileName);
         return Response.ok(deploymentLogContentUseCase.getContent(deploymentLogContentCommand)).build();
