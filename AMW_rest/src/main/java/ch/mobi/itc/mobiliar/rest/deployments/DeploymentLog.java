@@ -2,6 +2,7 @@ package ch.mobi.itc.mobiliar.rest.deployments;
 
 import java.util.Objects;
 
+@Deprecated(forRemoval = true)
 public class DeploymentLog {
 
     private int deploymentId;
