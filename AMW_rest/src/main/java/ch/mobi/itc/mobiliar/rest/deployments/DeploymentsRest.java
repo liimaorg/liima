@@ -327,36 +327,6 @@ public class DeploymentsRest {
         return Response.status(Status.OK).entity(new DeploymentDTO(result)).build();
     }
 
-    @GET
-    @Path("/{id : \\d+}/logs/{fileName}")
-    @ApiOperation(value = "get the log file content as plain text for a given deployment and file name")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response getDeploymentLogFileContent(@ApiParam("Deployment ID") @PathParam("id") Integer id, @PathParam("fileName") String fileName) {
-        List<String> availableLogFiles = Arrays.asList(deploymentBoundary.getLogFileNames(id));
-        if (!availableLogFiles.contains(fileName)) {
-            return Response.status(Status.BAD_REQUEST).entity("No logfile with name " + fileName + " for deployment with id " + id).build();
-        }
-
-        String logfileContent = "";
-        try {
-            logfileContent = deploymentBoundary.getDeploymentLog(fileName);
-        } catch (IllegalAccessException e) {
-            String msg = "error: unable to get contents of logfile " + fileName;
-            log.info(msg);
-            return Response.status(Status.BAD_REQUEST).entity(msg).build();
-        }
-
-        return Response.ok(logfileContent).build();
-    }
-
-    @GET
-    @Path("/{deploymentId : \\d+}/logs")
-    @ApiOperation(value = "get list of log files meta data for a given deployment id")
-    public Response getDeploymentLogFileNames(@PathParam("deploymentId") Integer deploymentId) {
-        String[] fileNames = deploymentBoundary.getLogFileNames(deploymentId);
-        List<DeploymentLog> deploymentLogFiles = Arrays.stream(fileNames).map(fileName -> new DeploymentLog(deploymentId, fileName)).collect(Collectors.toList());
-        return Response.ok(deploymentLogFiles).build();
-    }
 
     @GET
     @Path("/deploymentParameterKeyNames")
