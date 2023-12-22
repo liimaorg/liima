@@ -14,6 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class DeploymentsLogsRestTest {
     }
 
     @Test
-    public void getDeploymentLogFileContent() throws ValidationException {
+    public void getDeploymentLogFileContent() throws ValidationException, IOException {
         doReturn("log-file-content").when(logContentUseCase).getContent(any(DeploymentLogContentCommand.class));
         Response response = resource.getDeploymentLogFileContent(123, "log-file-name");
         assertThat(response.getStatus(), is(200));
@@ -49,7 +50,7 @@ public class DeploymentsLogsRestTest {
     }
 
     @Test(expected = ConstraintViolationException.class)
-    public void getDeploymentLogFileContent_invalidFileName() throws ValidationException {
+    public void getDeploymentLogFileContent_invalidFileName() throws ValidationException, IOException {
         // given
 
         // when
@@ -60,7 +61,7 @@ public class DeploymentsLogsRestTest {
     }
 
     @Test(expected = ConstraintViolationException.class)
-    public void getDeploymentLogFileContent_id_is_null() throws ValidationException {
+    public void getDeploymentLogFileContent_id_is_null() throws ValidationException, IOException {
         // given
 
         // when
@@ -71,7 +72,7 @@ public class DeploymentsLogsRestTest {
     }
 
     @Test(expected = ConstraintViolationException.class)
-    public void getDeploymentLogFileContent_filename_is_null() throws ValidationException {
+    public void getDeploymentLogFileContent_filename_is_null() throws ValidationException, IOException {
         // given
 
         // when
