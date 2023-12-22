@@ -1,6 +1,7 @@
 package ch.mobi.itc.mobiliar.rest.deployments;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentCommand;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentUseCase;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.ListDeploymentLogsUseCase;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.annotations.Api;
@@ -15,9 +16,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Logger;
 
 @Stateless
 @Path("/deployments")
@@ -25,37 +23,20 @@ import java.util.logging.Logger;
 public class DeploymentsLogRest {
 
     @Inject
-    private DeploymentBoundary deploymentBoundary;
-
-    @Inject
     private ListDeploymentLogsUseCase listDeploymentLogsUseCase;
 
     @Inject
-    Logger log;
+    private DeploymentLogContentUseCase deploymentLogContentUseCase;
 
     @GET
     @Path("/{id : \\d+}/logs/{fileName}")
     @ApiOperation(value = "get the log file content as plain text for a given deployment and file name")
     @Produces(MediaType.TEXT_PLAIN)
     public Response getDeploymentLogFileContent(@ApiParam("Deployment ID") @PathParam("id") Integer id,
-                                                @PathParam("fileName") String fileName) {
-        List<String> availableLogFiles = Arrays.asList(deploymentBoundary.getLogFileNames(id));
-        if (!availableLogFiles.contains(fileName)) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                           .entity("No logfile with name " + fileName + " for deployment with id " + id)
-                           .build();
-        }
+                                                @PathParam("fileName") String fileName) throws ValidationException {
 
-        String logfileContent = "";
-        try {
-            logfileContent = deploymentBoundary.getDeploymentLog(fileName);
-        } catch (IllegalAccessException e) {
-            String msg = "error: unable to get contents of logfile " + fileName;
-            log.info(msg);
-            return Response.status(Response.Status.BAD_REQUEST).entity(msg).build();
-        }
-
-        return Response.ok(logfileContent).build();
+        DeploymentLogContentCommand deploymentLogContentCommand = new DeploymentLogContentCommand(id, fileName);
+        return Response.ok(deploymentLogContentUseCase.getContent(deploymentLogContentCommand)).build();
     }
 
     @GET
