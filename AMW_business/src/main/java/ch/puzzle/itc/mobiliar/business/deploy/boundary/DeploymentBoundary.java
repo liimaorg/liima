@@ -807,10 +807,14 @@ public class DeploymentBoundary {
             throw new IllegalAccessException("The log file contains a file separator (\"" + File.separator + "\"). For security reasons, this is not permitted!");
         }
 
+        String name = logsPath + File.separator + logName;
+        File file = new File(name);
+
         StringBuilder content = new StringBuilder();
         Scanner scanner;
         try {
-            scanner = new Scanner(new FileInputStream(logsPath + File.separator + logName));
+
+            scanner = new Scanner(new FileInputStream(file));
             try {
                 while (scanner.hasNextLine()) {
                     content.append(scanner.nextLine()).append('\n');
