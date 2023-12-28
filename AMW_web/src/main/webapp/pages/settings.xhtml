@@ -86,7 +86,7 @@
                 </li>
                 <li class="${settingsDataProvider.mode=='appVersion' ? 'current': ''}">
                     <h:outputLink value="/AMW_angular/#/settings/application-info"
-                                  rendered="#{securityDataProvider.hasPermission('RELEASE')}}">
+                                  rendered="#{securityDataProvider.hasPermission('RELEASE','READ')}">
                         Application Info
                     </h:outputLink>
                 </li>
@@ -327,13 +327,6 @@
             <h:panelGroup rendered="${settingsDataProvider.mode=='releases'}">
                 <ui:include src="components/releasesScreenComp.xhtml" />
             </h:panelGroup>
-
-            <!-- Application Version -->
-            <h:panelGroup rendered="${settingsDataProvider.mode=='appVersion'}">
-                <ui:include src="components/applicationInfoComp.xhtml">
-                </ui:include>
-            </h:panelGroup>
-
 
         </div>
 
