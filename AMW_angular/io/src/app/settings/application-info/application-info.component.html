@@ -1,0 +1,58 @@
+<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+
+<div class="container">
+  <div class="card row mb-3">
+    <div class="card-header"><b>Application Information</b></div>
+    <div class="card-body">
+      <div class="table-responsive">
+
+        <table class="table table-sm table-striped" *ngIf="appVersions.length > 0">
+          <thead>
+          <tr>
+            <th>Key</th>
+            <th>Value</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr *ngFor="let item of appVersions">
+            <td>{{ item.key }}</td>
+            <td>{{ item.value }}</td>
+
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="card row">
+    <div class="card-header"><b>Application Configuration</b></div>
+    <div class="card-body">
+
+      <div class="table-responsive">
+        <table class="table table-sm table-striped" *ngIf="appConfigs.length > 0">
+          <thead>
+          <tr>
+            <th>Key</th>
+            <th>ENV</th>
+            <th>Value</th>
+            <th>DefaultValue</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr *ngFor="let item of appConfigs">
+            <td>{{ item.key.value }}</td>
+            <td>{{ item.key.env }}</td>
+            <td>{{ item.value }}</td>
+            <td>{{ item.defaultValue }}</td>
+
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
