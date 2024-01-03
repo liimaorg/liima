@@ -52,11 +52,9 @@ describe('DeploymentLogService', () => {
 
     httpClientSpy.get.and.returnValue(asyncError(errorResponse));
 
-    service
-      .getLogFileMetaData(1)
-      .subscribe({
-        next: (_) => fail('expected an error, not a list of deploymentLogs'),
-        error: (error) => expect(error).toContain('no deployment logs found'),
-      });
+    service.getLogFileMetaData(1).subscribe({
+      next: (_) => fail('expected an error, not a list of deploymentLogs'),
+      error: (error) => expect(error).toContain('no deployment logs found'),
+    });
   });
 });

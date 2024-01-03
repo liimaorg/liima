@@ -1,17 +1,16 @@
 import { Component } from '@angular/core';
-import { LoadingIndicatorComponent } from "../../shared/elements/loading-indicator.component";
-import { HttpClient } from "@angular/common/http";
-import {NgFor, NgIf} from "@angular/common";
+import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
+import { HttpClient } from '@angular/common/http';
+import { NgFor, NgIf } from '@angular/common';
 
-type Config = { key: { value: string, env: string }; value: string; defaultValue: string };
-type Version = { key: string; value: string; };
+type Config = { key: { value: string; env: string }; value: string; defaultValue: string };
+type Version = { key: string; value: string };
 
 @Component({
   selector: 'amw-application-info',
   standalone: true,
-  imports: [LoadingIndicatorComponent,     NgIf,NgFor,],
+  imports: [LoadingIndicatorComponent, NgIf, NgFor],
   templateUrl: './application-info.component.html',
-  styleUrl: './application-info.component.scss'
 })
 export class ApplicationInfoComponent {
   isLoading: boolean = false;
