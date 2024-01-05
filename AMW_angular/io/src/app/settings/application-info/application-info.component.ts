@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { HttpClient } from '@angular/common/http';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { BehaviorSubject, forkJoin, mapTo, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 type Config = { key: { value: string; env: string }; value: string; defaultValue: string };
