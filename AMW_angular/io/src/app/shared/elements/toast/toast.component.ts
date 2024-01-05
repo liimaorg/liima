@@ -5,7 +5,8 @@ type SuccessOrError = 'success' | 'error';
 @Component({
   selector: 'app-toast',
   template: `
-    <div *ngIf="show" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    @if (show) {
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
       <div
         class="toast-image"
         [ngClass]="{ 'image-success': type === 'success', 'image-error': type === 'error' }"
@@ -25,6 +26,7 @@ type SuccessOrError = 'success' | 'error';
         </div>
       </div>
     </div>
+    }
   `,
   styleUrls: ['./toast.component.scss'],
   standalone: true,

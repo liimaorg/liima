@@ -1,39 +1,45 @@
 <div class="btn-toolbar p-2 justify-content-between" role="toolbar">
-  <ng-container *ngIf="pages()">
-    <nav>
-      <ul class="pagination pointer m-1">
-        <li class="page-item {{ currentPage < 2 ? 'disabled' : '' }}" aria-label="first" (click)="toPage(1)">
-          <a class="page-link" aria-hidden="true" href="#">&laquo;</a>
-        </li>
-        <li
-          class="page-item {{ currentPage < 2 ? 'disabled' : '' }}"
-          aria-label="previous"
-          (click)="toPage(currentPage - 1)"
+  @if (pages()) {
+
+  <nav>
+    <ul class="pagination pointer m-1">
+      <li class="page-item {{ currentPage < 2 ? 'disabled' : '' }}" aria-label="first" (click)="toPage(1)">
+        <a class="page-link" aria-hidden="true" href="#">&laquo;</a>
+      </li>
+      <li
+        class="page-item {{ currentPage < 2 ? 'disabled' : '' }}"
+        aria-label="previous"
+        (click)="toPage(currentPage - 1)"
+      >
+        <a class="page-link" aria-hidden="true" href="#">&lt;</a>
+      </li>
+      @for (page of pages(); track page) {
+      <li class="page-item {{ currentPage === page ? 'active' : '' }}">
+        <a class="page-link" (click)="toPage(page)"
+          >{{ page }}@if (currentPage === page) {
+          <span class="visually-hidden">(current)</span>
+          }</a
         >
-          <a class="page-link" aria-hidden="true" href="#">&lt;</a>
-        </li>
-        <li *ngFor="let page of pages()" class="page-item {{ currentPage === page ? 'active' : '' }}">
-          <a class="page-link" (click)="toPage(page)"
-            >{{ page }}<span *ngIf="currentPage === page" class="visually-hidden">(current)</span></a
-          >
-        </li>
-        <li
-          class="page-item {{ currentPage === lastPage ? 'disabled' : '' }}"
-          aria-label="next"
-          (click)="toPage(currentPage + 1)"
-        >
-          <a class="page-link" href="#"><span aria-hidden="true">&gt;</span></a>
-        </li>
-        <li
-          class="page-item {{ currentPage === lastPage ? 'disabled' : '' }}"
-          aria-label="last"
-          (click)="toPage(lastPage)"
-        >
-          <a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a>
-        </li>
-      </ul>
-    </nav>
-  </ng-container>
+      </li>
+      }
+      <li
+        class="page-item {{ currentPage === lastPage ? 'disabled' : '' }}"
+        aria-label="next"
+        (click)="toPage(currentPage + 1)"
+      >
+        <a class="page-link" href="#"><span aria-hidden="true">&gt;</span></a>
+      </li>
+      <li
+        class="page-item {{ currentPage === lastPage ? 'disabled' : '' }}"
+        aria-label="last"
+        (click)="toPage(lastPage)"
+      >
+        <a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a>
+      </li>
+    </ul>
+  </nav>
+
+  }
   <div class="btn-group justify-content-end" role="group">
     <select class="form-select m-1" [(ngModel)]="maxResults" (change)="setMax()">
       <option>10</option>

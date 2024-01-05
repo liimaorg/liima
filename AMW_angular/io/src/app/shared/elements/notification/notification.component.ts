@@ -4,10 +4,12 @@ import { NgIf } from '@angular/common';
 @Component({
   selector: 'app-notification',
   template: `
-    <div *ngIf="message" class="alert alert-{{ messageType }}" role="alert">
+    @if (message) {
+    <div class="alert alert-{{ messageType }}" role="alert">
       <span [innerHTML]="message"></span
       ><button type="button" class="btn-close float-end" (click)="message = ''" aria-label="Close"></button>
     </div>
+    }
   `,
   standalone: true,
   imports: [NgIf],

@@ -4,8 +4,11 @@
   <div class="page-content">
     <h1>{{ name }}</h1>
 
-    <app-notification *ngIf="successMessage" [message]="successMessage" [messageType]="'success'"></app-notification>
-    <app-notification *ngIf="errorMessage" [message]="errorMessage" [messageType]="'warning'"></app-notification>
+    @if (successMessage) {
+    <app-notification [message]="successMessage" [messageType]="'success'"></app-notification>
+    } @if (errorMessage) {
+    <app-notification [message]="errorMessage" [messageType]="'warning'"></app-notification>
+    }
     <app-auditview-table [auditlogEntries]="auditLogEntries"></app-auditview-table>
   </div>
 </app-page>

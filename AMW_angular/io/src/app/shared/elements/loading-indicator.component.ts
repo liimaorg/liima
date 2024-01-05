@@ -4,11 +4,13 @@ import { NgIf } from '@angular/common';
 @Component({
   selector: 'app-loading-indicator',
   template: `
-    <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center overlay">
+    @if (isLoading) {
+    <div class="d-flex justify-content-center align-items-center overlay">
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
+    }
     <div class=""></div>
   `,
   styles: [

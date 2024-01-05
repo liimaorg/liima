@@ -1,61 +1,69 @@
 <div class="table-responsive">
-  <table id="deployment-list" class="table table-sm" *ngIf="deployments.length > 0">
+  @if (deployments.length > 0) {
+  <table id="deployment-list" class="table table-sm">
     <thead>
       <tr>
         <th class="has-checkbox">
           <input type="checkbox" (click)="switchAllDeployments()" />
           <span class="link" (click)="reSort('d.trackingId')"
-            >&nbsp;Tracking id
-            <ng-container *ngIf="sortCol === 'd.trackingId'">
-              <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-            </ng-container>
+            >&nbsp;Tracking id @if (sortCol === 'd.trackingId') {
+
+            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+
+            }
           </span>
         </th>
         <th>
           <span class="link" (click)="reSort('d.deploymentState')"
-            >State
-            <ng-container *ngIf="sortCol === 'd.deploymentState'">
-              <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-            </ng-container>
+            >State @if (sortCol === 'd.deploymentState') {
+
+            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+
+            }
           </span>
         </th>
         <th>
           <span class="link" (click)="reSort('d.resourceGroup.name')"
-            >App server
-            <ng-container *ngIf="sortCol === 'd.resourceGroup.name'">
-              <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-            </ng-container>
+            >App server @if (sortCol === 'd.resourceGroup.name') {
+
+            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+
+            }
           </span>
         </th>
         <th>
           <span class="link" (click)="reSort('d.release.installationInProductionAt')"
-            >Release
-            <ng-container *ngIf="sortCol === 'd.release.installationInProductionAt'">
-              <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-            </ng-container>
+            >Release @if (sortCol === 'd.release.installationInProductionAt') {
+
+            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+
+            }
           </span>
         </th>
         <th>
           <span class="link" (click)="reSort('d.context.name')"
-            >Env
-            <ng-container *ngIf="sortCol === 'd.context.name'">
-              <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-            </ng-container>
+            >Env @if (sortCol === 'd.context.name') {
+
+            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+
+            }
           </span>
         </th>
         <th>
           <span class="link" (click)="reSort('d.deploymentDate')"
-            >Deployment date
-            <ng-container *ngIf="sortCol === 'd.deploymentDate'">
-              <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-            </ng-container>
+            >Deployment date @if (sortCol === 'd.deploymentDate') {
+
+            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+
+            }
           </span>
         </th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let deployment of deployments" class="deploy-{{ deployment.state }}">
+      @for (deployment of deployments; track deployment) {
+      <tr class="deploy-{{ deployment.state }}">
         <td class="has-checkbox">
           <input type="checkbox" [(ngModel)]="deployment.selected" />
           {{ deployment.trackingId }}
@@ -72,82 +80,92 @@
         <td>
           <span class="link" (click)="appServerLink(deployment.resourceId)">{{ deployment.appServerName }}</span>
           <ul class="nob">
-            <li
-              *ngFor="let appWithVersion of deployment.appsWithVersion"
-              class="link"
-              (click)="appLink(appWithVersion.applicationId)"
-            >
+            @for (appWithVersion of deployment.appsWithVersion; track appWithVersion) {
+            <li class="link" (click)="appLink(appWithVersion.applicationId)">
               {{ appWithVersion.applicationName }} ({{ appWithVersion.version }})
             </li>
+            }
           </ul>
         </td>
         <td>{{ deployment.releaseName }}</td>
         <td>
           <strong
-            >{{ deployment.environmentName }}
-            <ng-container *ngIf="deployment.environmentNameAlias">({{ deployment.environmentNameAlias }})</ng-container>
+            >{{ deployment.environmentName }} @if (deployment.environmentNameAlias) { ({{
+              deployment.environmentNameAlias
+            }}) }
           </strong>
         </td>
         <td>
-          <ng-container *ngIf="deployment.actions.editPossible">
-            <app-icon *ngIf="deployment.deploymentDelayed" icon="hourglass-split"></app-icon>
-            <span
-              class="pointer"
-              (click)="showDateChange(deploymentDateChange, deployment.id)"
-              title="change the deployment date"
-            >
-              <span [attr.class]="deployment.deploymentDelayed ? 'align-text-top delayed' : 'align-text-top action'">{{
-                deployment.deploymentDate | date: dateFormat
-              }}</span>
-            </span>
-          </ng-container>
-          <ng-container *ngIf="!deployment.actions.editPossible">
-            <app-icon *ngIf="deployment.deploymentDelayed" icon="hourglass-split"></app-icon>
+          @if (deployment.actions.editPossible) { @if (deployment.deploymentDelayed) {
+          <app-icon icon="hourglass-split"></app-icon>
+          }
+          <span
+            class="pointer"
+            (click)="showDateChange(deploymentDateChange, deployment.id)"
+            title="change the deployment date"
+          >
             <span [attr.class]="deployment.deploymentDelayed ? 'align-text-top delayed' : 'align-text-top action'">{{
               deployment.deploymentDate | date: dateFormat
             }}</span>
-          </ng-container>
+          </span>
+
+          } @if (!deployment.actions.editPossible) { @if (deployment.deploymentDelayed) {
+          <app-icon icon="hourglass-split"></app-icon>
+          }
+          <span [attr.class]="deployment.deploymentDelayed ? 'align-text-top delayed' : 'align-text-top action'">{{
+            deployment.deploymentDate | date: dateFormat
+          }}</span>
+
+          }
         </td>
         <td>
-          <ng-container *ngIf="deployment.actions.confirmPossible">
-            <span class="text-success cursor-pointer" (click)="showConfirm(deploymentConfirmation, deployment.id)">
-              <app-icon icon="check-circle"></app-icon>
-              <span class="ms-1">confirm</span>
-            </span>
-            <br />
-          </ng-container>
-          <ng-container *ngIf="deployment.actions.rejectPossible">
-            <span class="text-danger cursor-pointer" (click)="showReject(deploymentRejection, deployment.id)">
-              <app-icon icon="x-circle"></app-icon>
-              <span class="ms-1">reject</span>
-            </span>
-            <br />
-          </ng-container>
-          <ng-container *ngIf="deployment.actions.cancelPossible">
-            <span (click)="showCancel(deploymentCancelation, deployment.id)" class="cursor-pointer">
-              <app-icon icon="slash-circle"></app-icon>
-              <span class="ms-1">cancel</span>
-            </span>
-            <br />
-          </ng-container>
-          <ng-container *ngIf="deployment.actions.redeployPossible">
-            <a class="action" href="#/deployment/{{ deployment.id }}">
-              <app-icon icon="arrow-clockwise"></app-icon>
-              <span class="ms-1">redeploy</span>
-            </a>
-            <br />
-          </ng-container>
-          <ng-container *ngIf="deployment.actions.hasLogFiles">
-            <a [routerLink]="['/deployments', deployment.id, 'logs']" class="cursor-pointer">
-              <app-icon icon="journal-text"></app-icon>
-              <span class="ms-1">logs</span>
-            </a>
-            <br />
-          </ng-container>
+          @if (deployment.actions.confirmPossible) {
+
+          <span class="text-success cursor-pointer" (click)="showConfirm(deploymentConfirmation, deployment.id)">
+            <app-icon icon="check-circle"></app-icon>
+            <span class="ms-1">confirm</span>
+          </span>
+          <br />
+
+          } @if (deployment.actions.rejectPossible) {
+
+          <span class="text-danger cursor-pointer" (click)="showReject(deploymentRejection, deployment.id)">
+            <app-icon icon="x-circle"></app-icon>
+            <span class="ms-1">reject</span>
+          </span>
+          <br />
+
+          } @if (deployment.actions.cancelPossible) {
+
+          <span (click)="showCancel(deploymentCancelation, deployment.id)" class="cursor-pointer">
+            <app-icon icon="slash-circle"></app-icon>
+            <span class="ms-1">cancel</span>
+          </span>
+          <br />
+
+          } @if (deployment.actions.redeployPossible) {
+
+          <a class="action" href="#/deployment/{{ deployment.id }}">
+            <app-icon icon="arrow-clockwise"></app-icon>
+            <span class="ms-1">redeploy</span>
+          </a>
+          <br />
+
+          } @if (deployment.actions.hasLogFiles) {
+
+          <a [routerLink]="['/deployments', deployment.id, 'logs']" class="cursor-pointer">
+            <app-icon icon="journal-text"></app-icon>
+            <span class="ms-1">logs</span>
+          </a>
+          <br />
+
+          }
         </td>
       </tr>
+      }
     </tbody>
   </table>
+  }
 </div>
 
 <ng-template #deploymentDetails let-modal>
@@ -170,45 +188,55 @@
       requested by: {{ deployment.requestUser }}<br />
       created at: {{ deployment.deploymentJobCreationDate | date: dateFormat }}
     </p>
-    <ng-container *ngIf="deployment.confirmUser && deployment.state !== 'rejected'">
-      <p>
-        confirmed by: {{ deployment.confirmUser }}<br />
-        confirmed at: {{ deployment.deploymentConfirmationDate | date: dateFormat }}
-      </p>
-    </ng-container>
-    <ng-container *ngIf="deployment.confirmUser && deployment.state === 'rejected'">
-      <p>
-        rejected by: {{ deployment.confirmUser }}<br />
-        rejected at: {{ deployment.deploymentConfirmationDate | date: dateFormat }}
-      </p>
-    </ng-container>
-    <ng-container *ngIf="deployment.deploymentDelayed">
-      <h6>deployment job delayed</h6>
-      <p>planed deployment date: {{ deployment.deploymentDate | date: dateFormat }}</p>
-    </ng-container>
-    <ng-container *ngIf="deployment.cancelUser">
-      <h6>deployment job canceled</h6>
-      <p>
-        canceled by: {{ deployment.cancelUser }}<br />
-        canceled at: {{ deployment.deploymentCancelDate | date: dateFormat }}
-      </p>
-    </ng-container>
-    <ng-container *ngIf="deployment.deploymentParameters.length > 0">
-      <h6>deployment parameter</h6>
-      <p>
-        <ng-container *ngFor="let param of deployment.deploymentParameters">
-          {{ param.key }}: {{ param.value }}<br />
-        </ng-container>
-      </p>
-    </ng-container>
-    <ng-container *ngIf="deployment.reason">
-      <h6>failure reason</h6>
-      <p>{{ failureReason[deployment.reason] }}</p>
-    </ng-container>
-    <ng-container *ngIf="deployment.statusMessage">
-      <h6>state message</h6>
-      <pre class="bg-light border p-1 rounded pre-scrollable"><code>{{ deployment.statusMessage }}</code></pre>
-    </ng-container>
+    @if (deployment.confirmUser && deployment.state !== 'rejected') {
+
+    <p>
+      confirmed by: {{ deployment.confirmUser }}<br />
+      confirmed at: {{ deployment.deploymentConfirmationDate | date: dateFormat }}
+    </p>
+
+    } @if (deployment.confirmUser && deployment.state === 'rejected') {
+
+    <p>
+      rejected by: {{ deployment.confirmUser }}<br />
+      rejected at: {{ deployment.deploymentConfirmationDate | date: dateFormat }}
+    </p>
+
+    } @if (deployment.deploymentDelayed) {
+
+    <h6>deployment job delayed</h6>
+    <p>planed deployment date: {{ deployment.deploymentDate | date: dateFormat }}</p>
+
+    } @if (deployment.cancelUser) {
+
+    <h6>deployment job canceled</h6>
+    <p>
+      canceled by: {{ deployment.cancelUser }}<br />
+      canceled at: {{ deployment.deploymentCancelDate | date: dateFormat }}
+    </p>
+
+    } @if (deployment.deploymentParameters.length > 0) {
+
+    <h6>deployment parameter</h6>
+    <p>
+      @for (param of deployment.deploymentParameters; track param) {
+
+      {{ param.key }}: {{ param.value }}<br />
+
+      }
+    </p>
+
+    } @if (deployment.reason) {
+
+    <h6>failure reason</h6>
+    <p>{{ failureReason[deployment.reason] }}</p>
+
+    } @if (deployment.statusMessage) {
+
+    <h6>state message</h6>
+    <pre class="bg-light border p-1 rounded pre-scrollable"><code>{{ deployment.statusMessage }}</code></pre>
+
+    }
   </div>
 </ng-template>
 
@@ -266,18 +294,21 @@
         </label>
       </div>
 
-      <div class="checkbox" *ngIf="hasPermissionShakedownTest">
+      @if (hasPermissionShakedownTest) {
+      <div class="checkbox">
         <label>
           <input type="checkbox" [(ngModel)]="deployment.shakedownTestsWhenDeployed" />
           execute shakedown tests when deployed
         </label>
       </div>
-      <div class="checkbox" *ngIf="deployment.shakedownTestsWhenDeployed">
+      } @if (deployment.shakedownTestsWhenDeployed) {
+      <div class="checkbox">
         <label>
           <input type="checkbox" [(ngModel)]="deployment.neighbourhoodTest" />
           test neighbourhood
         </label>
       </div>
+      }
     </div>
   </div>
   <div class="modal-footer">
