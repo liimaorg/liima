@@ -17,7 +17,7 @@ span.reject:hover {
 
 span.confirm,
 span.confirm:hover {
-  color: var(--bs-success)
+  color: var(--bs-success);
 }
 
 span.delayed,
@@ -32,7 +32,7 @@ span.reject:hover {
 
 tr.deploy-pre_deploy,
 tr.deploy-progress > td {
-  background-color: var(--bs-light)
+  background-color: var(--bs-light);
 }
 
 tr.deploy-failed > td {
@@ -40,7 +40,7 @@ tr.deploy-failed > td {
 }
 
 tr.deploy-success > td {
-  background-color: var(--bs-success-bg-subtle)
+  background-color: var(--bs-success-bg-subtle);
 }
 span.action,
 span.delayed,

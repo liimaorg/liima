@@ -1,6 +1,7 @@
 package ch.mobi.itc.mobiliar.rest.settings;
 
 import ch.puzzle.itc.mobiliar.business.applicationinfo.boundary.ApplicationVersionService;
+import ch.puzzle.itc.mobiliar.business.applicationinfo.entity.ApplicationBuildInfoKeyValue;
 import ch.puzzle.itc.mobiliar.business.applicationinfo.entity.ConfigurationKeyValuePair;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,5 +24,12 @@ public class SettingsRest {
     @ApiOperation(value = "Get Liima configuration information")
     public List<ConfigurationKeyValuePair> getAppConfig() {
         return applicationVersionService.getObfuscatedApplicationConfigurationKeyValuePairs();
+    }
+
+    @GET
+    @Path("/appInfo")
+    @ApiOperation(value = "Get Liima application information")
+    public List<ApplicationBuildInfoKeyValue> getAppInfo() {
+        return applicationVersionService.getApplicationBuildInfo().getAsList();
     }
 }
