@@ -24,9 +24,7 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
@@ -62,4 +60,12 @@ public class ReleasesRest {
 
         return Response.ok(release).build();
     }
+
+
+    @GET
+    @ApiOperation(value = "Get releases for management", notes = "Returns all releases for management")
+    public List<ReleaseEntity> loadReleasesForMgmt(@QueryParam("start") int start, @QueryParam("limit") int limit) {
+        return releaseMgmtService.loadReleasesForMgmt(start, limit, true);
+    }
+
 }

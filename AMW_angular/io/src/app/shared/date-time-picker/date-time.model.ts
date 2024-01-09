@@ -1,6 +1,6 @@
 import { NgbTimeStruct, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import * as datefns from 'date-fns';
-import { DATE_FORMAT } from 'src/app/core/amw-constants';
+import { DATE_TIME_FORMAT } from 'src/app/core/amw-constants';
 
 export interface NgbDateTimeStruct extends NgbDateStruct, NgbTimeStruct {}
 
@@ -39,7 +39,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
   public static fromLocalString(dateString: string, format?: string): DateTimeModel {
     let date: Date;
     if (typeof format === 'undefined') {
-      date = datefns.parse(dateString, DATE_FORMAT, new Date());
+      date = datefns.parse(dateString, DATE_TIME_FORMAT, new Date());
     } else {
       date = datefns.parse(dateString, format, new Date());
     }
@@ -61,7 +61,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
       return null;
     }
     if (typeof format === 'undefined') {
-      return datefns.format(date, DATE_FORMAT);
+      return datefns.format(date, DATE_TIME_FORMAT);
     }
     return datefns.format(date, format);
   }
