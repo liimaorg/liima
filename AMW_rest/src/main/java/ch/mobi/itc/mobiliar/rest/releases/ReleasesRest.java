@@ -30,6 +30,9 @@ import javax.ws.rs.core.Response;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -38,6 +41,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "/releases", description = "Releases")
 public class ReleasesRest {
 
+    @Inject
+    private PermissionBoundary permissionBoundary;
     @Inject
     private ReleaseMgmtService releaseMgmtService;
     @Inject
@@ -68,4 +73,32 @@ public class ReleasesRest {
         return releaseMgmtService.loadReleasesForMgmt(start, limit, true);
     }
 
+    @GET()
+    @Path("/default")
+    @ApiOperation(value = "Get default release", notes = "Returns the default release entity")
+    public ReleaseEntity getDefaultRelease() {
+        return releaseMgmtService.getDefaultRelease();
+    }
+
+
+    @GET
+    @Path("/canCreateRelease")
+    @ApiOperation(value = "Checks if the caller is allowed to create a release")
+    public Response canCreateRelease() {
+        return Response.ok(permissionBoundary.hasPermission(Permission.RELEASE, Action.CREATE)).build();
+    }
+
+    @GET
+    @Path("/canUpdateRelease")
+    @ApiOperation(value = "Checks if the caller is allowed to update a release")
+    public Response canUpdateRelease() {
+        return Response.ok(permissionBoundary.hasPermission(Permission.RELEASE, Action.UPDATE)).build();
+    }
+
+    @GET
+    @Path("/canDeleteRelease")
+    @ApiOperation(value = "Checks if the caller is allowed to delete a release")
+    public Response canDeleteRelease() {
+        return Response.ok(permissionBoundary.hasPermission(Permission.RELEASE, Action.DELETE)).build();
+    }
 }
