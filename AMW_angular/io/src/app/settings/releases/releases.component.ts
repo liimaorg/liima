@@ -11,6 +11,7 @@ import { ReleaseEditComponent } from './release-edit.component';
 import { Release } from './release';
 import { ReleasesService } from './ReleasesService';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'amw-releases',
@@ -26,6 +27,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
     ReleaseEditComponent,
     ToastComponent,
   ],
+  providers: [AuthService],
   templateUrl: './releases.component.html',
 })
 export class ReleasesComponent implements OnInit {
@@ -54,6 +56,7 @@ export class ReleasesComponent implements OnInit {
   errorMessage: string = ''; //TODO handle it
 
   constructor(
+    private authService: AuthService,
     private http: HttpClient,
     private modalService: NgbModal,
     private releasesService: ReleasesService,
@@ -63,6 +66,8 @@ export class ReleasesComponent implements OnInit {
     this.canCreateRelease();
     this.getDefaultRelease();
     this.getReleases();
+
+    console.log(this.authService.userRestrictions.subscribe((val) => console.log(val)));
   }
 
   private async getDefaultRelease() {

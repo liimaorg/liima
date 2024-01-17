@@ -24,7 +24,7 @@ export class ReleaseEditComponent {
   }
 
   getTitle(): string {
-    return 'Add';
+    return 'Add release';
   }
 
   cancel() {
