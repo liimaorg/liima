@@ -3,9 +3,6 @@
   <div class="page-content">
     <h1>Logs for Deployment {{ deploymentId$ | async }}</h1>
     <div *ngIf="availableLogFiles$ | async as deploymentLogMetaData; else loading">
-      <div *ngIf="deploymentLogMetaData?.length === 0">
-        <app-notification [message]="'no log files found for deployment'" [messageType]="'warning'"></app-notification>
-      </div>
       <div *ngIf="deploymentLogMetaData.length > 0">
         <div class="card mt-3 h-100">
           <div *ngIf="availableLogFiles$ | async as deploymentLogMetaData; else loading" class="card-header">
@@ -24,43 +21,28 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="mt-3 h-100" *ngIf="selectedDeploymentLogContent$ | async as selectedDeploymentLogContent">
-          <div *ngIf="selectedDeploymentLogContent === 'failed'">
-            <app-notification
-              [message]="'unable to show content of log file'"
-              [messageType]="'warning'"
-            ></app-notification>
-          </div>
-
-          <div class="h-100" *ngIf="selectedDeploymentLogContent !== 'failed'">
-            <ngx-codemirror
-              class="h-100"
-              [(ngModel)]="selectedDeploymentLogContent.content"
-              [options]="{
-                lineNumbers: false,
-                theme: 'default',
-                mode: 'simplemode',
-                readOnly: true
-              }"
-            ></ngx-codemirror>
+          <div *ngIf="selectedDeploymentLogContent$ | async as selectedDeploymentLogContent">
+            <div class="mt-3 h-100" *ngIf="selectedDeploymentLogContent !== 'failed'">
+              <div class="h-100">
+                <ngx-codemirror
+                  class="h-100"
+                  [(ngModel)]="selectedDeploymentLogContent.content"
+                  [options]="{
+                    lineNumbers: false,
+                    theme: 'default',
+                    mode: 'simplemode',
+                    readOnly: true
+                  }"
+                ></ngx-codemirror>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </app-page>
-
+<app-toast></app-toast>
 <ng-template #loading>
   <app-loading-indicator [isLoading]="true"></app-loading-indicator>
 </ng-template>
-
-<!--  <div *ngIf="deployment$ | async as deployment; else loading" class="h-100">
-      <div *ngIf="deployment === 'failed'">
-        <app-notification
-          [message]="'Unable to load log files for deployment'"
-          [messageType]="'warning'"
-        ></app-notification>
-      </div>
-
-      <div *ngIf="deployment !== 'failed'"></div>-->
