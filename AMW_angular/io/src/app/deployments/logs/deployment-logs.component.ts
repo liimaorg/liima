@@ -3,7 +3,6 @@ import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
-import { Deployment } from 'src/app/deployment/deployment';
 import { DeploymentService } from 'src/app/deployment/deployment.service';
 import { DeploymentLog, DeploymentLogContent } from './deployment-log';
 import { DeploymentLogsService } from './deployment-logs.service';
@@ -58,36 +57,39 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     private location: Location,
   ) {}
 
-  selectDeploymentLog$: Subject<DeploymentLog> = new Subject();
-
+  /**
+   * the deployment id taken from the route param
+   */
   deploymentId$: Observable<number> = this.route.paramMap.pipe(
     map((params) => +params.get('deploymentId')),
     distinctUntilChanged(),
   );
 
+  /**
+   * the file name from the path param - may be empty
+   */
   fileName$: Observable<string> = this.route.paramMap.pipe(
     map((params) => params.get('fileName')),
     distinctUntilChanged(),
   );
 
-  deployment$: Observable<Deployment | Failed> = this.deploymentId$.pipe(
-    switchMap(this.loadDeployment.bind(this)),
-    shareReplay(1),
-  );
+  selectedDeploymentLog$: Subject<DeploymentLog> = new Subject();
 
-  deploymentLogMetaData$: Observable<DeploymentLog[]> = this.deployment$.pipe(
-    switchMap(this.loadDeploymentLogs.bind(this)),
+  availableLogFiles$: Observable<DeploymentLog[]> = this.deploymentId$.pipe(
+    switchMap(this.loadAvailableDeploymentLogFileNames.bind(this)),
     shareReplay(1),
   );
 
   currentDeploymentLog$: Observable<DeploymentLog> = merge(
-    combineLatest([this.fileName$, this.deploymentLogMetaData$]).pipe(
-      map(([filename, meta]) => (!filename ? meta[0] : meta.find((m) => m.filename === filename))),
+    combineLatest([this.fileName$, this.availableLogFiles$]).pipe(
+      map(([filename, availableLogFiles]) =>
+        !filename ? availableLogFiles[0] : availableLogFiles.find((m) => m.filename === filename),
+      ),
     ),
-    this.selectDeploymentLog$,
+    this.selectedDeploymentLog$,
   ).pipe(distinctUntilChanged());
 
-  currentDeploymentLogContent$: Observable<DeploymentLogContent> = this.currentDeploymentLog$.pipe(
+  selectedDeploymentLogContent$: Observable<DeploymentLogContent> = this.currentDeploymentLog$.pipe(
     switchMap(this.loadDeploymentLogContent.bind(this)),
   );
 
@@ -117,27 +119,16 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
   }
 
   selectFile(deploymentLogMetaData: DeploymentLog) {
-    this.selectDeploymentLog$.next(deploymentLogMetaData);
+    this.selectedDeploymentLog$.next(deploymentLogMetaData);
   }
 
-  loadDeployment(deploymentId) {
-    return this.deploymentService.get(deploymentId).pipe(catchError(() => failed()));
-  }
-
-  loadDeploymentLogs(deployment: Deployment | Failed) {
-    return deployment === 'failed' || deployment === undefined
-      ? of([])
-      : this.deploymentLogsService.getLogFileMetaData(deployment.id).pipe(catchError(() => failed()));
+  loadAvailableDeploymentLogFileNames(deploymentId: number) {
+    return this.deploymentLogsService.getLogFileMetaData(deploymentId).pipe(catchError(() => failed()));
   }
 
   loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed) {
     return deploymentLog === 'failed' || deploymentLog === undefined
       ? of('')
-      : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(
-          map((content) => {
-            return { content };
-          }),
-          catchError(() => failed()),
-        );
+      : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(catchError(() => failed()));
   }
 }
