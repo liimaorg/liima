@@ -1,7 +1,7 @@
 import { Location, NgIf, NgFor, AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { DeploymentService } from 'src/app/deployment/deployment.service';
 import { DeploymentLog, DeploymentLogContent } from './deployment-log';
@@ -16,8 +16,8 @@ import {
   NgbDropdownButtonItem,
   NgbDropdownItem,
 } from '@ng-bootstrap/ng-bootstrap';
-import { NotificationComponent } from '../../shared/elements/notification/notification.component';
 import { PageComponent } from '../../layout/page/page.component';
+import { ToastComponent } from '../../shared/elements/toast/toast.component';
 
 declare let CodeMirror: any;
 
@@ -35,7 +35,6 @@ function failed(): Observable<Failed> {
   standalone: true,
   imports: [
     NgIf,
-    NotificationComponent,
     NgbDropdown,
     NgbDropdownToggle,
     NgbDropdownMenu,
@@ -47,6 +46,7 @@ function failed(): Observable<Failed> {
     LoadingIndicatorComponent,
     AsyncPipe,
     PageComponent,
+    ToastComponent,
   ],
 })
 export class DeploymentLogsComponent implements OnInit, OnDestroy {
@@ -56,6 +56,8 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private location: Location,
   ) {}
+
+  @ViewChild(ToastComponent) toast: ToastComponent;
 
   /**
    * the deployment id taken from the route param
@@ -93,6 +95,8 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     switchMap(this.loadDeploymentLogContent.bind(this)),
   );
 
+  private error$ = new BehaviorSubject<string>('');
+
   private destroy$ = new Subject<void>();
   ngOnInit(): void {
     this.currentDeploymentLog$
@@ -100,6 +104,13 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
       .subscribe((current) =>
         this.location.replaceState(`/deployments/${current.deploymentId}/logs/${current.filename}`),
       );
+    this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => this.toast.display(msg, 'error', 5000));
+    this.availableLogFiles$.pipe(takeUntil(this.destroy$)).subscribe((logFiles) => {
+      if (logFiles.length === 0) {
+        this.error$.next('no logfiles found');
+      }
+    });
+
     CodeMirror.defineSimpleMode('simplemode', {
       start: [
         {
@@ -123,12 +134,22 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
   }
 
   loadAvailableDeploymentLogFileNames(deploymentId: number) {
-    return this.deploymentLogsService.getLogFileMetaData(deploymentId).pipe(catchError(() => failed()));
+    return this.deploymentLogsService.getLogFileMetaData(deploymentId).pipe(
+      catchError((msg) => {
+        this.error$.next(msg);
+        return failed();
+      }),
+    );
   }
 
   loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed) {
     return deploymentLog === 'failed' || deploymentLog === undefined
       ? of('')
-      : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(catchError(() => failed()));
+      : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(
+          catchError((msg) => {
+            this.error$.next(msg);
+            return failed();
+          }),
+        );
   }
 }
