@@ -42,14 +42,14 @@
             <td class="align-middle">{{ item.installationInProductionAt | date: dateFormat }}</td>
             <td class="text-center">
               @if (item.default != true && canEdit) {
-              <button class="btn btn-sm btn-primary me-0" (click)="editRelease(item.id)">
+              <button class="btn btn-sm btn-primary me-0" (click)="editRelease(item)">
                 <app-icon icon="pencil"></app-icon>
               </button>
               }
             </td>
             <td class="text-center">
               @if (item.default != true && canDelete) {
-              <button class="btn btn-sm btn-danger me-0" (click)="deleteRelease(item.id)">
+              <button class="btn btn-sm btn-danger me-0" (click)="deleteRelease(item)">
                 <app-icon icon="trash"></app-icon>
               </button>
               }

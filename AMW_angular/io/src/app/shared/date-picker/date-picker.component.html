@@ -1,0 +1,41 @@
+<div *ngIf="errorMessage" class="alert alert-warning alert-dismissible" role="alert">
+  <span [innerHTML]="errorMessage"></span>
+  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+</div>
+<div class="input-group me-2">
+  <input
+    [ngClass]="ngControl?.valid ? 'ng-valid' : 'ng-invalid'"
+    class="form-control"
+    (blur)="inputBlur($event)"
+    [ngModel]="dateString"
+    (change)="onDateStringChange($event)"
+    [disabled]="disabled"
+    [attr.data-cy]="'date-picker'"
+    placeholder="{{ dateStringFormat }}"
+  />
+
+  <div class="input-group-append">
+    <button class="btn btn-secondary" [ngbPopover]="calendarContent" [disabled]="disabled" type="button">
+      <app-icon icon="calendar3"></app-icon>
+    </button>
+  </div>
+</div>
+
+<ng-template #calendarContent>
+  <div>
+    <div class="d-grid">
+      <ngb-datepicker name="datepicker" [ngModel]="date" (ngModelChange)="onDateChange($event)"></ngb-datepicker>
+      <button
+        class="btn btn-secondary m-0"
+        [disabled]="!date?.day"
+        type="button"
+        (click)="toggleDateTimeState($event)"
+      > OK
+      </button>
+    </div>
+</div>
+</ng-template>
+<!-- workaround to make the datetimepicker actually work -->
+<div class="d-none">
+  <div *ngIf="false; else calendarContent"></div>
+</div>

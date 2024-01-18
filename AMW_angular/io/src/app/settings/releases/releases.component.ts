@@ -110,11 +110,24 @@ export class ReleasesComponent implements OnInit {
 
   addRelease() {
     const modalRef = this.modalService.open(ReleaseEditComponent);
-    modalRef.componentInstance.selectedRelease = undefined;
+    const newRelease: Release = {
+      default: false,
+      description: '',
+      id: 0,
+      installationInProductionAt: undefined,
+      mainRelease: false,
+      name: '',
+    };
+
+    modalRef.componentInstance.release = newRelease;
     modalRef.componentInstance.saveRelease.subscribe((release: Release) => this.save(release));
   }
 
-  editRelease(id: number) {}
+  editRelease(release: Release) {
+    const modalRef = this.modalService.open(ReleaseEditComponent);
+    modalRef.componentInstance.release = release;
+    modalRef.componentInstance.saveRelease.subscribe((release: Release) => this.save(release));
+  }
 
   save(release: Release) {
     this.isLoading = true;
@@ -128,7 +141,7 @@ export class ReleasesComponent implements OnInit {
     // TODO           Toast it
   }
 
-  deleteRelease(id: number) {}
+  deleteRelease(release: Release) {}
 
   setMaxResultsPerPage(max: number) {
     this.maxResults = max;
