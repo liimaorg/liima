@@ -91,15 +91,6 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     switchMap(this.loadDeploymentLogContent.bind(this)),
   );
 
-  pagetitle$: Observable<string> = this.deployment$.pipe(
-    map((deployment) =>
-      deployment === 'failed'
-        ? ``
-        : `Log file for ${deployment.id} (${deployment.appServerName}
-          ${deployment.releaseName})`,
-    ),
-  );
-
   private destroy$ = new Subject<void>();
   ngOnInit(): void {
     this.currentDeploymentLog$

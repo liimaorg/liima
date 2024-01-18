@@ -32,7 +32,7 @@ public class DeploymentsLogRest {
     @GET
     @Path("/{id : \\d+}/logs/{fileName}")
     @ApiOperation(value = "get the log file content as plain text for a given deployment and file name")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getDeploymentLogFileContent(@ApiParam("Deployment ID") @PathParam("id") Integer id,
                                                 @PathParam("fileName") String fileName) throws ValidationException, IOException {
 
