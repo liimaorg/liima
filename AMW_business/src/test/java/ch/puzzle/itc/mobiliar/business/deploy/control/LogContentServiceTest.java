@@ -1,6 +1,7 @@
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContent;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentCommand;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import org.junit.Test;
@@ -45,9 +46,11 @@ public class LogContentServiceTest {
         doReturn("log-file-content").when(deploymentBoundary).getDeploymentLog("file-name.log");
 
         // when
-        String content = service.getContent(new DeploymentLogContentCommand(12345, "file-name.log"));
+        DeploymentLogContent content = service.getContent(new DeploymentLogContentCommand(12345, "file-name.log"));
 
         // then
-        assertThat(content, is("log-file-content"));
+        assertThat(content.getId(), is(12345L));
+        assertThat(content.getFileName(), is("file-name.log"));
+        assertThat(content.getContent(), is("log-file-content"));
     }
 }
