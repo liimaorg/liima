@@ -19,6 +19,7 @@ public class ListDeploymentLogService implements ListDeploymentLogsUseCase {
 
     @Override
     public List<DeploymentLog> logsFor(@NonNull Integer deploymentId) {
+        deploymentBoundary.getDeploymentById(deploymentId); // check that the deployment with the given id exists. throws an exception if no entity is found!
         return Arrays.stream(deploymentBoundary.getLogFileNames(deploymentId))
                      .map(fileName -> new DeploymentLog(deploymentId, fileName))
                      .collect(Collectors.toList());
