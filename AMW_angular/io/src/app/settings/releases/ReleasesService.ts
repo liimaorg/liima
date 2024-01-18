@@ -11,14 +11,6 @@ export class ReleasesService extends BaseService {
     super();
   }
 
-  canCreateRelease(): Observable<boolean> {
-    return this.http
-      .get<boolean>(`${this.getBaseUrl()}/releases/canCreateRelease`, {
-        headers: this.getHeaders(),
-      })
-      .pipe(catchError(this.handleError));
-  }
-
   create(release: Release) {
     // TODO
     return this.http

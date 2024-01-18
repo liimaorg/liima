@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { filter, Observable, Subject } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Restriction } from '../settings/permission/restriction';
+import { Release } from '../settings/releases/release';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
   private readonly _cachedUserRestrictions: Subject<Restriction[]>;
-  private readonly _userData;
+  private readonly _userData: Observable<Restriction[]>;
 
   constructor(private http: HttpClient) {
     super();
@@ -36,5 +37,13 @@ export class AuthService extends BaseService {
 
   get userRestrictions() {
     return this._userData;
+  }
+
+  getActionsForPermission(permissionName: string) {
+    return this._userData.pipe(
+      map((restrictions) => {
+        return restrictions.filter((entry) => entry.permission.name === permissionName).map((entry) => entry.action);
+      }),
+    );
   }
 }

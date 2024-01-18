@@ -9,7 +9,7 @@
           <b>Releases</b>
         </div>
         <div class="col-sm">
-          @if (hasPermissionToCreateRelease) {
+          @if (canCreate) {
           <button type="button" class="btn btn-primary float-end" (click)="addRelease()">
             <app-icon icon="plus-circle"></app-icon>
             Add release
@@ -28,7 +28,6 @@
             <th>Main Release</th>
             <th>Description</th>
             <th>Date</th>
-            <th>Default</th>
             <th class="text-center">Edit</th>
             <th class="text-center">Delete</th>
           </tr>
@@ -41,16 +40,15 @@
             <td class="align-middle">{{ item.mainRelease }}</td>
             <td class="align-middle">{{ item.description }}</td>
             <td class="align-middle">{{ item.installationInProductionAt | date: dateFormat }}</td>
-            <td class="align-middle">{{ item.default }}</td>
             <td class="text-center">
-              @if (item.default != true) {
+              @if (item.default != true && canEdit) {
               <button class="btn btn-sm btn-primary me-0" (click)="editRelease(item.id)">
                 <app-icon icon="pencil"></app-icon>
               </button>
               }
             </td>
             <td class="text-center">
-              @if (item.default != true) {
+              @if (item.default != true && canDelete) {
               <button class="btn btn-sm btn-danger me-0" (click)="deleteRelease(item.id)">
                 <app-icon icon="trash"></app-icon>
               </button>

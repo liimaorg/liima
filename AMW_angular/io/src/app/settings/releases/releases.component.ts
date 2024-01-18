@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatestWith, filter, Observable, switchMap, take } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
@@ -12,6 +12,7 @@ import { Release } from './release';
 import { ReleasesService } from './ReleasesService';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../auth/auth.service';
+import { withLatestFrom, debounceTime, map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'amw-releases',
@@ -35,7 +36,6 @@ export class ReleasesComponent implements OnInit {
   defaultRelease$: Observable<Release>;
   isLoading$: Observable<boolean> = new BehaviorSubject<boolean>(true);
   results$: BehaviorSubject<Release[]> = new BehaviorSubject<Release[]>([]);
-  defaultReleaseId: number;
 
   dateFormat = DATE_FORMAT;
 
@@ -49,9 +49,10 @@ export class ReleasesComponent implements OnInit {
   lastPage: number;
 
   isLoading: boolean = true;
-  edit: boolean = false;
 
-  hasPermissionToCreateRelease: boolean = false;
+  canCreate: boolean = false;
+  canEdit: boolean = false;
+  canDelete: boolean = false;
 
   errorMessage: string = ''; //TODO handle it
 
@@ -63,20 +64,21 @@ export class ReleasesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.canCreateRelease();
+    this.getUserPermissions();
     this.getDefaultRelease();
     this.getReleases();
-
-    console.log(this.authService.userRestrictions.subscribe((val) => console.log(val)));
   }
 
-  private async getDefaultRelease() {
-    this.defaultRelease$ = this.http.get<Release>('/AMW_rest/resources/releases/default');
-    this.defaultRelease$.subscribe({
-      next: (result) => {
-        this.defaultReleaseId = result.id;
-      },
+  private getUserPermissions() {
+    this.authService.getActionsForPermission('RELEASE').subscribe((value) => {
+      this.canCreate = value.indexOf('CREATE') > -1;
+      this.canEdit = value.indexOf('UPDATE') > -1;
+      this.canDelete = value.indexOf('DELETE') > -1;
     });
+  }
+
+  private getDefaultRelease() {
+    this.defaultRelease$ = this.http.get<Release>('/AMW_rest/resources/releases/default');
   }
 
   private getReleases() {
@@ -85,27 +87,25 @@ export class ReleasesComponent implements OnInit {
       '/AMW_rest/resources/releases?start=' + this.offset + '&limit=' + this.maxResults,
     );
 
-    this.releases$.subscribe({
-      next: (results) => {
-        results.map((release) =>
-          release.id === this.defaultReleaseId ? (release.default = true) : (release.default = false),
-        );
+    this.releases$
+      .pipe(
+        withLatestFrom(this.defaultRelease$, (releases, defaultR) => ({ releases, defaultR })),
+        map(({ releases, defaultR }) =>
+          releases.map((release) => {
+            if (release.id === defaultR.id) {
+              release.default = true;
+            }
+            return release;
+          }),
+        ),
+      )
+      .subscribe((results) => {
         this.results$.next(results);
         this.allResults = results.length;
         this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
         this.lastPage = Math.ceil(this.allResults / this.maxResults);
         this.isLoading = false;
-      },
-
-      complete: () => (this.isLoading = false),
-    });
-  }
-
-  private canCreateRelease() {
-    this.releasesService.canCreateRelease().subscribe({
-      next: (r) => (this.hasPermissionToCreateRelease = r),
-      error: (e) => (this.errorMessage = e),
-    });
+      });
   }
 
   addRelease() {
