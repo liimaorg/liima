@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h6 class="modal-title" id="editReleaseTitle">{{ getTitle() }}</h6>
+  <h5 class="modal-title" id="editReleaseTitle">{{ getTitle() }}</h5>
   <button type="button" class="close" aria-label="Close" (click)="cancel()">
     <span aria-hidden="true">&times;</span>
   </button>
@@ -18,7 +18,7 @@
     </div>
     <div class="mb-3">
       <label for="releaseDate" class="form-label">Installation date</label>
-      <div id="releaseDate" class="input-group date mb-3">
+      <div id="releaseDate" class="form-text input-group date mb-3" required>
         <app-date-picker
           [(ngModel)]="installationDate"
           [dateStringFormat]="dateFormat"
@@ -27,6 +27,9 @@
           class="w-100"
         ></app-date-picker>
       </div>
+      @if (installationDate == null) {
+        <div class="text-warning">The installation date is mandatory</div>
+      }
     </div>
     <div class="mb-3">
       <label for="description" class="form-label">Release description</label>
@@ -37,6 +40,7 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-primary" (click)="save()">Save changes</button>
+  <button type="button" class="btn btn-primary" [disabled]="!installationDate" (click)="save()">Save changes</button>
 </div>
+
 

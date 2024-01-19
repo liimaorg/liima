@@ -4,7 +4,7 @@
   <h1>Releases</h1>
   <div class="card row mt-2 mb-3">
     <div class="card-header">
-      <div class="row justify-content-between">
+      <div class="row justify-content-between align-items-center">
         <div class="col-sm">
           <b>Releases</b>
         </div>
@@ -61,8 +61,13 @@
         }
       </div>
     </div>
-    <div class="card-footer p-1">
-      <div class="bg-light">
+    <div class="card-footer py-1">
+      <div class="row  bg-light align-items-center">
+        <div class="col-sm ">
+          Page: {{ currentPage }}
+        </div>
+
+        <div class="col-sm ms-auto">
         <amw-pagination
           [currentPage]="currentPage"
           [lastPage]="lastPage"
@@ -70,6 +75,7 @@
           (doSetOffset)="setNewOffset($event)"
         >
         </amw-pagination>
+        </div>
       </div>
     </div>
   </div>

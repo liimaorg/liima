@@ -77,7 +77,7 @@ public class ReleaseMgmtPersistenceService {
 	/**
 	 * @return the default release which is the release with the lowest date
 	 */
-	public ReleaseEntity getDefaultRelease(){
+	public ReleaseEntity getDefaultRelease() {
 		CriteriaQuery<ReleaseEntity> query = entityManager.getCriteriaBuilder().createQuery(ReleaseEntity.class);
 		Root<ReleaseEntity> root = query.from(ReleaseEntity.class);
 		query.orderBy(entityManager.getCriteriaBuilder().asc(root.get("installationInProductionAt")));

@@ -1,0 +1,33 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="deleteReleaseTitle">{{ getTitle() }}</h5>
+  <button type="button" class="close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form-horizontal mx-2">
+    <div class="mb-3">
+      @if (!hasResources) {
+      <div class="text-body">Do you really want to delete the release {{ release.name }} ?</div>
+      } @else {
+      <div class="text-body">The release {{ release.name }} is used by the following resources and can not be deleted:
+      </div>
+        <ul>
+          {{ resources.keys }}
+        @for (item of resources | keyvalue; track item) {
+          <li>{{item.key}}:{{item.value}}>/li>
+        }
+        </ul>
+
+      <ul>
+        <li *ngFor="let item of resources | keyvalue async">
+          {{item.key}} ---> {{item.value}}</li>
+      </ul>
+      }
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" [disabled]="hasResources" (click)="delete()">Delete</button>
+</div>

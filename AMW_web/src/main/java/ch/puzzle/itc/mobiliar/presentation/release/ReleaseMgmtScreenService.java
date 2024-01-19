@@ -72,7 +72,7 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 	 */
 	public List<ReleaseEntity> getReleases() {
 		if (releases == null || releases.isEmpty()) {
-			releases = releaseMgmtService.loadReleasesForMgmt(getStartIndex(), getPageSize(), true);
+			releases = releaseLocator.loadReleasesForMgmt(getStartIndex(), getPageSize(), true);
 		}
 		return releases;
 	}
@@ -91,7 +91,7 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 	 */
 	private int countReleases() {
 		if (totalCount == null) {
-			totalCount = releaseMgmtService.countReleases();
+			totalCount = releaseLocator.countReleases();
 		}
 		return totalCount.intValue();
 	}
@@ -148,7 +148,7 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 	}
 
 	public void loadResourcesAndDeploymentsForRelease(Integer releaseId) {
-		List<ResourceEntity> result = releaseMgmtService.getResourcesForRelease(releaseId);
+		List<ResourceEntity> result = releaseLocator.getResourcesForRelease(releaseId);
 		resourcesForCurrentRelease = new TreeMap();
 		for (ResourceEntity r : result) {
 			if (!resourcesForCurrentRelease.containsKey(r.getResourceType())) {
@@ -186,9 +186,9 @@ public class ReleaseMgmtScreenService extends PaginationComp implements Serializ
 	 */
 	public boolean save() {
 		if (currentRelease.getId() == null) {
-			releaseMgmtService.create(currentRelease);
+			releaseLocator.create(currentRelease);
 		} else {
-			releaseMgmtService.update(currentRelease);
+			releaseLocator.update(currentRelease);
 		}
 		GlobalMessageAppender.addSuccessMessage("Release " + currentRelease.getName()
 				+ " successfully saved.");
