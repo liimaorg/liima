@@ -34,20 +34,26 @@ export class ReleaseEditComponent implements OnInit {
     return this.release.id ? 'Edit release' : 'Add release';
   }
 
+  hasInvalidDate(): boolean {
+    return this.installationDate == null || this.installationDate.toEpoch() == null;
+  }
+
   cancel() {
     this.activeModal.close();
   }
 
   save() {
-    const release: Release = {
-      name: this.release.name,
-      mainRelease: this.release.mainRelease,
-      description: this.release.description,
-      installationInProductionAt: this.installationDate.toEpoch(),
-      id: this.release.id ? this.release.id : null,
-      default: false,
-    };
-    this.saveRelease.emit(release);
-    this.activeModal.close();
+    if (this.installationDate.toEpoch() != null) {
+      const release: Release = {
+        name: this.release.name,
+        mainRelease: this.release.mainRelease,
+        description: this.release.description,
+        installationInProductionAt: this.installationDate.toEpoch(),
+        id: this.release.id ? this.release.id : null,
+        default: false,
+      };
+      this.saveRelease.emit(release);
+      this.activeModal.close();
+    }
   }
 }

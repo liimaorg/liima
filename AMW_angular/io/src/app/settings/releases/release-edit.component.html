@@ -27,7 +27,7 @@
           class="w-100"
         ></app-date-picker>
       </div>
-      @if (installationDate == null) {
+      @if (hasInvalidDate()) {
         <div class="text-warning">The installation date is mandatory</div>
       }
     </div>
@@ -40,7 +40,7 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-primary" [disabled]="!installationDate" (click)="save()">Save changes</button>
+  <button type="button" class="btn btn-primary" [disabled]="hasInvalidDate()" (click)="save()">Save changes</button>
 </div>
 
 

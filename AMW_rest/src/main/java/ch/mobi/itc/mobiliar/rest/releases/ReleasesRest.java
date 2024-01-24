@@ -94,8 +94,11 @@ public class ReleasesRest {
         if (request.getId() != null) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
         }
-        releaseLocator.create(request);
-        return Response.status(CREATED).build();
+        if (releaseLocator.create(request)) {
+            return Response.status(CREATED).build();
+        } else {
+            return Response.status(BAD_REQUEST).build();
+        }
     }
 
     @PUT
