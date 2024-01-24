@@ -1,6 +1,6 @@
 <div class="modal-header">
   <h5 class="modal-title" id="deleteReleaseTitle">{{ getTitle() }}</h5>
-  <button type="button" class="close" aria-label="Close" (click)="cancel()">
+  <button type="button" class="btn btn-light close" aria-label="Close" (click)="cancel()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
@@ -11,23 +11,25 @@
       <div class="text-body">Do you really want to delete the release {{ release.name }} ?</div>
       } @else {
       <div class="text-body">The release {{ release.name }} is used by the following resources and can not be deleted:
-      </div>
-        <ul>
-          {{ resources.keys }}
-        @for (item of resources | keyvalue; track item) {
-          <li>{{item.key}}:{{item.value}}>/li>
-        }
+        <ul class="list-group mt-2">
+          @for (item of resources | keyvalue; track item) {
+          <li class="list-group-item ">
+            <div class="d-flex justify-content-between align-items-start">{{item.key}}
+              <span class="badge bg-primary rounded-pill ms-auto">{{ item.value.length }}</span></div>
+            <ul class="list-unstyled">
+              @for (rs of item.value; track rs) {
+              <li><small class="bi-dot">{{rs.name}}</small></li>
+              }
+            </ul>
+          </li>
+          }
         </ul>
-
-      <ul>
-        <li *ngFor="let item of resources | keyvalue async">
-          {{item.key}} ---> {{item.value}}</li>
-      </ul>
+      </div>
       }
     </div>
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
   <button type="button" class="btn btn-primary" [disabled]="hasResources" (click)="delete()">Delete</button>
 </div>

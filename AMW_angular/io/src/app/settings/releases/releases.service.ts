@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../../base/base.service';
 import { HttpClient } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { Release } from './release';
 import { Observable } from 'rxjs';
 import { ResourceEntity } from './resourceEntity';
@@ -26,8 +26,17 @@ export class ReleasesService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  getReleaseResources(id: number) {
-    return this.http.get(`${this.getBaseUrl()}/releases/${id}/resources`).pipe(catchError(this.handleError));
+  getReleaseResources(id: number): Observable<Map<string, ResourceEntity[]>> {
+    return this.http.get(`${this.getBaseUrl()}/releases/${id}/resources`).pipe(
+      map((jsonObject) => {
+        let resourceMap = new Map<string, ResourceEntity[]>();
+        for (var value in jsonObject) {
+          resourceMap.set(value, jsonObject[value]);
+        }
+        return resourceMap;
+      }),
+      catchError(this.handleError),
+    );
   }
 
   save(release: Release) {

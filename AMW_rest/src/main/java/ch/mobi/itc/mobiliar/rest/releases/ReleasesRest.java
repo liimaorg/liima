@@ -35,6 +35,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
+import java.lang.annotation.Repeatable;
 import java.util.*;
 
 import static javax.ws.rs.core.Response.Status.*;
@@ -121,6 +122,9 @@ public class ReleasesRest {
         ReleaseEntity release = releaseLocator.getReleaseById(id);
         if (release == null) {
             return Response.status(NOT_FOUND).build();
+        }
+        if (!releaseLocator.loadResourcesAndDeploymentsForRelease(id).keySet().isEmpty()) {
+            return Response.status(CONFLICT).entity(new ExceptionDto("Constraint violation. Cascade-delete is not supported. ")).build();
         }
         releaseLocator.delete(release);
 

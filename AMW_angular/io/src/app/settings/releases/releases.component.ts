@@ -172,41 +172,17 @@ export class ReleasesComponent implements OnInit {
   }
 
   deleteRelease(release: Release) {
-    let resources = {};
-    // let resources: Map<string, ResourceEntity[]> = [
-    //   [
-    //     'APPLICATION',
-    //     [
-    //       {
-    //         id: 267210,
-    //         name: 'asdfasdf',
-    //         resourceType: {
-    //           id: 1,
-    //           name: 'APPLICATION',
-    //         },
-    //       },
-    //       {
-    //         id: 266912,
-    //         name: 'bert_beratung_service',
-    //         resourceType: {
-    //           id: 1,
-    //           name: 'APPLICATION',
-    //         },
-    //       },
-    //     ],
-    //   ],
-    // ];
-    // this.releasesService
-    //   .getReleaseResources(release.id)
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe((list: Map<string, ResourceEntity[]>) => (resources = list));
-
-    const modalRef = this.modalService.open(ReleaseDeleteComponent);
-    modalRef.componentInstance.release = release;
-    modalRef.componentInstance.resources = resources;
-    modalRef.componentInstance.deleteRelease
+    this.releasesService
+      .getReleaseResources(release.id)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((release: Release) => this.delete(release));
+      .subscribe((list) => {
+        const modalRef = this.modalService.open(ReleaseDeleteComponent);
+        modalRef.componentInstance.release = release;
+        modalRef.componentInstance.resources = list;
+        modalRef.componentInstance.deleteRelease
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((release: Release) => this.delete(release));
+      });
   }
 
   delete(release: Release) {
