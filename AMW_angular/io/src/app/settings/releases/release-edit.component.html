@@ -1,6 +1,6 @@
 <div class="modal-header">
   <h5 class="modal-title" id="editReleaseTitle">{{ getTitle() }}</h5>
-  <button type="button" class="close" aria-label="Close" (click)="cancel()">
+  <button type="button" class="btn btn-light close" aria-label="Close" (click)="cancel()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
@@ -39,7 +39,7 @@
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
   <button type="button" class="btn btn-primary" [disabled]="!installationDate" (click)="save()">Save changes</button>
 </div>
 

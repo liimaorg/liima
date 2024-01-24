@@ -38,7 +38,6 @@ export class ReleasesComponent implements OnInit {
   releases$: Observable<Release[]>;
   defaultRelease$: Observable<Release>;
   count$: Observable<number>;
-  isLoading$: Observable<boolean> = new BehaviorSubject<boolean>(true);
   results$: BehaviorSubject<Release[]> = new BehaviorSubject<Release[]>([]);
   private error$ = new BehaviorSubject<string>('');
 
@@ -92,7 +91,7 @@ export class ReleasesComponent implements OnInit {
   private getUserPermissions() {
     this.authService
       .getActionsForPermission('RELEASE')
-      // .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe((value) => {
         if (value.indexOf('ALL') > -1) {
           this.canDelete = this.canEdit = this.canCreate = true;

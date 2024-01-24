@@ -63,11 +63,6 @@
     </div>
     <div class="card-footer py-1">
       <div class="row  bg-light align-items-center">
-        <div class="col-sm ">
-          Page: {{ currentPage }}
-        </div>
-
-        <div class="col-sm ms-auto">
         <amw-pagination
           [currentPage]="currentPage"
           [lastPage]="lastPage"
@@ -75,7 +70,7 @@
           (doSetOffset)="setNewOffset($event)"
         >
         </amw-pagination>
-        </div>
+
       </div>
     </div>
   </div>
