@@ -25,15 +25,11 @@
   <div>
     <div class="d-grid">
       <ngb-datepicker name="datepicker" [ngModel]="date" (ngModelChange)="onDateChange($event)"></ngb-datepicker>
-      <button
-        class="btn btn-secondary m-0"
-        [disabled]="!date?.day"
-        type="button"
-        (click)="toggleDateTimeState($event)"
-      > OK
+      <button class="btn btn-secondary m-0" [disabled]="!date?.day" type="button" (click)="toggleDateTimeState($event)">
+        OK
       </button>
     </div>
-</div>
+  </div>
 </ng-template>
 <!-- workaround to make the datetimepicker actually work -->
 <div class="d-none">

@@ -8,12 +8,12 @@
   <div class="form-horizontal mx-2">
     <div class="mb-3">
       <label for="name" class="form-label">Release name</label>
-      <input type="text" class="form-control" id="name" [(ngModel)]="release.name">
+      <input type="text" class="form-control" id="name" [(ngModel)]="release.name" />
     </div>
     <div class="mb-3">
       <div class="form-check">
         <label for="main" class="form-check-label">Main release</label>
-        <input type="checkbox" class="form-check-input" id="main" [(ngModel)]="release.mainRelease">
+        <input type="checkbox" class="form-check-input" id="main" [(ngModel)]="release.mainRelease" />
       </div>
     </div>
     <div class="mb-3">
@@ -28,13 +28,12 @@
         ></app-date-picker>
       </div>
       @if (hasInvalidDate()) {
-        <div class="text-warning">The installation date is mandatory</div>
+      <div class="text-warning">The installation date is mandatory</div>
       }
     </div>
     <div class="mb-3">
       <label for="description" class="form-label">Release description</label>
-      <textarea type="text" class="form-control" id="description"
-                [(ngModel)]="release.description"></textarea>
+      <textarea type="text" class="form-control" id="description" [(ngModel)]="release.description"></textarea>
     </div>
   </div>
 </div>
@@ -42,5 +41,3 @@
   <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
   <button type="button" class="btn btn-primary" [disabled]="hasInvalidDate()" (click)="save()">Save changes</button>
 </div>
-
-

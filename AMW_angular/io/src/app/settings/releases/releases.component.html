@@ -23,46 +23,46 @@
         @if ((results$ | async)?.length > 0) {
         <table class="table table-sm table-striped">
           <thead>
-          <tr>
-            <th>Release Name</th>
-            <th>Main Release</th>
-            <th>Description</th>
-            <th>Date</th>
-            <th class="text-center">Edit</th>
-            <th class="text-center">Delete</th>
-          </tr>
+            <tr>
+              <th>Release Name</th>
+              <th>Main Release</th>
+              <th>Description</th>
+              <th>Date</th>
+              <th class="text-center">Edit</th>
+              <th class="text-center">Delete</th>
+            </tr>
           </thead>
 
           <tbody>
-          @for (item of results$ | async; track item) {
-          <tr>
-            <td class="align-middle">{{ item.name }}</td>
-            <td class="align-middle">{{ item.mainRelease }}</td>
-            <td class="align-middle">{{ item.description }}</td>
-            <td class="align-middle">{{ item.installationInProductionAt | date: dateFormat }}</td>
-            <td class="text-center">
-              @if (item.default != true && canEdit) {
-              <button class="btn btn-sm btn-primary me-0" (click)="editRelease(item)">
-                <app-icon icon="pencil"></app-icon>
-              </button>
-              }
-            </td>
-            <td class="text-center">
-              @if (item.default != true && canDelete) {
-              <button class="btn btn-sm btn-danger me-0" (click)="deleteRelease(item)">
-                <app-icon icon="trash"></app-icon>
-              </button>
-              }
-            </td>
-          </tr>
-          }
+            @for (item of results$ | async; track item) {
+            <tr>
+              <td class="align-middle">{{ item.name }}</td>
+              <td class="align-middle">{{ item.mainRelease }}</td>
+              <td class="align-middle">{{ item.description }}</td>
+              <td class="align-middle">{{ item.installationInProductionAt | date: dateFormat }}</td>
+              <td class="text-center">
+                @if (item.default != true && canEdit) {
+                <button class="btn btn-sm btn-primary me-0" (click)="editRelease(item)">
+                  <app-icon icon="pencil"></app-icon>
+                </button>
+                }
+              </td>
+              <td class="text-center">
+                @if (item.default != true && canDelete) {
+                <button class="btn btn-sm btn-danger me-0" (click)="deleteRelease(item)">
+                  <app-icon icon="trash"></app-icon>
+                </button>
+                }
+              </td>
+            </tr>
+            }
           </tbody>
         </table>
         }
       </div>
     </div>
     <div class="card-footer py-1">
-      <div class="row  bg-light align-items-center">
+      <div class="row bg-light align-items-center">
         <amw-pagination
           [currentPage]="currentPage"
           [lastPage]="lastPage"
@@ -70,7 +70,6 @@
           (doSetOffset)="setNewOffset($event)"
         >
         </amw-pagination>
-
       </div>
     </div>
   </div>
