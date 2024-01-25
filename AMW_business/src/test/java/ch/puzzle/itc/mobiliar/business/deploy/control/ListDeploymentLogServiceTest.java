@@ -2,6 +2,7 @@ package ch.puzzle.itc.mobiliar.business.deploy.control;
 
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLog;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,7 +31,7 @@ public class ListDeploymentLogServiceTest {
     private DeploymentBoundary deploymentBoundary;
 
     @Test
-    public void shouldGetLogsFor() {
+    public void shouldGetLogsFor() throws NotFoundException {
         // given
         String[] fileNames = new String[] {"log-file-1", "log-file-2"};
         doReturn(fileNames).when(deploymentBoundary).getLogFileNames(81552);
@@ -47,7 +48,7 @@ public class ListDeploymentLogServiceTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void expectNullPointerException() {
+    public void expectNullPointerException() throws NotFoundException {
         // given
 
         // when

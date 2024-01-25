@@ -18,6 +18,8 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { PageComponent } from '../../layout/page/page.component';
 import { ToastComponent } from '../../shared/elements/toast/toast.component';
+import { NotificationComponent } from '../../shared/elements/notification/notification.component';
+import { Deployment } from '../../deployment/deployment';
 
 declare let CodeMirror: any;
 
@@ -47,12 +49,13 @@ function failed(): Observable<Failed> {
     AsyncPipe,
     PageComponent,
     ToastComponent,
+    NotificationComponent,
   ],
 })
 export class DeploymentLogsComponent implements OnInit, OnDestroy {
   constructor(
-    private deploymentLogsService: DeploymentLogsService,
     private deploymentService: DeploymentService,
+    private deploymentLogsService: DeploymentLogsService,
     private route: ActivatedRoute,
     private location: Location,
   ) {}
@@ -75,9 +78,14 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     distinctUntilChanged(),
   );
 
+  deployment$: Observable<Deployment | Failed> = this.deploymentId$.pipe(
+    switchMap(this.loadDeployment.bind(this)),
+    shareReplay(1),
+  );
+
   selectedDeploymentLog$: Subject<DeploymentLog> = new Subject();
 
-  availableLogFiles$: Observable<DeploymentLog[]> = this.deploymentId$.pipe(
+  availableLogFiles$: Observable<DeploymentLog[]> = this.deployment$.pipe(
     switchMap(this.loadAvailableDeploymentLogFileNames.bind(this)),
     shareReplay(1),
   );
@@ -99,17 +107,14 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   ngOnInit(): void {
-    this.currentDeploymentLog$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((current) =>
-        this.location.replaceState(`/deployments/${current.deploymentId}/logs/${current.filename}`),
-      );
-    this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => this.toast.display(msg, 'error', 5000));
-    this.availableLogFiles$.pipe(takeUntil(this.destroy$)).subscribe((logFiles) => {
-      if (logFiles.length === 0) {
-        this.error$.next('no logfiles found');
+    this.currentDeploymentLog$.pipe(takeUntil(this.destroy$)).subscribe((current: DeploymentLog | Failed) => {
+      if (current !== undefined && current !== 'failed') {
+        debugger;
+        this.location.replaceState(`/deployments/${current.deploymentId}/logs/${current.filename}`);
       }
     });
+
+    this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => this.toast.display(msg, 'error', 5000));
 
     CodeMirror.defineSimpleMode('simplemode', {
       start: [
@@ -133,23 +138,26 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     this.selectedDeploymentLog$.next(deploymentLogMetaData);
   }
 
-  loadAvailableDeploymentLogFileNames(deploymentId: number) {
-    return this.deploymentLogsService.getLogFileMetaData(deploymentId).pipe(
-      catchError((msg) => {
-        this.error$.next(msg);
-        return failed();
-      }),
-    );
+  loadDeployment(deploymentId) {
+    return this.deploymentService.get(deploymentId).pipe(catchError(this.fail()));
+  }
+
+  loadAvailableDeploymentLogFileNames(deployment: Deployment | Failed) {
+    return deployment === 'failed' || deployment === undefined
+      ? of([])
+      : this.deploymentLogsService.getLogFileMetaData(deployment.id).pipe(catchError(this.fail()));
   }
 
   loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed) {
     return deploymentLog === 'failed' || deploymentLog === undefined
       ? of('')
-      : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(
-          catchError((msg) => {
-            this.error$.next(msg);
-            return failed();
-          }),
-        );
+      : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(catchError(this.fail()));
+  }
+
+  private fail() {
+    return (msg) => {
+      this.error$.next(msg);
+      return failed();
+    };
   }
 }
