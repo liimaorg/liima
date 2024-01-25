@@ -3,6 +3,7 @@ package ch.mobi.itc.mobiliar.rest.deployments;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentCommand;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentUseCase;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.ListDeploymentLogsUseCase;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,7 +46,7 @@ public class DeploymentsLogRest {
     @ApiOperation(value = "Get the list of available log file names for a given deployment id.")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDeploymentLogs(
-            @PathParam("deploymentId") Integer deploymentId) throws ValidationException {
+            @PathParam("deploymentId") Integer deploymentId) throws ValidationException, NotFoundException {
 
         if (deploymentId == null) throw new ValidationException("deployment id must not be null");
         return Response.ok(listDeploymentLogsUseCase.logsFor(deploymentId)).build();
