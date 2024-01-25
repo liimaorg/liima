@@ -1,7 +1,7 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
-import { BehaviorSubject, Observable, Subject, take } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
@@ -12,9 +12,9 @@ import { Release } from './release';
 import { ReleasesService } from './releases.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../auth/auth.service';
-import { map, takeUntil, withLatestFrom } from 'rxjs/operators';
+import { combineLatest } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { ReleaseDeleteComponent } from './release-delete.component';
-import { ResourceEntity } from './resourceEntity';
 
 @Component({
   selector: 'amw-releases',
@@ -38,7 +38,7 @@ export class ReleasesComponent implements OnInit {
   releases$: Observable<Release[]>;
   defaultRelease$: Observable<Release>;
   count$: Observable<number>;
-  results$: BehaviorSubject<Release[]> = new BehaviorSubject<Release[]>([]);
+  results$: Observable<Release[]>;
   private error$ = new BehaviorSubject<string>('');
 
   private destroy$ = new Subject<void>();
@@ -72,20 +72,13 @@ export class ReleasesComponent implements OnInit {
       msg != '' ? this.toast.display(msg, 'error', 5000) : null;
     });
     this.getUserPermissions();
-    this.getCount();
-    this.defaultRelease$ = this.releasesService.getDefaultRelease().pipe(takeUntil(this.destroy$));
+    this.count$ = this.releasesService.getCount();
+    this.defaultRelease$ = this.releasesService.getDefaultRelease();
     this.getReleases();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next(undefined);
-  }
-
-  private getCount() {
-    this.releasesService
-      .getCount()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((count) => (this.allResults = count));
   }
 
   private getUserPermissions() {
@@ -106,29 +99,24 @@ export class ReleasesComponent implements OnInit {
   private getReleases() {
     this.isLoading = true;
     this.releases$ = this.releasesService.getReleases(this.offset, this.maxResults);
+    this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
 
-    this.releases$
+    this.results$ = combineLatest([this.releases$, this.defaultRelease$, this.count$])
       .pipe(
-        takeUntil(this.destroy$),
-        withLatestFrom(this.defaultRelease$, (releases, defaultR) => ({ releases, defaultR })),
-        map(({ releases, defaultR }) =>
+        map(([releases, defaultR, count]) => {
+          this.lastPage = Math.ceil(count / this.maxResults);
           releases.map((release) => {
             if (release.id === defaultR.id) {
               release.default = true;
             }
             return release;
-          }),
-        ),
+          });
+          return releases;
+        }),
       )
-      .subscribe({
-        next: (results) => {
-          this.results$.next(results);
-          this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
-          this.lastPage = Math.ceil(this.allResults / this.maxResults);
-        },
-        error: (e) => this.error$.next(e),
-        complete: () => (this.isLoading = false),
-      });
+      .pipe();
+
+    this.isLoading = false;
   }
 
   addRelease() {
