@@ -4,6 +4,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLog;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentCommand;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentUseCase;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.ListDeploymentLogsUseCase;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,7 +84,7 @@ public class DeploymentsLogsRestTest {
     }
 
     @Test
-    public void getDeploymentLogs_nothingFound() throws ValidationException {
+    public void getDeploymentLogs_nothingFound() throws ValidationException, NotFoundException {
         when(listDeploymentLogsUseCase.logsFor(123456)).thenReturn(List.of());
 
         Response response = resource.getDeploymentLogs(123456);
@@ -95,7 +96,7 @@ public class DeploymentsLogsRestTest {
     }
 
     @Test
-    public void getDeploymentLogs() throws ValidationException {
+    public void getDeploymentLogs() throws ValidationException, NotFoundException {
         List<ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLog> logs = List.of(
                 new DeploymentLog(123456, "log1"),
                 new DeploymentLog(123456, "log2"));
@@ -111,7 +112,7 @@ public class DeploymentsLogsRestTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void getDeploymentLogs_throwsValidationExcpetionWhenDeploymentIdIsNull() throws ValidationException {
+    public void getDeploymentLogs_throwsValidationExcpetionWhenDeploymentIdIsNull() throws ValidationException, NotFoundException {
         // given
 
         // when

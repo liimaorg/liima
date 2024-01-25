@@ -1,9 +1,11 @@
 <app-page>
   <div class="page-title">Deployment Logs</div>
   <div class="page-content">
+    @if((deployment$ | async) === 'failed') { deployment does not exist } @else {
     <h1>Logs for Deployment {{ deploymentId$ | async }}</h1>
-    <div *ngIf="availableLogFiles$ | async as deploymentLogMetaData; else loading">
-      <div *ngIf="deploymentLogMetaData.length > 0">
+
+    <div *ngIf="availableLogFiles$ | async as availableLogFiles; else loading">
+      <div *ngIf="availableLogFiles.length > 0">
         <div class="card mt-3 h-100">
           <div *ngIf="availableLogFiles$ | async as deploymentLogMetaData; else loading" class="card-header">
             <div ngbDropdown class="d-inline-block">
@@ -22,7 +24,9 @@
             </div>
           </div>
           <div *ngIf="selectedDeploymentLogContent$ | async as selectedDeploymentLogContent">
-            <div class="mt-3 h-100" *ngIf="selectedDeploymentLogContent !== 'failed'">
+            <div class="m-2 h-100">
+              @if (selectedDeploymentLogContent !== 'failed') {
+
               <div class="h-100">
                 <ngx-codemirror
                   class="h-100"
@@ -35,11 +39,14 @@
                   }"
                 ></ngx-codemirror>
               </div>
+
+              } @else { ... }
             </div>
           </div>
         </div>
       </div>
     </div>
+    }
   </div>
 </app-page>
 <app-toast></app-toast>
