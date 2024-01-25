@@ -22,8 +22,6 @@ package ch.mobi.itc.mobiliar.rest.releases;
 
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
-import ch.puzzle.itc.mobiliar.business.releasing.boundary.ResourceEntityDto;
-import ch.puzzle.itc.mobiliar.business.releasing.boundary.ResourceTypeEntityDto;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import io.swagger.annotations.Api;
@@ -35,8 +33,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
-import java.lang.annotation.Repeatable;
-import java.util.*;
+import java.util.List;
 
 import static javax.ws.rs.core.Response.Status.*;
 
@@ -52,8 +49,8 @@ public class ReleasesRest {
 
     @GET
     @ApiOperation(value = "Get releases", notes = "Returns all releases")
-    public List<ReleaseEntity> getReleases(@DefaultValue("-1") @QueryParam("start") int start, @DefaultValue("-1") @QueryParam("limit") int limit) {
-        if (start < 0 || limit < 0) {
+    public List<ReleaseEntity> getReleases(@QueryParam("start") Integer start, @QueryParam("limit") Integer limit) {
+        if (start == null && limit == null) {
             return releaseLocator.loadAllReleases(true);
         } else {
             return releaseLocator.loadReleasesForMgmt(start, limit, true);

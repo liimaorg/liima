@@ -1,24 +1,17 @@
 package ch.puzzle.itc.mobiliar.business.releasing.boundary;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
+@Data
+@AllArgsConstructor
 public class ResourceEntityDto implements Comparable<ResourceEntityDto> {
-    @Getter
-    @Setter
-    private Integer id;
-    @Getter
-    @Setter
-    private String name;
-    @Getter
-    @Setter
-    private ResourceTypeEntityDto resourceType;
 
-    public ResourceEntityDto(Integer id, String name, ResourceTypeEntityDto resourceType) {
-        this.id = id;
-        this.name = name;
-        this.resourceType = resourceType;
-    }
+    private Integer id;
+
+    private String name;
+
+    private ResourceTypeEntityDto resourceType;
 
     @Override
     public int compareTo(ResourceEntityDto o) {

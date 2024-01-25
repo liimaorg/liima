@@ -76,7 +76,7 @@ public class ReleaseLocator {
      * create, edit or delete plain release-instances
      */
     @HasPermission(permission = Permission.RELEASE, action = READ)
-    public List<ReleaseEntity> loadReleasesForMgmt(int startIndex, int length, boolean sortDesc) {
+    public List<ReleaseEntity> loadReleasesForMgmt(Integer startIndex, Integer length, boolean sortDesc) {
         return persistenceService.loadReleaseEntities(startIndex, length, sortDesc);
     }
 

@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TransactionRequiredException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.logging.Logger;
@@ -57,11 +58,21 @@ public class ReleaseMgmtPersistenceService {
 	 * @return a sublist of all releaseEntities ordered by installationInProductionAt starting from the given
 	 *         startIndex and with the given length
 	 */
-	public List<ReleaseEntity> loadReleaseEntities(int startIndex, int length, boolean sortDesc) {
+	public List<ReleaseEntity> loadReleaseEntities(Integer startIndex, Integer length, boolean sortDesc) {
 		CriteriaQuery<ReleaseEntity> query = entityManager.getCriteriaBuilder().createQuery(ReleaseEntity.class);
 		Root<ReleaseEntity> root = query.from(ReleaseEntity.class);
 		query.orderBy(getDefaultOrder(root, sortDesc));
-		return entityManager.createQuery(query).setFirstResult(startIndex).setMaxResults(length).getResultList();
+
+		TypedQuery typedQuery = entityManager.createQuery(query);
+		if (startIndex != null) {
+			typedQuery.setFirstResult(startIndex);
+		}
+
+		if (length != null) {
+			typedQuery.setMaxResults(length);
+		}
+
+		return typedQuery.getResultList();
 	}
 
 	/**
