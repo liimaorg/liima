@@ -20,10 +20,14 @@ import { PageComponent } from '../../layout/page/page.component';
 import { ToastComponent } from '../../shared/elements/toast/toast.component';
 import { NotificationComponent } from '../../shared/elements/notification/notification.component';
 import { Deployment } from '../../deployment/deployment';
+import { DeploymentLogContentComponent } from './deployment-log-content.component';
+import { DeploymentLogFileSelectorComponent } from './deployment-log-file-selector.component';
 
 declare let CodeMirror: any;
 
 type Failed = 'failed';
+
+const FAIL: Failed = 'failed';
 
 function failed(): Observable<Failed> {
   return of('failed');
@@ -50,6 +54,8 @@ function failed(): Observable<Failed> {
     PageComponent,
     ToastComponent,
     NotificationComponent,
+    DeploymentLogContentComponent,
+    DeploymentLogFileSelectorComponent,
   ],
 })
 export class DeploymentLogsComponent implements OnInit, OnDestroy {
@@ -85,16 +91,19 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
 
   selectedDeploymentLog$: Subject<DeploymentLog> = new Subject();
 
-  availableLogFiles$: Observable<DeploymentLog[]> = this.deployment$.pipe(
+  availableLogFiles$: Observable<DeploymentLog[] | Failed> = this.deployment$.pipe(
     switchMap(this.loadAvailableDeploymentLogFileNames.bind(this)),
     shareReplay(1),
   );
 
-  currentDeploymentLog$: Observable<DeploymentLog> = merge(
+  currentDeploymentLog$: Observable<DeploymentLog | Failed> = merge(
     combineLatest([this.fileName$, this.availableLogFiles$]).pipe(
-      map(([filename, availableLogFiles]) =>
-        !filename ? availableLogFiles[0] : availableLogFiles.find((m) => m.filename === filename),
-      ),
+      map(([filename, availableLogFiles]) => {
+        if (availableLogFiles === FAIL) {
+          return FAIL;
+        }
+        return !filename ? availableLogFiles[0] : availableLogFiles.find((m) => m.filename === filename);
+      }),
     ),
     this.selectedDeploymentLog$,
   ).pipe(distinctUntilChanged());
@@ -108,10 +117,10 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   ngOnInit(): void {
     this.currentDeploymentLog$.pipe(takeUntil(this.destroy$)).subscribe((current: DeploymentLog | Failed) => {
-      if (current !== undefined && current !== 'failed') {
-        debugger;
-        this.location.replaceState(`/deployments/${current.deploymentId}/logs/${current.filename}`);
+      if (current === FAIL) {
+        return;
       }
+      this.location.replaceState(`/deployments/${current.deploymentId}/logs/${current.filename}`);
     });
 
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => this.toast.display(msg, 'error', 5000));
@@ -134,21 +143,21 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     this.destroy$.next(undefined);
   }
 
-  selectFile(deploymentLogMetaData: DeploymentLog) {
-    this.selectedDeploymentLog$.next(deploymentLogMetaData);
+  selectFile(deploymentLog: DeploymentLog): void {
+    this.selectedDeploymentLog$.next(deploymentLog);
   }
 
   loadDeployment(deploymentId) {
     return this.deploymentService.get(deploymentId).pipe(catchError(this.fail()));
   }
 
-  loadAvailableDeploymentLogFileNames(deployment: Deployment | Failed) {
+  loadAvailableDeploymentLogFileNames(deployment: Deployment | Failed): Observable<DeploymentLog[] | Failed> {
     return deployment === 'failed' || deployment === undefined
       ? of([])
       : this.deploymentLogsService.getLogFileMetaData(deployment.id).pipe(catchError(this.fail()));
   }
 
-  loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed) {
+  loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed): Observable<string | DeploymentLogContent> {
     return deploymentLog === 'failed' || deploymentLog === undefined
       ? of('')
       : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(catchError(this.fail()));
@@ -160,4 +169,6 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
       return failed();
     };
   }
+
+  protected readonly FAIL = FAIL;
 }
