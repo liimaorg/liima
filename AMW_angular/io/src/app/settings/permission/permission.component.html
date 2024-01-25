@@ -18,9 +18,9 @@
               (ngModelChange)="onChangeRole()"
             />
             <datalist id="roleList">
-              <ng-container *ngIf="roleNames.length > 0">
-                <option [ngValue]="roleName" *ngFor="let roleName of roleNames">{{ roleName }}</option>
-              </ng-container>
+              @if (roleNames.length > 0) { @for (roleName of roleNames; track roleName) {
+              <option [ngValue]="roleName">{{ roleName }}</option>
+              } }
             </datalist>
           </div>
         </div>
@@ -52,46 +52,49 @@
   <div class="form-group">
     <label class="col-sm-1"></label>
     <div class="col">
-      <ng-container *ngIf="selectedRoleName || selectedUserNames.length > 0">
-        <ng-container *ngIf="!restriction && !create">
-          <button type="button" class="btn btn-primary offset-1" (click)="addRestriction()">
-            <app-icon icon="plus-circle"></app-icon>
-            Add permission
-          </button>
-        </ng-container>
-        <ng-container *ngIf="restriction">
-          <amw-restriction-edit
-            class="bg-light"
-            [restriction]="restriction"
-            [groupedEnvironments]="groupedEnvironments"
-            [permissions]="getPermissions()"
-            [resourceGroups]="resourceGroups"
-            [resourceTypes]="resourceTypes"
-            [availableRestrictions]="assignableRestrictions"
-            [delegationMode]="delegationMode"
-            (cancelEdit)="cancel()"
-            (saveRestriction)="persistRestriction()"
-          ></amw-restriction-edit>
-        </ng-container>
-        <ng-container *ngIf="create">
-          <amw-restriction-add
-            [roleName]="selectedRoleName"
-            [userNames]="selectedUserNames"
-            [groupedEnvironments]="groupedEnvironments"
-            [permissions]="getPermissions()"
-            [resourceGroups]="resourceGroups"
-            [resourceTypes]="resourceTypes"
-            [availableRestrictions]="assignableRestrictions"
-            [delegationMode]="delegationMode"
-            (cancelEdit)="cancel()"
-            (saveRestrictions)="createRestrictions($event)"
-          ></amw-restriction-add>
-        </ng-container>
-      </ng-container>
+      @if (selectedRoleName || selectedUserNames.length > 0) { @if (!restriction && !create) {
+
+      <button type="button" class="btn btn-primary offset-1" (click)="addRestriction()">
+        <app-icon icon="plus-circle"></app-icon>
+        Add permission
+      </button>
+
+      } @if (restriction) {
+
+      <amw-restriction-edit
+        class="bg-light"
+        [restriction]="restriction"
+        [groupedEnvironments]="groupedEnvironments"
+        [permissions]="getPermissions()"
+        [resourceGroups]="resourceGroups"
+        [resourceTypes]="resourceTypes"
+        [availableRestrictions]="assignableRestrictions"
+        [delegationMode]="delegationMode"
+        (cancelEdit)="cancel()"
+        (saveRestriction)="persistRestriction()"
+      ></amw-restriction-edit>
+
+      } @if (create) {
+
+      <amw-restriction-add
+        [roleName]="selectedRoleName"
+        [userNames]="selectedUserNames"
+        [groupedEnvironments]="groupedEnvironments"
+        [permissions]="getPermissions()"
+        [resourceGroups]="resourceGroups"
+        [resourceTypes]="resourceTypes"
+        [availableRestrictions]="assignableRestrictions"
+        [delegationMode]="delegationMode"
+        (cancelEdit)="cancel()"
+        (saveRestrictions)="createRestrictions($event)"
+      ></amw-restriction-add>
+
+      } }
     </div>
   </div>
 
-  <div class="form-group" *ngIf="assignedRestrictions.length > 0">
+  @if (assignedRestrictions.length > 0) {
+  <div class="form-group">
     <label class="col-sm-1"></label>
     <div class="col">
       <amw-restriction-list
@@ -103,4 +106,5 @@
       ></amw-restriction-list>
     </div>
   </div>
+  }
 </div>

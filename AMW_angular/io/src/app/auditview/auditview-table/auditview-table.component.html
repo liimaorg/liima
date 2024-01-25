@@ -25,7 +25,8 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let entry of auditlogEntries$ | async">
+    @for (entry of auditlogEntries$ | async; track entry) {
+    <tr>
       <td>{{ entry.timestamp | date: dateFormat }}</td>
       <td>
         <ngb-highlight [result]="entry.relation" [term]="service.searchTerm"></ngb-highlight>
@@ -52,5 +53,6 @@
         <ngb-highlight [result]="entry.username | newlineFilter" [term]="service.searchTerm"></ngb-highlight>
       </td>
     </tr>
+    }
   </tbody>
 </table>

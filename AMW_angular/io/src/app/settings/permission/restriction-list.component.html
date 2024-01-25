@@ -1,7 +1,8 @@
 <div class="card row offset-1">
   <div class="card-header">Assigned</div>
   <div class="card-body">
-    <table class="table table-sm" *ngIf="restrictions.length > 0">
+    @if (restrictions.length > 0) {
+    <table class="table table-sm">
       <thead>
         <tr>
           <th>Permission</th>
@@ -16,10 +17,13 @@
       </thead>
 
       <tbody>
-        <tr *ngFor="let restriction of restrictions">
+        @for (restriction of restrictions; track restriction) {
+        <tr>
           <td>{{ restriction.permission.name }}</td>
           <td>
-            <app-icon *ngIf="restriction.permission.old" icon="check"></app-icon>
+            @if (restriction.permission.old) {
+            <app-icon icon="check"></app-icon>
+            }
           </td>
           <td>{{ restriction.action }}</td>
           <td>{{ restriction.contextName }}</td>
@@ -27,17 +31,21 @@
           <td>{{ restriction.resourceTypeName }}</td>
           <td>{{ restriction.resourceTypePermission }}</td>
           <td>
-            <ng-container *ngIf="!delegationMode">
-              <button class="btn btn-sm btn-primary" (click)="modifyRestriction(restriction)">
-                <app-icon icon="pencil"></app-icon>
-              </button>
-              <button class="btn btn-sm btn-danger" (click)="removeRestriction(restriction.id)">
-                <app-icon icon="trash"></app-icon>
-              </button>
-            </ng-container>
+            @if (!delegationMode) {
+
+            <button class="btn btn-sm btn-primary" (click)="modifyRestriction(restriction)">
+              <app-icon icon="pencil"></app-icon>
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="removeRestriction(restriction.id)">
+              <app-icon icon="trash"></app-icon>
+            </button>
+
+            }
           </td>
         </tr>
+        }
       </tbody>
     </table>
+    }
   </div>
 </div>

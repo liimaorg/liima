@@ -3,11 +3,15 @@
   <div class="page-title">Deployment</div>
   <div class="page-content">
     <div>
-      <app-notification *ngIf="successMessage" [message]="successMessage" [messageType]="'success'"></app-notification>
-      <app-notification *ngIf="errorMessage" [message]="errorMessage" [messageType]="'warning'"></app-notification>
+      @if (successMessage) {
+      <app-notification [message]="successMessage" [messageType]="'success'"></app-notification>
+      } @if (errorMessage) {
+      <app-notification [message]="errorMessage" [messageType]="'warning'"></app-notification>
+      }
       <span class="form-horizontal">
         <h1 class="offset-2 mb-4">@if (isRedeployment) { Redeployment } @else { Create new deployment }</h1>
-        <div class="form-group row" *ngIf="appservers.length > 0">
+        @if (appservers.length > 0) {
+        <div class="form-group row">
           <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end">Applicationserver</label>
           <div class="col-sm-10 col-md-5">
             <ng-select
@@ -22,19 +26,19 @@
             </ng-select>
           </div>
         </div>
-
-        <div class="form-group row" *ngIf="isRedeployment">
+        } @if (isRedeployment) {
+        <div class="form-group row">
           <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end">Applicationserver</label>
           <div class="col-sm-10 col-md-5">
             <span class="environments-title" [innerHTML]="redeploymentAppserverDisplayName"></span>
           </div>
         </div>
-
-        <div class="form-group row" *ngIf="!isRedeployment">
+        } @if (!isRedeployment) {
+        <div class="form-group row">
           <label for="selectRelease" class="col-sm-2 fw-bold text-end">Release</label>
           <div class="col-sm-10 col-md-5">
+            @if (selectedAppserver) {
             <ng-select
-              *ngIf="selectedAppserver"
               id="selectRelease"
               [items]="releases"
               bindLabel="release"
@@ -43,61 +47,76 @@
               (ngModelChange)="onChangeRelease()"
             >
             </ng-select>
+            }
           </div>
         </div>
+        }
 
         <div class="form-group row">
           <label class="col-sm-2 fw-bold text-end">Environments</label>
           <div class="col-sm-10">
-            <ng-container *ngFor="let group of getEnvironmentGroups()">
-              <p class="mb-1">{{ group }}:</p>
-              <div class="d-inline me-3" *ngFor="let env of groupedEnvironments[group]">
-                <label
-                  ><input
-                    class="me-2 form-check-input"
-                    type="checkbox"
-                    [attr.data-cy]="env.name"
-                    (change)="onChangeEnvironment()"
-                    [(ngModel)]="env.selected"
-                  />{{ env.name }}
-                  <ng-container *ngIf="env.nameAlias">({{ env.nameAlias }})</ng-container>
-                </label>
-              </div>
-            </ng-container>
+            @for (group of getEnvironmentGroups(); track group) {
+
+            <p class="mb-1">{{ group }}:</p>
+            @for (env of groupedEnvironments[group]; track env) {
+            <div class="d-inline me-3">
+              <label
+                ><input
+                  class="me-2 form-check-input"
+                  type="checkbox"
+                  [attr.data-cy]="env.name"
+                  (change)="onChangeEnvironment()"
+                  [(ngModel)]="env.selected"
+                />{{ env.name }} @if (env.nameAlias) { ({{ env.nameAlias }}) }
+              </label>
+            </div>
+            } }
           </div>
         </div>
 
-        <div class="form-group row" *ngIf="!isRedeployment">
+        @if (!isRedeployment) {
+        <div class="form-group row">
           <label class="col-sm-2 fw-bold text-end">Applications</label>
           <div class="col-sm-10 col-md-5">
-            <table class="table table-striped pt-0" *ngIf="appsWithVersion.length > 0">
-              <tr class="pt-0 pb-3" *ngFor="let app of appsWithVersion">
+            @if (appsWithVersion.length > 0) {
+            <table class="table table-striped pt-0">
+              @for (app of appsWithVersion; track app) {
+              <tr class="pt-0 pb-3">
                 <td class="pt-0 pb-3">{{ app.applicationName }}</td>
                 <td class="pt-0 pb-3">
                   <input class="form-control" type="text" [(ngModel)]="app.version" />
                 </td>
               </tr>
+              }
             </table>
+            }
           </div>
         </div>
-
-        <div class="form-group row" *ngIf="!isRedeployment">
+        } @if (!isRedeployment) {
+        <div class="form-group row">
           <label class="col-sm-2 fw-bold text-end">Runtime</label>
           <div class="col-sm-10 col-md-5">
-            <h5 class="environments-title" *ngIf="runtime">
+            @if (runtime) {
+            <h5 class="environments-title">
               {{ runtime.identifier }}
             </h5>
+            }
           </div>
         </div>
-
-        <div class="form-group row" *ngIf="!isRedeployment">
+        } @if (!isRedeployment) {
+        <div class="form-group row">
           <label for="selectState" class="col-sm-2 fw-bold text-end">State</label>
-          <div class="col-sm-10 col-md-5" *ngIf="bestForSelectedRelease">
+          @if (bestForSelectedRelease) {
+          <div class="col-sm-10 col-md-5">
             <select id="selectState" class="form-control input-sm" [(ngModel)]="selectedResourceTag">
-              <option *ngFor="let resourceTag of resourceTags" [ngValue]="resourceTag">{{ resourceTag.label }}</option>
+              @for (resourceTag of resourceTags; track resourceTag) {
+              <option [ngValue]="resourceTag">{{ resourceTag.label }}</option>
+              }
             </select>
           </div>
+          }
         </div>
+        }
 
         <div class="form-group row">
           <label for="dateDeployment" class="col-sm-2 fw-bold text-end">Deploy at</label>
@@ -115,40 +134,40 @@
           <div class="col-sm-2">
             <input class="form-control" list="depParamList" type="text" [(ngModel)]="transDeploymentParameter.key" />
             <datalist id="depParamList">
-              <option *ngFor="let depParam of deploymentParameters">{{ depParam.key }}</option>
+              @for (depParam of deploymentParameters; track depParam) {
+              <option>{{ depParam.key }}</option>
+              }
             </datalist>
           </div>
           <div class="col-sm-3">
             <input class="form-control" type="text" [(ngModel)]="transDeploymentParameter.value" />
           </div>
           <div class="col-sm-2">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              *ngIf="transDeploymentParameter.key && transDeploymentParameter.value"
-              (click)="onAddParam()"
-            >
+            @if (transDeploymentParameter.key && transDeploymentParameter.value) {
+            <button type="button" class="btn btn-secondary" (click)="onAddParam()">
               <app-icon icon="plus"></app-icon>
             </button>
+            }
           </div>
         </div>
 
-        <ng-container *ngIf="transDeploymentParameters.length > 0">
-          <div class="form-group row" *ngFor="let transDepParam of transDeploymentParameters">
-            <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end"></label>
-            <div class="col-sm-2">
-              <input class="form-control" disabled type="text" value="{{ transDepParam.key }}" />
-            </div>
-            <div class="col-sm-3">
-              <input class="form-control" disabled type="text" value="{{ transDepParam.value }}" />
-            </div>
-            <div class="col-sm-2">
-              <button type="button" class="btn btn-secondary" (click)="onRemoveParam(transDepParam)">
-                <app-icon icon="trash"></app-icon>
-              </button>
-            </div>
+        @if (transDeploymentParameters.length > 0) { @for (transDepParam of transDeploymentParameters; track
+        transDepParam) {
+        <div class="form-group row">
+          <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end"></label>
+          <div class="col-sm-2">
+            <input class="form-control" disabled type="text" value="{{ transDepParam.key }}" />
           </div>
-        </ng-container>
+          <div class="col-sm-3">
+            <input class="form-control" disabled type="text" value="{{ transDepParam.value }}" />
+          </div>
+          <div class="col-sm-2">
+            <button type="button" class="btn btn-secondary" (click)="onRemoveParam(transDepParam)">
+              <app-icon icon="trash"></app-icon>
+            </button>
+          </div>
+        </div>
+        } }
 
         <div class="form-group row">
           <label class="col-sm-2 fw-bold text-end">Details</label>
@@ -161,7 +180,8 @@
               <input class="form-check-input" id="email" type="checkbox" [(ngModel)]="doSendEmail" />
               <label for="email">send an email when deployed</label>
             </div>
-            <div class="form-check" *ngIf="hasPermissionShakedownTest">
+            @if (hasPermissionShakedownTest) {
+            <div class="form-check">
               <input
                 class="form-check-input"
                 id="doExecuteShakedownTest"
@@ -170,7 +190,8 @@
               />
               <label for="doExecuteShakedownTest">execute shakedown tests when deployed</label>
             </div>
-            <div class="form-check" *ngIf="doExecuteShakedownTest">
+            } @if (doExecuteShakedownTest) {
+            <div class="form-check">
               <input
                 class="form-check-input"
                 id="doNeighbourhoodTest"
@@ -179,6 +200,7 @@
               />
               <label for="doNeighbourhoodTest">test neighbourhood</label>
             </div>
+            }
           </div>
         </div>
 
