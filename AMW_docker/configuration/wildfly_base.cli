@@ -20,5 +20,10 @@ embed-server --std-out=echo
 # avoids that sessionContext.getCallerPrincipal().getName() returns anonymous
 /subsystem=ejb3:write-attribute(name=default-security-domain,value=jboss-secure)
 
+# GZIP frontend assets
+/subsystem=undertow/configuration=filter/gzip=gzipFilter:add()
+/subsystem=undertow/server=default-server/host=default-host/\
+   filter-ref=gzipFilter:add(predicate="regex[pattern='text/html|text/css|application/javascript|application/json|image/jpeg|application/octet-stream|image/png|application/font-woff2',value=%{o,Content-Type}] and max-content-size(value=1024)")
+
 stop-embedded-server
 quit
