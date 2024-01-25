@@ -24,6 +24,7 @@ import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -60,12 +61,8 @@ public class ReleasesRest {
     @GET
     @Path("/{id}")
     @ApiOperation(value = "Get a release", notes = "Returns the specifed release")
-    public Response getRelease(@PathParam("id") int id) {
+    public Response getRelease(@PathParam("id") int id) throws NotFoundException {
         ReleaseEntity release = releaseLocator.getReleaseById(id);
-        if (release == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
         return Response.ok(release).build();
     }
 
@@ -103,10 +100,8 @@ public class ReleasesRest {
     // support digit only
     @Produces("application/json")
     @ApiOperation(value = "Update a release")
-    public Response updateRelease(@ApiParam("Release ID") @PathParam("id") Integer id, ReleaseEntity request) {
-        if (releaseLocator.getReleaseById(id) == null) {
-            return Response.status(NOT_FOUND).build();
-        }
+    public Response updateRelease(@ApiParam("Release ID") @PathParam("id") Integer id, ReleaseEntity request) throws NotFoundException {
+        releaseLocator.getReleaseById(id);
         if (releaseLocator.update(request)) {
             return Response.status(OK).build();
         } else {
@@ -118,11 +113,8 @@ public class ReleasesRest {
     @Path("/{id : \\d+}")
     // support digit only
     @ApiOperation(value = "Remove a release")
-    public Response deleteRelease(@ApiParam("Release ID") @PathParam("id") Integer id) {
+    public Response deleteRelease(@ApiParam("Release ID") @PathParam("id") Integer id) throws NotFoundException {
         ReleaseEntity release = releaseLocator.getReleaseById(id);
-        if (release == null) {
-            return Response.status(NOT_FOUND).build();
-        }
         if (!releaseLocator.loadResourcesAndDeploymentsForRelease(id).keySet().isEmpty()) {
             return Response.status(CONFLICT).entity(new ExceptionDto("Constraint violation. Cascade-delete is not supported. ")).build();
         }

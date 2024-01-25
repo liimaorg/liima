@@ -33,6 +33,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import lombok.NonNull;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
 
@@ -54,8 +56,16 @@ public class ReleaseLocator {
     }
 
     @HasPermission(permission = Permission.RELEASE, action = READ)
-    public ReleaseEntity getReleaseById(Integer id) {
-        return releaseRepository.find(id);
+    public ReleaseEntity getReleaseById(@NonNull Integer id) throws NotFoundException {
+        ReleaseEntity entity = releaseRepository.find(id);
+        this.requireNotNull(entity);
+        return entity;
+    }
+
+    private void requireNotNull(ReleaseEntity entity) throws NotFoundException {
+        if (entity == null) {
+            throw new NotFoundException("Release not found.");
+        }
     }
 
     public List<ReleaseEntity> getReleasesForResourceGroup(ResourceGroupEntity resourceGroup) {
