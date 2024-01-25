@@ -1,7 +1,9 @@
-<div *ngIf="errorMessage" class="alert alert-warning alert-dismissible" role="alert">
+@if (errorMessage) {
+<div class="alert alert-warning alert-dismissible" role="alert">
   <span [innerHTML]="errorMessage"></span>
   <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
 </div>
+}
 <div class="input-group me-2">
   <input
     [ngClass]="ngControl?.valid ? 'ng-valid' : 'ng-invalid'"
@@ -33,5 +35,9 @@
 </ng-template>
 <!-- workaround to make the datetimepicker actually work -->
 <div class="d-none">
-  <div *ngIf="false; else calendarContent"></div>
+  @if (false) {
+  <div></div>
+  } @else {
+  <div calenderContent></div>
+  }
 </div>
