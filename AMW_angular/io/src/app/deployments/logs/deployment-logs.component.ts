@@ -30,7 +30,7 @@ function failed(): Observable<Failed> {
 }
 
 @Component({
-  selector: 'app-logs',
+  selector: 'amw-logs',
   styleUrls: ['./deployment-logs.component.scss'],
   templateUrl: './deployment-logs.component.html',
   encapsulation: ViewEncapsulation.None,
