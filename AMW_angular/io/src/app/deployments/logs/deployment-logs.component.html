@@ -1,55 +1,22 @@
 <app-page>
   <div class="page-title">Deployment Logs</div>
   <div class="page-content">
-    @if((deployment$ | async) === 'failed') { deployment does not exist } @else {
+    @if((deployment$ | async) === 'failed') { deployment does not exist } @else if ((deployment$ | async) !== 'failed')
+    {
     <h1>Logs for Deployment {{ deploymentId$ | async }}</h1>
 
-    <div *ngIf="availableLogFiles$ | async as availableLogFiles; else loading">
-      <div *ngIf="availableLogFiles.length > 0">
-        <div class="card mt-3 h-100">
-          <div *ngIf="availableLogFiles$ | async as deploymentLogMetaData; else loading" class="card-header">
-            <div ngbDropdown class="d-inline-block">
-              <button class="btn btn-outline-primary" id="filename-picker" ngbDropdownToggle>
-                {{ (currentDeploymentLog$ | async)?.filename }}
-              </button>
-              <div ngbDropdownMenu aria-labelledby="filename-picker">
-                <button
-                  ngbDropdownItem
-                  *ngFor="let deploymentLog of deploymentLogMetaData"
-                  (click)="selectFile(deploymentLog)"
-                >
-                  {{ deploymentLog.filename }}
-                </button>
-              </div>
-            </div>
-          </div>
-          <div *ngIf="selectedDeploymentLogContent$ | async as selectedDeploymentLogContent">
-            <div class="m-2 h-100">
-              @if (selectedDeploymentLogContent !== 'failed') {
-
-              <div class="h-100">
-                <ngx-codemirror
-                  class="h-100"
-                  [(ngModel)]="selectedDeploymentLogContent.content"
-                  [options]="{
-                    lineNumbers: false,
-                    theme: 'default',
-                    mode: 'simplemode',
-                    readOnly: true
-                  }"
-                ></ngx-codemirror>
-              </div>
-
-              } @else { ... }
-            </div>
-          </div>
-        </div>
-      </div>
+    @if(availableLogFiles$ | async; as logFiles) { @if(logFiles === 'failed') {
+    <span>There are no log files for deployment {{ deploymentId$ | async }}</span>
+    } @if (logFiles !== FAIL && logFiles.length > 0) {
+    <div class="card mt-3 h-100">
+      <amw-deployment-logs-selector
+        [logFiles]="logFiles"
+        [selected]="currentDeploymentLog$ | async"
+        (fileSelected)="this.selectFile($event)"
+      ></amw-deployment-logs-selector>
+      <amw-deployment-log-content [content]="selectedDeploymentLogContent$ | async"></amw-deployment-log-content>
     </div>
-    }
+    } } }
   </div>
 </app-page>
 <app-toast></app-toast>
-<ng-template #loading>
-  <app-loading-indicator [isLoading]="true"></app-loading-indicator>
-</ng-template>
