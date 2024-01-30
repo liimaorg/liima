@@ -11,7 +11,8 @@ import static ch.puzzle.itc.mobiliar.business.utils.Validation.validate;
 @Getter
 public class DeploymentLogContentCommand {
 
-    @NotNull private Integer id;
+    @NotNull
+    private Integer id;
     @ValidFileName
     private String fileName;
 

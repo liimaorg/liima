@@ -15,7 +15,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface ValidFileName {
 
-
     String message() default "The log file contains a file separator";
 
     Class<?>[] groups() default {};
