@@ -807,7 +807,7 @@ public class DeploymentBoundary {
         String name = logsPath + File.separator + logName;
         File file = new File(name);
 
-        if (file.length() > 200_000) throw new IOException(String.format("The size of the file '%s' is %d bytes. Only file contents up to 10MB is allowed.", file.getName(), file.length()));
+        if (file.length() > 1_000_000) throw new IOException(String.format("%s is larger than 10 MB and cannot be shown.", file.getName()));
 
         StringBuilder content = new StringBuilder();
         Scanner scanner;
