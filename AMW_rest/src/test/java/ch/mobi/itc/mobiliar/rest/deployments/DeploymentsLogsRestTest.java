@@ -1,9 +1,6 @@
 package ch.mobi.itc.mobiliar.rest.deployments;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLog;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentCommand;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentUseCase;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.ListDeploymentLogsUseCase;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.*;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import org.junit.Before;
@@ -43,11 +40,11 @@ public class DeploymentsLogsRestTest {
 
     @Test
     public void getDeploymentLogFileContent() throws ValidationException, IOException {
-        doReturn("log-file-content").when(logContentUseCase).getContent(any(DeploymentLogContentCommand.class));
+        doReturn(new DeploymentLogContent(123, "log-file-name", "log-file-content")).when(logContentUseCase).getContent(any(DeploymentLogContentCommand.class));
         Response response = resource.getDeploymentLogFileContent(123, "log-file-name");
         assertThat(response.getStatus(), is(200));
-        String content = (String) response.getEntity();
-        assertThat(content, is("log-file-content"));
+        DeploymentLogContent deploymentLogContent = (DeploymentLogContent) response.getEntity();
+        assertThat(deploymentLogContent.getContent(), is("log-file-content"));
     }
 
     @Test(expected = ConstraintViolationException.class)
