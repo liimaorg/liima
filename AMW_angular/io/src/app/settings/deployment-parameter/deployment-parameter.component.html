@@ -1,1 +1,41 @@
-<p>deployment-parameter works!</p>
+<div class="container">
+  <h1>Deployment Parameter Keys</h1>
+  <div class="row mt-2 py-4">
+    <div class="col-6 ms-auto">
+      <div class="input-group">
+        <input
+          id="keyName"
+          type="text"
+          class="form-control"
+          [(ngModel)]="keyName"
+          placeholder="Create new key"
+          (keyup.enter)="addKey()"
+        />
+        <button class="btn btn-primary" (click)="addKey()" [attr.data-cy]="'button-add'">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @for (paramKey of paramKeys; track paramKey) {
+    <tr>
+      <td>{{ paramKey.key }}</td>
+        <td>
+          <button class="btn" (click)="deleteKey(paramKey.value)" [attr.data-cy]="'delete-' + paramKey.key">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    }
+    </tbody>
+  </table>
+  <app-toast></app-toast>
+</div>
+
