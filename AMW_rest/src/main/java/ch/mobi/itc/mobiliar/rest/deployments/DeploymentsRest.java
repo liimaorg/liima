@@ -47,7 +47,6 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import com.google.gson.Gson;
@@ -59,17 +58,20 @@ import io.swagger.annotations.ApiParam;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.ValidationException;
+import java.net.URI;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
+import static javax.ws.rs.core.Response.Status.CREATED;
 
 @Stateless
 @Path("/deployments")
@@ -361,6 +363,20 @@ public class DeploymentsRest {
             deploymentParameters.add(new DeploymentParameterDTO(key.getName(), null));
         }
         return Response.status(Status.OK).entity(deploymentParameters).build();
+    }
+
+    @POST
+    @Path("/deploymentParameterKeys/")
+    @ApiOperation(value = "Adds one parameter key")
+    public Response addOneParameterKey(
+            @NotNull(message = "Key must not be null.") DeploymentParameterDTO deploymentParameterDTO) throws ch.puzzle.itc.mobiliar.common.exception.ValidationException {
+        Key keyToBeAdded = new Key(deploymentParameterDTO.getKey());
+        keyRepository.createDeployParameterKey(keyToBeAdded);
+        return Response
+                .status(CREATED)
+                .entity(keyToBeAdded)
+                .location(URI.create("/deploymentParameterKeys/" + keyToBeAdded.getName()))
+                .build();
     }
 
     @GET

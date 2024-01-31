@@ -29,9 +29,18 @@ export class DeploymentParameterComponent {
 
   addKey(): void {
     if (this.keyName.trim().length > 0) {
-      // Dummy action: Display a toast message
-      this.toast.display('Dummy action: Key would be added.');
-      this.keyName = '';
+      this.http
+        .post<Key>('/AMW_rest/resources/deployments/deploymentParameterKeys/', { key: this.keyName, value: null })
+        .subscribe({
+          next: (newKey) => {
+            this.paramKeys.push(newKey);
+            this.toast.display('Key added.');
+            this.keyName = '';
+          },
+          error: (error) => {
+            this.toast.display(error.error.message, 'error');
+          },
+        });
     }
   }
 
