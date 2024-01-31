@@ -59,9 +59,9 @@
                     </h:link>
                 </li>
                 <li class="${settingsDataProvider.mode=='deployparam' ? 'current' : ''}">
-                    <h:link value="Deployment Parameter">
-                        <f:param name="mode" value="deployparam" />
-                    </h:link>
+                    <h:outputLink value="/AMW_angular/#/settings/deployment-parameter">
+                        Deployment Parameter
+                    </h:outputLink>
                 </li>
                 <li class="${settingsDataProvider.mode=='myAmw' ? 'current' : ''}">
                     <h:link value="My favorites">
