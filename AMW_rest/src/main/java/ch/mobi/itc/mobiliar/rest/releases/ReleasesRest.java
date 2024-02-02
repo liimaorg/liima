@@ -24,6 +24,7 @@ import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.common.exception.ConcurrentModificationException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -100,7 +101,7 @@ public class ReleasesRest {
     // support digit only
     @Produces("application/json")
     @ApiOperation(value = "Update a release")
-    public Response updateRelease(@ApiParam("Release ID") @PathParam("id") Integer id, ReleaseEntity request) throws NotFoundException {
+    public Response updateRelease(@ApiParam("Release ID") @PathParam("id") Integer id, ReleaseEntity request) throws NotFoundException, ConcurrentModificationException {
         releaseLocator.getReleaseById(id);
         if (releaseLocator.update(request)) {
             return Response.status(OK).build();

@@ -20,12 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.releasing.boundary;
 
-import java.util.*;
-import java.util.logging.Logger;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseRepository;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -33,8 +27,15 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.common.exception.ConcurrentModificationException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import lombok.NonNull;
+
+import javax.ejb.EJBTransactionRolledbackException;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.util.*;
+import java.util.logging.Logger;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
 
@@ -122,10 +123,13 @@ public class ReleaseLocator {
      * Persists the given release - the already existing instance will be updated.
      */
     @HasPermission(permission = Permission.RELEASE, action = UPDATE)
-    public boolean update(ReleaseEntity release) {
-        return persistenceService.saveReleaseEntity(release);
+    public boolean update(ReleaseEntity release) throws ConcurrentModificationException {
+        try {
+            return persistenceService.saveReleaseEntity(release);
+        } catch (EJBTransactionRolledbackException e) {
+            throw new ConcurrentModificationException("Concurrent update prevented! Please reload before updating release: " + release);
+        }
     }
-
 
     @HasPermission(permission = Permission.RELEASE, action = DELETE)
     public void delete(ReleaseEntity release) {

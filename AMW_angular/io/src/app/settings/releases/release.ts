@@ -4,5 +4,6 @@ export interface Release {
   description: string;
   installationInProductionAt: number;
   id: number;
+  v: number;
   default: boolean;
 }
