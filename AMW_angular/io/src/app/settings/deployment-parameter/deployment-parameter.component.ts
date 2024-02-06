@@ -48,7 +48,6 @@ export class DeploymentParameterComponent {
   }
 
   deleteKey(keyName: string): void {
-    this.toast.display('Dummy action: Key would be deleted.');
     this.http.delete<Key>(`/AMW_rest/resources/deployments/deploymentParameterKeys/${keyName}`).subscribe({
       next: (response) => {
         this.paramKeys = this.paramKeys.filter((key) => key.key !== keyName);
