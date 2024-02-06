@@ -59,7 +59,6 @@ import io.swagger.annotations.ApiParam;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -371,8 +370,7 @@ public class DeploymentsRest {
     @POST
     @Path("/deploymentParameterKeys/")
     @ApiOperation(value = "Adds one parameter key")
-    public Response addOneParameterKey(
-            @NotNull(message = "Key must not be null.") DeploymentParameterDTO deploymentParameterDTO) {
+    public Response addOneParameterKey(DeploymentParameterDTO deploymentParameterDTO) {
         Key keyToBeAdded = new Key(deploymentParameterDTO.getKey());
         keyRepository.createDeployParameterKey(keyToBeAdded);
         return Response

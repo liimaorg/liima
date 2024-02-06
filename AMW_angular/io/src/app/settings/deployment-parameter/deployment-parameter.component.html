@@ -28,7 +28,7 @@
     <tr>
       <td>{{ paramKey.key }}</td>
         <td>
-          <button class="btn" (click)="deleteKey(paramKey.value)" [attr.data-cy]="'delete-' + paramKey.key">
+          <button class="btn" (click)="deleteKey(paramKey.key)" [attr.data-cy]="'delete-' + paramKey.key">
             <i class="bi bi-trash"></i>
           </button>
         </td>

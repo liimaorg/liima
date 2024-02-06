@@ -28,7 +28,8 @@ export class DeploymentParameterComponent {
   }
 
   addKey(): void {
-    if (this.keyName.trim().length > 0) {
+    const trimmedKeyName = this.keyName.trim();
+    if (trimmedKeyName.length > 0 && trimmedKeyName.toLowerCase() !== 'null') {
       this.http
         .post<Key>('/AMW_rest/resources/deployments/deploymentParameterKeys/', { key: this.keyName, value: null })
         .subscribe({
@@ -41,10 +42,21 @@ export class DeploymentParameterComponent {
             this.toast.display(error.error.message, 'error');
           },
         });
+    } else {
+      this.toast.display('Key name must not be null or empty', 'error');
     }
   }
 
-  deleteKey(keyId: number): void {
+  deleteKey(keyName: string): void {
     this.toast.display('Dummy action: Key would be deleted.');
+    this.http.delete<Key>(`/AMW_rest/resources/deployments/deploymentParameterKeys/${keyName}`).subscribe({
+      next: (response) => {
+        this.paramKeys = this.paramKeys.filter((key) => key.key !== keyName);
+        this.toast.display('Key deleted.');
+      },
+      error: (error) => {
+        this.toast.display(error.error.message, 'error');
+      },
+    });
   }
 }
