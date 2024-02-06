@@ -26,6 +26,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
+import ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary.DeploymentParameterBoundary;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
@@ -100,6 +101,8 @@ public class DeploymentsRest {
     private PermissionBoundary permissionBoundary;
     @Inject
     private ContextLocator contextLocator;
+    @Inject
+    private DeploymentParameterBoundary deploymentParameterBoundary;
 
     @Inject
     Logger log;
@@ -369,7 +372,7 @@ public class DeploymentsRest {
     @Path("/deploymentParameterKeys/")
     @ApiOperation(value = "Adds one parameter key")
     public Response addOneParameterKey(
-            @NotNull(message = "Key must not be null.") DeploymentParameterDTO deploymentParameterDTO) throws ch.puzzle.itc.mobiliar.common.exception.ValidationException {
+            @NotNull(message = "Key must not be null.") DeploymentParameterDTO deploymentParameterDTO) {
         Key keyToBeAdded = new Key(deploymentParameterDTO.getKey());
         keyRepository.createDeployParameterKey(keyToBeAdded);
         return Response
@@ -377,6 +380,19 @@ public class DeploymentsRest {
                 .entity(keyToBeAdded)
                 .location(URI.create("/deploymentParameterKeys/" + keyToBeAdded.getName()))
                 .build();
+    }
+
+    @DELETE
+    @Path("/deploymentParameterKeys/{keyName}")
+    @ApiOperation(value = "Deletes one parameter key")
+    public Response deleteOneKey(@PathParam("keyName") String keyName) {
+        Key keyToBeRemoved = keyRepository.findFirstKeyByName(keyName);
+        if (keyToBeRemoved != null) {
+            deploymentParameterBoundary.deleteDeployParameterKey(keyToBeRemoved);
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @GET
