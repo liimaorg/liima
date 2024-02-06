@@ -20,20 +20,24 @@
 
 package ch.mobi.itc.mobiliar.rest.releases;
 
-import java.util.List;
+import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
+import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.common.exception.ConcurrentModificationException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
-import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import static javax.ws.rs.core.Response.Status.*;
 
 @RequestScoped
 @Path("/releases")
@@ -47,19 +51,86 @@ public class ReleasesRest {
 
     @GET
     @ApiOperation(value = "Get releases", notes = "Returns all releases")
-    public List<ReleaseEntity> getReleases() {
-        return releaseMgmtService.loadAllReleases(true);
+    public List<ReleaseEntity> getReleases(@QueryParam("start") Integer start, @QueryParam("limit") Integer limit) {
+        if (start == null && limit == null) {
+            return releaseLocator.loadAllReleases(true);
+        } else {
+            return releaseLocator.loadReleasesForMgmt(start, limit, true);
+        }
     }
 
     @GET
     @Path("/{id}")
     @ApiOperation(value = "Get a release", notes = "Returns the specifed release")
-    public Response getRelease(@PathParam("id") int id) {
+    public Response getRelease(@PathParam("id") int id) throws NotFoundException {
         ReleaseEntity release = releaseLocator.getReleaseById(id);
-        if(release == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
         return Response.ok(release).build();
+    }
+
+
+    @GET()
+    @Path("/count")
+    @ApiOperation(value = "Get the number of releases", notes = "Returns the total amount of release entities")
+    public int getCount() {
+        return releaseLocator.countReleases();
+    }
+
+
+    @GET()
+    @Path("/default")
+    @ApiOperation(value = "Get default release", notes = "Returns the default release entity")
+    public ReleaseEntity getDefaultRelease() {
+        return releaseLocator.getDefaultRelease();
+    }
+
+    @POST
+    @ApiOperation(value = "Add a release")
+    public Response addRelease(@ApiParam() ReleaseEntity request) {
+        if (request.getId() != null) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
+        }
+        if (releaseLocator.create(request)) {
+            return Response.status(CREATED).build();
+        } else {
+            return Response.status(BAD_REQUEST).build();
+        }
+    }
+
+    @PUT
+    @Path("/{id : \\d+}")
+    // support digit only
+    @Produces("application/json")
+    @ApiOperation(value = "Update a release")
+    public Response updateRelease(@ApiParam("Release ID") @PathParam("id") Integer id, ReleaseEntity request) throws NotFoundException, ConcurrentModificationException {
+        releaseLocator.getReleaseById(id);
+        if (releaseLocator.update(request)) {
+            return Response.status(OK).build();
+        } else {
+            return Response.status(BAD_REQUEST).build();
+        }
+    }
+
+    @DELETE
+    @Path("/{id : \\d+}")
+    // support digit only
+    @ApiOperation(value = "Remove a release")
+    public Response deleteRelease(@ApiParam("Release ID") @PathParam("id") Integer id) throws NotFoundException {
+        ReleaseEntity release = releaseLocator.getReleaseById(id);
+        if (!releaseLocator.loadResourcesAndDeploymentsForRelease(id).keySet().isEmpty()) {
+            return Response.status(CONFLICT).entity(new ExceptionDto("Constraint violation. Cascade-delete is not supported. ")).build();
+        }
+        releaseLocator.delete(release);
+
+        return Response.status(NO_CONTENT).build();
+    }
+
+    @GET
+    @Path("/{id : \\d+}/resources")
+    @ApiOperation(value = "Get resources of a release", notes = "Returns all resources for a release by id")
+    public Response getResourcesForRelease(@ApiParam("Release ID") @PathParam("id") Integer id) {
+        return Response.status(OK)
+                .entity(
+                        new GenericEntity<>(releaseLocator.loadResourcesAndDeploymentsForRelease(id)) {
+        }).build();
     }
 }
