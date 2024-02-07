@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ToastComponent } from 'src/app/shared/elements/toast/toast.component';
 import { ToastComponent as ToastComponent_1 } from '../../shared/elements/toast/toast.component';
 import { FormsModule } from '@angular/forms';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 type Tag = { id: number; name: string };
 
@@ -11,7 +12,7 @@ type Tag = { id: number; name: string };
   templateUrl: './tags.component.html',
   styleUrl: './tags.component.scss',
   standalone: true,
-  imports: [FormsModule, ToastComponent_1],
+  imports: [FormsModule, ToastComponent_1, IconComponent],
 })
 export class TagsComponent {
   tagName = '';

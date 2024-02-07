@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastComponent } from '../../shared/elements/toast/toast.component';
 import { HttpClient } from '@angular/common/http';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 type Key = { key: string; value: any };
 
 @Component({
   selector: 'app-deployment-parameter',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ToastComponent, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ToastComponent, FormsModule, IconComponent],
   templateUrl: './deployment-parameter.component.html',
   styleUrl: './deployment-parameter.component.scss',
 })

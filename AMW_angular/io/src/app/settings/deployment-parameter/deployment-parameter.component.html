@@ -11,16 +11,16 @@
           placeholder="Create new key"
           (keyup.enter)="addKey()"
         />
-        <button class="btn btn-primary" (click)="addKey()" [attr.data-cy]="'button-add'">Add</button>
+        <button class="btn btn-primary" (click)="addKey()" [attr.data-cy]="'button-add'"><app-icon icon="plus-circle"></app-icon> Add key</button>
       </div>
     </div>
   </div>
 
-  <table class="table table-bordered">
+  <table class="table table-sm table-striped table-bordered">
     <thead>
     <tr>
       <th>Name</th>
-      <th></th>
+      <th>Delete</th>
     </tr>
     </thead>
     <tbody>
@@ -28,7 +28,7 @@
     <tr>
       <td>{{ paramKey.key }}</td>
         <td>
-          <button class="btn" (click)="deleteKey(paramKey.key)" [attr.data-cy]="'delete-' + paramKey.key">
+          <button class="btn btn-sm btn-danger me-0" (click)="deleteKey(paramKey.key)" [attr.data-cy]="'delete-' + paramKey.key">
             <i class="bi bi-trash"></i>
           </button>
         </td>
