@@ -173,16 +173,6 @@
                 <mobi:listGlobalFunctions/>
             </h:panelGroup>
 
-            <!-- Tags -->
-            <h:panelGroup rendered="${settingsDataProvider.mode=='tags'}">
-                <ui:include  src="components/propertyTagsComp.xhtml" />
-            </h:panelGroup>
-
-            <!-- Deployparam -->
-            <h:panelGroup rendered="${settingsDataProvider.mode=='deployparam'}">
-                <ui:include  src="components/deploymentParameterComp.xhtml" />
-            </h:panelGroup>
-
             <h:panelGroup rendered="${settingsDataProvider.mode=='myAmw'}">
                 <h:panelGroup id="myAmw" layout="block">
                     <h:dataTable var="favorit" value="${userSettings.myAMWObjects}"
@@ -522,7 +512,6 @@
                                     Add argument</a4j:commandLink>
                         </h:panelGroup>
 
-                        <div></div>
                     </div>
                 </h:panelGroup>
                 <a4j:commandLink styleClass="btn primary right" value="Confirm"
