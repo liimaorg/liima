@@ -66,16 +66,6 @@ public class ReleaseMgmtService {
     }
 
     /**
-     * Returns a list of releases for management operations. This means, we
-     * don't care about relations to resources or deployments but only want to
-     * create, edit or delete plain release-instances
-     */
-    @HasPermission(permission = Permission.RELEASE, action = READ)
-    public List<ReleaseEntity> loadReleasesForMgmt(int startIndex, int length, boolean sortDesc) {
-        return persistenceService.loadReleaseEntities(startIndex, length, sortDesc);
-    }
-
-    /**
      * @return a list with releaseEntities, excluding the one we want to copy from
      */
     public Map<Integer, ReleaseEntity> loadReleasesForCreatingNewRelease(Set<ReleaseEntity> existingReleases) {
@@ -89,36 +79,8 @@ public class ReleaseMgmtService {
         return releases;
     }
 
-    /**
-     * @return the number of existing releases
-     */
-    @HasPermission(permission = Permission.RELEASE, action = READ)
-    public int countReleases() {
-        return persistenceService.count();
-    }
-
-    /**
-     * Persists the given new release.
-     */
-    @HasPermission(permission = Permission.RELEASE, action = CREATE)
-    public boolean create(ReleaseEntity release) {
-        return persistenceService.saveReleaseEntity(release);
-    }
-
-    /**
-     * Persists the given release - the already existing instance will be updated.
-     */
-    @HasPermission(permission = Permission.RELEASE, action = UPDATE)
-    public boolean update(ReleaseEntity release) {
-        return persistenceService.saveReleaseEntity(release);
-    }
-
     public ReleaseEntity getDefaultRelease() {
         return persistenceService.getDefaultRelease();
-    }
-
-    public List<ResourceEntity> getResourcesForRelease(Integer releaseId) {
-        return persistenceService.getResourcesForRelease(releaseId);
     }
 
 

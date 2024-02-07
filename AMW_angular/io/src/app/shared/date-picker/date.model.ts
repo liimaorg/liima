@@ -1,45 +1,39 @@
 import { NgbTimeStruct, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import * as datefns from 'date-fns';
-import { DATE_TIME_FORMAT } from 'src/app/core/amw-constants';
+import { DATE_FORMAT } from 'src/app/core/amw-constants';
 
 export interface NgbDateTimeStruct extends NgbDateStruct, NgbTimeStruct {}
 
-export class DateTimeModel implements NgbDateTimeStruct {
+export class DateModel implements NgbDateStruct {
   year: number;
   month: number;
   day: number;
-  hour: number;
-  minute: number;
-  second: number;
 
   timeZoneOffset: number;
 
-  public constructor(init?: Partial<DateTimeModel>) {
+  public constructor(init?: Partial<DateModel>) {
     Object.assign(this, init);
   }
 
-  private static fromDate(date: Date): DateTimeModel {
+  private static fromDate(date: Date): DateModel {
     if (!datefns.isValid(date)) {
       return null;
     }
-    return new DateTimeModel({
+    return new DateModel({
       year: date.getFullYear(),
       // months start at 0
       month: date.getMonth() + 1,
       // getDate is the day of month
       // getDay is the day of the week
       day: date.getDate(),
-      hour: date.getHours(),
-      minute: date.getMinutes(),
-      second: date.getSeconds(),
       timeZoneOffset: date.getTimezoneOffset(),
     });
   }
 
-  public static fromLocalString(dateString: string, format?: string): DateTimeModel {
+  public static fromLocalString(dateString: string, format?: string): DateModel {
     let date: Date;
     if (typeof format === 'undefined') {
-      date = datefns.parse(dateString, DATE_TIME_FORMAT, new Date());
+      date = datefns.parse(dateString, DATE_FORMAT, new Date());
     } else {
       date = datefns.parse(dateString, format, new Date());
     }
@@ -52,7 +46,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
   }
 
   private thisToDate(): Date {
-    return new Date(this.year, this.month - 1, this.day, this.hour, this.minute, this.second);
+    return new Date(this.year, this.month - 1, this.day);
   }
 
   public toString(format?: string): string {
@@ -61,7 +55,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
       return null;
     }
     if (typeof format === 'undefined') {
-      return datefns.format(date, DATE_TIME_FORMAT);
+      return datefns.format(date, DATE_FORMAT);
     }
     return datefns.format(date, format);
   }
