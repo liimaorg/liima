@@ -5,7 +5,7 @@ import { ToastComponent } from '../../shared/elements/toast/toast.component';
 import { HttpClient } from '@angular/common/http';
 import { IconComponent } from '../../shared/icon/icon.component';
 
-type Key = { key: string; value: string };
+type Key = { id: number; name: string };
 
 @Component({
   selector: 'app-deployment-parameter',
@@ -31,30 +31,25 @@ export class DeploymentParameterComponent {
   addKey(): void {
     const trimmedKeyName = this.keyName.trim();
     if (trimmedKeyName.length > 0 && trimmedKeyName.toLowerCase() !== 'null') {
-      this.http
-        .post<Key>('/AMW_rest/resources/deployments/deploymentParameterKeys', {
-          key: this.keyName,
-          value: null,
-        })
-        .subscribe({
-          next: (newKey) => {
-            this.paramKeys.push(newKey);
-            this.toast.display('Key added.');
-            this.keyName = '';
-          },
-          error: (error) => {
-            this.toast.display(error.error.message, 'error');
-          },
-        });
+      this.http.post<Key>('/AMW_rest/resources/deployments/deploymentParameterKeys', this.keyName).subscribe({
+        next: (newKey) => {
+          this.paramKeys.push(newKey);
+          this.toast.display('Key added.');
+          this.keyName = '';
+        },
+        error: (error) => {
+          this.toast.display(error.error.message, 'error');
+        },
+      });
     } else {
       this.toast.display('Key name must not be null or empty', 'error');
     }
   }
 
-  deleteKey(keyName: string): void {
-    this.http.delete<Key>(`/AMW_rest/resources/deployments/deploymentParameterKeys/${keyName}`).subscribe({
+  deleteKey(keyId: number): void {
+    this.http.delete<Key>(`/AMW_rest/resources/deployments/deploymentParameterKeys/${keyId}`).subscribe({
       next: (response) => {
-        this.paramKeys = this.paramKeys.filter((key) => key.key !== keyName);
+        this.paramKeys = this.paramKeys.filter((key) => key.id !== keyId);
         this.toast.display('Key deleted.');
       },
       error: (error) => {

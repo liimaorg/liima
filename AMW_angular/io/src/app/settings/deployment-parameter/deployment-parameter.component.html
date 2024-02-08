@@ -25,9 +25,9 @@
     <tbody>
     @for (paramKey of paramKeys; track paramKey) {
     <tr>
-      <td>{{ paramKey.key }}</td>
-        <td>
-          <button class="btn btn-sm btn-danger me-0" (click)="deleteKey(paramKey.key)" [attr.data-cy]="'delete-' + paramKey.key">
+      <td class="align-middle">{{ paramKey.name}}</td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-danger me-0" (click)="deleteKey(paramKey.id)" [attr.data-cy]="'delete-' + paramKey.id">
             <i class="bi bi-trash"></i>
           </button>
         </td>

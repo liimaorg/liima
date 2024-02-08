@@ -59,8 +59,8 @@ public class DeploymentParameterBoundary {
     }
 
     @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER, action = DELETE)
-    public void deleteDeployParameterKey(Key keyToDelete) throws NotFoundException {
-        Key attachedKeyToDelete = keyRepository.findFirstKeyByName(keyToDelete.getName());
+    public void deleteDeployParameterKey(Integer id) throws NotFoundException {
+        Key attachedKeyToDelete = keyRepository.find(id);
         this.requireNotNull(attachedKeyToDelete);
         keyRepository.remove(attachedKeyToDelete);
     }
@@ -84,13 +84,14 @@ public class DeploymentParameterBoundary {
     }
 
     @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER, action = CREATE)
-    public void createDeployParameterKey(String deployParameterKeyName) throws ValidationException {
+    public Key createDeployParameterKey(String deployParameterKeyName) throws ValidationException {
         if (deployParameterKeyName != null && !deployParameterKeyName.trim().isEmpty()) {
             Key newKey = new Key(deployParameterKeyName.trim());
             if (keyRepository.findFirstKeyByName(newKey.getName()) != null) {
                 throw new ValidationException("A key with same name exists", deployParameterKeyName);
             }
             keyRepository.createDeployParameterKey(newKey);
+            return keyRepository.findFirstKeyByName(deployParameterKeyName);
         } else {
             throw new ValidationException("invalid empty name", deployParameterKeyName);
         }
