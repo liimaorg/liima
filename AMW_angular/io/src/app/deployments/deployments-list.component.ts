@@ -5,7 +5,7 @@ import { ResourceService } from '../resource/resource.service';
 import * as _ from 'lodash';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DATE_FORMAT } from '../core/amw-constants';
+import { DATE_TIME_FORMAT } from '../core/amw-constants';
 import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-picker.component';
 import { RouterLink } from '@angular/router';
 import { IconComponent } from '../shared/icon/icon.component';
@@ -46,7 +46,7 @@ export class DeploymentsListComponent {
   allSelected: boolean = false;
   // TODO: show this error somewhere?
   errorMessage = '';
-  dateFormat = DATE_FORMAT;
+  dateFormat = DATE_TIME_FORMAT;
 
   failureReason: { [key: string]: string } = {
     PRE_DEPLOYMENT_GENERATION: 'pre deployment generation failed',

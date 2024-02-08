@@ -74,9 +74,10 @@
                     </h:link>
                 </li>
                 <li class="${settingsDataProvider.mode== 'releases' ? 'current' : ''}">
-                    <h:link value="Releases" rendered="#{securityDataProvider.hasPermission('RELEASE')}">
-                        <f:param name="mode" value="releases" />
-                    </h:link>
+                    <h:outputLink value="/AMW_angular/#/settings/releases"
+                                  rendered="#{securityDataProvider.hasPermission('RELEASE')}">
+                        Releases
+                    </h:outputLink>
                 </li>
                 <li class="${settingsDataProvider.mode=='rolePerm' ? 'current': ''}">
                     <h:outputLink value="/AMW_angular/#/settings/permission/role"
@@ -322,14 +323,7 @@
                     </h:panelGroup>
                 </h:panelGroup>
             </h:form>
-
-            <!-- Releases-->
-            <h:panelGroup rendered="${settingsDataProvider.mode=='releases'}">
-                <ui:include src="components/releasesScreenComp.xhtml" />
-            </h:panelGroup>
-
         </div>
-
         </section>
     </ui:define>
 

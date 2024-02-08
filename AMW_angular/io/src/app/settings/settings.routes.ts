@@ -2,6 +2,7 @@ import { TagsComponent } from './tags/tags.component';
 import { SettingsComponent } from './settings.component';
 import { PermissionComponent } from './permission/permission.component';
 import { ApplicationInfoComponent } from './application-info/application-info.component';
+import { ReleasesComponent } from './releases/releases.component';
 
 export const settingsRoutes = [
   {
@@ -9,6 +10,7 @@ export const settingsRoutes = [
     component: SettingsComponent,
     title: 'Settings',
     children: [
+      { path: 'releases', component: ReleasesComponent },
       { title: 'Settings - Tags', path: 'tags', component: TagsComponent },
       {
         path: 'permission/delegation/:actingUser',

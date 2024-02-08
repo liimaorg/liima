@@ -150,7 +150,6 @@ public class ReleaseEntity implements Serializable, Comparable<ReleaseEntity> {
     @Setter
     @Version
     @XmlTransient
-    @JsonIgnore
     private long v;
 
     public ReleaseEntity() {

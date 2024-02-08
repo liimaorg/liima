@@ -11,7 +11,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, NgControl, FormsModule } from 
 import { DatePipe, NgIf, NgClass } from '@angular/common';
 import { DateTimeModel } from './date-time.model';
 import { noop } from 'rxjs';
-import { DATE_FORMAT } from 'src/app/core/amw-constants';
+import { DATE_TIME_FORMAT } from 'src/app/core/amw-constants';
 import { IconComponent } from '../icon/icon.component';
 
 @Component({
@@ -31,7 +31,7 @@ import { IconComponent } from '../icon/icon.component';
 })
 export class DateTimePickerComponent implements ControlValueAccessor, OnInit, AfterViewInit {
   @Input()
-  dateStringFormat = DATE_FORMAT;
+  dateStringFormat = DATE_TIME_FORMAT;
   @Input()
   hourStep = 1;
   @Input()

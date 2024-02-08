@@ -334,7 +334,7 @@ public class ResourceGroupsRestTest {
     }
 
     @Test
-    public void shouldInvokeBoundaryWithRightArgumentsOnGetApplicationsWithVersionForRelease() {
+    public void shouldInvokeBoundaryWithRightArgumentsOnGetApplicationsWithVersionForRelease() throws NotFoundException {
         // given
         Integer resourceGroupId = 8;
         Integer releaseId = 9;
@@ -412,7 +412,7 @@ public class ResourceGroupsRestTest {
     }
 
     @Test
-    public void shouldDeleteResource() throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+    public void shouldDeleteResource() throws NotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
         // given
         Integer resourceGroupId = 8;
         Integer resourceId = 9;
@@ -429,7 +429,7 @@ public class ResourceGroupsRestTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteResource() throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+    public void shouldReturnNotFoundWhenDeleteResource() throws NotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
         // given
         Integer resourceGroupId = 8;
         Integer releaseId = 10;

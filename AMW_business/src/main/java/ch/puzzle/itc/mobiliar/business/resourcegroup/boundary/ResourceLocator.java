@@ -30,6 +30,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
@@ -116,7 +117,7 @@ public class ResourceLocator {
      * @param releaseId release id
      * @return ResourceEntity
      */
-    public ResourceEntity getExactOrClosestPastReleaseByGroupIdAndReleaseId(@NotNull Integer groupId, @NotNull Integer releaseId) {
+    public ResourceEntity getExactOrClosestPastReleaseByGroupIdAndReleaseId(@NotNull Integer groupId, @NotNull Integer releaseId) throws NotFoundException {
 
         ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
         ResourceGroupEntity resGroup = resourceGroupRepository.getResourceGroupById(groupId);
@@ -135,7 +136,7 @@ public class ResourceLocator {
      * @param releaseId release id
      * @return
      */
-    public ResourceEntity getResourceByGroupIdAndRelease(@NotNull Integer groupId, @NotNull Integer releaseId) {
+    public ResourceEntity getResourceByGroupIdAndRelease(@NotNull Integer groupId, @NotNull Integer releaseId) throws NotFoundException {
 
         ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
         try {

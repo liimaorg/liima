@@ -1,0 +1,43 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="editReleaseTitle">{{ getTitle() }}</h5>
+  <button type="button" class="btn btn-light close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form-horizontal mx-2">
+    <div class="mb-3">
+      <label for="name" class="form-label">Release name</label>
+      <input type="text" class="form-control" id="name" [(ngModel)]="release.name" />
+    </div>
+    <div class="mb-3">
+      <div class="form-check">
+        <label for="main" class="form-check-label">Main release</label>
+        <input type="checkbox" class="form-check-input" id="main" [(ngModel)]="release.mainRelease" />
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="releaseDate" class="form-label">Installation date</label>
+      <div id="releaseDate" class="form-text input-group date mb-3" required>
+        <app-date-picker
+          [(ngModel)]="installationDate"
+          [dateStringFormat]="dateFormat"
+          name="installationDate"
+          id="datetimepicker"
+          class="w-100"
+        ></app-date-picker>
+      </div>
+      @if (hasInvalidDate()) {
+      <div class="text-warning">The installation date is mandatory</div>
+      }
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Release description</label>
+      <textarea type="text" class="form-control" id="description" [(ngModel)]="release.description"></textarea>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" [disabled]="hasInvalidDate()" (click)="save()">Save changes</button>
+</div>

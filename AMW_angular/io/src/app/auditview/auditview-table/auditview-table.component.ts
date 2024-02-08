@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { AuditLogEntry } from '../auditview-entry';
 import { AuditviewTableService } from './auditview-table.service';
 import { SortableHeader, SortEvent } from './sortable.directive';
-import { DATE_FORMAT } from '../../core/amw-constants';
+import { DATE_TIME_FORMAT } from '../../core/amw-constants';
 import { NewlineFilterPipe } from './newlineFilterPipe';
 import { NgbHighlight } from '@ng-bootstrap/ng-bootstrap';
 import { AsyncPipe, DatePipe, NgFor } from '@angular/common';
@@ -22,7 +22,7 @@ export class AuditviewTableComponent implements OnChanges {
 
   auditlogEntries$: Observable<AuditLogEntry[]>;
   @ViewChildren(SortableHeader) headers: QueryList<SortableHeader>;
-  dateFormat = DATE_FORMAT;
+  dateFormat = DATE_TIME_FORMAT;
 
   constructor(public service: AuditviewTableService) {
     this.auditlogEntries$ = service.result$;

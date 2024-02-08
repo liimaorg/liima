@@ -4,19 +4,19 @@
   <nav>
     <ul class="pagination pointer m-1">
       <li class="page-item {{ currentPage < 2 ? 'disabled' : '' }}" aria-label="first" (click)="toPage(1)">
-        <a class="page-link" aria-hidden="true" href="#">&laquo;</a>
+        <a class="page-link" aria-hidden="true">&laquo;</a>
       </li>
       <li
         class="page-item {{ currentPage < 2 ? 'disabled' : '' }}"
         aria-label="previous"
         (click)="toPage(currentPage - 1)"
       >
-        <a class="page-link" aria-hidden="true" href="#">&lt;</a>
+        <a class="page-link" aria-hidden="true">&lt;</a>
       </li>
       @for (page of pages(); track page) {
       <li class="page-item {{ currentPage === page ? 'active' : '' }}">
         <a class="page-link" (click)="toPage(page)"
-          >{{ page }}@if (currentPage === page) {
+        >{{ page }} @if (currentPage === page) {
           <span class="visually-hidden">(current)</span>
           }</a
         >
@@ -27,14 +27,14 @@
         aria-label="next"
         (click)="toPage(currentPage + 1)"
       >
-        <a class="page-link" href="#"><span aria-hidden="true">&gt;</span></a>
+        <a class="page-link"><span aria-hidden="true">&gt;</span></a>
       </li>
       <li
         class="page-item {{ currentPage === lastPage ? 'disabled' : '' }}"
         aria-label="last"
         (click)="toPage(lastPage)"
       >
-        <a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a>
+        <a class="page-link"><span aria-hidden="true">&raquo;</span></a>
       </li>
     </ul>
   </nav>

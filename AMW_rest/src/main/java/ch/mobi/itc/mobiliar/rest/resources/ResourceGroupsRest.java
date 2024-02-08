@@ -42,6 +42,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.annotations.Api;
@@ -286,7 +287,7 @@ public class ResourceGroupsRest {
     @GET
     @ApiOperation(value = "Get resource in specific release - used by Angular")
     public ResourceDTO getResourceRelationListForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
-                                                         @PathParam("releaseId") Integer releaseId) {
+                                                         @PathParam("releaseId") Integer releaseId) throws NotFoundException {
 
         ResourceEntity resource = resourceDependencyResolverService.getResourceEntityForRelease(resourceGroupId, releaseId);
         if (resource == null) {
@@ -303,7 +304,7 @@ public class ResourceGroupsRest {
     @DELETE
     @ApiOperation(value = "Delete a specific resource release")
     public Response deleteResourceRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
-                                                            @PathParam("releaseId") Integer releaseId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+                                                            @PathParam("releaseId") Integer releaseId) throws NotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
         ResourceEntity resource = resourceLocator.getResourceByGroupIdAndRelease(resourceGroupId, releaseId);
         if (resource == null) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
@@ -317,7 +318,7 @@ public class ResourceGroupsRest {
     @ApiOperation(value = "Get application with version for a specific resourceGroup, release and context(s) - used by Angular")
     public Response getApplicationsWithVersionForRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
                                                          @PathParam("releaseId") Integer releaseId,
-                                                         @QueryParam("context") List<Integer> contextIds) {
+                                                         @QueryParam("context") List<Integer> contextIds) throws NotFoundException {
 
         ResourceEntity appServer = resourceLocator.getExactOrClosestPastReleaseByGroupIdAndReleaseId(resourceGroupId, releaseId);
         if (appServer == null) {

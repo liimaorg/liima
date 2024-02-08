@@ -28,6 +28,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import javax.ejb.Stateless;
@@ -233,7 +234,7 @@ public class ResourceDependencyResolverService {
      * @param releaseId
      * @return
      */
-    public ResourceEntity getResourceEntityForRelease(@NotNull Integer resourceGroupId, @NotNull Integer releaseId) {
+    public ResourceEntity getResourceEntityForRelease(@NotNull Integer resourceGroupId, @NotNull Integer releaseId) throws NotFoundException {
         ResourceGroupEntity resourceGroup = resourceGroupLocator.getResourceGroupForCreateDeploy(resourceGroupId);
         return getResourceEntityForRelease(resourceGroup.getResources(), releaseLocator.getReleaseById(releaseId));
     }
@@ -250,7 +251,7 @@ public class ResourceDependencyResolverService {
             //Otherwise, we're only interested in earlier releases than the requested one
             else if (compareValue < 0) {
                 if (comparator.compare(resource.getRelease(), bestResource == null ? null : bestResource.getRelease()) > 0) {
-                    //If the release date of the current resource is later than the the best release we've found yet, it is better suited and is our new "best resource"
+                    //If the release date of the current resource is later than the best release we've found yet, it is better suited and is our new "best resource"
                     bestResource = resource;
                 }
             }

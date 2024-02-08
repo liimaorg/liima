@@ -20,19 +20,24 @@
 
 package ch.puzzle.itc.mobiliar.business.releasing.boundary;
 
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
+import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseRepository;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.common.exception.ConcurrentModificationException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import lombok.NonNull;
 
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.DELETE;
+import javax.ejb.EJBTransactionRolledbackException;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.util.*;
+import java.util.logging.Logger;
+
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
 
 @Stateless
 public class ReleaseLocator {
@@ -44,20 +49,106 @@ public class ReleaseLocator {
     @Inject
     ReleaseRepository releaseRepository;
 
+    @Inject
+    ReleaseMgmtPersistenceService persistenceService;
+
     public ReleaseEntity getReleaseByName(String name) {
         return releaseRepository.getReleaseByName(name);
     }
 
-    public ReleaseEntity getReleaseById(Integer id) {
-        return releaseRepository.find(id);
+    @HasPermission(permission = Permission.RELEASE, action = READ)
+    public ReleaseEntity getReleaseById(@NonNull Integer id) throws NotFoundException {
+        ReleaseEntity entity = releaseRepository.find(id);
+        this.requireNotNull(entity);
+        return entity;
+    }
+
+    private void requireNotNull(ReleaseEntity entity) throws NotFoundException {
+        if (entity == null) {
+            throw new NotFoundException("Release not found.");
+        }
     }
 
     public List<ReleaseEntity> getReleasesForResourceGroup(ResourceGroupEntity resourceGroup) {
         return releaseRepository.getReleasesForResourceGroup(resourceGroup);
     }
 
+    /**
+     * @return the number of existing releases
+     */
+    @HasPermission(permission = Permission.RELEASE, action = READ)
+    public int countReleases() {
+        return persistenceService.count();
+    }
+
+    /**
+     * Returns a list of releases for management operations. This means, we
+     * don't care about relations to resources or deployments but only want to
+     * create, edit or delete plain release-instances
+     */
+    @HasPermission(permission = Permission.RELEASE, action = READ)
+    public List<ReleaseEntity> loadReleasesForMgmt(Integer startIndex, Integer length, boolean sortDesc) {
+        return persistenceService.loadReleaseEntities(startIndex, length, sortDesc);
+    }
+
+    /**
+     * Load all releases
+     */
+    @HasPermission(permission = Permission.RELEASE, action = READ)
+    public List<ReleaseEntity> loadAllReleases(boolean sortDesc) {
+
+        return persistenceService.loadAllReleaseEntities(sortDesc);
+    }
+
+    @HasPermission(permission = Permission.RELEASE, action = READ)
+    public ReleaseEntity getDefaultRelease() {
+        return persistenceService.getDefaultRelease();
+    }
+
+
+    @HasPermission(permission = Permission.RELEASE, action = READ)
+    public List<ResourceEntity> getResourcesForRelease(Integer releaseId) {
+        return persistenceService.getResourcesForRelease(releaseId);
+    }
+
+    /**
+     * Persists the given new release.
+     */
+    @HasPermission(permission = Permission.RELEASE, action = CREATE)
+    public boolean create(ReleaseEntity release) {
+        return persistenceService.saveReleaseEntity(release);
+    }
+
+    /**
+     * Persists the given release - the already existing instance will be updated.
+     */
+    @HasPermission(permission = Permission.RELEASE, action = UPDATE)
+    public boolean update(ReleaseEntity release) throws ConcurrentModificationException {
+        try {
+            return persistenceService.saveReleaseEntity(release);
+        } catch (EJBTransactionRolledbackException e) {
+            throw new ConcurrentModificationException("Concurrent update prevented! Please reload before updating release: " + release);
+        }
+    }
+
     @HasPermission(permission = Permission.RELEASE, action = DELETE)
     public void delete(ReleaseEntity release) {
         releaseRepository.removeRelease(release);
+    }
+
+    @HasPermission(permission = Permission.RELEASE, action = READ)
+    public SortedMap<String, SortedSet<ResourceEntityDto>> loadResourcesAndDeploymentsForRelease(Integer releaseId) {
+        SortedMap<String, SortedSet<ResourceEntityDto>> resourcesForCurrentRelease;
+        List<ResourceEntity> result = this.getResourcesForRelease(releaseId);
+        resourcesForCurrentRelease = new TreeMap();
+        for (ResourceEntity r : result) {
+            ResourceTypeEntityDto typeDto = new ResourceTypeEntityDto(r.getResourceType().getId(), r.getResourceType().getName());
+            ResourceEntityDto entityDto = new ResourceEntityDto(r.getId(), r.getName(), typeDto);
+            if (!resourcesForCurrentRelease.containsKey(typeDto.getName())) {
+                resourcesForCurrentRelease.put(typeDto.getName(), new TreeSet<>());
+            }
+            resourcesForCurrentRelease.get(typeDto.getName()).add(entityDto);
+        }
+        return resourcesForCurrentRelease;
     }
 }
