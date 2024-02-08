@@ -801,16 +801,19 @@ public class DeploymentBoundary {
     }
 
     // TODO test
-    public String getDeploymentLog(String logName) throws IllegalAccessException {
+    public String getDeploymentLog(String logName) throws IOException {
         String logsPath = ConfigurationService.getProperty(ConfigKey.LOGS_PATH);
-        if (logName.contains(File.separator)) {
-            throw new IllegalAccessException("The log file contains a file separator (\"" + File.separator + "\"). For security reasons, this is not permitted!");
-        }
+
+        String name = logsPath + File.separator + logName;
+        File file = new File(name);
+
+        if (file.length() > 1_000_000) throw new IOException(String.format("%s is larger than 10 MB and cannot be shown.", file.getName()));
 
         StringBuilder content = new StringBuilder();
         Scanner scanner;
         try {
-            scanner = new Scanner(new FileInputStream(logsPath + File.separator + logName));
+
+            scanner = new Scanner(new FileInputStream(file));
             try {
                 while (scanner.hasNextLine()) {
                     content.append(scanner.nextLine()).append('\n');
