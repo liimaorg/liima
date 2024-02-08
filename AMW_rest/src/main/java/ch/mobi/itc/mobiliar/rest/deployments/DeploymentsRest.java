@@ -71,6 +71,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.CREATED;
 
 @Stateless
@@ -357,40 +358,37 @@ public class DeploymentsRest {
     }
 
     @GET
-    @Path("/deploymentParameterKeys/")
+    @Path("/deploymentParameterKeys")
     @ApiOperation(value = "returns the keys of all available DeploymentParameter")
     public Response getAllDeploymentParameterKeys() {
         List<DeploymentParameterDTO> deploymentParameters = new ArrayList<>();
-        for (Key key : keyRepository.findAll()) {
+        for (Key key : deploymentParameterBoundary.findAllKeys()) {
             deploymentParameters.add(new DeploymentParameterDTO(key.getName(), null));
         }
         return Response.status(Status.OK).entity(deploymentParameters).build();
     }
 
     @POST
-    @Path("/deploymentParameterKeys/")
+    @Path("/deploymentParameterKeys")
     @ApiOperation(value = "Adds one parameter key")
-    public Response addOneParameterKey(DeploymentParameterDTO deploymentParameterDTO) {
-        Key keyToBeAdded = new Key(deploymentParameterDTO.getKey());
-        keyRepository.createDeployParameterKey(keyToBeAdded);
+    @Produces({APPLICATION_JSON})
+    public Response addOneParameterKey(DeploymentParameterDTO deploymentParameterDTO) throws ch.puzzle.itc.mobiliar.common.exception.ValidationException {
+        String keyToBeAdded = deploymentParameterDTO.getKey();
+        deploymentParameterBoundary.createDeployParameterKey(keyToBeAdded);
         return Response
                 .status(CREATED)
-                .entity(keyToBeAdded)
-                .location(URI.create("/deploymentParameterKeys/" + keyToBeAdded.getName()))
+                .entity(new DeploymentParameterDTO(keyToBeAdded, null))
+                .location(URI.create("/deploymentParameterKeys/" + keyToBeAdded))
                 .build();
     }
 
     @DELETE
     @Path("/deploymentParameterKeys/{keyName}")
     @ApiOperation(value = "Deletes one parameter key")
-    public Response deleteOneKey(@PathParam("keyName") String keyName) {
-        Key keyToBeRemoved = keyRepository.findFirstKeyByName(keyName);
-        if (keyToBeRemoved != null) {
-            deploymentParameterBoundary.deleteDeployParameterKey(keyToBeRemoved);
-            return Response.ok().build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+    public Response deleteOneKey(@PathParam("keyName") String keyName) throws NotFoundException {
+        Key keyToBeRemoved = new Key(keyName);
+        deploymentParameterBoundary.deleteDeployParameterKey(keyToBeRemoved);
+        return Response.ok().build();
     }
 
     @GET

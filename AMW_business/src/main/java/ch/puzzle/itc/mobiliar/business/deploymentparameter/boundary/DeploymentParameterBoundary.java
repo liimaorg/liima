@@ -20,24 +20,22 @@
 
 package ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary;
 
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.DELETE;
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Logger;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.DeploymentParameterRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Logger;
+
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
 
 @Stateless
 public class DeploymentParameterBoundary {
@@ -61,9 +59,16 @@ public class DeploymentParameterBoundary {
     }
 
     @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER, action = DELETE)
-    public void deleteDeployParameterKey(Key keyToDelete) {
-        Key attachedKeyToDelete = keyRepository.find(Objects.requireNonNull(keyToDelete, "Must not be null").getId());
+    public void deleteDeployParameterKey(Key keyToDelete) throws NotFoundException {
+        Key attachedKeyToDelete = keyRepository.findFirstKeyByName(keyToDelete.getName());
+        this.requireNotNull(attachedKeyToDelete);
         keyRepository.remove(attachedKeyToDelete);
+    }
+
+    private void requireNotNull(Key key) throws NotFoundException {
+        if (key == null) {
+            throw new NotFoundException("Key not found.");
+        }
     }
 
     @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER, action = UPDATE)
@@ -83,7 +88,7 @@ public class DeploymentParameterBoundary {
         if (deployParameterKeyName != null && !deployParameterKeyName.trim().isEmpty()) {
             Key newKey = new Key(deployParameterKeyName.trim());
             if (keyRepository.findFirstKeyByName(newKey.getName()) != null) {
-                throw new ValidationException("a key with same name exists", deployParameterKeyName);
+                throw new ValidationException("A key with same name exists", deployParameterKeyName);
             }
             keyRepository.createDeployParameterKey(newKey);
         } else {

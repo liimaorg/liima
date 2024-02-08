@@ -5,7 +5,7 @@ import { ToastComponent } from '../../shared/elements/toast/toast.component';
 import { HttpClient } from '@angular/common/http';
 import { IconComponent } from '../../shared/icon/icon.component';
 
-type Key = { key: string; value: any };
+type Key = { key: string; value: string };
 
 @Component({
   selector: 'app-deployment-parameter',
@@ -21,7 +21,7 @@ export class DeploymentParameterComponent {
   @ViewChild(ToastComponent) toast: ToastComponent;
 
   constructor(private http: HttpClient) {
-    http.get<Key[]>('/AMW_rest/resources/deployments/deploymentParameterKeys/').subscribe({
+    http.get<Key[]>('/AMW_rest/resources/deployments/deploymentParameterKeys').subscribe({
       next: (data) => {
         this.paramKeys = data;
       },
@@ -32,7 +32,10 @@ export class DeploymentParameterComponent {
     const trimmedKeyName = this.keyName.trim();
     if (trimmedKeyName.length > 0 && trimmedKeyName.toLowerCase() !== 'null') {
       this.http
-        .post<Key>('/AMW_rest/resources/deployments/deploymentParameterKeys/', { key: this.keyName, value: null })
+        .post<Key>('/AMW_rest/resources/deployments/deploymentParameterKeys', {
+          key: this.keyName,
+          value: null,
+        })
         .subscribe({
           next: (newKey) => {
             this.paramKeys.push(newKey);
