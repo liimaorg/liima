@@ -4,6 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastComponent } from '../../shared/elements/toast/toast.component';
 import { HttpClient } from '@angular/common/http';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { takeUntil } from 'rxjs/operators';
+import { AuthService } from '../../auth/auth.service';
+import { Subject } from 'rxjs';
 
 type Key = { id: number; name: string };
 
@@ -17,15 +20,40 @@ type Key = { id: number; name: string };
 export class DeploymentParameterComponent {
   keyName = '';
   paramKeys: Key[] = [];
+  canCreate: boolean = false;
+  canDelete: boolean = false;
+  private destroy$ = new Subject<void>();
 
   @ViewChild(ToastComponent) toast: ToastComponent;
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+  ) {
+    this.getUserPermissions();
     http.get<Key[]>('/AMW_rest/resources/deployments/deploymentParameterKeys').subscribe({
       next: (data) => {
         this.paramKeys = data;
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(undefined);
+  }
+
+  private getUserPermissions() {
+    this.authService
+      .getActionsForPermission('MANAGE_DEPLOYMENT_PARAMETER')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((value) => {
+        if (value.indexOf('ALL') > -1) {
+          this.canCreate = this.canDelete = true;
+        } else {
+          this.canCreate = value.indexOf('CREATE') > -1;
+          this.canDelete = value.indexOf('DELETE') > -1;
+        }
+      });
   }
 
   addKey(): void {
