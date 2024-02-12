@@ -24,15 +24,15 @@
     </thead>
     <tbody>
       @for (tag of tags; track tag) {
-      <tr>
-        <td>{{ tag.name }}</td>
-        <td>
-          <button class="btn btn-sm btn-danger me-0" (click)="deleteTag(tag.id)" [attr.data-cy]="'delete-' + tag.name">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-      }
+        <tr>
+          <td>{{ tag.name }}</td>
+          <td>
+            <button class="btn btn-sm btn-danger me-0" (click)="deleteTag(tag.id)" [attr.data-cy]="'delete-' + tag.name">
+              <app-icon icon="trash"></app-icon>
+            </button>
+          </td>
+        </tr>
+       }
     </tbody>
   </table>
   <app-toast></app-toast>
