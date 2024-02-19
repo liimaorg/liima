@@ -66,11 +66,11 @@ export class DeploymentParameterComponent {
           this.keyName = '';
         },
         error: (error) => {
-          this.toast.display(error.error.message, 'error');
+          this.toast.display(error.error.message, 'error', 5000);
         },
       });
     } else {
-      this.toast.display('Key name must not be null or empty', 'error');
+      this.toast.display('Key name must not be null or empty', 'error', 5000);
     }
   }
 
@@ -81,7 +81,7 @@ export class DeploymentParameterComponent {
         this.toast.display('Key deleted.');
       },
       error: (error) => {
-        this.toast.display(error.error.message, 'error');
+        this.toast.display(error.error.message, 'error', 5000);
       },
     });
   }

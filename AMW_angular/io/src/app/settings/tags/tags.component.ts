@@ -65,7 +65,7 @@ export class TagsComponent {
           this.tagName = '';
         },
         error: (error) => {
-          this.toast.display(error.error.message, 'error');
+          this.toast.display(error.error.message, 'error', 5000);
         },
       });
     }
@@ -78,7 +78,7 @@ export class TagsComponent {
         this.toast.display('Tag deleted.');
       },
       error: (error) => {
-        this.toast.display(error.error.message, 'error');
+        this.toast.display(error.error.message, 'error', 5000);
       },
     });
   }
