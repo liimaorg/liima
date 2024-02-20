@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ToastComponent } from 'src/app/shared/elements/toast/toast.component';
 import { ToastComponent as ToastComponent_1 } from '../../shared/elements/toast/toast.component';
@@ -17,7 +17,7 @@ type Tag = { id: number; name: string };
   standalone: true,
   imports: [FormsModule, ToastComponent_1, IconComponent],
 })
-export class TagsComponent {
+export class TagsComponent implements OnInit {
   tagName = '';
   tags: Tag[] = [];
   canCreate: boolean = false;
@@ -29,9 +29,11 @@ export class TagsComponent {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-  ) {
+  ) {}
+
+  ngOnInit(): void {
     this.getUserPermissions();
-    http.get<Tag[]>('/AMW_rest/resources/settings/tags').subscribe({
+    this.http.get<Tag[]>('/AMW_rest/resources/settings/tags').subscribe({
       next: (data) => {
         this.tags = data;
       },

@@ -11,7 +11,10 @@
           [(ngModel)]="keyName"
           (keyup.enter)="addKey()"
         />
-        <button class="btn btn-primary" (click)="addKey()" [attr.data-cy]="'button-add'"><app-icon icon="plus-circle"></app-icon> Add key</button>
+        <button class="btn btn-primary" (click)="addKey()" [attr.data-cy]="'button-add'">
+          <app-icon icon="plus-circle"></app-icon>
+          Add key
+        </button>
         }
       </div>
     </div>
@@ -29,13 +32,14 @@
     <tr>
       <td class="align-middle">{{ paramKey.name}}</td>
       <td>
-      @if (canDelete) {
-        <button class="btn btn-sm btn-danger me-0" (click)="deleteKey(paramKey.id)" [attr.data-cy]="'delete-' + paramKey.id">
+        @if (canDelete) {
+        <button class="btn btn-sm btn-danger me-0" (click)="deleteKey(paramKey.id)"
+                [attr.data-cy]="'delete-' + paramKey.id">
           <app-icon icon="trash"></app-icon>
         </button>
         }
       </td>
-     </tr>
+    </tr>
     }
     </tbody>
   </table>

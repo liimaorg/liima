@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastComponent } from '../../shared/elements/toast/toast.component';
@@ -17,7 +17,7 @@ type Key = { id: number; name: string };
   templateUrl: './deployment-parameter.component.html',
   styleUrl: './deployment-parameter.component.scss',
 })
-export class DeploymentParameterComponent {
+export class DeploymentParameterComponent implements OnInit {
   keyName = '';
   paramKeys: Key[] = [];
   canCreate: boolean = false;
@@ -29,9 +29,11 @@ export class DeploymentParameterComponent {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-  ) {
+  ) {}
+
+  ngOnInit(): void {
     this.getUserPermissions();
-    http.get<Key[]>('/AMW_rest/resources/deployments/deploymentParameterKeys').subscribe({
+    this.http.get<Key[]>('/AMW_rest/resources/deployments/deploymentParameterKeys').subscribe({
       next: (data) => {
         this.paramKeys = data;
       },
