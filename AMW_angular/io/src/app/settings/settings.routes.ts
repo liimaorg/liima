@@ -3,6 +3,7 @@ import { SettingsComponent } from './settings.component';
 import { PermissionComponent } from './permission/permission.component';
 import { ApplicationInfoComponent } from './application-info/application-info.component';
 import { ReleasesComponent } from './releases/releases.component';
+import { DeploymentParameterComponent } from './deployment-parameter/deployment-parameter.component';
 
 export const settingsRoutes = [
   {
@@ -19,6 +20,7 @@ export const settingsRoutes = [
       { path: 'permission/:restrictionType', component: PermissionComponent },
       { path: 'permission', component: PermissionComponent },
       { path: 'application-info', component: ApplicationInfoComponent },
+      { path: 'deployment-parameter', component: DeploymentParameterComponent },
     ],
   },
 ];

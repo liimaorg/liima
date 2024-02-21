@@ -38,7 +38,7 @@ describe('DeploymentService', () => {
       expect(deploymentParameters).toEqual([deploymentParamter]);
     });
 
-    const req = httpTestingController.expectOne('/AMW_rest/resources/deployments/deploymentParameterKeys/');
+    const req = httpTestingController.expectOne('/AMW_rest/resources/deployments/deploymentParameterKeyNames');
 
     expect(req.request.method).toEqual('GET');
 

@@ -1,30 +1,25 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
-import { filter, Observable, Subject } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, startWith, Subject } from 'rxjs';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Restriction } from '../settings/permission/restriction';
-import { Release } from '../settings/releases/release';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
-  private readonly _cachedUserRestrictions: Subject<Restriction[]>;
-  private readonly _userData: Observable<Restriction[]>;
+  private reload$ = new Subject<Restriction[]>();
+  private readonly restrictions$ = this.reload$.pipe(
+    startWith(null),
+    switchMap(() => this.getRestrictions()),
+    shareReplay(1),
+  );
 
   constructor(private http: HttpClient) {
     super();
-    if (!this._cachedUserRestrictions) {
-      this._cachedUserRestrictions = new Subject<Restriction[]>();
-      this.refreshData();
-    }
-    this._userData = this._cachedUserRestrictions.asObservable();
   }
 
-  private refreshData() {
-    this.getRestrictions().subscribe({
-      next: (r) => this._cachedUserRestrictions.next(r),
-      error: (e) => console.log(e),
-    });
+  refreshData() {
+    this.getRestrictions().pipe(map((v) => this.reload$.next(v)));
   }
 
   private getRestrictions(): Observable<Restriction[]> {
@@ -36,11 +31,11 @@ export class AuthService extends BaseService {
   }
 
   get userRestrictions() {
-    return this._userData;
+    return this.restrictions$;
   }
 
   getActionsForPermission(permissionName: string) {
-    return this._userData.pipe(
+    return this.restrictions$.pipe(
       map((restrictions) => {
         return restrictions.filter((entry) => entry.permission.name === permissionName).map((entry) => entry.action);
       }),

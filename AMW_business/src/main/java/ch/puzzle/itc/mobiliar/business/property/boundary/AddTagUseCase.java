@@ -26,7 +26,7 @@ public class AddTagUseCase {
         try {
             return propertyTagEditingService.addPropertyTag(propertyTagEntity);
         } catch (AMWRuntimeException e) {
-            // the runtime excpetion is caught here to provide the user with nice error messages.
+            // the runtime exception is caught here to provide the user with nice error messages.
             throw new ValidationException("Tag with name " + tagCommand.getName() + " already exists");
         }
     }

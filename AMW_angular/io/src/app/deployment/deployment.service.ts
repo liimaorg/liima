@@ -103,7 +103,7 @@ export class DeploymentService extends BaseService {
 
   getAllDeploymentParameterKeys(): Observable<DeploymentParameter[]> {
     return this.http
-      .get<DeploymentParameter[]>(`${this.getBaseUrl()}/deployments/deploymentParameterKeys/`, {
+      .get<DeploymentParameter[]>(`${this.getBaseUrl()}/deployments/deploymentParameterKeyNames`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
