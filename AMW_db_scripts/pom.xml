@@ -19,7 +19,7 @@
 
 		<!-- dependency versions -->
 		<version.h2>1.4.196</version.h2>
-		<version.pg>42.4.3</version.pg>
+		<version.pg>42.7.2</version.pg>
 		<version.ora>11.2.0.3</version.ora>
 		
 		<version.hibernate4-maven-plugin>1.1.1</version.hibernate4-maven-plugin>
