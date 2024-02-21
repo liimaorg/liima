@@ -26,6 +26,7 @@ import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
+import ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary.DeploymentParameterBoundary;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
@@ -47,7 +48,6 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import com.google.gson.Gson;
@@ -65,11 +65,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.ValidationException;
+import java.net.URI;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @Stateless
 @Path("/deployments")
@@ -98,6 +102,8 @@ public class DeploymentsRest {
     private PermissionBoundary permissionBoundary;
     @Inject
     private ContextLocator contextLocator;
+    @Inject
+    private DeploymentParameterBoundary deploymentParameterBoundary;
 
     @Inject
     Logger log;
@@ -353,14 +359,42 @@ public class DeploymentsRest {
     }
 
     @GET
-    @Path("/deploymentParameterKeys/")
+    @Path("/deploymentParameterKeyNames")
     @ApiOperation(value = "returns the keys of all available DeploymentParameter")
-    public Response getAllDeploymentParameterKeys() {
+    public Response getAllDeploymentParameterKeyNames() {
         List<DeploymentParameterDTO> deploymentParameters = new ArrayList<>();
-        for (Key key : keyRepository.findAll()) {
+        for (Key key : deploymentParameterBoundary.findAllKeys()) {
             deploymentParameters.add(new DeploymentParameterDTO(key.getName(), null));
         }
         return Response.status(Status.OK).entity(deploymentParameters).build();
+    }
+
+    @GET
+    @Path("/deploymentParameterKeys")
+    @ApiOperation(value = "returns the keys of all available DeploymentParameter")
+    public Response getAllDeploymentParameterKeys() {
+        return Response.status(Status.OK).entity(deploymentParameterBoundary.findAllKeys()).build();
+    }
+
+    @POST
+    @Path("/deploymentParameterKeys")
+    @ApiOperation(value = "Adds one parameter key")
+    @Produces({APPLICATION_JSON})
+    public Response addOneParameterKey(String keyName) throws ch.puzzle.itc.mobiliar.common.exception.ValidationException {
+        Key createdKey = deploymentParameterBoundary.createDeployParameterKey(keyName);
+        return Response
+                .status(CREATED)
+                .entity(createdKey)
+                .location(URI.create("/deploymentParameterKeys/" + createdKey.getId()))
+                .build();
+    }
+
+    @DELETE
+    @Path("/deploymentParameterKeys/{id : \\d+}")
+    @ApiOperation(value = "Deletes one parameter key")
+    public Response deleteOneKey(@ApiParam("Key ID") @PathParam("id") Integer id) throws NotFoundException {
+        deploymentParameterBoundary.deleteDeployParameterKey(id);
+        return Response.status(NO_CONTENT).build();
     }
 
     @GET

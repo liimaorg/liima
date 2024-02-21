@@ -36,13 +36,18 @@ export class ToastComponent {
   @Input() message = '';
   @Input() type: SuccessOrError;
   show = false;
+  timeoutId = undefined;
 
   public display(message: string, type: SuccessOrError = 'success', duration = 3000) {
     this.message = message;
     this.type = type;
     this.show = true;
 
-    setTimeout(() => {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
+    this.timeoutId = setTimeout(() => {
       this.show = false;
     }, duration);
   }

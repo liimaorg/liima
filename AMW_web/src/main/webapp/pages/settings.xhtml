@@ -59,9 +59,9 @@
                     </h:link>
                 </li>
                 <li class="${settingsDataProvider.mode=='deployparam' ? 'current' : ''}">
-                    <h:link value="Deployment Parameter">
-                        <f:param name="mode" value="deployparam" />
-                    </h:link>
+                    <h:outputLink value="/AMW_angular/#/settings/deployment-parameter">
+                        Deployment Parameter
+                    </h:outputLink>
                 </li>
                 <li class="${settingsDataProvider.mode=='myAmw' ? 'current' : ''}">
                     <h:link value="My favorites">
@@ -171,16 +171,6 @@
             <!-- Functions -->
             <h:panelGroup rendered="${settingsDataProvider.mode=='functions'}">
                 <mobi:listGlobalFunctions/>
-            </h:panelGroup>
-
-            <!-- Tags -->
-            <h:panelGroup rendered="${settingsDataProvider.mode=='tags'}">
-                <ui:include  src="components/propertyTagsComp.xhtml" />
-            </h:panelGroup>
-
-            <!-- Deployparam -->
-            <h:panelGroup rendered="${settingsDataProvider.mode=='deployparam'}">
-                <ui:include  src="components/deploymentParameterComp.xhtml" />
             </h:panelGroup>
 
             <h:panelGroup rendered="${settingsDataProvider.mode=='myAmw'}">
@@ -522,7 +512,6 @@
                                     Add argument</a4j:commandLink>
                         </h:panelGroup>
 
-                        <div></div>
                     </div>
                 </h:panelGroup>
                 <a4j:commandLink styleClass="btn primary right" value="Confirm"
