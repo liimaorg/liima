@@ -1,3 +1,12 @@
+# v1.17.35
+* Replace JSF GUI in settings/application-info page with Angular [#725](https://github.com/liimaorg/liima/issues/725)
+* Replace JSF GUI in Settings -> Releases page with Angular [#729](https://github.com/liimaorg/liima/issues/729)
+* Replace JSF GUI in Settings -> Deployment Parameter page with Angular [#737](https://github.com/liimaorg/liima/issues/737)
+* Upgrade to Angular 17.1 and switch to new Vite build [#734](https://github.com/liimaorg/liima/issues/734)
+* Migrate to angular17 control-flow [#727](https://github.com/liimaorg/liima/issues/727)
+* Node and js version update, GH action updates [#741](https://github.com/liimaorg/liima/pull/741)
+* Update Java Script dependencies
+
 # v1.17.34
 * Angular Cleanup and Consolidation [#723](https://github.com/liimaorg/liima/pull/723)
 * fix nullpointer in notification service with preserved deployments [#724](https://github.com/liimaorg/liima/pull/724)
