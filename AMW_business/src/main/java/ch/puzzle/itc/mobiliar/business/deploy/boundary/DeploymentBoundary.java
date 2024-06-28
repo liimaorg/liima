@@ -800,38 +800,29 @@ public class DeploymentBoundary {
         }
     }
 
-    // TODO test
-    public String getDeploymentLog(String logName) throws IOException {
+    public String readContentOfDeploymentLog(String logFilename, long maxSize) throws IOException {
         String logsPath = ConfigurationService.getProperty(ConfigKey.LOGS_PATH);
-
-        String name = logsPath + File.separator + logName;
+        String name = logsPath + File.separator + logFilename;
         File file = new File(name);
 
-        if (file.length() > 1_000_000) throw new IOException(String.format("%s is larger than 10 MB and cannot be shown.", file.getName()));
+        long fileSize = file.length();
+        long startPosition = fileSize > maxSize ? fileSize - maxSize : 0;
 
-        StringBuilder content = new StringBuilder();
-        Scanner scanner;
-        try {
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+            raf.seek(startPosition);
 
-            scanner = new Scanner(new FileInputStream(file));
-            try {
-                while (scanner.hasNextLine()) {
-                    content.append(scanner.nextLine()).append('\n');
-                }
-            } finally {
-                scanner.close();
+            StringBuilder content = new StringBuilder();
+            if (startPosition > 0 ) {
+                content.append("[INFO] Log Truncation Notice: The beginning of this log has been truncated because the log file exceeded the maximum allowable size. Some earlier entries are missing.\n\n");
+                content.append("\n...\n");
             }
-            return content.toString();
-        } catch (FileNotFoundException e) {
-            String message = "The file "
-                    + logsPath
-                    + File.separator
-                    + logName
-                    + " was found, but couldn't be read!";
-            log.log(Level.WARNING, message);
-            throw new AMWRuntimeException(message, e);
-        }
+            String line;
+            while ((line = raf.readLine()) != null) {
+                content.append(line).append("\n");
+            }
 
+            return content.toString();
+        }
     }
 
     /**

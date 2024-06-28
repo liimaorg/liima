@@ -13,6 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 
+import static ch.puzzle.itc.mobiliar.business.deploy.control.LogContentService.MAX_FILE_SIZE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
@@ -43,7 +44,7 @@ public class LogContentServiceTest {
     public void should_get_content_of_log_file() throws ValidationException, IOException {
         // given
         doReturn(new String[]{"file-name.log"}).when(deploymentBoundary).getLogFileNames(12345);
-        doReturn("log-file-content").when(deploymentBoundary).getDeploymentLog("file-name.log");
+        doReturn("log-file-content").when(deploymentBoundary).readContentOfDeploymentLog("file-name.log", MAX_FILE_SIZE);
 
         // when
         DeploymentLog content = service.getContent(new DeploymentLogContentCommand(12345, "file-name.log"));
