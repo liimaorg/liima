@@ -12,6 +12,8 @@ import java.util.List;
 @Stateless
 public class LogContentService implements DeploymentLogContentUseCase {
 
+    public final static int MAX_FILE_SIZE = 10_000_000;
+
     @Inject
     private DeploymentBoundary deploymentBoundary;
 
@@ -23,6 +25,6 @@ public class LogContentService implements DeploymentLogContentUseCase {
 
         return new DeploymentLog(command.getId(),
                 command.getFilename(),
-                deploymentBoundary.getDeploymentLog(command.getFilename()));
+                deploymentBoundary.readContentOfDeploymentLog(command.getFilename(), MAX_FILE_SIZE));
     }
 }
