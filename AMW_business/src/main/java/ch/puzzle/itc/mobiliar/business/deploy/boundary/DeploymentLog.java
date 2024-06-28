@@ -13,7 +13,7 @@ public class DeploymentLog {
     private String filename;
     private String content;
 
-    public DeploymentLog(Integer id, String filename) {
+    public DeploymentLog(long id, String filename) {
         this(id, filename, null);
     }
 }

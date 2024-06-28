@@ -46,7 +46,7 @@ public class DeploymentsLogRest {
     @ApiOperation(value = "Get the list of available log file names for a given deployment id.")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDeploymentLogs(
-            @PathParam("deploymentId") Integer deploymentId) throws ValidationException, NotFoundException {
+            @PathParam("deploymentId") Long deploymentId) throws ValidationException, NotFoundException {
 
         if (deploymentId == null) throw new ValidationException("deployment id must not be null");
         return Response.ok(listDeploymentLogsUseCase.logsFor(deploymentId)).build();
