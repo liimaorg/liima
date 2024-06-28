@@ -772,7 +772,7 @@ public class DeploymentBoundary {
     }
 
     // TODO test
-    public String[] getLogFileNames(final int deploymentId) {
+    public String[] getLogFileNames(final long deploymentId) {
         String logsPath = ConfigurationService
                 .getProperty(ConfigKey.LOGS_PATH);
         if (logsPath == null) {

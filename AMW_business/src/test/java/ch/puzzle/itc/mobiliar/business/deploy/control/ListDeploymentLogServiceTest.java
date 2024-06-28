@@ -37,7 +37,7 @@ public class ListDeploymentLogServiceTest {
         doReturn(fileNames).when(deploymentBoundary).getLogFileNames(81552);
 
         // when
-        List<DeploymentLog> logFiles = service.logsFor(81552);
+        List<DeploymentLog> logFiles = service.logsFor(81552L);
 
         // then
         assertThat(logFiles.size(), is(2));

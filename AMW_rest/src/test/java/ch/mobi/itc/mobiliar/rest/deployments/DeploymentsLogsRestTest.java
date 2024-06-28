@@ -82,9 +82,9 @@ public class DeploymentsLogsRestTest {
 
     @Test
     public void getDeploymentLogs_nothingFound() throws ValidationException, NotFoundException {
-        when(listDeploymentLogsUseCase.logsFor(123456)).thenReturn(List.of());
+        when(listDeploymentLogsUseCase.logsFor(123456L)).thenReturn(List.of());
 
-        Response response = resource.getDeploymentLogs(123456);
+        Response response = resource.getDeploymentLogs(123456L);
 
         assertNotNull(response);
         assertThat(Response.Status.OK.getStatusCode(), is(response.getStatus()));
@@ -95,12 +95,12 @@ public class DeploymentsLogsRestTest {
     @Test
     public void getDeploymentLogs() throws ValidationException, NotFoundException {
         List<ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLog> logs = List.of(
-                new DeploymentLog(123456, "log1"),
-                new DeploymentLog(123456, "log2"));
+                new DeploymentLog(123456L, "log1"),
+                new DeploymentLog(123456L, "log2"));
 
-        when(listDeploymentLogsUseCase.logsFor(123456)).thenReturn(logs);
+        when(listDeploymentLogsUseCase.logsFor(123456L)).thenReturn(logs);
 
-        Response response = resource.getDeploymentLogs(123456);
+        Response response = resource.getDeploymentLogs(123456L);
 
         assertNotNull(response);
         assertThat(Response.Status.OK.getStatusCode(), is(response.getStatus()));
@@ -109,7 +109,7 @@ public class DeploymentsLogsRestTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void getDeploymentLogs_throwsValidationExcpetionWhenDeploymentIdIsNull() throws ValidationException, NotFoundException {
+    public void getDeploymentLogs_throwsValidationExceptionWhenDeploymentIdIsNull() throws ValidationException, NotFoundException {
         // given
 
         // when

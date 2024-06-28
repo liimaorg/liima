@@ -8,7 +8,6 @@ import lombok.NonNull;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +19,7 @@ public class ListDeploymentLogService implements ListDeploymentLogsUseCase {
     private DeploymentBoundary deploymentBoundary;
 
     @Override
-    public List<DeploymentLog> logsFor(@NonNull Integer deploymentId) throws NotFoundException {
+    public List<DeploymentLog> logsFor(@NonNull Long deploymentId) throws NotFoundException {
         List<DeploymentLog> deploymentLogFiles = Arrays.stream(deploymentBoundary.getLogFileNames(deploymentId))
                 .map(fileName -> new DeploymentLog(deploymentId, fileName))
                 .collect(Collectors.toList());

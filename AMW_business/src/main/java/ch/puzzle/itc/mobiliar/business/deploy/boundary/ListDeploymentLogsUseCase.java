@@ -11,5 +11,5 @@ public interface ListDeploymentLogsUseCase {
      * List the logs for a given deployment (by deployment id)
      * @param deploymentId
      */
-    List<DeploymentLog> logsFor(Integer deploymentId) throws NotFoundException;
+    List<DeploymentLog> logsFor(Long deploymentId) throws NotFoundException;
 }
