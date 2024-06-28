@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -21,11 +21,10 @@ export class DeploymentLogsService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  getLogFileContent(deploymentLog: DeploymentLog): Observable<string> {
+  getLogFileContent(deploymentLog: DeploymentLog): Observable<DeploymentLog> {
     return this.http
-      .get(`${this.getBaseUrl()}/deployments/${deploymentLog.deploymentId}/logs/${deploymentLog.filename}`, {
-        headers: new HttpHeaders().append('Accept', 'text/plain'),
-        responseType: 'text',
+      .get<DeploymentLog>(`${this.getBaseUrl()}/deployments/${deploymentLog.id}/logs/${deploymentLog.filename}`, {
+        headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
   }

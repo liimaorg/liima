@@ -1,8 +1,5 @@
-export interface DeploymentLog {
-  deploymentId: number;
+export type DeploymentLog = {
+  id: number;
   filename: string;
-}
-
-export interface DeploymentLogContent {
-  content: string;
-}
+  content?: string;
+};

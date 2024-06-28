@@ -1,11 +1,10 @@
 import { Location, NgIf, NgFor, AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
-import { Deployment } from 'src/app/deployment/deployment';
 import { DeploymentService } from 'src/app/deployment/deployment.service';
-import { DeploymentLog, DeploymentLogContent } from './deployment-log';
+import { DeploymentLog } from './deployment-log';
 import { DeploymentLogsService } from './deployment-logs.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { FormsModule } from '@angular/forms';
@@ -17,26 +16,31 @@ import {
   NgbDropdownButtonItem,
   NgbDropdownItem,
 } from '@ng-bootstrap/ng-bootstrap';
-import { NotificationComponent } from '../../shared/elements/notification/notification.component';
 import { PageComponent } from '../../layout/page/page.component';
+import { ToastComponent } from '../../shared/elements/toast/toast.component';
+import { NotificationComponent } from '../../shared/elements/notification/notification.component';
+import { Deployment } from '../../deployment/deployment';
+import { DeploymentLogContentComponent } from './deployment-log-content.component';
+import { DeploymentLogFileSelectorComponent } from './deployment-log-file-selector.component';
 
 declare let CodeMirror: any;
 
 type Failed = 'failed';
+
+const FAIL: Failed = 'failed';
 
 function failed(): Observable<Failed> {
   return of('failed');
 }
 
 @Component({
-  selector: 'app-logs',
+  selector: 'amw-logs',
   styleUrls: ['./deployment-logs.component.scss'],
   templateUrl: './deployment-logs.component.html',
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [
     NgIf,
-    NotificationComponent,
     NgbDropdown,
     NgbDropdownToggle,
     NgbDropdownMenu,
@@ -48,23 +52,33 @@ function failed(): Observable<Failed> {
     LoadingIndicatorComponent,
     AsyncPipe,
     PageComponent,
+    ToastComponent,
+    NotificationComponent,
+    DeploymentLogContentComponent,
+    DeploymentLogFileSelectorComponent,
   ],
 })
 export class DeploymentLogsComponent implements OnInit, OnDestroy {
   constructor(
-    private deploymentLogsService: DeploymentLogsService,
     private deploymentService: DeploymentService,
+    private deploymentLogsService: DeploymentLogsService,
     private route: ActivatedRoute,
     private location: Location,
   ) {}
 
-  selectDeploymentLog$: Subject<DeploymentLog> = new Subject();
+  @ViewChild(ToastComponent) toast: ToastComponent;
 
+  /**
+   * the deployment id taken from the route param
+   */
   deploymentId$: Observable<number> = this.route.paramMap.pipe(
     map((params) => +params.get('deploymentId')),
     distinctUntilChanged(),
   );
 
+  /**
+   * the file name from the path param - may be empty
+   */
   fileName$: Observable<string> = this.route.paramMap.pipe(
     map((params) => params.get('fileName')),
     distinctUntilChanged(),
@@ -75,38 +89,42 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     shareReplay(1),
   );
 
-  deploymentLogMetaData$: Observable<DeploymentLog[]> = this.deployment$.pipe(
-    switchMap(this.loadDeploymentLogs.bind(this)),
+  selectedDeploymentLog$: Subject<DeploymentLog> = new Subject();
+
+  availableLogFiles$: Observable<DeploymentLog[] | Failed> = this.deployment$.pipe(
+    switchMap(this.loadAvailableDeploymentLogFileNames.bind(this)),
     shareReplay(1),
   );
 
-  currentDeploymentLog$: Observable<DeploymentLog> = merge(
-    combineLatest([this.fileName$, this.deploymentLogMetaData$]).pipe(
-      map(([filename, meta]) => (!filename ? meta[0] : meta.find((m) => m.filename === filename))),
+  currentDeploymentLog$: Observable<DeploymentLog | Failed> = merge(
+    combineLatest([this.fileName$, this.availableLogFiles$]).pipe(
+      map(([filename, availableLogFiles]) => {
+        if (availableLogFiles === FAIL) {
+          return FAIL;
+        }
+        return !filename ? availableLogFiles[0] : availableLogFiles.find((m) => m.filename === filename);
+      }),
     ),
-    this.selectDeploymentLog$,
+    this.selectedDeploymentLog$,
   ).pipe(distinctUntilChanged());
 
-  currentDeploymentLogContent$: Observable<DeploymentLogContent> = this.currentDeploymentLog$.pipe(
+  selectedDeploymentLogContent$: Observable<DeploymentLog> = this.currentDeploymentLog$.pipe(
     switchMap(this.loadDeploymentLogContent.bind(this)),
   );
 
-  pagetitle$: Observable<string> = this.deployment$.pipe(
-    map((deployment) =>
-      deployment === 'failed'
-        ? ``
-        : `Log file for ${deployment.id} (${deployment.appServerName}
-          ${deployment.releaseName})`,
-    ),
-  );
+  private error$ = new BehaviorSubject<string>('');
 
   private destroy$ = new Subject<void>();
   ngOnInit(): void {
-    this.currentDeploymentLog$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((current) =>
-        this.location.replaceState(`/deployments/${current.deploymentId}/logs/${current.filename}`),
-      );
+    this.currentDeploymentLog$.pipe(takeUntil(this.destroy$)).subscribe((current: DeploymentLog | Failed) => {
+      if (current === FAIL) {
+        return;
+      }
+      this.location.replaceState(`/deployments/${current.id}/logs/${current.filename}`);
+    });
+
+    this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => this.toast.display(msg, 'error', 5000));
+
     CodeMirror.defineSimpleMode('simplemode', {
       start: [
         {
@@ -125,28 +143,32 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     this.destroy$.next(undefined);
   }
 
-  selectFile(deploymentLogMetaData: DeploymentLog) {
-    this.selectDeploymentLog$.next(deploymentLogMetaData);
+  selectFile(deploymentLog: DeploymentLog): void {
+    this.selectedDeploymentLog$.next(deploymentLog);
   }
 
   loadDeployment(deploymentId) {
-    return this.deploymentService.get(deploymentId).pipe(catchError(() => failed()));
+    return this.deploymentService.get(deploymentId).pipe(catchError(this.fail()));
   }
 
-  loadDeploymentLogs(deployment: Deployment | Failed) {
+  loadAvailableDeploymentLogFileNames(deployment: Deployment | Failed): Observable<DeploymentLog[] | Failed> {
     return deployment === 'failed' || deployment === undefined
       ? of([])
-      : this.deploymentLogsService.getLogFileMetaData(deployment.id).pipe(catchError(() => failed()));
+      : this.deploymentLogsService.getLogFileMetaData(deployment.id).pipe(catchError(this.fail()));
   }
 
-  loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed) {
+  loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed): Observable<string | DeploymentLog> {
     return deploymentLog === 'failed' || deploymentLog === undefined
       ? of('')
-      : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(
-          map((content) => {
-            return { content };
-          }),
-          catchError(() => failed()),
-        );
+      : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(catchError(this.fail()));
   }
+
+  private fail() {
+    return (msg) => {
+      this.error$.next(msg);
+      return failed();
+    };
+  }
+
+  protected readonly FAIL = FAIL;
 }
