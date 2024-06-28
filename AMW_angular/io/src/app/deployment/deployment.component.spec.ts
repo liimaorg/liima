@@ -19,8 +19,13 @@ import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-@Component({ template: '',
-    standalone: true, imports: [FormsModule, RouterTestingModule], providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()] })
+
+@Component({
+  template: '',
+  standalone: true,
+  imports: [FormsModule, RouterTestingModule],
+  providers: [provideHttpClientTesting()],
+})
 class DummyComponent {}
 
 describe('DeploymentComponent (create deployment)', () => {
@@ -31,9 +36,15 @@ describe('DeploymentComponent (create deployment)', () => {
   let deploymentService: DeploymentService;
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [FormsModule, RouterTestingModule, DeploymentComponent, DummyComponent],
-    providers: [ResourceService, EnvironmentService, DeploymentService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-});
+      imports: [FormsModule, RouterTestingModule, DeploymentComponent, DummyComponent],
+      providers: [
+        ResourceService,
+        EnvironmentService,
+        DeploymentService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
+    });
     fixture = TestBed.createComponent(DeploymentComponent);
     component = fixture.componentInstance;
 
@@ -369,19 +380,16 @@ describe('DeploymentComponent (create deployment with params)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [FormsModule,
-        RouterTestingModule.withRoutes([]),
-        DeploymentComponent,
-        DummyComponent],
-    providers: [
+      imports: [FormsModule, RouterTestingModule.withRoutes([]), DeploymentComponent, DummyComponent],
+      providers: [
         ResourceService,
         EnvironmentService,
         DeploymentService,
         { provide: ActivatedRoute, useValue: mockRoute },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-    ]
-});
+      ],
+    });
     fixture = TestBed.createComponent(DeploymentComponent);
     component = fixture.componentInstance;
   });
@@ -426,19 +434,16 @@ describe('DeploymentComponent (redeployment)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [FormsModule,
-        RouterTestingModule.withRoutes([]),
-        DeploymentComponent,
-        DummyComponent],
-    providers: [
+      imports: [FormsModule, RouterTestingModule.withRoutes([]), DeploymentComponent, DummyComponent],
+      providers: [
         { provide: ActivatedRoute, useValue: mockRoute },
         ResourceService,
         EnvironmentService,
         DeploymentService,
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-    ]
-});
+      ],
+    });
     fixture = TestBed.createComponent(DeploymentComponent);
     component = fixture.componentInstance;
 
