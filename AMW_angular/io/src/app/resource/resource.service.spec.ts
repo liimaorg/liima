@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ResourceService } from './resource.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { Resource } from './resource';
 import { Release } from './release';
 
@@ -12,9 +12,9 @@ describe('ResourceService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [ResourceService],
-    });
+    imports: [],
+    providers: [ResourceService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
