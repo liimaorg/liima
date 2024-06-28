@@ -6,5 +6,5 @@ import java.io.IOException;
 
 public interface DeploymentLogContentUseCase {
 
-    DeploymentLogContent getContent(DeploymentLogContentCommand command) throws ValidationException, IOException;
+    DeploymentLog getContent(DeploymentLogContentCommand command) throws ValidationException, IOException;
 }

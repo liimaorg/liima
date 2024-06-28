@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
-import { DeploymentLogContent } from './deployment-log';
+import { DeploymentLog } from './deployment-log';
 
 type Failed = 'failed';
 @Component({
@@ -30,5 +30,5 @@ type Failed = 'failed';
   imports: [FormsModule, CodemirrorModule],
 })
 export class DeploymentLogContentComponent {
-  @Input() content: DeploymentLogContent | Failed;
+  @Input() content: DeploymentLog | Failed;
 }

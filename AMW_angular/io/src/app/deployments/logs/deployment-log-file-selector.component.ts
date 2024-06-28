@@ -17,7 +17,7 @@ type Failed = 'failed';
           {{ selected?.filename }}
         </button>
         <div ngbDropdownMenu aria-labelledby="filename-picker">
-          @for (logFile of logFiles; track logFile.deploymentId) {
+          @for (logFile of logFiles; track logFile.id) {
           <button ngbDropdownItem (click)="selectFile(logFile)">
             {{ logFile.filename }}</button
           >}
