@@ -42,9 +42,9 @@ public class ListDeploymentLogServiceTest {
         // then
         assertThat(logFiles.size(), is(2));
         assertThat(logFiles.stream().map(DeploymentLog::getFilename).collect(Collectors.toList()), hasItems("log-file-1", "log-file-2"));
-        Set<Integer> deploymentIds = logFiles.stream().map(DeploymentLog::getDeploymentId).collect(Collectors.toSet());
+        Set<Long> deploymentIds = logFiles.stream().map(DeploymentLog::getId).collect(Collectors.toSet());
         assertThat(deploymentIds.size(), is(1));
-        assertThat(deploymentIds, hasItems(81552));
+        assertThat(deploymentIds, hasItems(81552L));
     }
 
     @Test(expected = NullPointerException.class)

@@ -1,9 +1,6 @@
 package ch.puzzle.itc.mobiliar.business.deploy.control;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContent;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentCommand;
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentUseCase;
+import ch.puzzle.itc.mobiliar.business.deploy.boundary.*;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 import javax.ejb.Stateless;
@@ -19,13 +16,13 @@ public class LogContentService implements DeploymentLogContentUseCase {
     private DeploymentBoundary deploymentBoundary;
 
     @Override
-    public DeploymentLogContent getContent(DeploymentLogContentCommand command) throws ValidationException, IOException {
+    public DeploymentLog getContent(DeploymentLogContentCommand command) throws ValidationException, IOException {
         List<String> availableLogFiles = Arrays.asList(deploymentBoundary.getLogFileNames(command.getId()));
-        if (!availableLogFiles.contains(command.getFileName()))
-            throw new ValidationException(String.format("file %s not found!", command.getFileName()));
+        if (!availableLogFiles.contains(command.getFilename()))
+            throw new ValidationException(String.format("file %s not found!", command.getFilename()));
 
-        return new DeploymentLogContent(command.getId(),
-                command.getFileName(),
-                deploymentBoundary.getDeploymentLog(command.getFileName()));
+        return new DeploymentLog(command.getId(),
+                command.getFilename(),
+                deploymentBoundary.getDeploymentLog(command.getFilename()));
     }
 }

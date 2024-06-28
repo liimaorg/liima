@@ -40,10 +40,10 @@ public class DeploymentsLogsRestTest {
 
     @Test
     public void getDeploymentLogFileContent() throws ValidationException, IOException {
-        doReturn(new DeploymentLogContent(123, "log-file-name", "log-file-content")).when(logContentUseCase).getContent(any(DeploymentLogContentCommand.class));
+        doReturn(new DeploymentLog(123, "log-file-name", "log-file-content")).when(logContentUseCase).getContent(any(DeploymentLogContentCommand.class));
         Response response = resource.getDeploymentLogFileContent(123, "log-file-name");
         assertThat(response.getStatus(), is(200));
-        DeploymentLogContent deploymentLogContent = (DeploymentLogContent) response.getEntity();
+        DeploymentLog deploymentLogContent = (DeploymentLog) response.getEntity();
         assertThat(deploymentLogContent.getContent(), is("log-file-content"));
     }
 

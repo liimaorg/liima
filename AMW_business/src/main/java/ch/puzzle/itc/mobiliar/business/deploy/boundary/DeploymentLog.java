@@ -9,7 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DeploymentLog {
 
-    private int deploymentId;
+    private long id;
     private String filename;
+    private String content;
 
+    public DeploymentLog(Integer id, String filename) {
+        this(id, filename, null);
+    }
 }

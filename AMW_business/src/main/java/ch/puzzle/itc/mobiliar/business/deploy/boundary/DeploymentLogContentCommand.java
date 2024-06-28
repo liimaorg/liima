@@ -12,13 +12,13 @@ import static ch.puzzle.itc.mobiliar.business.utils.Validation.validate;
 public class DeploymentLogContentCommand {
 
     @NotNull
-    private Integer id;
+    private final Integer id;
     @ValidFileName
-    private String fileName;
+    private final String filename;
 
-    public DeploymentLogContentCommand(Integer id, String fileName) throws ValidationException {
+    public DeploymentLogContentCommand(Integer id, String filename) throws ValidationException {
         this.id = id;
-        this.fileName = fileName;
+        this.filename = filename;
         validate(this);
     }
 }

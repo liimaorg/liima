@@ -1,10 +1,5 @@
 export type DeploymentLog = {
-  deploymentId: number;
+  id: number;
   filename: string;
-};
-
-export type DeploymentLogContent = {
-  deploymentId: number;
-  filename: string;
-  content: string;
+  content?: string;
 };

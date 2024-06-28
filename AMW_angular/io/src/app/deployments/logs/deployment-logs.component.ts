@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { DeploymentService } from 'src/app/deployment/deployment.service';
-import { DeploymentLog, DeploymentLogContent } from './deployment-log';
+import { DeploymentLog } from './deployment-log';
 import { DeploymentLogsService } from './deployment-logs.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { FormsModule } from '@angular/forms';
@@ -108,7 +108,7 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     this.selectedDeploymentLog$,
   ).pipe(distinctUntilChanged());
 
-  selectedDeploymentLogContent$: Observable<DeploymentLogContent> = this.currentDeploymentLog$.pipe(
+  selectedDeploymentLogContent$: Observable<DeploymentLog> = this.currentDeploymentLog$.pipe(
     switchMap(this.loadDeploymentLogContent.bind(this)),
   );
 
@@ -120,7 +120,7 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
       if (current === FAIL) {
         return;
       }
-      this.location.replaceState(`/deployments/${current.deploymentId}/logs/${current.filename}`);
+      this.location.replaceState(`/deployments/${current.id}/logs/${current.filename}`);
     });
 
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => this.toast.display(msg, 'error', 5000));
@@ -157,7 +157,7 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
       : this.deploymentLogsService.getLogFileMetaData(deployment.id).pipe(catchError(this.fail()));
   }
 
-  loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed): Observable<string | DeploymentLogContent> {
+  loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed): Observable<string | DeploymentLog> {
     return deploymentLog === 'failed' || deploymentLog === undefined
       ? of('')
       : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(catchError(this.fail()));

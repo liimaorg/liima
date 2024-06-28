@@ -1,6 +1,5 @@
 package ch.mobi.itc.mobiliar.rest.deployments;
 
-import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContent;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentCommand;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentUseCase;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.ListDeploymentLogsUseCase;
@@ -36,9 +35,9 @@ public class DeploymentsLogRest {
     @ApiOperation(value = "get the log file content as plain text for a given deployment and file name")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDeploymentLogFileContent(@ApiParam("Deployment ID") @PathParam("id") Integer id,
-                                                                      @PathParam("fileName") String fileName) throws ValidationException, IOException {
+                                                @PathParam("fileName") String filename) throws ValidationException, IOException {
 
-        DeploymentLogContentCommand deploymentLogContentCommand = new DeploymentLogContentCommand(id, fileName);
+        DeploymentLogContentCommand deploymentLogContentCommand = new DeploymentLogContentCommand(id, filename);
         return Response.ok(deploymentLogContentUseCase.getContent(deploymentLogContentCommand)).build();
     }
 

@@ -28,8 +28,8 @@ describe('DeploymentLogService', () => {
 
   it('should return expected deployment logs', () => {
     const expectedDeploymentLogs: DeploymentLog[] = [
-      { deploymentId: 1, filename: 'log1.log' },
-      { deploymentId: 1, filename: 'log2.log' },
+      { id: 1, filename: 'log1.log' },
+      { id: 1, filename: 'log2.log' },
     ];
 
     httpClientSpy.get.and.returnValue(asyncData(expectedDeploymentLogs));
