@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ToastComponent } from 'src/app/shared/elements/toast/toast.component';
 import { ToastComponent as ToastComponent_1 } from '../../shared/elements/toast/toast.component';
@@ -7,6 +7,7 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { Subject } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { takeUntil } from 'rxjs/operators';
+import { ToastService } from '../../shared/elements/toast/toast-service';
 
 type Tag = { id: number; name: string };
 
@@ -17,7 +18,7 @@ type Tag = { id: number; name: string };
   standalone: true,
   imports: [FormsModule, ToastComponent_1, IconComponent],
 })
-export class TagsComponent implements OnInit {
+export class TagsComponent implements OnInit, OnDestroy {
   tagName = '';
   tags: Tag[] = [];
   canCreate: boolean = false;
@@ -29,6 +30,7 @@ export class TagsComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -62,12 +64,12 @@ export class TagsComponent implements OnInit {
     if (this.tagName.trim().length > 0) {
       this.http.post<Tag>('/AMW_rest/resources/settings/tags', { name: this.tagName }).subscribe({
         next: (newTag) => {
+          this.toastService.success('Tag added.');
           this.tags.push(newTag);
-          this.toast.display('Tag added.');
           this.tagName = '';
         },
         error: (error) => {
-          this.toast.display(error.error.message, 'error', 5000);
+          this.toastService.error(error.error.message);
         },
       });
     }
@@ -75,12 +77,13 @@ export class TagsComponent implements OnInit {
 
   deleteTag(tagId: number): void {
     this.http.delete<Tag>(`/AMW_rest/resources/settings/tags/${tagId}`).subscribe({
-      next: (response) => {
+      next: () => {
         this.tags = this.tags.filter((tag) => tag.id !== tagId);
-        this.toast.display('Tag deleted.');
+        this.toastService.success('Tag deleted.');
       },
+
       error: (error) => {
-        this.toast.display(error.error.message, 'error', 5000);
+        this.toastService.error(error.error.message);
       },
     });
   }

@@ -5,6 +5,7 @@ import { AppConfiguration } from './setting/app-configuration';
 import { AMW_LOGOUT_URL } from './core/amw-constants';
 import { AsyncPipe } from '@angular/common';
 import { NavigationComponent } from './navigation/navigation.component';
+import { ToastsContainerComponent } from './shared/elements/toast/toasts-container.component';
 
 @Component({
   selector: 'app',
@@ -12,7 +13,7 @@ import { NavigationComponent } from './navigation/navigation.component';
   styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html',
   standalone: true,
-  imports: [RouterOutlet, AsyncPipe, NavigationComponent],
+  imports: [RouterOutlet, AsyncPipe, NavigationComponent, ToastsContainerComponent],
 })
 export class AppComponent implements OnInit {
   logoutUrl: string;
