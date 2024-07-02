@@ -12,7 +12,7 @@ import { ToastService } from '../../shared/elements/toast/toast-service';
 type Tag = { id: number; name: string };
 
 @Component({
-  selector: 'amw-tags',
+  selector: 'app-tags',
   templateUrl: './tags.component.html',
   styleUrl: './tags.component.scss',
   standalone: true,
@@ -21,8 +21,8 @@ type Tag = { id: number; name: string };
 export class TagsComponent implements OnInit, OnDestroy {
   tagName = '';
   tags: Tag[] = [];
-  canCreate: boolean = false;
-  canDelete: boolean = false;
+  canCreate = false;
+  canDelete = false;
   private destroy$ = new Subject<void>();
 
   @ViewChild(ToastComponent) toast: ToastComponent;
