@@ -11,7 +11,7 @@ import { ToastService } from './toast-service';
     <ngb-toast
       [class]="'toast ' + toast.type"
       [autohide]="true"
-      [delay]="toast.delay || 50000"
+      [delay]="toast.delay || 5000"
       (hidden)="toastService.remove(toast)"
     >
       <div class="toast-content">
@@ -23,7 +23,7 @@ import { ToastService } from './toast-service';
   styles: `
     :host {
       position: fixed;
-      top: 3rem;
+      bottom: 3rem;
       right: 0;
       z-index: 1200;
       margin: 0.5rem;
