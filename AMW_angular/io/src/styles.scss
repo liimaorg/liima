@@ -10,6 +10,9 @@ $container-max-widths: (
   xxl: 1920px,
 );
 
+$toast-padding-x: 0;
+$toast-padding-y: 0;
+
 @import 'bootstrap/scss/bootstrap';
 @import '@ng-select/ng-select/themes/default.theme.css';
 @import 'codemirror/lib/codemirror';
