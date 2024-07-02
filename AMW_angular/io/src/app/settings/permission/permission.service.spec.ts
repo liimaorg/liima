@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { PermissionService } from './permission.service';
 import { Restriction } from './restriction';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('PermissionService', () => {
   let service: PermissionService;
@@ -12,9 +12,9 @@ describe('PermissionService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [PermissionService],
-    });
+    imports: [],
+    providers: [PermissionService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
     service = TestBed.inject(PermissionService);
 
     httpTestingController = TestBed.inject(HttpTestingController);

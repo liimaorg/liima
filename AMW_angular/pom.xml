@@ -21,7 +21,7 @@
                     <webResources>
                         <!-- filter only the index HTML file  -->
                         <resource>
-                            <directory>io/dist</directory>
+                            <directory>io/dist/browser</directory>
                             <includes>
                                 <include>index.html</include>
                             </includes>
@@ -29,7 +29,7 @@
                         </resource>
                         <!-- everything else is not filtered -->
                         <resource>
-                            <directory>io/dist</directory>
+                            <directory>io/dist/browser</directory>
                             <excludes>
                                 <exclude>index.html</exclude>
                             </excludes>

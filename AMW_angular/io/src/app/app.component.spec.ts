@@ -8,7 +8,8 @@ import { NavigationComponent } from './navigation/navigation.component';
 
 import { AppConfiguration } from './setting/app-configuration';
 import { SettingService } from './setting/setting.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 class RouterStub {
   navigateByUrl(url: string) {
@@ -24,9 +25,9 @@ describe('App', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule, NavigationComponent, AppComponent],
-      providers: [SettingService, ChangeDetectorRef, AppComponent, { provide: Router, useClass: RouterStub }],
-    }).compileComponents();
+    imports: [RouterTestingModule, NavigationComponent, AppComponent],
+    providers: [SettingService, ChangeDetectorRef, AppComponent, { provide: Router, useClass: RouterStub }, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+}).compileComponents();
     router = TestBed.inject(Router);
     settingService = TestBed.inject(SettingService);
 

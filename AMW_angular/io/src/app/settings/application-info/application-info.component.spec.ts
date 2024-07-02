@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ApplicationInfoComponent } from './application-info.component';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ApplicationInfoComponent', () => {
   let component: ApplicationInfoComponent;
@@ -11,8 +11,9 @@ describe('ApplicationInfoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationInfoComponent, HttpClientTestingModule],
-    }).compileComponents();
+    imports: [ApplicationInfoComponent],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+}).compileComponents();
 
     fixture = TestBed.createComponent(ApplicationInfoComponent);
     component = fixture.componentInstance;

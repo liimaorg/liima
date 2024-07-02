@@ -9,8 +9,8 @@
     "test": "cypress run",
     "test:ci": "npm start & wait-on http://admin:admin@127.0.0.1:8080/AMW_web && cypress run",
     "docker:build": "cd ./../ && mvn clean install -DskipTests && ./AMW_docker/build.sh && cd ./AMW_e2e",
-    "docker:start": "docker-compose -f ./../AMW_docker/docker-compose/docker-compose.yml up -d",
-    "docker:stop": "docker-compose -f ./../AMW_docker/docker-compose/docker-compose.yml down"
+    "docker:start": "docker compose -f ./../AMW_docker/docker-compose/docker-compose.yml up -d",
+    "docker:stop": "docker compose -f ./../AMW_docker/docker-compose/docker-compose.yml down"
   },
   "author": "",
   "license": "ISC",

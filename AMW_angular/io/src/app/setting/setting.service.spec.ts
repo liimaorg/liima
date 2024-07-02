@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { SettingService } from './setting.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('SettingService', () => {
   let httpClient: HttpClient;
@@ -10,9 +10,9 @@ describe('SettingService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [SettingService],
-    });
+    imports: [],
+    providers: [SettingService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     httpTestingController = TestBed.inject(HttpTestingController);
     httpClient = TestBed.inject(HttpClient);

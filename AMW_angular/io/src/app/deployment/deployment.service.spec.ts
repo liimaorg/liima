@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Deployment } from './deployment';
 import { DeploymentService } from './deployment.service';
@@ -11,9 +11,9 @@ describe('DeploymentService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [DeploymentService],
-    });
+    imports: [],
+    providers: [DeploymentService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     httpTestingController = TestBed.inject(HttpTestingController);
     httpClient = TestBed.inject(HttpClient);
