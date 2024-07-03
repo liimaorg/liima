@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 export interface Toast {
-  type: 'light' | 'danger';
+  type: 'success' | 'error';
   body: string;
   delay?: number;
 }
@@ -11,11 +11,11 @@ export class ToastService {
   toasts: Toast[] = [];
 
   success(message: string) {
-    this.show({ type: 'light', body: message });
+    this.show({ type: 'success', body: message });
   }
 
   error(message: string) {
-    this.show({ type: 'danger', body: message, delay: 15000 });
+    this.show({ type: 'error', body: message, delay: 15000 });
   }
 
   show(toast: Toast) {

@@ -9,13 +9,13 @@ import { ToastService } from './toast-service';
   imports: [NgbToastModule, NgTemplateOutlet],
   template: `@for (toast of toastService.toasts; track toast) {
     <ngb-toast
-      [class]="'toast ' + toast.type"
+      [class]="['toast', toast.type]"
       [autohide]="true"
       [delay]="toast.delay || 5000"
       (hidden)="toastService.remove(toast)"
     >
-      <div class="toast-content">
-        <div class="toast-image"></div>
+      <div class="content">
+        <div class="image"></div>
         <div class="px-4 align-self-center">{{ toast.body }}</div>
       </div>
     </ngb-toast>
@@ -33,12 +33,12 @@ import { ToastService } from './toast-service';
       margin-bottom: 0.25rem;
     }
 
-    .toast-content {
+    .content {
       display: flex;
       flex-direction: row;
     }
 
-    .toast-image {
+    .image {
       background-image: url('toast_alert.png');
       background-repeat: no-repeat;
       height: 50px;
@@ -46,18 +46,18 @@ import { ToastService } from './toast-service';
       border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius);
     }
 
-    .light .toast-image {
+    .success .image {
       background-color: var(--bs-primary);
     }
-    .danger .toast-image {
+    .error .image {
       background-color: var(--bs-danger);
     }
 
-    .light .toast-content {
+    .light .content {
       color: steelblue;
     }
 
-    .danger .toast-content {
+    .danger .content {
       color: darkred;
     }
   `,
