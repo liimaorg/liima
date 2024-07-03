@@ -1,13 +1,11 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ToastComponent } from 'src/app/shared/elements/toast/toast.component';
-import { ToastComponent as ToastComponent_1 } from '../../shared/elements/toast/toast.component';
 import { FormsModule } from '@angular/forms';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { Subject } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { takeUntil } from 'rxjs/operators';
-import { ToastService } from '../../shared/elements/toast/toast-service';
+import { ToastService } from '../../shared/elements/toast/toast.service';
 
 type Tag = { id: number; name: string };
 
@@ -16,7 +14,7 @@ type Tag = { id: number; name: string };
   templateUrl: './tags.component.html',
   styleUrl: './tags.component.scss',
   standalone: true,
-  imports: [FormsModule, ToastComponent_1, IconComponent],
+  imports: [FormsModule, IconComponent],
 })
 export class TagsComponent implements OnInit, OnDestroy {
   tagName = '';
@@ -24,8 +22,6 @@ export class TagsComponent implements OnInit, OnDestroy {
   canCreate = false;
   canDelete = false;
   private destroy$ = new Subject<void>();
-
-  @ViewChild(ToastComponent) toast: ToastComponent;
 
   constructor(
     private http: HttpClient,
