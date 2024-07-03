@@ -62,6 +62,6 @@ import { ToastService } from './toast-service';
     }
   `,
 })
-export class ToastsContainerComponent {
+export class ToastContainerComponent {
   constructor(public toastService: ToastService) {}
 }
