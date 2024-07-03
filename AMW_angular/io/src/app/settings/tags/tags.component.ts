@@ -58,29 +58,18 @@ export class TagsComponent implements OnInit, OnDestroy {
 
   addTag(): void {
     if (this.tagName.trim().length > 0) {
-      this.http.post<Tag>('/AMW_rest/resources/settings/tags', { name: this.tagName }).subscribe({
-        next: (newTag) => {
-          this.toastService.success('Tag added.');
-          this.tags.push(newTag);
-          this.tagName = '';
-        },
-        error: (error) => {
-          this.toastService.error(error.error.message);
-        },
+      this.http.post<Tag>('/AMW_rest/resources/settings/tags', { name: this.tagName }).subscribe((newTag) => {
+        this.toastService.success('Tag added.');
+        this.tags.push(newTag);
+        this.tagName = '';
       });
     }
   }
 
   deleteTag(tagId: number): void {
-    this.http.delete<Tag>(`/AMW_rest/resources/settings/tags/${tagId}`).subscribe({
-      next: () => {
-        this.tags = this.tags.filter((tag) => tag.id !== tagId);
-        this.toastService.success('Tag deleted.');
-      },
-
-      error: (error) => {
-        this.toastService.error(error.error.message);
-      },
+    this.http.delete<Tag>(`/AMW_rest/resources/settings/tags/${tagId}`).subscribe(() => {
+      this.tags = this.tags.filter((tag) => tag.id !== tagId);
+      this.toastService.success('Tag deleted.');
     });
   }
 }

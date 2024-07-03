@@ -297,12 +297,9 @@ export class DeploymentsComponent implements OnInit {
 
   async copyURL() {
     const url: string = decodeURIComponent(window.location.href);
-    try {
-      await navigator.clipboard.writeText(url);
-      this.toastService.success('URL copied to clipboard.');
-    } catch (err) {
-      this.toastService.error('Failed to copy URL. Please try again.');
-    }
+    await navigator.clipboard.writeText(url);
+    this.toastService.success('URL copied to clipboard.');
+    throw new Error('Failed to copy');
   }
 
   sortDeploymentsBy(col: string) {

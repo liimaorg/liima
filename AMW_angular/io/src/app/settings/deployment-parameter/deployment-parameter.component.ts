@@ -60,30 +60,22 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
   addKey(): void {
     const trimmedKeyName = this.keyName.trim();
     if (trimmedKeyName.length > 0 && trimmedKeyName.toLowerCase() !== 'null') {
-      this.http.post<Key>('/AMW_rest/resources/deployments/deploymentParameterKeys', this.keyName).subscribe({
-        next: (newKey) => {
+      this.http
+        .post<Key>('/AMW_rest/resources/deployments/deploymentParameterKeys', this.keyName)
+        .subscribe((newKey) => {
           this.paramKeys.push(newKey);
           this.toastService.success('Key added.');
           this.keyName = '';
-        },
-        error: (error) => {
-          this.toastService.error(error.error.message);
-        },
-      });
+        });
     } else {
       this.toastService.error('Key name must not be null or empty');
     }
   }
 
   deleteKey(keyId: number): void {
-    this.http.delete<Key>(`/AMW_rest/resources/deployments/deploymentParameterKeys/${keyId}`).subscribe({
-      next: () => {
-        this.paramKeys = this.paramKeys.filter((key) => key.id !== keyId);
-        this.toastService.success('Key deleted.');
-      },
-      error: (error) => {
-        this.toastService.error(error.error.message);
-      },
+    this.http.delete<Key>(`/AMW_rest/resources/deployments/deploymentParameterKeys/${keyId}`).subscribe(() => {
+      this.paramKeys = this.paramKeys.filter((key) => key.id !== keyId);
+      this.toastService.success('Key deleted.');
     });
   }
 }
