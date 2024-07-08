@@ -110,7 +110,7 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     switchMap(this.loadDeploymentLogContent.bind(this)),
   );
 
-  private error$ = new BehaviorSubject<string>('');
+  private error$ = new BehaviorSubject<string>(null);
 
   private destroy$ = new Subject<void>();
   ngOnInit(): void {
@@ -120,7 +120,9 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
       }
       this.location.replaceState(`/deployments/${current.id}/logs/${current.filename}`);
     });
-    this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => this.toastService.error(msg));
+    this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
+      if (msg !== null) this.toastService.error(msg);
+    });
 
     CodeMirror.defineSimpleMode('simplemode', {
       start: [

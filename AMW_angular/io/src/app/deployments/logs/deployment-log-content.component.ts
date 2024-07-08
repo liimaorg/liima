@@ -8,7 +8,7 @@ type Failed = 'failed';
   selector: 'amw-deployment-log-content',
   template: `
     <div class="m-2 h-100">
-      @if (content !== 'failed') {
+      @if (content !== null && content !== 'failed') {
 
       <div class="h-100">
         <ngx-codemirror
