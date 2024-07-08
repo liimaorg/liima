@@ -4,14 +4,10 @@
     <div class="col-6 ms-auto">
       <div class="input-group">
         @if (canCreate) {
-        <input
-          id="tagName"
-          type="text"
-          class="form-control"
-          [(ngModel)]="tagName"
-          (keyup.enter)="addTag()"
-        />
-        <button class="btn btn-primary" (click)="addTag()" [attr.data-cy]="'button-add'"><app-icon icon="plus-circle"></app-icon> Add tag</button>
+        <input id="tagName" type="text" class="form-control" [(ngModel)]="tagName" (keyup.enter)="addTag()" />
+        <button class="btn btn-primary" (click)="addTag()" [attr.data-cy]="'button-add'">
+          <app-icon icon="plus-circle"></app-icon> Add tag
+        </button>
         }
       </div>
     </div>
@@ -26,18 +22,17 @@
     </thead>
     <tbody>
       @for (tag of tags; track tag) {
-        <tr>
-          <td>{{ tag.name }}</td>
-          <td>
+      <tr>
+        <td>{{ tag.name }}</td>
+        <td>
           @if (canDelete) {
-            <button class="btn btn-sm btn-danger me-0" (click)="deleteTag(tag.id)" [attr.data-cy]="'delete-' + tag.name">
-              <app-icon icon="trash"></app-icon>
-            </button>
-            }
-          </td>
-        </tr>
-       }
+          <button class="btn btn-sm btn-danger me-0" (click)="deleteTag(tag.id)" [attr.data-cy]="'delete-' + tag.name">
+            <app-icon icon="trash"></app-icon>
+          </button>
+          }
+        </td>
+      </tr>
+      }
     </tbody>
   </table>
-  <app-toast></app-toast>
 </div>

@@ -4,13 +4,7 @@
     <div class="col-6 ms-auto">
       <div class="input-group">
         @if (canCreate) {
-        <input
-          id="keyName"
-          type="text"
-          class="form-control"
-          [(ngModel)]="keyName"
-          (keyup.enter)="addKey()"
-        />
+        <input id="keyName" type="text" class="form-control" [(ngModel)]="keyName" (keyup.enter)="addKey()" />
         <button class="btn btn-primary" (click)="addKey()" [attr.data-cy]="'button-add'">
           <app-icon icon="plus-circle"></app-icon>
           Add key
@@ -22,27 +16,28 @@
 
   <table class="table table-sm table-striped table-bordered">
     <thead>
-    <tr>
-      <th>Name</th>
-      <th>Delete</th>
-    </tr>
+      <tr>
+        <th>Name</th>
+        <th>Delete</th>
+      </tr>
     </thead>
     <tbody>
-    @for (paramKey of paramKeys; track paramKey) {
-    <tr>
-      <td class="align-middle">{{ paramKey.name}}</td>
-      <td>
-        @if (canDelete) {
-        <button class="btn btn-sm btn-danger me-0" (click)="deleteKey(paramKey.id)"
-                [attr.data-cy]="'delete-' + paramKey.id">
-          <app-icon icon="trash"></app-icon>
-        </button>
-        }
-      </td>
-    </tr>
-    }
+      @for (paramKey of paramKeys; track paramKey) {
+      <tr>
+        <td class="align-middle">{{ paramKey.name }}</td>
+        <td>
+          @if (canDelete) {
+          <button
+            class="btn btn-sm btn-danger me-0"
+            (click)="deleteKey(paramKey.id)"
+            [attr.data-cy]="'delete-' + paramKey.id"
+          >
+            <app-icon icon="trash"></app-icon>
+          </button>
+          }
+        </td>
+      </tr>
+      }
     </tbody>
   </table>
-  <app-toast></app-toast>
 </div>
-

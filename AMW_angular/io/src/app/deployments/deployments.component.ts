@@ -1,7 +1,7 @@
-import { Location, NgIf, NgFor } from '@angular/common';
+import { Location, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgModel, FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { FormsModule, NgModel } from '@angular/forms';
+import { ActivatedRoute, Params } from '@angular/router';
 import * as _ from 'lodash';
 import * as datefns from 'date-fns';
 import { Subscription, timer } from 'rxjs';
@@ -14,27 +14,25 @@ import { DeploymentService } from '../deployment/deployment.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
-import { ToastComponent } from 'src/app/shared/elements/toast/toast.component';
 import { PaginationComponent } from '../shared/pagination/pagination.component';
 import { DeploymentsListComponent } from './deployments-list.component';
 import { IconComponent } from '../shared/icon/icon.component';
 import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-picker.component';
-import { ToastComponent as ToastComponent_1 } from '../shared/elements/toast/toast.component';
 import { NotificationComponent } from '../shared/elements/notification/notification.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { PageComponent } from '../layout/page/page.component';
+import { ToastService } from '../shared/elements/toast/toast.service';
 
 declare let $: any;
 
 @Component({
-  selector: 'amw-deployments',
+  selector: 'app-deployments',
   templateUrl: './deployments.component.html',
   standalone: true,
   imports: [
     LoadingIndicatorComponent,
     NgIf,
     NotificationComponent,
-    ToastComponent_1,
     FormsModule,
     NgFor,
     DateTimePickerComponent,
@@ -45,11 +43,11 @@ declare let $: any;
   ],
 })
 export class DeploymentsComponent implements OnInit {
-  defaultComparator: string = 'eq';
+  defaultComparator = 'eq';
 
   // initially by queryParam
   paramFilters: DeploymentFilter[] = [];
-  autoload: boolean = true;
+  autoload = true;
 
   // enhanced filters for deployment service
   filtersForBackend: DeploymentFilter[] = [];
@@ -60,11 +58,11 @@ export class DeploymentsComponent implements OnInit {
   filterTypes: DeploymentFilterType[] = [];
   comparatorOptions: ComparatorFilterOption[] = [];
   comparatorOptionsMap: { [key: string]: string } = {};
-  hasPermissionToRequestDeployments: boolean = false;
-  csvSeparator: string = '';
+  hasPermissionToRequestDeployments = false;
+  csvSeparator = '';
 
   // available edit actions
-  hasPermissionShakedownTest: boolean = false;
+  hasPermissionShakedownTest = false;
   deploymentDate: number; // for deployment date change
 
   // available filterValues (if any)
@@ -83,28 +81,27 @@ export class DeploymentsComponent implements OnInit {
   csvDocument: ArrayBuffer;
 
   // sorting with default values
-  sortCol: string = 'd.deploymentDate';
-  sortDirection: string = 'DESC';
+  sortCol = 'd.deploymentDate';
+  sortDirection = 'DESC';
 
   // pagination with default values
-  maxResults: number = 10;
-  offset: number = 0;
+  maxResults = 10;
+  offset = 0;
   allResults: number;
   currentPage: number;
   lastPage: number;
 
   // auto refresh
   refreshIntervals: number[] = [0, 5, 10, 30, 60, 120];
-  refreshInterval: number = 0;
+  refreshInterval = 0;
   timerSubscription: Subscription;
 
-  errorMessage: string = '';
-  successMessage: string = '';
-  isLoading: boolean = true;
+  errorMessage = '';
+  successMessage = '';
+  isLoading = true;
 
   @ViewChild('selectModel', { static: true })
   selectModel: NgModel;
-  @ViewChild(ToastComponent) toast: ToastComponent;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -112,13 +109,14 @@ export class DeploymentsComponent implements OnInit {
     private deploymentService: DeploymentService,
     private resourceService: ResourceService,
     private modalService: NgbModal,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit() {
-    this.activatedRoute.queryParams.subscribe((param: any) => {
-      if (param['filters']) {
+    this.activatedRoute.queryParams.subscribe((param: Params) => {
+      if (param.filters) {
         try {
-          this.paramFilters = JSON.parse(param['filters']);
+          this.paramFilters = JSON.parse(param.filters);
         } catch (e) {
           this.errorMessage = 'Error parsing filter';
           this.autoload = false;
@@ -299,12 +297,9 @@ export class DeploymentsComponent implements OnInit {
 
   async copyURL() {
     const url: string = decodeURIComponent(window.location.href);
-    try {
-      await navigator.clipboard.writeText(url);
-      this.toast.display('URL copied to clipboard.');
-    } catch (err) {
-      this.toast.display('Failed to copy URL. Please try again.', 'error');
-    }
+    await navigator.clipboard.writeText(url);
+    this.toastService.success('URL copied to clipboard.');
+    throw new Error('Failed to copy');
   }
 
   sortDeploymentsBy(col: string) {
