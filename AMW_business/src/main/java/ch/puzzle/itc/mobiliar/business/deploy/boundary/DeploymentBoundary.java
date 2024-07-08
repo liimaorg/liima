@@ -813,7 +813,7 @@ public class DeploymentBoundary {
 
             StringBuilder content = new StringBuilder();
             if (startPosition > 0 ) {
-                content.append("[INFO] Log Truncation Notice: The beginning of this log has been truncated because the log file exceeded the maximum allowable size. Some earlier entries are missing.\n\n");
+                content.append("[WARN] Log Truncation Notice: The beginning of this log has been truncated because the log file exceeded the maximum allowable size. Some earlier entries are missing.\n\n");
                 content.append("\n...\n");
             }
             String line;
