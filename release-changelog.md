@@ -4,6 +4,9 @@
 * Replace JSF GUI in Settings -> Deployment Parameter page with Angular [#737](https://github.com/liimaorg/liima/issues/737)
 * Upgrade to Angular 17.1 and switch to new Vite build [#734](https://github.com/liimaorg/liima/issues/734)
 * Migrate to angular17 control-flow [#727](https://github.com/liimaorg/liima/issues/727)
+* Angular 18 Upgrade [#755](https://github.com/liimaorg/liima/issues/755)
+* Angular: create ToastContainer Component [#744](https://github.com/liimaorg/liima/issues/744)
+* Limit deployment log file size to 10MB [#413](https://github.com/liimaorg/liima/issues/413)
 * Node and js version update, GH action updates [#741](https://github.com/liimaorg/liima/pull/741)
 * Update Java Script dependencies
 
