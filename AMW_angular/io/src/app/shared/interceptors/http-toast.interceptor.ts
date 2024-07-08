@@ -16,6 +16,7 @@ export class HttpToastInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     return next.handle(req).pipe(
       catchError((error) => {
+        console.error('Error in HttpToastInterceptor', error);
         this.toastService.error(error.error.message);
         return EMPTY;
       }),

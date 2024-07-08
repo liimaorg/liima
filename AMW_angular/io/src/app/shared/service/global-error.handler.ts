@@ -9,7 +9,7 @@ export function provideGlobalErrorHandler(): Provider[] {
 export class GlobalErrorHandler implements ErrorHandler {
   toastService = inject(ToastService);
   handleError(error: { message: string }): void {
-    console.error(error);
+    console.error('Global Error Handler: ' + error);
     this.toastService.error(error.message);
   }
 }
