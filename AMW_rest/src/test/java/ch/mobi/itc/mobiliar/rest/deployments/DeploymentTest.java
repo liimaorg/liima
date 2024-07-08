@@ -261,36 +261,6 @@ public class DeploymentTest {
 
     }
 
-    @Test
-    public void getDeploymentLogFileNames_nothingFound() {
-        String[] fileNames = {};
-        when(deploymentBoundary.getLogFileNames(deploymentEntity.getId())).thenReturn(fileNames);
-
-        Response response = deploymentRestService.getDeploymentLogFileNames(deploymentEntity.getId());
-
-        assertNotNull(response);
-        assertThat(Status.OK.getStatusCode(), is(response.getStatus()));
-        List<DeploymentLog> expected = Collections.emptyList();
-        assertThat(expected, is(response.getEntity()));
-    }
-
-    @Test
-    public void getDeploymentLogfileNames() {
-        String[] fileNames = {"log1", "log2"};
-        when(deploymentBoundary.getLogFileNames(deploymentEntity.getId())).thenReturn(fileNames);
-
-        Response response = deploymentRestService.getDeploymentLogFileNames(deploymentEntity.getId());
-
-        assertNotNull(response);
-        assertThat(Status.OK.getStatusCode(), is(response.getStatus()));
-        verify(deploymentBoundary).getLogFileNames(deploymentEntity.getId());
-
-        List<DeploymentLog> expected = List.of(
-                new DeploymentLog(deploymentEntity.getId(), "log1"),
-                new DeploymentLog(deploymentEntity.getId(), "log2"));
-
-        assertThat(expected, is(response.getEntity()));
-    }
 
     @Test
     public void getDeploymentNoResult() {
@@ -304,40 +274,7 @@ public class DeploymentTest {
 
     }
 
-    @Test
-    public void getDeploymentLogFileContent() throws IllegalAccessException {
-        String[] fileNames = {"log1", "log2"};
-        when(deploymentBoundary.getLogFileNames(deploymentEntity.getId())).thenReturn(fileNames);
-        when(deploymentBoundary.getDeploymentLog("log1")).thenReturn("content 1");
 
-        Response response = deploymentRestService.getDeploymentLogFileContent(deploymentEntity.getId(), "log1");
-        assertThat(response.getStatus(), is(200));
-        String content = (String) response.getEntity();
-        assertThat(content, is("content 1"));
-        verify(deploymentBoundary).getDeploymentLog("log1");
-    }
-
-    @Test
-    public void getDeploymentLogFileContent_notFound() throws IllegalAccessException {
-        when(deploymentBoundary.getLogFileNames(deploymentEntity.getId())).thenReturn(new String[] {});
-        when(deploymentBoundary.getDeploymentLog(anyString())).thenReturn("content");
-
-        Response response = deploymentRestService.getDeploymentLogFileContent(deploymentEntity.getId(), "test");
-        assertThat(response.getStatus(), is(400));
-        verify(deploymentBoundary, never()).getDeploymentLog(anyString());
-    }
-
-    @Test
-    public void getDeploymentLogs_withIllegalAccess() throws IllegalAccessException {
-        String[] fileNames = {"log1", "log2"};
-        when(deploymentBoundary.getLogFileNames(deploymentEntity.getId())).thenReturn(fileNames);
-        when(deploymentBoundary.getDeploymentLog("unknown")).thenThrow(new IllegalAccessException());
-
-        Response response = deploymentRestService.getDeploymentLogFileContent(deploymentEntity.getId(), "unknown");
-        assertThat(response.getStatus(), is(Status.BAD_REQUEST.getStatusCode()));
-        String msg = (String) response.getEntity();
-        assertThat(msg, is("No logfile with name unknown for deployment with id 123"));
-    }
 
         @SuppressWarnings("unchecked")
         @Test

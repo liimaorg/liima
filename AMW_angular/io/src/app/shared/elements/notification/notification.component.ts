@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgIf } from '@angular/common';
 
 @Component({
@@ -14,7 +14,7 @@ import { NgIf } from '@angular/common';
   standalone: true,
   imports: [NgIf],
 })
-export class NotificationComponent implements OnInit {
+export class NotificationComponent {
   @Input()
   message: string;
 
@@ -22,8 +22,6 @@ export class NotificationComponent implements OnInit {
   messageType: MessageType;
 
   constructor() {}
-
-  ngOnInit(): void {}
 }
 
 export type MessageType = 'success' | 'warning';
