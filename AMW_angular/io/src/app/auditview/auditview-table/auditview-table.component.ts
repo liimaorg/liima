@@ -6,7 +6,7 @@ import { SortableHeader, SortEvent } from './sortable.directive';
 import { DATE_TIME_FORMAT } from '../../core/amw-constants';
 import { NewlineFilterPipe } from './newlineFilterPipe';
 import { NgbHighlight } from '@ng-bootstrap/ng-bootstrap';
-import { AsyncPipe, DatePipe, NgFor } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -15,7 +15,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./auditview-table.component.scss'],
   standalone: true,
 
-  imports: [FormsModule, SortableHeader, NgFor, NgbHighlight, AsyncPipe, DatePipe, NewlineFilterPipe],
+  imports: [FormsModule, SortableHeader, NgbHighlight, AsyncPipe, DatePipe, NewlineFilterPipe],
 })
 export class AuditviewTableComponent implements OnChanges {
   @Input() auditlogEntries;

@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { Location, NgIf, NgFor } from '@angular/common';
+import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ResourceService } from '../resource/resource.service';
 import { ResourceTag } from '../resource/resource-tag';
@@ -30,11 +30,9 @@ import { PageComponent } from '../layout/page/page.component';
   standalone: true,
   imports: [
     LoadingIndicatorComponent,
-    NgIf,
     NotificationComponent,
     NgSelectModule,
     FormsModule,
-    NgFor,
     DateTimePickerComponent,
     IconComponent,
     PageComponent,

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, forwardRef, ViewChild, Injector } from '@angular/core';
 import { NgbPopoverConfig, NgbPopover, NgbDateStruct, NgbDatepicker } from '@ng-bootstrap/ng-bootstrap';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, NgControl, FormsModule } from '@angular/forms';
-import { DatePipe, NgIf, NgClass } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { DateModel } from './date.model';
 import { noop } from 'rxjs';
 import { DATE_FORMAT } from 'src/app/core/amw-constants';
@@ -19,7 +19,7 @@ import { IconComponent } from '../icon/icon.component';
     },
   ],
   standalone: true,
-  imports: [NgIf, FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker],
+  imports: [FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker],
 })
 export class DatePickerComponent implements ControlValueAccessor, OnInit {
   @Input()

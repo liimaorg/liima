@@ -7,13 +7,13 @@ import { Environment } from '../../deployment/environment';
 import { ResourceType } from '../../resource/resource-type';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { FormsModule } from '@angular/forms';
-import { NgIf, NgFor, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'amw-restriction-edit',
   templateUrl: './restriction-edit.component.html',
   standalone: true,
-  imports: [NgIf, FormsModule, NgFor, NgClass, IconComponent],
+  imports: [FormsModule, NgClass, IconComponent],
 })
 export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
   actions: string[] = ['ALL', 'CREATE', 'DELETE', 'READ', 'UPDATE'];

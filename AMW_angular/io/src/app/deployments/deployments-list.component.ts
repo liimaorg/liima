@@ -11,16 +11,14 @@ import { RouterLink } from '@angular/router';
 import { IconComponent } from '../shared/icon/icon.component';
 import { FormsModule } from '@angular/forms';
 import { SortableIconComponent } from '../shared/sortable-icon/sortable-icon.component';
-import { NgIf, NgFor, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'amw-deployments-list',
   templateUrl: './deployments-list.component.html',
   standalone: true,
   imports: [
-    NgIf,
     SortableIconComponent,
-    NgFor,
     FormsModule,
     IconComponent,
     RouterLink,

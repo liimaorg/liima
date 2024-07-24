@@ -1,12 +1,11 @@
 import { Component, Input, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'amw-pagination',
   templateUrl: './pagination.component.html',
   standalone: true,
-  imports: [NgIf, NgFor, FormsModule],
+  imports: [FormsModule],
 })
 export class PaginationComponent {
   @Input() currentPage: number;

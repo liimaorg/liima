@@ -5,13 +5,12 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DatePickerComponent } from '../../shared/date-picker/date-picker.component';
 import { DATE_FORMAT } from '../../core/amw-constants';
 import { DateModel } from '../../shared/date-picker/date.model';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'amw-release-edit',
   templateUrl: './release-edit.component.html',
   standalone: true,
-  imports: [DatePickerComponent, NgIf, FormsModule],
+  imports: [DatePickerComponent, FormsModule],
 })
 export class ReleaseEditComponent implements OnInit {
   @Input() release: Release;

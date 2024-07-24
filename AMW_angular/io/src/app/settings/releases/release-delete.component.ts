@@ -2,13 +2,13 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Release } from './release';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { AsyncPipe, KeyValuePipe, NgFor, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import { ResourceEntity } from './resourceEntity';
 
 @Component({
   selector: 'amw-release-delete',
   standalone: true,
-  imports: [AsyncPipe, KeyValuePipe, NgIf, NgFor, NgForOf, FormsModule],
+  imports: [AsyncPipe, KeyValuePipe, FormsModule],
   templateUrl: './release-delete.component.html',
 })
 export class ReleaseDeleteComponent implements OnInit {

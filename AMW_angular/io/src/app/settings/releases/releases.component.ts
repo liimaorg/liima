@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -22,8 +22,6 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
     DatePipe,
     IconComponent,
     LoadingIndicatorComponent,
-    NgIf,
-    NgFor,
     PaginationComponent,
     ReleaseEditComponent,
     ReleaseDeleteComponent,

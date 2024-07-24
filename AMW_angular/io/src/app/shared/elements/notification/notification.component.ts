@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-notification',
@@ -12,7 +11,6 @@ import { NgIf } from '@angular/common';
     }
   `,
   standalone: true,
-  imports: [NgIf],
 })
 export class NotificationComponent {
   @Input()
