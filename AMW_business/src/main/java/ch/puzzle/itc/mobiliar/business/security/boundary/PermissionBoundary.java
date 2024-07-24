@@ -741,7 +741,6 @@ public class PermissionBoundary implements Serializable {
      *
      * @return List<PermissionEntity>
      */
-    @HasPermission(permission = Permission.PERMISSION_DELEGATION)
     public List<RestrictionEntity> getAllCallerRestrictions() {
         return permissionService.getAllCallerRestrictions();
     }

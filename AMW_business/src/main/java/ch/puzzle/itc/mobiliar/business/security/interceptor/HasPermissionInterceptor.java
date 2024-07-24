@@ -20,31 +20,34 @@
 
 package ch.puzzle.itc.mobiliar.business.security.interceptor;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.inject.Inject;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
+import javax.interceptor.InvocationContext;
+
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 
-import javax.inject.Inject;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-@Interceptor
 @HasPermission
-public class HasPermissionInterceptor implements Serializable {
+@Interceptor
+public class HasPermissionInterceptor {
 
-	private static final long serialVersionUID = 1L;
+	@Inject
+	private Logger log;
 
 	@Inject
 	PermissionService permissionService;
 
-	private static List<Permission> getRequiredPermission(InvocationContext context, HasPermission permissionMethodAnnotation) {
+	private static List<Permission> getRequiredPermission(InvocationContext context,
+			HasPermission permissionMethodAnnotation) {
 		List<Permission> permissions = new ArrayList<>();
 		if (!permissionMethodAnnotation.permission().equals(Permission.DEFAULT)) {
 			permissions.add(permissionMethodAnnotation.permission());
@@ -71,7 +74,7 @@ public class HasPermissionInterceptor implements Serializable {
 	}
 
 	@AroundInvoke
-	protected Object roleCall(InvocationContext context) throws Exception {
+	public Object roleCall(InvocationContext context) throws Exception {
 		HasPermission permissionMethodAnnotation = context.getMethod().getAnnotation(HasPermission.class);
 		List<Permission> permissions = getRequiredPermission(context, permissionMethodAnnotation);
 		List<Action> actions = getRequiredAction(context, permissionMethodAnnotation);
@@ -100,7 +103,10 @@ public class HasPermissionInterceptor implements Serializable {
 				}
 			}
 		}
-
+		log.warning(String.format(
+				"User %s doesn't have permissions to call method %s. Required permissions: %s actions: %s resourceSpecific: %s resourceGroup: %s",
+				permissionService.getCurrentUserName(), context.getMethod().getName(), permissions, actions,
+				resourceSpecific, resourceGroup));
 		permissionService.throwNotAuthorizedException(null);
 		return null;
 	}

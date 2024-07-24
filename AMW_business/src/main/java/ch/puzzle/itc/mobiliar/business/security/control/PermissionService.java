@@ -299,7 +299,7 @@ public class PermissionService implements Serializable {
         }
     }
 
-    public void throwNotAuthorizedException(String extraInfo) {
+    public void throwNotAuthorizedException(String extraInfo) throws NotAuthorizedException {
         String errorMessage = "Not Authorized!";
         if (StringUtils.isNotEmpty(extraInfo)) {
             errorMessage += " You're not allowed to " + extraInfo + "!";

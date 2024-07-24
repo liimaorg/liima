@@ -28,7 +28,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-//@RunWith(MockitoJUnitRunner.class)
 public class ResourceRelationServiceTest {
 
     @Mock

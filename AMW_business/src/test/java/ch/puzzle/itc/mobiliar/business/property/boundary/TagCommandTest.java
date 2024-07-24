@@ -1,6 +1,5 @@
 package ch.puzzle.itc.mobiliar.business.property.boundary;
 
-import ch.puzzle.itc.mobiliar.business.property.boundary.TagCommand;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import org.junit.Test;
 
