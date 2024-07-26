@@ -26,9 +26,7 @@ import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 
 public class TestBoundary {
 
-    public void noPermissionNeeded() {
-
-    }
+    public void noPermissionNeeded() {}
 
     @HasPermission(permission = Permission.DEPLOYMENT)
     public void deployPermissionNeeded() {}

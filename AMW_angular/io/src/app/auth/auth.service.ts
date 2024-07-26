@@ -34,11 +34,19 @@ export class AuthService extends BaseService {
     return this.restrictions$;
   }
 
-  getActionsForPermission(permissionName: string) {
+  getActionsForPermission(permissionName: string): Observable<string[]> {
     return this.restrictions$.pipe(
       map((restrictions) => {
         return restrictions.filter((entry) => entry.permission.name === permissionName).map((entry) => entry.action);
       }),
     );
   }
+
+  hasPermission(permissionName: string, action: string): Observable<boolean> {
+    return this.getActionsForPermission(permissionName).pipe(map(values => {
+      return values.find(value => value === 'ALL' || value === action) !== undefined;
+    })
+    )
+  }
+
 }

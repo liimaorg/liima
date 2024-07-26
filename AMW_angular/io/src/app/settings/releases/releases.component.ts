@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { DATE_FORMAT } from '../../core/amw-constants';
@@ -23,13 +22,10 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
     DatePipe,
     IconComponent,
     LoadingIndicatorComponent,
-    NgIf,
-    NgFor,
     PaginationComponent,
     ReleaseEditComponent,
     ReleaseDeleteComponent,
   ],
-  providers: [AuthService],
   templateUrl: './releases.component.html',
 })
 export class ReleasesComponent implements OnInit {
@@ -58,11 +54,10 @@ export class ReleasesComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private http: HttpClient,
     private modalService: NgbModal,
     private releasesService: ReleasesService,
     private toastService: ToastService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {

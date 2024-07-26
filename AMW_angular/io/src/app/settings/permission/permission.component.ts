@@ -10,7 +10,7 @@ import { Resource } from 'src/app/resource/resource';
 import { ResourceType } from '../../resource/resource-type';
 import { EnvironmentService } from '../../deployment/environment.service';
 import { ResourceService } from 'src/app/resource/resource.service';
-import { Location, NgIf, NgFor } from '@angular/common';
+import { Location } from '@angular/common';
 import { RestrictionListComponent } from './restriction-list.component';
 import { RestrictionAddComponent } from './restriction-add.component';
 import { RestrictionEditComponent } from './restriction-edit.component';
@@ -41,8 +41,6 @@ import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicat
     NgbNavLinkBase,
     NgbNavContent,
     FormsModule,
-    NgIf,
-    NgFor,
     NgSelectModule,
     NgbNavOutlet,
     IconComponent,

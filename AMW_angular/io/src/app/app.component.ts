@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation, OnInit } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { SettingService } from './setting/setting.service';
 import { AppConfiguration } from './setting/app-configuration';
 import { AMW_LOGOUT_URL } from './core/amw-constants';
@@ -19,9 +19,8 @@ export class AppComponent implements OnInit {
   logoutUrl: string;
 
   constructor(
-    private router: Router,
-    private settingService: SettingService,
-  ) {}
+    private settingService: SettingService
+  ) { }
 
   ngOnInit(): void {
     this.settingService.getAllAppSettings().subscribe((r) => this.configureSettings(r));

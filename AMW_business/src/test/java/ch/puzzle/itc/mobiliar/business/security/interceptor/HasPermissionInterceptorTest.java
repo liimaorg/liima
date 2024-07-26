@@ -20,24 +20,31 @@
 
 package ch.puzzle.itc.mobiliar.business.security.interceptor;
 
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.test.TestBoundary;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.security.entity.Action;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.logging.Logger;
+
+import javax.interceptor.InvocationContext;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import javax.interceptor.InvocationContext;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
+
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.test.TestBoundary;
 
 public class HasPermissionInterceptorTest {
 
@@ -47,14 +54,15 @@ public class HasPermissionInterceptorTest {
     @Mock
     PermissionService permissionService;
 
+    @Mock
+	Logger log;
+
     @InjectMocks
     HasPermissionInterceptor hasPermissionInterceptor;
 
     @Before
     public void init() {
         MockitoAnnotations.openMocks(this);
-        permissionService = mock(PermissionService.class);
-        hasPermissionInterceptor.permissionService = permissionService;
         when(context.getTarget()).thenReturn(new TestBoundary());
     }
 

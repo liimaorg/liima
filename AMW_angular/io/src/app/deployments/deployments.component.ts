@@ -1,4 +1,4 @@
-import { Location, NgFor, NgIf } from '@angular/common';
+import { Location } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -31,10 +31,8 @@ declare let $: any;
   standalone: true,
   imports: [
     LoadingIndicatorComponent,
-    NgIf,
     NotificationComponent,
     FormsModule,
-    NgFor,
     DateTimePickerComponent,
     IconComponent,
     DeploymentsListComponent,

@@ -8,7 +8,7 @@ import {
   NgbTimepicker,
 } from '@ng-bootstrap/ng-bootstrap';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, NgControl, FormsModule } from '@angular/forms';
-import { DatePipe, NgIf, NgClass } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { DateTimeModel } from './date-time.model';
 import { noop } from 'rxjs';
 import { DATE_TIME_FORMAT } from 'src/app/core/amw-constants';
@@ -27,7 +27,7 @@ import { IconComponent } from '../icon/icon.component';
     },
   ],
   standalone: true,
-  imports: [NgIf, FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker, NgbTimepicker],
+  imports: [FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker, NgbTimepicker],
 })
 export class DateTimePickerComponent implements ControlValueAccessor, OnInit, AfterViewInit {
   @Input()

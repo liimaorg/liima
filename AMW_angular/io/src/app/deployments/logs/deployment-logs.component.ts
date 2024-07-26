@@ -1,4 +1,4 @@
-import { Location, NgIf, NgFor, AsyncPipe } from '@angular/common';
+import { Location, AsyncPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, merge, Observable, of, Subject } from 'rxjs';
@@ -40,11 +40,9 @@ function failed(): Observable<Failed> {
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [
-    NgIf,
     NgbDropdown,
     NgbDropdownToggle,
     NgbDropdownMenu,
-    NgFor,
     NgbDropdownButtonItem,
     NgbDropdownItem,
     CodemirrorModule,

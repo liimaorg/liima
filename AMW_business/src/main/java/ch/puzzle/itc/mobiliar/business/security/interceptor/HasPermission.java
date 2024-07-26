@@ -25,7 +25,7 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
-import javax.persistence.Inheritance;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -38,7 +38,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @InterceptorBinding
 @Retention(RUNTIME)
 @Target({METHOD, TYPE})
-@Inheritance
+@Inherited
 public @interface HasPermission {
 	@Nonbinding
 	Permission permission() default DEFAULT;

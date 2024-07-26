@@ -10,13 +10,12 @@ import { ResourceType } from 'src/app/resource/resource-type';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'amw-restriction-add',
   templateUrl: './restriction-add.component.html',
   standalone: true,
-  imports: [NgIf, NgSelectModule, FormsModule, NgFor, IconComponent],
+  imports: [NgSelectModule, FormsModule, IconComponent],
 })
 export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   actions: Action[] = [
