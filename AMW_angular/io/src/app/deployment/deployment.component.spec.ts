@@ -36,6 +36,7 @@ describe('DeploymentComponent (create deployment)', () => {
   let deploymentService: DeploymentService;
   beforeEach(() => {
     TestBed.configureTestingModule({
+      teardown: { destroyAfterEach: false },
       imports: [FormsModule, RouterTestingModule, DeploymentComponent, DummyComponent],
       providers: [
         ResourceService,
