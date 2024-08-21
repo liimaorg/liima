@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Restriction } from '../settings/permission/restriction';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
@@ -13,9 +14,14 @@ export class AuthService extends BaseService {
     switchMap(() => this.getRestrictions()),
     shareReplay(1),
   );
+  #restrictions = signal<Restriction[]>(null);
+  restrictions = this.#restrictions.asReadonly();
 
   constructor(private http: HttpClient) {
     super();
+    this.restrictions$.pipe(takeUntilDestroyed()).subscribe((values) => {
+      this.#restrictions.set(values);
+    });
   }
 
   refreshData() {
@@ -30,23 +36,19 @@ export class AuthService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  get userRestrictions() {
-    return this.restrictions$;
+  get isLoaded() {
+    return computed(() => !!this.restrictions());
   }
 
-  getActionsForPermission(permissionName: string): Observable<string[]> {
-    return this.restrictions$.pipe(
-      map((restrictions) => {
-        return restrictions.filter((entry) => entry.permission.name === permissionName).map((entry) => entry.action);
-      }),
+  getActionsForPermission(permissionName: string): string[] {
+    return this.restrictions()
+      .filter((entry) => entry.permission.name === permissionName)
+      .map((entry) => entry.action);
+  }
+
+  hasPermission(permissionName: string, action: string): boolean {
+    return (
+      this.getActionsForPermission(permissionName).find((value) => value === 'ALL' || value === action) !== undefined
     );
   }
-
-  hasPermission(permissionName: string, action: string): Observable<boolean> {
-    return this.getActionsForPermission(permissionName).pipe(map(values => {
-      return values.find(value => value === 'ALL' || value === action) !== undefined;
-    })
-    )
-  }
-
 }

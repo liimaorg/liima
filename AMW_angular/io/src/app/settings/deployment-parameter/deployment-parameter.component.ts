@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -20,8 +20,8 @@ type Key = { id: number; name: string };
 export class DeploymentParameterComponent implements OnInit, OnDestroy {
   keyName = '';
   paramKeys: Key[] = [];
-  canCreate = false;
-  canDelete = false;
+  canCreate = signal<boolean>(false);
+  canDelete = signal<boolean>(false);
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -44,17 +44,17 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
   }
 
   private getUserPermissions() {
-    this.authService
-      .getActionsForPermission('MANAGE_DEPLOYMENT_PARAMETER')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((value) => {
-        if (value.indexOf('ALL') > -1) {
-          this.canCreate = this.canDelete = true;
+    if (this.authService.isLoaded) {
+      this.authService.getActionsForPermission('MANAGE_DEPLOYMENT_PARAMETER').map((action) => {
+        if (action.indexOf('ALL') > -1) {
+          this.canDelete.set(true);
+          this.canCreate.set(true);
         } else {
-          this.canCreate = value.indexOf('CREATE') > -1;
-          this.canDelete = value.indexOf('DELETE') > -1;
+          this.canCreate.set(action.indexOf('CREATE') > -1);
+          this.canDelete.set(action.indexOf('DELETE') > -1);
         }
       });
+    }
   }
 
   addKey(): void {

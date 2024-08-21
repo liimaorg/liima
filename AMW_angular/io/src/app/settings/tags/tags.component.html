@@ -21,7 +21,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (tag of tags; track tag) {
+      @for (tag of tags(); track tag) {
       <tr>
         <td>{{ tag.name }}</td>
         <td>

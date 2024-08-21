@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
@@ -48,16 +48,16 @@ export class ReleasesComponent implements OnInit {
 
   isLoading = true;
 
-  canCreate = false;
-  canEdit = false;
-  canDelete = false;
+  canCreate = signal<boolean>(false);
+  canEdit = signal<boolean>(false);
+  canDelete = signal<boolean>(false);
 
   constructor(
     private authService: AuthService,
     private modalService: NgbModal,
     private releasesService: ReleasesService,
     private toastService: ToastService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
@@ -74,18 +74,19 @@ export class ReleasesComponent implements OnInit {
   }
 
   private getUserPermissions() {
-    this.authService
-      .getActionsForPermission('RELEASE')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((value) => {
-        if (value.indexOf('ALL') > -1) {
-          this.canDelete = this.canEdit = this.canCreate = true;
+    if (this.authService.isLoaded()) {
+      this.authService.getActionsForPermission('RELEASE').map((action) => {
+        if (action.indexOf('ALL') > -1) {
+          this.canDelete.set(true);
+          this.canEdit.set(true);
+          this.canCreate.set(true);
         } else {
-          this.canCreate = value.indexOf('CREATE') > -1;
-          this.canEdit = value.indexOf('UPDATE') > -1;
-          this.canDelete = value.indexOf('DELETE') > -1;
+          this.canCreate.set(action.indexOf('CREATE') > -1);
+          this.canEdit.set(action.indexOf('UPDATE') > -1);
+          this.canDelete.set(action.indexOf('DELETE') > -1);
         }
       });
+    }
   }
 
   private getReleases() {
