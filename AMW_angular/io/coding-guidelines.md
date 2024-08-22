@@ -1,4 +1,3 @@
-
 # Coding Guidelines
 
 ## Inject() over Constructor-Injections
@@ -32,7 +31,8 @@ private users$ = this.http.get<User[]>(this.userUrl);
 // expose as signal
 users = toSignal(this.users$, { initialValue: [] as User[]});
 ```
-The observable `users$` is just used to pass the state to the *readonly* signal `users`. (The signals created from an observable are always *readonly*!)
+
+The observable `users$` is just used to pass the state to the _readonly_ signal `users`. (The signals created from an observable are always _readonly_!)
 No need for unsubscription - this is handled by `toSignal()` automatically.
 
 Use the signal in the component not in the template. (Separation of concerns)
@@ -49,6 +49,3 @@ private users$ = this.http.get<User[]>(this.userUrl).pipe(tap((users) => this.us
 // only used to automatically un-/subscribe to the observable
 readOnlyUsers = toSignal(this.users$, { initialValue: [] as User[]});
 ```
-
-
-
