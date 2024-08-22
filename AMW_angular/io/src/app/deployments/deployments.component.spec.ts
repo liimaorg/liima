@@ -34,14 +34,26 @@ describe('DeploymentsComponent (with query params)', () => {
   let deploymentService: DeploymentService;
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [FormsModule,
+      teardown: { destroyAfterEach: false },
+      imports: [
+        FormsModule,
         RouterTestingModule.withRoutes([]),
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
-        DeploymentsEditModalComponent],
-    providers: [DeploymentService, ResourceService, { provide: ActivatedRoute, useValue: mockRoute }, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-}).compileComponents();
+        DeploymentsEditModalComponent,
+      ],
+      providers: [
+        DeploymentService,
+        ResourceService,
+        {
+          provide: ActivatedRoute,
+          useValue: mockRoute,
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);
     component = fixture.componentInstance;
@@ -176,14 +188,25 @@ describe('DeploymentsComponent (with illegal query params)', () => {
   let deploymentService: DeploymentService;
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [FormsModule,
+      imports: [
+        FormsModule,
         RouterTestingModule.withRoutes([]),
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
-        DeploymentsEditModalComponent],
-    providers: [DeploymentService, ResourceService, { provide: ActivatedRoute, useValue: mockRoute }, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-}).compileComponents();
+        DeploymentsEditModalComponent,
+      ],
+      providers: [
+        DeploymentService,
+        ResourceService,
+        {
+          provide: ActivatedRoute,
+          useValue: mockRoute,
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);
     component = fixture.componentInstance;
@@ -226,14 +249,25 @@ describe('DeploymentsComponent (without query params)', () => {
   let resourceService: ResourceService;
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [FormsModule,
+      imports: [
+        FormsModule,
         RouterTestingModule.withRoutes([]),
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
-        DeploymentsEditModalComponent],
-    providers: [DeploymentService, ResourceService, { provide: ActivatedRoute, useValue: mockRoute }, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-}).compileComponents();
+        DeploymentsEditModalComponent,
+      ],
+      providers: [
+        DeploymentService,
+        ResourceService,
+        {
+          provide: ActivatedRoute,
+          useValue: mockRoute,
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentsComponent);
     component = fixture.componentInstance;

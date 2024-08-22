@@ -34,24 +34,27 @@ describe('PermissionComponent without any params (default: type Role)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    imports: [CommonModule,
+      teardown: { destroyAfterEach: false },
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [
+        CommonModule,
         FormsModule,
         RouterTestingModule.withRoutes([]),
         NgbModule,
         PermissionComponent,
         RestrictionEditComponent,
         RestrictionAddComponent,
-        RestrictionListComponent],
-    providers: [
+        RestrictionListComponent,
+      ],
+      providers: [
         EnvironmentService,
         PermissionService,
         ResourceService,
         { provide: ActivatedRoute, useValue: mockRoute },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-    ]
-});
+      ],
+    });
 
     fixture = TestBed.createComponent(PermissionComponent);
     component = fixture.componentInstance;
@@ -406,24 +409,26 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    imports: [CommonModule,
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [
+        CommonModule,
         FormsModule,
         RouterTestingModule.withRoutes([]),
         NgbModule,
         PermissionComponent,
         RestrictionEditComponent,
         RestrictionAddComponent,
-        RestrictionListComponent],
-    providers: [
+        RestrictionListComponent,
+      ],
+      providers: [
         EnvironmentService,
         PermissionService,
         ResourceService,
         { provide: ActivatedRoute, useValue: mockRoute },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-    ]
-});
+      ],
+    });
     fixture = TestBed.createComponent(PermissionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -504,24 +509,26 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    imports: [CommonModule,
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [
+        CommonModule,
         FormsModule,
         RouterTestingModule.withRoutes([]),
         NgbModule,
         PermissionComponent,
         RestrictionEditComponent,
         RestrictionAddComponent,
-        RestrictionListComponent],
-    providers: [
+        RestrictionListComponent,
+      ],
+      providers: [
         EnvironmentService,
         PermissionService,
         ResourceService,
         { provide: ActivatedRoute, useValue: mockRoute },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-    ]
-});
+      ],
+    });
     fixture = TestBed.createComponent(PermissionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
