@@ -149,6 +149,7 @@ public class PropertyTypeDataProvider implements Serializable {
         newPropTypeTagsString = null;
     }
 
+    //data provider delegates responsibility to controller
     private void reloadPropertyTypes() {
         propertyTypes = controller.loadPropertyTypes();
         if(selectedPropertyTypeId != null) {

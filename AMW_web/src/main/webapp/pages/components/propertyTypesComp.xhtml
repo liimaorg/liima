@@ -37,7 +37,7 @@
                     <nav>
                         <ul>
                             <ui:repeat var="propType"
-                                       value="${propertyTypeDataProvider.allPropertyTypes}">
+                                       value="${propertyTypeDataProvider.allPropertyTypes}">  <!-- old HTML page uses propertyTypeDataProvider -->
                                 <li class="${propertyTypeDataProvider.selectedPropertyTypeId==propType.id ? 'current' : ''}">
                                     <h:link value="${propType.propertyTypeName}"
                                             outcome="settings">

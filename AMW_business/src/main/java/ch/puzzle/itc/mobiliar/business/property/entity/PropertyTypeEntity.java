@@ -34,10 +34,10 @@ import java.util.Set;
 
 @Entity
 @Audited
-//Dises Query wird gebraucht nur um ein Beispiel zu testen
+//Dieses Query wird gebraucht nur um ein Beispiel zu testen
 @NamedQuery(name = "propertiesNames", query = "select p from PropertyTypeEntity p",  cacheable = true)
 @Table(name="TAMW_propertyType")
-public class PropertyTypeEntity implements PropertyTagEntityHolder{
+public class PropertyTypeEntity implements PropertyTagEntityHolder {
 	
 	@Getter
 	@Setter
@@ -72,7 +72,7 @@ public class PropertyTypeEntity implements PropertyTagEntityHolder{
 	//For cascading only
 	@Getter
 	@Setter
-	@OneToMany(mappedBy = "propertyTypeEntity")
+	@OneToMany(mappedBy = "propertyTypeEntity"/*, fetch = FetchType.EAGER*/)
 	private Set<PropertyDescriptorEntity> propertyDescriptors;
 
 	public List<PropertyTagEntity> getPropertyTags() {

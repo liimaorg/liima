@@ -1,0 +1,37 @@
+<div class="container">
+  <h1>Property Types</h1>
+  <div class="card row mt-2 mb-3">
+    <div class="card-header">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-sm">
+          <b>Property Types</b>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm table-striped">
+          <thead>
+          <tr>
+            <th>Property Name</th>
+            <th>Encrypted</th>
+            <th>Validation</th>
+            <th>Tags</th>
+          </tr>
+          </thead>
+          <tbody>
+          @for (property of properties; track property.id) {
+          <tr>
+            <td class="align-middle">{{ property.propertyName }}</td>
+                <td class="align-middle">{{ property.encrypted ? 'Yes' : 'No' }}</td>
+                <td class="align-middle">{{ property.validation }}</td>
+                <td class="align-middle">{{ property.tags.join(', ') }}</td>
+              </tr>
+          }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

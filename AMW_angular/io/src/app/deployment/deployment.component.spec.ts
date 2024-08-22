@@ -1,5 +1,4 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -19,6 +18,7 @@ import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { Component } from '@angular/core';
 
 @Component({
   template: '',
@@ -34,6 +34,7 @@ describe('DeploymentComponent (create deployment)', () => {
   let resourceService: ResourceService;
   let environmentService: EnvironmentService;
   let deploymentService: DeploymentService;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       teardown: { destroyAfterEach: false },
@@ -45,7 +46,8 @@ describe('DeploymentComponent (create deployment)', () => {
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
-    });
+    }).compileComponents();
+
     fixture = TestBed.createComponent(DeploymentComponent);
     component = fixture.componentInstance;
 
@@ -381,6 +383,7 @@ describe('DeploymentComponent (create deployment with params)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      teardown: { destroyAfterEach: false },
       imports: [FormsModule, RouterTestingModule.withRoutes([]), DeploymentComponent, DummyComponent],
       providers: [
         ResourceService,
@@ -435,6 +438,7 @@ describe('DeploymentComponent (redeployment)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      teardown: { destroyAfterEach: false },
       imports: [FormsModule, RouterTestingModule.withRoutes([]), DeploymentComponent, DummyComponent],
       providers: [
         { provide: ActivatedRoute, useValue: mockRoute },

@@ -53,6 +53,7 @@ public class PropertyTypeController implements Serializable {
 	@Inject
 	PropertyTypeService propertyTypeService;
 
+	//how property types are loaded in old UI
 	public List<PropertyTypeEntity> loadPropertyTypes() {
 
 		List<PropertyTypeEntity> propertyTypes = propertyTypeService.getPropertyTypes();

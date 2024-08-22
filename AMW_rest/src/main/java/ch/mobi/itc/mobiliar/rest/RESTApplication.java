@@ -29,6 +29,7 @@ import ch.mobi.itc.mobiliar.rest.environments.EnvironmentsRest;
 import ch.mobi.itc.mobiliar.rest.exceptions.*;
 import ch.mobi.itc.mobiliar.rest.health.HealthCheck;
 import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
+import ch.mobi.itc.mobiliar.rest.properties.PropertyTypesRest;
 import ch.mobi.itc.mobiliar.rest.resources.*;
 import ch.mobi.itc.mobiliar.rest.releases.ReleasesRest;
 import ch.mobi.itc.mobiliar.rest.settings.SettingsRest;
@@ -71,6 +72,7 @@ public class RESTApplication extends Application {
         resources.add(SettingsRest.class);
         resources.add(TestGenerationRest.class);
         resources.add(TagsRest.class);
+        resources.add(PropertyTypesRest.class);
 
         // writers
         resources.add(DeploymentDtoCsvBodyWriter.class);
