@@ -21,6 +21,10 @@ npm run backend:start
 npm run backend:stop
 ```
 
+## Coding guidelines
+
+See [coding-guideline.md](./coding-guidelines.md)
+
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
@@ -49,3 +53,4 @@ You can use any icon from the boostrap icon set with the custom `<app-icon>` com
 ```
 <app-icon icon="clock"></app-icon>
 ```
+
