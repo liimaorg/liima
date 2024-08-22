@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { IconComponent } from '../../shared/icon/icon.component';
-import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../auth/auth.service';
 import { Subject } from 'rxjs';
 import { ToastService } from '../../shared/elements/toast/toast.service';

@@ -4,7 +4,6 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { Subject } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { ToastService } from '../../shared/elements/toast/toast.service';
-import { Tag } from './tag';
 import { TagsService } from './tags.service';
 
 @Component({

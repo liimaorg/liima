@@ -28,7 +28,7 @@ describe('AuthService', () => {
     authService.refreshData();
 
     const req2 = httpTestingController.match(API_URL);
-    expect(req.request.method).toBe('GET');
+    expect(req2.length).toBe(2);
   });
 
   it('should return actions for a permission', () => {
