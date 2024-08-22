@@ -9,7 +9,7 @@
     "backend:stop": "docker compose -f ./../../AMW_docker/docker-compose/docker-compose.yml down",
     "build": "ng build",
     "test": "ng test",
-    "test-headless": "ng test --browsers=ChromeHeadless",
+    "test:watch": "ng test --watch",
     "lint": "ng lint",
     "prettier": "npx prettier --write .",
     "mavenbuild": "ng test --watch=false --browsers=ChromeHeadless && ng build --configuration production",
