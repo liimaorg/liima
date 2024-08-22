@@ -21,7 +21,7 @@ export class AuthService extends BaseService {
   }
 
   refreshData() {
-    this.getRestrictions().pipe(map((v) => this.reload$.next(v)));
+    this.reload$.next([]);
   }
 
   private getRestrictions(): Observable<Restriction[]> {

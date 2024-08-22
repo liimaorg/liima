@@ -23,12 +23,9 @@ describe('AuthService', () => {
   });
 
   it('should reload permissions', () => {
-    const req = httpTestingController.expectOne(API_URL);
-    expect(req.request.method).toBe('GET');
     authService.refreshData();
-
-    const req2 = httpTestingController.match(API_URL);
-    expect(req2.length).toBe(2);
+    const requests = httpTestingController.match(API_URL);
+    expect(requests.length).toEqual(2);
   });
 
   it('should return actions for a permission', () => {
