@@ -43,9 +43,9 @@
                     </h:link>
                 </li>
                 <li class="${settingsDataProvider.mode=='props' ? 'current' : ''}">
-                    <h:link value="Property Types">
-                        <f:param name="mode" value="props" />
-                    </h:link>
+                    <h:outputLink value="/AMW_angular/#/settings/property-types">
+                        Property Types
+                    </h:outputLink>
                 </li>
                 <li class="${settingsDataProvider.mode=='tags' ? 'current' : ''}">
                     <h:outputLink value="/AMW_angular/#/settings/tags"

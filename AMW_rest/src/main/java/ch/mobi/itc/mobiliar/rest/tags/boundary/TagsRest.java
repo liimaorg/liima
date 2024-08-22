@@ -38,7 +38,6 @@ public class TagsRest {
     private RemoveTagUseCase removeTagUseCase;
 
     @GET
-
     @ApiOperation(value = "Gets all tags")
     public Response getAllTags() {
         return Response.status(OK).entity(listTagsUseCase.get()).build();
