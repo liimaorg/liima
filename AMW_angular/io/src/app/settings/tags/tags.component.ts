@@ -43,17 +43,15 @@ export class TagsComponent implements OnInit, OnDestroy {
   }
 
   private getUserPermissions() {
-    if (this.authService.isLoaded()) {
-      this.authService.getActionsForPermission('MANAGE_GLOBAL_TAGS').map((action) => {
-        if (action.indexOf('ALL') > -1) {
-          this.canCreate.set(true);
-          this.canDelete.set(true);
-        } else {
-          this.canCreate.set(action.indexOf('CREATE') > -1);
-          this.canDelete.set(action.indexOf('DELETE') > -1);
-        }
-      });
-    }
+    this.authService.getActionsForPermission('MANAGE_GLOBAL_TAGS').map((action) => {
+      if (action.indexOf('ALL') > -1) {
+        this.canCreate.set(true);
+        this.canDelete.set(true);
+      } else {
+        this.canCreate.set(action.indexOf('CREATE') > -1);
+        this.canDelete.set(action.indexOf('DELETE') > -1);
+      }
+    });
   }
 
   addTag(): void {

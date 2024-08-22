@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
@@ -29,6 +29,11 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
   templateUrl: './releases.component.html',
 })
 export class ReleasesComponent implements OnInit {
+  private authService = inject(AuthService);
+  private modalService = inject(NgbModal);
+  private releasesService = inject(ReleasesService);
+  private toastService = inject(ToastService);
+
   releases$: Observable<Release[]>;
   defaultRelease$: Observable<Release>;
   count$: Observable<number>;
@@ -52,13 +57,6 @@ export class ReleasesComponent implements OnInit {
   canEdit = signal<boolean>(false);
   canDelete = signal<boolean>(false);
 
-  constructor(
-    private authService: AuthService,
-    private modalService: NgbModal,
-    private releasesService: ReleasesService,
-    private toastService: ToastService,
-  ) {}
-
   ngOnInit(): void {
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
       msg !== '' ? this.toastService.error(msg) : null;
@@ -74,19 +72,17 @@ export class ReleasesComponent implements OnInit {
   }
 
   private getUserPermissions() {
-    if (this.authService.isLoaded()) {
-      this.authService.getActionsForPermission('RELEASE').map((action) => {
-        if (action.indexOf('ALL') > -1) {
-          this.canDelete.set(true);
-          this.canEdit.set(true);
-          this.canCreate.set(true);
-        } else {
-          this.canCreate.set(action.indexOf('CREATE') > -1);
-          this.canEdit.set(action.indexOf('UPDATE') > -1);
-          this.canDelete.set(action.indexOf('DELETE') > -1);
-        }
-      });
-    }
+    this.authService.getActionsForPermission('RELEASE').map((action) => {
+      if (action.indexOf('ALL') > -1) {
+        this.canDelete.set(true);
+        this.canEdit.set(true);
+        this.canCreate.set(true);
+      } else {
+        this.canCreate.set(action.indexOf('CREATE') > -1);
+        this.canEdit.set(action.indexOf('UPDATE') > -1);
+        this.canDelete.set(action.indexOf('DELETE') > -1);
+      }
+    });
   }
 
   private getReleases() {

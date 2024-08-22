@@ -25,7 +25,6 @@ describe('AuthService', () => {
   it('should reload permissions', () => {
     const req = httpTestingController.expectOne(API_URL);
     expect(req.request.method).toBe('GET');
-    expect(authService.isLoaded).toBeTruthy();
     authService.refreshData();
 
     const req2 = httpTestingController.match(API_URL);
@@ -45,7 +44,7 @@ describe('AuthService', () => {
       { permission: { name: 'secondPermission' }, action: CREATE },
       { permission: { name: 'thirdPermission' }, action: CREATE },
     ]);
-    expect(authService.isLoaded).toBeTruthy();
+
     expect(authService.getActionsForPermission(permissionName)).toEqual([READ, CREATE]);
   });
 
@@ -60,7 +59,7 @@ describe('AuthService', () => {
       { permission: { name: 'secondPermission' }, action: action },
       { permission: { name: 'thirdPermission' }, action: action },
     ]);
-    expect(authService.isLoaded).toBeTruthy();
+
     expect(authService.getActionsForPermission(permissionName)).toEqual([]);
   });
 
@@ -74,7 +73,7 @@ describe('AuthService', () => {
       { permission: { name: permissionName }, action: 'READ' },
       { permission: { name: permissionName }, action: action },
     ]);
-    expect(authService.isLoaded).toBeTruthy();
+
     expect(authService.hasPermission(permissionName, action)).toBeTrue();
   });
 
@@ -86,7 +85,6 @@ describe('AuthService', () => {
     expect(req.request.method).toBe('GET');
     req.flush([{ permission: { name: permissionName }, action: 'ALL' }]);
 
-    expect(authService.isLoaded).toBeTruthy();
     expect(authService.hasPermission(permissionName, action)).toBeTrue();
   });
 
@@ -98,7 +96,6 @@ describe('AuthService', () => {
     expect(req.request.method).toBe('GET');
     req.flush([{ permission: { name: permissionName }, action: 'READ' }]);
 
-    expect(authService.isLoaded).toBeTruthy();
     expect(authService.hasPermission(permissionName, action)).toBeFalse();
   });
 
@@ -110,7 +107,6 @@ describe('AuthService', () => {
     expect(req.request.method).toBe('GET');
     req.flush([{ permission: { name: 'otherPermission' }, action: 'READ' }]);
 
-    expect(authService.isLoaded).toBeTruthy();
     expect(authService.hasPermission(permissionName, action)).toBeFalse();
   });
 });

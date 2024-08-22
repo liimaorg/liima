@@ -44,17 +44,15 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
   }
 
   private getUserPermissions() {
-    if (this.authService.isLoaded) {
-      this.authService.getActionsForPermission('MANAGE_DEPLOYMENT_PARAMETER').map((action) => {
-        if (action.indexOf('ALL') > -1) {
-          this.canDelete.set(true);
-          this.canCreate.set(true);
-        } else {
-          this.canCreate.set(action.indexOf('CREATE') > -1);
-          this.canDelete.set(action.indexOf('DELETE') > -1);
-        }
-      });
-    }
+    this.authService.getActionsForPermission('MANAGE_DEPLOYMENT_PARAMETER').map((action) => {
+      if (action.indexOf('ALL') > -1) {
+        this.canDelete.set(true);
+        this.canCreate.set(true);
+      } else {
+        this.canCreate.set(action.indexOf('CREATE') > -1);
+        this.canDelete.set(action.indexOf('DELETE') > -1);
+      }
+    });
   }
 
   addKey(): void {

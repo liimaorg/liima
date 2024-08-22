@@ -1,27 +1,23 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Restriction } from '../settings/permission/restriction';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
   private reload$ = new Subject<Restriction[]>();
-  private readonly restrictions$ = this.reload$.pipe(
+  private restrictions$ = this.reload$.pipe(
     startWith(null),
     switchMap(() => this.getRestrictions()),
     shareReplay(1),
   );
-  #restrictions = signal<Restriction[]>(null);
-  restrictions = this.#restrictions.asReadonly();
+  restrictions = toSignal(this.restrictions$, { initialValue: [] as Restriction[] });
 
   constructor(private http: HttpClient) {
     super();
-    this.restrictions$.pipe(takeUntilDestroyed()).subscribe((values) => {
-      this.#restrictions.set(values);
-    });
   }
 
   refreshData() {
@@ -34,10 +30,6 @@ export class AuthService extends BaseService {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
-  }
-
-  get isLoaded() {
-    return computed(() => !!this.restrictions());
   }
 
   getActionsForPermission(permissionName: string): string[] {
