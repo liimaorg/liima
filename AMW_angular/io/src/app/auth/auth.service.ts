@@ -45,6 +45,9 @@ export class AuthService extends BaseService {
   }
 }
 
-export function isAllowed(action: string, role: string) {
-  return action === 'ALL' || action === role;
+// currying function which verifies roles in a action
+export function isAllowed(role: string) {
+  return (action: string) => {
+    return action === 'ALL' || action === role;
+  };
 }

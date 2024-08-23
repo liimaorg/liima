@@ -73,9 +73,9 @@ export class ReleasesComponent implements OnInit {
 
   private getUserPermissions() {
     const actions = this.authService.getActionsForPermission('RELEASE');
-    this.canCreate.set(actions.some((action) => isAllowed(action, 'CREATE')));
-    this.canEdit.set(actions.some((action) => isAllowed(action, 'UPDATE')));
-    this.canDelete.set(actions.some((action) => isAllowed(action, 'DELETE')));
+    this.canCreate.set(actions.some(isAllowed('CREATE')));
+    this.canEdit.set(actions.some(isAllowed('UPDATE')));
+    this.canDelete.set(actions.some(isAllowed('DELETE')));
   }
 
   private getReleases() {

@@ -44,8 +44,8 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
 
   private getUserPermissions() {
     const actions = this.authService.getActionsForPermission('MANAGE_DEPLOYMENT_PARAMETER');
-    this.canCreate.set(actions.some((action) => isAllowed(action, 'CREATE')));
-    this.canDelete.set(actions.some((action) => isAllowed(action, 'DELETE')));
+    this.canCreate.set(actions.some(isAllowed('CREATE')));
+    this.canDelete.set(actions.some(isAllowed('DELETE')));
   }
 
   addKey(): void {
