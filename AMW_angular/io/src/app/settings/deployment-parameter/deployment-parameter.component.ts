@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { IconComponent } from '../../shared/icon/icon.component';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService, isAllowed } from '../../auth/auth.service';
 import { Subject } from 'rxjs';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 
@@ -43,15 +43,9 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
   }
 
   private getUserPermissions() {
-    this.authService.getActionsForPermission('MANAGE_DEPLOYMENT_PARAMETER').map((action) => {
-      if (action.indexOf('ALL') > -1) {
-        this.canDelete.set(true);
-        this.canCreate.set(true);
-      } else {
-        this.canCreate.set(action.indexOf('CREATE') > -1);
-        this.canDelete.set(action.indexOf('DELETE') > -1);
-      }
-    });
+    const actions = this.authService.getActionsForPermission('MANAGE_DEPLOYMENT_PARAMETER');
+    this.canCreate.set(actions.some((action) => isAllowed(action, 'CREATE')));
+    this.canDelete.set(actions.some((action) => isAllowed(action, 'DELETE')));
   }
 
   addKey(): void {

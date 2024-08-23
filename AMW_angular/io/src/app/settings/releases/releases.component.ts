@@ -9,7 +9,7 @@ import { ReleaseEditComponent } from './release-edit.component';
 import { Release } from './release';
 import { ReleasesService } from './releases.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService, isAllowed } from '../../auth/auth.service';
 import { map, takeUntil } from 'rxjs/operators';
 import { ReleaseDeleteComponent } from './release-delete.component';
 import { ToastService } from '../../shared/elements/toast/toast.service';
@@ -72,17 +72,10 @@ export class ReleasesComponent implements OnInit {
   }
 
   private getUserPermissions() {
-    this.authService.getActionsForPermission('RELEASE').map((action) => {
-      if (action.indexOf('ALL') > -1) {
-        this.canDelete.set(true);
-        this.canEdit.set(true);
-        this.canCreate.set(true);
-      } else {
-        this.canCreate.set(action.indexOf('CREATE') > -1);
-        this.canEdit.set(action.indexOf('UPDATE') > -1);
-        this.canDelete.set(action.indexOf('DELETE') > -1);
-      }
-    });
+    const actions = this.authService.getActionsForPermission('RELEASE');
+    this.canCreate.set(actions.some((action) => isAllowed(action, 'CREATE')));
+    this.canEdit.set(actions.some((action) => isAllowed(action, 'UPDATE')));
+    this.canDelete.set(actions.some((action) => isAllowed(action, 'DELETE')));
   }
 
   private getReleases() {

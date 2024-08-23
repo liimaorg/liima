@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
-import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { Restriction } from '../settings/permission/restriction';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -43,4 +43,8 @@ export class AuthService extends BaseService {
       this.getActionsForPermission(permissionName).find((value) => value === 'ALL' || value === action) !== undefined
     );
   }
+}
+
+export function isAllowed(action: string, role: string) {
+  return action === 'ALL' || action === role;
 }

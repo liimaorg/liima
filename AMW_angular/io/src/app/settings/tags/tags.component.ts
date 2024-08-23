@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { Subject } from 'rxjs';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService, isAllowed } from '../../auth/auth.service';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { TagsService } from './tags.service';
 
@@ -34,15 +34,9 @@ export class TagsComponent implements OnInit, OnDestroy {
   }
 
   private getUserPermissions() {
-    this.authService.getActionsForPermission('MANAGE_GLOBAL_TAGS').map((action) => {
-      if (action.indexOf('ALL') > -1) {
-        this.canCreate.set(true);
-        this.canDelete.set(true);
-      } else {
-        this.canCreate.set(action.indexOf('CREATE') > -1);
-        this.canDelete.set(action.indexOf('DELETE') > -1);
-      }
-    });
+    const actions = this.authService.getActionsForPermission('MANAGE_GLOBAL_TAGS');
+    this.canCreate.set(actions.some((action) => isAllowed(action, 'CREATE')));
+    this.canDelete.set(actions.some((action) => isAllowed(action, 'DELETE')));
   }
 
   addTag(): void {
