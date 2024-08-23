@@ -29,7 +29,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.common.exception.*;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
@@ -86,7 +85,6 @@ public class CreateResourceController {
                     Resource r = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), newResourceName,
                                 resourceType.getId(), release.getId());
                     if (r != null) {
-                        userSettings.addFavoriteResource(r.getEntity().getResourceGroup().getId(), r.getName(), resourceType.getName());
                         String message = "Resource " + newResourceName + " successfully created";
                         GlobalMessageAppender.addSuccessMessage(message);
                         try {
@@ -101,8 +99,6 @@ public class CreateResourceController {
                 }
             }
 
-        } catch (ResourceNotFoundException e) {
-            errorMessage = "The selected resource can not be found.";
         } catch (ResourceTypeNotFoundException e) {
             errorMessage = "Could not find resourcetype.";
         } catch (ElementAlreadyExistsException e) {
@@ -169,12 +165,6 @@ public class CreateResourceController {
                 }
 
                 if (app != null) {
-                    try {
-                        userSettings.addFavoriteResource(app.getEntity().getResourceGroup().getId(), app.getName(), DefaultResourceTypeDefinition.APPLICATION.name());
-                    } catch (ResourceNotFoundException e) {
-                        message = "Could not add Application " + appName + " to favorites.";
-                        GlobalMessageAppender.addSuccessMessage(message);
-                    }
                     try {
                         permissionBoundary.createAutoAssignedRestrictions(app.getEntity());
                     } catch (AMWException e) {
