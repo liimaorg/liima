@@ -45,6 +45,8 @@ export class AuthService extends BaseService {
   }
 }
 
-export function isAllowed(action: string, role: string) {
-  return action === 'ALL' || action === role;
+export function isAllowed(role: string) {
+  return (action: string) => {
+    return action === 'ALL' || action === role;
+  };
 }
