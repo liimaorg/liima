@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, Signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
@@ -11,23 +11,26 @@ import { PageComponent } from '../layout/page/page.component';
   imports: [RouterLink, RouterLinkActive, RouterOutlet, PageComponent],
 })
 export class SettingsComponent implements OnInit {
-  canViewSettings = false
-  canViewPermissionsTab = false
-  canViewStpTab = false
-  canViewAppInfo = false
+  authService = inject(AuthService);
+  canViewSettings = false;
+  canViewPermissionsTab = false;
+  canViewStpTab = false;
+  canViewAppInfo = false;
 
-  constructor(
-    private authService: AuthService
-  ) { }
+  loadingPermissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      this.getUserPermissions();
+    } else {
+      return `<div>Could not load permissions</div>`;
+    }
+  });
 
-  ngOnInit(): void {
-    this.getUserPermissions();
-  }
+  ngOnInit(): void {}
 
   private getUserPermissions() {
-    this.authService.hasPermission('SETTING_PANEL_LIST', 'ALL').subscribe(value => this.canViewSettings = value)
-    this.authService.hasPermission('ROLES_AND_PERMISSIONS_TAB', 'ALL').subscribe(value => this.canViewPermissionsTab = value)
-    this.authService.hasPermission('SHAKEDOWNTEST', 'ALL').subscribe(value => this.canViewStpTab = value)
-    this.authService.hasPermission('RELEASE', 'READ').subscribe(value => this.canViewAppInfo = value)
+    this.canViewSettings = this.authService.hasPermission('SETTING_PANEL_LIST', 'ALL');
+    this.canViewPermissionsTab = this.authService.hasPermission('ROLES_AND_PERMISSIONS_TAB', 'ALL');
+    this.canViewStpTab = this.authService.hasPermission('SHAKEDOWNTEST', 'ALL');
+    this.canViewAppInfo = this.authService.hasPermission('RELEASE', 'CREATE');
   }
 }

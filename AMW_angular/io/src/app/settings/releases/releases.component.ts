@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
@@ -9,7 +9,7 @@ import { ReleaseEditComponent } from './release-edit.component';
 import { Release } from './release';
 import { ReleasesService } from './releases.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService, isAllowed } from '../../auth/auth.service';
 import { map, takeUntil } from 'rxjs/operators';
 import { ReleaseDeleteComponent } from './release-delete.component';
 import { ToastService } from '../../shared/elements/toast/toast.service';
@@ -29,6 +29,11 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
   templateUrl: './releases.component.html',
 })
 export class ReleasesComponent implements OnInit {
+  private authService = inject(AuthService);
+  private modalService = inject(NgbModal);
+  private releasesService = inject(ReleasesService);
+  private toastService = inject(ToastService);
+
   releases$: Observable<Release[]>;
   defaultRelease$: Observable<Release>;
   count$: Observable<number>;
@@ -48,16 +53,9 @@ export class ReleasesComponent implements OnInit {
 
   isLoading = true;
 
-  canCreate = false;
-  canEdit = false;
-  canDelete = false;
-
-  constructor(
-    private authService: AuthService,
-    private modalService: NgbModal,
-    private releasesService: ReleasesService,
-    private toastService: ToastService,
-  ) { }
+  canCreate = signal<boolean>(false);
+  canEdit = signal<boolean>(false);
+  canDelete = signal<boolean>(false);
 
   ngOnInit(): void {
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
@@ -74,18 +72,10 @@ export class ReleasesComponent implements OnInit {
   }
 
   private getUserPermissions() {
-    this.authService
-      .getActionsForPermission('RELEASE')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((value) => {
-        if (value.indexOf('ALL') > -1) {
-          this.canDelete = this.canEdit = this.canCreate = true;
-        } else {
-          this.canCreate = value.indexOf('CREATE') > -1;
-          this.canEdit = value.indexOf('UPDATE') > -1;
-          this.canDelete = value.indexOf('DELETE') > -1;
-        }
-      });
+    const actions = this.authService.getActionsForPermission('RELEASE');
+    this.canCreate.set(actions.some(isAllowed('CREATE')));
+    this.canEdit.set(actions.some(isAllowed('UPDATE')));
+    this.canDelete.set(actions.some(isAllowed('DELETE')));
   }
 
   private getReleases() {

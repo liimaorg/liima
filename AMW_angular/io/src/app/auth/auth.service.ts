@@ -1,25 +1,27 @@
-import { Injectable } from '@angular/core';
+import { computed, Injectable, Signal } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
-import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { Restriction } from '../settings/permission/restriction';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
   private reload$ = new Subject<Restriction[]>();
-  private readonly restrictions$ = this.reload$.pipe(
+  private restrictions$ = this.reload$.pipe(
     startWith(null),
     switchMap(() => this.getRestrictions()),
     shareReplay(1),
   );
+  restrictions = toSignal(this.restrictions$, { initialValue: [] as Restriction[] });
 
   constructor(private http: HttpClient) {
     super();
   }
 
   refreshData() {
-    this.getRestrictions().pipe(map((v) => this.reload$.next(v)));
+    this.reload$.next([]);
   }
 
   private getRestrictions(): Observable<Restriction[]> {
@@ -30,23 +32,23 @@ export class AuthService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  get userRestrictions() {
-    return this.restrictions$;
+  getActionsForPermission(permissionName: string): string[] {
+    return this.restrictions()
+      .filter((entry) => entry.permission.name === permissionName)
+      .map((entry) => entry.action);
   }
 
-  getActionsForPermission(permissionName: string): Observable<string[]> {
-    return this.restrictions$.pipe(
-      map((restrictions) => {
-        return restrictions.filter((entry) => entry.permission.name === permissionName).map((entry) => entry.action);
-      }),
+  hasPermission(permissionName: string, action: string): boolean {
+    return (
+      this.getActionsForPermission(permissionName).find((value) => value === 'ALL' || value === action) !== undefined
     );
   }
+}
 
-  hasPermission(permissionName: string, action: string): Observable<boolean> {
-    return this.getActionsForPermission(permissionName).pipe(map(values => {
-      return values.find(value => value === 'ALL' || value === action) !== undefined;
-    })
-    )
-  }
-
+// curried function to verify a role in an action
+// usage example: actions.some(isAllowed("CREATE"))
+export function isAllowed(role: string) {
+  return (action: string) => {
+    return action === 'ALL' || action === role;
+  };
 }

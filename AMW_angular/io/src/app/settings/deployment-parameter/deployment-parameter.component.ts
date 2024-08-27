@@ -1,10 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { IconComponent } from '../../shared/icon/icon.component';
-import { takeUntil } from 'rxjs/operators';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService, isAllowed } from '../../auth/auth.service';
 import { Subject } from 'rxjs';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 
@@ -18,17 +17,15 @@ type Key = { id: number; name: string };
   styleUrl: './deployment-parameter.component.scss',
 })
 export class DeploymentParameterComponent implements OnInit, OnDestroy {
+  authService = inject(AuthService);
+  http = inject(HttpClient);
+  toastService = inject(ToastService);
+
   keyName = '';
   paramKeys: Key[] = [];
-  canCreate = false;
-  canDelete = false;
+  canCreate = signal<boolean>(false);
+  canDelete = signal<boolean>(false);
   private destroy$ = new Subject<void>();
-
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-    private toastService: ToastService,
-  ) {}
 
   ngOnInit(): void {
     this.getUserPermissions();
@@ -44,17 +41,9 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
   }
 
   private getUserPermissions() {
-    this.authService
-      .getActionsForPermission('MANAGE_DEPLOYMENT_PARAMETER')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((value) => {
-        if (value.indexOf('ALL') > -1) {
-          this.canCreate = this.canDelete = true;
-        } else {
-          this.canCreate = value.indexOf('CREATE') > -1;
-          this.canDelete = value.indexOf('DELETE') > -1;
-        }
-      });
+    const actions = this.authService.getActionsForPermission('MANAGE_DEPLOYMENT_PARAMETER');
+    this.canCreate.set(actions.some(isAllowed('CREATE')));
+    this.canDelete.set(actions.some(isAllowed('DELETE')));
   }
 
   addKey(): void {
