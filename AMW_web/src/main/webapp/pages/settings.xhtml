@@ -173,57 +173,6 @@
                 <mobi:listGlobalFunctions/>
             </h:panelGroup>
 
-            <h:panelGroup rendered="${settingsDataProvider.mode=='myAmw'}">
-                <h:panelGroup id="myAmw" layout="block">
-                    <h:dataTable var="favorit" value="${userSettings.myAMWObjects}"
-                                 styleClass="well width100 caption-top" rowClasses="odd-row,even-row"
-                                 id="amwlist">
-                        <f:facet name="caption">
-                            <h2>My favorites</h2>
-                        </f:facet>
-                        <h:column>
-                            <f:facet name="header">
-                                <h:panelGroup>
-                                    <h:outputText value="Resource Name"/>
-                                    <br/>
-                                </h:panelGroup>
-                            </f:facet>
-                            <div>
-                                <h:outputText value="${favorit.name}" />
-                            </div>
-                        </h:column>
-                        <h:column>
-                            <f:facet name="header">
-                                <h:panelGroup>
-                                    <h:outputText value="Send email when deploying" />
-                                    <br />
-                                </h:panelGroup>
-                            </f:facet>
-                            <div>
-                                <h:selectBooleanCheckbox value="#{favorit.email}"
-                                    rendered="${favorit.asOrApp}">
-                                    <a4j:ajax listener="${userSettings.switchEmailNotification(favorit)}" />
-                                </h:selectBooleanCheckbox>
-                            </div>
-                        </h:column>
-                        <h:column>
-                            <f:facet name="header">
-                                <h:panelGroup>
-                                    <h:outputText value="Remove from favorites" />
-                                    <br />
-                                </h:panelGroup>
-                            </f:facet>
-                            <div>
-                                <a4j:commandLink
-                                    action="${userSettings.removeFavoriteResource(favorit.groupId)}"
-                                    render="myAmw">Remove from favorites</a4j:commandLink>
-                            </div>
-                        </h:column>
-                    </h:dataTable>
-                </h:panelGroup>
-
-            </h:panelGroup>
-
             <!-- STP MANAGEMENT -->
             <h:form id="stpPanelForm">
                 <h:panelGroup rendered="${settingsDataProvider.mode=='STP'}">

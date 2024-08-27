@@ -50,24 +50,7 @@ public class UserSettingsService implements Serializable {
 	protected Logger log;
 
 	public Map<Integer, MyAMWObject> loadFavoriteResources(String userName) {
-		List<FavoriteResourceEntity> tmpResult = fetchFavoriteResources(userName);
-		Map<Integer, MyAMWObject> result = new LinkedHashMap<Integer, MyAMWObject>();
-
-		if (tmpResult != null) {
-			for (FavoriteResourceEntity fav : tmpResult) {
-				// This is a temporary hack - the resource type will be put on the resource group in the
-				// next release, so this is not possible anymore. however for the moment, it still is
-				// possible that a resourcegroup exists without resources and therefore without
-				// resourcetype...
-				ResourceTypeEntity t = fav.getResourceGroup().getResourceType();
-				if (t != null) {
-					result.put(fav.getResourceGroup().getId(), new MyAMWObject(fav.getResourceGroup()
-							.getId(), fav.getResourceGroup().getName(), fav.isEmail(), fav
-							.getResourceGroup().getResourceType().getName()));
-				}
-			}
-		}
-		return result;
+		return new LinkedHashMap<Integer, MyAMWObject>(); // Returns an empty map
 	}
 
 	/**
@@ -75,17 +58,7 @@ public class UserSettingsService implements Serializable {
 	 * @return
 	 */
 	public List<FavoriteResourceEntity> fetchFavoriteResources(String userName) {
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<FavoriteResourceEntity> q = cb.createQuery(FavoriteResourceEntity.class);
-		Root<FavoriteResourceEntity> r = q.from(FavoriteResourceEntity.class);
-		Join<FavoriteResourceEntity, UserSettingsEntity> userSettings = r.join("user");
-		Join<FavoriteResourceEntity, ResourceGroupEntity> resourceGroup = r.join("resourceGroup");
-		Predicate userNamePred = cb.like(userSettings.<String> get("userName"), userName);
-		q.where(userNamePred);
-		q.orderBy(cb.asc(resourceGroup.get("name")));
-		r.fetch("resourceGroup", JoinType.LEFT);
-
-		return entityManager.createQuery(q).getResultList();
+		return new ArrayList<FavoriteResourceEntity>(); // Returns an empty list
 	}
 
 	public UserSettingsEntity saveUserSettings(UserSettingsEntity userSettings) {
@@ -104,54 +77,6 @@ public class UserSettingsService implements Serializable {
 			user.setUserName(userName);
 			entityManager.persist(user);
 		}
-		return user;
-	}
-
-	public UserSettingsEntity setEmail(Integer groupId, String userName, boolean email) {
-		Query q = entityManager
-				.createQuery(
-						"from FavoriteResourceEntity f where f.resourceGroup.id=:groupId and f.user.userName=:name")
-				.setParameter("name", userName).setParameter("groupId", groupId);
-		FavoriteResourceEntity r = (FavoriteResourceEntity) q.getSingleResult();
-		r.setEmail(email);
-		entityManager.persist(r);
-		return r.getUser();
-	}
-
-	/**
-	 * @param groupId
-	 * @param userName
-	 * @return
-	 * @throws ResourceNotFoundException
-	 */
-	public UserSettingsEntity addFavoriteResource(Integer groupId, String userName)
-			throws ResourceNotFoundException {
-		Query q = entityManager.createQuery(
-				"from UserSettingsEntity u left join fetch u.favoriteResources where u.userName=:name")
-				.setParameter("name", userName);
-		UserSettingsEntity user;
-		try {
-			user = (UserSettingsEntity) q.getSingleResult();
-		}
-		catch (NoResultException e) {
-			user = new UserSettingsEntity();
-			user.setUserName(userName);
-			entityManager.persist(user);
-		}
-
-		FavoriteResourceEntity r = new FavoriteResourceEntity();
-		r.setUser(user);
-		ResourceGroupEntity g = entityManager.find(ResourceGroupEntity.class, groupId);
-		if (g == null) {
-			throw new ResourceNotFoundException("ResourceGroup with id " + groupId + " not found.");
-		}
-		r.setResourceGroup(g);
-		entityManager.persist(r);
-
-		if (user.getFavoriteResources() == null) {
-			user.setFavoriteResources(new HashSet<FavoriteResourceEntity>());
-		}
-		user.getFavoriteResources().add(r);
 		return user;
 	}
 

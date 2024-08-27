@@ -103,40 +103,6 @@ public class UserSettings implements Serializable {
 		}
 	}
 
-	/**
-	 * @param groupId
-	 * @return
-	 */
-	public boolean getFavorite(Integer groupId) {
-		return getFavoriteResources().contains(groupId);
-	}
-
-	/**
-	 * @param groupId
-	 * @param name
-	 * @param resourceType
-	 * @throws ResourceNotFoundException
-	 */
-	public void setFavorite(Integer groupId, String name, String resourceType)
-			throws ResourceNotFoundException {
-		if (groupId != null && StringUtils.isNotBlank(name)) {
-			if (!getFavoriteResources().contains(groupId)) {
-				try {
-					addFavoriteResource(groupId, name, resourceType);
-					GlobalMessageAppender.addSuccessMessage("Resource " + name + " added to favorites.");
-				}
-				catch (ResourceNotFoundException e) {
-					GlobalMessageAppender
-							.addErrorMessage("Resource not found - was not able to add resource to favorites");
-				}
-			}
-			else {
-				removeFavoriteResource(groupId);
-				GlobalMessageAppender.addSuccessMessage("Resource " + name + " removed from favorites.");
-			}
-		}
-	}
-
 	public String getUserName() {
 		return permissionService.getCurrentUserName();
 	}
@@ -146,31 +112,6 @@ public class UserSettings implements Serializable {
 			favoriteResources = service.loadFavoriteResources(getUserName());
 		}
 		return new ArrayList<Integer>(favoriteResources.keySet());
-	}
-
-	/**
-	 * @param groupId
-	 * @param name
-	 * @param resourceType
-	 * @throws ResourceNotFoundException
-	 */
-	public void addFavoriteResource(Integer groupId, String name, String resourceType)
-			throws ResourceNotFoundException {
-		userSetting = service.addFavoriteResource(groupId, getUserName());
-		favoriteResources = service.loadFavoriteResources(getUserName());
-	}
-
-	/**
-	 * @param groupId
-	 */
-	public void removeFavoriteResource(Integer groupId) {
-		userSetting = service.removeFavoriteResource(groupId, getUserName());
-		favoriteResources = service.loadFavoriteResources(getUserName());
-	}
-
-	public List<MyAMWObject> getMyAMWObjects() {
-		favoriteResources = service.loadFavoriteResources(getUserName());
-		return new ArrayList<MyAMWObject>(favoriteResources.values());
 	}
 
 	public List<MyAMWObject> getMyAMWASandApps() {
@@ -183,21 +124,6 @@ public class UserSettings implements Serializable {
 			}
 		}
 		return result;
-	}
-
-    /**
-     * Switches the email notification setting for the given MyAMWObject
-     * @param object
-     */
-    public void switchEmailNotification(MyAMWObject object) {
-		try {
-			userSetting = service.setEmail(object.getGroupId(), getUserName(), !object.isEmail());
-			GlobalMessageAppender.addSuccessMessage("eMail settings for " + object.getName()
-					+ " successfully saved");
-		}
-		catch (Exception e) {
-			GlobalMessageAppender.addErrorMessage("eMail settings were not saved: " + e.getMessage());
-		}
 	}
 
 	@Produces

@@ -65,15 +65,6 @@
 				</f:facet>
 				<mobi:editResourceLink resId="#{group.selectedResourceId}" linkLabel="#{group.selectedResource.release.name}" editPermission="RESOURCE" resourceType="#{resourceInstanceListImpl.selectedResourceType.name}"/>
 			</h:column>
-			<h:column rendered="#{securityDataProvider.hasPermission('RESOURCE_LIST')}">
-				<f:facet name="header">
-					<h:outputText value="Favorite" />
-				</f:facet>
-				<h:selectBooleanCheckbox readonly="true" value="${userSettings.getFavorite(group.id)}" id="selectFavoriteCheckbox">
-					<a4j:ajax execute="#{userSettings.setFavorite(group.id, group.name, resourceInstanceListImpl.selectedResourceType.name)}">						
-					</a4j:ajax>
-				</h:selectBooleanCheckbox>
-			</h:column>
 		</h:dataTable>
 	</h:panelGroup>
 </h:body>
