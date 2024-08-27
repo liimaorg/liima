@@ -45,7 +45,8 @@ export class AuthService extends BaseService {
   }
 }
 
-// currying function which verifies roles in a action
+// curried function to verify a role in an action
+// usage example: actions.some(isAllowed("CREATE"))
 export function isAllowed(role: string) {
   return (action: string) => {
     return action === 'ALL' || action === role;

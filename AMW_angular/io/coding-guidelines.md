@@ -1,5 +1,6 @@
 # Coding Guidelines
 
+
 ## Inject() over Constructor-Injections
 
 Use `inject()` instead of constuctor-injection to make the code more explicit and obvious.
@@ -13,6 +14,9 @@ constructor(
   private myservice: MyService
 ) {}
 ```
+
+## RxJS
+Leverage RxJS for API calls, web sockets, and complex data flows, especially when handling multiple asynchronous events. Combine with Signals to simplify component state management.
 
 ## Signals
 
@@ -48,4 +52,25 @@ users = signal<Tag[]>([]);
 private users$ = this.http.get<User[]>(this.userUrl).pipe(tap((users) => this.users.set(users)));
 // only used to automatically un-/subscribe to the observable
 readOnlyUsers = toSignal(this.users$, { initialValue: [] as User[]});
+```
+
+## Auth Service
+
+The frontend provides a singelton auth-service which holds all restrictions for the current user. 
+
+After injecting the service in your component you can get Permissions/Actions depending on your needs:
+
+```typescript
+// inject the service
+authService = inject(AuthService);
+
+// get actions for a specific permission
+const actions = this.authService.getActionsForPermission('MY_PERMISSION');
+
+// verify role in an action and set signal
+this.canCreate.set(actions.some(isAllowed('CREATE')));
+
+// or directly set signal based on a concret permission and action value
+this.canViewSettings.set(this.authService.hasPermission('SETTINGS', 'READ'));
+
 ```
