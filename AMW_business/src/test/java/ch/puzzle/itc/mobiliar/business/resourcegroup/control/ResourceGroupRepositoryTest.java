@@ -128,8 +128,8 @@ public class ResourceGroupRepositoryTest {
         entityManager.persist(fav);
 
         // when
-        List<ResourceGroupEntity> result = repository.getGroupsForType(type1.getId(), null, true);
-        List<ResourceGroupEntity> resultFavorites = repository.getGroupsForType(type1.getId(), Collections.singletonList(resource1.getId()), true);
+        List<ResourceGroupEntity> result = repository.getGroupsForType(type1.getId(), true);
+        List<ResourceGroupEntity> resultFavorites = repository.getGroupsForType(type1.getId(), true);
 
         // then
         assertNotNull(result);
@@ -155,7 +155,7 @@ public class ResourceGroupRepositoryTest {
         myAmw.add(resource4.getResourceGroup().getId());
 
         // when
-        List<ResourceGroupEntity> result = repository.getGroupsForType(type1.getId(), myAmw, true);
+        List<ResourceGroupEntity> result = repository.getGroupsForType(type1.getId(), true);
 
         // then
         assertNotNull(result);

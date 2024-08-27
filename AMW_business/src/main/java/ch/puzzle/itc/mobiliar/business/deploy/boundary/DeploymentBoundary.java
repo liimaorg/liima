@@ -1414,17 +1414,17 @@ public class DeploymentBoundary {
 
     private List<ResourceGroupEntity> getApplicationServerGroups() {
         return resourceGroupLocator.getGroupsForType(
-                DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), Collections.EMPTY_LIST, false, true);
+                DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), false, true);
     }
 
     private List<ResourceGroupEntity> getApplicationGroups() {
         return resourceGroupLocator.getGroupsForType(
-                DefaultResourceTypeDefinition.APPLICATION.name(), Collections.EMPTY_LIST, false, true);
+                DefaultResourceTypeDefinition.APPLICATION.name(), false, true);
     }
 
     private List<ResourceGroupEntity> getRuntimesGroups() {
         return resourceGroupLocator.getGroupsForType(
-                DefaultResourceTypeDefinition.RUNTIME.name(), Collections.EMPTY_LIST, false, true);
+                DefaultResourceTypeDefinition.RUNTIME.name(), false, true);
     }
 
     private <K extends NamedIdentifiable> List<String> converToStringList(List<K> namedIdentifiables) {

@@ -28,7 +28,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.FavoriteResourceEntity;
 import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
@@ -58,11 +57,6 @@ public class ResourceRelations {
         List<Integer> myAMWFilter = null;
         if(userSettings!=null && userSettings.isMyAmwEnabled()) {
             myAMWFilter = new ArrayList<>();
-            List<FavoriteResourceEntity> favoriteResourceEntities = userSettingsService.fetchFavoriteResources(
-                      userSettings.getUserName());
-            for (FavoriteResourceEntity f : favoriteResourceEntities) {
-                myAMWFilter.add(f.getResourceGroup().getId());
-            }
         }
         List<ResourceEntity> appServersWithAllApplications = applistScreenDomainService.getAppServerResourcesWithApplications(filter, maxResults, myAMWFilter, true);
         return filterAppServersByRelease(release, appServersWithAllApplications, myAMWFilter);

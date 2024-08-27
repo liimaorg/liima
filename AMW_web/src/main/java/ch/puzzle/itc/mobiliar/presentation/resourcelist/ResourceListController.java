@@ -69,7 +69,7 @@ public class ResourceListController {
 	 */
 	public SortedSet<ResourceGroup> loadResourceGroupsForResourceType(ResourceType resourceType) {
 		SortedSet<ResourceGroup> groups = new TreeSet<ResourceGroup>();
-		List<ResourceGroupEntity> result = resourceGroupLocator.getGroupsForType(resourceType.getId(), userSettings.getMyAMWFilter(), true);
+		List<ResourceGroupEntity> result = resourceGroupLocator.getGroupsForType(resourceType.getId(), true);
 		for (ResourceGroupEntity g : result) {
 			groups.add(ResourceGroup.createByResource(g, dependencyResolver));
 		}

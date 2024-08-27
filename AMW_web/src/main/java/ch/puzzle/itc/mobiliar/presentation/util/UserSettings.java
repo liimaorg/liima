@@ -76,21 +76,6 @@ public class UserSettings implements Serializable {
 		userSetting = service.getUserSettings(getUserName());
 	}
 
-	public List<Integer> getMyAMWFilter() {
-		if (isMyAMWMode()) {
-			List<Integer> result = getFavoriteResources();
-			if (result == null || result.isEmpty()) {
-				// Hibernate doesn't like to filter with an empty list.
-				// therefore set -1 as an id which will never match.
-				return Arrays.asList(-1);
-			}
-			else {
-				return result;
-			}
-		}
-		return null;
-	}
-
 	public boolean isMyAMWMode() {
 		return userSetting != null ? userSetting.isMyAmwEnabled() : false;
 	}
@@ -105,13 +90,6 @@ public class UserSettings implements Serializable {
 
 	public String getUserName() {
 		return permissionService.getCurrentUserName();
-	}
-
-	public List<Integer> getFavoriteResources() {
-		if (favoriteResources == null) {
-			favoriteResources = service.loadFavoriteResources(getUserName());
-		}
-		return new ArrayList<Integer>(favoriteResources.keySet());
 	}
 
 	public List<MyAMWObject> getMyAMWASandApps() {

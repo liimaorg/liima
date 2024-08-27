@@ -114,7 +114,7 @@ public class ResourceGroupsRest {
         List<ResourceGroupDTO> result = new ArrayList<>();
         List<ResourceGroupEntity> resourceGroups;
         if (type != null) {
-            resourceGroups = resourceGroupLocator.getGroupsForType(type, Collections.EMPTY_LIST, true, true);
+            resourceGroups = resourceGroupLocator.getGroupsForType(type, true, true);
         } else {
             resourceGroups = resourceGroupLocator.getResourceGroups();
         }

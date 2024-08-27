@@ -49,18 +49,6 @@ public class UserSettingsService implements Serializable {
 	@Inject
 	protected Logger log;
 
-	public Map<Integer, MyAMWObject> loadFavoriteResources(String userName) {
-		return new LinkedHashMap<Integer, MyAMWObject>(); // Returns an empty map
-	}
-
-	/**
-	 * @param userName
-	 * @return
-	 */
-	public List<FavoriteResourceEntity> fetchFavoriteResources(String userName) {
-		return new ArrayList<FavoriteResourceEntity>(); // Returns an empty list
-	}
-
 	public UserSettingsEntity saveUserSettings(UserSettingsEntity userSettings) {
 		return entityManager.merge(userSettings);
 	}
@@ -78,45 +66,5 @@ public class UserSettingsService implements Serializable {
 			entityManager.persist(user);
 		}
 		return user;
-	}
-
-	/**
-	 * @param groupId
-	 * @param userName
-	 * @return
-	 */
-	public UserSettingsEntity removeFavoriteResource(Integer groupId, String userName) {
-		Query q = entityManager
-				.createQuery(
-						"from FavoriteResourceEntity f where f.resourceGroup.id=:groupId and f.user.userName=:name")
-				.setParameter("name", userName).setParameter("groupId", groupId);
-		try {
-			FavoriteResourceEntity r = (FavoriteResourceEntity) q.getSingleResult();
-			entityManager.remove(r);
-			return r.getUser();
-		}
-		catch (NoResultException e) {
-			log.log(Level.WARNING, "Error loading FavoriteResourceEntity", e);
-		}
-		return null;
-	}
-
-	/**
-	 * Returns a List of Usernames, which have registered at least one of the given ids as a favorite
-	 * 
-	 * @param ids
-	 * @return
-	 */
-	public List<String> getRegisteredUsernamesForResourcesIds(Set<Integer> ids) {
-		if (ids == null || ids.isEmpty()) {
-			return new ArrayList<String>();
-		}
-
-		// Find registered users for ids
-		final TypedQuery<String> q = entityManager
-				.createQuery(
-						"select distinct u.userName from FavoriteResourceEntity f left join f.user u left join f.resourceGroup g where f.email=true and g.id in (:ids)",
-						String.class).setParameter("ids", ids);
-		return q.getResultList();
 	}
 }

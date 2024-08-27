@@ -170,9 +170,6 @@ public class DeploymentNotificationService {
 			}
 		}
 
-		emailRecipients.addAll(userSettingsService.getRegisteredUsernamesForResourcesIds(groupIds));
-
-
 		final Address[] to = new InternetAddress[emailRecipients.size()];
 		int i = 0;
 		for (final String user : emailRecipients) {

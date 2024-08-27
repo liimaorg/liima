@@ -252,7 +252,7 @@ public class RelationDataProvider implements Serializable {
             GlobalMessageAppender.addErrorMessage(message);
         } else {
             // #4361 don't use the user settings for adding resources
-            for (ResourceGroupEntity resourceGroupEntity : resourceGroupLocator.getGroupsForType(id, null, true)) {
+            for (ResourceGroupEntity resourceGroupEntity : resourceGroupLocator.getGroupsForType(id,  true)) {
                 resourcesByResourceType.add(ResourceGroup.createByResource(resourceGroupEntity));
             }
         }
