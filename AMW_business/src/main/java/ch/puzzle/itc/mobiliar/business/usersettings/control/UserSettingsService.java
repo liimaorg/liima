@@ -20,25 +20,15 @@
 
 package ch.puzzle.itc.mobiliar.business.usersettings.control;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.FavoriteResourceEntity;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.MyAMWObject;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+import java.io.Serializable;
+import java.util.logging.Logger;
 
 @Stateless
 public class UserSettingsService implements Serializable {

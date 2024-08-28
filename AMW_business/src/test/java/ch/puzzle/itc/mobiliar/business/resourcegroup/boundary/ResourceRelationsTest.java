@@ -83,7 +83,6 @@ public class ResourceRelationsTest {
     @Test
     public void testGetAppServersWithApplications() throws Exception {
         UserSettingsEntity userSettings = Mockito.mock(UserSettingsEntity.class);
-        Mockito.when(userSettings.isMyAmwEnabled()).thenReturn(false);
         Mockito.when(userSettingsService.getUserSettings(Mockito.anyString())).thenReturn(userSettings);
         List<ResourceEntity> aslist = Arrays.asList(as);
         Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.isNull(),

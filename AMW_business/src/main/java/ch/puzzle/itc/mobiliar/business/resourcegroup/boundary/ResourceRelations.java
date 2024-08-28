@@ -55,9 +55,6 @@ public class ResourceRelations {
     public List<ResourceWithRelations> getAppServersWithApplications(String filter, Integer maxResults, ReleaseEntity release) {
         UserSettingsEntity userSettings = userSettingsService.getUserSettings(permissionService.getCurrentUserName());
         List<Integer> myAMWFilter = null;
-        if(userSettings!=null && userSettings.isMyAmwEnabled()) {
-            myAMWFilter = new ArrayList<>();
-        }
         List<ResourceEntity> appServersWithAllApplications = applistScreenDomainService.getAppServerResourcesWithApplications(filter, maxResults, myAMWFilter, true);
         return filterAppServersByRelease(release, appServersWithAllApplications, myAMWFilter);
     }

@@ -28,7 +28,6 @@ import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.utils.notification.NotificationService;
 import org.junit.Before;
@@ -41,7 +40,6 @@ import javax.mail.Address;
 import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -225,7 +223,6 @@ public class DeploymentNotificationServiceTest {
 		when(releaseMgmtService.getDefaultRelease()).thenReturn(defaultRelease);
 		List<String> value = new ArrayList<>();
 		value.add("testuser1");
-		when(userSettingsService.getRegisteredUsernamesForResourcesIds(any(Set.class))).thenReturn(value );
 		
 		// when
 		String result = deploymentNotificationService.createAndSendMailForDeplyoments(deployments);

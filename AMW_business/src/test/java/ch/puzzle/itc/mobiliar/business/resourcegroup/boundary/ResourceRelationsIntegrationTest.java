@@ -126,7 +126,6 @@ public class ResourceRelationsIntegrationTest {
 
 	@Test
 	public void testGetAppServersWithApplications() {
-	    Mockito.when(userSettingsEntity.isMyAmwEnabled()).thenReturn(false);
 	    service.getAppServersWithApplications("app", null, release1);
 	}
 

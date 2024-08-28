@@ -20,12 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.presentation.util;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
+import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -33,16 +32,9 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.apache.commons.lang3.StringUtils;
-
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.MyAMWObject;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
 
 @Named
 @SessionScoped
@@ -64,11 +56,6 @@ public class UserSettings implements Serializable {
 	 */
 	private UserSettingsEntity userSetting;
 
-	/**
-	 * Loaded lazily on first access
-	 */
-	private Map<Integer, MyAMWObject> favoriteResources;
-
 	private boolean testingMode;
 
 	@PostConstruct
@@ -76,32 +63,8 @@ public class UserSettings implements Serializable {
 		userSetting = service.getUserSettings(getUserName());
 	}
 
-	public boolean isMyAMWMode() {
-		return userSetting != null ? userSetting.isMyAmwEnabled() : false;
-	}
-
-	public void setMyAMWMode(boolean myAMWMode) {
-		if (myAMWMode != isMyAMWMode()) {
-			userSetting = service.getUserSettings(getUserName());
-			userSetting.setMyAmwEnabled(myAMWMode);
-			userSetting = service.saveUserSettings(userSetting);
-		}
-	}
-
 	public String getUserName() {
 		return permissionService.getCurrentUserName();
-	}
-
-	public List<MyAMWObject> getMyAMWASandApps() {
-		List<MyAMWObject> result = new ArrayList<MyAMWObject>();
-		if (favoriteResources != null) {
-			for (MyAMWObject o : favoriteResources.values()) {
-				if (o.isAsOrApp()) {
-					result.add(o);
-				}
-			}
-		}
-		return result;
 	}
 
 	@Produces
