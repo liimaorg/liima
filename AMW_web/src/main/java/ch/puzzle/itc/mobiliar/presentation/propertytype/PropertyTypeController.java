@@ -30,7 +30,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ch.puzzle.itc.mobiliar.business.property.control.PropertyTypeScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTypeService;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
@@ -46,9 +45,6 @@ import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 public class PropertyTypeController implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	@Inject
-	PropertyTypeScreenDomainService propertyTypeScreenService;
 
 	@Inject
 	PropertyTypeService propertyTypeService;
@@ -78,7 +74,7 @@ public class PropertyTypeController implements Serializable {
 				GlobalMessageAppender.addErrorMessage(message);
 			} else {
 				try{
-					propertyTypeScreenService.deletePropertyTypeById(propertyType.getId());
+					propertyTypeService.deletePropertyTypeById(propertyType.getId());
 					String message = "Property type: " + propertyType.getPropertyTypeName() + " successfully deleted.";
 					GlobalMessageAppender.addSuccessMessage(message);
 					isSuccessful = true;
@@ -117,7 +113,7 @@ public class PropertyTypeController implements Serializable {
 				GlobalMessageAppender.addErrorMessage(message);
 			} else {
 				try{
-					propertyTypeScreenService.updatePropertyType(prtTypeId, prtTypeName, prtTypeValidation, encrypted, prtTypeTagsString);
+					propertyTypeService.updatePropertyType(prtTypeId, prtTypeName, prtTypeValidation, encrypted, prtTypeTagsString);
 					String message = "The Property Type: " + prtTypeName + " successfully saved.";
 					GlobalMessageAppender.addSuccessMessage(message);
 					isSuccessful = true;
@@ -158,7 +154,7 @@ public class PropertyTypeController implements Serializable {
 				GlobalMessageAppender.addErrorMessage(message);
 			} else {
 				try{
-					propertyTypeScreenService.createPropertyTypeByNameAndVal(prtTypeName, prtTypeValidation, encrypted, propertyTypeTags);
+					propertyTypeService.createPropertyTypeByNameAndVal(prtTypeName, prtTypeValidation, encrypted, propertyTypeTags);
 					String message = "Property type " + prtTypeName + " succesfully created.";
 					GlobalMessageAppender.addSuccessMessage(message);
 					isSuccessful = true;

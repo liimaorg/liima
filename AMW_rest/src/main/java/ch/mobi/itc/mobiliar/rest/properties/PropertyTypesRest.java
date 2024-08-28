@@ -41,7 +41,3 @@ public class PropertyTypesRest {
         return Response.status(OK).entity(propertyTypeDTOS).build();
     }
 }
-
-// propertyTypeService.getPropertyTypes() is giving me a LazyInitializationException
-// there is also a PropertyEditor with a getPropertyTypes
-// create a DTO and use it to transform the List<PropertyTypeEntity> to a Response
