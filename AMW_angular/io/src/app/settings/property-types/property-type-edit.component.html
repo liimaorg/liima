@@ -1,0 +1,30 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="editPropertyTypesTitle">{{ getTitle() }}</h5>
+  <button type="button" class="btn btn-light close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form-horizontal mx-2">
+    <div class="mb-3">
+      <label for="name" class="form-label">Property name</label>
+      <input type="text" class="form-control" id="name" [(ngModel)]="propertyType.name" />
+    </div>
+    <div class="mb-3">
+      <div class="form-check">
+        <label for="encrypted" class="form-check-label">Encrypted</label>
+        <input type="checkbox" class="form-check-input" id="encrypted" [(ngModel)]="propertyType.encrypted" />
+      </div>
+    </div>
+    <div class="mb-3">
+      <div class="form-horizontal mx-2">
+        <label for="regex" class="form-label">Validation</label>
+        <input type="text" class="form-control" id="regex" [(ngModel)]="propertyType.validationRegex" />
+      </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="save()">Save changes</button>
+</div>

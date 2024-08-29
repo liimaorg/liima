@@ -5,7 +5,12 @@ import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicat
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PropertyTypesService } from './property-types.service';
 import { PropertyType } from './property-type';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastService } from '../../shared/elements/toast/toast.service';
+import { takeUntil } from 'rxjs/operators';
+import { PropertyTypeEditComponent } from './property-type-edit.component';
+import { Subject } from 'rxjs';
+import { PropertyTypeDeleteComponent } from './property-type-delete.component';
 
 @Component({
   selector: 'app-property-types',
@@ -14,8 +19,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
   templateUrl: './property-types.component.html',
 })
 export class PropertyTypesComponent {
-  authService = inject(AuthService);
-  propertyTypeService = inject(PropertyTypesService);
+  private authService = inject(AuthService);
+  private propertyTypeService = inject(PropertyTypesService);
+  private modalService = inject(NgbModal);
+  private toastService = inject(ToastService);
+
+  private destroy$ = new Subject<void>();
 
   canAdd = signal<boolean>(false);
   canDelete = signal<boolean>(false);
@@ -28,27 +37,14 @@ export class PropertyTypesComponent {
 
   isLoading = true;
 
-  properties = [
-    {
-      id: 1,
-      propertyName: 'Example Property 1',
-      encrypted: true,
-      validation: 'Type: String, Length: 10',
-      tags: ['tag1', 'tag2'],
-    },
-    {
-      id: 2,
-      propertyName: 'Example Property 2',
-      encrypted: false,
-      validation: 'Type: Number, Range: 1-100',
-      tags: ['tag3'],
-    },
-  ];
-
   ngOnInit(): void {
     this.getUserPermissions();
-    this.propertyTypes = this.propertyTypeService.propertyTypes;
+    this.getPropertyTypes();
     this.isLoading = false;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(undefined);
   }
 
   private getUserPermissions() {
@@ -60,9 +56,50 @@ export class PropertyTypesComponent {
     this.canSave.set(this.authService.hasPermission('SAVE_SETTINGS_PROPTYPE', 'ALL'));
   }
 
-  add() {}
+  private getPropertyTypes() {
+    this.propertyTypes = this.propertyTypeService.propertyTypes;
+  }
 
-  edit() {}
+  add() {
+    const modalRef = this.modalService.open(PropertyTypeEditComponent);
+    modalRef.componentInstance.propertyType = {
+      id: 0,
+      name: '',
+      encrypted: false,
+      validationRegex: '',
+      tags: [],
+    };
+    modalRef.componentInstance.savePropertyType
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((propertyType: PropertyType) => this.save(propertyType));
+  }
 
-  delete() {}
+  editModal(propertyType: PropertyType) {
+    const modalRef = this.modalService.open(PropertyTypeEditComponent);
+    modalRef.componentInstance.propertyType = propertyType;
+    modalRef.componentInstance.savePropertyType
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((propertyType: PropertyType) => this.save(propertyType));
+  }
+
+  deleteModal(propertyType: PropertyType) {
+    const modalRef = this.modalService.open(PropertyTypeDeleteComponent);
+    modalRef.componentInstance.propertyType = propertyType;
+    modalRef.componentInstance.deletePropertyType
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((propertyType: PropertyType) => this.delete(propertyType));
+  }
+
+  save(propertyType: PropertyType) {
+    this.isLoading = true;
+    //saveit
+    this.propertyTypeService.reload();
+    this.isLoading = false;
+  }
+  delete(propertyType: PropertyType) {
+    this.isLoading = true;
+    this.propertyTypeService.reload();
+    // delete it
+    this.isLoading = false;
+  }
 }

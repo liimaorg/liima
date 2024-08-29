@@ -45,14 +45,14 @@
             </td>
             <td class="text-center">
               @if (canEditName) {
-              <button class="btn btn-sm btn-primary me-0" (click)="edit()">
+              <button class="btn btn-sm btn-primary me-0" (click)="editModal(property)">
                 <app-icon icon="pencil"></app-icon>
               </button>
               }
             </td>
             <td class="text-center">
               @if (canDelete) {
-              <button class="btn btn-sm btn-danger me-0" (click)="delete()">
+              <button class="btn btn-sm btn-danger me-0" (click)="deleteModal(property)">
                 <app-icon icon="trash"></app-icon>
               </button>
               }
