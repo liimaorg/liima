@@ -117,30 +117,30 @@ public class PropertyTypeDataProvider implements Serializable {
         return propertyTagEditor.getTagsAsCommaSeparatedString(selectedPropertyType.getPropertyTags());
     }
 
-    public void createByPropertyTypeEntity() {
-        if (controller.doCreateByPropertyType(getNewPropertyTypeName(), getNewValidationRegex(), isNewEncrypted(), getNewPropTypeTagsString())) {
-            reloadPropertyTypes();
-            selectPropertyTypeByName(getNewPropertyTypeName());
-            clearCreatePropertyTypePopup();
-        }
-    }
+//    public void createByPropertyTypeEntity() {
+//        if (controller.doCreateByPropertyType(getNewPropertyTypeName(), getNewValidationRegex(), isNewEncrypted(), getNewPropTypeTagsString())) {
+//            reloadPropertyTypes();
+//            selectPropertyTypeByName(getNewPropertyTypeName());
+//            clearCreatePropertyTypePopup();
+//        }
+//    }
 
-    public void save() {
-        if (controller.doSave(getSelectedPropertyType().getId(), getSelectedPropertyTypeName(), getSelectedPropertyTypeRegex(), isSelectedEncrypted(), selectedPropTypeTagsString)) {
-            reloadPropertyTypes();
-        } else {
-            setSelectedPropertyTypeName(getSelectedPropertyType().getPropertyTypeName());
-            setSelectedPropertyTypeRegex(getSelectedPropertyType().getValidationRegex());
-        }
-    }
+//    public void save() {
+//        if (controller.doSave(getSelectedPropertyType().getId(), getSelectedPropertyTypeName(), getSelectedPropertyTypeRegex(), isSelectedEncrypted(), selectedPropTypeTagsString)) {
+//            reloadPropertyTypes();
+//        } else {
+//            setSelectedPropertyTypeName(getSelectedPropertyType().getPropertyTypeName());
+//            setSelectedPropertyTypeRegex(getSelectedPropertyType().getValidationRegex());
+//        }
+//    }
 
-    public void remove() {
-        if (controller.doRemovePropertyType(getSelectedPropertyType())) {
-            this.selectedPropertyTypeId = null;
-            reloadPropertyTypes();
-            clearCreatePropertyTypePopup();
-        }
-    }
+//    public void remove() {
+//        if (controller.doRemovePropertyType(getSelectedPropertyType())) {
+//            this.selectedPropertyTypeId = null;
+//            reloadPropertyTypes();
+//            clearCreatePropertyTypePopup();
+//        }
+//    }
 
     public void clearCreatePropertyTypePopup() {
         newPropertyTypeName = null;

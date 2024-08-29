@@ -1,4 +1,4 @@
-import { Component, inject, Signal, signal } from '@angular/core';
+import { Component, computed, inject, Signal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../auth/auth.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
@@ -34,7 +34,14 @@ export class PropertyTypesComponent {
   canSave = signal<boolean>(false);
 
   propertyTypes: Signal<PropertyType[]>;
+  error = signal<string>('');
+  handleError = computed(() => {
+    if (this.error() != '') {
+      this.toastService.error(this.error());
+    }
+  });
 
+  private readonly PROPERTY_TYPE = 'Property type';
   isLoading = true;
 
   ngOnInit(): void {
@@ -60,14 +67,14 @@ export class PropertyTypesComponent {
     this.propertyTypes = this.propertyTypeService.propertyTypes;
   }
 
-  add() {
+  addModal() {
     const modalRef = this.modalService.open(PropertyTypeEditComponent);
     modalRef.componentInstance.propertyType = {
       id: 0,
       name: '',
       encrypted: false,
       validationRegex: '',
-      tags: [],
+      propertyTags: [],
     };
     modalRef.componentInstance.savePropertyType
       .pipe(takeUntil(this.destroy$))
@@ -92,14 +99,31 @@ export class PropertyTypesComponent {
 
   save(propertyType: PropertyType) {
     this.isLoading = true;
-    //saveit
-    this.propertyTypeService.reload();
+    this.propertyTypeService
+      .save(propertyType)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (r) => this.toastService.success(`${this.PROPERTY_TYPE} saved successfully.`),
+        error: (e) => this.error.set(e),
+        complete: () => {
+          this.propertyTypeService.reload();
+        },
+      });
     this.isLoading = false;
   }
+
   delete(propertyType: PropertyType) {
     this.isLoading = true;
-    this.propertyTypeService.reload();
-    // delete it
+    this.propertyTypeService
+      .delete(propertyType.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (r) => this.toastService.success(`${this.PROPERTY_TYPE} deleted successfully.`),
+        error: (e) => this.error.set(e),
+        complete: () => {
+          this.propertyTypeService.reload();
+        },
+      });
     this.isLoading = false;
   }
 }

@@ -8,21 +8,47 @@
   <div class="form-horizontal mx-2">
     <div class="mb-3">
       <label for="name" class="form-label">Property name</label>
-      <input type="text" class="form-control" id="name" [(ngModel)]="propertyType.name" />
+      <input type="text" class="form-control" id="name" [(ngModel)]="propertyType.name"/>
     </div>
     <div class="mb-3">
       <div class="form-check">
         <label for="encrypted" class="form-check-label">Encrypted</label>
-        <input type="checkbox" class="form-check-input" id="encrypted" [(ngModel)]="propertyType.encrypted" />
+        <input type="checkbox" class="form-check-input" id="encrypted" [(ngModel)]="propertyType.encrypted"/>
       </div>
     </div>
     <div class="mb-3">
-      <div class="form-horizontal mx-2">
-        <label for="regex" class="form-label">Validation</label>
-        <input type="text" class="form-control" id="regex" [(ngModel)]="propertyType.validationRegex" />
+      <label for="regex" class="form-label">Validation</label>
+      <input type="text" class="form-control" id="regex" [(ngModel)]="propertyType.validationRegex"/>
+    </div>
+    <div class="mb-3">
+      <label for="addtags" class="form-label">Add Tag</label>
+      <div class="input-group">
+        <input type="text" class="form-control" id="addtags" [(ngModel)]="newTag" (keyup.enter)="onEnter()"/>
+        <div class="input-group-append ms-1">
+          <button type="button" class="btn btn-light ">
+            <app-icon icon="plus-circle" (click)="onEnter()"></app-icon>
+          </button>
+        </div>
       </div>
     </div>
+    @if (propertyType.propertyTags !== null && propertyType.propertyTags.length > 0) {
+    <div class="mb-3">
+      <label for="tags" class="form-label">Tags</label>
+      <div class="list-group-horizontal row justify-content-start" id="tags">
+        @for (item of propertyType.propertyTags; track item.id) {
+        <div class="list-group-item col-2 mx-2">
+            <span class="badge bg-light text-dark rounded-pill">
+              {{item.name}}
+              <app-icon icon="x-circle" (click)="deleteTag(item)"></app-icon>
+            </span>
+        </div>
+        }
+      </div>
 
+
+    </div>
+    }
+  </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>

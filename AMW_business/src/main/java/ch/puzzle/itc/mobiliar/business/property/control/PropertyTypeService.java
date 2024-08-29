@@ -22,14 +22,10 @@ package ch.puzzle.itc.mobiliar.business.property.control;
 
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonQueries;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.PropertyTypeNotDeletableException;
-import ch.puzzle.itc.mobiliar.common.exception.PropertyTypeNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.RenameException;
+import ch.puzzle.itc.mobiliar.common.exception.*;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -66,106 +62,77 @@ public class PropertyTypeService {
     }
 
     /**
-     * Speichert/umbenennen den PropertyType anhand den Name und Validation.
+     * Speichert den PropertyType
+     *
      * @param id
-     * @param name
-     * @param validation
-     * @param propertyTypeTagsString
-     * @throws PropertyTypeNotFoundException
-     * @throws ElementAlreadyExistsException
-     * @throws RenameException
+     * @param propertyType
+     * @throws NotFoundException
      */
     @HasPermission(permission = Permission.SAVE_SETTINGS_PROPTYPE)
-    public void updatePropertyType(int id, String name, String validation, boolean encrypted, String propertyTypeTagsString)
-            throws PropertyTypeNotFoundException,
-            ElementAlreadyExistsException, RenameException {
+    public void update(int id, PropertyTypeEntity propertyType)
+            throws NotFoundException, ValidationException {
 
         PropertyTypeEntity propertyTypeEntity = getPropertyTypeById(id);
-        PropertyTypeEntity propertyByName = getPropertyTypeByName(name);
+        PropertyTypeEntity propertyByName = getPropertyTypeByName(propertyType.getPropertyTypeName());
 
-        if (propertyByName != null && !propertyByName.getId().equals(propertyTypeEntity.getId())){
+        if (propertyByName != null && !propertyByName.getId().equals(propertyTypeEntity.getId())) {
             String message = "An other PropertyType with the same Name already exists.";
-            throw new RenameException(message);
+            throw new ValidationException(message, propertyType);
         }
 
-        propertyTypeEntity.setValidationRegex(validation);
-        propertyTypeEntity.setPropertyTypeName(name);
-        propertyTypeEntity.setEncrypt(encrypted);
+        entityManager.merge(propertyTypeEntity);
 
         // Update Tags
-        List<PropertyTagEntity> tags = propertyTagEditingService.convertToTags(propertyTypeTagsString);
-        propertyTagEditingService.updateTags(tags,propertyTypeEntity);
+        // FIXME Needed ???
+//        List<PropertyTagEntity> tags = propertyTagEditingService.convertToTags(propertyTypeTagsString);
+//        propertyTagEditingService.updateTags(tags, propertyTypeEntity);
     }
 
     /**
-     * Erstellt einen neuen PropertyType anhand den Name und Validation..
-     * @param prtName
-     * @param prtValidation
-     * @throws ElementAlreadyExistsException
+     * Erstellt einen neuen PropertyType
+     *
+     * @param propertyType
+     * @throws ValidationException
      */
     @HasPermission(permission = Permission.ADD_PROPTYPE)
-    public PropertyTypeEntity createPropertyTypeByNameAndVal(String prtName,
-                                                             String prtValidation, boolean encrypted, String propertyTypeTagsString) throws ElementAlreadyExistsException {
+    public void create(PropertyTypeEntity propertyType) throws ValidationException {
 
-        PropertyTypeEntity newPropertyTypeEntity = commonService.getUniquePropertyTypeByName(prtName);
-        PropertyTypeEntity result;
-
-        if ( newPropertyTypeEntity == null ) {
-
-            result = new PropertyTypeEntity();
-            result.setPropertyTypeName(prtName);
-            result.setValidationRegex(prtValidation);
-            result.setEncrypt(encrypted);
-
-            entityManager.persist(result);
-
+        if (commonService.isUnique(propertyType.getPropertyTypeName())) {
+            entityManager.persist(propertyType);
+            // FIXME needed with list of tags???
             // Update Tags
-            List<PropertyTagEntity> tags = propertyTagEditingService.convertToTags(propertyTypeTagsString);
-            propertyTagEditingService.updateTags(tags, result);
-
-            log.info("Property Type " + prtName + " in DB persist");
+//            List<PropertyTagEntity> tags = propertyTagEditingService.convertToTags(propertyTypeTagsString);
+//            propertyTagEditingService.updateTags(tags, result);
         } else {
-            String message = "Das Property Type mit dem Namen: " + prtName
-                    + " ist beretis vorhanden und kann nicht erstellen werden";
-            log.info(message);
-            throw new ElementAlreadyExistsException(message,
-                    PropertyTypeEntity.class, prtName);
+            throw new ValidationException("Property type already exists.",
+                    propertyType);
         }
-        return result;
     }
 
     /**
      * Löscht den PropertyType anhand der Id.
+     *
      * @param id
-     * @throws PropertyTypeNotFoundException
-     * @throws PropertyTypeNotDeletableException
+     * @throws NotFoundException
+     * @throws ValidationException
      */
     @HasPermission(permission = Permission.DELETE_PROPTYPE)
-    public void deletePropertyTypeById(int id) throws PropertyTypeNotFoundException, PropertyTypeNotDeletableException{
-
+    public void deletePropertyTypeById(int id) throws NotFoundException, ValidationException {
         PropertyTypeEntity propertyTypeEntity = getPropertyTypeById(id);
-        if(propertyTypeEntity == null){
-            String message = "Der zu löschende Property Type ist nicht vorhanden";
-            log.info(message);
-            throw new PropertyTypeNotFoundException(message);
-        }
-        if (!propertyTypeEntity.getPropertyDescriptors().isEmpty()){
-            String message = "Propertytype kann nicht gelöscht werden weil dieser von propertydescriptors verwendet wird.";
-            log.info(message);
-            throw new PropertyTypeNotDeletableException(message);
+
+        if (!propertyTypeEntity.getPropertyDescriptors().isEmpty()) {
+            throw new ValidationException("Could not delete Property type because it is used by properties.", propertyTypeEntity);
         }
 
         entityManager.remove(propertyTypeEntity);
-        log.info("Property Type mit der Id: " + propertyTypeEntity.getId() + " wurde aus der DB gelöscht");
+        log.info("Property type: " + propertyTypeEntity.getPropertyTypeName() + " successfully deleted.");
     }
 
-    private PropertyTypeEntity getPropertyTypeById(int id) throws PropertyTypeNotFoundException {
+    private PropertyTypeEntity getPropertyTypeById(int id) throws NotFoundException {
         PropertyTypeEntity propertyTypeEntity = entityManager.find(PropertyTypeEntity.class, id);
 
-        if(propertyTypeEntity == null){
-            String message = "Der PropertyType mit der Id: " + id + " existiert nicht auf der DB";
-            log.info(message);
-            throw new PropertyTypeNotFoundException(message);
+        if (propertyTypeEntity == null) {
+            throw new NotFoundException("Property type with id: " +  id + " has not been found.");
         }
         return propertyTypeEntity;
     }

@@ -25,19 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
-import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTypeService;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
-import ch.puzzle.itc.mobiliar.common.exception.PropertyTypeNotDeletableException;
-import ch.puzzle.itc.mobiliar.common.exception.PropertyTypeNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.RenameException;
-import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 
 
 @Named
@@ -66,112 +59,43 @@ public class PropertyTypeController implements Serializable {
 		return uniquePropertyTypes;
 	}
 
-	public boolean doRemovePropertyType(PropertyTypeEntity propertyType) {
-		boolean isSuccessful = false;
-		try {
-			if (propertyType == null) {
-				String message = "No property type selected.";
-				GlobalMessageAppender.addErrorMessage(message);
-			} else {
-				try{
-					propertyTypeService.deletePropertyTypeById(propertyType.getId());
-					String message = "Property type: " + propertyType.getPropertyTypeName() + " successfully deleted.";
-					GlobalMessageAppender.addSuccessMessage(message);
-					isSuccessful = true;
-				}catch(EJBException e){
-					if(e.getCause() instanceof NotAuthorizedException) {
-						GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
-					} else {
-						throw e;
-					}
-				}
-			}
-		} catch (PropertyTypeNotFoundException e) {
-			GlobalMessageAppender.addErrorMessage("Property type has not been found.");
-		} catch (PropertyTypeNotDeletableException e) {
-			GlobalMessageAppender.addErrorMessage("Could not delete Property type because it is used by properties.");
-		}
+//
+//	public boolean doCreateByPropertyType(String prtTypeName, String prtTypeValidation, boolean encrypted, String propertyTypeTags) {
+//		boolean isSuccessful = false;
+//
+//		try {
+//			if (prtTypeName == null) {
+//				String message = "Could not read name for new propertytype.";
+//				GlobalMessageAppender.addErrorMessage(message);
+//			} else if (prtTypeName == null || prtTypeName.isEmpty()) {
+//				String message = "The name for the propertytype must not be empty.";
+//				GlobalMessageAppender.addErrorMessage(message);
+//			}else if (prtTypeValidation==null || prtTypeValidation.isEmpty()) {
+//				String message = "The validation for the propertytype must not be empty.";
+//				GlobalMessageAppender.addErrorMessage(message);
+//			}else if (checkIfRegexpSyntaxError(prtTypeValidation)) {
+//				String message = "Invalid property type validation pattern.";
+//				GlobalMessageAppender.addErrorMessage(message);
+//			} else {
+//				try{
+//					propertyTypeService.createPropertyTypeByNameAndVal(prtTypeName, prtTypeValidation, encrypted, propertyTypeTags);
+//					String message = "Property type " + prtTypeName + " succesfully created.";
+//					GlobalMessageAppender.addSuccessMessage(message);
+//					isSuccessful = true;
+//				}catch(EJBException e){
+//					if(e.getCause() instanceof NotAuthorizedException) {
+//						GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
+//					} else {
+//						throw e;
+//					}
+//				}
+//			}
+//		} catch (ElementAlreadyExistsException e) {
+//			GlobalMessageAppender.addErrorMessage("Property type already exists.");
+//		}
 
-		return isSuccessful;
-	}
-
-	public boolean doSave(Integer prtTypeId, String prtTypeName, String prtTypeValidation, boolean encrypted, String prtTypeTagsString) {
-		boolean isSuccessful = false;
-
-		try {
-			if (prtTypeId == null) {
-				String message = "No property type id selected.";
-				GlobalMessageAppender.addErrorMessage(message);
-			} else if (prtTypeName == null) {
-				String message = "No property type name selected.";
-				GlobalMessageAppender.addErrorMessage(message);
-			} else if (prtTypeValidation == null) {
-				String message = "Property type validation must not be empty.";
-				GlobalMessageAppender.addErrorMessage(message);
-			} else if (checkIfRegexpSyntaxError(prtTypeValidation)) {
-				String message = "Invalid property type validation pattern.";
-				GlobalMessageAppender.addErrorMessage(message);
-			} else {
-				try{
-					propertyTypeService.updatePropertyType(prtTypeId, prtTypeName, prtTypeValidation, encrypted, prtTypeTagsString);
-					String message = "The Property Type: " + prtTypeName + " successfully saved.";
-					GlobalMessageAppender.addSuccessMessage(message);
-					isSuccessful = true;
-				}catch(EJBException e){
-					if(e.getCause() instanceof NotAuthorizedException) {
-						GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
-					} else {
-						throw e;
-					}
-				}
-			}
-		} catch (PropertyTypeNotFoundException e) {
-			GlobalMessageAppender.addErrorMessage("The property type has not been found.");
-		} catch (RenameException e) {
-			GlobalMessageAppender.addErrorMessage("Was not able to rename the property type.");
-		} catch (ElementAlreadyExistsException e) {
-			GlobalMessageAppender.addErrorMessage("Was not able to save the property type.");
-		}
-
-		return isSuccessful;
-	}
-
-	public boolean doCreateByPropertyType(String prtTypeName, String prtTypeValidation, boolean encrypted, String propertyTypeTags) {
-		boolean isSuccessful = false;
-
-		try {
-			if (prtTypeName == null) {
-				String message = "Could not read name for new propertytype.";
-				GlobalMessageAppender.addErrorMessage(message);
-			} else if (prtTypeName == null || prtTypeName.isEmpty()) {
-				String message = "The name for the propertytype must not be empty.";
-				GlobalMessageAppender.addErrorMessage(message);
-			}else if (prtTypeValidation==null || prtTypeValidation.isEmpty()) {
-				String message = "The validation for the propertytype must not be empty.";
-				GlobalMessageAppender.addErrorMessage(message);
-			}else if (checkIfRegexpSyntaxError(prtTypeValidation)) {
-				String message = "Invalid property type validation pattern.";
-				GlobalMessageAppender.addErrorMessage(message);
-			} else {
-				try{
-					propertyTypeService.createPropertyTypeByNameAndVal(prtTypeName, prtTypeValidation, encrypted, propertyTypeTags);
-					String message = "Property type " + prtTypeName + " succesfully created.";
-					GlobalMessageAppender.addSuccessMessage(message);
-					isSuccessful = true;
-				}catch(EJBException e){
-					if(e.getCause() instanceof NotAuthorizedException) {
-						GlobalMessageAppender.addErrorMessage(e.getCause().getMessage());
-					} else {
-						throw e;
-					}
-				}
-			}
-		} catch (ElementAlreadyExistsException e) {
-			GlobalMessageAppender.addErrorMessage("Property type already exists.");
-		}
-
-		return isSuccessful;
-	}
+//		return isSuccessful;
+//	}
 	
 	private boolean checkIfRegexpSyntaxError(String regexp){
 		boolean result = false;
