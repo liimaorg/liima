@@ -13,5 +13,5 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-primary" (click)="delete()">Delete</button>
+  <button type="button" class="btn btn-primary" (click)="delete()" [attr.data-cy]="'button-delete'">Delete</button>
 </div>

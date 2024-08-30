@@ -1,20 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PropertyTypeDeleteComponent } from './property-type-delete.component';
 
 describe('PropertyTypeDeleteComponent', () => {
   let component: PropertyTypeDeleteComponent;
-  let fixture: ComponentFixture<PropertyTypeDeleteComponent>;
+  const activeModal = new NgbActiveModal();
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [PropertyTypeDeleteComponent]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(PropertyTypeDeleteComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component = new PropertyTypeDeleteComponent(activeModal);
   });
 
   it('should create', () => {

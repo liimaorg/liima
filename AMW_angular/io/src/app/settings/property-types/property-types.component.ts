@@ -103,7 +103,7 @@ export class PropertyTypesComponent {
       .save(propertyType)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => this.toastService.success(`${this.PROPERTY_TYPE} saved successfully.`),
+        next: (r) => this.toastService.success(`${this.PROPERTY_TYPE} saved.`),
         error: (e) => this.error.set(e),
         complete: () => {
           this.propertyTypeService.reload();
@@ -118,7 +118,7 @@ export class PropertyTypesComponent {
       .delete(propertyType.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => this.toastService.success(`${this.PROPERTY_TYPE} deleted successfully.`),
+        next: (r) => this.toastService.success(`${this.PROPERTY_TYPE} deleted.`),
         error: (e) => this.error.set(e),
         complete: () => {
           this.propertyTypeService.reload();

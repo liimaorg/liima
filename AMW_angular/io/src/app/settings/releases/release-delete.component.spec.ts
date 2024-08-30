@@ -1,13 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ReleaseDeleteComponent } from './release-delete.component';
+import { PropertyTypeEditComponent } from '../property-types/property-type-edit.component';
 
-describe('ReleaseDeleteComponent', () => {
-  let component: ReleaseDeleteComponent;
+describe('PropertyTypeEditComponent', () => {
+  let component: PropertyTypeEditComponent;
   const activeModal = new NgbActiveModal();
 
   beforeEach(async () => {
-    component = new ReleaseDeleteComponent(activeModal);
+    component = new PropertyTypeEditComponent(activeModal);
   });
 
   it('should create', () => {
