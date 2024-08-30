@@ -22,7 +22,6 @@ package ch.puzzle.itc.mobiliar.business.property.control;
 
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonQueries;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
@@ -67,13 +66,6 @@ public class PropertyTypeService {
         return query.getResultList();
     }
 
-    /**
-     * Speichert den PropertyType
-     *
-     * @param id
-     * @param propertyType
-     * @throws NotFoundException
-     */
     @HasPermission(permission = Permission.SAVE_SETTINGS_PROPTYPE)
     public void update(int id, PropertyTypeEntity propertyType)
             throws NotFoundException, ValidationException {

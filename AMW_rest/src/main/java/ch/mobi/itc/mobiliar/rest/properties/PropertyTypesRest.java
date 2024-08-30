@@ -18,6 +18,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -53,14 +54,7 @@ public class PropertyTypesRest {
         if (request.getId() != null) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
         }
-        PropertyTypeEntity propertyTypeEntity = new PropertyTypeEntity();
-        propertyTypeEntity.setPropertyTypeName(request.getName());
-        propertyTypeEntity.setEncrypt(request.isEncrypted());
-        propertyTypeEntity.setValidationRegex(request.getValidationRegex());
-        propertyTypeEntity.setPropertyTags(request.getPropertyTags().stream().map((propertyTagDTO) ->
-                new PropertyTagEntity(propertyTagDTO.getName(),
-                        PropertyTagType.valueOf(propertyTagDTO.getType())))
-                .collect(Collectors.toList()));
+        PropertyTypeEntity propertyTypeEntity = mapDto(request);
 
         propertyTypeService.create(propertyTypeEntity);
 
@@ -76,14 +70,8 @@ public class PropertyTypesRest {
                                        @PathParam("id") Integer id, PropertyTypeDTO request)
             throws NotFoundException, ValidationException {
 
-        PropertyTypeEntity propertyTypeEntity = new PropertyTypeEntity();
+        PropertyTypeEntity propertyTypeEntity = mapDto(request);
         propertyTypeEntity.setId(id);
-        propertyTypeEntity.setPropertyTypeName(request.getName());
-        propertyTypeEntity.setEncrypt(request.isEncrypted());
-        propertyTypeEntity.setValidationRegex(request.getValidationRegex());
-        propertyTypeEntity.setPropertyTags(request.getPropertyTags().stream()
-                .map((propertyTagDTO) -> new PropertyTagEntity(propertyTagDTO.getName(), PropertyTagType.valueOf(propertyTagDTO.getType()))).collect(Collectors.toList()));
-
 
         propertyTypeService.update(id, propertyTypeEntity);
 
@@ -99,6 +87,32 @@ public class PropertyTypesRest {
         propertyTypeService.deleteById(id);
 
         return Response.status(NO_CONTENT).build();
+    }
+
+    private PropertyTypeEntity mapDto(PropertyTypeDTO request) {
+        PropertyTypeEntity propertyTypeEntity = new PropertyTypeEntity();
+        propertyTypeEntity.setPropertyTypeName(request.getName());
+        propertyTypeEntity.setEncrypt(request.isEncrypted());
+        propertyTypeEntity.setValidationRegex(request.getValidationRegex());
+        propertyTypeEntity.setPropertyTags(request.getPropertyTags().stream()
+                .map((propertyTagDTO) ->
+                        new PropertyTagEntity(propertyTagDTO.getName(),
+                                PropertyTagType.valueOf(propertyTagDTO.getType())))
+                .collect(Collectors.toList()));
+
+        if (checkIfRegexpSyntaxError(request.getValidationRegex())) {
+            Response.status(BAD_REQUEST).entity(new ExceptionDto("Invalid property type validation pattern.")).build();
+        }
+        return propertyTypeEntity;
+    }
+
+    private boolean checkIfRegexpSyntaxError(String regexp) {
+        try {
+            "".matches(regexp);
+            return false;
+        } catch (PatternSyntaxException e) {
+            return true;
+        }
     }
 
 }
