@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ApplistScreenDomainServiceTest {
@@ -42,24 +41,22 @@ public class ApplistScreenDomainServiceTest {
     }
 
     /**
-     * Ensure, that there is an empty list resulting when asking with an empty myamw-filter (which means "my amw filter on, but no favorite resources available")
      * @throws Exception
      */
     @Test
-    public void testGetApplicationServersWithEmptyMyAMWFilter() throws Exception {
+    public void testGetApplicationServers() throws Exception {
         List<ResourceEntity> applicationServers = applistScreenDomainService
-                  .getAppServerResourcesWithApplications("*", 42, Collections.<Integer>emptyList(), true);
+                  .getAppServerResourcesWithApplications("*", 42, true);
         Assert.assertTrue(applicationServers.isEmpty());
     }
 
     /**
-     * Ensure, that there is an empty list resulting when asking with an empty myamw-filter (which means "my amw filter on, but no favorite resources available")
      * @throws Exception
      */
     @Test
-    public void testGetApplicationServerResourcesWithNull() throws Exception {
+    public void testGetApplicationServerResources() throws Exception {
         List<ResourceEntity> applicationServers = applistScreenDomainService
-                  .getApplicationServerResources("*", 42, Collections.<Integer>emptyList());
+                  .getApplicationServerResources("*", 42);
         Assert.assertTrue(applicationServers.isEmpty());
     }
 }

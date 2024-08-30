@@ -42,7 +42,7 @@ public class ApplistScreenDomainServiceQueries {
     @Inject
     private DatabaseUtil dbUtil;
 
-    List<ResourceEntity> doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(String nameFilter, List<Integer> myAmwIds, Integer maxResult) {
+    List<ResourceEntity> doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(String nameFilter,  Integer maxResult) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Predicate p;
         boolean nameFilterIsEmpty = nameFilter == null || nameFilter.trim().isEmpty();
@@ -64,13 +64,6 @@ public class ApplistScreenDomainServiceQueries {
                             cb.like(cb.lower(appServer.<String>get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER),
                             cb.like(cb.lower(app.<String>get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER)));
         }
-        if (myAmwIds != null) {
-            p = cb.and(p,
-                    cb.or(
-                            appServer.get("resourceGroup").get("id").in(myAmwIds),
-                            app.get("resourceGroup").get("id").in(myAmwIds)));
-        }
-
         q.where(p);
 
         q.distinct(true);

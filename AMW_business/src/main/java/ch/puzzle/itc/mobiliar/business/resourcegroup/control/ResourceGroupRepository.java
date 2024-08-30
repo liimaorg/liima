@@ -83,7 +83,6 @@ public class ResourceGroupRepository {
 	
     /**
      * @param resourceTypeName
-     * @param myAmw
      * @param fetchResources determines if resources fetched
      * @return a list of Groups
      */    

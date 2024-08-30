@@ -22,7 +22,7 @@
         <a4j:commandLink value="Save" styleClass="btn primary right"
             rendered="#{securityDataProvider.hasPermission('SAVE_SETTINGS_ENV')}"
             action="#{environmentsDataProvider.save()}" render="environments"
-            style="display: ${(param['mode']!='props' and param['mode']!='rolPerm' and param['mode']!='tags' and param['mode']!='functions' and param['mode']!='myAmw' and param['mode']!='STP' and param['mode']!='releases' and param['mode']!='appVersion') ? 'block' : 'none'}" />
+            style="display: ${(param['mode']!='props' and param['mode']!='rolPerm' and param['mode']!='tags' and param['mode']!='functions' and param['mode']!='STP' and param['mode']!='releases' and param['mode']!='appVersion') ? 'block' : 'none'}" />
         <a4j:commandLink styleClass="btn primary right"
             rendered="#{securityDataProvider.hasPermission('SAVE_SETTINGS_PROPTYPE')}"
             style="display: ${param['mode']=='props' ? 'block' : 'none'}"
@@ -35,9 +35,7 @@
             <aside> <nav>
             <ul>
                 <li
-                    class="${settingsDataProvider.mode!='props' and settingsDataProvider.mode!='rolPerm' and settingsDataProvider.mode!='tags' and settingsDataProvider.mode!='functions' and settingsDataProvider.mode!='deployparam' and settingsDataProvider.mode!='myAmw'
-                    and settingsDataProvider.mode!='STP' and
-                    settingsDataProvider.mode!='releases' and settingsDataProvider.mode!='appVersion' ? 'current' : ''}">
+                    class="${settingsDataProvider.mode!='props' and settingsDataProvider.mode!='rolPerm' and settingsDataProvider.mode!='tags' and settingsDataProvider.mode!='functions' and settingsDataProvider.mode!='deployparam' and settingsDataProvider.mode!='STP' and settingsDataProvider.mode!='releases' and settingsDataProvider.mode!='appVersion' ? 'current' : ''}">
                     <h:link value="Environments">
                         <f:param name="mode" value="envs" />
                     </h:link>
@@ -62,11 +60,6 @@
                     <h:outputLink value="/AMW_angular/#/settings/deployment-parameter">
                         Deployment Parameter
                     </h:outputLink>
-                </li>
-                <li class="${settingsDataProvider.mode=='myAmw' ? 'current' : ''}">
-                    <h:link value="My favorites">
-                        <f:param name="mode" value="myAmw" />
-                    </h:link>
                 </li>
                 <li class="${settingsDataProvider.mode== 'STP' ? 'current' : ''}">
                     <h:link value="STP Management" rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST')}">
@@ -99,10 +92,7 @@
         <div class="container">
             <h:form>
                 <h:panelGroup
-                    rendered="${settingsDataProvider.mode!='props' and settingsDataProvider.mode!='rolPerm' and settingsDataProvider.mode!='tags' and settingsDataProvider.mode!='functions' and settingsDataProvider.mode!='deployparam' and
-                    settingsDataProvider.mode!='myAmw' and settingsDataProvider.mode!='STP' and
-                     settingsDataProvider.mode!='releases' and settingsDataProvider.mode!='appVersion'}">
-
+                    rendered="${settingsDataProvider.mode!='props' and settingsDataProvider.mode!='rolPerm' and settingsDataProvider.mode!='tags' and settingsDataProvider.mode!='functions' and settingsDataProvider.mode!='deployparam' and settingsDataProvider.mode!='STP' and settingsDataProvider.mode!='releases' and settingsDataProvider.mode!='appVersion'}">
                     <h:panelGroup id="environments">
                         <div class="well">
                             <h2>Environments</h2>

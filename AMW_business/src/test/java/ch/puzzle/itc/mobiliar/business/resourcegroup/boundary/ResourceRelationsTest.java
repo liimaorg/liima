@@ -86,9 +86,9 @@ public class ResourceRelationsTest {
         Mockito.when(userSettingsService.getUserSettings(Mockito.anyString())).thenReturn(userSettings);
         List<ResourceEntity> aslist = Arrays.asList(as);
         Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.isNull(),
-                Mockito.isNull(), Mockito.isNull(), Mockito.anyBoolean())).thenReturn(aslist);
+                Mockito.isNull(), Mockito.anyBoolean())).thenReturn(aslist);
         service.getAppServersWithApplications(null, null, release);
-        Mockito.verify(service).filterAppServersByRelease(release, aslist, null);
+        Mockito.verify(service).filterAppServersByRelease(release, aslist);
     }
 
     @Test
@@ -104,12 +104,10 @@ public class ResourceRelationsTest {
                 return null;
             }
         }).when(service).filterApplicationsByRelease(Mockito.any(ReleaseEntity.class),
-                  Mockito.any(ResourceEntity.class), Mockito.any(ResourceWithRelations.class),
-                  Mockito.any(List.class));
+                  Mockito.any(ResourceEntity.class), Mockito.any(ResourceWithRelations.class));
 
         //when
-        List<ResourceWithRelations> resources = service.filterAppServersByRelease(release, applicationServers,
-                  null);
+        List<ResourceWithRelations> resources = service.filterAppServersByRelease(release, applicationServers);
 
         //then
         Assert.assertEquals(1, resources.size());
@@ -118,32 +116,15 @@ public class ResourceRelationsTest {
     }
 
     @Test
-    public void testFilterApplicationsByReleaseNoMyAmw() throws Exception {
-        ResourceWithRelations resourceWithRelations = doTestFilterApplicationsByRelease(5, null);
+    public void testFilterApplicationsByRelease() throws Exception {
+        ResourceWithRelations resourceWithRelations = doTestFilterApplicationsByRelease(5);
 
         //then
         Assert.assertEquals(1, resourceWithRelations.getRelatedResources().size());
         Assert.assertEquals(resourceWithRelations.getRelatedResources().get(0), app);
     }
 
-    @Test
-    public void testFilterApplicationsByReleaseWithMyAMWFilterOK() throws Exception {
-        ResourceWithRelations resourceWithRelations = doTestFilterApplicationsByRelease(5, Arrays.asList(5));
-
-        //then
-        Assert.assertEquals(1, resourceWithRelations.getRelatedResources().size());
-        Assert.assertEquals(resourceWithRelations.getRelatedResources().get(0), app);
-    }
-
-    @Test
-    public void testFilterApplicationsByReleaseWithMyAMWFilterNOK() throws Exception {
-        ResourceWithRelations resourceWithRelations = doTestFilterApplicationsByRelease(5, Arrays.asList(6));
-
-        //then
-        Assert.assertTrue(resourceWithRelations.getRelatedResources().isEmpty());
-    }
-
-    private ResourceWithRelations doTestFilterApplicationsByRelease(int appId, List<Integer> myAmw)
+    private ResourceWithRelations doTestFilterApplicationsByRelease(int appId)
               throws Exception {
         //given
         Mockito.when(as.getConsumedRelatedResourcesByResourceType(Mockito.any(
@@ -157,7 +138,7 @@ public class ResourceRelationsTest {
         Mockito.when(appGrp.getId()).thenReturn(appId);
 
         //when
-        service.filterApplicationsByRelease(release, as, resourceWithRelations, myAmw);
+        service.filterApplicationsByRelease(release, as, resourceWithRelations);
         return resourceWithRelations;
     }
 }

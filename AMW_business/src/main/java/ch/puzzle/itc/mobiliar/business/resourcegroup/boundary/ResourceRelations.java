@@ -54,14 +54,12 @@ public class ResourceRelations {
 
     public List<ResourceWithRelations> getAppServersWithApplications(String filter, Integer maxResults, ReleaseEntity release) {
         UserSettingsEntity userSettings = userSettingsService.getUserSettings(permissionService.getCurrentUserName());
-        List<Integer> myAMWFilter = null;
-        List<ResourceEntity> appServersWithAllApplications = applistScreenDomainService.getAppServerResourcesWithApplications(filter, maxResults, myAMWFilter, true);
-        return filterAppServersByRelease(release, appServersWithAllApplications, myAMWFilter);
+        List<ResourceEntity> appServersWithAllApplications = applistScreenDomainService.getAppServerResourcesWithApplications(filter, maxResults, true);
+        return filterAppServersByRelease(release, appServersWithAllApplications);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    List<ResourceWithRelations> filterAppServersByRelease(ReleaseEntity release,
-              List<ResourceEntity> appServersWithAllApplications, List<Integer> myAMWFilter) {
+    List<ResourceWithRelations> filterAppServersByRelease(ReleaseEntity release, List<ResourceEntity> appServersWithAllApplications) {
         // filter app server releases
         Set<Integer> idLookup = new HashSet<>();
         List<ResourceWithRelations> result = new ArrayList<>();
@@ -74,7 +72,7 @@ public class ResourceRelations {
                     idLookup.add(as.getResourceGroup().getId());
 
                     ResourceWithRelations asWithApps = new ResourceWithRelations(asForRelease);
-                    filterApplicationsByRelease(release, asForRelease, asWithApps, myAMWFilter);
+                    filterApplicationsByRelease(release, asForRelease, asWithApps);
                     result.add(asWithApps);
                 }
             }
@@ -83,18 +81,15 @@ public class ResourceRelations {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    void filterApplicationsByRelease(ReleaseEntity release, ResourceEntity as,
-              ResourceWithRelations asWithApps, List<Integer> myAMWFilter) {
+    void filterApplicationsByRelease(ReleaseEntity release, ResourceEntity as, ResourceWithRelations asWithApps) {
         List<ResourceEntity> list = as.getConsumedRelatedResourcesByResourceType(DefaultResourceTypeDefinition.APPLICATION);
     	
         for (ResourceEntity r : list) {
-            if(myAMWFilter==null || myAMWFilter.contains(r.getResourceGroup().getId())) {
                 ResourceEntity rel = dependencyResolverService
                           .getResourceEntityForRelease(r.getResourceGroup(), release);
                 if (rel != null && !asWithApps.getRelatedResources().contains(rel)) {
                     asWithApps.getRelatedResources().add(rel);
                 }
-            }
         }
     }
 }

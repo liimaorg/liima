@@ -119,7 +119,7 @@ public class ResourceRelationsIntegrationTest {
 	    entityManager.persist(asRel2.addConsumedResourceRelation(appRel1, resRelType, null, ForeignableOwner.AMW));
 	    entityManager.persist(asRel2.addConsumedResourceRelation(appRel2, resRelType, null, ForeignableOwner.AMW));
 	     Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.anyString(),
-				Mockito.anyInt(), Mockito.anyList(), Mockito.anyBoolean())).thenReturn(
+				Mockito.anyInt(), Mockito.anyBoolean())).thenReturn(
 			    Arrays.asList(asRel1,asRel2));
 	    service.dependencyResolverService = dependencyResolver;
 	}

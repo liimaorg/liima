@@ -107,11 +107,11 @@ public class ShakedownTestScreenController {
 			}
 		}
 
-		return shakedownTestService.getFilteredShakedownTests(count, startIndex, maxResults, filter, colToSort, sortingDirection, null); // TODO: not fixing tests since Shakedown Test removal is planned
+		return shakedownTestService.getFilteredShakedownTests(count, startIndex, maxResults, filter, colToSort, sortingDirection);
 	}
 
 	public List<ResourceGroupEntity> loadAppServers() {
-		return resourceGroupService.loadGroupsForTypeName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), null); // TODO: not fixing tests since Shakedown Test removal is planned
+		return resourceGroupService.loadGroupsForTypeName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
 	}
 	
 	public List<ResourceGroupEntity> loadAllApplications(){

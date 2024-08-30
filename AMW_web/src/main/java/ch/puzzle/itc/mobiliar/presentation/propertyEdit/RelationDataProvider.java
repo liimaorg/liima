@@ -296,7 +296,7 @@ public class RelationDataProvider implements Serializable {
     public List<NamedIdentifiable> loadAllRuntimeEnvironments() {
         List<NamedIdentifiable> result = new ArrayList<>();
         result.addAll(resourceGroupPersistenceService.loadGroupsForTypeName(
-                DefaultResourceTypeDefinition.RUNTIME.name(), null));
+                DefaultResourceTypeDefinition.RUNTIME.name()));
         Collections.sort(result, nameComparator);
 
         return result;

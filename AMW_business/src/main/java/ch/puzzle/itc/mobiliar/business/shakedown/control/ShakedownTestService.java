@@ -104,17 +104,14 @@ public class ShakedownTestService{
 
 
 	public Tuple<Set<ShakedownTestEntity>, Integer> getFilteredShakedownTests(boolean doPageingCalculation, Integer startIndex, Integer maxResults,
-																			  List<CustomFilter> filter, String colToSort, Sort.SortingDirectionType sortingDirection, List<Integer> myAMWFilter) {
+																			  List<CustomFilter> filter, String colToSort, Sort.SortingDirectionType sortingDirection) {
 
 		Integer totalItemsForCurrentFilter = null;
 		StringBuilder stringQuery = new StringBuilder();
-		String baseQuery;
+		String baseQuery = null;
 
 		stringQuery.append("from " + SHAKEDOWN_ENTITY_QL + " " + SHAKEDOWN_TEST_QL_ALIAS + " ");
 
-		commonFilterService.appendWhereAndMyAmwParameter(myAMWFilter, stringQuery, getEntityDependantMyAmwParameterQl());
-		baseQuery = stringQuery.toString();
-		
 		boolean lowerSortCol = ShakedownTestFilterTypes.APPSERVER_NAME.getFilterTabColumnName().equals(colToSort);
 
 		Sort.SortBuilder builder = Sort.builder();
@@ -125,7 +122,7 @@ public class ShakedownTestService{
 
 		Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filter, builder.build(), false, false);
 
-		query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAMWFilter, query);
+		query = commonFilterService.setParameterToQuery(startIndex, maxResults, query);
 
 		// some stuff may be lazy loaded
 		List<ShakedownTestEntity> resultList = query.getResultList();
@@ -137,16 +134,12 @@ public class ShakedownTestService{
 			String countQueryString = "select count(" + SHAKEDOWN_TEST_QL_ALIAS + ".id) " + baseQuery;
 			Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filter, Sort.nothing(), false, false);
 
-			commonFilterService.setParameterToQuery(null, null, myAMWFilter, countQuery);
+			commonFilterService.setParameterToQuery(null, null, countQuery);
 			totalItemsForCurrentFilter = ((Long) countQuery.getSingleResult()).intValue();
 		}
 
 		return new Tuple<>(shakedownTests, totalItemsForCurrentFilter);
 
-	}
-	
-	private String getEntityDependantMyAmwParameterQl() {
-		return "(" + GROUP_QL + ".id in (:" + CommonFilterService.MY_AMW + ")) ";
 	}
 
 	@HasPermission(permission = Permission.SHAKEDOWNTEST, action = Action.CREATE)

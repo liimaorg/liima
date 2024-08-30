@@ -48,19 +48,9 @@ public class CommonFilterService {
 		this.log = log;
 	}
 
-
-	public static final String MY_AMW = "myAmw";
-
 	protected static final String SPACE_STRING = " ";
 
 	private static final String WHERE = "where";
-
-	public void appendWhereAndMyAmwParameter(List<Integer> myAmw, StringBuilder stringQuery, String entityDependantMyAmwParameterQl) {
-		if (myAmw != null && !myAmw.isEmpty()) {
-			appendWhereIfNotAlreadyExists(stringQuery);
-			stringQuery.append(entityDependantMyAmwParameterQl);
-		}
-	}
 
 	/**
 	 *
@@ -88,7 +78,7 @@ public class CommonFilterService {
 			}
 
 			if (filterQuery.length() > 0) {
-				setzeWhereUndAndStatementsZuQuery(stringQuery);
+				appendWhereIfNotAlreadyExists(stringQuery);
 				stringQuery.append('(').append(filterQuery).append(')');
 			}
 		}
@@ -181,16 +171,6 @@ public class CommonFilterService {
 		}
 
 		return (uniqueJoiningString.length() == 0) ? "" : (SPACE_STRING + uniqueJoiningString);
-	}
-
-	private void setzeWhereUndAndStatementsZuQuery(StringBuilder stringQuery) {
-		appendWhereIfNotAlreadyExists(stringQuery);
-		// Wenn die query bereits mit einer Klammer endet, bedeutet dies,
-		// dass ein myAmw-Filter gesetzt ist und die zusätzlichen Filter
-		// über ein "and" hinzugefügt werden müssen.
-		if (stringQuery.toString().endsWith(") ")) {
-			stringQuery.append("and ");
-		}
 	}
 
 	private void appendWhereIfNotAlreadyExists(StringBuilder stringQuery) {
@@ -289,10 +269,7 @@ public class CommonFilterService {
 		}
 	}
 
-	public Query setParameterToQuery(Integer startIndex, Integer maxResults, List<Integer> myAmw, Query query) {
-		if (myAmw != null && !myAmw.isEmpty()) {
-			query.setParameter(MY_AMW, myAmw);
-		}
+	public Query setParameterToQuery(Integer startIndex, Integer maxResults,  Query query) {
 		if (startIndex != null) {
 			query.setFirstResult(startIndex);
 		}
