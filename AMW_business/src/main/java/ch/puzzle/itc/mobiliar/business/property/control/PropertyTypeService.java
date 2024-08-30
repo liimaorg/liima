@@ -92,10 +92,11 @@ public class PropertyTypeService {
      * Erstellt einen neuen PropertyType
      *
      * @param propertyType
+     * @return propertyType
      * @throws ValidationException
      */
     @HasPermission(permission = Permission.ADD_PROPTYPE)
-    public void create(PropertyTypeEntity propertyType) throws ValidationException {
+    public PropertyTypeEntity create(PropertyTypeEntity propertyType) throws ValidationException {
 
         if (commonService.isUnique(propertyType.getPropertyTypeName())) {
             PropertyTypeEntity propertyTypeEntity = new PropertyTypeEntity();
@@ -109,6 +110,7 @@ public class PropertyTypeService {
             throw new ValidationException("Property type already exists.",
                     propertyType);
         }
+        return propertyType;
     }
 
     /**

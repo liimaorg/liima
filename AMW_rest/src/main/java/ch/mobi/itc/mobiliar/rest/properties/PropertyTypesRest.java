@@ -1,5 +1,6 @@
 package ch.mobi.itc.mobiliar.rest.properties;
 
+import ch.mobi.itc.mobiliar.rest.dtos.PropertyTagDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyTypeDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTypeService;
@@ -14,9 +15,13 @@ import io.swagger.annotations.ApiParam;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -36,7 +41,7 @@ public class PropertyTypesRest {
     private PropertyTypeService propertyTypeService;
 
     @GET
-    @ApiOperation(value = "Gets all property types")
+    @ApiOperation(value = "Get all property types")
     public Response getAllPropertyTypes() {
 
         List<PropertyTypeEntity> propertyTypes = propertyTypeService.loadAll();
@@ -50,15 +55,17 @@ public class PropertyTypesRest {
 
     @POST
     @ApiOperation(value = "Add a property type")
-    public Response addPropertyType(@ApiParam() PropertyTypeDTO request) throws ValidationException {
+    public Response addPropertyType(@NotNull(message = "Property type must not be null.") @Valid PropertyTypeDTO request) throws ValidationException {
         if (request.getId() != null) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
         }
         PropertyTypeEntity propertyTypeEntity = mapDto(request);
 
-        propertyTypeService.create(propertyTypeEntity);
+        PropertyTypeEntity newEntity = propertyTypeService.create(propertyTypeEntity);
 
-        return Response.status(CREATED).build();
+        return Response.status(CREATED).entity(newEntity)
+                .location(URI.create("/settings/propertyTypes/" + newEntity.getId()))
+                .build();
     }
 
     @PUT
@@ -69,7 +76,9 @@ public class PropertyTypesRest {
     public Response updatePropertyType(@ApiParam("Property type ID")
                                        @PathParam("id") Integer id, PropertyTypeDTO request)
             throws NotFoundException, ValidationException {
-
+        if (request == null) {
+            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Property type must not be null.")).build();
+        }
         PropertyTypeEntity propertyTypeEntity = mapDto(request);
         propertyTypeEntity.setId(id);
 
@@ -89,19 +98,31 @@ public class PropertyTypesRest {
         return Response.status(NO_CONTENT).build();
     }
 
-    private PropertyTypeEntity mapDto(PropertyTypeDTO request) {
+    private PropertyTypeEntity mapDto(PropertyTypeDTO request) throws ValidationException {
+
         PropertyTypeEntity propertyTypeEntity = new PropertyTypeEntity();
         propertyTypeEntity.setPropertyTypeName(request.getName());
         propertyTypeEntity.setEncrypt(request.isEncrypted());
         propertyTypeEntity.setValidationRegex(request.getValidationRegex());
-        propertyTypeEntity.setPropertyTags(request.getPropertyTags().stream()
-                .map((propertyTagDTO) ->
-                        new PropertyTagEntity(propertyTagDTO.getName(),
-                                PropertyTagType.valueOf(propertyTagDTO.getType())))
-                .collect(Collectors.toList()));
+
+            List<PropertyTagEntity> list = new ArrayList<>();
+            for (PropertyTagDTO tagDTO : request.getPropertyTags()) {
+                if (tagDTO.getName() == null || tagDTO.getName().isEmpty()) {
+                    throw new ValidationException("PropertyTag name must not be null or empty.");
+                }
+                if (tagDTO.getType() == null || tagDTO.getType().isEmpty()) {
+                    throw new ValidationException("PropertyTag type must not be null or empty.");
+                }
+
+                PropertyTagEntity apply = new PropertyTagEntity(tagDTO.getName(),
+                        PropertyTagType.valueOf(tagDTO.getType()));
+                list.add(apply);
+            }
+            propertyTypeEntity.setPropertyTags(list
+            );
 
         if (checkIfRegexpSyntaxError(request.getValidationRegex())) {
-            Response.status(BAD_REQUEST).entity(new ExceptionDto("Invalid property type validation pattern.")).build();
+            throw new ValidationException("Invalid property type validation pattern.");
         }
         return propertyTypeEntity;
     }
