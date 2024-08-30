@@ -6,6 +6,7 @@ import { DatePickerComponent } from '../../shared/date-picker/date-picker.compon
 import { PropertyType } from './property-type';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PropertyTag } from './property-tag';
+import { tr } from 'date-fns/locale';
 
 @Component({
   selector: 'amw-property-type-edit',
@@ -32,6 +33,22 @@ export class PropertyTypeEditComponent implements OnInit {
 
   cancel() {
     this.activeModal.close();
+  }
+
+  isValidRegex() {
+    if (this.propertyType.validationRegex === '') {
+      return true;
+    }
+    try {
+      ''.match(this.propertyType.validationRegex);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  isValidForm() {
+    return this.propertyType.name !== '' && this.propertyType.validationRegex !== '';
   }
 
   save() {

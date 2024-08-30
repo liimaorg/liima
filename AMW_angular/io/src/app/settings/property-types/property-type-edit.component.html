@@ -19,14 +19,18 @@
     <div class="mb-3">
       <label for="regex" class="form-label">Validation</label>
       <input type="text" class="form-control" id="regex" [(ngModel)]="propertyType.validationRegex"/>
+      @if (!isValidRegex()) {
+        <div class="text-warning">Invalid regular expression pattern.</div>
+      }
     </div>
     <div class="mb-3">
       <label for="addtags" class="form-label">Add Tag</label>
       <div class="input-group">
-        <input type="text" class="form-control" id="addtags" [(ngModel)]="newTag" (keyup.enter)="onEnter()"/>
+        <input type="text" class="form-control" id="addtags" [(ngModel)]="newTag" (keyup.enter)="onEnter()"
+               placeholder="Type something and hit enter"/>
         <div class="input-group-append ms-1">
           <button type="button" class="btn btn-light ">
-            <app-icon icon="plus-circle" (click)="onEnter()"></app-icon>
+            <app-icon icon="plus" (click)="onEnter()"></app-icon>
           </button>
         </div>
       </div>
@@ -52,5 +56,8 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-primary" (click)="save()">Save changes</button>
+  <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
+        [title]="!isValidForm()?'Please provide a name and validation':'Save'">
+  <button type="button" class="btn btn-primary" [disabled]="!isValidForm()" (click)="save()">Save changes</button>
+  </span>
 </div>
