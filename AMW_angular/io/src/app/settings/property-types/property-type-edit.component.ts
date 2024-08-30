@@ -65,12 +65,15 @@ export class PropertyTypeEditComponent implements OnInit {
 
   deleteTag(tag: PropertyTag) {
     this.propertyType.propertyTags = this.propertyType.propertyTags.filter((value) => {
-      return value.id !== tag.id || value.name !== tag.name;
+      return value.type !== tag.type || value.name !== tag.name;
     });
   }
 
-  onEnter() {
-    this.propertyType.propertyTags.push({ id: 0, name: this.newTag.trim() });
+  addTag() {
+    let tag = this.newTag.trim();
+    if (tag !== '') {
+      this.propertyType.propertyTags.push({ name: tag, type: 'LOCAL' });
+    }
     this.newTag = '';
   }
 }

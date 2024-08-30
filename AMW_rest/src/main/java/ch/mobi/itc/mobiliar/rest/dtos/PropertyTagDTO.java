@@ -8,12 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PropertyTagDTO {
 
-    private Integer id;
     private String name;
-    // tagType is assumed to be global
+    private String type;
 
     public PropertyTagDTO(PropertyTagEntity propertyTagEntity) {
-        this.id = propertyTagEntity.getId();
         this.name = propertyTagEntity.getName();
+        this.type = String.valueOf(propertyTagEntity.getTagType());
     }
 }

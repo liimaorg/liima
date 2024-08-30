@@ -45,7 +45,7 @@ public class PropertyTypeController implements Serializable {
 	//how property types are loaded in old UI
 	public List<PropertyTypeEntity> loadPropertyTypes() {
 
-		List<PropertyTypeEntity> propertyTypes = propertyTypeService.getPropertyTypes();
+		List<PropertyTypeEntity> propertyTypes = propertyTypeService.loadAll();
 		List<PropertyTypeEntity> uniquePropertyTypes = new ArrayList<>(propertyTypes.size());
 		for (PropertyTypeEntity pType : propertyTypes) {
 			int pos = uniquePropertyTypes.indexOf(pType);

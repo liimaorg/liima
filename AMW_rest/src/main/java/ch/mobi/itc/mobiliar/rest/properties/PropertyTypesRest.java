@@ -1,6 +1,5 @@
 package ch.mobi.itc.mobiliar.rest.properties;
 
-import ch.mobi.itc.mobiliar.rest.dtos.PropertyTagDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyTypeDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTypeService;
@@ -39,11 +38,11 @@ public class PropertyTypesRest {
     @ApiOperation(value = "Gets all property types")
     public Response getAllPropertyTypes() {
 
-        List<PropertyTypeEntity> propertyTypes = propertyTypeService.getPropertyTypes();
+        List<PropertyTypeEntity> propertyTypes = propertyTypeService.loadAll();
 
-        // FIXME are there duplicates in the db? old implementation makes a check for unique types
         List<PropertyTypeDTO> propertyTypeDTOS = propertyTypes.stream()
                 .map(PropertyTypeDTO::new)
+                .distinct()
                 .collect(Collectors.toList());
         return Response.status(OK).entity(propertyTypeDTOS).build();
     }
@@ -58,8 +57,10 @@ public class PropertyTypesRest {
         propertyTypeEntity.setPropertyTypeName(request.getName());
         propertyTypeEntity.setEncrypt(request.isEncrypted());
         propertyTypeEntity.setValidationRegex(request.getValidationRegex());
-        propertyTypeEntity.setPropertyTags(request.getPropertyTags().stream().map((propertyTagDTO ->
-                new PropertyTagEntity(propertyTagDTO.getName(), PropertyTagType.GLOBAL))).collect(Collectors.toList()));
+        propertyTypeEntity.setPropertyTags(request.getPropertyTags().stream().map((propertyTagDTO) ->
+                new PropertyTagEntity(propertyTagDTO.getName(),
+                        PropertyTagType.valueOf(propertyTagDTO.getType())))
+                .collect(Collectors.toList()));
 
         propertyTypeService.create(propertyTypeEntity);
 
@@ -72,7 +73,7 @@ public class PropertyTypesRest {
     @Produces("application/json")
     @ApiOperation(value = "Update a property type")
     public Response updatePropertyType(@ApiParam("Property type ID")
-                                           @PathParam("id") Integer id, PropertyTypeDTO request)
+                                       @PathParam("id") Integer id, PropertyTypeDTO request)
             throws NotFoundException, ValidationException {
 
         PropertyTypeEntity propertyTypeEntity = new PropertyTypeEntity();
@@ -80,11 +81,8 @@ public class PropertyTypesRest {
         propertyTypeEntity.setPropertyTypeName(request.getName());
         propertyTypeEntity.setEncrypt(request.isEncrypted());
         propertyTypeEntity.setValidationRegex(request.getValidationRegex());
-        propertyTypeEntity.setPropertyTags(request.getPropertyTags().stream().map((propertyTagDTO) -> {
-            PropertyTagEntity propertyTagEntity = new PropertyTagEntity(propertyTagDTO.getName(), PropertyTagType.GLOBAL);
-            if (propertyTagDTO.getId() != null) {propertyTagEntity.setId(propertyTagDTO.getId());}
-            return propertyTagEntity;
-        }).collect(Collectors.toList()));
+        propertyTypeEntity.setPropertyTags(request.getPropertyTags().stream()
+                .map((propertyTagDTO) -> new PropertyTagEntity(propertyTagDTO.getName(), PropertyTagType.valueOf(propertyTagDTO.getType()))).collect(Collectors.toList()));
 
 
         propertyTypeService.update(id, propertyTypeEntity);
@@ -98,7 +96,7 @@ public class PropertyTypesRest {
     @ApiOperation(value = "Remove a property type")
     public Response deletePropertyType(@ApiParam("Property type ID") @PathParam("id") Integer id)
             throws NotFoundException, ValidationException {
-        propertyTypeService.deletePropertyTypeById(id);
+        propertyTypeService.deleteById(id);
 
         return Response.status(NO_CONTENT).build();
     }

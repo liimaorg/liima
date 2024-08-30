@@ -38,7 +38,7 @@
             <td class="align-middle">{{ property.validationRegex }}</td>
             <td class="align-middle">
               <div>
-                @for (tag of property.propertyTags; track tag.id) {
+                @for (tag of property.propertyTags; track tag.name) {
                 <span class="badge bg-light text-dark rounded-pill">{{tag.name}}</span>
                 }
               </div>

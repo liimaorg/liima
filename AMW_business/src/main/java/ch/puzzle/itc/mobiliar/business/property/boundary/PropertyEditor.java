@@ -167,7 +167,7 @@ public class PropertyEditor {
      * @return all available property types with validation logic
      */
     public List<PropertyTypeEntity> getPropertyTypes() {
-        return propertyTypeService.getPropertyTypes();
+        return propertyTypeService.loadAll();
     }
 
     /**

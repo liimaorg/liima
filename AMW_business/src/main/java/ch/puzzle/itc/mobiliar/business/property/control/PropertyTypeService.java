@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.business.property.control;
 
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonQueries;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
@@ -55,7 +56,12 @@ public class PropertyTypeService {
     @Inject
     EntityManager entityManager;
 
-    public List<PropertyTypeEntity> getPropertyTypes() {
+    /**
+     * Returns all PropertyTypes with Tags. Because of left join on PropertyTags, PropertyTypes
+     * are listed multiple times when having more than one tag.
+     * @return List<PropertyTypeEntity>
+     */
+    public List<PropertyTypeEntity> loadAll() {
         TypedQuery<PropertyTypeEntity> query = entityManager.createQuery("from PropertyTypeEntity ptype " +
                 "left join fetch ptype.propertyTags order by LOWER(ptype.propertyTypeName) asc", PropertyTypeEntity.class);
         return query.getResultList();
@@ -72,20 +78,22 @@ public class PropertyTypeService {
     public void update(int id, PropertyTypeEntity propertyType)
             throws NotFoundException, ValidationException {
 
-        PropertyTypeEntity propertyTypeEntity = getPropertyTypeById(id);
-        PropertyTypeEntity propertyByName = getPropertyTypeByName(propertyType.getPropertyTypeName());
+        PropertyTypeEntity propertyTypeEntity = getById(id);
+        PropertyTypeEntity propertyByName = getByName(propertyType.getPropertyTypeName());
 
         if (propertyByName != null && !propertyByName.getId().equals(propertyTypeEntity.getId())) {
             String message = "An other PropertyType with the same Name already exists.";
             throw new ValidationException(message, propertyType);
         }
 
+        propertyTypeEntity.setEncrypt(propertyType.isEncrypt());
+        propertyTypeEntity.setValidationRegex(propertyType.getValidationRegex());
+        propertyTypeEntity.setPropertyTypeName(propertyType.getPropertyTypeName());
+
         entityManager.merge(propertyTypeEntity);
 
         // Update Tags
-        // FIXME Needed ???
-//        List<PropertyTagEntity> tags = propertyTagEditingService.convertToTags(propertyTypeTagsString);
-//        propertyTagEditingService.updateTags(tags, propertyTypeEntity);
+        propertyTagEditingService.updateTags(propertyType.getPropertyTags(), propertyTypeEntity);
     }
 
     /**
@@ -98,11 +106,13 @@ public class PropertyTypeService {
     public void create(PropertyTypeEntity propertyType) throws ValidationException {
 
         if (commonService.isUnique(propertyType.getPropertyTypeName())) {
+            PropertyTypeEntity propertyTypeEntity = new PropertyTypeEntity();
+            propertyTypeEntity.setPropertyTypeName(propertyType.getPropertyTypeName());
+            propertyTypeEntity.setEncrypt(propertyType.isEncrypt());
+            propertyTypeEntity.setValidationRegex(propertyType.getValidationRegex());
             entityManager.persist(propertyType);
-            // FIXME needed with list of tags???
-            // Update Tags
-//            List<PropertyTagEntity> tags = propertyTagEditingService.convertToTags(propertyTypeTagsString);
-//            propertyTagEditingService.updateTags(tags, result);
+
+          propertyTagEditingService.updateTags(propertyType.getPropertyTags(), propertyTypeEntity);
         } else {
             throw new ValidationException("Property type already exists.",
                     propertyType);
@@ -117,8 +127,8 @@ public class PropertyTypeService {
      * @throws ValidationException
      */
     @HasPermission(permission = Permission.DELETE_PROPTYPE)
-    public void deletePropertyTypeById(int id) throws NotFoundException, ValidationException {
-        PropertyTypeEntity propertyTypeEntity = getPropertyTypeById(id);
+    public void deleteById(int id) throws NotFoundException, ValidationException {
+        PropertyTypeEntity propertyTypeEntity = getById(id);
 
         if (!propertyTypeEntity.getPropertyDescriptors().isEmpty()) {
             throw new ValidationException("Could not delete Property type because it is used by properties.", propertyTypeEntity);
@@ -128,7 +138,7 @@ public class PropertyTypeService {
         log.info("Property type: " + propertyTypeEntity.getPropertyTypeName() + " successfully deleted.");
     }
 
-    private PropertyTypeEntity getPropertyTypeById(int id) throws NotFoundException {
+    private PropertyTypeEntity getById(int id) throws NotFoundException {
         PropertyTypeEntity propertyTypeEntity = entityManager.find(PropertyTypeEntity.class, id);
 
         if (propertyTypeEntity == null) {
@@ -137,7 +147,7 @@ public class PropertyTypeService {
         return propertyTypeEntity;
     }
 
-    public PropertyTypeEntity getPropertyTypeByName(String propertyTypeName) {
+    public PropertyTypeEntity getByName(String propertyTypeName) {
         PropertyTypeEntity propertyType = null;
         try {
             Query searchPropertyTypeQuery = commonQueries.searchPropertyTypeByName(propertyTypeName);
