@@ -267,10 +267,10 @@ public class DeploymentBoundaryTest
 		// given
 		Query query = mock(Query.class);
 		when(commonFilterService.addFilterAndCreateQuery(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(query);
-		when(commonFilterService.setParameterToQuery(any(), any(), any(), any())).thenReturn(query);
+		when(commonFilterService.setParameterToQuery(any(), any(), any())).thenReturn(query);
 
 		// when
-		deploymentBoundary.getFilteredDeployments(0, null, emptyList(), "d.trackingId", DESC, emptyList() );
+		deploymentBoundary.getFilteredDeployments(0, null, emptyList(), "d.trackingId", DESC);
 
 		// then
 		ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
@@ -283,10 +283,10 @@ public class DeploymentBoundaryTest
 		// given
 		Query query = mock(Query.class);
 		when(commonFilterService.addFilterAndCreateQuery(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(query);
-		when(commonFilterService.setParameterToQuery(any(), any(), any(), any())).thenReturn(query);
+		when(commonFilterService.setParameterToQuery(any(), any(), any())).thenReturn(query);
 
 		// when
-		deploymentBoundary.getFilteredDeployments(0, null, emptyList(), null, DESC, emptyList() );
+		deploymentBoundary.getFilteredDeployments(0, null, emptyList(), null, DESC);
 
 		// then
 		ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
@@ -301,7 +301,7 @@ public class DeploymentBoundaryTest
 	public void shouldThrowIfSortColumnUnknown() {
 		try {
 			// when
-			deploymentBoundary.getFilteredDeployments(0, null, emptyList(), "unknown.column", DESC, emptyList());
+			deploymentBoundary.getFilteredDeployments(0, null, emptyList(), "unknown.column", DESC);
 			fail("IllegalArgumentException should have been thrown");
 		} catch (IllegalArgumentException ex) {
 			// then
