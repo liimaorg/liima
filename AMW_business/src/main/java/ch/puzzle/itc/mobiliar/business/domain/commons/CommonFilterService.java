@@ -78,7 +78,7 @@ public class CommonFilterService {
 			}
 
 			if (filterQuery.length() > 0) {
-				appendWhereIfNotAlreadyExists(stringQuery);
+				appendWhereOrAndStatementsToQuery(stringQuery);
 				stringQuery.append('(').append(filterQuery).append(')');
 			}
 		}
@@ -171,6 +171,13 @@ public class CommonFilterService {
 		}
 
 		return (uniqueJoiningString.length() == 0) ? "" : (SPACE_STRING + uniqueJoiningString);
+	}
+
+	private void appendWhereOrAndStatementsToQuery(StringBuilder stringQuery) {
+		appendWhereIfNotAlreadyExists(stringQuery);
+		if (stringQuery.toString().endsWith(") ")) {
+			stringQuery.append("and ");
+		}
 	}
 
 	private void appendWhereIfNotAlreadyExists(StringBuilder stringQuery) {

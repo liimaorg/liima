@@ -181,7 +181,7 @@ public class DeploymentNotificationServiceTest {
 	}
 	
 	@Test
-	public void createAndSendMailForDeplyoments_oneDeployment_noAddress_sending_Exception() throws MessagingException {
+	public void createAndSendMailForDeployments_oneDeployment_noAddress_sending_Exception() throws MessagingException {
 		// given
 		ArrayList<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 		
@@ -206,7 +206,7 @@ public class DeploymentNotificationServiceTest {
 	
 	
 	@Test
-	public void createAndSendMailForDeplyoments_oneDeployment_noAddress_sending_Recipients() throws MessagingException {
+	public void createAndSendMailForDeployments_oneDeployment_noAddress_sending_Recipients() throws MessagingException {
 		// given
 		ArrayList<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 		
