@@ -21,6 +21,14 @@ npm run backend:start
 npm run backend:stop
 ```
 
+## Coding guidelines
+
+See [coding-guideline.md](./coding-guidelines.md)
+
+## Code Formatting
+
+We use Prettier for code-formatting. Additionally, there is a pre-commit hook to format all staged files with husky. [More info](https://github.com/hallettj/git-format-staged)
+
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.

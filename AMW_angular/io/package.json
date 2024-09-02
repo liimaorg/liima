@@ -9,10 +9,11 @@
     "backend:stop": "docker compose -f ./../../AMW_docker/docker-compose/docker-compose.yml down",
     "build": "ng build",
     "test": "ng test",
-    "test-headless": "ng test --browsers=ChromeHeadless",
+    "test:watch": "ng test --watch",
     "lint": "ng lint",
     "prettier": "npx prettier --write .",
-    "mavenbuild": "ng test --watch=false --browsers=ChromeHeadless && ng build --configuration production"
+    "mavenbuild": "ng test --watch=false --browsers=ChromeHeadless && ng build --configuration production",
+    "prepare": "husky"
   },
   "private": true,
   "dependencies": {
@@ -56,6 +57,8 @@
     "eslint": "8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "git-format-staged": "^3.1.1",
+    "husky": "^9.1.5",
     "jasmine-core": "~5.1.1",
     "jasmine-spec-reporter": "~7.0.0",
     "prettier": "3.0.3",

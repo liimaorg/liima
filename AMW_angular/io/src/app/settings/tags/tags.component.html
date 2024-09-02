@@ -1,5 +1,5 @@
 <div class="container">
-  <h1>Tags</h1>
+  <h1>{{ pageTitle }}</h1>
   <div class="row mt-2 py-4">
     <div class="col-6 ms-auto">
       <div class="input-group">
@@ -21,7 +21,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (tag of tags; track tag) {
+      @for (tag of tags(); track tag) {
       <tr>
         <td>{{ tag.name }}</td>
         <td>
