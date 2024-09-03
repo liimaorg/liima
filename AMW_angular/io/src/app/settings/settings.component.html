@@ -1,5 +1,6 @@
 <app-page>
   <div class="page-title">Settings</div>
+  {{ loadingPermissions()}}
   @if (canViewSettings) {
   <div class="page-content row">
     <div class="col-2">
