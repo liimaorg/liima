@@ -8,7 +8,7 @@
           <b>Property Types</b>
         </div>
         <div class="col-sm">
-          @if (canAdd) {
+          @if (canAdd()) {
           <button type="button" class="btn btn-primary float-end" (click)="addModal()" [attr.data-cy]="'button-add'">
             <app-icon icon="plus-circle"></app-icon>
             Add property type
@@ -34,29 +34,31 @@
           @for (property of propertyTypes(); track property.id) {
           <tr>
             <td class="align-middle">{{ property.name }}</td>
-            <td class="align-middle">{{ property.encrypted ? 'Yes' : 'No' }}</td>
-            <td class="align-middle">{{ property.validationRegex }}</td>
-            <td class="align-middle">
-              <div>
-                @for (tag of property.propertyTags; track tag.name) {
-                <span class="badge bg-light text-dark rounded-pill">{{tag.name}}</span>
+            @if (canDisplay()) {
+              <td class="align-middle">{{ property.encrypted ? 'Yes' : 'No' }}</td>
+              <td class="align-middle">{{ property.validationRegex }}</td>
+              <td class="align-middle">
+                <div>
+                  @for (tag of property.propertyTags; track tag.name) {
+                  <span class="badge bg-light text-dark rounded-pill">{{tag.name}}</span>
+                  }
+                </div>
+              </td>
+              <td class="text-center">
+                @if (canEditName()) {
+                <button class="btn btn-sm btn-primary me-0" (click)="editModal(property)" [attr.data-cy]="'edit-' + property.name">
+                  <app-icon icon="pencil"></app-icon>
+                </button>
                 }
-              </div>
-            </td>
-            <td class="text-center">
-              @if (canEditName) {
-              <button class="btn btn-sm btn-primary me-0" (click)="editModal(property)" [attr.data-cy]="'edit-' + property.name">
-                <app-icon icon="pencil"></app-icon>
-              </button>
-              }
-            </td>
-            <td class="text-center">
-              @if (canDelete) {
-              <button class="btn btn-sm btn-danger me-0" (click)="deleteModal(property)" [attr.data-cy]="'delete-' + property.name">
-                <app-icon icon="trash"></app-icon>
-              </button>
-              }
-            </td>
+              </td>
+              <td class="text-center">
+                @if (canDelete()) {
+                <button class="btn btn-sm btn-danger me-0" (click)="deleteModal(property)" [attr.data-cy]="'delete-' + property.name">
+                  <app-icon icon="trash"></app-icon>
+                </button>
+                }
+              </td>
+            }
           </tr>
           }
           </tbody>

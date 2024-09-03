@@ -99,16 +99,18 @@ export class PropertyTypesComponent {
 
   save(propertyType: PropertyType) {
     this.isLoading = true;
-    this.propertyTypeService
-      .save(propertyType)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (r) => this.toastService.success(`${this.PROPERTY_TYPE} saved.`),
-        error: (e) => this.error.set(e),
-        complete: () => {
-          this.propertyTypeService.reload();
-        },
-      });
+    if (this.canSave() && this.canEditValidation && this.canEditName) {
+      this.propertyTypeService
+        .save(propertyType)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (r) => this.toastService.success(`${this.PROPERTY_TYPE} saved.`),
+          error: (e) => this.error.set(e),
+          complete: () => {
+            this.propertyTypeService.reload();
+          },
+        });
+    }
     this.isLoading = false;
   }
 
