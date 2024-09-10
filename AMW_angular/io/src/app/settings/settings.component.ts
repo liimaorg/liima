@@ -13,7 +13,6 @@ import { PageComponent } from '../layout/page/page.component';
 export class SettingsComponent implements OnInit {
   canViewSettings = signal<boolean>(false);
   canViewPermissionsTab = signal<boolean>(false);
-  canViewStpTab = signal<boolean>(false);
   canViewAppInfo = signal<boolean>(false);
 
   authService = inject(AuthService);
@@ -25,7 +24,6 @@ export class SettingsComponent implements OnInit {
   private getUserPermissions() {
     this.canViewSettings.set(this.authService.hasPermission('SETTING_PANEL_LIST', 'ALL'));
     this.canViewPermissionsTab.set(this.authService.hasPermission('ROLES_AND_PERMISSIONS_TAB', 'ALL'));
-    this.canViewStpTab.set(this.authService.hasPermission('SHAKEDOWNTEST', 'ALL'));
     this.canViewAppInfo.set(this.authService.hasPermission('RELEASE', 'READ'));
   }
 }

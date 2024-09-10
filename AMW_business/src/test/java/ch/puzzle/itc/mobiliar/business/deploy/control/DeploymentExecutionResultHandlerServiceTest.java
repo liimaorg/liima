@@ -92,8 +92,6 @@ public class DeploymentExecutionResultHandlerServiceTest {
 
 	@Test
 	public void handleSuccessfulDeployment_STP() {
-		// given
-		deployment.setCreateTestAfterDeployment(true);
 
 		// when
 		deploymentExecutionResultHandlerService.handleSuccessfulDeployment(GenerationModus.DEPLOY, result);
@@ -101,7 +99,6 @@ public class DeploymentExecutionResultHandlerServiceTest {
 		// then
 		verify(deploymentBoundary, times(1)).updateDeploymentInfoAndSendNotification(GenerationModus.DEPLOY, deployment.getId(), null,
 				deployment.getResource() != null ? deployment.getResource().getId() : null, result, null);
-		verify(deploymentBoundary, times(1)).createShakedownTestForTrackinIdOfDeployment(deployment.getTrackingId());
 	}
 
 	@Test

@@ -556,8 +556,6 @@ public class DeploymentsRest {
         try{
             deploymentBoundary.confirmDeployment(deploymentId,
                     deploymentDTO.isSendEmailWhenDeployed(),
-                    deploymentDTO.isShakedownTestsWhenDeployed(),
-                    deploymentDTO.isNeighbourhoodTest(),
                     deploymentDTO.isSimulateBeforeDeployment(),
                     deploymentDTO.getDeploymentDate());
             return Response.status(Response.Status.OK).build();

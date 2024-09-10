@@ -51,7 +51,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.exception.*;
@@ -113,9 +112,6 @@ public class DeploymentBoundary {
 
     @Inject
     private ResourceDependencyResolverService dependencyResolver;
-
-    @Inject
-    private ShakedownTestService shakedownTestService;
 
     @Inject
     private SequencesService sequencesService;
@@ -575,13 +571,6 @@ public class DeploymentBoundary {
             deployment.setApplicationsWithVersion(applicationWithVersion);
 
             deployment.setDeploymentRequestUser(permissionService.getCurrentUserName());
-
-            deployment.setCreateTestAfterDeployment(isExecuteShakedownTest);
-            if (isExecuteShakedownTest && isNeighbourhoodTest) {
-                deployment.setCreateTestForNeighborhoodAfterDeployment(true);
-            } else {
-                deployment.setCreateTestForNeighborhoodAfterDeployment(false);
-            }
 
             // Permission DEPLOYMENT.UPDATE is required for confirming Deployments
             if (requestOnly || !(permissionService.hasPermissionAndActionForDeploymentOnContext(context, group, Action.UPDATE)
@@ -1089,22 +1078,6 @@ public class DeploymentBoundary {
         }
     }
 
-
-    /**
-     * Look up which other deployments (than just this one) belong together (via the tracking id) and create
-     * shakedowntests after all of them are executed.
-     *
-     * @param trackingId
-     */
-    public void createShakedownTestForTrackinIdOfDeployment(Integer trackingId) {
-        // hole alle deployments mit derselben trackingId
-        List<DeploymentEntity> deploymentsWithSameTrackingId = getDeplyomentsWithSameTrackingId(trackingId);
-
-        if (isAllDeploymentsWithSameTrackingIdExecuted(deploymentsWithSameTrackingId)) {
-            shakedownTestService.createAndExecuteShakedowntestForDeployments(deploymentsWithSameTrackingId);
-        }
-    }
-
     /**
      * Look up which other deployments (than just this one) belong together (via the tracking id) and send a
      * single email notification if all of them are executed (independent of their success state).
@@ -1164,12 +1137,9 @@ public class DeploymentBoundary {
     }
 
     public DeploymentEntity confirmDeployment(Integer deploymentId, boolean sendEmail,
-                                              boolean executeShakedownTest, boolean neighbourhoodTest,
                                               boolean simulateGeneration, Date deploymentDate) throws DeploymentStateException {
         DeploymentEntity deployment = getDeploymentById(deploymentId);
         deployment.setSendEmailConfirmation(sendEmail);
-        deployment.setCreateTestAfterDeployment(executeShakedownTest);
-        deployment.setCreateTestForNeighborhoodAfterDeployment(neighbourhoodTest);
         deployment.setSimulating(simulateGeneration);
         deployment.setDeploymentDate(deploymentDate);
 

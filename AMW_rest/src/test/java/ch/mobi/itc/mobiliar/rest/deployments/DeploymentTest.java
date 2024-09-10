@@ -114,7 +114,6 @@ public class DeploymentTest {
         deploymentEntity.setDeploymentDate(new Date());
         deploymentEntity.setStateToDeploy(new Date());
         deploymentEntity.setSimulating(false);
-        deploymentEntity.setShakedownTests(null);
         deploymentEntity.setTrackingId(321);
         ResourceEntity targetPlatform = ResourceFactory.createNewResource("test");
         deploymentEntity.setRuntime(targetPlatform);
@@ -147,8 +146,6 @@ public class DeploymentTest {
         deploymentRequestDto.setAppsWithVersion(apps);
         deploymentRequestDto.setDeploymentDate(deploymentEntity.getDeploymentDate());
         deploymentRequestDto.setEnvironmentName(deploymentEntity.getContext().getName());
-        deploymentRequestDto.setExecuteShakedownTest(deploymentEntity.isCreateTestAfterDeployment());
-        deploymentRequestDto.setNeighbourhoodTest(deploymentEntity.isCreateTestForNeighborhoodAfterDeployment());
         deploymentRequestDto.setRequestOnly(false);
         deploymentRequestDto.setSendEmail(deploymentEntity.isSendEmail());
         deploymentRequestDto.setSimulate(deploymentEntity.isSimulating());

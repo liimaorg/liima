@@ -141,19 +141,6 @@ public class DeploymentEntity implements Serializable {
 
     @Getter
     @Setter
-    @Column(nullable = false)
-    private boolean createTestAfterDeployment;
-
-    @Column(nullable = false)
-    private boolean neighborhoodTest;
-
-    @Getter
-    @Setter
-    @OneToMany(mappedBy = "deployment", cascade = CascadeType.ALL)
-    private Set<ShakedownTestEntity> shakedownTests;
-
-    @Getter
-    @Setter
     @OneToMany(mappedBy = "deployment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @BatchSize(size = 10)
     private Set<NodeJobEntity> nodeJobs;
@@ -389,14 +376,6 @@ public class DeploymentEntity implements Serializable {
                         && !getDeploymentState().equals(DeploymentState.progress)
                         && !getDeploymentState().equals(DeploymentState.failed)))
                 && getDeploymentDate() != null && new Date().after(getDeploymentDate());
-    }
-
-    public boolean isCreateTestForNeighborhoodAfterDeployment() {
-        return neighborhoodTest;
-    }
-
-    public void setCreateTestForNeighborhoodAfterDeployment(boolean createTestForNeighborhoodAfterDeployment) {
-        this.neighborhoodTest = createTestForNeighborhoodAfterDeployment;
     }
 
     /**
