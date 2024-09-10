@@ -25,12 +25,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
 public class ApplistScreenDomainServiceTest {
 
+    @Mock
+    ApplistScreenDomainServiceQueries applistScreenDomainServiceQueries;
 
     @InjectMocks
     ApplistScreenDomainService applistScreenDomainService;
