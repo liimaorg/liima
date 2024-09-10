@@ -27,10 +27,6 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.deploy.event.DeploymentEvent;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestExecuterService;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
-import ch.puzzle.itc.mobiliar.business.shakedown.event.ShakedownTestEvent;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
@@ -56,21 +52,15 @@ public class DeploymentScheduler {
 	private DeploymentBoundary deploymentBoundary;
 
 	@Inject
-	private ShakedownTestService shakedownTestService;
-
-	@Inject
 	private Logger log;
 
 	@Inject
 	private DeploymentExecuterService deploymentExecuterService;
 
-	@Inject
-	private ShakedownTestExecuterService shakedownTestExecuterService;
-
 	private Level logLevel = Level.INFO;
 
 	/**
-	 * Triggers the Deployment and Test Execution This Method is triggerd by
+	 * Triggers the Deployment. This Method is triggerd by
 	 * the Container
 	 */
 	@Schedule(hour = "*", minute = "*", second = "*/30", persistent = false)
@@ -80,7 +70,6 @@ public class DeploymentScheduler {
 			executePreDeployments();
 			executeDeployments();
 			executeSimulation();
-			executeForTests();
 			checkForFinishedPredeploymentDeployments();
 		}
 	}
@@ -142,13 +131,6 @@ public class DeploymentScheduler {
 		}
 	}
 
-	@Asynchronous
-	public void handleShakedownTestEvent(@Observes(during=TransactionPhase.AFTER_SUCCESS) ShakedownTestEvent event) {
-		log.log(logLevel, "ShakedownTest event fired");
-
-		executeForTests();
-	}
-
 	protected synchronized void executeSimulation() {
 		int deploymentSimulationLimit = deploymentBoundary.getDeploymentSimulationLimit();
 		log.log(Level.FINE, "Checking for simulations, max pro run " + deploymentSimulationLimit);
@@ -185,18 +167,6 @@ public class DeploymentScheduler {
 		}
 		else {
 			log.log(Level.FINE, "No preDeployments found");
-		}
-	}
-
-	protected synchronized void executeForTests() {
-		log.log(Level.FINE, "Checking for tests");
-		List<ShakedownTestEntity> tests = shakedownTestService.getTestsToExecute();
-		if (!tests.isEmpty()) {
-			log.log(logLevel, tests.size() + " tests found");
-			doTesting(tests);
-		}
-		else {
-			log.log(Level.FINE, "No tests found");
 		}
 	}
 
@@ -258,16 +228,6 @@ public class DeploymentScheduler {
 						+ " on environement " + deployment.getContext().getName() + " id " + deployment.getId());
 				deploymentExecuterService.generateConfigurationAndExecuteDeployment(deployment.getId(),
 						generationModus);
-			}
-		}
-	}
-
-	private void doTesting(List<ShakedownTestEntity> tests) {
-		for (ShakedownTestEntity test : tests) {
-			if (test.getContext() != null) {
-				log.log(logLevel, "Checking test of " + test.getApplicationServer().getName() + " on environement "
-						+ test.getContext().getName() + " id " + test.getId());
-				shakedownTestExecuterService.generateConfigurationAndExecuteShakedownTest(test.getId());
 			}
 		}
 	}

@@ -29,7 +29,6 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
           id="navbarSupportedContent"
         >
           <ul class="navbar-nav p-3 p-lg-0">
-
             <li class="nav-item">
               <a class="nav-link" href="/AMW_web/pages/applist.xhtml">Apps</a>
             </li>
@@ -43,9 +42,6 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#/deployments/">Deploy</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/AMW_web/pages/shakedownTest.xhtml">Shakedown Test</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/AMW_web/pages/settings.xhtml">Settings</a>

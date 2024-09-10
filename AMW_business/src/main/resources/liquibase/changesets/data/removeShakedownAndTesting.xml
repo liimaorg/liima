@@ -1,0 +1,21 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/removeShakedownAndTesting.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="sgirod" id="removeShakedownAndTestingData" >
+        <comment>
+
+        </comment>
+
+        <delete tableName="TAMW_tmplDesc_targetPlat">
+            <where>TEMPLATEDESCRIPTORS_ID = (SELECT * FROM TAMW_templateDescriptor WHERE TESTING = 1)</where>
+        </delete>
+        <delete tableName="TAMW_templateDescriptor">
+            <where>testing = 1</where>
+        </delete>
+
+        <rollback></rollback>
+    </changeSet>
+</databaseChangeLog>

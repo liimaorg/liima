@@ -13,7 +13,6 @@ import { FormsModule } from '@angular/forms';
 })
 export class DeploymentsEditModalComponent {
   @Input() deployments: Deployment[] = [];
-  @Input() hasPermissionShakedownTest: boolean;
 
   @Output() errorMessage: EventEmitter<string> = new EventEmitter<string>();
   @Output() doConfirmDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
@@ -68,7 +67,6 @@ export class DeploymentsEditModalComponent {
     for (const deployment of this.deployments) {
       deployment.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
       deployment.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
-      deployment.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
       deployment.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
       this.doConfirmDeployment.emit(deployment);
     }

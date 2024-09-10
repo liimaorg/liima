@@ -358,7 +358,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
     }
 
     /**
-     * @return a faked deploymentEntity for testing and shakedownTests
+     * @return a faked deploymentEntity for testing
      */
     public DeploymentEntity createFakeDeployment(Integer id, ReleaseEntity release, ResourceEntity runtime, Date stateToDeploy) {
         DeploymentEntity fakeDeplyoment = new DeploymentEntity();

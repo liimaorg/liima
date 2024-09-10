@@ -119,11 +119,6 @@ import java.util.Set;
  * <td>nein</td>
  * <td>nein</td>
  * </tr>
- * <tr>
- * <td>Shakedown Tests</td>
- * <td>nein</td>
- * <td>nein</td>
- * </tr>
  * </table>
  *
  * @author cweber

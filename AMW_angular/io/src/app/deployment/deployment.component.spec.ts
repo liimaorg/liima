@@ -184,14 +184,11 @@ describe('DeploymentComponent (create deployment)', () => {
     const appServer: Resource = { name: 'testServer', id: 3 } as Resource;
     component.environments = [{ id: 1 } as Environment, { id: 2, selected: true } as Environment];
     component.selectedAppserver = appServer;
-    spyOn(resourceService, 'canCreateShakedownTest').and.returnValue(of(false));
     spyOn(deploymentService, 'canDeploy').and.returnValue(of(true));
     // when
     component.onChangeAppserver();
     // then
-    expect(resourceService.canCreateShakedownTest).toHaveBeenCalledWith(3);
     expect(deploymentService.canDeploy).toHaveBeenCalledWith(3, [2]);
-    expect(component.hasPermissionShakedownTest).toBeFalsy();
     expect(component.hasPermissionToDeploy).toBeTruthy();
   });
 
@@ -282,7 +279,6 @@ describe('DeploymentComponent (create deployment)', () => {
     component.selectedAppserver = { name: 'testServer' } as Resource;
     component.selectedRelease = { id: 1, release: 'testRelease' } as Release;
     component.environments = [{ id: 2, name: 'A' } as Environment, { id: 3, name: 'B', selected: true } as Environment];
-    component.doExecuteShakedownTest = true;
     component.appsWithVersion = [
       {
         applicationId: 4,
@@ -305,7 +301,6 @@ describe('DeploymentComponent (create deployment)', () => {
       releaseName: 'testRelease',
       simulate: false,
       sendEmail: false,
-      executeShakedownTest: component.doExecuteShakedownTest,
       neighbourhoodTest: false,
       requestOnly: true,
       appsWithVersion: component.appsWithVersion,
@@ -329,7 +324,6 @@ describe('DeploymentComponent (create deployment)', () => {
       { id: 2, name: 'A', selected: true } as Environment,
       { id: 3, name: 'B', selected: true } as Environment,
     ];
-    component.doExecuteShakedownTest = true;
     component.simulate = true;
     component.appsWithVersion = [
       {
@@ -357,8 +351,6 @@ describe('DeploymentComponent (create deployment)', () => {
       releaseName: 'testRelease',
       simulate: component.simulate,
       sendEmail: false,
-      executeShakedownTest: component.doExecuteShakedownTest,
-      neighbourhoodTest: false,
       requestOnly: false,
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,
@@ -616,8 +608,6 @@ describe('DeploymentComponent (redeployment)', () => {
       contextIds: [2],
       simulate: false,
       sendEmail: false,
-      executeShakedownTest: false,
-      neighbourhoodTest: false,
       requestOnly: false,
       appsWithVersion,
       deploymentParameters,

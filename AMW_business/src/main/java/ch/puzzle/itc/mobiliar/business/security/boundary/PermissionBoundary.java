@@ -87,15 +87,11 @@ public class PermissionBoundary implements Serializable {
      * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToEditPropertiesByResourceTypeAndContext(Integer resourceTypeId, Integer contextId,
-                                                                         boolean isTestingMode) {
-        if (!isTestingMode) {
+    public boolean hasPermissionToEditPropertiesByResourceTypeAndContext(Integer resourceTypeId, Integer contextId) {
+
             ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
             ContextEntity context = contextId == null ? null : contextLocator.getContextById(contextId);
             return permissionService.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType);
-        }
-        // so we must be in TestingMode
-        return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     /**
@@ -105,8 +101,8 @@ public class PermissionBoundary implements Serializable {
      * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToEditPropertiesByResourceType(Integer resourceTypeId, boolean isTestingMode) {
-        return hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeId, null, isTestingMode);
+    public boolean hasPermissionToEditPropertiesByResourceType(Integer resourceTypeId) {
+        return hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeId, null);
     }
 
     /**
@@ -114,18 +110,13 @@ public class PermissionBoundary implements Serializable {
      *
      * @param resourceId
      * @param context
-     * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToEditPropertiesByResourceAndContext(Integer resourceId, ContextEntity context,
-                                                                     boolean isTestingMode) {
-        if (!isTestingMode) {
+    public boolean hasPermissionToEditPropertiesByResourceAndContext(Integer resourceId, ContextEntity context
+                                                                     ) {
             ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
             return permissionService.hasPermission(Permission.RESOURCE, context, Action.UPDATE,
                     resource.getResourceGroup(), null);
-        }
-        // so we must be in TestingMode
-        return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     /**
@@ -133,24 +124,22 @@ public class PermissionBoundary implements Serializable {
      *
      * @param resourceId
      * @param contextId
-     * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToEditPropertiesByResourceAndContext(Integer resourceId, boolean isTestingMode,
+    public boolean hasPermissionToEditPropertiesByResourceAndContext(Integer resourceId,
                                                                      Integer contextId) {
         ContextEntity context = contextLocator.getContextById(contextId);
-        return hasPermissionToEditPropertiesByResourceAndContext(resourceId, context, isTestingMode);
+        return hasPermissionToEditPropertiesByResourceAndContext(resourceId, context);
     }
 
     /**
      * Checks if the user is allowed to edit the Properties of a Resource without checking its Context
      *
      * @param resourceId
-     * @param isTestingMode
      * @return
      */
-    public boolean hasPermissionToEditPropertiesByResource(Integer resourceId, boolean isTestingMode) {
-        return hasPermissionToEditPropertiesByResourceAndContext(resourceId, null, isTestingMode);
+    public boolean hasPermissionToEditPropertiesByResource(Integer resourceId) {
+        return hasPermissionToEditPropertiesByResourceAndContext(resourceId, (ContextEntity) null);
     }
 
     public boolean hasPermission(String permissionName) {
@@ -280,19 +269,19 @@ public class PermissionBoundary implements Serializable {
     }
 
     /**
-     * Check that the user is config_admin, app_developer or shakedown_admin : shakedown_admin: can
-     * modify(add/edit/delete) all testing templates config_admin: can modify(add/edit/delete) all templates
+     * Check that the user is config_admin, app_developer
+     * config_admin: can modify(add/edit/delete) all templates
      * app_developer: can modify(add/edit/delete) only templates in instances of APPLICATION
      */
-    public boolean hasPermissionToAddTemplate(Identifiable resourceOrResourceTypeEntity, boolean isTestingMode) {
+    public boolean hasPermissionToAddTemplate(Identifiable resourceOrResourceTypeEntity) {
         if (resourceOrResourceTypeEntity != null) {
             if (resourceOrResourceTypeEntity instanceof ResourceEntity) {
                 ResourceEntity mergedResource = entityManager.find(ResourceEntity.class, resourceOrResourceTypeEntity.getId());
-                return permissionService.hasPermissionToAddResourceTemplate(mergedResource, isTestingMode);
+                return permissionService.hasPermissionToAddResourceTemplate(mergedResource);
             }
             if (resourceOrResourceTypeEntity instanceof ResourceTypeEntity) {
                 ResourceTypeEntity mergedResourceType = entityManager.find(ResourceTypeEntity.class, resourceOrResourceTypeEntity.getId());
-                return permissionService.hasPermissionToAddResourceTypeTemplate(mergedResourceType, isTestingMode);
+                return permissionService.hasPermissionToAddResourceTypeTemplate(mergedResourceType);
             }
         }
         return false;
@@ -320,10 +309,7 @@ public class PermissionBoundary implements Serializable {
         return permissionService.hasPermission(Permission.RESOURCETYPE_AMWFUNCTION, null, action, null, type);
     }
 
-    public boolean canModifyTemplateOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId, Action action, boolean testingMode) {
-        if (testingMode) {
-            return permissionService.hasPermission(Permission.SHAKEDOWN_TEST_MODE);
-        }
+    public boolean canModifyTemplateOfResourceOrResourceType(Integer resourceEntityId, Integer resourceTypeEntityId, Action action) {
         // context is always global
         if (resourceEntityId != null) {
             ResourceEntity resource = resourceRepository.find(resourceEntityId);
@@ -393,11 +379,6 @@ public class PermissionBoundary implements Serializable {
 
     public boolean hasPermissionToCreateDeployment() {
         return permissionService.hasPermissionToCreateDeployment();
-    }
-
-    public boolean hasPermissionToCreateShakedownTests(Integer resourceGroupId) {
-        ResourceGroupEntity resourceGroupEntity = resourceGroupRepository.find(resourceGroupId);
-        return permissionService.hasPermission(Permission.SHAKEDOWNTEST, null, Action.CREATE, resourceGroupEntity, null);
     }
 
     @HasPermission(oneOfPermission = { Permission.ASSIGN_REMOVE_PERMISSION, Permission.PERMISSION_DELEGATION })

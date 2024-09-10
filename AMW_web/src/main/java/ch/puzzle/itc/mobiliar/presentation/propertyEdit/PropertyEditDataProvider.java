@@ -420,7 +420,7 @@ public class PropertyEditDataProvider implements Serializable {
         resourceEditProperties = userSettings.filterTestingProperties(propertiesForResource);
         filterHostNameAndActiveFromNode();
         editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
-                currentContext, userSettings.isTestingMode());
+                currentContext);
         canChangeRuntime = permissionBoundary.hasPermission(Permission.RESOURCE, currentContext, Action.UPDATE,
                 resourceEntity, null);
         canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, currentContext, Action.ALL,

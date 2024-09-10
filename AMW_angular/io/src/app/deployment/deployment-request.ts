@@ -7,7 +7,6 @@ export interface DeploymentRequest {
   releaseName: string;
   requestOnly: boolean;
   simulate: boolean;
-  neighbourhoodTest: boolean;
   sendEmail: boolean;
   appsWithVersion: AppWithVersion[];
   stateToDeploy: number;

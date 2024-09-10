@@ -511,8 +511,7 @@ public class DeploymentBoundary {
                                                     List<Integer> contextIds,
                                                     List<ApplicationWithVersion> applicationWithVersion,
                                                     List<DeploymentParameter> deployParams,
-                                                    boolean sendEmail, boolean requestOnly, boolean doSimulate,
-                                                    boolean isExecuteShakedownTest, boolean isNeighbourhoodTest) {
+                                                    boolean sendEmail, boolean requestOnly, boolean doSimulate) {
 
         Integer trackingId = sequencesService.getNextValueAndUpdate(DeploymentEntity.SEQ_NAME);
 
@@ -521,7 +520,7 @@ public class DeploymentBoundary {
             deploymentDate = now;
         }
         requestOnly = createDeploymentForAppserver(appServerGroupId, releaseId, deploymentDate, stateToDeploy, contextIds, applicationWithVersion, deployParams, sendEmail, requestOnly, doSimulate,
-                isExecuteShakedownTest, isNeighbourhoodTest, trackingId);
+                trackingId);
 
         if (deploymentDate == now && !requestOnly) {
             deploymentEvent.fire(new DeploymentEvent(DeploymentEventType.NEW, DeploymentState.scheduled));
@@ -543,14 +542,11 @@ public class DeploymentBoundary {
      * @param sendEmail
      * @param requestOnly
      * @param doSimulate
-     * @param isExecuteShakedownTest
-     * @param isNeighbourhoodTest
      * @param trackingId
      * @return boolean true if deployment request only
      */
     private boolean createDeploymentForAppserver(Integer appServerGroupId, Integer releaseId, Date deploymentDate, Date stateToDeploy, List<Integer> contextIds, List<ApplicationWithVersion>
-            applicationWithVersion, List<DeploymentParameter> deployParams, boolean sendEmail, boolean requestOnly, boolean doSimulate, boolean isExecuteShakedownTest, boolean
-                                                         isNeighbourhoodTest, Integer trackingId) {
+            applicationWithVersion, List<DeploymentParameter> deployParams, boolean sendEmail, boolean requestOnly, boolean doSimulate, Integer trackingId) {
         ResourceGroupEntity group = em.find(ResourceGroupEntity.class, appServerGroupId);
         ReleaseEntity release = em.find(ReleaseEntity.class, releaseId);
         ResourceEntity resource = dependencyResolver.getResourceEntityForRelease(group, release);

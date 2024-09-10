@@ -57,27 +57,7 @@
       <label for="simulate">simulate before deployment</label>
     </div>
 
-    @if (hasPermissionShakedownTest) {
-    <div class="form-check">
-      <input
-        type="checkbox"
-        class="form-check-input"
-        id="shakedownTestsWhenDeployed"
-        [(ngModel)]="confirmationAttributes.shakedownTestsWhenDeployed"
-      />
-      <label for="shakedownTestsWhenDeployed">execute shakedown tests when deployed</label>
-    </div>
-    } @if (confirmationAttributes.shakedownTestsWhenDeployed) {
-    <div class="form-check">
-      <input
-        type="checkbox"
-        class="form-check-input"
-        id="neighbourhoodTest"
-        [(ngModel)]="confirmationAttributes.neighbourhoodTest"
-      />
-      <label for="neighbourhoodTest">test neighbourhood</label>
-    </div>
-    } }
+    }
   </span>
 </div>
 <div class="modal-footer">

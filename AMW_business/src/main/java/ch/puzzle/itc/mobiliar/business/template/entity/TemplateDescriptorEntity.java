@@ -61,8 +61,6 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 	private String name;
 	private String targetPath;
 
-	@Column(nullable = false)
-	private boolean testing = true;
 
 	@ManyToMany(fetch=FetchType.EAGER)
 	@Getter
@@ -157,13 +155,6 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 		this.ownerResource = ownerResource;
 	}
 
-	public boolean isTesting() {
-		return testing;
-	}
-
-	public void setTesting(boolean testing) {
-		this.testing = testing;
-	}
 
 	public long getV() {
 		return v;
@@ -198,8 +189,6 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 		// name
 		target.setName(this.getName());
 
-		// testing
-		target.setTesting(this.isTesting());
 
 		// fileContent
 		if (alreadyExists && !StringUtils.equals(target.getFileContent(), this.getFileContent())) {

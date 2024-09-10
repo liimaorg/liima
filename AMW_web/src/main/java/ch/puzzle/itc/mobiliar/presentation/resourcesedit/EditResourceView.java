@@ -300,23 +300,19 @@ public class EditResourceView implements Serializable {
     public boolean hasAddPropertyPermission() {
         if (isEditResource()) {
             if (contextIdViewParam == null) {
-                return permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceIdFromParam, isTesting(), sessionContext.getCurrentContext().getId());
+                return permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceIdFromParam, sessionContext.getCurrentContext().getId());
             }
-            return permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceIdFromParam, isTesting(), contextIdViewParam);
+            return permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceIdFromParam, contextIdViewParam);
         } else {
             if (contextIdViewParam == null) {
-                return permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeIdFromParam, sessionContext.getCurrentContext().getId(), isTesting());
+                return permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeIdFromParam, sessionContext.getCurrentContext().getId());
             }
-            return permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeIdFromParam, contextIdViewParam, isTesting());
+            return permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(resourceTypeIdFromParam, contextIdViewParam);
         }
     }
 
     public boolean canGoBackToResourceList() {
         return permissionBoundary.hasPermission(Permission.BACK_TO_RES_LIST);
-    }
-
-    public boolean hasShakedownTestPermission() {
-        return permissionBoundary.hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     public ContextEntity getCurrentContext() {

@@ -1,4 +1,4 @@
-<databaseChangeLog logicalFilePath="liquibase/changesets/model/removeShakedownTest/removeShakedownTest.xml"
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/removeTesting/removeShakedownAndTesting.xml"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
@@ -8,5 +8,9 @@
         <dropTable tableName="TAMW_shakedownTest"/>
         <dropColumn tableName="TAMW_deployment" columnName="createTestAfterDeployment"/>
         <dropColumn tableName="TAMW_deployment" columnName="neighborhoodTest"/>
+    </changeSet>
+
+    <changeSet author="sgirod" id="removeTesting">
+        <dropColumn tableName="TAMW_templateDescriptor" columnName="testing"/>
     </changeSet>
 </databaseChangeLog>

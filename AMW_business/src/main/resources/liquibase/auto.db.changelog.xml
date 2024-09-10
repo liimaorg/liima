@@ -112,6 +112,6 @@
 
     <!--1.17.37-->
     <include file="changesets/model/removeFavorites/removeFavorites.xml" relativeToChangelogFile="true"/>
-    <include file="changesets/model/removeShakedownTest/removeShakedownTest.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/removeTesting/removeShakedownAndTesting.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -685,16 +685,6 @@ public class PropertyEditor {
     }
 
     /**
-     * Checks Permissions and Persists the given shakedown test property descriptor to the database for resource instance
-     */
-    @HasPermission(permission = Permission.SHAKEDOWN_TEST_MODE)
-    public PropertyDescriptorEntity saveTestingPropertyDescriptorForResource(Integer resourceId, PropertyDescriptorEntity descriptor,int foreignableHashBeforeModification, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
-        // verify if modifications are allowed
-        foreignableService.verifyEditableByOwner(ForeignableOwner.getSystemOwner(), foreignableHashBeforeModification, descriptor);
-        return savePropertyDescriptorResource(ForeignableOwner.getSystemOwner(), resourceId, descriptor, propertyTagsString);
-    }
-
-    /**
      * Checks Permissions and Persists the given property descriptor to the database for resource instance
      */
     public PropertyDescriptorEntity savePropertyDescriptorForResource(ForeignableOwner editingOwner, Integer resourceId, PropertyDescriptorEntity descriptor, int foreignableHashBeforeModification, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
@@ -716,17 +706,6 @@ public class PropertyEditor {
         }
 
         return propertyDescriptorService.savePropertyDescriptorForOwner(editingOwner, resourceContext, descriptor, propertyTagEditingService.convertToTags(propertyTagsString), attachedResource);
-    }
-
-    /**
-     * Checks Permissions and Persists the given shakedown test property descriptor to the database for resource type
-     */
-    @HasPermission(permission = Permission.SHAKEDOWN_TEST_MODE)
-    public PropertyDescriptorEntity saveTestingPropertyDescriptorForResourceType(Integer resourceTypeId, PropertyDescriptorEntity descriptor, int foreignableHashBeforeModification, String propertyTagsString) throws AMWException, ForeignableOwnerViolationException {
-
-        // verify if modifications are allowed
-        foreignableService.verifyEditableByOwner(ForeignableOwner.getSystemOwner(), foreignableHashBeforeModification, descriptor);
-        return savePropertyDescriptorResourceType(ForeignableOwner.getSystemOwner(), resourceTypeId, descriptor, propertyTagsString);
     }
 
     /**
