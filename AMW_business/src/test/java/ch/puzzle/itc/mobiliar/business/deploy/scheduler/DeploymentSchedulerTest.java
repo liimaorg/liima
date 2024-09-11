@@ -319,7 +319,7 @@ public class DeploymentSchedulerTest {
 		verify(deploymentExecuterService, times(1)).generateConfigurationAndExecuteDeployment(Integer.valueOf(2), GenerationModus.SIMULATE);
 		verify(deploymentExecuterService, times(1)).generateConfigurationAndExecuteDeployment(Integer.valueOf(1), GenerationModus.PREDEPLOY);
 		verify(deploymentExecuterService, times(1)).generateConfigurationAndExecuteDeployment(Integer.valueOf(2), GenerationModus.PREDEPLOY);
-		verify(log, times(12)).log(argThat(matchesLevel(Level.INFO)), anyString());
+		verify(log, times(9)).log(argThat(matchesLevel(Level.INFO)), anyString());
 	}
 	
 	@Test

@@ -221,15 +221,14 @@ public class PropertyEditDataProvider implements Serializable {
 
     private void loadResourceRelationEditProperties() {
         filteredRelationProperties = new ArrayList<>();
-
+        currentRelationProperties = new ArrayList<>();
         if (currentRelation != null) {
             if (currentRelation.isResourceTypeRelation()) {
-                List<ResourceEditProperty> properties = editor.getPropertiesForRelatedResourceType(currentRelation, getContextId());
-                currentRelationProperties = userSettings.filterTestingProperties(properties);
+                currentRelationProperties = editor.getPropertiesForRelatedResourceType(currentRelation, getContextId());
                 typeRelationIdentifier = currentRelation.getDisplayName();
             } else {
-                currentRelationProperties = userSettings.filterTestingProperties(editor
-                        .getPropertiesForRelatedResource(getResourceId(), currentRelation, getContextId()));
+                currentRelationProperties = editor
+                        .getPropertiesForRelatedResource(getResourceId(), currentRelation, getContextId());
                 filterHostNameAndActiveFromRelatedNode(currentRelation);
                 relationIdentifier = currentRelation.getIdentifier();
             }
@@ -416,8 +415,7 @@ public class PropertyEditDataProvider implements Serializable {
 
     private List<ResourceEditProperty> reloadResourceEditProperties(ResourceEntity resourceEntity) {
         filteredResourceProperties = new ArrayList<>();
-        List<ResourceEditProperty> propertiesForResource = editor.getPropertiesForResource(resourceEntity.getId(), getContextId());
-        resourceEditProperties = userSettings.filterTestingProperties(propertiesForResource);
+        resourceEditProperties = editor.getPropertiesForResource(resourceEntity.getId(), getContextId());
         filterHostNameAndActiveFromNode();
         editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
                 currentContext);
@@ -435,8 +433,8 @@ public class PropertyEditDataProvider implements Serializable {
 
     private List<ResourceEditProperty> reloadResourceTypeEditProperties(ResourceTypeEntity resourceTypeEntity) {
         filteredResourceProperties = new ArrayList<>();
-        resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResourceType(
-                resourceTypeEntity.getId(), getContextId()));
+        resourceEditProperties = editor.getPropertiesForResourceType(
+                resourceTypeEntity.getId(), getContextId());
         editableProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE, currentContext, Action.UPDATE,
                 null, resourceTypeEntity);
         canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, currentContext, Action.ALL,

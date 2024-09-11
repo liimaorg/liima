@@ -283,20 +283,6 @@ public class EditResourceView implements Serializable {
                     Action.UPDATE, null, getResourceType());
     }
 
-    /**
-     * Set testing mode in session scoped bean
-     */
-    public void setTesting(boolean isTesting) {
-        userSettingsSessionScoped.setTestingMode(isTesting);
-    }
-
-    /**
-     * Get testing mode from session scoped bean
-     */
-    public boolean isTesting() {
-        return userSettingsSessionScoped.isTestingMode();
-    }
-
     public boolean hasAddPropertyPermission() {
         if (isEditResource()) {
             if (contextIdViewParam == null) {

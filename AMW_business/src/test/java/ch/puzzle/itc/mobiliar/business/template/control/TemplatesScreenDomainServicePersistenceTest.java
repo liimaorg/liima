@@ -71,9 +71,7 @@ public class TemplatesScreenDomainServicePersistenceTest {
 		// when
 		List<TemplateDescriptorEntity> result1 = service.getTemplateDescriptorByName("datasource_db2");
 		List<TemplateDescriptorEntity> result2 = service.getTemplateDescriptorByName("AMW_stp_ws");
-		List<TemplateDescriptorEntity> result3 = service.getTemplateDescriptorByName("datasource_db2");
-		List<TemplateDescriptorEntity> result4 = service.getTemplateDescriptorByName("AMW_stp_ws");
-		List<TemplateDescriptorEntity> result5 = service.getTemplateDescriptorByName("db2");
+		List<TemplateDescriptorEntity> result3 = service.getTemplateDescriptorByName("db2");
 
 		// then
 		assertNotNull(result1);
@@ -86,10 +84,6 @@ public class TemplatesScreenDomainServicePersistenceTest {
 
 		assertNotNull(result3);
 		assertEquals(0, result3.size());
-		assertNotNull(result4);
-		assertEquals(0, result4.size());
-		assertNotNull(result5);
-		assertEquals(0, result5.size());
 	}
 
 	@Test

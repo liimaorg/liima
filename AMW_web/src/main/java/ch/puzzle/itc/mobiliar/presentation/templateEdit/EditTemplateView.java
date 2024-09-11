@@ -202,10 +202,10 @@ public class EditTemplateView implements Serializable {
             return;
         }
         if (resourceId == null) {
-            templateEditor.saveTemplateForResourceType(template, resourceTypeId, settings.isTestingMode());
+            templateEditor.saveTemplateForResourceType(template, resourceTypeId);
             return;
         }
-        templateEditor.saveTemplateForResource(template, resourceId, settings.isTestingMode());
+        templateEditor.saveTemplateForResource(template, resourceId);
     }
 
     public boolean canModifyTemplates() {
