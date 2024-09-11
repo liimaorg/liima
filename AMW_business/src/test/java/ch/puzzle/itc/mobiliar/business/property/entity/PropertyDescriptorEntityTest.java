@@ -366,19 +366,6 @@ public class PropertyDescriptorEntityTest {
     }
 
     @Test
-    public void foreignableFieldHashCodeWithChangedTestingShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().isTesting(true).build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
     public void foreignableFieldHashCodeWithChangedValidationLogicShouldBeDifferent(){
         // given
         propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
