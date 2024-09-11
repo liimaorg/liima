@@ -40,30 +40,29 @@ public class GeneratorUtils {
 
     public Set<TemplateDescriptorEntity> getTemplates(ContextEntity context,
                                                       AbstractResourceRelationEntity resourceRelation, Set<TemplateDescriptorEntity> result,
-                                                      Integer platform, boolean testing) {
+                                                      Integer platform) {
         if (result == null) {
             result = new HashSet<>();
         }
-        getTemplateDescriptorsForContext(context, resourceRelation, result, platform, testing);
+        getTemplateDescriptorsForContext(context, resourceRelation, result, platform);
         if (context.getParent() != null) {
-            result = getTemplates(context.getParent(), resourceRelation, result, platform, testing);
+            result = getTemplates(context.getParent(), resourceRelation, result, platform);
         }
         result.addAll(getTemplates(resourceRelation.getResourceRelationType().getResourceTypeA(),
-                resourceRelation.getResourceRelationType().getResourceTypeB(), context, platform, testing));
+                resourceRelation.getResourceRelationType().getResourceTypeB(), context, platform));
         return result;
     }
 
     private Set<TemplateDescriptorEntity> getTemplateDescriptorsForContext(ContextEntity context,
                                                                            AbstractResourceRelationEntity resourceRelation, Set<TemplateDescriptorEntity> result,
-                                                                           Integer platform, boolean testing) {
+                                                                           Integer platform) {
         if (resourceRelation != null) {
             if (resourceRelation.getContexts() != null) {
                 for (ResourceRelationContextEntity resourceRelationContext : resourceRelation
                         .getContexts()) {
                     if (resourceRelationContext.getContext() != null
                             && resourceRelationContext.getContext().getId().equals(context.getId())) {
-                        result = collectTemplateDescriptors(resourceRelationContext, result, platform,
-                                testing);
+                        result = collectTemplateDescriptors(resourceRelationContext, result, platform);
                     }
                 }
             }
@@ -175,7 +174,7 @@ public class GeneratorUtils {
     /*************************************** START RESOURCE **********************************************/
 
     public Set<TemplateDescriptorEntity> getTemplates(ResourceEntity resource, ContextEntity context,
-                                                      Set<TemplateDescriptorEntity> result, Integer platform, boolean testing) {
+                                                      Set<TemplateDescriptorEntity> result, Integer platform) {
         if (result == null) {
             result = new HashSet<>();
         }
@@ -184,14 +183,13 @@ public class GeneratorUtils {
                 for (ResourceContextEntity relatedResourceContext : resource.getContexts()) {
                     if (relatedResourceContext.getContext() != null
                             && relatedResourceContext.getContext().getId().equals(context.getId())) {
-                        result = collectTemplateDescriptors(relatedResourceContext, result, platform,
-                                testing);
+                        result = collectTemplateDescriptors(relatedResourceContext, result, platform);
                     }
                 }
             }
-            result = getTemplatesForContext(context, resource.getResourceType(), result, platform, testing);
+            result = getTemplatesForContext(context, resource.getResourceType(), result, platform);
             if (context.getParent() != null) {
-                result = getTemplates(resource, context.getParent(), result, platform, testing);
+                result = getTemplates(resource, context.getParent(), result, platform);
             }
         }
         return result;
@@ -249,8 +247,7 @@ public class GeneratorUtils {
     /*************************************** START RELATED RESOURCE TYPES **********************************************/
 
     private Set<TemplateDescriptorEntity> getTemplates(ResourceTypeEntity resourceType,
-                                                       ResourceTypeEntity relatedResourceType, ContextEntity context, Integer targetPlatform,
-                                                       boolean testing) {
+                                                       ResourceTypeEntity relatedResourceType, ContextEntity context, Integer targetPlatform) {
         Set<TemplateDescriptorEntity> result = new HashSet<>();
         for (ResourceRelationTypeEntity relType : TemplateUtils.getAllResourceRelationTypes(resourceType,
                 relatedResourceType)) {
@@ -258,8 +255,8 @@ public class GeneratorUtils {
                     .getContextsByLowestContext(context)) {
                 if (relContextType.getTemplates() != null) {
                     for (TemplateDescriptorEntity template : relContextType.getTemplates()) {
-                        if (testing == template.isTesting() && (targetPlatform != null && containsRuntimeId(targetPlatform,
-                                template.getTargetPlatforms()))) {
+                        if (targetPlatform != null && containsRuntimeId(targetPlatform,
+                                template.getTargetPlatforms())) {
                             template.setRelationTemplate(true);
                             result.add(template);
                         }
@@ -275,8 +272,7 @@ public class GeneratorUtils {
     /*************************************** START RESOURCE TYPE **********************************************/
 
     private Set<TemplateDescriptorEntity> getTemplatesForContext(ContextEntity context,
-                                                                 ResourceTypeEntity resourceType, Set<TemplateDescriptorEntity> result, Integer platform,
-                                                                 boolean testing) {
+                                                                 ResourceTypeEntity resourceType, Set<TemplateDescriptorEntity> result, Integer platform) {
         if (resourceType != null) {
             ResourceTypeEntity resType = resourceType;
             while (resType != null) {
@@ -285,8 +281,7 @@ public class GeneratorUtils {
                     for (ResourceTypeContextEntity resourceTypeContext : resType.getContexts()) {
                         if (resourceTypeContext.getContext() != null
                                 && resourceTypeContext.getContext().getId().equals(context.getId())) {
-                            result = collectTemplateDescriptors(resourceTypeContext, result, platform,
-                                    testing);
+                            result = collectTemplateDescriptors(resourceTypeContext, result, platform);
                         }
                     }
                 }
@@ -376,7 +371,7 @@ public class GeneratorUtils {
     }
 
     public Set<TemplateDescriptorEntity> collectTemplateDescriptors(AbstractContext context,
-                                                                    Set<TemplateDescriptorEntity> result, Integer targetPlatform, boolean testing) {
+                                                                    Set<TemplateDescriptorEntity> result, Integer targetPlatform) {
         if (result == null) {
             result = new HashSet<>();
         }
@@ -385,11 +380,9 @@ public class GeneratorUtils {
                 // Only consider templates for the given platform
                 if (targetPlatform != null
                         && containsRuntimeId(targetPlatform, template.getTargetPlatforms())) {
-                    // distinct between testing and non-testing templates
-                    if (testing == template.isTesting()) {
+
                         template.setOwnerResource(context);
                         result.add(template);
-                    }
                 }
             }
         }

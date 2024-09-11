@@ -518,7 +518,6 @@ public class PropertyDescriptorEntityTest {
         assertEquals(origin.isEncrypt(), copy.isEncrypt());
         assertEquals(origin.getPropertyName(), copy.getPropertyName());
         assertEquals(origin.isNullable(), copy.isNullable());
-        assertEquals(origin.isTesting(), copy.isTesting());
         assertEquals(origin.getValidationLogic(), copy.getValidationLogic());
         assertEquals(origin.getPropertyComment(), copy.getPropertyComment());
         assertEquals(origin.getCardinalityProperty(), copy.getCardinalityProperty());

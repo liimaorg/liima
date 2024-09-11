@@ -1,6 +1,5 @@
 package ch.puzzle.itc.mobiliar.presentation.templateEdit;
 
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownStpEntity;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -24,9 +23,6 @@ public class EditTemplateViewTest {
     @Spy
     TemplateEditor templateEditor;
 
-    @Mock
-    ShakedownStpEntity selectedStp;
-
     @Spy
     @InjectMocks
     EditTemplateView editTemplateView;
@@ -36,43 +32,11 @@ public class EditTemplateViewTest {
 
     @Before
     public void setUp() {
-        doReturn(false).when(settings).isTestingMode();
         doReturn(false).when(editTemplateView).fail(any(AMWException.class));
         doNothing().when(editTemplateView).succeed();
 
         template = editTemplateView.getTemplate();
         template.setId(1);
-    }
-
-    @Test
-    public void shouldRejectTemplateInTestingModeWihtoutSelectedSTP() throws AMWException {
-        // given
-        doReturn(true).when(settings).isTestingMode();
-        editTemplateView.setSelectedStpId(9999); // clear selectedStp in the view
-
-        // when
-        editTemplateView.save();
-
-        // then
-        verify(editTemplateView).throwError("No STP-name selected!");
-        verify(editTemplateView, never()).succeed();
-    }
-
-    @Test
-    public void shouldSetTemplateNameFromSelectedStp() throws AMWException {
-        // given
-        doReturn(true).when(settings).isTestingMode();
-        doReturn("name-of-selected-stp").when(selectedStp).getStpName();
-
-        editTemplateView.setResourceTypeId(10);
-        doNothing().when(templateEditor).saveTemplateForResourceType(template, 10, true);
-
-        // when
-        editTemplateView.save();
-
-        // then
-        verify(template).setName("name-of-selected-stp");
-        verify(editTemplateView).succeed();
     }
 
     @Test
@@ -111,13 +75,13 @@ public class EditTemplateViewTest {
         editTemplateView.setRelationIdForTemplate(null);
         editTemplateView.setResourceId(null);
         editTemplateView.setResourceTypeId(99);
-        doNothing().when(templateEditor).saveTemplateForResourceType(template, 99, false);
+        doNothing().when(templateEditor).saveTemplateForResourceType(template, 99);
 
         // when
         editTemplateView.save();
 
         // then
-        verify(templateEditor).saveTemplateForResourceType(template, 99, settings.isTestingMode());
+        verify(templateEditor).saveTemplateForResourceType(template, 99);
         verify(editTemplateView).succeed();
     }
 
@@ -127,13 +91,13 @@ public class EditTemplateViewTest {
         editTemplateView.setResourceTypeId(null);
         editTemplateView.setRelationIdForTemplate(null);
         editTemplateView.setResourceId(10);
-        doNothing().when(templateEditor).saveTemplateForResource(template, 10, false);
+        doNothing().when(templateEditor).saveTemplateForResource(template, 10);
 
         // when
         editTemplateView.save();
 
         // then
-        verify(templateEditor).saveTemplateForResource(template, 10, settings.isTestingMode());
+        verify(templateEditor).saveTemplateForResource(template, 10);
         verify(editTemplateView).succeed();
     }
 }

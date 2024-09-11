@@ -119,15 +119,6 @@ public class SecurityDataProvider implements Serializable{
 		return permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.READ);
 	}
 
-	public boolean hasPermissionToCreateShakedownTests(List<Integer> resourceGroupIds) {
-		for (Integer resourceGroupId : resourceGroupIds) {
-			if (!permissionBoundary.hasPermissionToCreateShakedownTests(resourceGroupId)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	public String getUserName() {
 		return permissionBoundary.getUserName();
 	}

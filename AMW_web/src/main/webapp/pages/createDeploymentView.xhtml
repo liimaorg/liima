@@ -327,27 +327,7 @@
                                                             <h:selectBooleanCheckbox
                                                                     value="#{createDeploymentView.sendEmail}"/>send an email when deployed</label>
                                                     </div>
-                                                    <div>
-                                                        <h:panelGroup
-                                                                rendered="#{securityDataProvider.hasPermissionToCreateShakedownTests(createDeploymentView.selectedApplicationServerGroupForRedeployment)}">
 
-                                                            <label class="inlineBlock">
-                                                                <h:selectBooleanCheckbox
-                                                                        value="#{createDeploymentView.executeShakedownTest}">
-                                                                    <a4j:ajax render="testNeighbourhoodButtonId"/>
-                                                                </h:selectBooleanCheckbox>execute shakedown tests when deployed</label>
-                                                        </h:panelGroup>
-                                                    </div>
-
-                                                    <div class="paddingLeft20">
-                                                        <h:panelGroup
-                                                                rendered="#{securityDataProvider.hasPermissionToCreateShakedownTests(createDeploymentView.selectedApplicationServerGroupForRedeployment)}">
-                                                            <label class="inlineBlock">
-                                                                <h:selectBooleanCheckbox id="testNeighbourhoodButtonId"
-                                                                                         disabled="#{createDeploymentView.executeShakedownTest==false}"
-                                                                                         value="#{createDeploymentView.neighbourhoodTest}"/>test neighbourhood</label>
-                                                        </h:panelGroup>
-                                                    </div>
                                                 </h:panelGroup>
                                             </div>
                                             <div style="height: 0; clear: both;"></div>

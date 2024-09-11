@@ -51,287 +51,263 @@ import java.util.logging.Logger;
 @Stateless
 public class TemplatesScreenDomainService {
 
-	@Inject
-	private Logger log;
+    @Inject
+    private Logger log;
 
-	@Inject
-	private EntityManager entityManager;
+    @Inject
+    private EntityManager entityManager;
 
-	@Inject
-	private ContextDomainService contextService;
+    @Inject
+    private ContextDomainService contextService;
 
-	@Inject
-	ResourceLocator resourceLocator;
+    @Inject
+    ResourceLocator resourceLocator;
 
-	@Inject
-	ResourceRelationService resourceRelationService;
+    @Inject
+    ResourceRelationService resourceRelationService;
 
-	public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResourceType(ResourceTypeEntity resourceType, boolean testing) {
-		resourceType = entityManager.find(ResourceTypeEntity.class, resourceType.getId());
-		return getTemplateDescriptorsForResourceTypeContext(contextService.getGlobalResourceContextEntity(), resourceType, new ArrayList<TemplateDescriptorEntity>(), testing);
-	}
+    public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResourceType(ResourceTypeEntity resourceType) {
+        resourceType = entityManager.find(ResourceTypeEntity.class, resourceType.getId());
+        return getTemplateDescriptorsForResourceTypeContext(contextService.getGlobalResourceContextEntity(), resourceType, new ArrayList<TemplateDescriptorEntity>());
+    }
 
-	public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResource(ResourceEntity resource, boolean testing) {
-		resource = entityManager.find(ResourceEntity.class, resource.getId());
-		return getTemplateDescriptorsForResourceContext(contextService.getGlobalResourceContextEntity(), resource, new ArrayList<TemplateDescriptorEntity>(), testing);
-	}
+    public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResource(ResourceEntity resource) {
+        resource = entityManager.find(ResourceEntity.class, resource.getId());
+        return getTemplateDescriptorsForResourceContext(contextService.getGlobalResourceContextEntity(), resource, new ArrayList<TemplateDescriptorEntity>());
+    }
 
-	public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResource(String resourceGroupName, String releaseName, boolean testing) throws ValidationException {
-		ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
-		return getTemplateDescriptorsForResourceContext(contextService.getGlobalResourceContextEntity(), resource, new ArrayList<TemplateDescriptorEntity>(), testing);
-	}
+    public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResource(String resourceGroupName, String releaseName) throws ValidationException {
+        ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
+        return getTemplateDescriptorsForResourceContext(contextService.getGlobalResourceContextEntity(), resource, new ArrayList<TemplateDescriptorEntity>());
+    }
 
-	public List<TemplateDescriptorEntity> getGlobalTemplatesForResourceRelation(ResourceEditRelation relation, boolean testing) {
-		return getTemplateDescriptorsForResourceRelationContext(contextService.getGlobalResourceContextEntity(), resourceRelationService.getResourceRelation(relation.getResRelId()), new ArrayList<TemplateDescriptorEntity>(), testing);
-	}
+    public List<TemplateDescriptorEntity> getGlobalTemplatesForResourceRelation(ResourceEditRelation relation) {
+        return getTemplateDescriptorsForResourceRelationContext(contextService.getGlobalResourceContextEntity(), resourceRelationService.getResourceRelation(relation.getResRelId()), new ArrayList<TemplateDescriptorEntity>());
+    }
 
-	public List<TemplateDescriptorEntity> getGlobalTemplatesForResourceRelationType(ResourceEditRelation relation, boolean testing) {
-		ResourceRelationTypeEntity resRelType = entityManager.find(ResourceRelationTypeEntity.class, relation.getResRelTypeId());
-		//TODO parent resource types!?
-		return getTemplateDescriptorsForResourceRelationTypeContext(contextService.getGlobalResourceContextEntity(), resRelType, new ArrayList<TemplateDescriptorEntity>(), testing);
-	}
+    public List<TemplateDescriptorEntity> getGlobalTemplatesForResourceRelationType(ResourceEditRelation relation) {
+        ResourceRelationTypeEntity resRelType = entityManager.find(ResourceRelationTypeEntity.class, relation.getResRelTypeId());
+        //TODO parent resource types!?
+        return getTemplateDescriptorsForResourceRelationTypeContext(contextService.getGlobalResourceContextEntity(), resRelType, new ArrayList<TemplateDescriptorEntity>());
+    }
 
-	public List<TemplateDescriptorEntity> getTemplatesForResourceRelation(AbstractResourceRelationEntity relation, boolean testing) throws ResourceNotFoundException {
-		return getTemplateDescriptorsForResourceRelationContext(contextService.getGlobalResourceContextEntity(), resourceRelationService.getResourceRelation(relation.getId()), new ArrayList<TemplateDescriptorEntity>(), testing);
-	}
+    public List<TemplateDescriptorEntity> getTemplatesForResourceRelation(AbstractResourceRelationEntity relation) throws ResourceNotFoundException {
+        return getTemplateDescriptorsForResourceRelationContext(contextService.getGlobalResourceContextEntity(), resourceRelationService.getResourceRelation(relation.getId()), new ArrayList<TemplateDescriptorEntity>());
+    }
 
-	public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResourceRelation(Integer identifier, boolean testing) {
-		ResourceRelationTypeEntity resRelType = entityManager.find(ResourceRelationTypeEntity.class, identifier);
-		return getTemplateDescriptorsForResourceRelationTypeContext(contextService.getGlobalResourceContextEntity(), resRelType, new ArrayList<TemplateDescriptorEntity>(), testing);
-	}
+    public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResourceRelation(Integer identifier) {
+        ResourceRelationTypeEntity resRelType = entityManager.find(ResourceRelationTypeEntity.class, identifier);
+        return getTemplateDescriptorsForResourceRelationTypeContext(contextService.getGlobalResourceContextEntity(), resRelType, new ArrayList<TemplateDescriptorEntity>());
+    }
 
-	private List<TemplateDescriptorEntity> getTemplateDescriptorsForResourceTypeContext(ContextEntity context, ResourceTypeEntity resourceType,
-			List<TemplateDescriptorEntity> templateDescriptors, boolean testing) {
-		if (resourceType != null) {
+    private List<TemplateDescriptorEntity> getTemplateDescriptorsForResourceTypeContext(ContextEntity context, ResourceTypeEntity resourceType,
+                                                                                        List<TemplateDescriptorEntity> templateDescriptors) {
+        if (resourceType != null) {
 
-			if (resourceType.getContexts() != null) {
-				// Get templates of resource type context
-				for (ResourceTypeContextEntity resourceTypeContext : resourceType.getContexts()) {
-					if (resourceTypeContext.getContext() != null && resourceTypeContext.getContext().getId().equals(context.getId())) {
-						templateDescriptors = collectTemplateDescriptors(resourceTypeContext, templateDescriptors, testing);
-					}
-				}
-			}
-		}
+            if (resourceType.getContexts() != null) {
+                // Get templates of resource type context
+                for (ResourceTypeContextEntity resourceTypeContext : resourceType.getContexts()) {
+                    if (resourceTypeContext.getContext() != null && resourceTypeContext.getContext().getId().equals(context.getId())) {
+                        templateDescriptors = collectTemplateDescriptors(resourceTypeContext, templateDescriptors);
+                    }
+                }
+            }
+        }
 
-		if (context.getParent() != null) {
-			templateDescriptors = getTemplateDescriptorsForResourceTypeContext(context.getParent(), resourceType, templateDescriptors, testing);
-		}
-		return templateDescriptors;
-	}
+        if (context.getParent() != null) {
+            templateDescriptors = getTemplateDescriptorsForResourceTypeContext(context.getParent(), resourceType, templateDescriptors);
+        }
+        return templateDescriptors;
+    }
 
-	private List<TemplateDescriptorEntity> getTemplateDescriptorsForResourceContext(ContextEntity context, ResourceEntity resource, List<TemplateDescriptorEntity> templateDescriptors, boolean testing) {
-		if (resource != null) {
-			if (resource.getContexts() != null) {
-				// Get templates of resource context
-				for (ResourceContextEntity resourceContext : resource.getContexts()) {
-					if (resourceContext.getContext() != null && resourceContext.getContext().getId().equals(context.getId())) {
-						templateDescriptors = collectTemplateDescriptors(resourceContext, templateDescriptors, testing);
-					}
-				}
-			}
-		}
-		if (context.getParent() != null) {
-			templateDescriptors = getTemplateDescriptorsForResourceContext(context.getParent(), resource, templateDescriptors, testing);
-		}
-		return templateDescriptors;
-	}
+    private List<TemplateDescriptorEntity> getTemplateDescriptorsForResourceContext(ContextEntity context, ResourceEntity resource, List<TemplateDescriptorEntity> templateDescriptors) {
+        if (resource != null) {
+            if (resource.getContexts() != null) {
+                // Get templates of resource context
+                for (ResourceContextEntity resourceContext : resource.getContexts()) {
+                    if (resourceContext.getContext() != null && resourceContext.getContext().getId().equals(context.getId())) {
+                        templateDescriptors = collectTemplateDescriptors(resourceContext, templateDescriptors);
+                    }
+                }
+            }
+        }
+        if (context.getParent() != null) {
+            templateDescriptors = getTemplateDescriptorsForResourceContext(context.getParent(), resource, templateDescriptors);
+        }
+        return templateDescriptors;
+    }
 
-	private List<TemplateDescriptorEntity> getTemplateDescriptorsForResourceRelationTypeContext(ContextEntity context, ResourceRelationTypeEntity relationType,
-			List<TemplateDescriptorEntity> templateDescriptors, boolean testing) {
-		if (relationType != null) {
+    private List<TemplateDescriptorEntity> getTemplateDescriptorsForResourceRelationTypeContext(ContextEntity context, ResourceRelationTypeEntity relationType,
+                                                                                                List<TemplateDescriptorEntity> templateDescriptors) {
+        if (relationType != null) {
 
-			if (relationType.getContexts() != null) {
-				// Get templates of resource type context
-				for (ResourceRelationTypeContextEntity resourceRelationTypeContext : relationType.getContexts()) {
-					if (resourceRelationTypeContext.getContext() != null && resourceRelationTypeContext.getContext().getId().equals(context.getId())) {
-						templateDescriptors = collectTemplateDescriptors(resourceRelationTypeContext, templateDescriptors, testing);
-					}
-				}
-			}
-		}
+            if (relationType.getContexts() != null) {
+                // Get templates of resource type context
+                for (ResourceRelationTypeContextEntity resourceRelationTypeContext : relationType.getContexts()) {
+                    if (resourceRelationTypeContext.getContext() != null && resourceRelationTypeContext.getContext().getId().equals(context.getId())) {
+                        templateDescriptors = collectTemplateDescriptors(resourceRelationTypeContext, templateDescriptors);
+                    }
+                }
+            }
+        }
 
-		if (context.getParent() != null) {
-			templateDescriptors = getTemplateDescriptorsForResourceRelationTypeContext(context.getParent(), relationType, templateDescriptors, testing);
-		}
-		return templateDescriptors;
-	}
+        if (context.getParent() != null) {
+            templateDescriptors = getTemplateDescriptorsForResourceRelationTypeContext(context.getParent(), relationType, templateDescriptors);
+        }
+        return templateDescriptors;
+    }
 
-	private List<TemplateDescriptorEntity> getTemplateDescriptorsForResourceRelationContext(ContextEntity context, AbstractResourceRelationEntity relation,
-			List<TemplateDescriptorEntity> templateDescriptors, boolean testing) {
+    private List<TemplateDescriptorEntity> getTemplateDescriptorsForResourceRelationContext(ContextEntity context, AbstractResourceRelationEntity relation,
+                                                                                            List<TemplateDescriptorEntity> templateDescriptors) {
 
-		if (relation != null) {
-			if (relation.getContexts() != null) {
-				// Get templates of resource context
-				for (ResourceRelationContextEntity resourceRelationContext : relation.getContexts()) {
-					if (resourceRelationContext.getContext() != null && resourceRelationContext.getContext().getId().equals(context.getId())) {
-						templateDescriptors = collectTemplateDescriptors(resourceRelationContext, templateDescriptors, testing);
-					}
-				}
-			}
-		}
+        if (relation != null) {
+            if (relation.getContexts() != null) {
+                // Get templates of resource context
+                for (ResourceRelationContextEntity resourceRelationContext : relation.getContexts()) {
+                    if (resourceRelationContext.getContext() != null && resourceRelationContext.getContext().getId().equals(context.getId())) {
+                        templateDescriptors = collectTemplateDescriptors(resourceRelationContext, templateDescriptors);
+                    }
+                }
+            }
+        }
 
-		if (context.getParent() != null) {
-			templateDescriptors = getTemplateDescriptorsForResourceRelationContext(context.getParent(), relation, templateDescriptors, testing);
-		}
-		return templateDescriptors;
-	}
+        if (context.getParent() != null) {
+            templateDescriptors = getTemplateDescriptorsForResourceRelationContext(context.getParent(), relation, templateDescriptors);
+        }
+        return templateDescriptors;
+    }
 
-	private List<TemplateDescriptorEntity> collectTemplateDescriptors(AbstractContext context, List<TemplateDescriptorEntity> templateDescriptorList, boolean testing) {
-		if (context.getTemplates() != null) {
-			for (TemplateDescriptorEntity templateDescriptor : context.getTemplates()) {
-				if ((testing && templateDescriptor.isTesting()) || (!testing && !templateDescriptor.isTesting())) {
-					templateDescriptor.setOwnerResource(context);
-					templateDescriptorList.add(templateDescriptor);
-				}
-			}
-		}
-		return templateDescriptorList;
-	}
+    private List<TemplateDescriptorEntity> collectTemplateDescriptors(AbstractContext context, List<TemplateDescriptorEntity> templateDescriptorList) {
+        if (context.getTemplates() != null) {
+            for (TemplateDescriptorEntity templateDescriptor : context.getTemplates()) {
+                templateDescriptor.setOwnerResource(context);
+                templateDescriptorList.add(templateDescriptor);
+            }
+        }
+        return templateDescriptorList;
+    }
 
-	private void removeTemplate(Integer selectedTemplateId, boolean isTesting, boolean isResType) throws TemplateNotDeletableException {
-		if(isTesting) {
-			//Check that the template is a Testing_Template(Shakedown entity).
-			removeTestingTemplate(selectedTemplateId);
-		} else if(isResType) {
-			removeDefaultResTypeTemplate(selectedTemplateId);
-			//The template is an InstanceResource_Template. Permitted to app_developer
-		} else {
-			removeDefaultResTemplate(selectedTemplateId);
-		}
-	}
+    private void removeTemplate(Integer selectedTemplateId, boolean isResType) throws TemplateNotDeletableException {
+		if (isResType) {
+            removeDefaultResTypeTemplate(selectedTemplateId);
+            //The template is an InstanceResource_Template. Permitted to app_developer
+        } else {
+            removeDefaultResTemplate(selectedTemplateId);
+        }
+    }
 
-	@HasPermission(permission = Permission.RESOURCE_TEMPLATE, action = Action.DELETE)
-	private void removeDefaultResTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
-		doRemoveTemplate(selectedTemplateId);
-	}
+    @HasPermission(permission = Permission.RESOURCE_TEMPLATE, action = Action.DELETE)
+    private void removeDefaultResTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
+        doRemoveTemplate(selectedTemplateId);
+    }
 
-	@HasPermission(permission = Permission.RESOURCETYPE_TEMPLATE, action = Action.DELETE)
-	private void removeDefaultResTypeTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
-		doRemoveTemplate(selectedTemplateId);
-	}
-
-	@HasPermission(permission = Permission.SHAKEDOWN_TEST_MODE)
-	private void removeTestingTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
-		doRemoveTemplate(selectedTemplateId);
-	}
+    @HasPermission(permission = Permission.RESOURCETYPE_TEMPLATE, action = Action.DELETE)
+    private void removeDefaultResTypeTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
+        doRemoveTemplate(selectedTemplateId);
+    }
 
 
     /**
      * Retruns a list of templates with the name templateName
+     *
      * @param templateName
      * @return
      */
-    private List<TemplateDescriptorEntity> getTemplateListByName(String templateName){
-		ArrayList<TemplateDescriptorEntity> result = (ArrayList<TemplateDescriptorEntity>) entityManager.createQuery("from TemplateDescriptorEntity tde where tde.name=:templateName", TemplateDescriptorEntity.class)
-				.setParameter("templateName", templateName).getResultList();
-		return result==null ? new ArrayList<TemplateDescriptorEntity>() : result;
-	}
+    private List<TemplateDescriptorEntity> getTemplateListByName(String templateName) {
+        ArrayList<TemplateDescriptorEntity> result = (ArrayList<TemplateDescriptorEntity>) entityManager.createQuery("from TemplateDescriptorEntity tde where tde.name=:templateName", TemplateDescriptorEntity.class)
+                .setParameter("templateName", templateName).getResultList();
+        return result == null ? new ArrayList<TemplateDescriptorEntity>() : result;
+    }
 
     /**
-     * Removes Templates with the given name
-     * @param templateName
+     * Löscht die Template von eine ResourceType.
+     *
+     * @param selectedTemplateId
      * @throws ResourceTypeNotFoundException
      * @throws TemplateNotDeletableException
      */
-	public void deleteSTPTemplate(String templateName) throws TemplateNotDeletableException {
-		for(TemplateDescriptorEntity template : getTemplateListByName(templateName)){
-			if(template!=null) {
-				removeTemplate(template.getId(), template.isTesting(),false);
-			}
-		}
-	}
+    private void doRemoveTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
+        TemplateDescriptorEntity templateDescriptor = entityManager.find(TemplateDescriptorEntity.class, selectedTemplateId);
+        if (templateDescriptor != null && templateDescriptor.getName() != null && SystemCallTemplate.getName().equals(templateDescriptor.getName())) {
+            String message = SystemCallTemplate.getName() + " Template can't be deleted!";
+            log.info(message);
+            throw new TemplateNotDeletableException(message);
+        }
+        AbstractContext owner = getOwnerOfTemplate(templateDescriptor);
+        if (owner != null) {
+            owner.removeTemplate(templateDescriptor);
+        }
+        entityManager.remove(templateDescriptor);
+        log.info("Template Id: " + selectedTemplateId + " was deleted successfully.");
+    }
 
-	/**
-	 * Löscht die Template von eine ResourceType.
-	 *
-	 * @param selectedTemplateId
-	 * @throws ResourceTypeNotFoundException
-	 * @throws TemplateNotDeletableException
-	 */
-	private void doRemoveTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
-		TemplateDescriptorEntity templateDescriptor = entityManager.find(TemplateDescriptorEntity.class, selectedTemplateId);
-		if (templateDescriptor != null && templateDescriptor.getName() != null && SystemCallTemplate.getName().equals(templateDescriptor.getName())) {
-			String message = SystemCallTemplate.getName() + " Template can't be deleted!";
-			log.info(message);
-			throw new TemplateNotDeletableException(message);
-		}
-		AbstractContext owner = getOwnerOfTemplate(templateDescriptor);
-		if (owner != null) {
-			owner.removeTemplate(templateDescriptor);
-		}
-		entityManager.remove(templateDescriptor);
-		log.info("Template Id: " + selectedTemplateId + " was deleted successfully.");
-	}
+    public AbstractContext getOwnerOfTemplate(TemplateDescriptorEntity templateDescriptor) {
+        // ContextEntity
+        AbstractContext c;
+        c = (AbstractContext) getSingleObjectOrNull(
+                entityManager.createQuery("select distinct n from ContextEntity n where :templ member of n.templates")
+                        .setParameter("templ", templateDescriptor));
+        if (c != null) {
+            return c;
+        }
+        c = (AbstractContext) getSingleObjectOrNull(entityManager
+                .createQuery("select distinct n from ContextTypeEntity n where :templ member of n.templates")
+                .setParameter("templ", templateDescriptor));
+        if (c != null) {
+            return c;
+        }
+        c = (AbstractContext) getSingleObjectOrNull(entityManager
+                .createQuery("select distinct n from ResourceContextEntity n where :templ member of n.templates")
+                .setParameter("templ", templateDescriptor));
+        if (c != null) {
+            return c;
+        }
+        c = (AbstractContext) getSingleObjectOrNull(entityManager
+                .createQuery(
+                        "select distinct n from ResourceRelationContextEntity n where :templ member of n.templates")
+                .setParameter("templ", templateDescriptor));
+        if (c != null) {
+            return c;
+        }
+        c = (AbstractContext) getSingleObjectOrNull(entityManager
+                .createQuery(
+                        "select distinct n from ResourceRelationTypeContextEntity n where :templ member of n.templates")
+                .setParameter("templ", templateDescriptor));
+        if (c != null) {
+            return c;
+        }
+        c = (AbstractContext) getSingleObjectOrNull(entityManager
+                .createQuery("select distinct n from ResourceTypeContextEntity n where :templ member of n.templates")
+                .setParameter("templ", templateDescriptor));
+        return c;
+    }
 
-	public AbstractContext getOwnerOfTemplate(TemplateDescriptorEntity templateDescriptor) {
-		// ContextEntity
-		AbstractContext c;
-		c = (AbstractContext) getSingleObjectOrNull(
-				entityManager.createQuery("select distinct n from ContextEntity n where :templ member of n.templates")
-						.setParameter("templ", templateDescriptor));
-		if (c != null) {
-			return c;
-		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager
-				.createQuery("select distinct n from ContextTypeEntity n where :templ member of n.templates")
-				.setParameter("templ", templateDescriptor));
-		if (c != null) {
-			return c;
-		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager
-				.createQuery("select distinct n from ResourceContextEntity n where :templ member of n.templates")
-				.setParameter("templ", templateDescriptor));
-		if (c != null) {
-			return c;
-		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager
-				.createQuery(
-						"select distinct n from ResourceRelationContextEntity n where :templ member of n.templates")
-				.setParameter("templ", templateDescriptor));
-		if (c != null) {
-			return c;
-		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager
-				.createQuery(
-						"select distinct n from ResourceRelationTypeContextEntity n where :templ member of n.templates")
-				.setParameter("templ", templateDescriptor));
-		if (c != null) {
-			return c;
-		}
-		c = (AbstractContext) getSingleObjectOrNull(entityManager
-				.createQuery("select distinct n from ResourceTypeContextEntity n where :templ member of n.templates")
-				.setParameter("templ", templateDescriptor));
-		return c;
-	}
+    private Object getSingleObjectOrNull(Query q) {
+        try {
+            return q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 
-	private Object getSingleObjectOrNull(Query q) {
-		try {
-			return q.getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
-	}
+    protected List<TemplateDescriptorEntity> getTemplateDescriptorByName(String templateName) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<TemplateDescriptorEntity> q = cb.createQuery(TemplateDescriptorEntity.class);
+        Root<TemplateDescriptorEntity> root = q.from(TemplateDescriptorEntity.class);
+        Predicate templateNamePred = cb.like(root.<String>get("name"), templateName);
+        q.where(cb.and(templateNamePred));
 
-	protected List<TemplateDescriptorEntity> getTemplateDescriptorByName(String templateName, boolean testing) {
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<TemplateDescriptorEntity> q = cb.createQuery(TemplateDescriptorEntity.class);
-		Root<TemplateDescriptorEntity> root = q.from(TemplateDescriptorEntity.class);
-		Predicate templateNamePred = cb.like(root.<String> get("name"), templateName);
-		Predicate testingPred = cb.equal(root.<Boolean> get("testing"), testing);
-		q.where(cb.and(templateNamePred, testingPred));
+        TypedQuery<TemplateDescriptorEntity> query = entityManager.createQuery(q);
+        return query.getResultList();
+    }
 
-		TypedQuery<TemplateDescriptorEntity> query = entityManager.createQuery(q);
-		return query.getResultList();
-	}
-
-	public void renameTestingTemplates(String oldName, String newName) {
-		List<TemplateDescriptorEntity> templates = getTemplateDescriptorByName(oldName, true);
-		for (TemplateDescriptorEntity t : templates) {
-			t.setName(newName);
-			entityManager.merge(t);
-			String message = "Template with name '" + oldName + "' renamed to '" + newName + "'";
-			log.info(message);
-		}
-	}
+    public void renameTestingTemplates(String oldName, String newName) {
+        List<TemplateDescriptorEntity> templates = getTemplateDescriptorByName(oldName);
+        for (TemplateDescriptorEntity t : templates) {
+            t.setName(newName);
+            entityManager.merge(t);
+            String message = "Template with name '" + oldName + "' renamed to '" + newName + "'";
+            log.info(message);
+        }
+    }
 }

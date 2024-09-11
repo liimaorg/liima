@@ -29,9 +29,6 @@ import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestExecuterService;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -66,10 +63,6 @@ public class DeploymentSchedulerTest {
 	DeploymentBoundary deploymentBoundary;
 	@Mock
 	DeploymentExecuterService deploymentExecuterService;
-	@Mock
-	ShakedownTestExecuterService shakedownTestExecuterService;
-	@Mock
-	ShakedownTestService shakedownTestService;
 
 	ContextEntity contextEntity;
 
@@ -255,91 +248,6 @@ public class DeploymentSchedulerTest {
 		verify(log, times(3)).log(argThat(matchesLevel(Level.INFO)), anyString());
 	}
 
-
-	@Test
-	public void test_checkForTests_noTest() {
-		// given
-		List<ShakedownTestEntity> tests = new ArrayList<ShakedownTestEntity>();
-
-		when(shakedownTestService.getTestsToExecute()).thenReturn(tests);
-
-		// when
-		deploymentScheduler.executeForTests();
-
-		// then
-		verify(shakedownTestExecuterService, never()).generateConfigurationAndExecuteShakedownTest(any(Integer.class));
-		verify(log, times(2)).log(argThat(matchesLevel(Level.FINE)), anyString());
-	}
-
-	@Test
-	public void test_checkForDeployments_OneTest_noContext() {
-		// given
-		List<ShakedownTestEntity> tests = new ArrayList<ShakedownTestEntity>();
-		ShakedownTestEntity test = new ShakedownTestEntity();
-		tests.add(test);
-
-		when(shakedownTestService.getTestsToExecute()).thenReturn(tests);
-
-		// when
-		deploymentScheduler.executeForTests();
-
-		// then
-		verify(shakedownTestExecuterService, never()).generateConfigurationAndExecuteShakedownTest(any(Integer.class));
-		verify(log, times(1)).log(argThat(matchesLevel(Level.INFO)), anyString());
-	}
-
-	@Test
-	public void test_checkForDeployments_OneTest_Context() {
-		// given
-		List<ShakedownTestEntity> tests = new ArrayList<ShakedownTestEntity>();
-		ResourceEntity resource =  ResourceFactory.createNewResource("testAppserver");
-
-		ShakedownTestEntity test = new ShakedownTestEntity();
-		test.setApplicationServer(resource);
-
-		test.setContext(contextEntity);
-		tests.add(test);
-
-		when(shakedownTestService.getTestsToExecute()).thenReturn(tests);
-
-		// when
-		deploymentScheduler.executeForTests();
-
-		// then
-		verify(shakedownTestExecuterService, times(1)).generateConfigurationAndExecuteShakedownTest(test.getId());
-		verify(log, times(2)).log(argThat(matchesLevel(Level.INFO)), anyString());
-	}
-
-	@Test
-	public void test_checkForDeployments_2Tests_Context() {
-		// given
-		List<ShakedownTestEntity> tests = new ArrayList<ShakedownTestEntity>();
-		ResourceEntity resource =  ResourceFactory.createNewResource("testAppserver");
-
-		ShakedownTestEntity test = new ShakedownTestEntity();
-		test.setId(Integer.valueOf(12));
-		ShakedownTestEntity test2 = new ShakedownTestEntity();
-		test2.setId(Integer.valueOf(13));
-		test.setApplicationServer(resource);
-		test2.setApplicationServer(resource);
-
-		test.setContext(contextEntity);
-		test2.setContext(contextEntity);
-
-		tests.add(test);
-		tests.add(test2);
-
-		when(shakedownTestService.getTestsToExecute()).thenReturn(tests);
-
-		// when
-		deploymentScheduler.executeForTests();
-
-		// then
-		verify(shakedownTestExecuterService, times(1)).generateConfigurationAndExecuteShakedownTest(test.getId());
-		verify(shakedownTestExecuterService, times(1)).generateConfigurationAndExecuteShakedownTest(test2.getId());
-		verify(log, times(3)).log(argThat(matchesLevel(Level.INFO)), anyString());
-	}
-
 	@Test
 	public void test_checkForEndlessDeployments_noDeployments(){
 		// given
@@ -379,7 +287,7 @@ public class DeploymentSchedulerTest {
 	}
 
 	@Test
-	public void test_checkForDeploymentsAndTests_2Deployments() {
+	public void test_checkForDeployments_2Deployments() {
 		// given
 		List<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 		ResourceEntity resource =  ResourceFactory.createNewResource("testResource");
@@ -397,27 +305,9 @@ public class DeploymentSchedulerTest {
 		deployments.add(deployment);
 		deployments.add(deployment2);
 
-		List<ShakedownTestEntity> tests = new ArrayList<ShakedownTestEntity>();
-		ResourceEntity appServer =  ResourceFactory.createNewResource("testAppserver");
-
-		ShakedownTestEntity test = new ShakedownTestEntity();
-		test.setId(Integer.valueOf(12));
-		ShakedownTestEntity test2 = new ShakedownTestEntity();
-		test.setId(Integer.valueOf(13));
-		test.setApplicationServer(appServer);
-		test2.setApplicationServer(appServer);
-
-		test.setContext(contextEntity);
-		test2.setContext(contextEntity);
-
-		tests.add(test);
-		tests.add(test2);
-
 		when(deploymentBoundary.getDeploymentsToSimulate()).thenReturn(deployments);
 		when(deploymentBoundary.getDeploymentsToExecute()).thenReturn(deployments);
 		when(deploymentBoundary.getPreDeploymentsToExecute()).thenReturn(deployments);
-		when(shakedownTestService.getTestsToExecute()).thenReturn(tests);
-
 
 		// when
 		deploymentScheduler.triggerDeyploymentsAndTests();
@@ -429,8 +319,6 @@ public class DeploymentSchedulerTest {
 		verify(deploymentExecuterService, times(1)).generateConfigurationAndExecuteDeployment(Integer.valueOf(2), GenerationModus.SIMULATE);
 		verify(deploymentExecuterService, times(1)).generateConfigurationAndExecuteDeployment(Integer.valueOf(1), GenerationModus.PREDEPLOY);
 		verify(deploymentExecuterService, times(1)).generateConfigurationAndExecuteDeployment(Integer.valueOf(2), GenerationModus.PREDEPLOY);
-		verify(shakedownTestExecuterService, times(1)).generateConfigurationAndExecuteShakedownTest(test.getId());
-		verify(shakedownTestExecuterService, times(1)).generateConfigurationAndExecuteShakedownTest(test2.getId());
 		verify(log, times(12)).log(argThat(matchesLevel(Level.INFO)), anyString());
 	}
 	
@@ -446,7 +334,6 @@ public class DeploymentSchedulerTest {
 
 		// then
 		verify(deploymentExecuterService, never()).generateConfigurationAndExecuteDeployment(any(Integer.class), any(GenerationModus.class));
-		verify(shakedownTestExecuterService, never()).generateConfigurationAndExecuteShakedownTest(any(Integer.class));
 		verify(log, never()).log(any(Level.class), anyString());
 		//remove Systemconfig
 		System.getProperties().remove(ConfigKey.DEPLOYMENT_SCHEDULER_DISABLED.getValue());

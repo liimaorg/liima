@@ -24,7 +24,6 @@ import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -47,9 +46,6 @@ public class DeploymentExecutionResultHandlerServiceTest {
 
 	@Mock
     DeploymentBoundary deploymentBoundary;
-
-	@Mock
-	ShakedownTestService shakedownTestService;
 
 	DeploymentEntity deployment;
 	GenerationResult result;

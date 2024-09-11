@@ -47,7 +47,6 @@ public class GenerationContext {
 	private GenerationModus generationModus;
 	private List<ApplicationWithVersion> applicationsWithVersion;
 	private ResourceEntity node;
-	private boolean testing;
 	private ResourceDependencyResolverService resourceDependencyResolver;
 
 	private String generationDir;
@@ -133,14 +132,6 @@ public class GenerationContext {
 		return applicationsWithVersion;
 	}
 
-	public boolean isTesting() {
-		return testing;
-	}
-
-	public void setTesting(boolean testing) {
-		this.testing = testing;
-	}
-
 	public Integer getDeploymentId() {
 		return deploymentId;
 	}
@@ -193,8 +184,7 @@ public class GenerationContext {
 	
 	public GenerationContext copyGenerationContextForOtherAs(ResourceEntity as){
 		GenerationContext c = new GenerationContext(context, as, deployment, deploymentDate, generationModus, resourceDependencyResolver);
-		c.setTesting(testing);
-		
+
 		return c;
 	}
 	

@@ -363,15 +363,4 @@ public class ResourceGroupsRest {
         return Response.ok(mostRelevant).build();
     }
 
-    @Path("/resourceGroups/{resourceGroupId}/canCreateShakedownTest")
-    @GET
-    @ApiOperation(value = "Checks is caller is allowed to create/execute ShakedownTests - used by Angular")
-    public Response canCreateShakedownTest(@PathParam("resourceGroupId") Integer resourceGroupId) {
-        if (resourceGroupId == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        boolean hasPermission = permissionBoundary.hasPermissionToCreateShakedownTests(resourceGroupId);
-        return Response.ok(hasPermission).build();
-    }
-
 }

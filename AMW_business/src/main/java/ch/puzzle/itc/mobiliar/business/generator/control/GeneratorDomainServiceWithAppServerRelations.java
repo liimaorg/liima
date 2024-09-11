@@ -270,7 +270,6 @@ public class GeneratorDomainServiceWithAppServerRelations {
         for (final ContextEntity c : getAllEnvironments(context)) {
             GenerationContext generationContext = new GenerationContext(c, applicationServerFromHistory, deployment,
                     deploymentDate, generationModus, resourceDependencyResolver);
-            generationContext.setTesting(false);
 
             generationContext.setGlobalFunctions(globalFunctions);
             result.addEnvironmentGenerationResult(generateApplicationServerConfigurationForEnvironment(generationContext));

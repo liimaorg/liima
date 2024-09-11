@@ -34,7 +34,6 @@ public class ResourceEditPropertyBuilder {
     private boolean isOptional = false;
 	private boolean isEncrypted = false;
 	private Integer cardinalityProperty = null;
-	private boolean isTesting = false;
 	private String validationLogic = null;
     private String mik = null;
 	private Integer propContextId = null;
@@ -108,14 +107,6 @@ public class ResourceEditPropertyBuilder {
      */
     public ResourceEditPropertyBuilder withCardinality(Integer cardinalityProperty) {
         this.cardinalityProperty = cardinalityProperty;
-        return this;
-    }
-
-    /**
-     * Indicate if property is in testing mode
-     */
-    public ResourceEditPropertyBuilder withIsTesting(boolean isTesting) {
-        this.isTesting = isTesting;
         return this;
     }
 
@@ -304,7 +295,6 @@ public class ResourceEditPropertyBuilder {
         this.isOptional = descriptor.isOptional();
         this.isEncrypted = descriptor.isEncrypt();
         this.cardinalityProperty = descriptor.getCardinalityProperty();
-        this.isTesting = descriptor.isTesting();
         this.validationLogic = descriptor.getValidationLogic();
         this.mik = descriptor.getMachineInterpretationKey();
         this.descriptorId = descriptor.getId();
@@ -314,7 +304,7 @@ public class ResourceEditPropertyBuilder {
 
 	public ResourceEditProperty build() {
 		return new ResourceEditProperty(technicalKey, displayName, propertyValue, exampleValue, defaultValue, propertyComment,
-				isNullable, isOptional, isEncrypted, cardinalityProperty, isTesting, validationLogic, mik, propContextId,
+				isNullable, isOptional, isEncrypted, cardinalityProperty, validationLogic, mik, propContextId,
 				typeContextId, descriptorId, propContName, typeContName, typeId, propertyValueTypeId, masterTypeId, typeName,
 				validationRegex, propertyId, origin, loadedFor, resourceName, descriptorOrigin, fcOwner, fcExternalKey, fcExternalLink);
 	}

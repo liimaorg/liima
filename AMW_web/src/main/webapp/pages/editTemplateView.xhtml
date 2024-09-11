@@ -373,62 +373,6 @@
 		</div>
 		</section>
 
-		<rich:popupPanel id="infoStpArguments" autosized="true"
-			moveable="true" headerClass="testing"
-			rendered="${editTemplateView.testing}">
-			<f:facet name="header">
-				<h2>
-					<h:outputText value="Info Shakedown Test Package" />
-				</h2>
-			</f:facet>
-			<f:facet name="controls">
-				<h:outputLink value="#" class="icon icon-closeGrey icon-replace"
-					onclick="#{rich:component('infoStpArguments')}.hide(); return false;">x	</h:outputLink>
-			</f:facet>
-			<h:panelGroup
-				rendered="#{editTemplateView.selectedStp!=null}">
-				<div class="well textLeft">
-					<div class="control-group">
-						<h:outputText value="Name: " />
-						<h:outputText
-							value="#{editTemplateView.selectedStp.stpName}" />
-					</div>
-					<hr align="center" />
-					<div class="control-group">
-						<h:outputText value="Version: " />
-						<h:outputText
-							value="#{editTemplateView.selectedStp.version}" />
-					</div>
-					<hr align="center" />
-					<div class="control-group">
-						<h:outputText value="Arguments: " />
-						<h:outputText
-							value="#{editTemplateView.selectedStp.comaSeperatedParameters}" />
-					</div>
-				</div>
-			</h:panelGroup>
-			<h:panelGroup
-				rendered="#{editTemplateView.selectedStp==null}">
-				<div class="well textLeft">
-					<div class="control-group">
-						<h2>
-							<h:outputText value="STP has been deleted or not found!" />
-						</h2>
-					</div>
-				</div>
-			</h:panelGroup>
-			<h:panelGroup
-				rendered="#{editTemplateView.selectedStp==null}">
-				<div class="well textCenter">
-					<div class="control-group">
-						<h2>
-							<h:outputText value="Shakedown Test Suite" />
-						</h2>
-					</div>
-				</div>
-			</h:panelGroup>
-		</rich:popupPanel>
-
 	</ui:define>
 </ui:composition>
 </html>

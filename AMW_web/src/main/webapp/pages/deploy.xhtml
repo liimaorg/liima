@@ -429,27 +429,6 @@
                         </label>
                     </div>
 
-                    <div>
-                        <h:panelGroup rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
-                            <label class="inlineBlock">
-                                <h:selectBooleanCheckbox value="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment}">
-                                <a4j:ajax render="testNeighbourhoodButtonId"/>
-                            </h:selectBooleanCheckbox>execute shakedown tests when deployed</label>
-                        </h:panelGroup>
-                    </div>
-
-                    <div class="paddingLeft20">
-                        <h:panelGroup
-                                rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
-                            <label class="inlineBlock">
-                                <h:selectBooleanCheckbox id="testNeighbourhoodButtonId"
-                                    disabled="#{deployScreenDataProvider.selectedDeployment.createTestAfterDeployment==false}"
-                                    value="#{deployScreenDataProvider.selectedDeployment.createTestForNeighborhoodAfterDeployment}"/>
-                                test neighbourhood
-                            </label>
-                        </h:panelGroup>
-                    </div>
-
                     <a4j:commandLink render="deployments" value="Confirm"
                                      action="${deployScreenDataProvider.doConfirmAction(deployScreenDataProvider.selectedDeployment)}"
                                      styleClass="btn primary right marginLeft20"
@@ -628,23 +607,6 @@
                                 <h:selectBooleanCheckbox
                                         value="#{deployScreenDataProvider.sendEmailConfirmation}"/>send an email when deployed</label>
                         </div>
-                        <h:panelGroup layout="block"
-                                      rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
-                            <label class="inlineBlock">
-                                <h:selectBooleanCheckbox value="#{deployScreenDataProvider.executeShakedownTest}">
-                                    <a4j:ajax render="bulkTestNeighbourhoodButtonId"/>
-                                </h:selectBooleanCheckbox>execute shakedown tests when deployed</label>
-                        </h:panelGroup>
-
-                        <h:panelGroup layout="block" class="paddingLeft20"
-                                      rendered="#{securityDataProvider.hasPermission('SHAKEDOWNTEST', 'CREATE')}">
-                            <label class="inlineBlock">
-                                <h:selectBooleanCheckbox
-                                    id="bulkTestNeighbourhoodButtonId"
-                                    disabled="#{deployScreenDataProvider.executeShakedownTest==false}"
-                                    value="#{deployScreenDataProvider.neighbourhoodTest}"/>test neighbourhood
-                            </label>
-                        </h:panelGroup>
                     </h:panelGroup>
 
                     <a4j:commandLink styleClass="btn primary right marginLeft20"

@@ -90,22 +90,6 @@
                                           oncomplete="hideLoader();#{rich:component('copyFromPredecessorPopup')}.show();"/>
                             </h:commandLink>
                         </li>
-                        <li>
-                            <h:panelGroup id="testingModeButton"
-                                          styleClass="control-group  ${editResourceView.testing ? 'testing' : ''}"
-                                          rendered="#{editResourceView.hasShakedownTestPermission()}">
-
-                                <label class="btn light dropdown-item">
-                                    <h:selectBooleanCheckbox
-                                            onclick="return confirmLeave(event);"
-                                            value="#{editResourceView.testing}">
-                                        <a4j:ajax oncomplete="window.location.reload();"
-                                                  onbegin="showLoader();" onerror="hideLoader();"/>
-                                    </h:selectBooleanCheckbox>
-                                    Testing mode
-                                </label>
-                            </h:panelGroup>
-                        </li>
                     </ul>
                 </li>
                 </h:panelGroup>

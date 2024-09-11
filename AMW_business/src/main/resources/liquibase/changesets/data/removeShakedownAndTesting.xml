@@ -15,6 +15,21 @@
         <delete tableName="TAMW_templateDescriptor">
             <where>testing = 1</where>
         </delete>
+        <delete tableName="tamw_restriction">
+            <where>ROLE_ID in (select id from TAMW_ROLE where name like 'shakedown%')</where>
+        </delete>
+        <delete tableName="TAMW_role">
+            <where>name like 'shakedown%'</where>
+        </delete>
+        <delete tableName="TAMW_restriction">
+            <where>PERMISSION_ID in (select id from TAMW_PERMISSION where VALUE like 'SHAKEDOWN%')</where>
+        </delete>
+        <delete tableName="TAMW_permission">
+            <where>value like 'SHAKEDOWN%' </where>
+        </delete>
+        <delete tableName="TAMW_propertyDescriptor">
+            <where>testing = 1</where>
+        </delete>
 
         <rollback></rollback>
     </changeSet>
