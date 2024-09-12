@@ -67,7 +67,6 @@ export class DeploymentsEditModalComponent {
     for (const deployment of this.deployments) {
       deployment.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
       deployment.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
-      deployment.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
       this.doConfirmDeployment.emit(deployment);
     }
   }

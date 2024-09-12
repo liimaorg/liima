@@ -87,6 +87,5 @@ describe('DeploymentService', () => {
     stateToDeploy: 1,
     sendEmailWhenDeployed: true,
     simulateBeforeDeployment: true,
-    neighbourhoodTest: false,
   };
 });

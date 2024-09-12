@@ -301,7 +301,6 @@ describe('DeploymentComponent (create deployment)', () => {
       releaseName: 'testRelease',
       simulate: false,
       sendEmail: false,
-      neighbourhoodTest: false,
       requestOnly: true,
       appsWithVersion: component.appsWithVersion,
       stateToDeploy: component.selectedResourceTag.tagDate,

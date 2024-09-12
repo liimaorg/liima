@@ -76,8 +76,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   simulate: boolean = false;
   requestOnly: boolean = false;
   doSendEmail: boolean = false;
-  // may only be enabled if above is true
-  doNeighbourhoodTest: boolean = false;
 
   bestForSelectedRelease: Release = null;
 
@@ -305,7 +303,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.deploymentDate = null;
     this.simulate = false;
     this.doSendEmail = false;
-    this.doNeighbourhoodTest = false;
     this.appsWithVersion = [];
     this.transDeploymentParameter = {} as DeploymentParameter;
     this.transDeploymentParameters = [];
@@ -369,7 +366,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     deploymentRequest.contextIds = contextIds;
     deploymentRequest.simulate = this.simulate;
     deploymentRequest.sendEmail = this.doSendEmail;
-    deploymentRequest.neighbourhoodTest = this.doNeighbourhoodTest;
     deploymentRequest.requestOnly = this.requestOnly;
     deploymentRequest.appsWithVersion = this.appsWithVersion;
     if (!this.isRedeployment) {

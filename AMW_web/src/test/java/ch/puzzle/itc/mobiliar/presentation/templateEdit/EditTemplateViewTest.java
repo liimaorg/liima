@@ -32,7 +32,7 @@ public class EditTemplateViewTest {
 
     @Before
     public void setUp() {
-        doReturn(false).when(editTemplateView).fail(any(AMWException.class));
+//        doReturn(false).when(editTemplateView).fail(any(AMWException.class));
         doNothing().when(editTemplateView).succeed();
 
         template = editTemplateView.getTemplate();

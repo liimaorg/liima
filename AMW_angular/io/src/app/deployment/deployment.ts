@@ -33,5 +33,4 @@ export interface Deployment {
   stateToDeploy: number;
   sendEmailWhenDeployed: boolean;
   simulateBeforeDeployment: boolean;
-  neighbourhoodTest: boolean;
 }
