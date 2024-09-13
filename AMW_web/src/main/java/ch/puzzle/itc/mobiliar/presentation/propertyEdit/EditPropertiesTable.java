@@ -32,7 +32,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
-import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 
 @CompositeBackingBean
 public class EditPropertiesTable implements Serializable {

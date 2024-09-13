@@ -49,7 +49,7 @@ public class ApplistScreenDomainService {
                 if (!withAppServerContainer || as.getConsumedMasterRelations().isEmpty()) {
                     appServerList.remove(as);
                     break;
-                }
+                };
             }
         }
         return appServerList;

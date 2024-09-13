@@ -143,32 +143,17 @@
 				<div style="height: 0px; clear: both;"></div>
 
 				<label class="control-label"> <h:outputText
-						value="${editTemplateView.testing ? 'Test ' : ''}Template name:" />
+						value="Template name:" />
 				</label>
 				<div class="controls">
 					<div class="CodeMirror-merge-2pane">
 						<div class="CodeMirror-merge-pane">
-							<h:inputText rendered="${!editTemplateView.testing}"
+							<h:inputText
 								value="#{editTemplateView.template.name}"
 										 disabled="#{!editTemplateView.canModifyTemplates()}"
 								label="Name" styleClass="changeAware">
 							</h:inputText>
-							<h:selectOneMenu
-								value="#{editTemplateView.selectedStpId}"
-								rendered="${editTemplateView.testing}"
-								disabled="#{!editTemplateView.canModifyTemplates()}"
-								required="true" label="STP" styleClass="changeAware">
-								<f:selectItems value="#{editTemplateView.stpList}"
-									var="stp" itemLabel="#{stp.stpName}" itemValue="#{stp.id}" />
-								<a4j:ajax render="infoStpArguments" />
-							</h:selectOneMenu>
-							<a4j:commandLink id="infoStpCommandLink"
-								rendered="#{editTemplateView.testing}" execute="@form"
-								oncomplete="#{rich:component('infoStpArguments')}.show();"
-								render="infoStpArguments" title="Show details about this STP"
-								styleClass="simpleInfo">
-								<i class="icon icon-info inlineBlockMiddle height16" />
-							</a4j:commandLink>
+
 						</div>
 						<h:panelGroup layout="block" styleClass="CodeMirror-merge-gap"
 							rendered="${editTemplateView.compareMode}" />
@@ -180,13 +165,13 @@
 					</div>
 				</div>
 				<label class="control-label"> <h:outputText
-						value="Path/filename:" rendered="${!editTemplateView.testing}"
+						value="Path/filename:"
 						disabled="#{!editTemplateView.canModifyTemplates()}"/>
 				</label>
 				<div class="controls">
 					<div class="CodeMirror-merge-2pane">
 						<div class="CodeMirror-merge-pane">
-							<h:inputText rendered="${!editTemplateView.testing}"
+							<h:inputText
 								value="#{editTemplateView.template.targetPath}"
 								required="false" label="Path_Filename" id="templateFileName"
 										 disabled="#{!editTemplateView.canModifyTemplates()}" styleClass="changeAware">
@@ -250,7 +235,7 @@
 			    	var codeEditor = document.getElementById("codeMirrorReference");
 					var originalValue = codeEditor.value;
 			    	var code = codeEditor.value;
-					var templateName = document.getElementById("templateFileName") == null ? "stp" : document.getElementById("templateFileName").value;
+					var templateName = document.getElementById("templateFileName").value;
 					var mode = "velocity";
 					var file = templateName.split(".");
 					var readonlyEditor = (document.getElementById("codeMirrorReference").disabled == true);

@@ -20,21 +20,15 @@
 
 package ch.puzzle.itc.mobiliar.presentation.util;
 
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
 
 @Named
 @SessionScoped
@@ -46,17 +40,10 @@ public class UserSettings implements Serializable {
 
 	@Inject
 	PermissionService permissionService;
-
-	@Inject
-	@TestingMode
-	Event<Boolean> testingModeEvent;
-
 	/**
 	 * Loaded at initialization time
 	 */
 	private UserSettingsEntity userSetting;
-
-	private boolean testingMode;
 
 	@PostConstruct
 	public void init() {

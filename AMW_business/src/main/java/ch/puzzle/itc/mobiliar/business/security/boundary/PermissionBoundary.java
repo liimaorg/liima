@@ -84,7 +84,6 @@ public class PermissionBoundary implements Serializable {
      *
      * @param resourceTypeId
      * @param contextId
-     * @param isTestingMode
      * @return
      */
     public boolean hasPermissionToEditPropertiesByResourceTypeAndContext(Integer resourceTypeId, Integer contextId) {
@@ -98,7 +97,6 @@ public class PermissionBoundary implements Serializable {
      * Checks if the user is allowed to edit the Properties of a ResourceType without checking its Context
      *
      * @param resourceTypeId
-     * @param isTestingMode
      * @return
      */
     public boolean hasPermissionToEditPropertiesByResourceType(Integer resourceTypeId) {

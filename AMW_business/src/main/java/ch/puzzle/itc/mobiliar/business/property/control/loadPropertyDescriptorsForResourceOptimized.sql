@@ -9,7 +9,6 @@ WITH descr_with
                 descr.OPTIONAL optional,
                 descr.ENCRYPT encrypt,
                 descr.CARDINALITYPROPERTY CARDINALITY,
-                descr.TESTING testing,
                 descr.VALIDATIONLOGIC validationLogic,
                 descr.MACHINEINTERPRETATIONKEY mik,
                 descr.ID descId,

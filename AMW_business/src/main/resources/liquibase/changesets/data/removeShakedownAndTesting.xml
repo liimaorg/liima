@@ -8,9 +8,14 @@
         <comment>
 
         </comment>
-
+        <delete tableName="TAMW_resourcectx_tmpldesc">
+            <where>TEMPLATES_ID in (SELECT ID FROM TAMW_templateDescriptor WHERE TESTING = 1)</where>
+        </delete>
+        <delete tableName="TAMW_restypectx_tmpldesc">
+            <where>TEMPLATES_ID in (SELECT ID FROM TAMW_templateDescriptor WHERE TESTING = 1)</where>
+        </delete>
         <delete tableName="TAMW_tmplDesc_targetPlat">
-            <where>TEMPLATEDESCRIPTORS_ID = (SELECT * FROM TAMW_templateDescriptor WHERE TESTING = 1)</where>
+            <where>TEMPLATEDESCRIPTORS_ID in (SELECT ID FROM TAMW_templateDescriptor WHERE TESTING = 1)</where>
         </delete>
         <delete tableName="TAMW_templateDescriptor">
             <where>testing = 1</where>

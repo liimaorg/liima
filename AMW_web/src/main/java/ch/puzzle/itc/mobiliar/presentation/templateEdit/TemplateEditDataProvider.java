@@ -37,7 +37,6 @@ import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
-import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
 import lombok.Setter;
@@ -109,25 +108,9 @@ public class TemplateEditDataProvider implements Serializable {
 	@Getter
 	boolean canListResTypeTemplates;
 
-	@Inject
-	@TestingMode
-	private Boolean testing;
-
-	@TestingMode
-	public void onChangedTestingMode(@Observes Boolean isTesting) {
-		this.testing = isTesting;
-	}
-
 	ResourceEditRelation relation;
 
 	private Identifiable resourceOrType;
-
-    /**
-     * @return true if testing is tue and initialized, otherwise false
-     */
-    public boolean isTesting() {
-        return testing != null && testing;
-    }
 
 	@PostConstruct
 	public void init() {

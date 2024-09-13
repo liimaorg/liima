@@ -247,9 +247,9 @@
                                         <h:link outcome="editPropertyView"
                                                 includeViewParams="false"
                                                 rendered="#{editResourceView.hasAddPropertyPermission()}"
-                                                styleClass="btn light ${editResourceView.testing ? 'testing' : ''}">
-                                            <i class="icon ${editResourceView.testing ? 'icon-addWhite' :  'icon-add'}"/>
-                                            <h:outputText value="Add new ${editResourceView.editResource ? 'instance' : 'resource type'} ${editResourceView.testing ? 'testing ' : ''}Property"/>
+                                                styleClass="btn light">
+                                            <i class="icon icon-add"/>
+                                            <h:outputText value="Add new ${editResourceView.editResource ? 'instance' : 'resource type'} Property"/>
                                             <f:param name="id" value="#{editResourceView.resourceIdFromParam}"/>
                                             <f:param name="resTypId" value="#{editResourceView.resourceTypeIdFromParam}"/>
                                             <f:param name="ctx" value="#{editResourceView.contextIdViewParam}" />
@@ -274,7 +274,7 @@
 
                                                     <div class="controls">
                                                         <h:inputText styleClass="propertyInputField changeAware"
-                                                                     disabled="#{!propertyEditDataProvider.editableProperties and !propertyEditDataProvider.testing}"
+                                                                     disabled="#{!propertyEditDataProvider.editableProperties}"
                                                                      value="#{editResourceView.asNamedIdentifiable.name}"/>
                                                     </div>
                                                 </div>

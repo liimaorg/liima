@@ -34,13 +34,11 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.PropertyDescriptorNotDeletableException;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
@@ -96,17 +94,8 @@ public class EditPropertyView implements Serializable {
 	@Setter
 	private String propertyTagsString;
 
-	@Inject
-	@TestingMode
-	private Boolean testing;
-
 	@Getter
 	private boolean showForce;
-
-	@TestingMode
-	public void onChangedTestingMode(@Observes Boolean isTesting) {
-		this.testing = isTesting;
-	}
 
 	@PostConstruct
 	public void init() {
