@@ -8,6 +8,9 @@
         <comment>
 
         </comment>
+        <delete tableName="TAMW_resourcetype">
+            <where>NAME like 'shakedown%'</where>
+        </delete>
         <delete tableName="TAMW_resourcectx_tmpldesc">
             <where>TEMPLATES_ID in (SELECT ID FROM TAMW_templateDescriptor WHERE TESTING = 1)</where>
         </delete>
