@@ -1,0 +1,21 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="editFunctionTitle">{{ getTitle() }}</h5>
+  <button type="button" class="btn btn-light close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form-horizontal mx-2">
+    <div class="mb-3">
+      <label for="name" class="form-label">Function name</label>
+      <input type="text" class="form-control" id="name" [(ngModel)]="function.name" />
+    </div>
+    <div class="mb-3"> <label for="content" class="form-label">Function content</label>
+      <textarea class="form-control" id="content" rows="10" [(ngModel)]="function.content"></textarea>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="save()">Save changes</button>
+</div>
