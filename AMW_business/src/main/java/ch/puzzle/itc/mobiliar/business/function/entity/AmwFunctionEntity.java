@@ -20,14 +20,14 @@
 
 package ch.puzzle.itc.mobiliar.business.function.entity;
 
-import static javax.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.ALL;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.utils.Copyable;

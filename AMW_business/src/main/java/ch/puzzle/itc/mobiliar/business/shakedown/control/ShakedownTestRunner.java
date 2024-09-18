@@ -39,8 +39,8 @@ import java.util.zip.ZipOutputStream;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import javax.xml.bind.JAXB;
 
 import ch.puzzle.itc.mobiliar.business.shakedown.xmlmodel.STS;

@@ -29,7 +29,7 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -22,7 +22,7 @@ package ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary;
 
 import static org.mockito.Mockito.*;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;

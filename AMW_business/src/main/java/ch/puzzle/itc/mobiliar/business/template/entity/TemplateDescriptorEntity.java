@@ -34,7 +34,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;

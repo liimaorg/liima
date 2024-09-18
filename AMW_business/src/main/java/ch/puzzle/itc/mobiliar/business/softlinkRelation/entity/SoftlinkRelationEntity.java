@@ -20,10 +20,10 @@
 
 package ch.puzzle.itc.mobiliar.business.softlinkRelation.entity;
 
-import static javax.persistence.CascadeType.DETACH;
-import static javax.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.DETACH;
+import static jakarta.persistence.CascadeType.PERSIST;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import lombok.Getter;

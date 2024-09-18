@@ -33,7 +33,7 @@ import java.util.List;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;

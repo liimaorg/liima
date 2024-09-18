@@ -7,7 +7,7 @@ import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntryContainer;
 
 import javax.ejb.Stateless;
 import javax.inject.Named;
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 import static ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry.RELATION_CONSUMED_RESOURCE;
 

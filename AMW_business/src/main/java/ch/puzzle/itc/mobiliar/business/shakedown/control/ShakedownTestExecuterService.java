@@ -27,7 +27,7 @@ import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

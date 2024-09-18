@@ -23,8 +23,8 @@ package ch.puzzle.itc.mobiliar.business.property.control;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
 
 /**

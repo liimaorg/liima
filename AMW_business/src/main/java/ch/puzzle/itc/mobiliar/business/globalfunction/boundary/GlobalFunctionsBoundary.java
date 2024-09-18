@@ -34,7 +34,7 @@ import org.hibernate.envers.AuditReaderFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -68,7 +68,7 @@ public class GlobalFunctionsBoundary {
      * Returns a AmwFunctionEntity identified by its id and revision id
      */
     public GlobalFunctionEntity getFunctionByIdAndRevision(Integer functionId, Number revisionId) {
-        GlobalFunctionEntity globalFunctionEntity = AuditReaderFactory.get(entityManager).find(
+        GlobalFunctionEntity globalFunctionEntity = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class)).find(
                 GlobalFunctionEntity.class, functionId, revisionId);
         return globalFunctionEntity;
     }
@@ -79,7 +79,7 @@ public class GlobalFunctionsBoundary {
     public List<RevisionInformation> getFunctionRevisions(Integer functionId) {
         List<RevisionInformation> result = new ArrayList<RevisionInformation>();
         if (functionId != null) {
-            AuditReader reader = AuditReaderFactory.get(entityManager);
+            AuditReader reader = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
             List<Number> list = reader.getRevisions(GlobalFunctionEntity.class, functionId);
             for (Number rev : list) {
                 Date date = reader.getRevisionDate(rev);

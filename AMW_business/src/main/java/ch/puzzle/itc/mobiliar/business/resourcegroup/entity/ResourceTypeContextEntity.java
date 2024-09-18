@@ -24,7 +24,7 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import lombok.Getter;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Audited

@@ -25,8 +25,8 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;

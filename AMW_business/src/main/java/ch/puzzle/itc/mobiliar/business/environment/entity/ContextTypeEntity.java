@@ -25,10 +25,10 @@ import lombok.Setter;
 import org.hibernate.annotations.NamedQuery;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Set;
 
-import static javax.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.ALL;
 
 /**
  * Entity implementation class for Entity: ResourceType

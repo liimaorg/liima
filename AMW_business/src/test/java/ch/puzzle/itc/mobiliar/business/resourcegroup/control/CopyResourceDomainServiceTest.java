@@ -29,8 +29,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

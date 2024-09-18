@@ -47,7 +47,7 @@ import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.*;
 import java.util.logging.Logger;
 

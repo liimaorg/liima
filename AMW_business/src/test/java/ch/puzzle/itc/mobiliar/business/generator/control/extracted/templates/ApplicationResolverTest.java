@@ -36,8 +36,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.io.IOException;
 import java.util.logging.Level;
 

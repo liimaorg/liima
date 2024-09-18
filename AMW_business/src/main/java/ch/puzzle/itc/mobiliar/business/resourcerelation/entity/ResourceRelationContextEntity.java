@@ -26,10 +26,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Set;
 
-import static javax.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.PERSIST;
 
 @Entity
 @Audited

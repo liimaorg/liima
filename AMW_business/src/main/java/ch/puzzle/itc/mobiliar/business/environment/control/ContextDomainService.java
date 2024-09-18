@@ -31,8 +31,8 @@ import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

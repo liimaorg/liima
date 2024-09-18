@@ -58,7 +58,7 @@ import io.swagger.annotations.ApiParam;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;

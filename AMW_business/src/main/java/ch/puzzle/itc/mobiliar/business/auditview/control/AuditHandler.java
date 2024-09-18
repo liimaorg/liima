@@ -13,9 +13,9 @@ import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
 
 import static org.hibernate.envers.RevisionType.DEL;
 
@@ -36,7 +36,7 @@ public abstract class AuditHandler {
         Auditable entityForRevision = auditViewEntryContainer.getEntityForRevision();
         MyRevisionEntity revEntity = auditViewEntryContainer.getRevEntity();
 
-        AuditReader reader = AuditReaderFactory.get(entityManager);
+        AuditReader reader = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
         Auditable previous = getPrevious(reader, entityForRevision, revEntity);
         return buildAuditViewEntry(auditViewEntryContainer, previous);
     }

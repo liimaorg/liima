@@ -27,8 +27,8 @@ import ch.puzzle.itc.mobiliar.business.utils.JpaWildcardConverter;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import java.util.*;
 import java.util.logging.Logger;
 

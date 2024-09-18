@@ -1,7 +1,10 @@
 package ch.puzzle.itc.mobiliar.business.utils.database;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
+import org.hibernate.Session;
+
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Objects;
 
@@ -20,16 +23,13 @@ public class DatabaseUtil {
     }
 
     private boolean isEngine(String engine) {
-        org.hibernate.engine.spi.SessionImplementor sessionImp =
-                (org.hibernate.engine.spi.SessionImplementor) entityManager.getDelegate();
+        Session session = entityManager.unwrap(Session.class);
         String databaseProductName = null;
-        try {
-            databaseProductName = sessionImp.connection().getMetaData().getDatabaseProductName();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        databaseProductName = session.doReturningWork(connection -> {
+            DatabaseMetaData metaData = connection.getMetaData();
+            return metaData.getDatabaseProductName();
+        });
+
         return Objects.requireNonNull(databaseProductName).equalsIgnoreCase(engine);
     }
-
-
 }

@@ -43,8 +43,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Map;
 
@@ -87,7 +87,7 @@ public class ReleaseTest {
 		context = builder.context;
 		asContext = as.getContextsByLowestContext(context).get(0);
 
-		reader = AuditReaderFactory.get(entityManager);
+		reader = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
 	}
 
 	@Test

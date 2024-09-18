@@ -20,11 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.business.utils;
 
-import javax.persistence.*;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.*;
+import jakarta.persistence.PersistenceContext;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 
 import java.util.*;
 

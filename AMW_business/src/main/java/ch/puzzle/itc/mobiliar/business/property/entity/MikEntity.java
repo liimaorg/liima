@@ -27,7 +27,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * Entity implementation class for Entity: Mik (Machine Interpretation Key)

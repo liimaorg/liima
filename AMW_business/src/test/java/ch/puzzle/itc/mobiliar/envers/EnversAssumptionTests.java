@@ -22,8 +22,8 @@ package ch.puzzle.itc.mobiliar.envers;
 
 import java.util.Date;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -57,7 +57,7 @@ public class EnversAssumptionTests extends AbstractPersistenceEnverseTest {
 
 	@Before
 	public void setup() throws Exception {
-		auditReader = AuditReaderFactory.get(entityManager);
+		auditReader = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
 
 		// We create a context entity
 		c = new ContextEntity();

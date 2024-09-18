@@ -26,10 +26,10 @@ import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;

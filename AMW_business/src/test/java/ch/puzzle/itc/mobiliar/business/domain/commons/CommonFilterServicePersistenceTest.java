@@ -29,7 +29,6 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 
-import org.hibernate.internal.QueryImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,9 +37,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -198,8 +197,8 @@ public class CommonFilterServicePersistenceTest {
                 true, false);
 
         //then
-        assertThat(query.unwrap(QueryImpl.class), is(not(nullValue())));
-        assertThat(query.unwrap(QueryImpl.class).getQueryString(), containsString("LOWER(d.deploymentDate)"));
+        assertThat(query.unwrap(org.hibernate.query.Query.class), is(not(nullValue())));
+        assertThat(query.unwrap(org.hibernate.query.Query.class).getQueryString(), containsString("LOWER(d.deploymentDate)"));
 
     }
     @Test
@@ -215,8 +214,8 @@ public class CommonFilterServicePersistenceTest {
         Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.builder().order(colToSort).order(uniqueCol).build(), true, false);
 
         //then
-        assertThat(query.unwrap(QueryImpl.class), is(not(nullValue())));
-        assertThat(query.unwrap(QueryImpl.class).getQueryString(), not(containsString("LOWER(")));
+        assertThat(query.unwrap(org.hibernate.query.Query.class), is(not(nullValue())));
+        assertThat(query.unwrap(org.hibernate.query.Query.class).getQueryString(), not(containsString("LOWER(")));
 
     }
 

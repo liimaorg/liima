@@ -6,6 +6,9 @@ import java.io.File;
 
 public class ValidFileNameValidator implements ConstraintValidator<ValidFileName, String> {
 
+    @Override
+    public void initialize(ValidFileName constraintAnnotation) {
+    }
 
     @Override
     public boolean isValid(String fileName, ConstraintValidatorContext constraintValidatorContext) {

@@ -20,14 +20,14 @@
 
 package ch.puzzle.itc.mobiliar.business.globalfunction.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +35,7 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Audited
@@ -51,7 +51,7 @@ public class GlobalFunctionEntity {
 
 	@Getter
 	@Column(nullable = false, unique = true)
-	@NotEmpty
+	@NotNull
 	private String name;
 
 	@Getter

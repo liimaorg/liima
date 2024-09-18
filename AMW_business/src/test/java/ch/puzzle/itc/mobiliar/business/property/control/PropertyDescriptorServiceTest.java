@@ -24,8 +24,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import ch.puzzle.itc.mobiliar.builders.PropertyEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;

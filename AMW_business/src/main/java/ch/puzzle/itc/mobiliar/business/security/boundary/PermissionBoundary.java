@@ -40,7 +40,7 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

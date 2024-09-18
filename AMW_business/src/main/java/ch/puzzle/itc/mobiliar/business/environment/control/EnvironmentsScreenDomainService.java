@@ -31,9 +31,9 @@ import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

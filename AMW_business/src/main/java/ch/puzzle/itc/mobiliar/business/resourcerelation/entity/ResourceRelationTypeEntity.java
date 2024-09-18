@@ -30,11 +30,11 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
-import static javax.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.ALL;
 
 /**
  * Entity implementation class for Entity: ResourceType

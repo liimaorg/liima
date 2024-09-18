@@ -32,7 +32,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.Date;
 
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.*;

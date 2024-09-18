@@ -21,8 +21,8 @@
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 public class ResourcesScreenQueries {
 	

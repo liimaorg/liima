@@ -41,7 +41,7 @@ import lombok.SneakyThrows;
 
 import org.hibernate.annotations.BatchSize;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.io.StringReader;

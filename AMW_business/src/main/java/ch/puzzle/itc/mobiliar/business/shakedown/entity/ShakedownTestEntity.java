@@ -34,7 +34,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.Date;

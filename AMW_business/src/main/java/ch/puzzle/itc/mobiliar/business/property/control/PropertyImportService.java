@@ -34,7 +34,7 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

@@ -30,9 +30,9 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.AuditReader;
@@ -105,8 +105,8 @@ public class TemplateEditor {
 	}
 
 	public TemplateDescriptorEntity getTemplateByIdAndRevision(Integer templateId, Number revisionId) {
-		TemplateDescriptorEntity templateDescriptorEntity = AuditReaderFactory.get(entityManager).find(
-				TemplateDescriptorEntity.class, templateId, revisionId);
+		TemplateDescriptorEntity templateDescriptorEntity = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class))
+				.find(TemplateDescriptorEntity.class, templateId, revisionId);
 		//We have to ensure, that the target platforms are loaded. To make sure, that the compiler doesn't optimize the access to the target platforms away, we have to do this ugly hack.
 		templateDescriptorEntity.getTargetPlatforms().size();
 		return templateDescriptorEntity;
@@ -114,7 +114,7 @@ public class TemplateEditor {
 
 	public List<RevisionInformation> getTemplateRevisions(Integer templateId) {
 		List<RevisionInformation> result = new ArrayList<>();
-		AuditReader reader = AuditReaderFactory.get(entityManager);
+		AuditReader reader = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
 		List<Number> list = reader.getRevisions(TemplateDescriptorEntity.class, templateId);
 		for (Number rev : list) {
 			Date date = reader.getRevisionDate(rev);

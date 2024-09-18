@@ -21,8 +21,8 @@
 package ch.puzzle.itc.mobiliar.business.database.control;
 
 import javax.enterprise.inject.Produces;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 
 public class EntityManagerProducer {

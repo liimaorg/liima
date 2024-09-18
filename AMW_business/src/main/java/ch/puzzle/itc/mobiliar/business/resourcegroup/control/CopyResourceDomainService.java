@@ -47,7 +47,7 @@ import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

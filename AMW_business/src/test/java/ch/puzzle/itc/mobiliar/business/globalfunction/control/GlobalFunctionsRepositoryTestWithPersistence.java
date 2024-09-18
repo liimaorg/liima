@@ -23,8 +23,8 @@ package ch.puzzle.itc.mobiliar.business.globalfunction.control;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.junit.Test;

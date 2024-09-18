@@ -27,9 +27,9 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import javax.persistence.Table;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
+import jakarta.persistence.Table;
 
 public class QueryUtils {
 

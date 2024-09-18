@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.test;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.junit.runner.RunWith;
 

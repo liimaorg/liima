@@ -32,7 +32,7 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.HashSet;
 import java.util.Set;
 

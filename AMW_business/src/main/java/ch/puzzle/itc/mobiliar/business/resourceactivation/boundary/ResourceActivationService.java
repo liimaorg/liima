@@ -31,7 +31,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

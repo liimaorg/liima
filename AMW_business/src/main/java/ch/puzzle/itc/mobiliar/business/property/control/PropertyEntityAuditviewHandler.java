@@ -12,8 +12,8 @@ import org.hibernate.envers.query.AuditEntity;
 
 import javax.ejb.Stateless;
 import javax.inject.Named;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
 
 import static ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry.RELATION_CONSUMED_RESOURCE;
 import static ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry.RELATION_PROVIDED_RESOURCE;
@@ -173,7 +173,7 @@ public class PropertyEntityAuditviewHandler extends AuditHandler {
                     .setParameter("rev", container.getRevEntity().getId())
                     .setParameter("propertyId", container.getEntityForRevision().getId());
             int resourceContextId = (int) query.getSingleResult();
-            AuditReader reader = AuditReaderFactory.get(entityManager);
+            AuditReader reader = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
             return (ResourceContextEntity) reader.createQuery()
                     .forRevisionsOfEntity(ResourceContextEntity.class, true, true)
                     .add(AuditEntity.id().eq(resourceContextId))

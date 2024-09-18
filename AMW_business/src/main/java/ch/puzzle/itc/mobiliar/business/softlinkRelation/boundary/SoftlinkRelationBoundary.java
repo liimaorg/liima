@@ -25,7 +25,7 @@ import java.util.Objects;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;

@@ -24,8 +24,8 @@ import java.security.Principal;
 import java.util.*;
 
 import javax.ejb.SessionContext;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import ch.puzzle.itc.mobiliar.builders.ContextEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;

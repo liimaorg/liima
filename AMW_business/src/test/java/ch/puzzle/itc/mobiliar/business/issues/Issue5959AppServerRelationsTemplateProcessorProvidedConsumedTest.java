@@ -27,8 +27,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.junit.Before;
 import org.junit.Test;

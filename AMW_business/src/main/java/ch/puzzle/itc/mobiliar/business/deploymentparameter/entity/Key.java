@@ -20,13 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.business.deploymentparameter.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
 import lombok.Getter;
 import lombok.Setter;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "TAMW_deployParamKey")
@@ -42,7 +42,7 @@ public class Key implements NamedIdentifiable {
 
     @Getter
     @Column(nullable = false, unique = true)
-    @NotEmpty
+    @NotNull
     private String name;
 
     /**

@@ -27,7 +27,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationC
 import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 
 public class ResourceRelationContextRepository {

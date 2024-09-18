@@ -22,10 +22,10 @@ package ch.puzzle.itc.mobiliar.business.environment.entity;
 
 import org.hibernate.envers.Audited;
 
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 
-import static javax.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.PERSIST;
 
 @MappedSuperclass
 @Audited

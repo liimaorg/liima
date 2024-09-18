@@ -24,9 +24,9 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import lombok.Getter;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.PERSIST;
 
 @Entity
 @Audited

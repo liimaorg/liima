@@ -34,7 +34,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import lombok.Getter;
 
 import javax.inject.Inject;
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 import java.io.IOException;
 import java.sql.Clob;
 import java.sql.SQLException;

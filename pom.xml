@@ -308,21 +308,21 @@
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>6.1.5.Final</version>
+                <version>8.0.1.Final</version>
                 <scope>provided</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>
-                <version>5.1.17.Final</version>
+                <version>6.6.0.Final</version>
                 <scope>provided</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-envers</artifactId>
-                <version>5.1.17.Final</version>
+                <version>6.6.0.Final</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -375,6 +375,12 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>32.0.0-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>3.1.0</version>
+                <scope>compile</scope>
             </dependency>
             <!-- Test dependencies -->
             <dependency>

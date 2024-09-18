@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.test.Entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 public class Color {

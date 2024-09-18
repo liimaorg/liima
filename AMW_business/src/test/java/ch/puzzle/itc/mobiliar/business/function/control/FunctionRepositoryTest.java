@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.function.control;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.junit.Before;
 import org.junit.Test;

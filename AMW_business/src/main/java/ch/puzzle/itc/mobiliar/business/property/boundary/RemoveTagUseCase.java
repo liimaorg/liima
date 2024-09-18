@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 @Stateless
 @AllArgsConstructor

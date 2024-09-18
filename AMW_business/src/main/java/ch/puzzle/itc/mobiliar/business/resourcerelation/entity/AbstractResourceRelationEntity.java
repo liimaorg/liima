@@ -20,14 +20,14 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcerelation.entity;
 
-import static javax.persistence.CascadeType.DETACH;
-import static javax.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.DETACH;
+import static jakarta.persistence.CascadeType.PERSIST;
 
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;

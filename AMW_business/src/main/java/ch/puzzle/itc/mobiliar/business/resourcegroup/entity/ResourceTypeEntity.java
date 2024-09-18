@@ -29,13 +29,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.REMOVE;
 
 /**
  * Entity implementation class for Entity: ResourceType

@@ -24,7 +24,7 @@ import java.util.*;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.function.control.FunctionRepository;
@@ -122,7 +122,7 @@ public class FunctionsBoundary {
      * Returns a AmwFunctionEntity identified by its id and revision id
      */
     public AmwFunctionEntity getFunctionByIdAndRevision(Integer functionId, Number revisionId) {
-        AmwFunctionEntity amwFunctionEntity = AuditReaderFactory.get(entityManager).find(
+        AmwFunctionEntity amwFunctionEntity = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class)).find(
                 AmwFunctionEntity.class, functionId, revisionId);
         return amwFunctionEntity;
     }
@@ -133,7 +133,7 @@ public class FunctionsBoundary {
     public List<RevisionInformation> getFunctionRevisions(Integer functionId) {
         List<RevisionInformation> result = new ArrayList<>();
         if (functionId != null) {
-            AuditReader reader = AuditReaderFactory.get(entityManager);
+            AuditReader reader = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
             List<Number> list = reader.getRevisions(AmwFunctionEntity.class, functionId);
             for (Number rev : list) {
                 Date date = reader.getRevisionDate(rev);

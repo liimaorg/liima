@@ -5,8 +5,8 @@ import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

@@ -32,8 +32,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Comparator;

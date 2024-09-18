@@ -34,9 +34,9 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationT
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import java.util.*;
 
 @Stateless

@@ -28,8 +28,8 @@ import java.nio.file.StandardCopyOption;
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Persistence;
 
 @Specializes
 public class EntityManagerProducerIntegrationTestImpl extends EntityManagerProducer {

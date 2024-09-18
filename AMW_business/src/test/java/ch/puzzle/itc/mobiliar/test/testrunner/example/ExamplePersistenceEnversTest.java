@@ -25,8 +25,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -66,7 +66,7 @@ public class ExamplePersistenceEnversTest extends AbstractPersistenceEnverseTest
         // when
     	PropertyDescriptorEntity result = entityManager.find(PropertyDescriptorEntity.class, 1);
 
-    	AuditReader auditReader = AuditReaderFactory.get(entityManager);
+    	AuditReader auditReader = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
     	
     	List<Number> revisions = auditReader.getRevisions(PropertyDescriptorEntity.class, 1);
     	PropertyDescriptorEntity revision1 = auditReader.find(PropertyDescriptorEntity.class, 1, 1);

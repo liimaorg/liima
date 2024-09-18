@@ -24,9 +24,9 @@ import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import lombok.Getter;
 import lombok.Setter;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "TAMW_deployParam")
@@ -41,7 +41,7 @@ public class DeploymentParameter {
 
     @Getter
     @Column(unique = true, nullable = false)
-    @NotEmpty
+    @NotNull
     private String key;
 
     @Getter

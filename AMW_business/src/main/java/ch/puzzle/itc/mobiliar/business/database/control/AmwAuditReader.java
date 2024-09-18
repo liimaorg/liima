@@ -25,7 +25,7 @@ import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.exception.RevisionDoesNotExistException;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.Date;
 
 /**
@@ -37,7 +37,7 @@ public class AmwAuditReader {
 	private EntityManager entityManager;
 
 	protected AuditReader getAuditReader() {
-		return AuditReaderFactory.get(entityManager);
+		return AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
 	}
 
 	/**

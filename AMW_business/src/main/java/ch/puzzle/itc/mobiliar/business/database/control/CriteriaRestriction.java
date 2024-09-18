@@ -20,8 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.database.control;
 
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 
 public class CriteriaRestriction<RootType, PathType> {
 	

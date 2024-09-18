@@ -23,7 +23,7 @@ package ch.puzzle.itc.mobiliar.business.deploymentparameter.control;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 
 public class DeploymentParameterRepository {

@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;

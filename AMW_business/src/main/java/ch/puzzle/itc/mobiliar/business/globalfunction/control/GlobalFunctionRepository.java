@@ -23,10 +23,10 @@ package ch.puzzle.itc.mobiliar.business.globalfunction.control;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-import javax.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaQuery;
 
 import ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity;
 

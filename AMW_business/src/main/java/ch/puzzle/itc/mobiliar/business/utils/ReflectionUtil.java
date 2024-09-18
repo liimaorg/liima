@@ -22,9 +22,9 @@ package ch.puzzle.itc.mobiliar.business.utils;
 
 import org.hibernate.proxy.HibernateProxy;
 
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;

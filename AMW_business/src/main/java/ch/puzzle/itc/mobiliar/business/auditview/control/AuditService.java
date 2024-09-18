@@ -43,8 +43,8 @@ import org.hibernate.envers.query.AuditQuery;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -68,7 +68,7 @@ public class AuditService {
         Objects.requireNonNull(entity, "Entity can not be null");
         Objects.requireNonNull(id, "Id can not be null");
 
-        AuditReader reader = AuditReaderFactory.get(entityManager);
+        AuditReader reader = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
 
         if (reader.isEntityClassAudited(entity.getClass())) {
             AuditQuery query = reader.createQuery()
@@ -88,7 +88,7 @@ public class AuditService {
     public List<Object> getAllDeletedEntities(Class clazz) {
         Objects.requireNonNull(clazz, "Clazz can not be null");
 
-        AuditReader reader = AuditReaderFactory.get(entityManager);
+        AuditReader reader = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
 
         if (reader.isEntityClassAudited(clazz)) {
             AuditQuery query = reader.createQuery()
@@ -110,7 +110,7 @@ public class AuditService {
     public List<AuditViewEntry> getAuditViewEntriesForResource(Integer resourceId) {
         // Map<Hashcode, AuditViewEntry>
         Map<Integer, AuditViewEntry> allAuditViewEntries = new HashMap<>();
-        AuditReader reader = AuditReaderFactory.get(entityManager);
+        AuditReader reader = AuditReaderFactory.get(entityManager.unwrap(org.hibernate.Session.class));
         CrossTypeRevisionChangesReader crossTypeRevisionChangesReader = reader.getCrossTypeRevisionChangesReader();
         List<MyRevisionEntity> revisionsForResource = getRevisionsForResource(resourceId);
         for (MyRevisionEntity revisionEntity : revisionsForResource) {

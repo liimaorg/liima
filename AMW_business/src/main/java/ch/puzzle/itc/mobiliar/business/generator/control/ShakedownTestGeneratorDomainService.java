@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import javax.xml.bind.JAXB;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;

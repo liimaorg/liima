@@ -52,7 +52,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;

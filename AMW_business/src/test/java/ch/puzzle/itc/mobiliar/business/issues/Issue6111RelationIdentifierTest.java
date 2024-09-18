@@ -23,8 +23,8 @@ package ch.puzzle.itc.mobiliar.business.issues;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.junit.Before;
 import org.junit.Test;

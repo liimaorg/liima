@@ -26,7 +26,7 @@ import lombok.Setter;
 import org.hibernate.annotations.NamedQuery;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
