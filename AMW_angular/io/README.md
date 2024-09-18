@@ -9,7 +9,7 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 The backend must be up and running. The simplest way is to run it in a docker container - in order to build the image, you must have docker, docker-compose, maven and java 11 installed - build the image with:
 
 ```bash
-npm run backend:build
+pnpm run backend:build
 ```
 
 Note: this will take some time!
@@ -17,8 +17,8 @@ Note: this will take some time!
 Start/ stop the backend container with:
 
 ```bash
-npm run backend:start
-npm run backend:stop
+pnpm run backend:start
+pnpm run backend:stop
 ```
 
 ## Coding guidelines

@@ -44,36 +44,36 @@
                 <version>1.13.3</version>
                 <configuration>
                     <nodeVersion>v20.11.1</nodeVersion>
-                    <npmVersion>10.4.0</npmVersion>
+                    <npmVersion>8.7.4</npmVersion>
                     <workingDirectory>io</workingDirectory>
                     <installDirectory>${user.home}/.node</installDirectory>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>install node and npm</id>
+                        <id>install node and pnpm</id>
                         <phase>initialize</phase>
                         <goals>
-                            <goal>install-node-and-npm</goal>
+                            <goal>install-node-and-pnpm</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>npm ci</id>
+                        <id>pnpm install</id>
                         <phase>initialize</phase>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>pnpm</goal>
                         </goals>
                         <configuration>
-                            <arguments>ci</arguments>
+                            <arguments>install</arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>npm run-script mavenbuild</id>
+                        <id>pnpm run mavenbuild</id>
                         <phase>compile</phase>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>pnpm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run-script mavenbuild</arguments>
+                            <arguments>run mavenbuild</arguments>
                         </configuration>
                     </execution>
                 </executions>
