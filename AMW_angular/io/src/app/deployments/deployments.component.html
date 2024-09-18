@@ -52,7 +52,8 @@
               }
             </select>
           </div>
-          @if (filter.type !== 'DateType') { @if (filter.type !== 'booleanType' && filter.type !== 'ENUM_TYPE') {
+          @if (filter.type !== 'DateType') {
+          @if (filter.type !== 'booleanType' && filter.type !== 'ENUM_TYPE') {
           <div class="col-sm-4">
             <input class="form-control" attr.list="list{{ i }}" type="text" [(ngModel)]="filter.val" />
             <datalist attr.id="list{{ i }}">

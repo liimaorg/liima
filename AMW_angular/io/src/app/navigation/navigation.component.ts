@@ -32,6 +32,9 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
             <li class="nav-item">
               <a class="nav-link" href="/AMW_web/pages/applist.xhtml">Apps</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#/apps/">Apps 2.0</a>
+            </li>
             <li class="nav-item"></li>
             <li>
               <a class="nav-link" href="/AMW_web/pages/serverListView.xhtml">Servers</a>
