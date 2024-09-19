@@ -118,15 +118,15 @@ public class ResourceRelationsIntegrationTest {
 	    entityManager.persist(asRel1.addConsumedResourceRelation(appRel2, resRelType, null, ForeignableOwner.AMW));
 	    entityManager.persist(asRel2.addConsumedResourceRelation(appRel1, resRelType, null, ForeignableOwner.AMW));
 	    entityManager.persist(asRel2.addConsumedResourceRelation(appRel2, resRelType, null, ForeignableOwner.AMW));
-	     Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.anyString(),
-				Mockito.anyInt(), Mockito.anyBoolean())).thenReturn(
+	     Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.anyInt(),
+				Mockito.anyInt(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(
 			    Arrays.asList(asRel1,asRel2));
 	    service.dependencyResolverService = dependencyResolver;
 	}
 
 	@Test
 	public void testGetAppServersWithApplications() {
-	    service.getAppServersWithApplications("app", null, release1);
+	    service.getAppServersWithApplications(null, null, "app", release1);
 	}
 
 }

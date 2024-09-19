@@ -21,6 +21,7 @@
 package ch.mobi.itc.mobiliar.rest;
 
 import ch.mobi.itc.mobiliar.rest.Analyze.TestGenerationRest;
+import ch.mobi.itc.mobiliar.rest.apps.AppsRest;
 import ch.mobi.itc.mobiliar.rest.auditview.AuditViewRest;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentDtoCsvBodyWriter;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentsLogRest;
@@ -52,6 +53,7 @@ public class RESTApplication extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
 
         // Endpoints
+        resources.add(AppsRest.class);
         resources.add(BatchJobRest.class);
         resources.add(ResourcesRest.class);
         resources.add(ResourceGroupsRest.class);

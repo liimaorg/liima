@@ -49,7 +49,7 @@ public class ApplistScreenDomainServiceTest {
     @Test
     public void testGetApplicationServers() throws Exception {
         List<ResourceEntity> applicationServers = applistScreenDomainService
-                  .getAppServerResourcesWithApplications("*", 42, true);
+                  .getAppServerResourcesWithApplications(0,  42, "*", true);
         Assert.assertTrue(applicationServers.isEmpty());
     }
 
@@ -59,7 +59,7 @@ public class ApplistScreenDomainServiceTest {
     @Test
     public void testGetApplicationServerResources() throws Exception {
         List<ResourceEntity> applicationServers = applistScreenDomainService
-                  .getApplicationServerResources("*", 42);
+                  .getApplicationServerResources(0,  42, "*");
         Assert.assertTrue(applicationServers.isEmpty());
     }
 }

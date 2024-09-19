@@ -37,19 +37,20 @@ public class ApplistScreenDomainService {
     @Inject
     private ApplistScreenDomainServiceQueries queries;
 
-    List<ResourceEntity> getApplicationServerResources(String filter, Integer maxResults) {
-        return queries.doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(filter, maxResults);
+    List<ResourceEntity> getApplicationServerResources( Integer startIndex, Integer maxResults, String filter) {
+        return queries.doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(startIndex, maxResults, filter);
     }
 
 
-    public List<ResourceEntity> getAppServerResourcesWithApplications(String filter, Integer maxResults, boolean withAppServerContainer) {
-        List<ResourceEntity> appServerList = getApplicationServerResources(filter, maxResults);
+    public List<ResourceEntity> getAppServerResourcesWithApplications(Integer startIndex, Integer maxResults, String filter, boolean withAppServerContainer) {
+        List<ResourceEntity> appServerList = getApplicationServerResources(startIndex, maxResults, filter);
         for (ResourceEntity as : appServerList) {
             if (as.getName().equals(ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName())) {
                 if (!withAppServerContainer || as.getConsumedMasterRelations().isEmpty()) {
                     appServerList.remove(as);
                     break;
-                };
+                }
+                ;
             }
         }
         return appServerList;

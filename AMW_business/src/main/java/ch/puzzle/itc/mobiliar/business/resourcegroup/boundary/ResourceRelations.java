@@ -52,9 +52,9 @@ public class ResourceRelations {
     @Inject
     ResourceDependencyResolverService dependencyResolverService;
 
-    public List<ResourceWithRelations> getAppServersWithApplications(String filter, Integer maxResults, ReleaseEntity release) {
+    public List<ResourceWithRelations> getAppServersWithApplications(Integer startIndex, Integer maxResults, String filter, ReleaseEntity release) {
         UserSettingsEntity userSettings = userSettingsService.getUserSettings(permissionService.getCurrentUserName());
-        List<ResourceEntity> appServersWithAllApplications = applistScreenDomainService.getAppServerResourcesWithApplications(filter, maxResults, true);
+        List<ResourceEntity> appServersWithAllApplications = applistScreenDomainService.getAppServerResourcesWithApplications(startIndex, maxResults, filter, true);
         return filterAppServersByRelease(release, appServersWithAllApplications);
     }
 

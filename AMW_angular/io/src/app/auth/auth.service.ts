@@ -5,6 +5,7 @@ import { Observable, startWith, Subject } from 'rxjs';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { Restriction } from '../settings/permission/restriction';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { DefaultResourceType } from './defaultResourceType';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
@@ -42,6 +43,22 @@ export class AuthService extends BaseService {
     return (
       this.getActionsForPermission(permissionName).find((value) => value === 'ALL' || value === action) !== undefined
     );
+  }
+
+  hasResourcePermission(permissionName: string, action: string, resourceType: string): boolean {
+    return (
+      this.restrictions()
+        .filter((entry) => entry.permission.name === permissionName)
+        .filter((entry) => entry.resourceTypeName === resourceType || this.isDefaultType(entry, resourceType))
+        .map((entry) => entry.action)
+        .find((entry) => entry === 'ALL' || entry === action) !== undefined
+    );
+  }
+
+  private isDefaultType(entry: Restriction, resourceType: string) {
+    if (entry.resourceTypeName === null && entry.resourceTypePermission === 'DEFAULT_ONLY') {
+      return Object.keys(DefaultResourceType).find((key) => key === resourceType);
+    } else return false;
   }
 }
 

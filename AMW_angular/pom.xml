@@ -44,7 +44,7 @@
                 <version>1.13.3</version>
                 <configuration>
                     <nodeVersion>v20.11.1</nodeVersion>
-                    <npmVersion>8.7.4</npmVersion>
+                    <pnpmVersion>8.7.4</pnpmVersion>
                     <workingDirectory>io</workingDirectory>
                     <installDirectory>${user.home}/.node</installDirectory>
                 </configuration>

@@ -1,7 +1,8 @@
-<app-loading-indicator [isLoading]="isLoading$ | async"></app-loading-indicator>
+<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
 <app-page>
   <div class="page-title">Apps</div>
   <div class="page-content">
+    {{ loadingPermissions()}}
     <div>
       <!--      @if (successMessage) {-->
       <!--      <app-notification [message]="successMessage" [messageType]="'success'"></app-notification>-->

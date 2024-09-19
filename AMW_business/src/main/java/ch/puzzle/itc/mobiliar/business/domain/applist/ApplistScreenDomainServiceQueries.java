@@ -42,7 +42,7 @@ public class ApplistScreenDomainServiceQueries {
     @Inject
     private DatabaseUtil dbUtil;
 
-    List<ResourceEntity> doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(String nameFilter,  Integer maxResult) {
+    List<ResourceEntity> doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(Integer startIndex, Integer maxResult, String nameFilter) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Predicate p;
         boolean nameFilterIsEmpty = nameFilter == null || nameFilter.trim().isEmpty();
@@ -76,6 +76,11 @@ public class ApplistScreenDomainServiceQueries {
 
         q.orderBy(cb.asc(appServer.get("deletable")), cb.asc(name));
         TypedQuery<ResourceEntity> query = entityManager.createQuery(q);
+
+        if (startIndex != null) {
+            query.setFirstResult(startIndex);
+        }
+
         if (maxResult != null) {
             query.setMaxResults(maxResult);
         }
