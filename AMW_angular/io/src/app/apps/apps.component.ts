@@ -9,10 +9,11 @@ import { AuthService } from '../auth/auth.service';
 import { ReleasesService } from '../settings/releases/releases.service';
 import { AppsService } from './apps.service';
 import { Release } from '../settings/releases/release';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { ToastService } from '../shared/elements/toast/toast.service';
 import { AppServer } from './app-server';
 import { AppServersListComponent } from './app-servers-list/app-servers-list.component';
+import { PaginationComponent } from '../shared/pagination/pagination.component';
 
 @Component({
   selector: 'amw-apps',
@@ -24,6 +25,7 @@ import { AppServersListComponent } from './app-servers-list/app-servers-list.com
     IconComponent,
     LoadingIndicatorComponent,
     PageComponent,
+    PaginationComponent,
   ],
   templateUrl: './apps.component.html',
   styleUrl: './apps.component.scss',
@@ -44,6 +46,13 @@ export class AppsComponent {
   canViewAppList = false;
   isLoading = false;
 
+  // pagination with default values
+  maxResults = 20;
+  offset = 0;
+  allResults: number;
+  currentPage: number;
+  lastPage: number;
+
   loadingPermissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       this.getUserPermissions();
@@ -58,8 +67,21 @@ export class AppsComponent {
     });
     this.isLoading = true;
     this.releases$ = this.releaseService.getReleases(null, null);
-    this.appServers$ = this.appsService.getApps(0, 100, null, 50);
+    this.getAppServers();
     this.isLoading = false;
+  }
+
+  private getAppServers() {
+    this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
+    this.appServers$ = this.appsService
+      .getApps(this.offset, this.maxResults, null, 50)
+      .pipe(
+        map((appServers) => {
+          this.lastPage = Math.ceil(300 / this.maxResults);
+          return appServers;
+        }),
+      )
+      .pipe();
   }
 
   private getUserPermissions() {
@@ -70,4 +92,15 @@ export class AppsComponent {
 
   addApp() {}
   addServer() {}
+
+  setMaxResultsPerPage(max: number) {
+    this.maxResults = max;
+    this.offset = 0;
+    this.getAppServers();
+  }
+
+  setNewOffset(offset: number) {
+    this.offset = offset;
+    this.getAppServers();
+  }
 }

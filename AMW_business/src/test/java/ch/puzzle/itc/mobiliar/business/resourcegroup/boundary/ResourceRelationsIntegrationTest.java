@@ -30,6 +30,7 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
@@ -44,6 +45,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @RunWith(PersistenceTestRunner.class)
 public class ResourceRelationsIntegrationTest {
@@ -120,7 +122,7 @@ public class ResourceRelationsIntegrationTest {
 	    entityManager.persist(asRel2.addConsumedResourceRelation(appRel2, resRelType, null, ForeignableOwner.AMW));
 	     Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.anyInt(),
 				Mockito.anyInt(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(
-			    Arrays.asList(asRel1,asRel2));
+				 new Tuple<List<ResourceEntity>, Long>(Arrays.asList(asRel1,asRel2),0L));
 	    service.dependencyResolverService = dependencyResolver;
 	}
 

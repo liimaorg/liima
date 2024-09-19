@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.domain.applist;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ApplistScreenDomainServiceTest {
@@ -48,9 +50,9 @@ public class ApplistScreenDomainServiceTest {
      */
     @Test
     public void testGetApplicationServers() throws Exception {
-        List<ResourceEntity> applicationServers = applistScreenDomainService
+        Tuple<List<ResourceEntity>, Long> applicationServers = applistScreenDomainService
                   .getAppServerResourcesWithApplications(0,  42, "*", true);
-        Assert.assertTrue(applicationServers.isEmpty());
+        Assert.assertTrue(applicationServers.getA().isEmpty());
     }
 
     /**
@@ -58,8 +60,8 @@ public class ApplistScreenDomainServiceTest {
      */
     @Test
     public void testGetApplicationServerResources() throws Exception {
-        List<ResourceEntity> applicationServers = applistScreenDomainService
+        Tuple<List<ResourceEntity>, Long> applicationServers = applistScreenDomainService
                   .getApplicationServerResources(0,  42, "*");
-        Assert.assertTrue(applicationServers.isEmpty());
+        Assert.assertTrue(applicationServers.getA().isEmpty());
     }
 }

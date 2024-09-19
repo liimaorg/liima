@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import { Release } from './release';
 import { Observable } from 'rxjs';
-import { ResourceEntity } from './resourceEntity';
+import { ResourceEntity } from './resource-entity';
 
 @Injectable({ providedIn: 'root' })
 export class ReleasesService extends BaseService {

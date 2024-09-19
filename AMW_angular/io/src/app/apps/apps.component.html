@@ -4,11 +4,6 @@
   <div class="page-content">
     {{ loadingPermissions()}}
     <div>
-      <!--      @if (successMessage) {-->
-      <!--      <app-notification [message]="successMessage" [messageType]="'success'"></app-notification>-->
-      <!--      } @if (errorMessage) {-->
-      <!--      <app-notification [message]="errorMessage" [messageType]="'warning'"></app-notification>-->
-      <!--      }-->
       <div class="container">
         <div class="card row mt-2 mb-3">
           <div class="card-header">
@@ -37,18 +32,18 @@
           @if (canViewAppList) {
           <div class="card-body">
             <amw-apps-filter></amw-apps-filter>
-              <amw-app-servers-list [appServers]="appServers$ | async" ></amw-app-servers-list>
+            <amw-app-servers-list [appServers]="appServers$ | async"></amw-app-servers-list>
           </div>
 
           <div class="card-footer py-1">
             <div class="row bg-light align-items-center">
-              <!--    <amw-pagination-->
-              <!--      [currentPage]="currentPage"-->
-              <!--      [lastPage]="lastPage"-->
-              <!--      (doSetMax)="setMaxResultsPerPage($event)"-->
-              <!--      (doSetOffset)="setNewOffset($event)"-->
-              <!--    >-->
-              <!--    </amw-pagination>-->
+              <amw-pagination
+                [currentPage]="currentPage"
+                [lastPage]="lastPage"
+                (doSetMax)="setMaxResultsPerPage($event)"
+                (doSetOffset)="setNewOffset($event)"
+              >
+              </amw-pagination>
             </div>
           </div>
           }

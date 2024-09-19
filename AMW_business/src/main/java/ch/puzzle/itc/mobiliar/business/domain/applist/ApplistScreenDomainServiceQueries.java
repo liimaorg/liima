@@ -33,6 +33,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.business.utils.JpaWildcardConverter;
 import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 public class ApplistScreenDomainServiceQueries {
 
@@ -42,17 +43,19 @@ public class ApplistScreenDomainServiceQueries {
     @Inject
     private DatabaseUtil dbUtil;
 
-    List<ResourceEntity> doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(Integer startIndex, Integer maxResult, String nameFilter) {
+
+    Tuple<List<ResourceEntity>, Long> getAppServersWithApps(Integer startIndex, Integer maxResult, String nameFilter) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Predicate p;
         boolean nameFilterIsEmpty = nameFilter == null || nameFilter.trim().isEmpty();
 
+        // Set up the common query parts
         CriteriaQuery<ResourceEntity> q = cb.createQuery(ResourceEntity.class);
         Root<ResourceEntity> appServer = q.from(ResourceEntity.class);
-
         Join<ResourceEntity, ResourceTypeEntity> appServerType = appServer.join("resourceType", JoinType.LEFT);
         SetJoin<ResourceEntity, ConsumedResourceRelationEntity> relation = appServer.joinSet("consumedMasterRelations", JoinType.LEFT);
         Join<ConsumedResourceRelationEntity, ResourceEntity> app = relation.join("slaveResource", JoinType.LEFT);
+
 
         p = cb.and(cb.equal(appServerType.<String>get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name()));
 
@@ -64,6 +67,19 @@ public class ApplistScreenDomainServiceQueries {
                             cb.like(cb.lower(appServer.<String>get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER),
                             cb.like(cb.lower(app.<String>get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER)));
         }
+
+        // Create a separate count query with the same filter
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<ResourceEntity> countAppServer = countQuery.from(ResourceEntity.class);
+        Join<ResourceEntity, ResourceTypeEntity> countAppServerType = countAppServer.join("resourceType", JoinType.LEFT);
+        SetJoin<ResourceEntity, ConsumedResourceRelationEntity> countRelation = countAppServer.joinSet("consumedMasterRelations", JoinType.LEFT);
+        Join<ConsumedResourceRelationEntity, ResourceEntity> countApp = countRelation.join("slaveResource", JoinType.LEFT);
+        countQuery.select(cb.count(countAppServer));
+        countQuery.where(p); // Apply the same filter as the main query
+
+        // Execute the count query
+        Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
+
         q.where(p);
 
         q.distinct(true);
@@ -75,17 +91,21 @@ public class ApplistScreenDomainServiceQueries {
         }
 
         q.orderBy(cb.asc(appServer.get("deletable")), cb.asc(name));
+
         TypedQuery<ResourceEntity> query = entityManager.createQuery(q);
+
 
         if (startIndex != null) {
             query.setFirstResult(startIndex);
         }
 
+
+
         if (maxResult != null) {
             query.setMaxResults(maxResult);
         }
 
-        return query.getResultList();
+        return  new Tuple<>(query.getResultList(), totalCount);
     }
 
 }

@@ -152,61 +152,7 @@
 				</div>
 			</h:panelGroup>
 
-			<rich:popupPanel id="confirmAppDeletePopupPanel" autosized="true"
-				domElementAttachment="form">
-				<f:facet name="header">
-					<h2>
-						<h:outputText value="Delete Application" />
-					</h2>
-				</f:facet>
-				<f:facet name="controls">
-					<h:outputLink value="#"
-						styleClass="close icon icon-close icon-replace"
-						onclick="#{rich:component('confirmAppDeletePopupPanel')}.hide(); return false;">
-					x
-					</h:outputLink>
-				</f:facet>
 
-				<h:form prependId="false">
-					<h:inputHidden id="removeSelectedAppId"
-						value="#{applistView.selectionApp}" />
-					<h:panelGrid styleClass="marginBottom10">Are you sure you want to delete the application release?</h:panelGrid>
-					<h:panelGrid id="appDeleteRelationOverview"><mobi:resourceRelations enableEdit="false"/></h:panelGrid>
-					<a4j:commandLink styleClass="btn primary right" type="button"
-						value="Delete" render="applicationServers"
-						action="#{applistView.removeApp()}"
-						onclick="showLoader();"
-						oncomplete="#{rich:component('confirmAppDeletePopupPanel')}.hide(); hideLoader(); return false;" />
-				</h:form>
-			</rich:popupPanel>
-
-			<rich:popupPanel id="confirmAppServerDeletePopupPanel"
-				autosized="true">
-				<f:facet name="header">
-					<h2>
-						<h:outputText value="Delete Application Server" />
-					</h2>
-				</f:facet>
-				<f:facet name="controls">
-					<h:outputLink value="#"
-						styleClass="close icon icon-close icon-replace"
-						onclick="#{rich:component('confirmAppServerDeletePopupPanel')}.hide(); return false;">
-					x
-					</h:outputLink>
-				</f:facet>
-
-				<h:form prependId="false">
-					<h:inputHidden id="removeSelectedAppServerId"
-						value="#{applistView.selection}" />
-					<h:panelGrid styleClass="marginBottom10">Are you sure you want to delete the application server release?</h:panelGrid>
-					<h:panelGrid id="appServerDeleteRelationOverview"><mobi:resourceRelations enableEdit="false"/></h:panelGrid>
-					<a4j:commandLink styleClass="btn primary right" type="button"
-						value="Delete" render="applicationServers"
-						action="#{applistView.removeAppServer()}"
-						onclick="showLoader();"
-						oncomplete="#{rich:component('confirmAppServerDeletePopupPanel')}.hide(); hideLoader(); return false;" />
-				</h:form>
-			</rich:popupPanel>
 
 		</div>
 		</section>

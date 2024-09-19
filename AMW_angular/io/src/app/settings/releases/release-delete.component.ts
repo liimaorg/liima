@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Release } from './release';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AsyncPipe, KeyValuePipe } from '@angular/common';
-import { ResourceEntity } from './resourceEntity';
+import { ResourceEntity } from './resource-entity';
 
 @Component({
   selector: 'amw-release-delete',

@@ -286,7 +286,7 @@ public class ApplistView implements Serializable, ApplicationCreatorDataProvider
 		if(maxResults!=null && maxResults==0) {
 			maxResults = null;
 		}
-		return resourceRelations.getAppServersWithApplications(0, maxResults,filter, release);
+		return resourceRelations.getAppServersWithApplications(0, maxResults,filter, release).getA();
 	}
 
 	public boolean canCreateApplicationServerInstance(){

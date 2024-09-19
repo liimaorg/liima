@@ -6,6 +6,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceRelations;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -43,16 +44,16 @@ public class AppsRest {
                             @NotNull @QueryParam("releaseId") Integer releaseId) throws NotFoundException {
         if (releaseId == null) { return Response.status(BAD_REQUEST).build(); }
         ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
+        Tuple<List<ResourceWithRelations>, Long> result = resourceRelations.getAppServersWithApplications(start, limit, filter, release);
 
-        return appServersToResponse(resourceRelations.getAppServersWithApplications(start, limit, filter, release));
+        return Response.status(OK).entity(appServersToResponse(result.getA())).header("X-total-count", result.getB()).build();
     }
 
-    private Response appServersToResponse(List<ResourceWithRelations> apps) {
+    private List<AppServerDTO> appServersToResponse(List<ResourceWithRelations> apps) {
         List<AppServerDTO> appServerList = new ArrayList<>(apps.size());
         for (ResourceWithRelations app : apps) {
             appServerList.add(new AppServerDTO(app));
         }
-
-        return Response.status(OK).entity(appServerList).build();
+        return appServerList;
     }
 }
