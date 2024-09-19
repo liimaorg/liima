@@ -40,7 +40,7 @@ public class AppsRest {
     public Response getApps(@QueryParam("start") Integer start,
                             @QueryParam("limit") Integer limit,
                             @QueryParam("appServerName") String filter,
-                            @NotNull @QueryParam("release") Integer releaseId) throws NotFoundException {
+                            @NotNull @QueryParam("releaseId") Integer releaseId) throws NotFoundException {
         if (releaseId == null) { return Response.status(BAD_REQUEST).build(); }
         ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
 

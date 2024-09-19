@@ -15,13 +15,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppDTO {
-    Integer appId;
-    String appName;
+    Integer id;
+    String name;
     ReleaseDTO release;
 
     public AppDTO(ResourceEntity app) {
-        this.appId = app.getId();
-        this.appName = app.getName();
+        this.id = app.getId();
+        this.name = app.getName();
         if (app.getRelease() != null) {
             this.release = new ReleaseDTO(app.getRelease().getId(), app.getRelease().getName());
         }

@@ -1,0 +1,18 @@
+@if (apps && apps.length > 0) {
+<table class="table table-sm table-borderless mb-0 ">
+  <tbody>
+  @for (app of apps; track app) {
+  <tr [class.table-light]="!even">
+    <td class="align-middle ps-2 w-90 border-0">
+
+      <a href="" id="app.id">{{app.name}}</a>
+
+    </td>
+    <td class="align-middle ps-4 w-10 border-0">{{app.release.id}}</td>
+  </tr>
+  }
+  </tbody>
+</table>
+}
+
+

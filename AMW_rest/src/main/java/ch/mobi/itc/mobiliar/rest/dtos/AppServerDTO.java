@@ -25,7 +25,7 @@ public class AppServerDTO {
     Boolean deletable;
     String runtimeName;
     ReleaseDTO release;
-    List<AppDTO> relatedResources;
+    List<AppDTO> apps;
 
     public AppServerDTO(ResourceWithRelations appServer) {
         this.id = appServer.getResource().getId();
@@ -36,9 +36,9 @@ public class AppServerDTO {
             this.release = new ReleaseDTO(appServer.getResource().getId(), appServer.getResource().getName());
         }
 
-        this.relatedResources = new ArrayList<>();
+        this.apps = new ArrayList<>();
         for (ResourceEntity app : appServer.getRelatedResources()) {
-            this.relatedResources.add(new AppDTO(app));
+            this.apps.add(new AppDTO(app));
         }
 
 
