@@ -49,13 +49,17 @@ public class ApplistScreenDomainServiceQueries {
         Predicate p;
         boolean nameFilterIsEmpty = nameFilter == null || nameFilter.trim().isEmpty();
 
-        // Set up the common query parts
+
+
+        // Count all values before filtering
+        Long totalCount = getTotalCount(cb);
+
+        // Filter and retrieve results
         CriteriaQuery<ResourceEntity> q = cb.createQuery(ResourceEntity.class);
         Root<ResourceEntity> appServer = q.from(ResourceEntity.class);
         Join<ResourceEntity, ResourceTypeEntity> appServerType = appServer.join("resourceType", JoinType.LEFT);
         SetJoin<ResourceEntity, ConsumedResourceRelationEntity> relation = appServer.joinSet("consumedMasterRelations", JoinType.LEFT);
         Join<ConsumedResourceRelationEntity, ResourceEntity> app = relation.join("slaveResource", JoinType.LEFT);
-
 
         p = cb.and(cb.equal(appServerType.<String>get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name()));
 
@@ -67,19 +71,6 @@ public class ApplistScreenDomainServiceQueries {
                             cb.like(cb.lower(appServer.<String>get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER),
                             cb.like(cb.lower(app.<String>get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER)));
         }
-
-        // Create a separate count query with the same filter
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        Root<ResourceEntity> countAppServer = countQuery.from(ResourceEntity.class);
-        Join<ResourceEntity, ResourceTypeEntity> countAppServerType = countAppServer.join("resourceType", JoinType.LEFT);
-        SetJoin<ResourceEntity, ConsumedResourceRelationEntity> countRelation = countAppServer.joinSet("consumedMasterRelations", JoinType.LEFT);
-        Join<ConsumedResourceRelationEntity, ResourceEntity> countApp = countRelation.join("slaveResource", JoinType.LEFT);
-        countQuery.select(cb.count(countAppServer));
-        countQuery.where(p); // Apply the same filter as the main query
-
-        // Execute the count query
-        Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
-
         q.where(p);
 
         q.distinct(true);
@@ -106,6 +97,18 @@ public class ApplistScreenDomainServiceQueries {
         }
 
         return  new Tuple<>(query.getResultList(), totalCount);
+    }
+
+    private Long getTotalCount(CriteriaBuilder cb) {
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<ResourceEntity> appServer = countQuery.from(ResourceEntity.class);
+        Join<ResourceEntity, ResourceTypeEntity> appServerType = appServer.join("resourceType", JoinType.LEFT);
+        SetJoin<ResourceEntity, ConsumedResourceRelationEntity> relation = appServer.joinSet("consumedMasterRelations", JoinType.LEFT);
+        Join<ConsumedResourceRelationEntity, ResourceEntity> app = relation.join("slaveResource", JoinType.LEFT);
+        countQuery.select(cb.count(appServer));
+        countQuery.where(cb.equal(appServerType.<String>get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name()));
+        Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
+        return totalCount;
     }
 
 }
