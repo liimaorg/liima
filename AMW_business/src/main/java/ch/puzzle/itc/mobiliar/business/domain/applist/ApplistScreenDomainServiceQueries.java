@@ -85,16 +85,13 @@ public class ApplistScreenDomainServiceQueries {
 
         TypedQuery<ResourceEntity> query = entityManager.createQuery(q);
 
-
         if (startIndex != null) {
             query.setFirstResult(startIndex);
         }
 
-
-
         if (maxResult != null) {
             query.setMaxResults(maxResult);
-        }
+    }
 
         return  new Tuple<>(query.getResultList(), totalCount);
     }
@@ -105,7 +102,7 @@ public class ApplistScreenDomainServiceQueries {
         Join<ResourceEntity, ResourceTypeEntity> appServerType = appServer.join("resourceType", JoinType.LEFT);
         SetJoin<ResourceEntity, ConsumedResourceRelationEntity> relation = appServer.joinSet("consumedMasterRelations", JoinType.LEFT);
         Join<ConsumedResourceRelationEntity, ResourceEntity> app = relation.join("slaveResource", JoinType.LEFT);
-        countQuery.select(cb.count(appServer));
+        countQuery.select(cb.countDistinct(appServer.get("id")));
         countQuery.where(cb.equal(appServerType.<String>get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name()));
         Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
         return totalCount;

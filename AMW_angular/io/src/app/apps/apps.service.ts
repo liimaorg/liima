@@ -1,9 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { BaseService } from '../base/base.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AppServer } from './app-server';
+import { App } from './app';
 
 @Injectable({ providedIn: 'root' })
 export class AppsService extends BaseService {
@@ -14,7 +15,7 @@ export class AppsService extends BaseService {
     super();
   }
 
-  getApps(offset: number, limit: number, filter: string, releaseId: number): Observable<AppServer[]> {
+  getApps(offset: number, limit: number, filter: string, releaseId: number): Observable<HttpResponse<AppServer[]>> {
     let urlParams = '';
     if (offset != null) {
       urlParams = `start=${offset}&`;
@@ -31,6 +32,7 @@ export class AppsService extends BaseService {
     return this.http
       .get<any[]>(`${this.appsUrl}?${urlParams}releaseId=${releaseId}`, {
         headers: this.getHeaders(),
+        observe: 'response',
       })
       .pipe(catchError(this.handleError));
   }

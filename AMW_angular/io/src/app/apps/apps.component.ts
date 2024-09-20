@@ -76,9 +76,10 @@ export class AppsComponent {
     this.appServers$ = this.appsService
       .getApps(this.offset, this.maxResults, null, 50)
       .pipe(
-        map((appServers) => {
-          this.lastPage = Math.ceil(300 / this.maxResults);
-          return appServers;
+        map((response) => {
+          this.allResults = Number(response.headers.get('x-total-count'));
+          this.lastPage = Math.ceil(this.allResults / this.maxResults);
+          return response.body;
         }),
       )
       .pipe();

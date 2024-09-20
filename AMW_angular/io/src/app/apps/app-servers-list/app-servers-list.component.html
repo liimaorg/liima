@@ -18,7 +18,7 @@
         <a href="">{{appServer.name}}</a> [ {{appServer.runtimeName}} ]
         }
       </td>
-      <td class="align-middle w-10">{{appServer.release.id}}</td>
+      <td class="align-middle w-10"><a href="" id="appServer.release.id">{{appServer.release.name}}</a></td>
     </tr>
     @if (appServer.apps && appServer.apps.length > 0) {
     <tr class="py-0 borderless" [class.table-light]="!even">
