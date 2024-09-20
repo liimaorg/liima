@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Signal } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { AppServer } from '../app-server';
