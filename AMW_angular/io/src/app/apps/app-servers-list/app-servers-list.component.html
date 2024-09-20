@@ -15,10 +15,10 @@
         @if (!appServer.deletable) {
         <div id="appServer.id">{{appServer.name}}</div>
         } @else {
-        <a href="">{{appServer.name}}</a> [ {{appServer.runtimeName}} ]
+        <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{appServer.id}}">{{appServer.name}}</a> [ {{appServer.runtimeName}} ]
         }
       </td>
-      <td class="align-middle w-10"><a href="" id="appServer.release.id">{{appServer.release.name}}</a></td>
+      <td class="align-middle w-10"><a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{appServer.release.id}}">{{appServer.release.name}}</a></td>
     </tr>
     @if (appServer.apps && appServer.apps.length > 0) {
     <tr class="py-0 borderless" [class.table-light]="!even">
