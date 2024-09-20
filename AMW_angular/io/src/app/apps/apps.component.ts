@@ -15,8 +15,10 @@ import { AppServer } from './app-server';
 import { AppServersListComponent } from './app-servers-list/app-servers-list.component';
 import { PaginationComponent } from '../shared/pagination/pagination.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AppServerAddComponent } from './app-server-add.component';
+import { AppServerAddComponent } from './app-server-add/app-server-add.component';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { AppAddComponent } from './app-add/app-add.component';
+import { App } from './app';
 
 @Component({
   selector: 'amw-apps',
@@ -86,8 +88,12 @@ export class AppsComponent implements OnInit {
   }
 
   addApp() {
-    this.appsService.offset.set(50);
-    this.appsService.refreshData();
+    const modalRef = this.modalService.open(AppAddComponent);
+    modalRef.componentInstance.releases = this.releases;
+
+    modalRef.componentInstance.saveApp
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((app: App) => console.log(`should save ${app}`));
   }
 
   addServer() {

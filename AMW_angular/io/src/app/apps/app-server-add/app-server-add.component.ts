@@ -1,15 +1,14 @@
 import { Component, EventEmitter, Input, Output, Signal } from '@angular/core';
-import { Release } from '../settings/releases/release';
-import { AppServer } from './app-server';
+import { Release } from '../../settings/releases/release';
+import { AppServer } from '../app-server';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
-import { AsyncPipe } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'amw-app-server-add',
   standalone: true,
-  imports: [AsyncPipe, FormsModule, NgSelectModule],
+  imports: [FormsModule, NgSelectModule],
   templateUrl: './app-server-add.component.html',
 })
 export class AppServerAddComponent {
