@@ -1,5 +1,5 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Component, computed, inject } from '@angular/core';
+import { async, BehaviorSubject, Observable, Subject } from 'rxjs';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { AsyncPipe } from '@angular/common';
 import { IconComponent } from '../shared/icon/icon.component';
@@ -14,10 +14,8 @@ import { ToastService } from '../shared/elements/toast/toast.service';
 import { AppServer } from './app-server';
 import { AppServersListComponent } from './app-servers-list/app-servers-list.component';
 import { PaginationComponent } from '../shared/pagination/pagination.component';
-import { ReleaseEditComponent } from '../settings/releases/release-edit.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add.component';
-import { App } from './app';
 
 @Component({
   selector: 'amw-apps',

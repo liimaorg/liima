@@ -14,7 +14,7 @@ export class AppServerAddComponent {
   @Input() releases: Release[];
   @Output() saveAppServer: EventEmitter<AppServer> = new EventEmitter<AppServer>();
 
-  appServer: AppServer;
+  appServer: AppServer = { name: '', apps: [], deletable: false, id: null, runtimeName: '', release: null };
 
   constructor(public activeModal: NgbActiveModal) {
     this.activeModal = activeModal;
@@ -28,10 +28,10 @@ export class AppServerAddComponent {
     const appServer: AppServer = {
       name: this.appServer.name,
       release: this.appServer.release,
-      deletable: false,
-      id: null,
-      runtimeName: null,
-      apps: [],
+      deletable: this.appServer.deletable,
+      id: this.appServer.id,
+      runtimeName: this.appServer.runtimeName,
+      apps: this.appServer.apps,
     };
     this.saveAppServer.emit(appServer);
     this.activeModal.close();
