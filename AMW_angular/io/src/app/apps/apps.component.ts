@@ -126,4 +126,20 @@ export class AppsComponent implements OnInit {
     this.appsService.refreshData();
     this.setPagination();
   }
+
+  updateFilter(values: { filter: string; releaseId: number }) {
+    let update = false;
+    if (values.filter !== undefined && this.filter() !== values.filter) {
+      this.filter.set(values.filter);
+      update = true;
+    }
+
+    if (values.releaseId > 0 && this.releaseId() !== values.releaseId) {
+      this.releaseId.set(values.releaseId);
+      update = true;
+    }
+    if (update) {
+      this.appsService.refreshData();
+    }
+  }
 }

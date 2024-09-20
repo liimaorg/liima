@@ -24,18 +24,15 @@
                   Add Application Server
                 </button>
                 }
-
               </div>
             </div>
-
-
           </div>
           @if (canViewAppList) {
           <div class="card-body">
-            <amw-apps-filter></amw-apps-filter>
-              <amw-app-servers-list [appServers]="appServers()"></amw-app-servers-list>
+            <amw-apps-filter [releases]="releases()" (filterEvent)="updateFilter($event)"
+            ></amw-apps-filter>
+            <amw-app-servers-list [appServers]="appServers()"></amw-app-servers-list>
           </div>
-
           <div class="card-footer py-1">
             <div class="row bg-light align-items-center">
               <amw-pagination

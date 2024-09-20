@@ -11,10 +11,6 @@ import { AppsListComponent } from '../apps-list/apps-list-component';
   templateUrl: './app-servers-list.component.html',
   styleUrl: './app-servers-list.component.scss',
 })
-export class AppServersListComponent implements OnInit {
+export class AppServersListComponent {
   @Input() appServers: AppServer[];
-
-  ngOnInit(): void {
-    console.log(this.appServers);
-  }
 }
