@@ -14,6 +14,10 @@ import { ToastService } from '../shared/elements/toast/toast.service';
 import { AppServer } from './app-server';
 import { AppServersListComponent } from './app-servers-list/app-servers-list.component';
 import { PaginationComponent } from '../shared/pagination/pagination.component';
+import { ReleaseEditComponent } from '../settings/releases/release-edit.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AppServerAddComponent } from './app-server-add.component';
+import { App } from './app';
 
 @Component({
   selector: 'amw-apps',
@@ -28,13 +32,13 @@ import { PaginationComponent } from '../shared/pagination/pagination.component';
     PaginationComponent,
   ],
   templateUrl: './apps.component.html',
-  styleUrl: './apps.component.scss',
 })
 export class AppsComponent {
-  appsService = inject(AppsService);
-  authService = inject(AuthService);
-  releaseService = inject(ReleasesService); // getCount -> getReleases(0, count)
-  toastService = inject(ToastService);
+  private appsService = inject(AppsService);
+  private authService = inject(AuthService);
+  private modalService = inject(NgbModal);
+  private releaseService = inject(ReleasesService); // getCount -> getReleases(0, count)
+  private toastService = inject(ToastService);
 
   releases$: Observable<Release[]>;
   appServers$: Observable<AppServer[]>;
@@ -92,7 +96,30 @@ export class AppsComponent {
   }
 
   addApp() {}
-  addServer() {}
+
+  addServer() {
+    const modalRef = this.modalService.open(AppServerAddComponent);
+    modalRef.componentInstance.releases = this.releases$.pipe();
+    modalRef.componentInstance.saveAppServer
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((appServer: AppServer) => this.save(appServer));
+  }
+
+  save(appServer: AppServer) {
+    this.isLoading = true;
+    this.appsService
+      .create(appServer)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (r) => r,
+        error: (e) => this.error$.next(e),
+        complete: () => {
+          this.toastService.success('AppServer saved successfully.');
+          this.getAppServers();
+        },
+      });
+    this.isLoading = false;
+  }
 
   setMaxResultsPerPage(max: number) {
     this.maxResults = max;

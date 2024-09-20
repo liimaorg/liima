@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AppServer } from './app-server';
 import { App } from './app';
+import { Release } from '../settings/releases/release';
 
 @Injectable({ providedIn: 'root' })
 export class AppsService extends BaseService {
@@ -33,6 +34,14 @@ export class AppsService extends BaseService {
       .get<any[]>(`${this.appsUrl}?${urlParams}releaseId=${releaseId}`, {
         headers: this.getHeaders(),
         observe: 'response',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  create(appServer: AppServer) {
+    return this.http
+      .post<AppServer>(`${this.appsUrl}`, appServer, {
+        headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
   }

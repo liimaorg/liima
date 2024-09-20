@@ -50,10 +50,7 @@ public class ResourceRelations {
 
     @Inject
     ApplistScreenDomainService applistScreenDomainService;
-    @Inject
-    UserSettingsService userSettingsService;
-    @Inject
-    PermissionService permissionService;
+
     @Inject
     ResourceDependencyResolverService dependencyResolverService;
 

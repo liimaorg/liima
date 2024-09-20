@@ -1,0 +1,32 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="editReleaseTitle">Create application server</h5>
+  <button type="button" class="btn btn-light close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form-horizontal mx-2">
+    <div class="mb-3">
+      <label for="name" class="form-label">Applicationserver</label>
+      <input type="text" class="form-control" id="name" [(ngModel)]="appServer.name" />
+    </div>
+    <div class="mb-3">
+      <label for="selectRelease" class="form-label">Release</label>
+      <select
+        id="selectRelease"
+        class="form-control input-sm"
+        [(ngModel)]="appServer.release"
+      >
+        @for (release of releases; track release) {
+        <option [ngValue]="release">{{ release }}</option>
+        }
+      </select>
+
+    </div>
+
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="save()">Save changes</button>
+</div>

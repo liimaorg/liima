@@ -5,7 +5,6 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './apps-filter.component.html',
-  styleUrl: './apps-filter.component.scss',
 })
 export class AppsFilterComponent {
   search() {}

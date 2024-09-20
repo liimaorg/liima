@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { AppServer } from '../app-server';
-import { AppsListComponent } from '../list/apps-list-component';
+import { AppsListComponent } from '../apps-list/apps-list-component';
 
 @Component({
   selector: 'amw-app-servers-list',
