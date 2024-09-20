@@ -12,15 +12,24 @@
     </div>
     <div class="mb-3">
       <label for="selectRelease" class="form-label">Release</label>
-      <select id="selectRelease" class="form-control input-sm" [(ngModel)]="appServer.release">
-        @for (release of releases; track release) {
-        <option [ngValue]="release">{{ release.name }}</option>
+      <select id="selectRelease" class="form-control " [(ngModel)]="appServer.release" >
+        @for (release of releases(); track release) {
+          <option [ngValue]="release">{{ release.name }}</option>
         }
       </select>
+<!--      <ng-select-->
+<!--        daty-cy="release-select"-->
+<!--        id="selectRelease"-->
+<!--        [items]="releases()"-->
+<!--        bindLabel="selectRelease"-->
+<!--        placeholder="Select release"-->
+<!--        [(ngModel)]="appServer.release"-->
+<!--      >-->
+<!--      </ng-select>-->
     </div>
   </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+  <button type="button" class="btn btn-primary"   [disabled]="hasInvalidFields()" (click)="save()">Save</button>
 </div>

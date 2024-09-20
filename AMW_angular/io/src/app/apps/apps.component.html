@@ -33,7 +33,7 @@
           @if (canViewAppList) {
           <div class="card-body">
             <amw-apps-filter></amw-apps-filter>
-            <amw-app-servers-list [appServers]="appServers$ | async"></amw-app-servers-list>
+              <amw-app-servers-list [appServers]="appServers()"></amw-app-servers-list>
           </div>
 
           <div class="card-footer py-1">

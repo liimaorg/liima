@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, Signal } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { AppServer } from '../app-server';
@@ -11,6 +11,10 @@ import { AppsListComponent } from '../apps-list/apps-list-component';
   templateUrl: './app-servers-list.component.html',
   styleUrl: './app-servers-list.component.scss',
 })
-export class AppServersListComponent {
+export class AppServersListComponent implements OnInit {
   @Input() appServers: AppServer[];
+
+  ngOnInit(): void {
+    console.log(this.appServers);
+  }
 }

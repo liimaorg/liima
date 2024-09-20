@@ -1,5 +1,5 @@
-import { Component, computed, inject } from '@angular/core';
-import { async, BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Component, computed, inject, OnInit, Signal } from '@angular/core';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { AsyncPipe } from '@angular/common';
 import { IconComponent } from '../shared/icon/icon.component';
@@ -9,13 +9,14 @@ import { AuthService } from '../auth/auth.service';
 import { ReleasesService } from '../settings/releases/releases.service';
 import { AppsService } from './apps.service';
 import { Release } from '../settings/releases/release';
-import { map, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../shared/elements/toast/toast.service';
 import { AppServer } from './app-server';
 import { AppServersListComponent } from './app-servers-list/app-servers-list.component';
 import { PaginationComponent } from '../shared/pagination/pagination.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'amw-apps',
@@ -31,15 +32,20 @@ import { AppServerAddComponent } from './app-server-add.component';
   ],
   templateUrl: './apps.component.html',
 })
-export class AppsComponent {
+export class AppsComponent implements OnInit {
   private appsService = inject(AppsService);
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private releaseService = inject(ReleasesService); // getCount -> getReleases(0, count)
   private toastService = inject(ToastService);
 
-  releases$: Observable<Release[]>;
-  appServers$: Observable<AppServer[]>;
+  releases: Signal<Release[]> = toSignal(this.releaseService.getReleases(0, 50), { initialValue: [] as Release[] });
+  appServers = this.appsService.apps;
+  count = this.appsService.count;
+  maxResults = this.appsService.limit;
+  offset = this.appsService.offset;
+  filter = this.appsService.filter;
+  releaseId = this.appsService.releaseId;
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
 
@@ -48,10 +54,6 @@ export class AppsComponent {
   canViewAppList = false;
   isLoading = false;
 
-  // pagination with default values
-  maxResults = 20;
-  offset = 0;
-  allResults: number;
   currentPage: number;
   lastPage: number;
 
@@ -68,23 +70,13 @@ export class AppsComponent {
       msg !== '' ? this.toastService.error(msg) : null;
     });
     this.isLoading = true;
-    this.releases$ = this.releaseService.getReleases(null, null);
-    this.getAppServers();
+    this.setPagination();
     this.isLoading = false;
   }
 
-  private getAppServers() {
-    this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
-    this.appServers$ = this.appsService
-      .getApps(this.offset, this.maxResults, null, 50)
-      .pipe(
-        map((response) => {
-          this.allResults = Number(response.headers.get('x-total-count'));
-          this.lastPage = Math.ceil(this.allResults / this.maxResults);
-          return response.body;
-        }),
-      )
-      .pipe();
+  private setPagination() {
+    this.currentPage = Math.floor(this.offset() / this.maxResults()) + 1;
+    this.lastPage = Math.ceil(this.count() / this.maxResults());
   }
 
   private getUserPermissions() {
@@ -93,11 +85,14 @@ export class AppsComponent {
     this.canViewAppList = this.authService.hasPermission('APP_AND_APPSERVER_LIST', 'READ');
   }
 
-  addApp() {}
+  addApp() {
+    this.appsService.offset.set(50);
+    this.appsService.refreshData();
+  }
 
   addServer() {
     const modalRef = this.modalService.open(AppServerAddComponent);
-    modalRef.componentInstance.releases = this.releases$.pipe();
+    modalRef.componentInstance.releases = this.releases;
     modalRef.componentInstance.saveAppServer
       .pipe(takeUntil(this.destroy$))
       .subscribe((appServer: AppServer) => this.save(appServer));
@@ -113,20 +108,22 @@ export class AppsComponent {
         error: (e) => this.error$.next(e),
         complete: () => {
           this.toastService.success('AppServer saved successfully.');
-          this.getAppServers();
+          this.appsService.refreshData();
         },
       });
     this.isLoading = false;
   }
 
   setMaxResultsPerPage(max: number) {
-    this.maxResults = max;
-    this.offset = 0;
-    this.getAppServers();
+    this.maxResults.set(max);
+    this.offset.set(0);
+    this.appsService.refreshData();
+    this.setPagination();
   }
 
   setNewOffset(offset: number) {
-    this.offset = offset;
-    this.getAppServers();
+    this.offset.set(offset);
+    this.appsService.refreshData();
+    this.setPagination();
   }
 }
