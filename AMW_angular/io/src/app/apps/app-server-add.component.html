@@ -11,21 +11,12 @@
       <input type="text" class="form-control" id="name" [(ngModel)]="appServer.name"/>
     </div>
     <div class="mb-3">
-      <label for="selectRelease" class="form-label">Release</label>
-      <select id="selectRelease" class="form-control " [(ngModel)]="appServer.release" >
-        @for (release of releases(); track release) {
-          <option [ngValue]="release">{{ release.name }}</option>
+      <label class="form-label">Release</label>
+      <ng-select id="selectRelease" [(ngModel)]="appServer.release" placeholder="Select release" >
+        @for (release of releases(); track release.id) {
+          <ng-option [value]="release">{{ release.name }}</ng-option>
         }
-      </select>
-<!--      <ng-select-->
-<!--        daty-cy="release-select"-->
-<!--        id="selectRelease"-->
-<!--        [items]="releases()"-->
-<!--        bindLabel="selectRelease"-->
-<!--        placeholder="Select release"-->
-<!--        [(ngModel)]="appServer.release"-->
-<!--      >-->
-<!--      </ng-select>-->
+      </ng-select>
     </div>
   </div>
 </div>

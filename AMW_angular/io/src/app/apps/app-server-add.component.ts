@@ -3,7 +3,6 @@ import { Release } from '../settings/releases/release';
 import { AppServer } from './app-server';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { NgSelectModule } from '@ng-select/ng-select';
 
