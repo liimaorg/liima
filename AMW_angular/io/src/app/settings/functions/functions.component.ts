@@ -1,11 +1,11 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AuthService, isAllowed } from '../../auth/auth.service';
+import { AuthService } from '../../auth/auth.service';
 import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { Function } from './function';
@@ -44,10 +44,8 @@ export class FunctionsComponent implements OnInit {
   lastPage: number;
 
   isLoading = true;
-
-  canCreate = signal<boolean>(false);
-  canEdit = signal<boolean>(false);
-  canDelete = signal<boolean>(false);
+  canManage: boolean = false;
+  canView: boolean = false;
 
   ngOnInit(): void {
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
@@ -63,10 +61,8 @@ export class FunctionsComponent implements OnInit {
   }
 
   private getUserPermissions() {
-    const actions = this.authService.getActionsForPermission('FUNCTION');
-    this.canCreate.set(actions.some(isAllowed('CREATE')));
-    this.canEdit.set(actions.some(isAllowed('UPDATE')));
-    this.canDelete.set(actions.some(isAllowed('DELETE')));
+    this.canManage = this.authService.hasPermission('MANAGE_GLOBAL_FUNCTIONS', 'ALL');
+    this.canView = this.authService.hasPermission('VIEW_GLOBAL_FUNCTIONS', 'ALL');
   }
 
   private getFunctions() {
