@@ -28,6 +28,7 @@ import ch.mobi.itc.mobiliar.rest.deployments.DeploymentsLogRest;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentsRest;
 import ch.mobi.itc.mobiliar.rest.environments.EnvironmentsRest;
 import ch.mobi.itc.mobiliar.rest.exceptions.*;
+import ch.mobi.itc.mobiliar.rest.functions.FunctionsRest;
 import ch.mobi.itc.mobiliar.rest.health.HealthCheck;
 import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
 import ch.mobi.itc.mobiliar.rest.properties.PropertyTypesRest;
@@ -75,6 +76,7 @@ public class RESTApplication extends Application {
         resources.add(TestGenerationRest.class);
         resources.add(TagsRest.class);
         resources.add(PropertyTypesRest.class);
+        resources.add(FunctionsRest.class);
 
         // writers
         resources.add(DeploymentDtoCsvBodyWriter.class);
