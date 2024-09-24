@@ -69,7 +69,7 @@ public class ResourceTemplatesRest {;
     public List<TemplateDTO> getResourceTemplates(@PathParam("resourceGroupName") String resourceGroupName,
                                                 @PathParam("releaseName") String releaseName) throws ValidationException {
         List<TemplateDTO> templateDTOs = new ArrayList<>();
-        List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resourceGroupName, releaseName, false);
+        List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resourceGroupName, releaseName);
 
         for (TemplateDescriptorEntity template : templates) {
             TemplateDTO temp = new TemplateDTO(template);
@@ -98,7 +98,7 @@ public class ResourceTemplatesRest {;
                                            @PathParam("releaseName") String releaseName,
                                            @PathParam("templateName") String templateName) throws ValidationException, AMWException {
         try {
-            templateEditor.removeTemplate(resourceGroupName, releaseName, templateName, false);
+            templateEditor.removeTemplate(resourceGroupName, releaseName, templateName);
         } catch (TemplateNotDeletableException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -114,7 +114,7 @@ public class ResourceTemplatesRest {;
         templateDTO.setId(null);
         TemplateDescriptorEntity template = toTemplateDescriptorEntity(templateDTO, null);
 
-        templateEditor.saveTemplateForResource(template, resourceGroupName, releaseName, false);
+        templateEditor.saveTemplateForResource(template, resourceGroupName, releaseName);
         return Response.ok(new TemplateDTO(template)).build();
     }
 
@@ -131,12 +131,12 @@ public class ResourceTemplatesRest {;
         }
         template = toTemplateDescriptorEntity(templateDTO, template);
 
-        templateEditor.saveTemplateForResource(template, resourceGroupName, releaseName, false);
+        templateEditor.saveTemplateForResource(template, resourceGroupName, releaseName);
         return Response.ok(new TemplateDTO(template)).build();
     }
 
     private TemplateDescriptorEntity getTemplate(String resourceGroupName, String releaseName, String templateName) throws ValidationException {
-        List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resourceGroupName, releaseName, false);
+        List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resourceGroupName, releaseName);
         for (TemplateDescriptorEntity template : templates) {
             if (templateName.equals(template.getName())) {
                 return template;
@@ -150,7 +150,6 @@ public class ResourceTemplatesRest {;
             template = new TemplateDescriptorEntity();
         }
         template.setId(templateDTO.getId());
-        template.setTesting(false);
         template.setFileContent(templateDTO.getFileContent());
         template.setName(templateDTO.getName());
         template.setTargetPath(templateDTO.getTargetPath());

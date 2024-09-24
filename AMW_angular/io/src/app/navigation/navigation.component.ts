@@ -45,9 +45,6 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
               <a class="nav-link" href="#/deployments/">Deploy</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/AMW_web/pages/shakedownTest.xhtml">Shakedown Test</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link" href="/AMW_web/pages/settings.xhtml">Settings</a>
             </li>
             <li class="nav-item">

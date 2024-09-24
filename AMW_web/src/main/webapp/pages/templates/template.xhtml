@@ -147,12 +147,6 @@
                 </li>
                 </ui:fragment>
 
-
-                <li class="#{screen eq 'shakedownTest' ? 'current' : ''}"><h:link
-                        outcome="shakedownTest" value="Shakedown Test"
-                        onclick="showLoader();"
-                        rendered="#{securityDataProvider.hasPermission('SHAKEDOWN_TEST_PAGE')}" /></li>
-
                 <li class="#{screen eq 'newSettings' ? ' current' : ''}"><h:link
                         outcome="settings" onclick="showLoader();">Settings</h:link></li>
                 <li>

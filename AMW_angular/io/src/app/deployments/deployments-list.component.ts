@@ -17,14 +17,7 @@ import { DatePipe } from '@angular/common';
   selector: 'amw-deployments-list',
   templateUrl: './deployments-list.component.html',
   standalone: true,
-  imports: [
-    SortableIconComponent,
-    FormsModule,
-    IconComponent,
-    RouterLink,
-    DateTimePickerComponent,
-    DatePipe,
-  ],
+  imports: [SortableIconComponent, FormsModule, IconComponent, RouterLink, DateTimePickerComponent, DatePipe],
 })
 export class DeploymentsListComponent {
   @Input() deployments: Deployment[] = [];
@@ -40,7 +33,6 @@ export class DeploymentsListComponent {
 
   deployment: Deployment;
   deploymentDate: DateTimeModel = new DateTimeModel();
-  hasPermissionShakedownTest: boolean = null;
   allSelected: boolean = false;
   // TODO: show this error somewhere?
   errorMessage = '';
@@ -84,17 +76,13 @@ export class DeploymentsListComponent {
 
   showConfirm(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    this.resourceService.canCreateShakedownTest(this.deployment.appServerId).subscribe({
-      next: (r) => (this.hasPermissionShakedownTest = r),
-      error: (e) => (this.errorMessage = e),
-      complete: () =>
-        this.modalService.open(content).result.then(
-          (result) => {
-            this.doConfirmDeployment.emit(this.deployment);
-          },
-          (reason) => {},
-        ),
-    });
+
+    this.modalService.open(content).result.then(
+      (result) => {
+        this.doConfirmDeployment.emit(this.deployment);
+      },
+      (reason) => {},
+    );
   }
 
   showReject(content, deploymentId: number) {

@@ -144,18 +144,6 @@ public class ResourceEditPropertyTest {
     }
 
     @Test
-    public void constructorIsTestingArgumentShouldSetIsTesting(){
-        // given
-        boolean isTesting = true;
-
-        // when
-        resourceEditProperty = new ResourceEditPropertyBuilder().withIsTesting(isTesting).build();
-
-        // then
-        assertEquals(isTesting, resourceEditProperty.isTesting());
-    }
-
-    @Test
     public void constructorValidationLogicArgumentShouldSetValidationLogic(){
         // given
         String validationLogic = "validationLogic";

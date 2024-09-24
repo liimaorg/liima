@@ -120,35 +120,6 @@ public class TemplateEditorTest {
     }
 
     @Test
-    public void shouldRejectSaveTemplateForResourceTypeInTestingMode_missingPermission() {
-        // given
-        doReturn(false).when(permissionService).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
-        // when
-        NotAuthorizedException exception = assertThrows(NotAuthorizedException.class,
-                                                        () -> templateEditor.saveTemplateForResourceType(
-                                                                templateDescriptorEntity,
-                                                                1,
-                                                                true));
-        // then
-        assertThat(exception.getMessage(), is("Not Authorized! You're not allowed to execute shakedown test mode!"));
-    }
-
-    @Test
-    public void shouldAllowSaveTemplateForResourceTypeInTestingMode_withPermission() throws AMWException {
-        // given
-        doReturn(true).when(permissionService).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
-        ResourceTypeEntity resourceTypeEntity = new ResourceTypeEntity();
-        doReturn(resourceTypeEntity).when(entityManager).find(ResourceTypeEntity.class, 1);
-        doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceTypeEntity);
-
-        // when
-        templateEditor.saveTemplateForResourceType(templateDescriptorEntity, 1, true);
-
-        // then
-        verify(templateEditor).saveTemplate(templateDescriptorEntity, resourceTypeEntity);
-    }
-
-    @Test
     public void shouldRejectSaveTemplateForResourceType_missingPermissionForActionCreate() {
         // given
         ResourceTypeEntity resourceTypeEntity = new ResourceTypeEntity();
@@ -159,8 +130,7 @@ public class TemplateEditorTest {
         NotAuthorizedException exception = assertThrows(NotAuthorizedException.class,
                                                         () -> templateEditor.saveTemplateForResourceType(
                                                                 templateDescriptorEntity,
-                                                                1,
-                                                                false));
+                                                                1));
 
         // then
         assertThat(exception.getMessage(),
@@ -179,8 +149,7 @@ public class TemplateEditorTest {
         NotAuthorizedException exception = assertThrows(NotAuthorizedException.class,
                                                         () -> templateEditor.saveTemplateForResourceType(
                                                                 templateDescriptorEntity,
-                                                                1,
-                                                                false));
+                                                                1));
 
         // then
         assertThat(exception.getMessage(),
@@ -196,7 +165,7 @@ public class TemplateEditorTest {
         doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceTypeEntity);
 
         // when
-        templateEditor.saveTemplateForResourceType(templateDescriptorEntity, 1, false);
+        templateEditor.saveTemplateForResourceType(templateDescriptorEntity, 1);
 
         // then
         verify(templateEditor).saveTemplate(templateDescriptorEntity, resourceTypeEntity);
@@ -212,39 +181,10 @@ public class TemplateEditorTest {
         doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceTypeEntity);
 
         // when
-        templateEditor.saveTemplateForResourceType(templateDescriptorEntity, 1, false);
+        templateEditor.saveTemplateForResourceType(templateDescriptorEntity, 1);
 
         // then
         verify(templateEditor).saveTemplate(templateDescriptorEntity, resourceTypeEntity);
-    }
-
-    @Test
-    public void shouldRejectSaveTemplateForResourceInTestingMode_missingPermission() {
-        // given
-        doReturn(false).when(permissionService).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
-        // when
-        NotAuthorizedException exception = assertThrows(NotAuthorizedException.class,
-                                                        () -> templateEditor.saveTemplateForResource(
-                                                                templateDescriptorEntity,
-                                                                1,
-                                                                true));
-        // then
-        assertThat(exception.getMessage(), is("Not Authorized! You're not allowed to execute shakedown test mode!"));
-    }
-
-    @Test
-    public void shouldAllowSaveTemplateForResourceInTestingMode_withPermission() throws AMWException {
-        // given
-        doReturn(true).when(permissionService).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
-        ResourceEntity resourceEntity = new ResourceEntity();
-        doReturn(resourceEntity).when(entityManager).find(ResourceEntity.class, 1);
-        doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceEntity);
-
-        // when
-        templateEditor.saveTemplateForResource(templateDescriptorEntity, 1, true);
-
-        // then
-        verify(templateEditor).saveTemplate(templateDescriptorEntity, resourceEntity);
     }
 
     @Test
@@ -259,8 +199,7 @@ public class TemplateEditorTest {
         NotAuthorizedException exception = assertThrows(NotAuthorizedException.class,
                                                         () -> templateEditor.saveTemplateForResource(
                                                                 templateDescriptorEntity,
-                                                                1,
-                                                                false));
+                                                                1));
 
         // then
         assertThat(exception.getMessage(),
@@ -280,8 +219,7 @@ public class TemplateEditorTest {
         NotAuthorizedException exception = assertThrows(NotAuthorizedException.class,
                                                         () -> templateEditor.saveTemplateForResource(
                                                                 templateDescriptorEntity,
-                                                                1,
-                                                                false));
+                                                                1));
 
         // then
         assertThat(exception.getMessage(),
@@ -298,7 +236,7 @@ public class TemplateEditorTest {
         doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceEntity);
 
         // when
-        templateEditor.saveTemplateForResource(templateDescriptorEntity, 1, false);
+        templateEditor.saveTemplateForResource(templateDescriptorEntity, 1);
 
         // then
         verify(templateEditor).saveTemplate(templateDescriptorEntity, resourceEntity);
@@ -315,7 +253,7 @@ public class TemplateEditorTest {
         doNothing().when(templateEditor).saveTemplate(templateDescriptorEntity, resourceEntity);
 
         // when
-        templateEditor.saveTemplateForResource(templateDescriptorEntity, 1, false);
+        templateEditor.saveTemplateForResource(templateDescriptorEntity, 1);
 
         // then
         verify(templateEditor).saveTemplate(templateDescriptorEntity, resourceEntity);

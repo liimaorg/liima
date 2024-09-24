@@ -146,7 +146,6 @@ public class GeneratorObjectFactory {
 		TemplateDescriptorEntity templateDesc = new TemplateDescriptorEntity();
 		templateDesc.setFileContent(content);
 		templateDesc.setName(name);
-		templateDesc.setTesting(false);
 		templateDesc.setTargetPlatforms(new HashSet<ResourceGroupEntity>());
 		templateDesc.getTargetPlatforms().add(createTargetPlatform(targetPlatformId));
 

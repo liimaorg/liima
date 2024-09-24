@@ -148,7 +148,7 @@ public class PropertyEntityTest {
 		// given
 		PropertyTypeEntity origType = propDescBuilder.buildPropertyTypeEntity("type1");
 		PropertyDescriptorEntity origDesc = propDescBuilder.buildPropertyDescriptorEntity(null, "foo",
-				"bar", false, false, false, false, origType, "defaultVal", "exampleVal", "MIK", true,
+				"bar", false, false, false, origType, "defaultVal", "exampleVal", "MIK", true,
 				"displayName");
 		PropertyEntity origin = propBuilder.buildPropertyEntity("foo", origDesc);
 
@@ -166,13 +166,13 @@ public class PropertyEntityTest {
 		// given
 		PropertyTypeEntity origType = propDescBuilder.mockPropertyTypeEntity("type1");
 		PropertyDescriptorEntity origDesc = propDescBuilder.buildPropertyDescriptorEntity(null, "foo",
-				"bar", false, false, false, false, origType, "defaultVal", "exampleVal", "MIK", true,
+				"bar", false, false, false, origType, "defaultVal", "exampleVal", "MIK", true,
 				"displayName");
 		PropertyEntity origin = propBuilder.buildPropertyEntity("foo", origDesc);
 
 		PropertyTypeEntity targetType = propDescBuilder.mockPropertyTypeEntity("type2");
 		PropertyDescriptorEntity targetDesc = propDescBuilder.buildPropertyDescriptorEntity(null, "foo",
-				"boo", true, true, true, true, targetType, "defaultVal", "exampleVal", "MIK", true,
+				"boo", true, true, true,  targetType, "defaultVal", "exampleVal", "MIK", true,
 				"displayName");
 
 		PropertyEntity target = propBuilder.buildPropertyEntity("foo", targetDesc);

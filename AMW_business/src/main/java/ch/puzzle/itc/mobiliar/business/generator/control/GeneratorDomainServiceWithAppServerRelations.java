@@ -270,7 +270,6 @@ public class GeneratorDomainServiceWithAppServerRelations {
         for (final ContextEntity c : getAllEnvironments(context)) {
             GenerationContext generationContext = new GenerationContext(c, applicationServerFromHistory, deployment,
                     deploymentDate, generationModus, resourceDependencyResolver);
-            generationContext.setTesting(false);
 
             generationContext.setGlobalFunctions(globalFunctions);
             result.addEnvironmentGenerationResult(generateApplicationServerConfigurationForEnvironment(generationContext));
@@ -358,7 +357,7 @@ public class GeneratorDomainServiceWithAppServerRelations {
     }
 
     /**
-     * @return a faked deploymentEntity for testing and shakedownTests
+     * @return a faked deploymentEntity for testing
      */
     public DeploymentEntity createFakeDeployment(Integer id, ReleaseEntity release, ResourceEntity runtime, Date stateToDeploy) {
         DeploymentEntity fakeDeplyoment = new DeploymentEntity();

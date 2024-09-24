@@ -161,8 +161,6 @@ public class DeploymentBoundaryTest
         Integer deploymentId = 1;
         boolean sendEmailWhenDeployed = true;
         boolean simulateBeforeDeployment = true;
-        boolean shakedownTestsWhenDeployed = true;
-        boolean neighbourhoodTest = true;;
 
         Integer trackingId = 2;
         Date releaseDate = new Date();
@@ -176,8 +174,6 @@ public class DeploymentBoundaryTest
         deployment.setDeploymentDate(new Date());
         deployment.setDeploymentState(DeploymentState.requested);
         deployment.setSendEmailConfirmation(false);
-        deployment.setCreateTestAfterDeployment(false);
-        deployment.setCreateTestForNeighborhoodAfterDeployment(false);
         deployment.setSimulating(false);
 
         Mockito.doReturn(DeploymentBoundary.DeploymentOperationValidation.SUCCESS).when(deploymentBoundary).isConfirmPossible(deployment);
@@ -187,7 +183,7 @@ public class DeploymentBoundaryTest
 
 		Date deploymentDate = Date.from(LocalDate.now().plusDays(2).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         // when
-        DeploymentEntity deploymentEntity = deploymentBoundary.confirmDeployment(deploymentId, sendEmailWhenDeployed, shakedownTestsWhenDeployed, neighbourhoodTest, simulateBeforeDeployment, deploymentDate);
+        DeploymentEntity deploymentEntity = deploymentBoundary.confirmDeployment(deploymentId, sendEmailWhenDeployed, simulateBeforeDeployment, deploymentDate);
 
         // then
         assertThat(deploymentEntity.getDeploymentState(), is(DeploymentState.scheduled));
@@ -196,8 +192,6 @@ public class DeploymentBoundaryTest
 
         assertThat(deploymentEntity.isSendEmailConfirmation(), is(sendEmailWhenDeployed));
         assertThat(deploymentEntity.isSimulating(), is(simulateBeforeDeployment));
-        assertThat(deploymentEntity.isCreateTestAfterDeployment(), is(shakedownTestsWhenDeployed));
-        assertThat(deploymentEntity.isCreateTestForNeighborhoodAfterDeployment(), is(neighbourhoodTest));
         assertThat(deploymentEntity.getDeploymentDate(), is(deploymentDate));
     }
 

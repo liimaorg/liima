@@ -51,7 +51,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownTestService;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.exception.*;
@@ -113,9 +112,6 @@ public class DeploymentBoundary {
 
     @Inject
     private ResourceDependencyResolverService dependencyResolver;
-
-    @Inject
-    private ShakedownTestService shakedownTestService;
 
     @Inject
     private SequencesService sequencesService;
@@ -515,8 +511,7 @@ public class DeploymentBoundary {
                                                     List<Integer> contextIds,
                                                     List<ApplicationWithVersion> applicationWithVersion,
                                                     List<DeploymentParameter> deployParams,
-                                                    boolean sendEmail, boolean requestOnly, boolean doSimulate,
-                                                    boolean isExecuteShakedownTest, boolean isNeighbourhoodTest) {
+                                                    boolean sendEmail, boolean requestOnly, boolean doSimulate) {
 
         Integer trackingId = sequencesService.getNextValueAndUpdate(DeploymentEntity.SEQ_NAME);
 
@@ -525,7 +520,7 @@ public class DeploymentBoundary {
             deploymentDate = now;
         }
         requestOnly = createDeploymentForAppserver(appServerGroupId, releaseId, deploymentDate, stateToDeploy, contextIds, applicationWithVersion, deployParams, sendEmail, requestOnly, doSimulate,
-                isExecuteShakedownTest, isNeighbourhoodTest, trackingId);
+                trackingId);
 
         if (deploymentDate == now && !requestOnly) {
             deploymentEvent.fire(new DeploymentEvent(DeploymentEventType.NEW, DeploymentState.scheduled));
@@ -547,14 +542,11 @@ public class DeploymentBoundary {
      * @param sendEmail
      * @param requestOnly
      * @param doSimulate
-     * @param isExecuteShakedownTest
-     * @param isNeighbourhoodTest
      * @param trackingId
      * @return boolean true if deployment request only
      */
     private boolean createDeploymentForAppserver(Integer appServerGroupId, Integer releaseId, Date deploymentDate, Date stateToDeploy, List<Integer> contextIds, List<ApplicationWithVersion>
-            applicationWithVersion, List<DeploymentParameter> deployParams, boolean sendEmail, boolean requestOnly, boolean doSimulate, boolean isExecuteShakedownTest, boolean
-                                                         isNeighbourhoodTest, Integer trackingId) {
+            applicationWithVersion, List<DeploymentParameter> deployParams, boolean sendEmail, boolean requestOnly, boolean doSimulate, Integer trackingId) {
         ResourceGroupEntity group = em.find(ResourceGroupEntity.class, appServerGroupId);
         ReleaseEntity release = em.find(ReleaseEntity.class, releaseId);
         ResourceEntity resource = dependencyResolver.getResourceEntityForRelease(group, release);
@@ -575,13 +567,6 @@ public class DeploymentBoundary {
             deployment.setApplicationsWithVersion(applicationWithVersion);
 
             deployment.setDeploymentRequestUser(permissionService.getCurrentUserName());
-
-            deployment.setCreateTestAfterDeployment(isExecuteShakedownTest);
-            if (isExecuteShakedownTest && isNeighbourhoodTest) {
-                deployment.setCreateTestForNeighborhoodAfterDeployment(true);
-            } else {
-                deployment.setCreateTestForNeighborhoodAfterDeployment(false);
-            }
 
             // Permission DEPLOYMENT.UPDATE is required for confirming Deployments
             if (requestOnly || !(permissionService.hasPermissionAndActionForDeploymentOnContext(context, group, Action.UPDATE)
@@ -1089,22 +1074,6 @@ public class DeploymentBoundary {
         }
     }
 
-
-    /**
-     * Look up which other deployments (than just this one) belong together (via the tracking id) and create
-     * shakedowntests after all of them are executed.
-     *
-     * @param trackingId
-     */
-    public void createShakedownTestForTrackinIdOfDeployment(Integer trackingId) {
-        // hole alle deployments mit derselben trackingId
-        List<DeploymentEntity> deploymentsWithSameTrackingId = getDeplyomentsWithSameTrackingId(trackingId);
-
-        if (isAllDeploymentsWithSameTrackingIdExecuted(deploymentsWithSameTrackingId)) {
-            shakedownTestService.createAndExecuteShakedowntestForDeployments(deploymentsWithSameTrackingId);
-        }
-    }
-
     /**
      * Look up which other deployments (than just this one) belong together (via the tracking id) and send a
      * single email notification if all of them are executed (independent of their success state).
@@ -1164,12 +1133,9 @@ public class DeploymentBoundary {
     }
 
     public DeploymentEntity confirmDeployment(Integer deploymentId, boolean sendEmail,
-                                              boolean executeShakedownTest, boolean neighbourhoodTest,
                                               boolean simulateGeneration, Date deploymentDate) throws DeploymentStateException {
         DeploymentEntity deployment = getDeploymentById(deploymentId);
         deployment.setSendEmailConfirmation(sendEmail);
-        deployment.setCreateTestAfterDeployment(executeShakedownTest);
-        deployment.setCreateTestForNeighborhoodAfterDeployment(neighbourhoodTest);
         deployment.setSimulating(simulateGeneration);
         deployment.setDeploymentDate(deploymentDate);
 

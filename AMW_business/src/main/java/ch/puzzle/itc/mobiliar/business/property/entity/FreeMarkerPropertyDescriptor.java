@@ -45,9 +45,6 @@ public class FreeMarkerPropertyDescriptor implements Serializable {
     private boolean valueOptional;
 
     @Getter
-    private boolean testing;
-
-    @Getter
     private String validationLogic;
 
     @Getter
@@ -80,7 +77,6 @@ public class FreeMarkerPropertyDescriptor implements Serializable {
             // TODO: Rename propertyDescriptorEntity.getPropertyName() to TechnicalKey
             technicalKey = propertyDescriptorEntity.getPropertyName();
             valueOptional = propertyDescriptorEntity.isNullable();
-            testing = propertyDescriptorEntity.isTesting();
             validationLogic = propertyDescriptorEntity.getValidationLogic();
             propertyComment = propertyDescriptorEntity.getPropertyComment();
             cardinalityProperty = propertyDescriptorEntity.getCardinalityProperty();

@@ -10,9 +10,6 @@ amw.generatorPath=/home/jboss/amw/build
 amw.logsPath=/home/jboss/amw/logs
 amw.hibernate.dialect=org.hibernate.dialect.DB2390Dialect
 amw.mailDomain=mobi.ch
-amw.stmpath=/home/jboss/amw/shakedown/stm.jar
-amw.stmrepo=/home/jboss/amw/shakedown/stps
-amw.testResultPath=/home/jboss/amw/shakedown/results
 amw.logoutUrl=http://mobiwiki.mobicorp.ch/wiki/index.php/AMW_Tool
 
 #Für grosse MAIA-Imports in standalone.xml:
@@ -125,7 +122,7 @@ ch.mobi.db2.host.currentSchema=DB2BVIEW
             # <== application-users.properties ch_puzzle_itc_mobi_amw
             # ==> application-role-mapping.properties ch_puzzle_itc_mobi_amw:
             content: L899DIR=viewer
-AAMW_CONFIG_ADMIN=config_admin,shakedown_admin
+AAMW_CONFIG_ADMIN=config_admin
 AAMW_APP_DEVELOPER=app_developer
 AAMW_SERVER_ADMIN=server_admin
 
@@ -133,7 +130,7 @@ AAMW_ADMIN_DEPLOYER=admin_deployer
 #Unbenutzt
 #AAMW_TEST_DEPLOYER=
 AAMW_DEVELOPER_DEPLOYER=developer_deployer
-AAMW_MANAGEMENT_DEPLOYER=env_management_deployer,test_deployer,shakedown_tester
+AAMW_MANAGEMENT_DEPLOYER=env_management_deployer,test_deployer
 
 #Maia WS Aufruf
 AAMW_MAIA_WS=maia_import
@@ -288,7 +285,6 @@ AAMW_MAIA_WS=maia_import
             id: 8745
             name: ch_puzzle_itc_mobi_amw
             logsPath: /home/jboss/amw/logs
-            testResultPath: /home/jboss/amw/shakedown/results
             # ==> app_jspCertJKS:
             fileName: jspStore_dev.jks
             id: 1254
@@ -506,15 +502,6 @@ AAMW_MAIA_WS=maia_import
             # => logsPath
 	       /home/jboss/amw/logs
             # <= logsPath
-            # => stmpath
-	       /home/jboss/amw/shakedown/stm.jar
-            # <= stmpath
-            # => stmrepo
-	       /home/jboss/amw/shakedown/stps
-            # <= stmrepo
-            # => testResultPath
-	       /home/jboss/amw/shakedown/results
-            # <= testResultPath
             # <== Path
             # ==> Port:
             # => port
@@ -563,11 +550,7 @@ AAMW_MAIA_WS=maia_import
             logoutUrl: http://mobiwiki.mobicorp.ch/wiki/index.php/AMW_Tool
             logsPath: /home/jboss/amw/logs
             name: ch_puzzle_itc_mobi_amw
-            stmpath: /home/jboss/amw/shakedown/stm.jar
-            stmrepo: /home/jboss/amw/shakedown/stps
-            testResultPath: /home/jboss/amw/shakedown/results
             # <== app
-            stmrepo: /home/jboss/amw/shakedown/stps
             MavenArtifactId: AMW_ear
             # ==> app_certAdIntern:
             id: 13242
@@ -611,7 +594,6 @@ AAMW_MAIA_WS=maia_import
             MavenGroupId: ch.puzzle.itc.mobiliar
             # ==> providedResTypes:
             # <== providedResTypes
-            stmpath: /home/jboss/amw/shakedown/stm.jar
             generatorPath: /home/jboss/amw/build
             # ==> app_mobiTrustJKS:
             fileName: mobiJspDynWesTrust_dev.jks
@@ -723,9 +705,6 @@ AAMW_MAIA_WS=maia_import
             logoutUrl: http://mobiwiki.mobicorp.ch/wiki/index.php/AMW_Tool
             logsPath: /home/jboss/amw/logs
             name: ch_puzzle_itc_mobi_amw
-            stmpath: /home/jboss/amw/shakedown/stm.jar
-            stmrepo: /home/jboss/amw/shakedown/stps
-            testResultPath: /home/jboss/amw/shakedown/results
             # <== app
             # ==> appServer:
             additionalJavaOpts: 
@@ -1079,12 +1058,6 @@ AAMW_MAIA_WS=maia_import
 	       /home/jboss/amw/build
            logsPath: 
 	       /home/jboss/amw/logs
-           stmpath: 
-	       /home/jboss/amw/shakedown/stm.jar
-           stmrepo: 
-	       /home/jboss/amw/shakedown/stps
-           testResultPath: 
-	       /home/jboss/amw/shakedown/results
             # <== Path
             # ==> Port:
            port: 
@@ -1098,9 +1071,6 @@ AAMW_MAIA_WS=maia_import
             # <== propertyTypes
             # ==> providedResTypes:
             # <== providedResTypes
-            stmpath: /home/jboss/amw/shakedown/stm.jar
-            stmrepo: /home/jboss/amw/shakedown/stps
-            testResultPath: /home/jboss/amw/shakedown/results
             # <== ch_puzzle_itc_mobi_amw
             # <== applications
             # ==> propertyTypes:

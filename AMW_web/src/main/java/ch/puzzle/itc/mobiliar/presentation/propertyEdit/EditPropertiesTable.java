@@ -32,7 +32,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
-import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 
 @CompositeBackingBean
 public class EditPropertiesTable implements Serializable {
@@ -42,14 +41,6 @@ public class EditPropertiesTable implements Serializable {
 	@Getter
 	private Integer relationId;
 
-	@Inject
-	@TestingMode
-	private Boolean testing;
-
-	@TestingMode
-	public void onChangedTestingMode(@Observes Boolean isTesting) {
-		this.testing = isTesting;
-	}
 
 	/**
 	 * Observes if currently editing resource instance
@@ -99,20 +90,7 @@ public class EditPropertiesTable implements Serializable {
 			break;
 		}
 
-		// if testing mode only return properties which are in current focus and are defined only for
-		// testing
-		if (isTesting()) {
-			return property.isTesting() && isEditable;
-		}
-
 		return isEditable;
-	}
-
-	/**
-	 * @return true if testing is tue and initialized, otherwise false
-	 */
-	public boolean isTesting() {
-		return testing != null && testing;
 	}
 
 	/**

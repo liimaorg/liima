@@ -119,11 +119,6 @@ import java.util.Set;
  * <td>nein</td>
  * <td>nein</td>
  * </tr>
- * <tr>
- * <td>Shakedown Tests</td>
- * <td>nein</td>
- * <td>nein</td>
- * </tr>
  * </table>
  *
  * @author cweber
@@ -565,7 +560,7 @@ public class CopyResourceDomainService {
     }
 
     protected String createDescriptorKey(PropertyDescriptorEntity desc) {
-        return desc.getPropertyName() + "_" + String.valueOf(desc.isTesting());
+        return desc.getPropertyName();
     }
 
     protected void copyTags(PropertyDescriptorEntity origin, PropertyDescriptorEntity target) {
@@ -690,15 +685,13 @@ public class CopyResourceDomainService {
         Map<String, TemplateDescriptorEntity> targetTemplatesMap = new HashMap<>();
         if (targets != null) {
             for (TemplateDescriptorEntity t : targets) {
-                String key = t.getName() + String.valueOf(t.isTesting());
-                targetTemplatesMap.put(key, t);
+                targetTemplatesMap.put(t.getName(), t);
             }
         }
 
         if (origins != null) {
             for (TemplateDescriptorEntity origin : origins) {
-                String key = origin.getName() + String.valueOf(origin.isTesting());
-                targetTemplatesMap.put(key, origin.getCopy(targetTemplatesMap.get(key), copyUnit));
+                targetTemplatesMap.put(origin.getName(), origin.getCopy(targetTemplatesMap.get(origin.getName()), copyUnit));
             }
         }
         return new HashSet<>(targetTemplatesMap.values());

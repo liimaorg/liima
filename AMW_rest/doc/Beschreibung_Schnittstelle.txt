@@ -9,8 +9,6 @@ curl -v -H "Content-Type: application/json" -X POST --data "@prest.json" -u u112
    "stateToDeploy": 1384804324074, (optional, default now)
    "requestOnly": false, (optional, default false)
    "simulate": false, (optional, default false)
-   "executeShakedownTest": false, (optional, default false)
-   "neighbourhoodTest": false, (optional, default false)
    "sendEmail": false, (optional, default false)
    "appsWithVersion":[ (must contain all applications)
       {

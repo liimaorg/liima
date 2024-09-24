@@ -305,25 +305,25 @@ public class PermissionBoundaryTest {
     @Test
     public void shouldCheckIfCallerHasSimilarRestrictionIfHeWantsToDelegatePermission() throws AMWException {
         // given
-        when(permissionService.hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE)).thenReturn(true);
+        when(permissionService.hasPermissionToDelegatePermission(Permission.DEPLOYMENT, null, null, null, CREATE)).thenReturn(true);
         when(permissionRepository.getUserRestrictionByName("fed")).thenReturn(new UserRestrictionEntity());
         when(permissionRepository.getPermissionByName(anyString())).thenReturn(resourcePermission);
         // when
-        permissionBoundary.createRestriction(null, "fred", "SHAKEDOWNTEST", null, null, null, null, CREATE, true, true);
+        permissionBoundary.createRestriction(null, "fred", "DEPLOYMENT", null, null, null, null, CREATE, true, true);
         // then
-        verify(permissionService).hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE);
+        verify(permissionService).hasPermissionToDelegatePermission(Permission.DEPLOYMENT, null, null, null, CREATE);
         verify(restrictionRepository).create(any(RestrictionEntity.class));
     }
 
     @Test(expected=AMWException.class)
     public void shouldThrowAMWExceptionIfCallerIsNotAllowedToDelegatePermission() throws AMWException {
         // given
-        when(permissionService.hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE)).thenReturn(false);
+        when(permissionService.hasPermissionToDelegatePermission(Permission.DEPLOYMENT, null, null, null, CREATE)).thenReturn(false);
         when(permissionRepository.getUserRestrictionByName("fed")).thenReturn(new UserRestrictionEntity());
         // when
-        permissionBoundary.createRestriction(null, "fred", "SHAKEDOWNTEST", null, null, null, null, CREATE, true, true);
+        permissionBoundary.createRestriction(null, "fred", "DEPLOYMENT", null, null, null, null, CREATE, true, true);
         // then
-        verify(permissionService).hasPermissionToDelegatePermission(Permission.SHAKEDOWNTEST, null, null, null, CREATE);
+        verify(permissionService).hasPermissionToDelegatePermission(Permission.DEPLOYMENT, null, null, null, CREATE);
         verify(restrictionRepository, never()).create(any(RestrictionEntity.class));
     }
 
@@ -663,10 +663,9 @@ public class PermissionBoundaryTest {
         when(contextLocator.getContextById(23)).thenReturn(context);
         when(permissionService.hasPermission(Permission.RESOURCETYPE, context, UPDATE, null, type)).thenReturn(true);
         // when
-        permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(21, 23, false);
+        permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(21, 23);
         // then
         verify(permissionService).hasPermission(Permission.RESOURCETYPE, context, UPDATE, null, type);
-        verify(permissionService, never()).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     @Test
@@ -682,20 +681,9 @@ public class PermissionBoundaryTest {
         when(contextLocator.getContextById(23)).thenReturn(context);
         when(permissionService.hasPermission(Permission.RESOURCE, context, UPDATE, rg, null)).thenReturn(false);
         // when
-        permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(21, context, false);
+        permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(21, context);
         // then
         verify(permissionService).hasPermission(Permission.RESOURCE, context, UPDATE, rg, null);
-        verify(permissionService, never()).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
-    }
-
-    @Test
-    public void shouldInvokePermissionServiceMethodsWithCorrectParametersIfInTestingMode() {
-        // given // when
-        permissionBoundary.hasPermissionToEditPropertiesByResourceTypeAndContext(21, 23, true);
-        // then
-        verify(permissionService, never()).hasPermission(any(Permission.class), any(ContextEntity.class),
-                any(Action.class), any(ResourceGroupEntity.class), any(ResourceTypeEntity.class));
-        verify(permissionService).hasPermission(Permission.SHAKEDOWN_TEST_MODE);
     }
 
     @Test
@@ -734,10 +722,10 @@ public class PermissionBoundaryTest {
         resource.setId(12);
         when(entityManager.find(ResourceEntity.class, 12)).thenReturn(resource);
         // when
-        permissionBoundary.hasPermissionToAddTemplate(resource, false);
+        permissionBoundary.hasPermissionToAddTemplate(resource);
         // then
-        verify(permissionService, never()).hasPermissionToAddResourceTypeTemplate((ResourceTypeEntity) anyObject(), anyBoolean());
-        verify(permissionService).hasPermissionToAddResourceTemplate(resource, false);
+        verify(permissionService, never()).hasPermissionToAddResourceTypeTemplate((ResourceTypeEntity) anyObject());
+        verify(permissionService).hasPermissionToAddResourceTemplate(resource);
     }
 
     @Test
@@ -747,10 +735,10 @@ public class PermissionBoundaryTest {
         type.setId(23);
         when(entityManager.find(ResourceTypeEntity.class, 23)).thenReturn(type);
         // when
-        permissionBoundary.hasPermissionToAddTemplate(type, true);
+        permissionBoundary.hasPermissionToAddTemplate(type);
         // then
-        verify(permissionService, never()).hasPermissionToAddResourceTemplate((ResourceEntity) anyObject(), anyBoolean());
-        verify(permissionService).hasPermissionToAddResourceTypeTemplate(type, true);
+        verify(permissionService, never()).hasPermissionToAddResourceTemplate((ResourceEntity) anyObject());
+        verify(permissionService).hasPermissionToAddResourceTypeTemplate(type);
     }
 
     @Test

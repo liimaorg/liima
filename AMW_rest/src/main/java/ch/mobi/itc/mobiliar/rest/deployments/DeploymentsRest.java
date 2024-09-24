@@ -499,8 +499,7 @@ public class DeploymentsRest {
 
         trackingId = deploymentBoundary.createDeploymentReturnTrackingId(group.getId(), release.getId(), request.getDeploymentDate(),
                 request.getStateToDeploy(), contexts,
-                applicationsWithVersion, deployParams, request.getSendEmail(), request.getRequestOnly(), request.getSimulate(), request.getExecuteShakedownTest(),
-                request.getNeighbourhoodTest());
+                applicationsWithVersion, deployParams, request.getSendEmail(), request.getRequestOnly(), request.getSimulate());
 
         // get the deployment from the tracking id
         CustomFilter trackingIdFilter = CustomFilter.builder(TRACKING_ID).build();
@@ -556,8 +555,6 @@ public class DeploymentsRest {
         try{
             deploymentBoundary.confirmDeployment(deploymentId,
                     deploymentDTO.isSendEmailWhenDeployed(),
-                    deploymentDTO.isShakedownTestsWhenDeployed(),
-                    deploymentDTO.isNeighbourhoodTest(),
                     deploymentDTO.isSimulateBeforeDeployment(),
                     deploymentDTO.getDeploymentDate());
             return Response.status(Response.Status.OK).build();

@@ -114,7 +114,6 @@ public class DeploymentTest {
         deploymentEntity.setDeploymentDate(new Date());
         deploymentEntity.setStateToDeploy(new Date());
         deploymentEntity.setSimulating(false);
-        deploymentEntity.setShakedownTests(null);
         deploymentEntity.setTrackingId(321);
         ResourceEntity targetPlatform = ResourceFactory.createNewResource("test");
         deploymentEntity.setRuntime(targetPlatform);
@@ -147,8 +146,6 @@ public class DeploymentTest {
         deploymentRequestDto.setAppsWithVersion(apps);
         deploymentRequestDto.setDeploymentDate(deploymentEntity.getDeploymentDate());
         deploymentRequestDto.setEnvironmentName(deploymentEntity.getContext().getName());
-        deploymentRequestDto.setExecuteShakedownTest(deploymentEntity.isCreateTestAfterDeployment());
-        deploymentRequestDto.setNeighbourhoodTest(deploymentEntity.isCreateTestForNeighborhoodAfterDeployment());
         deploymentRequestDto.setRequestOnly(false);
         deploymentRequestDto.setSendEmail(deploymentEntity.isSendEmail());
         deploymentRequestDto.setSimulate(deploymentEntity.isSimulating());
@@ -282,7 +279,7 @@ public class DeploymentTest {
                 ReleaseEntity release = mockRelease();
                 when(deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class),
                                 any(Date.class), any(LinkedList.class), any(LinkedList.class), any(ArrayList.class),
-                                anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean()))
+                                anyBoolean(), anyBoolean(), anyBoolean()))
                                                 .thenReturn(deploymentEntity.getTrackingId());
 
                 when(environmentsService.getContextByName(deploymentEntity.getContext().getName()))
@@ -312,7 +309,7 @@ public class DeploymentTest {
         // given
         ReleaseEntity release = mockRelease();
         when(deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
-                any(LinkedList.class), any(ArrayList.class), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean()))
+                any(LinkedList.class), any(ArrayList.class), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenReturn(deploymentEntity.getTrackingId());
 
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
@@ -343,7 +340,7 @@ public class DeploymentTest {
         when(
                 deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
                         any(LinkedList.class), any(ArrayList.class),
-                        anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
+                        anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
         
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
         when(
@@ -365,7 +362,7 @@ public class DeploymentTest {
         ReleaseEntity release = mockRelease();
         when(
                 deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
-                        any(LinkedList.class), any(ArrayList.class), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(
+                        any(LinkedList.class), any(ArrayList.class), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(
                 deploymentEntity.getTrackingId());
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
         when(deploymentBoundary.getFilteredDeployments(eq(0), eq(1), any(LinkedList.class), isNull(), isNull())).thenReturn(
@@ -396,7 +393,7 @@ public class DeploymentTest {
         when(
                 deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
                         any(LinkedList.class), any(ArrayList.class),
-                        anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
+                        anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
         when(
                 deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), any(LinkedList.class), anyString(),
@@ -418,7 +415,7 @@ public class DeploymentTest {
         when(
                 deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
                         any(LinkedList.class), any(ArrayList.class),
-                        anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
+                        anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
         when(
                 deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), any(LinkedList.class), anyString(),
@@ -448,7 +445,7 @@ public class DeploymentTest {
         when(
                 deploymentBoundary.createDeploymentReturnTrackingId(anyInt(), anyInt(), any(Date.class), any(Date.class), any(LinkedList.class),
                         any(LinkedList.class), any(ArrayList.class),
-                        anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
+                        anyBoolean(), anyBoolean(), anyBoolean())).thenReturn(deploymentEntity.getTrackingId());
         when(environmentsService.getContextByName(deploymentEntity.getContext().getName())).thenReturn(deploymentEntity.getContext());
         when(
                 deploymentBoundary.getFilteredDeployments(anyInt(), anyInt(), any(LinkedList.class), anyString(),

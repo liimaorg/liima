@@ -45,7 +45,6 @@ public class TemplateDescriptorEntityBuilder extends BaseEntityBuilder {
 	private String name;
 	private AbstractContext ownerResource;
 	private Set<ResourceGroupEntity> targetPlatforms;
-	private boolean testing;
 	private boolean relationTemplate;
 	private Integer id;
 
@@ -74,11 +73,6 @@ public class TemplateDescriptorEntityBuilder extends BaseEntityBuilder {
 		return this;
 	}
 
-	public TemplateDescriptorEntityBuilder withTesting(boolean testing) {
-		this.testing = testing;
-		return this;
-	}
-
 	public TemplateDescriptorEntityBuilder setId(Integer id) {
 		this.id = id;
 		return this;
@@ -100,7 +94,6 @@ public class TemplateDescriptorEntityBuilder extends BaseEntityBuilder {
 		when(mock.getName()).thenReturn(name);
 		when(mock.getOwnerResource()).thenReturn(ownerResource);
 		when(mock.getTargetPlatforms()).thenReturn(targetPlatforms);
-		when(mock.isTesting()).thenReturn(testing);
 		when(mock.isRelationTemplate()).thenReturn(relationTemplate);
 
 		return mock;
@@ -117,7 +110,6 @@ public class TemplateDescriptorEntityBuilder extends BaseEntityBuilder {
 		template.setName(name);
 		template.setOwnerResource(ownerResource);
 		template.setTargetPlatforms(targetPlatforms);
-		template.setTesting(testing);
 		template.setRelationTemplate(relationTemplate);
 
 		return template;

@@ -37,7 +37,6 @@ import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
-import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
 import lombok.Setter;
@@ -109,25 +108,9 @@ public class TemplateEditDataProvider implements Serializable {
 	@Getter
 	boolean canListResTypeTemplates;
 
-	@Inject
-	@TestingMode
-	private Boolean testing;
-
-	@TestingMode
-	public void onChangedTestingMode(@Observes Boolean isTesting) {
-		this.testing = isTesting;
-	}
-
 	ResourceEditRelation relation;
 
 	private Identifiable resourceOrType;
-
-    /**
-     * @return true if testing is tue and initialized, otherwise false
-     */
-    public boolean isTesting() {
-        return testing != null && testing;
-    }
 
 	@PostConstruct
 	public void init() {
@@ -180,10 +163,10 @@ public class TemplateEditDataProvider implements Serializable {
 		if (this.relation != null) {
 			if (canListInstanceTemplates && !this.relation.isResourceTypeRelation()) {
 				relationInstanceTemplates = templatesService.getGlobalTemplatesForResourceRelation(
-						this.relation, userSettings.isTestingMode());
+						this.relation);
 			}
 			relationTypeTemplates = templatesService.getGlobalTemplatesForResourceRelationType(
-					this.relation, userSettings.isTestingMode());
+					this.relation);
 		}
 		Collections.sort(relationInstanceTemplates, new TemplateComparator());
 		Collections.sort(relationTypeTemplates, new TemplateComparator());
@@ -208,26 +191,25 @@ public class TemplateEditDataProvider implements Serializable {
 		if (resourceOrType != null) {
 			if (isEditResource() && canListInstanceTemplates) {
 				instanceTemplates = templatesService.getGlobalTemplateDescriptorsForResource(
-						getResource(), userSettings.isTestingMode());
+						getResource());
 				Collections.sort(instanceTemplates, new TemplateComparator());
 			}
 
 			resourceTypeTemplates = canListResTypeTemplates ? templatesService
-					.getGlobalTemplateDescriptorsForResourceType(getResourceType(),
-							userSettings.isTestingMode()) : new ArrayList<TemplateDescriptorEntity>();
+					.getGlobalTemplateDescriptorsForResourceType(getResourceType()) : new ArrayList<TemplateDescriptorEntity>();
 			Collections.sort(resourceTypeTemplates, new TemplateComparator());
 		}
 	}
 
 	private boolean canAdd() {
 		return context.getIsGlobal()
-				&& permission.hasPermissionToAddTemplate(resourceOrType, userSettings.isTestingMode());
+				&& permission.hasPermissionToAddTemplate(resourceOrType);
 	}
 
 	private boolean canDelete(ResourceTypeEntity resourceType) {
 		// context has to be global
 		return context.getIsGlobal()
-				&& (canAddEditOrDeleteShakedownTest() || (isEditResource() ? permission
+				&& ( (isEditResource() ? permission
 						.hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.DELETE,
 								(ResourceEntity) resourceOrType, null) : permission
 						.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.DELETE,
@@ -236,13 +218,9 @@ public class TemplateEditDataProvider implements Serializable {
 
 	private boolean canRead() {
 		// context has to be global
-		return context.getIsGlobal() && (canAddEditOrDeleteShakedownTest() || (isEditResource() ?
+		return context.getIsGlobal() && (isEditResource() ?
 				permission.hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.READ, (ResourceEntity) resourceOrType, null) :
-				permission.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.READ, null, (ResourceTypeEntity) resourceOrType)));
-	}
-
-	private boolean canAddEditOrDeleteShakedownTest() {
-		return (userSettings.isTestingMode() && permission.hasPermission(Permission.SHAKEDOWN_TEST_MODE));
+				permission.hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.READ, null, (ResourceTypeEntity) resourceOrType));
 	}
 
 

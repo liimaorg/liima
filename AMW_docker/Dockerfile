@@ -13,7 +13,7 @@ COPY --chown=jboss:jboss configuration $JBOSS_HOME/standalone/configuration
 RUN $JBOSS_HOME/bin/jboss-cli.sh --file=$JBOSS_HOME/standalone/configuration/wildfly_base.cli && \
     $JBOSS_HOME/bin/jboss-cli.sh --file=$JBOSS_HOME/standalone/configuration/$DB_CLI_SCRIPT && \
     rm -rf $JBOSS_HOME/standalone/configuration/standalone_xml_history && \
-    mkdir -p $JBOSS_HOME/standalone/data/amw/logs $JBOSS_HOME/standalone/data/amw/generator $JBOSS_HOME/standalone/data/amw/shakedown
+    mkdir -p $JBOSS_HOME/standalone/data/amw/logs $JBOSS_HOME/standalone/data/amw/generator
 
 # add jsf 2.2 for RichFaces
 RUN mkdir -p $JBOSS_HOME/modules/com/sun/jsf-impl/mojarra-2.2 && \

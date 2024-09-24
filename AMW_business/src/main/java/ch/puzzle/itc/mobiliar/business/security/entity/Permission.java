@@ -27,10 +27,6 @@ public enum Permission {
     // FOREIGNABLES PERMISSIONS
     IGNORE_FOREIGNABLE_OWNER("Ignore the owner of a foreignable object. Chuck Norris can edit/delete objects of any owner!", true),
 
-    // SHAKEDOWN TEST
-    SHAKEDOWN_TEST_PAGE("Shakedown test page.", true),
-    SHAKEDOWN_TEST_MODE("", true),
-
     // FUNCTIONS
     MANAGE_GLOBAL_FUNCTIONS("Create, edit and delete GlobalFunctions", true),
     VIEW_GLOBAL_FUNCTIONS("Can see GlobalFunctions", true),
@@ -76,7 +72,6 @@ public enum Permission {
     DEPLOYMENT("The right to deploy.", false),
     RESOURCE_RELEASE_COPY_FROM_RESOURCE ("The right to copy the configuration from one Resources into an other.", false),
     RELEASE("The right to create, read, update or delete Releases", false),
-    SHAKEDOWNTEST("The right to create, read, update or delete ShakedownTests", false),
     RESOURCE("The right to create, read, update or delete Resources", false),
     RESOURCETYPE("The right to create, read, update or delete ResourceTypes", false),
     RESOURCE_TEMPLATE("The right to create, read, update or delete Templates of Resources", false),

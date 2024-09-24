@@ -366,19 +366,6 @@ public class PropertyDescriptorEntityTest {
     }
 
     @Test
-    public void foreignableFieldHashCodeWithChangedTestingShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().isTesting(true).build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
     public void foreignableFieldHashCodeWithChangedValidationLogicShouldBeDifferent(){
         // given
         propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
@@ -518,7 +505,6 @@ public class PropertyDescriptorEntityTest {
         assertEquals(origin.isEncrypt(), copy.isEncrypt());
         assertEquals(origin.getPropertyName(), copy.getPropertyName());
         assertEquals(origin.isNullable(), copy.isNullable());
-        assertEquals(origin.isTesting(), copy.isTesting());
         assertEquals(origin.getValidationLogic(), copy.getValidationLogic());
         assertEquals(origin.getPropertyComment(), copy.getPropertyComment());
         assertEquals(origin.getCardinalityProperty(), copy.getCardinalityProperty());

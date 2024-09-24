@@ -151,14 +151,6 @@ export class ResourceService extends BaseService {
         catchError(this.handleError),
       );
   }
-
-  canCreateShakedownTest(resourceGroupId: number): Observable<boolean> {
-    return this.http
-      .get<boolean>(`${this.getBaseUrl()}/resources/resourceGroups/${resourceGroupId}/canCreateShakedownTest`, {
-        headers: this.getHeaders(),
-      })
-      .pipe(catchError(this.handleError));
-  }
 }
 
 function toAppWithVersion(r: any): AppWithVersion {

@@ -448,7 +448,7 @@ public class GenerationUnitFactory {
 			ResourceEntity resource) {
 		Set<TemplateDescriptorEntity> templates = Sets.newLinkedHashSet();
 		utils.getTemplates(resource, options.getContext().getContext(), templates, options.getContext()
-				.getTargetPlatformId(), options.getContext().isTesting());
+				.getTargetPlatformId());
 		return templates;
 	}
 
@@ -458,7 +458,7 @@ public class GenerationUnitFactory {
 		if (resourceRelation != null) {
 			// relation is null when handed a ASR base on TYPES
 			utils.getTemplates(options.getContext().getContext(), resourceRelation, templates, options
-					.getContext().getTargetPlatformId(), options.getContext().isTesting());
+					.getContext().getTargetPlatformId());
 		}
 		return templates;
 	}

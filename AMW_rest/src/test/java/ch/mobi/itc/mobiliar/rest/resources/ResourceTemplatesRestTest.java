@@ -71,7 +71,7 @@ public class ResourceTemplatesRestTest {
         template.setName("template2");
         templates.add(template);
 
-        when(templateService.getGlobalTemplateDescriptorsForResource(eq("resourceGroupName"), eq("releaseName"), eq(false))).thenReturn(templates);
+        when(templateService.getGlobalTemplateDescriptorsForResource(eq("resourceGroupName"), eq("releaseName"))).thenReturn(templates);
 
         TemplateDTO templateDTO = resourceTemplatesRest.getResourceTemplate("resourceGroupName", "releaseName", "template2");
     

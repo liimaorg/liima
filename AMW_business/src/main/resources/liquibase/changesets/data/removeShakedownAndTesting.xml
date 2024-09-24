@@ -1,0 +1,44 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/removeShakedownAndTesting.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="sgirod" id="removeShakedownAndTestingData" >
+        <comment>
+
+        </comment>
+        <delete tableName="TAMW_resourcetype">
+            <where>NAME like 'shakedown%'</where>
+        </delete>
+        <delete tableName="TAMW_resourcectx_tmpldesc">
+            <where>TEMPLATES_ID in (SELECT ID FROM TAMW_templateDescriptor WHERE TESTING = 1)</where>
+        </delete>
+        <delete tableName="TAMW_restypectx_tmpldesc">
+            <where>TEMPLATES_ID in (SELECT ID FROM TAMW_templateDescriptor WHERE TESTING = 1)</where>
+        </delete>
+        <delete tableName="TAMW_tmplDesc_targetPlat">
+            <where>TEMPLATEDESCRIPTORS_ID in (SELECT ID FROM TAMW_templateDescriptor WHERE TESTING = 1)</where>
+        </delete>
+        <delete tableName="TAMW_templateDescriptor">
+            <where>testing = 1</where>
+        </delete>
+        <delete tableName="tamw_restriction">
+            <where>ROLE_ID in (select id from TAMW_ROLE where name like 'shakedown%')</where>
+        </delete>
+        <delete tableName="TAMW_role">
+            <where>name like 'shakedown%'</where>
+        </delete>
+        <delete tableName="TAMW_restriction">
+            <where>PERMISSION_ID in (select id from TAMW_PERMISSION where VALUE like 'SHAKEDOWN%')</where>
+        </delete>
+        <delete tableName="TAMW_permission">
+            <where>value like 'SHAKEDOWN%' </where>
+        </delete>
+        <delete tableName="TAMW_propertyDescriptor">
+            <where>testing = 1</where>
+        </delete>
+
+        <rollback></rollback>
+    </changeSet>
+</databaseChangeLog>
