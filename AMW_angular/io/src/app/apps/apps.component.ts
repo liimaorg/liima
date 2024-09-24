@@ -19,6 +19,8 @@ import { AppServerAddComponent } from './app-server-add/app-server-add.component
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AppAddComponent } from './app-add/app-add.component';
 import { App } from './app';
+import { ResourceService } from '../resource/resource.service';
+import { Resource } from '../resource/resource';
 
 @Component({
   selector: 'amw-apps',
@@ -39,9 +41,13 @@ export class AppsComponent implements OnInit {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private releaseService = inject(ReleasesService); // getCount -> getReleases(0, count)
+  private resourceService = inject(ResourceService);
   private toastService = inject(ToastService);
 
   releases: Signal<Release[]> = toSignal(this.releaseService.getReleases(0, 50), { initialValue: [] as Release[] });
+  appServerGroups = toSignal(this.resourceService.getByType('APPLICATIONSERVER'), {
+    initialValue: [] as Resource[],
+  });
   appServers = this.appsService.apps;
   count = this.appsService.count;
   maxResults = this.appsService.limit;
@@ -90,7 +96,7 @@ export class AppsComponent implements OnInit {
   addApp() {
     const modalRef = this.modalService.open(AppAddComponent);
     modalRef.componentInstance.releases = this.releases;
-
+    modalRef.componentInstance.appServerGroups = this.appServerGroups;
     modalRef.componentInstance.saveApp
       .pipe(takeUntil(this.destroy$))
       .subscribe((app: App) => console.log(`should save ${app}`));
