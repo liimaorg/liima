@@ -79,7 +79,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.QLConstants.DEPLOYMENT_QL_ALIAS;
-import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.QLConstants.GROUP_QL;
 
 
 @Stateless
@@ -179,12 +178,9 @@ public class DeploymentBoundary {
      * @param filters
      * @param colToSort
      * @param sortingDirection
-     * @param myAmw
      * @return a Tuple containing the filter deployments and the total deployments for that filter if doPagingCalculation is true
      */
-    public Tuple<Set<DeploymentEntity>, Integer> getFilteredDeployments(Integer startIndex,
-                                                                        Integer maxResults, List<CustomFilter> filters, String colToSort,
-                                                                        Sort.SortingDirectionType sortingDirection, List<Integer> myAmw) {
+    public Tuple<Set<DeploymentEntity>, Integer> getFilteredDeployments(Integer startIndex, Integer maxResults, List<CustomFilter> filters, String colToSort, Sort.SortingDirectionType sortingDirection) {
         Integer totalItemsForCurrentFilter;
         boolean doPaging = maxResults != null && (maxResults > 0);
 
@@ -216,10 +212,8 @@ public class DeploymentBoundary {
             } else {
                 stringQuery.append("select " + DEPLOYMENT_QL_ALIAS + " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " ");
             }
-            commonFilterService.appendWhereAndMyAmwParameter(myAmw, stringQuery, "and " + getEntityDependantMyAmwParameterQl());
         } else {
             stringQuery.append("select " + DEPLOYMENT_QL_ALIAS + " from " + DEPLOYMENT_ENTITY_NAME + " " + DEPLOYMENT_QL_ALIAS + " ");
-            commonFilterService.appendWhereAndMyAmwParameter(myAmw, stringQuery, getEntityDependantMyAmwParameterQl());
         }
 
         String baseQuery = stringQuery.toString();
@@ -239,7 +233,7 @@ public class DeploymentBoundary {
         sortBuilder.order(DeploymentOrder.of(DeploymentFilterTypes.ID.getFilterTabColumnName(), Sort.SortingDirectionType.DESC, false));
 
         Query query = commonFilterService.addFilterAndCreateQuery(stringQuery, filters, sortBuilder.build(), hasLastDeploymentForAsEnvFilterSet, false);
-        query = commonFilterService.setParameterToQuery(startIndex, maxResults, myAmw, query);
+        query = commonFilterService.setParameterToQuery(startIndex, maxResults, query);
 
         Set<DeploymentEntity> deployments = new LinkedHashSet<>();
         // some stuff may be lazy loaded
@@ -265,7 +259,7 @@ public class DeploymentBoundary {
             // last param needs to be true if we are dealing with a combination of "State" and "Latest deployment job for App Server and Env"
             Query countQuery = commonFilterService.addFilterAndCreateQuery(new StringBuilder(countQueryString), filters, Sort.nothing(), hasLastDeploymentForAsEnvFilterSet, lastDeploymentState != null);
 
-            commonFilterService.setParameterToQuery(null, null, myAmw, countQuery);
+            commonFilterService.setParameterToQuery(null, null, countQuery);
             totalItemsForCurrentFilter = (lastDeploymentState == null) ? ((Long) countQuery.getSingleResult()).intValue() : countQuery.getResultList().size();
             // fix for the special case of multiple deployments on the same environment with exactly the same deployment date
             if (hasLastDeploymentForAsEnvFilterSet && lastDeploymentState == null && deployments.size() != allResults) {
@@ -435,10 +429,6 @@ public class DeploymentBoundary {
             }
         }
         return deploymentsList;
-    }
-
-    private String getEntityDependantMyAmwParameterQl() {
-        return "(" + GROUP_QL + ".id in (:" + CommonFilterService.MY_AMW + ")) ";
     }
 
     private boolean isLastDeploymentForAsEnvFilterSet(List<CustomFilter> filter) {
@@ -1414,17 +1404,17 @@ public class DeploymentBoundary {
 
     private List<ResourceGroupEntity> getApplicationServerGroups() {
         return resourceGroupLocator.getGroupsForType(
-                DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), Collections.EMPTY_LIST, false, true);
+                DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), false, true);
     }
 
     private List<ResourceGroupEntity> getApplicationGroups() {
         return resourceGroupLocator.getGroupsForType(
-                DefaultResourceTypeDefinition.APPLICATION.name(), Collections.EMPTY_LIST, false, true);
+                DefaultResourceTypeDefinition.APPLICATION.name(), false, true);
     }
 
     private List<ResourceGroupEntity> getRuntimesGroups() {
         return resourceGroupLocator.getGroupsForType(
-                DefaultResourceTypeDefinition.RUNTIME.name(), Collections.EMPTY_LIST, false, true);
+                DefaultResourceTypeDefinition.RUNTIME.name(), false, true);
     }
 
     private <K extends NamedIdentifiable> List<String> converToStringList(List<K> namedIdentifiables) {

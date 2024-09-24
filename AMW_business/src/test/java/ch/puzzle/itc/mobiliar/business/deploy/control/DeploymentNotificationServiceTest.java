@@ -23,13 +23,10 @@ package ch.puzzle.itc.mobiliar.business.deploy.control;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.utils.notification.NotificationService;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +37,6 @@ import org.mockito.MockitoAnnotations;
 import javax.mail.Address;
 import javax.mail.MessagingException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,13 +52,7 @@ public class DeploymentNotificationServiceTest {
 	
 	@Mock
 	private NotificationService notificationService;
-	
-	@Mock 
-	private UserSettingsService userSettingsService;
-	
-	@Mock
-	private ResourceDependencyResolverService dependencyResolverService;
-	
+
 	@Mock
 	private ReleaseMgmtService releaseMgmtService;
 
@@ -87,7 +76,7 @@ public class DeploymentNotificationServiceTest {
 	}
 	
 	@Test
-	public void createAndSendMailForDeplyoments_null() {
+	public void createAndSendMailForDeployments_null() {
 		// given
 		
 		// when
@@ -98,7 +87,7 @@ public class DeploymentNotificationServiceTest {
 	}
 	
 	@Test
-	public void createAndSendMailForDeplyoments_empty() {
+	public void createAndSendMailForDeployments_empty() {
 		// given
 		
 		// when
@@ -109,7 +98,7 @@ public class DeploymentNotificationServiceTest {
 	}
 	
 	@Test
-	public void createAndSendMailForDeplyoments_oneDeployment_noAddress_sending_ok() throws MessagingException {
+	public void createAndSendMailForDeployments_oneDeployment_noAddress_sending_ok() throws MessagingException {
 		// given
 		ArrayList<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 		
@@ -132,7 +121,7 @@ public class DeploymentNotificationServiceTest {
 	}
 	
 	@Test
-	public void createAndSendMailForDeplyoments_oneDeployment_noAddress_sending_nok() throws MessagingException {
+	public void createAndSendMailForDeployments_oneDeployment_noAddress_sending_nok() throws MessagingException {
 		// given
 		ArrayList<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 		
@@ -157,7 +146,7 @@ public class DeploymentNotificationServiceTest {
 	}
 	
 	@Test
-	public void createAndSendMailForDeplyoments_oneDeployment_noAddress_sending_nok_release_onDeployment() throws MessagingException {
+	public void createAndSendMailForDeployments_oneDeployment_noAddress_sending_nok_release_onDeployment() throws MessagingException {
 		// given
 		ArrayList<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 		
@@ -183,7 +172,7 @@ public class DeploymentNotificationServiceTest {
 	}
 	
 	@Test
-	public void createAndSendMailForDeplyoments_oneDeployment_noAddress_sending_Exception() throws MessagingException {
+	public void createAndSendMailForDeployments_oneDeployment_noAddress_sending_Exception() throws MessagingException {
 		// given
 		ArrayList<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 		
@@ -208,7 +197,7 @@ public class DeploymentNotificationServiceTest {
 	
 	
 	@Test
-	public void createAndSendMailForDeplyoments_oneDeployment_noAddress_sending_Recipients() throws MessagingException {
+	public void createAndSendMailForDeployments_oneDeployment_noAddress_sending_Recipients() throws MessagingException {
 		// given
 		ArrayList<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 		
@@ -219,13 +208,12 @@ public class DeploymentNotificationServiceTest {
 		deployment.setResourceGroup(applicationServer.getResourceGroup());
 		deployment.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
 		deployment.setContext(context);
+		deployment.setSendEmail(true);
+		deployment.setDeploymentRequestUser("testuser1");
 		deployments.add(deployment);
 		
 		when(notificationService.createAndSendMail(anyString(), anyString(), any(Address[].class))).thenReturn(true);
 		when(releaseMgmtService.getDefaultRelease()).thenReturn(defaultRelease);
-		List<String> value = new ArrayList<>();
-		value.add("testuser1");
-		when(userSettingsService.getRegisteredUsernamesForResourcesIds(any(Set.class))).thenReturn(value );
 		
 		// when
 		String result = deploymentNotificationService.createAndSendMailForDeplyoments(deployments);
@@ -236,7 +224,7 @@ public class DeploymentNotificationServiceTest {
 	}
 
 	@Test
-	public void createAndSendMailForDeplyoments_archived() throws MessagingException {
+	public void createAndSendMailForDeployments_archived() throws MessagingException {
 		// given
 		ArrayList<DeploymentEntity> deployments = new ArrayList<DeploymentEntity>();
 

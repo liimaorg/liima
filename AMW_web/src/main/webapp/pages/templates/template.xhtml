@@ -130,15 +130,6 @@
             <img class="liimaLogo" src="../resources/images/misc/Liima.svg" alt="Liima" />
             <nav>
             <ul>
-                <li>
-                    <label class="inlineBlock myfavorites">
-                        <h:selectBooleanCheckbox value="#{userSettings.myAMWMode}" onclick="if(window.confirmLeave){return confirmLeave(event)};">
-                            <a4j:ajax render="fullBody"
-                                      oncomplete="window.location.reload();"
-                                      onbegin="showLoaderImmediate();" onerror="hideLoader();" />
-                        </h:selectBooleanCheckbox> Favorites only
-                    </label>
-                </li>
                 <li class="#{screen eq 'newApplist' ? 'current' : ''}"><h:link
                         outcome="applist" value="Apps" onclick="showLoader();" /></li>
                 <li class="#{screen eq 'server' ? 'current' : ''}"><h:link

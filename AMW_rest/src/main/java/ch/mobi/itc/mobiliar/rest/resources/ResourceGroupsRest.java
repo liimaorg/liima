@@ -113,10 +113,8 @@ public class ResourceGroupsRest {
             @ApiParam(value = "a resource type, the list should be filtered by") @QueryParam("type") String type) {
         List<ResourceGroupDTO> result = new ArrayList<>();
         List<ResourceGroupEntity> resourceGroups;
-        // used by angular
         if (type != null) {
-            // TODO my favorites only
-            resourceGroups = resourceGroupLocator.getGroupsForType(type, Collections.EMPTY_LIST, true, true);
+            resourceGroups = resourceGroupLocator.getGroupsForType(type, true, true);
         } else {
             resourceGroups = resourceGroupLocator.getResourceGroups();
         }

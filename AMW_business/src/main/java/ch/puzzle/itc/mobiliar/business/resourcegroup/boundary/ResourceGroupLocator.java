@@ -87,23 +87,22 @@ public class ResourceGroupLocator {
 		
     /**
      * @param resourceTypeName
-     * @param myAmw
      * @param fetchResources determines if resources fetched
      * @return a list of Groups
      */    
-	public List<ResourceGroupEntity> getGroupsForType(String resourceTypeName, List<Integer> myAmw, boolean fetchResources, boolean sorted) {
-		return resourceGroupControl.getGroupsForType(resourceTypeName, myAmw, fetchResources, sorted);
+	public List<ResourceGroupEntity> getGroupsForType(String resourceTypeName, boolean fetchResources, boolean sorted) {
+		return resourceGroupControl.getGroupsForType(resourceTypeName, fetchResources, sorted);
 	}
 	
-	public List<ResourceGroupEntity> getGroupsForType(String resourceTypeName, List<Integer> myAmw, boolean fetchResources) {
-		return resourceGroupControl.getGroupsForType(resourceTypeName, myAmw, fetchResources);
+	public List<ResourceGroupEntity> getGroupsForType(String resourceTypeName, boolean fetchResources) {
+		return resourceGroupControl.getGroupsForType(resourceTypeName, fetchResources);
 	}
 	
-	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, List<Integer> myAmw, boolean fetchResources, boolean sorted) {
-		return resourceGroupControl.getGroupsForType(resourceTypeId, myAmw, fetchResources, sorted);
+	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, boolean fetchResources, boolean sorted) {
+		return resourceGroupControl.getGroupsForType(resourceTypeId, fetchResources, sorted);
 	}
 	
-	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, List<Integer> myAmw, boolean fetchResources) {
-		return resourceGroupControl.getGroupsForType(resourceTypeId, myAmw, fetchResources);
+	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, boolean fetchResources) {
+		return resourceGroupControl.getGroupsForType(resourceTypeId, fetchResources);
 	}
 }

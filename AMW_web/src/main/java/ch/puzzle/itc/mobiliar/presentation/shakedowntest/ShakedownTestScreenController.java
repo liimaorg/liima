@@ -48,7 +48,7 @@ import java.util.Set;
 
 @Named
 @RequestScoped
-public class ShakedownTestScreenController{
+public class ShakedownTestScreenController {
 
 	@Inject
 	private ShakedownTestService shakedownTestService;
@@ -107,11 +107,11 @@ public class ShakedownTestScreenController{
 			}
 		}
 
-		return shakedownTestService.getFilteredShakedownTests(count, startIndex, maxResults, filter, colToSort, sortingDirection, userSettings.getMyAMWFilter());
+		return shakedownTestService.getFilteredShakedownTests(count, startIndex, maxResults, filter, colToSort, sortingDirection);
 	}
 
 	public List<ResourceGroupEntity> loadAppServers() {
-		return resourceGroupService.loadGroupsForTypeName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), userSettings.getMyAMWFilter());
+		return resourceGroupService.loadGroupsForTypeName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
 	}
 	
 	public List<ResourceGroupEntity> loadAllApplications(){

@@ -64,10 +64,9 @@ public class ResourceGroupPersistenceService {
 
 	/**
 	 * @param resourceTypeName
-	 * @param myAmw
 	 * @return
 	 */
-	public List<ResourceGroupEntity> loadGroupsForTypeName(String resourceTypeName, List<Integer> myAmw) {
+	public List<ResourceGroupEntity> loadGroupsForTypeName(String resourceTypeName) {
 		List<ResourceGroupEntity> result = new ArrayList<>();
 
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -76,21 +75,12 @@ public class ResourceGroupPersistenceService {
 		r.fetch("resources");
 		Join<ResourceGroupEntity, ResourceEntity> resources = r.join("resources");
 		Predicate typeNamePred = cb.equal(resources.get("resourceType").get("name"), resourceTypeName);
-		Predicate asContainerPred = cb.notEqual(resources.get("name"),
-				ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName());
+		Predicate asContainerPred = cb.notEqual(resources.get("name"), ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName());
 
-		if (myAmw != null && !myAmw.isEmpty()) {
-			Predicate myAmwPred = r.get("id").in(myAmw);
-			q.where(cb.and(cb.and(typeNamePred, asContainerPred), myAmwPred));
-		}
-		else {
-			q.where(cb.and(typeNamePred, asContainerPred));
-		}
-
+		q.where(cb.and(typeNamePred, asContainerPred));
 		q.distinct(true);
 
 		result = entityManager.createQuery(q).getResultList();
-
 		return result;
 	}
 

@@ -91,7 +91,7 @@ public class CopyResource {
 	 */
 	public List<ResourceGroup> loadResourceGroupsForType(Integer typeId, ResourceEntity originResource) {
 		List<ResourceGroup> groups = new ArrayList<ResourceGroup>();
-		List<ResourceGroupEntity> result = resourceGroupRepository.getGroupsForType(typeId, Collections.<Integer> emptyList(), true);
+		List<ResourceGroupEntity> result = resourceGroupRepository.getGroupsForType(typeId, true);
 
 		for (ResourceGroupEntity g : result) {
 			ResourceGroup group = ResourceGroup.createByResource(g, null);

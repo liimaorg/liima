@@ -20,12 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.presentation.util;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
+import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -33,16 +32,9 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.apache.commons.lang3.StringUtils;
-
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.MyAMWObject;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
 
 @Named
 @SessionScoped
@@ -64,11 +56,6 @@ public class UserSettings implements Serializable {
 	 */
 	private UserSettingsEntity userSetting;
 
-	/**
-	 * Loaded lazily on first access
-	 */
-	private Map<Integer, MyAMWObject> favoriteResources;
-
 	private boolean testingMode;
 
 	@PostConstruct
@@ -76,128 +63,8 @@ public class UserSettings implements Serializable {
 		userSetting = service.getUserSettings(getUserName());
 	}
 
-	public List<Integer> getMyAMWFilter() {
-		if (isMyAMWMode()) {
-			List<Integer> result = getFavoriteResources();
-			if (result == null || result.isEmpty()) {
-				// Hibernate doesn't like to filter with an empty list.
-				// therefore set -1 as an id which will never match.
-				return Arrays.asList(-1);
-			}
-			else {
-				return result;
-			}
-		}
-		return null;
-	}
-
-	public boolean isMyAMWMode() {
-		return userSetting != null ? userSetting.isMyAmwEnabled() : false;
-	}
-
-	public void setMyAMWMode(boolean myAMWMode) {
-		if (myAMWMode != isMyAMWMode()) {
-			userSetting = service.getUserSettings(getUserName());
-			userSetting.setMyAmwEnabled(myAMWMode);
-			userSetting = service.saveUserSettings(userSetting);
-		}
-	}
-
-	/**
-	 * @param groupId
-	 * @return
-	 */
-	public boolean getFavorite(Integer groupId) {
-		return getFavoriteResources().contains(groupId);
-	}
-
-	/**
-	 * @param groupId
-	 * @param name
-	 * @param resourceType
-	 * @throws ResourceNotFoundException
-	 */
-	public void setFavorite(Integer groupId, String name, String resourceType)
-			throws ResourceNotFoundException {
-		if (groupId != null && StringUtils.isNotBlank(name)) {
-			if (!getFavoriteResources().contains(groupId)) {
-				try {
-					addFavoriteResource(groupId, name, resourceType);
-					GlobalMessageAppender.addSuccessMessage("Resource " + name + " added to favorites.");
-				}
-				catch (ResourceNotFoundException e) {
-					GlobalMessageAppender
-							.addErrorMessage("Resource not found - was not able to add resource to favorites");
-				}
-			}
-			else {
-				removeFavoriteResource(groupId);
-				GlobalMessageAppender.addSuccessMessage("Resource " + name + " removed from favorites.");
-			}
-		}
-	}
-
 	public String getUserName() {
 		return permissionService.getCurrentUserName();
-	}
-
-	public List<Integer> getFavoriteResources() {
-		if (favoriteResources == null) {
-			favoriteResources = service.loadFavoriteResources(getUserName());
-		}
-		return new ArrayList<Integer>(favoriteResources.keySet());
-	}
-
-	/**
-	 * @param groupId
-	 * @param name
-	 * @param resourceType
-	 * @throws ResourceNotFoundException
-	 */
-	public void addFavoriteResource(Integer groupId, String name, String resourceType)
-			throws ResourceNotFoundException {
-		userSetting = service.addFavoriteResource(groupId, getUserName());
-		favoriteResources = service.loadFavoriteResources(getUserName());
-	}
-
-	/**
-	 * @param groupId
-	 */
-	public void removeFavoriteResource(Integer groupId) {
-		userSetting = service.removeFavoriteResource(groupId, getUserName());
-		favoriteResources = service.loadFavoriteResources(getUserName());
-	}
-
-	public List<MyAMWObject> getMyAMWObjects() {
-		favoriteResources = service.loadFavoriteResources(getUserName());
-		return new ArrayList<MyAMWObject>(favoriteResources.values());
-	}
-
-	public List<MyAMWObject> getMyAMWASandApps() {
-		List<MyAMWObject> result = new ArrayList<MyAMWObject>();
-		if (favoriteResources != null) {
-			for (MyAMWObject o : favoriteResources.values()) {
-				if (o.isAsOrApp()) {
-					result.add(o);
-				}
-			}
-		}
-		return result;
-	}
-
-    /**
-     * Switches the email notification setting for the given MyAMWObject
-     * @param object
-     */
-    public void switchEmailNotification(MyAMWObject object) {
-		try {
-			userSetting = service.setEmail(object.getGroupId(), getUserName(), !object.isEmail());
-			GlobalMessageAppender.addSuccessMessage("eMail settings for " + object.getName()
-					+ " successfully saved");
-		}
-		catch (Exception e) {
-			GlobalMessageAppender.addErrorMessage("eMail settings were not saved: " + e.getMessage());
-		}
 	}
 
 	@Produces

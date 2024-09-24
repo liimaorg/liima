@@ -128,7 +128,7 @@ public class CreateApplicationForAsPopup implements Serializable {
 	private Set<ResourceGroup> getApplicationServerGroupsForSelectBox(){
 		SortedSet<ResourceGroup> groups = new TreeSet<>();
 		List<ResourceGroupEntity> result;
-			result = resourceGroupService.loadGroupsForTypeName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), null);
+			result = resourceGroupService.loadGroupsForTypeName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
 			for (ResourceGroupEntity g : result) {
 				if (!ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName().equals(g.getName())) {
 					groups.add(ResourceGroup.createByResource(g));
