@@ -1,0 +1,61 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="editPropertyTypesTitle">{{ getTitle() }}</h5>
+  <button type="button" class="btn btn-light close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="form-horizontal mx-2">
+    <div class="mb-3">
+      <label for="name" class="form-label">Property name</label>
+      <input type="text" class="form-control" id="name" [(ngModel)]="propertyType.name"/>
+    </div>
+    <div class="mb-3">
+      <div class="form-check">
+        <label for="encrypted" class="form-check-label">Encrypted</label>
+        <input type="checkbox" class="form-check-input" id="encrypted" [(ngModel)]="propertyType.encrypted"/>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="regex" class="form-label">Validation</label>
+      <input type="text" class="form-control" id="regex" [(ngModel)]="propertyType.validationRegex"/>
+      @if (!isValidRegex()) {
+        <div class="text-warning">Invalid regular expression pattern.</div>
+      }
+    </div>
+    <div class="mb-3">
+      <label for="addtags" class="form-label">Add Tag</label>
+      <div class="input-group">
+        <input type="text" class="form-control" id="addtags" [(ngModel)]="newTag" (keyup.enter)="addTag()"
+               placeholder="Type something and hit enter"/>
+        <div class="input-group-append ms-1">
+          <button type="button" class="btn btn-light" [disabled]="newTag===''">
+            <app-icon icon="plus" (click)="addTag()"></app-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    @if (propertyType.propertyTags !== null && propertyType.propertyTags.length > 0) {
+    <div class="mb-3">
+      <label for="tags" class="form-label">Tags</label>
+      <div class="list-group-horizontal row justify-content-start" id="tags">
+        @for (item of propertyType.propertyTags; track item.name) {
+        <div class="list-group-item col-2 mx-2">
+            <span class="badge bg-light text-dark rounded-pill">
+              {{item.name}}
+              <app-icon icon="x-circle" (click)="deleteTag(item)"></app-icon>
+            </span>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+  <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
+        [title]="!isValidForm()?'Please provide a name and validation':'Save'">
+  <button type="button" class="btn btn-primary" [disabled]="!isValidForm()" (click)="save()" [attr.data-cy]="'button-save'">Save changes</button>
+  </span>
+</div>

@@ -1,11 +1,12 @@
 <app-page>
   <div class="page-title">Settings</div>
+  {{ loadingPermissions()}}
   @if (canViewSettings) {
   <div class="page-content row">
     <div class="col-2">
       <nav class="nav nav-pills flex-column">
         <a class="nav-link" href="/AMW_web/pages/settings.xhtml?mode=envs">Environments</a>
-        <a class="nav-link" href="/AMW_web/pages/settings.xhtml?mode=props">Property Types</a>
+        <a class="nav-link" routerLink="/settings/property-types" routerLinkActive="active">Property Types</a>
         @if (canViewPermissionsTab) {
         <a class="nav-link" routerLink="/settings/tags" routerLinkActive="active">Tags</a>
         }
