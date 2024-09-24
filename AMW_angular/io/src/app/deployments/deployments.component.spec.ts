@@ -660,21 +660,6 @@ describe('DeploymentsComponent (without query params)', () => {
     );
   });
 
-  it('should check permission on showEdit', () => {
-    // given
-    component.deployments = [
-      { id: 1, appServerId: 12, selected: false } as Deployment,
-      { id: 21, appServerId: 22, selected: true } as Deployment,
-    ];
-    spyOn(resourceService, 'canCreateShakedownTest').and.returnValue(of(true));
-
-    // when
-    component.showEdit();
-
-    // then
-    expect(resourceService.canCreateShakedownTest).toHaveBeenCalledWith(22);
-  });
-
   it('should confirm a deployment and reload it', () => {
     // given
     const deployment: Deployment = { id: 1 } as Deployment;

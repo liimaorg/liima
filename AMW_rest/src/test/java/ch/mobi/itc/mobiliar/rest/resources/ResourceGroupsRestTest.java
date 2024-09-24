@@ -178,7 +178,7 @@ public class ResourceGroupsRestTest {
         // given
         String typeName = "type";
 
-        when(resourceGroupLocatorMock.getGroupsForType(typeName, Collections.EMPTY_LIST, true, true)).thenReturn(new ArrayList<ResourceGroupEntity>());
+        when(resourceGroupLocatorMock.getGroupsForType(typeName, true, true)).thenReturn(new ArrayList<ResourceGroupEntity>());
 
         // when
         List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName);

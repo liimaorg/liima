@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.applist;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -38,24 +37,19 @@ public class ApplistScreenDomainService {
     @Inject
     private ApplistScreenDomainServiceQueries queries;
 
-    List<ResourceEntity> getApplicationServerResources(String filter, Integer maxResults, List<Integer> myAMW) {
-        if (myAMW != null && myAMW.isEmpty()) {
-            //there is a myAMW-filter, but it doesn't contain any values - so we don't have to ask the db - we know that there is an empty result
-            return Collections.emptyList();
-        }
-        return queries.doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(filter, myAMW, maxResults);
+    List<ResourceEntity> getApplicationServerResources(String filter, Integer maxResults) {
+        return queries.doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(filter, maxResults);
     }
 
 
-    public List<ResourceEntity> getAppServerResourcesWithApplications(String filter, Integer maxResults,
-                                                                      List<Integer> myAmw, boolean withAppServerContainer) {
-        List<ResourceEntity> appServerList = getApplicationServerResources(filter, maxResults, myAmw);
+    public List<ResourceEntity> getAppServerResourcesWithApplications(String filter, Integer maxResults, boolean withAppServerContainer) {
+        List<ResourceEntity> appServerList = getApplicationServerResources(filter, maxResults);
         for (ResourceEntity as : appServerList) {
             if (as.getName().equals(ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName())) {
-                if (!withAppServerContainer || as.getConsumedMasterRelations().size() == 0) {
+                if (!withAppServerContainer || as.getConsumedMasterRelations().isEmpty()) {
                     appServerList.remove(as);
                     break;
-                }
+                };
             }
         }
         return appServerList;

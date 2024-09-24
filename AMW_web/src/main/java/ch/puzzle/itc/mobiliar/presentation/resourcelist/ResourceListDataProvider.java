@@ -101,10 +101,8 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 	 * @return list with resourceGroups
 	 */
 	public List<ResourceGroup> getResourceGroupsForSelectedResourceType() {
-		if (resourceGroups == null || !getSelectedResourceType().getId().equals(this.selectedType.getId())
-				|| hasAmwFilterChanged()) {
+		if (resourceGroups == null || !getSelectedResourceType().getId().equals(this.selectedType.getId())) {
 			selectedType = getSelectedResourceType();
-			amwFilter = userSettings.getMyAMWFilter();
 			resourceGroups = new ArrayList<ResourceGroup>(
 					resourcesController.loadResourceGroupsForResourceType(selectedType));
 		}
@@ -131,13 +129,6 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
         }
         return new ForeignableAttributesDTO();
     }
-
-
-	private boolean hasAmwFilterChanged() {
-		List<Integer> newAmwFilter = userSettings.getMyAMWFilter();
-		return (newAmwFilter != null && !newAmwFilter.equals(amwFilter))
-				|| (amwFilter != null && !amwFilter.equals(newAmwFilter));
-	}
 
 	public ResourceGroup getSelectedResourceGroup() {
 	    return selectedResourceGroup;

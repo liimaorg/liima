@@ -65,7 +65,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   transDeploymentParameter: DeploymentParameter = {} as DeploymentParameter;
   transDeploymentParameters: DeploymentParameter[] = [];
   deploymentResponse: any = {};
-  hasPermissionShakedownTest: boolean = false;
   hasPermissionToDeploy: boolean = false;
   hasPermissionToRequestDeployment: boolean = false;
 
@@ -77,9 +76,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   simulate: boolean = false;
   requestOnly: boolean = false;
   doSendEmail: boolean = false;
-  doExecuteShakedownTest: boolean = false;
-  // may only be enabled if above is true
-  doNeighbourhoodTest: boolean = false;
 
   bestForSelectedRelease: Release = null;
 
@@ -136,7 +132,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   onChangeAppserver() {
     this.resetVars();
     this.loadReleases();
-    this.canCreateShakedownTest();
     this.canDeploy();
   }
 
@@ -301,7 +296,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.errorMessage = '';
     this.successMessage = '';
     this.isDeploymentBlocked = false;
-    this.hasPermissionShakedownTest = false;
     this.selectedRelease = null;
     this.bestForSelectedRelease = null;
     this.resourceTags = [this.defaultResourceTag];
@@ -309,17 +303,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.deploymentDate = null;
     this.simulate = false;
     this.doSendEmail = false;
-    this.doExecuteShakedownTest = false;
-    this.doNeighbourhoodTest = false;
     this.appsWithVersion = [];
     this.transDeploymentParameter = {} as DeploymentParameter;
     this.transDeploymentParameters = [];
-  }
-
-  private canCreateShakedownTest() {
-    this.resourceService
-      .canCreateShakedownTest(this.selectedAppserver.id)
-      .subscribe({ next: (r) => (this.hasPermissionShakedownTest = r), error: (e) => (this.errorMessage = e) });
   }
 
   private canDeploy() {
@@ -380,8 +366,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     deploymentRequest.contextIds = contextIds;
     deploymentRequest.simulate = this.simulate;
     deploymentRequest.sendEmail = this.doSendEmail;
-    deploymentRequest.executeShakedownTest = this.doExecuteShakedownTest;
-    deploymentRequest.neighbourhoodTest = this.doNeighbourhoodTest;
     deploymentRequest.requestOnly = this.requestOnly;
     deploymentRequest.appsWithVersion = this.appsWithVersion;
     if (!this.isRedeployment) {

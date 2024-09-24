@@ -24,13 +24,11 @@ import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourceactivation.entity.ResourceActivationEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.FavoriteResourceEntity;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -45,7 +43,7 @@ import java.util.TreeSet;
 @Entity
 @Audited
 @Table(name = "TAMW_resourceGroup")
-@EqualsAndHashCode(exclude = { "resources", "favorites", "runtimeTemplateDescriptors", "resourceActivationEntities" })
+@EqualsAndHashCode(exclude = { "resources", "runtimeTemplateDescriptors", "resourceActivationEntities" })
 @NamedQuery(name = ResourceGroupEntity.ALLRESOURCESBYTYPE_QUERY, query = "select rg from ResourceGroupEntity rg left join rg.resourceType rt where rt is not null and rt.name=:restype")
 public class ResourceGroupEntity implements Serializable, Comparable<ResourceGroupEntity>, NamedIdentifiable {
 
@@ -74,11 +72,6 @@ public class ResourceGroupEntity implements Serializable, Comparable<ResourceGro
 	@ManyToOne(cascade = CascadeType.PERSIST)
 	@Getter
 	private ResourceTypeEntity resourceType;
-
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceGroup")
-	@NotAudited
-	@Getter
-	private Set<FavoriteResourceEntity> favorites;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceGroup")
 	@Getter

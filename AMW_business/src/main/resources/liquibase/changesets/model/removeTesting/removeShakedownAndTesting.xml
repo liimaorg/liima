@@ -1,0 +1,18 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/model/removeTesting/removeShakedownAndTesting.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="sgirod" id="removeShakedownTest">
+        <dropTable tableName="TAMW_shakedownStp"/>
+        <dropTable tableName="TAMW_shakedownStp_aud"/>
+        <dropTable tableName="TAMW_shakedownTest"/>
+        <dropColumn tableName="TAMW_deployment" columnName="createTestAfterDeployment"/>
+        <dropColumn tableName="TAMW_deployment" columnName="neighborhoodTest"/>
+    </changeSet>
+
+    <changeSet author="sgirod" id="removeTesting">
+        <dropColumn tableName="TAMW_templateDescriptor" columnName="testing"/>
+        <dropColumn tableName="TAMW_propertyDescriptor" columnName="testing"/>
+    </changeSet>
+</databaseChangeLog>

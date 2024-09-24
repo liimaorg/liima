@@ -67,8 +67,6 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
     @Getter
     @Setter
     private Integer cardinalityProperty;
-    @Getter
-    private boolean isTesting;
     @Setter
     private String validationLogic;
     private String typeValidationRegex;
@@ -194,7 +192,6 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
      * @param isOptional if the property is optional (from {@link PropertyDescriptorEntity#isOptional()})
      * @param isEncrypted if the property is encrypted (from {@link PropertyDescriptorEntity#isEncrypt()})
      * @param cardinalityProperty the cardinality of the property (from {@link PropertyDescriptorEntity#cardinalityProperty})
-     * @param isTesting if the property is for testing purposes only (shakedown testing) (from {@link PropertyDescriptorEntity#isTesting()})
      * @param validationLogic the validation logic a property has to fulfill (if any) (from {@link PropertyDescriptorEntity#validationLogic})
      * @param machineInterpretationKey the machine interpretation key, if present, is used to compute the actual value of a property (@ generation time) (from {@link PropertyDescriptorEntity#machineInterpretationKey})
      * @param propContextId the id of the context where the property is defined or null if defined on a resource type (from {@link ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity#name#id})
@@ -218,7 +215,7 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
      */
     public ResourceEditProperty(String technicalKey, String displayName, String propertyValue, String exampleValue, String defaultValue,
                                 String propertyComment, boolean isNullable, boolean isOptional, boolean isEncrypted, Integer cardinalityProperty,
-            boolean isTesting, String validationLogic, String machineInterpretationKey, Integer propContextId, Integer typeContextId,
+            String validationLogic, String machineInterpretationKey, Integer propContextId, Integer typeContextId,
             Integer descriptorId, String propContName, String typeContName, Integer typeId, Integer propertyValueTypeId,
             Integer masterTypeId, String typeName, String validationRegex, Integer propertyId,
             String origin, String loadedFor, String resourceName, String propertyDescriptorOrigin, String fcOwner, String fcExternalKey, String fcExternalLink) {
@@ -244,7 +241,6 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
         this.isOptional = isOptional;
         this.isEncrypted = isEncrypted;
         this.cardinalityProperty = cardinalityProperty;
-        this.isTesting = isTesting;
         this.validationLogic = validationLogic;
         this.mik = machineInterpretationKey;
         this.propContextId = propContextId;

@@ -157,8 +157,8 @@ public class GenerationUnitFactoryAmwTest extends GenerationUnitFactoryBaseTest<
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testTemplateLoading() {
-		verify(utils, times(13)).getTemplates(any(ResourceEntity.class), any(ContextEntity.class), any(Set.class), eq(builder.platform.getId()), eq(false));
-		verify(utils, times(12)).getTemplates(any(ContextEntity.class), any(AbstractResourceRelationEntity.class), any(Set.class), eq(builder.platform.getId()), eq(false));
+		verify(utils, times(13)).getTemplates(any(ResourceEntity.class), any(ContextEntity.class), any(Set.class), eq(builder.platform.getId()));
+		verify(utils, times(12)).getTemplates(any(ContextEntity.class), any(AbstractResourceRelationEntity.class), any(Set.class), eq(builder.platform.getId()));
 	}
 
 }

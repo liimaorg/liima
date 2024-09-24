@@ -101,5 +101,9 @@ Please have a look at the [contribution guide](CONTRIBUTING.md)
 
 The contributors who are working on Liima or did contribute to Liima are listed in the [AUTHORS file](AUTHORS)
 
+## Declaration
+
+Contributions to the codebase have been made with the support of Codeium. Codeium is AI-powered code completion tool, that is trained exclusively on natural language and source code data with [permissive licenses](https://codeium.com/blog/copilot-trains-on-gpl-codeium-does-not ). 
+
 
 

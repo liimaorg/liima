@@ -111,7 +111,7 @@ public class ResourceRelationTemplatesRest {
 
         List<TemplateDescriptorEntity> templates = new ArrayList<>();
         for (ConsumedResourceRelationEntity resRel : resRelList) {
-            List<TemplateDescriptorEntity> temp = templateService.getTemplatesForResourceRelation(resRel, false);
+            List<TemplateDescriptorEntity> temp = templateService.getTemplatesForResourceRelation(resRel);
             for (TemplateDescriptorEntity t : temp) {
                 t.setRelatedResourceIdentifier(resRel.getIdentifier());
             }

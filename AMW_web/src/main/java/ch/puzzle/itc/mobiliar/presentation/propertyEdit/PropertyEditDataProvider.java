@@ -47,7 +47,6 @@ import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationMode
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.events.ChangeSelectedRelationEvent;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.DataProviderHelper;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
-import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import lombok.Getter;
 import lombok.Setter;
@@ -123,15 +122,6 @@ public class PropertyEditDataProvider implements Serializable {
     @Getter
     private ResourceGroup group;
 
-    @Inject
-    @TestingMode
-    private Boolean testing;
-
-    @TestingMode
-    public void onChangedTestingMode(@Observes Boolean isTesting) {
-        this.testing = isTesting;
-    }
-
     @Getter
     @Setter
     String typeRelationIdentifier;
@@ -145,13 +135,6 @@ public class PropertyEditDataProvider implements Serializable {
     private NamedIdentifiable resourceOrResourceType;
 
     private ResourceEditRelation currentRelation;
-
-    /**
-     * @return true if testing is tue and initialized, otherwise false
-     */
-    public boolean isTesting() {
-        return testing != null && testing;
-    }
 
     public boolean isGlobalContext() {
         return currentContext.isGlobal();
@@ -221,15 +204,14 @@ public class PropertyEditDataProvider implements Serializable {
 
     private void loadResourceRelationEditProperties() {
         filteredRelationProperties = new ArrayList<>();
-
+        currentRelationProperties = new ArrayList<>();
         if (currentRelation != null) {
             if (currentRelation.isResourceTypeRelation()) {
-                List<ResourceEditProperty> properties = editor.getPropertiesForRelatedResourceType(currentRelation, getContextId());
-                currentRelationProperties = userSettings.filterTestingProperties(properties);
+                currentRelationProperties = editor.getPropertiesForRelatedResourceType(currentRelation, getContextId());
                 typeRelationIdentifier = currentRelation.getDisplayName();
             } else {
-                currentRelationProperties = userSettings.filterTestingProperties(editor
-                        .getPropertiesForRelatedResource(getResourceId(), currentRelation, getContextId()));
+                currentRelationProperties = editor
+                        .getPropertiesForRelatedResource(getResourceId(), currentRelation, getContextId());
                 filterHostNameAndActiveFromRelatedNode(currentRelation);
                 relationIdentifier = currentRelation.getIdentifier();
             }
@@ -416,11 +398,10 @@ public class PropertyEditDataProvider implements Serializable {
 
     private List<ResourceEditProperty> reloadResourceEditProperties(ResourceEntity resourceEntity) {
         filteredResourceProperties = new ArrayList<>();
-        List<ResourceEditProperty> propertiesForResource = editor.getPropertiesForResource(resourceEntity.getId(), getContextId());
-        resourceEditProperties = userSettings.filterTestingProperties(propertiesForResource);
+        resourceEditProperties = editor.getPropertiesForResource(resourceEntity.getId(), getContextId());
         filterHostNameAndActiveFromNode();
         editableProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceAndContext(resourceEntity.getId(),
-                currentContext, userSettings.isTestingMode());
+                currentContext);
         canChangeRuntime = permissionBoundary.hasPermission(Permission.RESOURCE, currentContext, Action.UPDATE,
                 resourceEntity, null);
         canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, currentContext, Action.ALL,
@@ -435,8 +416,8 @@ public class PropertyEditDataProvider implements Serializable {
 
     private List<ResourceEditProperty> reloadResourceTypeEditProperties(ResourceTypeEntity resourceTypeEntity) {
         filteredResourceProperties = new ArrayList<>();
-        resourceEditProperties = userSettings.filterTestingProperties(editor.getPropertiesForResourceType(
-                resourceTypeEntity.getId(), getContextId()));
+        resourceEditProperties = editor.getPropertiesForResourceType(
+                resourceTypeEntity.getId(), getContextId());
         editableProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE, currentContext, Action.UPDATE,
                 null, resourceTypeEntity);
         canDecryptProperties = permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, currentContext, Action.ALL,

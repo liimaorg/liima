@@ -61,10 +61,6 @@ public class DeploymentExecutionResultHandlerService {
 
 		deploymentBoundary.updateDeploymentInfoAndSendNotification(generationModus, deployment.getId(), null, deployment.getResource() != null ? deployment.getResource()
 				.getId() : null, generationResult, null);
-
-		if (deployment.isCreateTestAfterDeployment()) {
-			deploymentBoundary.createShakedownTestForTrackinIdOfDeployment(deployment.getTrackingId());
-		}
 	}
 
 	/**

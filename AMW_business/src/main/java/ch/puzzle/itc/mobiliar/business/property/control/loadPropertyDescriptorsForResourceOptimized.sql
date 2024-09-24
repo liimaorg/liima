@@ -9,7 +9,6 @@ WITH descr_with
                 descr.OPTIONAL optional,
                 descr.ENCRYPT encrypt,
                 descr.CARDINALITYPROPERTY CARDINALITY,
-                descr.TESTING testing,
                 descr.VALIDATIONLOGIC validationLogic,
                 descr.MACHINEINTERPRETATIONKEY mik,
                 descr.ID descId,
@@ -97,8 +96,6 @@ SELECT
        descr_with.encrypt,
 -- the cardinality of the property
        descr_with.CARDINALITY,
--- if the property is for testing purposes only (shakedown testing)
-       descr_with.testing,
 -- the validation logic a property has to fulfill (if any)
        descr_with.validationLogic,
 -- the key which will be used to compute the property's value

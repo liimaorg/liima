@@ -20,13 +20,13 @@
                 <li>
                     <div style="display: inline-block; float: right;">
                         <h:link rendered="#{(!templateEditDataProvider.editResource or !cc.attrs.isRelation or resourceRelationModel.consumedRelation) and templateEditDataProvider.canAdd}"
-                            outcome="editTemplateView" type="button" styleClass="btn light right ${templateEditDataProvider.testing ? 'testing' :  ''}" includeViewParams="false">
+                            outcome="editTemplateView" type="button" styleClass="btn light right" includeViewParams="false">
                             <f:param name="rel" value="#{!cc.attrs.isRelation ? null : resourceRelationModel.currentRelationUniqueIdentifier}" />
                             <f:param name="templ" value="${instanceTemplate.id}" />
                             <f:param name="id" value="#{editResourceView.resourceIdFromParam}" />
                             <f:param name="resTypId" value="#{editResourceView.resourceTypeIdFromParam}" />
-                            <i class="icon ${templateEditDataProvider.testing ? 'icon-addGrey' :  'icon-add'}" />
-                            New  <h:outputText value="Test-" rendered="${templateEditDataProvider.testing}" />Template
+                            <i class="icon icon-add" />
+                            New Template
                         </h:link>
                     </div>
                 </li>
@@ -35,7 +35,7 @@
 
             <h2>
                 <h:outputText
-                    value="${cc.attrs.isRelation ? (templateEditDataProvider.testing ? 'Relationship Test Templates' : 'Relationship Templates') : (templateEditDataProvider.testing ? 'Testing Templates' : 'Templates')}" />
+                    value="${cc.attrs.isRelation ? 'Relationship Templates' : 'Templates'}" />
             </h2>
             <hr />
             <div id="template_${cc.attrs.isRelation}_list" class="max_70vh ajaxScroll">
@@ -43,9 +43,7 @@
                     <h:panelGroup
                         rendered="${!templateEditDataProvider.getInstanceTemplates(cc.attrs.isRelation).isEmpty() and templateEditDataProvider.canListInstanceTemplates}">
                         <h3>
-                            Instance
-                            <h:outputText value="test-" rendered="${templateEditDataProvider.testing}" />
-                            templates
+                            Instance templates
                         </h3>
                         <h:dataTable var="instanceTemplate"
                             value="${templateEditDataProvider.getInstanceTemplates(cc.attrs.isRelation)}"
@@ -76,7 +74,7 @@
                     rendered="#{!templateEditDataProvider.getTypeTemplates(cc.attrs.isRelation).isEmpty() and templateEditDataProvider.canListResTypeTemplates}">
                     <h3>
                         <h:outputText
-                            value="${cc.attrs.isRelation ? (templateEditDataProvider.testing ? 'Resource Type Relationship Test Template' : 'Resource Type Relationship Templates') : (templateEditDataProvider.testing ? 'Resource Type Test Template' : 'Resource Type Templates')}" />
+                            value="${cc.attrs.isRelation ? 'Resource Type Relationship Templates' : 'Resource Type Templates'}" />
                     </h3>
                     <h:dataTable var="resTypeTemplate"
                         value="${templateEditDataProvider.getTypeTemplates(cc.attrs.isRelation)}"
@@ -119,7 +117,7 @@
 
     <rich:popupPanel id="removeTemplatePopup_${cc.attrs.isRelation}"
         moveable="true" width="800" autosized="true"
-        headerClass="${templateEditDataProvider.testing ? 'testing' : ''}">
+        >
         <f:facet name="header">
             <h2>
                 <h:outputText value="Remove Template" />

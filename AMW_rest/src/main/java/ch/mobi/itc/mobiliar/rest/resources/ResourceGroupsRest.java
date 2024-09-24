@@ -113,10 +113,8 @@ public class ResourceGroupsRest {
             @ApiParam(value = "a resource type, the list should be filtered by") @QueryParam("type") String type) {
         List<ResourceGroupDTO> result = new ArrayList<>();
         List<ResourceGroupEntity> resourceGroups;
-        // used by angular
         if (type != null) {
-            // TODO my favorites only
-            resourceGroups = resourceGroupLocator.getGroupsForType(type, Collections.EMPTY_LIST, true, true);
+            resourceGroups = resourceGroupLocator.getGroupsForType(type, true, true);
         } else {
             resourceGroups = resourceGroupLocator.getResourceGroups();
         }
@@ -363,17 +361,6 @@ public class ResourceGroupsRest {
         SortedSet<ReleaseEntity> deployableReleases = new TreeSet(releaseMgmtService.getDeployableReleasesForResourceGroup(group));
         ResourceDTO mostRelevant = new ResourceDTO(resourceDependencyResolverService.findMostRelevantRelease(deployableReleases, null));
         return Response.ok(mostRelevant).build();
-    }
-
-    @Path("/resourceGroups/{resourceGroupId}/canCreateShakedownTest")
-    @GET
-    @ApiOperation(value = "Checks is caller is allowed to create/execute ShakedownTests - used by Angular")
-    public Response canCreateShakedownTest(@PathParam("resourceGroupId") Integer resourceGroupId) {
-        if (resourceGroupId == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-        boolean hasPermission = permissionBoundary.hasPermissionToCreateShakedownTests(resourceGroupId);
-        return Response.ok(hasPermission).build();
     }
 
 }

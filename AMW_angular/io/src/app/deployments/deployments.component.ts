@@ -60,7 +60,6 @@ export class DeploymentsComponent implements OnInit {
   csvSeparator = '';
 
   // available edit actions
-  hasPermissionShakedownTest = false;
   deploymentDate: number; // for deployment date change
 
   // available filterValues (if any)
@@ -226,33 +225,22 @@ export class DeploymentsComponent implements OnInit {
     if (!this.editableDeployments()) {
       return;
     }
-    // get shakeDownTestPermission for first element
-    const indexOfFirstSelectedElem = _.findIndex(this.deployments, {
-      selected: true,
-    });
-    const firstDeployment = this.deployments[indexOfFirstSelectedElem];
-    this.resourceService.canCreateShakedownTest(firstDeployment.appServerId).subscribe({
-      next: (r) => (this.hasPermissionShakedownTest = r),
-      error: (e) => (this.errorMessage = e),
-      complete: () => {
-        const modalRef = this.modalService.open(DeploymentsEditModalComponent);
-        modalRef.componentInstance.deployments = this.getSelectedDeployments();
-        modalRef.componentInstance.hasPermissionShakedownTest = this.hasPermissionShakedownTest;
 
-        modalRef.componentInstance.doConfirmDeployment.subscribe((deployment: Deployment) =>
-          this.confirmDeployment(deployment),
-        );
-        modalRef.componentInstance.doRejectDeployment.subscribe((deployment: Deployment) =>
-          this.rejectDeployment(deployment),
-        );
-        modalRef.componentInstance.doCancelDeployment.subscribe((deployment: Deployment) =>
-          this.cancelDeployment(deployment),
-        );
-        modalRef.componentInstance.doEditDeploymentDate.subscribe((deployment: Deployment) =>
-          this.changeDeploymentDate(deployment),
-        );
-      },
-    });
+    const modalRef = this.modalService.open(DeploymentsEditModalComponent);
+    modalRef.componentInstance.deployments = this.getSelectedDeployments();
+
+    modalRef.componentInstance.doConfirmDeployment.subscribe((deployment: Deployment) =>
+      this.confirmDeployment(deployment),
+    );
+    modalRef.componentInstance.doRejectDeployment.subscribe((deployment: Deployment) =>
+      this.rejectDeployment(deployment),
+    );
+    modalRef.componentInstance.doCancelDeployment.subscribe((deployment: Deployment) =>
+      this.cancelDeployment(deployment),
+    );
+    modalRef.componentInstance.doEditDeploymentDate.subscribe((deployment: Deployment) =>
+      this.changeDeploymentDate(deployment),
+    );
   }
 
   confirmDeployment(deployment: Deployment) {

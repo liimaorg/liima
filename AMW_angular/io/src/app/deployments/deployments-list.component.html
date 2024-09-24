@@ -293,22 +293,6 @@
           simulate before deployment
         </label>
       </div>
-
-      @if (hasPermissionShakedownTest) {
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" [(ngModel)]="deployment.shakedownTestsWhenDeployed" />
-          execute shakedown tests when deployed
-        </label>
-      </div>
-      } @if (deployment.shakedownTestsWhenDeployed) {
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" [(ngModel)]="deployment.neighbourhoodTest" />
-          test neighbourhood
-        </label>
-      </div>
-      }
     </div>
   </div>
   <div class="modal-footer">

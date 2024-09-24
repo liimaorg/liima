@@ -38,7 +38,6 @@ import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -104,36 +103,6 @@ public class ResourceGroupPersistenceServiceTest {
 		entityManager.persist(asContainer);
 	}
 
-
-	@Test
-	public void test_loadGroupsForTypeName_myAmw() {
-		// given
-		init();
-
-		List<Integer> myAmw = new ArrayList<Integer>();
-		myAmw.add(resource1.getId());
-		myAmw.add(resource4.getId());
-
-		// when
-		List<ResourceGroupEntity> result = service.loadGroupsForTypeName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), myAmw);
-
-		// then
-		assertNotNull(result);
-		assertEquals(1, result.size());
-		assertEquals(resource1.getId(), result.iterator().next().getId());
-
-		myAmw.add(resource3.getId());
-
-		// when
-		result = service.loadGroupsForTypeName(DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), myAmw);
-
-		// then
-		assertNotNull(result);
-		assertEquals(2, result.size());
-		assertTrue(result.contains(resource1.getResourceGroup()));
-		assertTrue(result.contains(resource4.getResourceGroup()));
-	}
-
 	@Test
 	public void test_loadGroupsForTypeName() {
 		// given
@@ -141,7 +110,7 @@ public class ResourceGroupPersistenceServiceTest {
 
 		// when
 		List<ResourceGroupEntity> result = service.loadGroupsForTypeName(
-				DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), null);
+				DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
 
 		// then
 		assertNotNull(result);

@@ -15,7 +15,7 @@
 	<h:dataTable value="#{cc.attrs.editProperties}" var="prop"
 		styleClass="propertyTable" rendered="#{securityDataProvider.hasPermission('RESOURCE','READ')}">
 		<h:column >
-		<h:panelGroup layout="block" styleClass="control-group ${prop.testing and editPropertiesTable.testing ? 'testing' : ''}" rendered="#{editPropertiesTable.isPropertyDisplayable(prop)}">
+		<h:panelGroup layout="block" styleClass="control-group" rendered="#{editPropertiesTable.isPropertyDisplayable(prop)}">
 				<label class="control-label ellipsisRight" title="${prop.propertyDisplayName}" >
 					<h:link rendered="${cc.attrs.isDefinedOnInstanceOrType and editPropertiesTable.isEditable(prop)}" outcome="editPropertyView" includeViewParams="true">
 						${prop.propertyDisplayName}

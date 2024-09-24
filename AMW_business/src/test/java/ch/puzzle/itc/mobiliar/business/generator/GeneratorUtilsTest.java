@@ -122,33 +122,24 @@ public class GeneratorUtilsTest {
 	@Test
 	public void testCollectTemplateDescriptors() {
 		context.addTemplate(f.createTemplate("foo", "foo", targetPlatformId));
-		Set<TemplateDescriptorEntity> collected = utils.collectTemplateDescriptors(context, null, targetPlatformId, false);
+		Set<TemplateDescriptorEntity> collected = utils.collectTemplateDescriptors(context, null, targetPlatformId);
 		assertEquals(1, collected.size());
 	}
 	
 	@Test
 	public void testCollectTestingTemplateDescriptors(){
 		TemplateDescriptorEntity standardTempl = f.createTemplate("standardTempl", "bla", targetPlatformId);
-		TemplateDescriptorEntity testingTempl = f.createTemplate("testingTempl", "testing", targetPlatformId);
-		testingTempl.setTesting(true);
 		
 		TemplateDescriptorEntity otherPlatformStandardTempl = f.createTemplate("standardTempl", "bla", targetPlatformId+1);
-		TemplateDescriptorEntity otherPlatformTestingTempl = f.createTemplate("testingTempl", "testing", targetPlatformId+1);
-		otherPlatformTestingTempl.setTesting(true);
 		
 		context.addTemplate(standardTempl);
-		context.addTemplate(testingTempl);
-		context.addTemplate(otherPlatformTestingTempl);
 		context.addTemplate(otherPlatformStandardTempl);
-		
-		Set<TemplateDescriptorEntity> collectedTesting = utils.collectTemplateDescriptors(context, null, targetPlatformId, true);
-		Set<TemplateDescriptorEntity> collectedStandard = utils.collectTemplateDescriptors(context, null, targetPlatformId, false);
+
+		Set<TemplateDescriptorEntity> collectedStandard = utils.collectTemplateDescriptors(context, null, targetPlatformId);
 		
 		//Ensure, only the templates of the given runtime are included and they are separated properly depending on their testing-mode.
-		assertEquals(1, collectedTesting.size());
 		assertEquals(1, collectedStandard.size());
-		
-		assertEquals(testingTempl, collectedTesting.iterator().next());
+
 		assertEquals(standardTempl, collectedStandard.iterator().next());
 	}
 	
@@ -164,7 +155,7 @@ public class GeneratorUtilsTest {
 		resource.setContexts(new HashSet<ResourceContextEntity>());
 		resource.getContexts().add(resourceContext);
 
-		Set<TemplateDescriptorEntity> templates = utils.getTemplates(resource, context, null, targetPlatformId, false);
+		Set<TemplateDescriptorEntity> templates = utils.getTemplates(resource, context, null, targetPlatformId);
 		assertEquals(1, templates.size());
 	}
 
@@ -182,7 +173,7 @@ public class GeneratorUtilsTest {
 		resourceRelation.getContexts().add(relationContext);
 
 		Set<TemplateDescriptorEntity> templates = utils.getTemplates(context, resourceRelation, null,
-				targetPlatformId, false);
+				targetPlatformId);
 		assertEquals(1, templates.size());
 
 	}

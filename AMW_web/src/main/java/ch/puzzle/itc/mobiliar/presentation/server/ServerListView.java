@@ -108,8 +108,7 @@ public class ServerListView implements Serializable {
 		if(appServers == null) {
 			appServers = new ArrayList<>();
 			List<ResourceGroupEntity> appServerGroups = resourceGroupLocator.getGroupsForType(
-					DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), 
-					null, false, true);
+					DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), false, true);
 			for(ResourceGroupEntity appServer : appServerGroups) {
 				appServers.add(appServer.getName());
 			}

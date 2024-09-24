@@ -26,7 +26,6 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -138,19 +137,6 @@ public class DeploymentEntity implements Serializable {
     @Setter
     @Column(nullable = false)
     private boolean sendEmailConfirmation;
-
-    @Getter
-    @Setter
-    @Column(nullable = false)
-    private boolean createTestAfterDeployment;
-
-    @Column(nullable = false)
-    private boolean neighborhoodTest;
-
-    @Getter
-    @Setter
-    @OneToMany(mappedBy = "deployment", cascade = CascadeType.ALL)
-    private Set<ShakedownTestEntity> shakedownTests;
 
     @Getter
     @Setter
@@ -389,14 +375,6 @@ public class DeploymentEntity implements Serializable {
                         && !getDeploymentState().equals(DeploymentState.progress)
                         && !getDeploymentState().equals(DeploymentState.failed)))
                 && getDeploymentDate() != null && new Date().after(getDeploymentDate());
-    }
-
-    public boolean isCreateTestForNeighborhoodAfterDeployment() {
-        return neighborhoodTest;
-    }
-
-    public void setCreateTestForNeighborhoodAfterDeployment(boolean createTestForNeighborhoodAfterDeployment) {
-        this.neighborhoodTest = createTestForNeighborhoodAfterDeployment;
     }
 
     /**

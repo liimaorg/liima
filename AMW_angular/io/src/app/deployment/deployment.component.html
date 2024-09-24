@@ -180,27 +180,6 @@
               <input class="form-check-input" id="email" type="checkbox" [(ngModel)]="doSendEmail" />
               <label for="email">send an email when deployed</label>
             </div>
-            @if (hasPermissionShakedownTest) {
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                id="doExecuteShakedownTest"
-                type="checkbox"
-                [(ngModel)]="doExecuteShakedownTest"
-              />
-              <label for="doExecuteShakedownTest">execute shakedown tests when deployed</label>
-            </div>
-            } @if (doExecuteShakedownTest) {
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                id="doNeighbourhoodTest"
-                type="checkbox"
-                [(ngModel)]="doNeighbourhoodTest"
-              />
-              <label for="doNeighbourhoodTest">test neighbourhood</label>
-            </div>
-            }
           </div>
         </div>
 

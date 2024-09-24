@@ -20,7 +20,7 @@ public class PropertyDTOTest {
         String context = "Global";
         ResourceEditProperty resourceEditProperty = new ResourceEditProperty("technicalKey", "displayName",
                 propertyValue, "exampleValue", defaultValue, "propertyComment",
-                true, true,false, null, true, "validationLogic",
+                true, true,false, null,  "validationLogic",
                 "mik", null, null, null, "propContName",
                 "typeContName", null, null, null, null,null,
                 null, null, null,null, null, null, null,null);
@@ -39,7 +39,7 @@ public class PropertyDTOTest {
         String context = "Global";
         ResourceEditProperty resourceEditProperty = new ResourceEditProperty("technicalKey", "displayName",
                 propertyValue, "exampleValue", defaultValue, "propertyComment",
-                true, true,false, null, true, "validationLogic",
+                true, true,false, null,  "validationLogic",
                 "mik", null, null, null, "propContName",
                 "typeContName", null, null, null, null,null,
                 null, null, null,null, null, null, null,null);

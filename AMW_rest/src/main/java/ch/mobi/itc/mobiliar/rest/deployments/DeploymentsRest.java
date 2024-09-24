@@ -68,7 +68,6 @@ import javax.xml.bind.ValidationException;
 import java.net.URI;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -129,7 +128,7 @@ public class DeploymentsRest {
         }
         Sort.SortingDirectionType sortingDirectionType = getSortingDirectionType(sortDirection);
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
-        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, colToSort, sortingDirectionType, null);
+        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, colToSort, sortingDirectionType);
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
         return Response.status(Status.OK).header("X-Total-Count", filteredDeployments.getB()).entity(new GenericEntity<List<DeploymentDTO>>(deploymentDTOs) {}).build();
     }
@@ -288,7 +287,7 @@ public class DeploymentsRest {
         if (deploymentParameterValues != null) {
             createFiltersAndAddToList(DEPLOYMENT_PARAMETER, deploymentParameterValues, filters);
         }
-        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, null, null, null);
+        Tuple<Set<DeploymentEntity>, Integer> filteredDeployments = deploymentBoundary.getFilteredDeployments(offset, maxResults, filters, null, null);
 
         List<DeploymentDTO> deploymentDTOs = createDeploymentDTOs(filteredDeployments);
 
@@ -500,14 +499,13 @@ public class DeploymentsRest {
 
         trackingId = deploymentBoundary.createDeploymentReturnTrackingId(group.getId(), release.getId(), request.getDeploymentDate(),
                 request.getStateToDeploy(), contexts,
-                applicationsWithVersion, deployParams, request.getSendEmail(), request.getRequestOnly(), request.getSimulate(), request.getExecuteShakedownTest(),
-                request.getNeighbourhoodTest());
+                applicationsWithVersion, deployParams, request.getSendEmail(), request.getRequestOnly(), request.getSimulate());
 
         // get the deployment from the tracking id
         CustomFilter trackingIdFilter = CustomFilter.builder(TRACKING_ID).build();
         trackingIdFilter.setValue(trackingId.toString());
         filters.add(trackingIdFilter);
-        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments( 0, 1, filters, null, null, null);
+        Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments( 0, 1, filters, null, null);
 
         DeploymentDTO deploymentDto = new DeploymentDTO(result.getA().iterator().next());
 
@@ -557,8 +555,6 @@ public class DeploymentsRest {
         try{
             deploymentBoundary.confirmDeployment(deploymentId,
                     deploymentDTO.isSendEmailWhenDeployed(),
-                    deploymentDTO.isShakedownTestsWhenDeployed(),
-                    deploymentDTO.isNeighbourhoodTest(),
                     deploymentDTO.isSimulateBeforeDeployment(),
                     deploymentDTO.getDeploymentDate());
             return Response.status(Response.Status.OK).build();

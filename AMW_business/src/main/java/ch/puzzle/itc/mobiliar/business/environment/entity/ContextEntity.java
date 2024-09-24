@@ -25,7 +25,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntit
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeContextEntity;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 import lombok.Getter;
 import lombok.Setter;
@@ -103,12 +102,6 @@ public class ContextEntity extends AbstractContext {
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @NotAudited
     private Set<DeploymentEntity> deploys;
-
-    @Getter
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "context")
-    @AuditMappedBy(mappedBy = "context")
-    @NotAudited
-    private Set<ShakedownTestEntity> shakedownTests;
 
     @Getter
     private static final long serialVersionUID = 1L;

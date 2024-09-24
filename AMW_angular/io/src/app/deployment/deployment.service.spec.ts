@@ -11,9 +11,9 @@ describe('DeploymentService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [DeploymentService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-});
+      imports: [],
+      providers: [DeploymentService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    });
 
     httpTestingController = TestBed.inject(HttpTestingController);
     httpClient = TestBed.inject(HttpClient);
@@ -87,7 +87,5 @@ describe('DeploymentService', () => {
     stateToDeploy: 1,
     sendEmailWhenDeployed: true,
     simulateBeforeDeployment: true,
-    shakedownTestsWhenDeployed: true,
-    neighbourhoodTest: false,
   };
 });
