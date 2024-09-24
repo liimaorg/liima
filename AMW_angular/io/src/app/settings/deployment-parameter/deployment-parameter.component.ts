@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -17,17 +17,15 @@ type Key = { id: number; name: string };
   styleUrl: './deployment-parameter.component.scss',
 })
 export class DeploymentParameterComponent implements OnInit, OnDestroy {
+  authService = inject(AuthService);
+  http = inject(HttpClient);
+  toastService = inject(ToastService);
+
   keyName = '';
   paramKeys: Key[] = [];
   canCreate = signal<boolean>(false);
   canDelete = signal<boolean>(false);
   private destroy$ = new Subject<void>();
-
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-    private toastService: ToastService,
-  ) {}
 
   ngOnInit(): void {
     this.getUserPermissions();
