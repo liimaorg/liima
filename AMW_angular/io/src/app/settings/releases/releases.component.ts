@@ -130,12 +130,9 @@ export class ReleasesComponent implements OnInit {
       .save(release)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => r,
+        next: (r) => this.toastService.success('Release saved successfully.'),
         error: (e) => this.error$.next(e),
-        complete: () => {
-          this.toastService.success('Release saved successfully.');
-          this.getReleases();
-        },
+        complete: () => this.getReleases(),
       });
     this.isLoading = false;
   }
@@ -160,12 +157,9 @@ export class ReleasesComponent implements OnInit {
       .delete(release.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => r,
+        next: (r) => this.toastService.success('Release deleted.'),
         error: (e) => this.error$.next(e),
-        complete: () => {
-          this.toastService.success('Release deleted.');
-          this.getReleases();
-        },
+        complete: () => this.getReleases(),
       });
     this.isLoading = false;
   }

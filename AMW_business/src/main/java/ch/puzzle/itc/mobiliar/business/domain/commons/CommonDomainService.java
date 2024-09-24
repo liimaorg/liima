@@ -53,7 +53,6 @@ import java.util.logging.Logger;
 
 /**
  * The abstract domain service, used to provide generic functionalities for similar screens
- *
  */
 @Stateless
 public class CommonDomainService {
@@ -170,7 +169,7 @@ public class CommonDomainService {
 
     /**
      * Listet alle ResourceTypes auf.
-     *
+     * <p>
      * alphabetic sorted
      *
      * @return
@@ -208,7 +207,7 @@ public class CommonDomainService {
      *
      * @return
      */
-    public ApplicationServer createOrGetApplicationCollectorServer()  {
+    public ApplicationServer createOrGetApplicationCollectorServer() {
         ApplicationServer result;
         ResourceEntity appServerResource = getUniqueResourceByNameAndType(
                 ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName(), DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
@@ -263,8 +262,7 @@ public class CommonDomainService {
             }
 
             resource = entityManager.createQuery(q).getSingleResult();
-        }
-        catch (NoResultException e) {
+        } catch (NoResultException e) {
             // do nothing
         }
         return resource;
@@ -275,19 +273,21 @@ public class CommonDomainService {
      * Hole für einen Name (prtTypeName) die PropertyType wenn sie existiert.
      *
      * @param prtTypeName
-     * @return
+     * @return Boolean
      */
-    public PropertyTypeEntity getUniquePropertyTypeByName(String prtTypeName) {
+    public Boolean isUnique(String prtTypeName) {
 
-        PropertyTypeEntity propertyTypeEntity = null;
         try {
             Query searchUniquePropertyType = commonQueries.searchPropertyTypeByName(prtTypeName);
-            propertyTypeEntity = (PropertyTypeEntity) searchUniquePropertyType.getSingleResult();
+            var propertyTypeEntity = (PropertyTypeEntity) searchUniquePropertyType.getSingleResult();
+            if (propertyTypeEntity != null) {
+                return false;
+            } else return true;
         } catch (NoResultException nre) {
             String message = "Das Property Type " + prtTypeName + " existiert nicht auf der DB";
             log.log(Level.WARNING, message);
+            return true;
         }
-        return propertyTypeEntity;
     }
 
 }

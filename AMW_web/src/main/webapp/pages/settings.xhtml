@@ -23,11 +23,6 @@
             rendered="#{securityDataProvider.hasPermission('SAVE_SETTINGS_ENV')}"
             action="#{environmentsDataProvider.save()}" render="environments"
             style="display: ${(param['mode']!='props' and param['mode']!='rolPerm' and param['mode']!='tags' and param['mode']!='functions' and param['mode']!='STP' and param['mode']!='releases' and param['mode']!='appVersion') ? 'block' : 'none'}" />
-        <a4j:commandLink styleClass="btn primary right"
-            rendered="#{securityDataProvider.hasPermission('SAVE_SETTINGS_PROPTYPE')}"
-            style="display: ${param['mode']=='props' ? 'block' : 'none'}"
-            render="@all, propertyTypes" action="#{propertyTypeDataProvider.save()}"
-            value="Save" />
     </ui:define>
     <ui:define name="body">
         <h:panelGroup layout="block" id="navig"
@@ -41,9 +36,9 @@
                     </h:link>
                 </li>
                 <li class="${settingsDataProvider.mode=='props' ? 'current' : ''}">
-                    <h:link value="Property Types">
-                        <f:param name="mode" value="props" />
-                    </h:link>
+                    <h:outputLink value="/AMW_angular/#/settings/property-types">
+                        Property Types
+                    </h:outputLink>
                 </li>
                 <li class="${settingsDataProvider.mode=='tags' ? 'current' : ''}">
                     <h:outputLink value="/AMW_angular/#/settings/tags"
@@ -152,11 +147,6 @@
                     </h:panelGroup>
                 </h:panelGroup>
             </h:form>
-
-            <!-- Property Types -->
-            <h:panelGroup rendered="${settingsDataProvider.mode=='props'}">
-                <ui:include  src="components/propertyTypesComp.xhtml" />
-            </h:panelGroup>
 
             <!-- Functions -->
             <h:panelGroup rendered="${settingsDataProvider.mode=='functions'}">
