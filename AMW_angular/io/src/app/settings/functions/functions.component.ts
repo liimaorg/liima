@@ -33,17 +33,10 @@ export class FunctionsComponent implements OnInit {
   private toastService = inject(ToastService);
 
   functions$: Observable<Function[]>;
-  count$: Observable<number>;
-  private error$ = new BehaviorSubject<string>('');
 
+  private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
 
-  maxResults = 10;
-  offset = 0;
-  currentPage: number;
-  lastPage: number;
-
-  isLoading = true;
   canManage: boolean = false;
   canView: boolean = false;
 
@@ -52,7 +45,6 @@ export class FunctionsComponent implements OnInit {
       msg !== '' ? this.toastService.error(msg) : null;
     });
     this.getUserPermissions();
-    this.count$ = this.functionsService.getCount();
     this.getFunctions();
   }
 
@@ -66,82 +58,14 @@ export class FunctionsComponent implements OnInit {
   }
 
   private getFunctions() {
-    this.isLoading = true;
-    this.functions$ = this.functionsService.getFunctions(this.offset, this.maxResults);
-    this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
-
-    this.count$.pipe(takeUntil(this.destroy$)).subscribe((count) => {
-      this.lastPage = Math.ceil(count / this.maxResults);
-    });
-
-    this.isLoading = false;
+    this.functions$ = this.functionsService.getAllFunctions();
   }
 
-  addFunction() {
-    const modalRef = this.modalService.open(FunctionEditComponent);
-    modalRef.componentInstance.function = {
-      id: 0,
-      name: '',
-    };
-    modalRef.componentInstance.saveFunction
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((functionData: Function) => this.save(functionData));
-  }
+  addFunction() {}
 
-  editFunction(functionData: Function) {
-    const modalRef = this.modalService.open(FunctionEditComponent);
-    modalRef.componentInstance.function = functionData;
-    modalRef.componentInstance.saveFunction
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((functionData: Function) => this.save(functionData));
-  }
+  editFunction() {}
 
-  save(functionData: Function) {
-    this.isLoading = true;
-    this.functionsService
-      .save(functionData)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (r) => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e),
-        complete: () => this.getFunctions(),
-      });
-    this.isLoading = false;
-  }
+  saveFunction() {}
 
-  deleteFunction(functionData: Function) {
-    const modalRef = this.modalService.open(FunctionDeleteComponent);
-    modalRef.componentInstance.function = functionData;
-    modalRef.componentInstance.deleteFunction
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((functionData: Function) => this.delete(functionData));
-  }
-
-  delete(functionData: Function) {
-    this.isLoading = true;
-    this.functionsService
-      .delete(functionData.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (r) => this.toastService.success('Function deleted.'),
-        error: (e) => this.error$.next(e),
-        complete: () => this.getFunctions(),
-      });
-    this.isLoading = false;
-  }
-
-  trackById(index: number, functionData: Function): number {
-    return functionData.id;
-  }
-
-  setMaxResultsPerPage(max: number) {
-    this.maxResults = max;
-    this.offset = 0;
-    this.getFunctions();
-  }
-
-  setNewOffset(offset: number) {
-    this.offset = offset;
-    this.getFunctions();
-  }
+  deleteFunction() {}
 }
