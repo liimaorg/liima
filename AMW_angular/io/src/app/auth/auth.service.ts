@@ -1,4 +1,4 @@
-import { computed, Injectable, Signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
@@ -9,6 +9,7 @@ import { DefaultResourceType } from './defaultResourceType';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
+  private http = inject(HttpClient);
   private reload$ = new Subject<Restriction[]>();
   private restrictions$ = this.reload$.pipe(
     startWith(null),
@@ -17,7 +18,7 @@ export class AuthService extends BaseService {
   );
   restrictions = toSignal(this.restrictions$, { initialValue: [] as Restriction[] });
 
-  constructor(private http: HttpClient) {
+  constructor() {
     super();
   }
 

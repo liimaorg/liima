@@ -1,7 +1,7 @@
+import { PropertyTypeEditComponent } from './property-type-edit.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { PropertyTypeEditComponent } from '../property-types/property-type-edit.component';
 
-describe('PropertyTypeEditComponent', () => {
+describe('ReleasesEditComponent', () => {
   let component: PropertyTypeEditComponent;
   const activeModal = new NgbActiveModal();
 
