@@ -70,6 +70,7 @@ export class FunctionsComponent implements OnInit {
       name: '',
       content: '',
     };
+    modalRef.componentInstance.canManage = this.canManage;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
       .subscribe((functionData: Function) => this.save(functionData));
@@ -80,6 +81,7 @@ export class FunctionsComponent implements OnInit {
       fullscreen: true,
     });
     modalRef.componentInstance.function = functionData;
+    modalRef.componentInstance.canManage = this.canManage;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
       .subscribe((functionData: Function) => this.save(functionData));
