@@ -61,11 +61,32 @@ export class FunctionsComponent implements OnInit {
     this.functions$ = this.functionsService.getAllFunctions();
   }
 
-  addFunction() {}
+  addFunction() {
+    const modalRef = this.modalService.open(FunctionEditComponent, {
+      fullscreen: true,
+    });
+    modalRef.componentInstance.function = {
+      id: 0,
+      name: '',
+      content: '',
+    };
+    modalRef.componentInstance.saveFunction
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((functionData: Function) => this.save(functionData));
+  }
 
   editFunction() {}
 
-  saveFunction() {}
+  save(functionData: Function) {
+    this.functionsService
+      .addFunction(functionData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (r) => this.toastService.success('Function saved successfully.'),
+        error: (e) => this.error$.next(e),
+        complete: () => this.getFunctions(),
+      });
+  }
 
   deleteFunction(functionData: Function) {
     const modalRef = this.modalService.open(FunctionDeleteComponent);
