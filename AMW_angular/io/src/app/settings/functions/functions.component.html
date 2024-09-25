@@ -38,7 +38,7 @@
               </td>
               <td class="text-center">
                 @if (canManage) {
-                <button class="btn btn-sm btn-danger me-0" disabled>
+                <button class="btn btn-sm btn-danger me-0" (click)="deleteFunction(function)">
                 <app-icon icon="trash"></app-icon>
                 </button>
                 }

@@ -67,5 +67,22 @@ export class FunctionsComponent implements OnInit {
 
   saveFunction() {}
 
-  deleteFunction() {}
+  deleteFunction(functionData: Function) {
+    const modalRef = this.modalService.open(FunctionDeleteComponent);
+    modalRef.componentInstance.function = functionData;
+    modalRef.componentInstance.deleteFunction
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((functionData: Function) => this.delete(functionData));
+  }
+
+  delete(functionData: Function) {
+    this.functionsService
+      .deleteFunction(functionData.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (r) => this.toastService.success('Function deleted.'),
+        error: (e) => this.error$.next(e),
+        complete: () => this.getFunctions(),
+      });
+  }
 }
