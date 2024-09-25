@@ -31,7 +31,7 @@
             <td class="align-middle">{{ function.name }}</td>
               <td class="text-center">
                 @if (canView) {
-                <button class="btn btn-sm btn-primary me-0" disabled>
+                <button class="btn btn-sm btn-primary me-0" (click)="editFunction(function)">
                 <app-icon icon="pencil"></app-icon>
                 </button>
                 }

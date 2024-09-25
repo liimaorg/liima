@@ -75,7 +75,16 @@ export class FunctionsComponent implements OnInit {
       .subscribe((functionData: Function) => this.save(functionData));
   }
 
-  editFunction() {}
+  editFunction(functionData: Function) {
+    const modalRef = this.modalService.open(FunctionEditComponent, {
+      fullscreen: true,
+    });
+    modalRef.componentInstance.function = functionData;
+    modalRef.componentInstance.saveFunction
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((functionData: Function) => this.save(functionData));
+    this.functions$ = this.functionsService.getAllFunctions();
+  }
 
   save(functionData: Function) {
     this.functionsService
