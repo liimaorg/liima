@@ -17,7 +17,7 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
-  @if (canManage) {
+  @if (canManage && function.name.length > 0) {
   <button type="button" class="btn btn-primary" (click)="save()">Save changes</button>
   }
 </div>
