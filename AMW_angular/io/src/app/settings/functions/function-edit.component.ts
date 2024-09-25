@@ -11,6 +11,7 @@ import { Function } from './function';
 })
 export class FunctionEditComponent {
   @Input() function: Function;
+  @Input() canManage: boolean;
   @Output() saveFunction: EventEmitter<Function> = new EventEmitter<Function>();
 
   constructor(public activeModal: NgbActiveModal) {}
