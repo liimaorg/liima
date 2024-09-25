@@ -1,12 +1,12 @@
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { PropertyTypeEditComponent } from '../property-types/property-type-edit.component';
+import { ReleaseDeleteComponent } from './release-delete.component';
 
-describe('PropertyTypeEditComponent', () => {
-  let component: PropertyTypeEditComponent;
+describe('ReleaseDeleteComponent', () => {
+  let component: ReleaseDeleteComponent;
   const activeModal = new NgbActiveModal();
 
   beforeEach(async () => {
-    component = new PropertyTypeEditComponent(activeModal);
+    component = new ReleaseDeleteComponent(activeModal);
   });
 
   it('should create', () => {

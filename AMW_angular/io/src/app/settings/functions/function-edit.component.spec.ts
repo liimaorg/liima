@@ -1,19 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { FunctionEditComponent } from './function-edit.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-describe('FunctionsEditComponent', () => {
+describe('FunctionEditComponent', () => {
   let component: FunctionEditComponent;
-  let fixture: ComponentFixture<FunctionEditComponent>;
+  const activeModal = new NgbActiveModal();
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FunctionEditComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(FunctionEditComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component = new FunctionEditComponent(activeModal);
   });
 
   it('should create', () => {

@@ -1,19 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { FunctionDeleteComponent } from './function-delete.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-describe('FunctionsDeleteComponent', () => {
+describe('FunctionDeleteComponent', () => {
   let component: FunctionDeleteComponent;
-  let fixture: ComponentFixture<FunctionDeleteComponent>;
+  const activeModal = new NgbActiveModal();
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FunctionDeleteComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(FunctionDeleteComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component = new FunctionDeleteComponent(activeModal);
   });
 
   it('should create', () => {
