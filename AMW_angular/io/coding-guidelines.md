@@ -3,7 +3,7 @@
 
 ## Inject() over Constructor-Injections
 
-Use `inject()` instead of constuctor-injection to make the code more explicit and obvious.
+Use `inject()` instead of constructor-injection to make the code more explicit and obvious.
 
 ```typescript
 // use
