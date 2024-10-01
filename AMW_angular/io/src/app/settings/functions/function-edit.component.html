@@ -10,8 +10,15 @@
       <label for="name" class="form-label">Function name</label>
       <input type="text" class="form-control" id="name" [(ngModel)]="function.name" />
     </div>
-    <div class="mb-3"> <label for="content" class="form-label">Function content</label>
-      <textarea class="form-control" id="content" rows="10" [(ngModel)]="function.content"></textarea>
+    <div class="mb-3"> <label class="form-label">Function content</label>
+      <ngx-codemirror class="h-100"
+        [(ngModel)]="function.content"
+        [options]="{
+          lineNumbers: true,
+          theme: 'default',
+          mode: 'simplemode'
+         }"
+      ></ngx-codemirror>
     </div>
   </div>
 </div>
