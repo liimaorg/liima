@@ -63,7 +63,7 @@ export class FunctionsComponent implements OnInit {
 
   addFunction() {
     const modalRef = this.modalService.open(FunctionEditComponent, {
-      fullscreen: true,
+      size: 'xl',
     });
     modalRef.componentInstance.function = {
       id: 0,
@@ -78,7 +78,7 @@ export class FunctionsComponent implements OnInit {
 
   editFunction(functionData: Function) {
     const modalRef = this.modalService.open(FunctionEditComponent, {
-      fullscreen: true,
+      size: 'xl',
     });
     modalRef.componentInstance.function = functionData;
     modalRef.componentInstance.canManage = this.canManage;
