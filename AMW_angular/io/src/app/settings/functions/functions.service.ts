@@ -24,12 +24,12 @@ export class FunctionsService extends BaseService {
     return this.http.get<Function[]>(`${this.getBaseUrl()}/functions`);
   }
 
-  addFunction(newFunction: Function): Observable<any> {
-    return this.http.post(`${this.getBaseUrl()}/functions`, newFunction);
+  addFunction(newFunction: Function): Observable<void> {
+    return this.http.post<void>(`${this.getBaseUrl()}/functions`, newFunction);
   }
 
-  deleteFunction(id: number): Observable<any> {
-    return this.http.delete(`${this.getBaseUrl()}/functions/${id}`);
+  deleteFunction(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.getBaseUrl()}/functions/${id}`);
   }
 
   refreshData() {
