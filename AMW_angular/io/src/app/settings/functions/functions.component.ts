@@ -1,7 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, Signal } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -32,7 +32,7 @@ export class FunctionsComponent implements OnInit {
   private functionsService = inject(FunctionsService);
   private toastService = inject(ToastService);
 
-  functions$: Observable<Function[]>;
+  functions: Signal<Function[]>;
 
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
@@ -58,7 +58,7 @@ export class FunctionsComponent implements OnInit {
   }
 
   private getFunctions() {
-    this.functions$ = this.functionsService.getAllFunctions();
+    this.functions = this.functionsService.functions;
   }
 
   addFunction() {
@@ -85,7 +85,6 @@ export class FunctionsComponent implements OnInit {
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
       .subscribe((functionData: Function) => this.save(functionData));
-    this.functions$ = this.functionsService.getAllFunctions();
   }
 
   save(functionData: Function) {
@@ -95,7 +94,7 @@ export class FunctionsComponent implements OnInit {
       .subscribe({
         next: (r) => this.toastService.success('Function saved successfully.'),
         error: (e) => this.error$.next(e),
-        complete: () => this.getFunctions(),
+        complete: () => this.functionsService.refreshData(),
       });
   }
 
@@ -114,7 +113,7 @@ export class FunctionsComponent implements OnInit {
       .subscribe({
         next: (r) => this.toastService.success('Function deleted.'),
         error: (e) => this.error$.next(e),
-        complete: () => this.getFunctions(),
+        complete: () => this.functionsService.refreshData(),
       });
   }
 }
