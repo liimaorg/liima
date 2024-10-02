@@ -10,7 +10,6 @@ Install all dependencies:
 npm install
 ```
 
-
 ## Run the application 
 
 To run the e2e test, you need a running application on http://localhost:8080/AMW_web
@@ -38,8 +37,8 @@ You can run the cypress ui with the following command:
 npm run test:ui
 ```
 
-This will start the cypress ui that let's you run individual tests and inspect the runs. You have to choose the test type and environment first. 
-Note: onyle e2e tests are setup up for this project, no component testing.
+This will start the cypress ui that lets you run individual tests and inspect the runs. You have to choose the test type and environment first. 
+Note: only e2e tests are setup up for this project, no component testing.
 
 See https://docs.cypress.io/guides/getting-started/opening-the-app for more information.
 
