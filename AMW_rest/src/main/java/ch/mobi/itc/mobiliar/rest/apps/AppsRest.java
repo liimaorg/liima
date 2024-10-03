@@ -1,8 +1,8 @@
 package ch.mobi.itc.mobiliar.rest.apps;
 
+import ch.mobi.itc.mobiliar.rest.dtos.AppAppServerDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.AppServerDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
-import ch.mobi.itc.mobiliar.rest.exceptions.IllegalArgumentExceptionMapper;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.AddAppServerUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceRelations;
@@ -73,5 +73,15 @@ public class AppsRest {
         }
         Integer id = addAppServerUseCase.add(appServer.getName(), appServer.getRelease().getId());
         return Response.status(CREATED).entity(id).build();
+    }
+
+    @POST
+    @ApiOperation(value = "Add a application with optional appServer")
+    public Response addApp(@ApiParam() AppAppServerDTO app) throws NotFoundException, IllegalArgumentException, IllegalStateException {
+//        if (app.getAppServerId() != null) {
+//            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
+//        }
+//        Integer id = addAppServerUseCase.add(appServer.getAppName(), appServer.getRelease().getId());
+//        return Response.status(CREATED).entity(id).build();
     }
 }

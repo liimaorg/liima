@@ -3,10 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Release } from '../../settings/releases/release';
 import { Release as Rel } from '../../resource/release';
-import { AppServer } from '../app-server';
-import { App } from '../app';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Resource } from '../../resource/resource';
+import { AppCreate } from '../app-create';
 
 @Component({
   selector: 'amw-app-add',
@@ -17,10 +16,9 @@ import { Resource } from '../../resource/resource';
 export class AppAddComponent {
   @Input() releases: Signal<Release[]>;
   @Input() appServerGroups: Signal<Resource[]>;
-  @Output() saveApp: EventEmitter<App> = new EventEmitter<App>();
+  @Output() saveApp: EventEmitter<AppCreate> = new EventEmitter<AppCreate>();
 
-  app: App = { name: '', id: 1, release: null };
-  //update appserver apps??
+  app: AppCreate = { name: '', releaseId: null, appServerGroupId: null, appServerReleaseId: null };
   appServerGroup: Resource;
   appServerRelease: Rel;
 
@@ -29,11 +27,21 @@ export class AppAddComponent {
   }
 
   hasInvalidGroup(): boolean {
-    return this.appServerGroup === undefined || this.appServerGroup.releases === null;
+    const isInvalid =
+      this.appServerGroup === undefined || this.appServerGroup === null || this.appServerGroup?.releases.length === 0;
+    if (isInvalid) {
+      this.appServerRelease = undefined;
+    }
+    return isInvalid;
   }
 
+  // apps without appserver are valid too
   hasInvalidFields(): boolean {
-    return this.app.name === '' || this.app.release === null || this.app.release.name === '';
+    return (
+      this.app.name === '' ||
+      this.app.releaseId === null ||
+      (!this.hasInvalidGroup() && (this.appServerRelease === undefined || this.appServerRelease === null))
+    );
   }
 
   cancel() {
@@ -41,10 +49,11 @@ export class AppAddComponent {
   }
 
   save() {
-    const app: App = {
+    const app: AppCreate = {
       name: this.app.name,
-      release: this.app.release,
-      id: null,
+      releaseId: this.app.releaseId,
+      appServerGroupId: this.appServerGroup?.id,
+      appServerReleaseId: this.appServerRelease?.id,
     };
     this.saveApp.emit(app);
     this.activeModal.close();
