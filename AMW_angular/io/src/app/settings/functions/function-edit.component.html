@@ -24,7 +24,10 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
-  @if (canManage && function.name.length > 0) {
-  <button type="button" class="btn btn-primary" (click)="save()">Save changes</button>
+  @if (canManage) {
+  <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
+        [title]="!function.name || !function.content?'Please provide function name and content':''">
+    <button type="button" class="btn btn-primary" [disabled]="function.name.length === 0 || function.content.length === 0" (click)="save()">Save changes</button>
+  </span>
   }
 </div>
