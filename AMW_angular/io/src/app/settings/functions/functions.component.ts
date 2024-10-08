@@ -32,7 +32,7 @@ export class FunctionsComponent implements OnInit {
   private functionsService = inject(FunctionsService);
   private toastService = inject(ToastService);
 
-  functions: Signal<Function[]>;
+  functions: Signal<Function[]> = this.functionsService.functions;
 
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
@@ -45,7 +45,6 @@ export class FunctionsComponent implements OnInit {
       msg !== '' ? this.toastService.error(msg) : null;
     });
     this.getUserPermissions();
-    this.getFunctions();
   }
 
   ngOnDestroy(): void {
@@ -55,10 +54,6 @@ export class FunctionsComponent implements OnInit {
   private getUserPermissions() {
     this.canManage = this.authService.hasPermission('MANAGE_GLOBAL_FUNCTIONS', 'ALL');
     this.canView = this.authService.hasPermission('VIEW_GLOBAL_FUNCTIONS', 'ALL');
-  }
-
-  private getFunctions() {
-    this.functions = this.functionsService.functions;
   }
 
   addFunction() {
