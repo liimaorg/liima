@@ -29,6 +29,7 @@ import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidato
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -111,13 +112,20 @@ public class GlobalFunctionsBoundary {
     }
 
     @HasPermission(permission = Permission.MANAGE_GLOBAL_FUNCTIONS)
-    public boolean saveGlobalFunction(GlobalFunctionEntity function) throws AMWException {
+    public boolean saveGlobalFunction(GlobalFunctionEntity function) throws ValidationException {
         if (function != null) {
-            if (StringUtils.isEmpty(function.getName())) {
-                throw new AMWException("The function name must not be empty");
+            if (StringUtils.isEmpty(function.getName()) || StringUtils.isEmpty(function.getContent())) {
+                throw new ValidationException("The function must not be empty");
             }
-            freemarkerValidator.validateFreemarkerSyntax(function.getContent());
-            return functionService.saveFunction(function);
+            try {
+                freemarkerValidator.validateFreemarkerSyntax(function.getContent());
+            } catch (AMWException e) {
+                throw new ValidationException(e.getMessage(), e);
+            }
+            boolean saved = functionService.saveFunction(function);
+            if (!saved) {
+                throw new ValidationException("Function with same name already exists");
+            }
         }
         return true;
     }

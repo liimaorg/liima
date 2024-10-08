@@ -40,7 +40,7 @@ public class GlobalFunctionRepository {
 	}
 
 	public boolean saveFunction(GlobalFunctionEntity gFunction) {
-		if (gFunction.getId() == null) {
+		if (gFunction.getId() == null || gFunction.getId() == 0) {
 			if (isExistingName(gFunction)) {
 				return false;
 			}

@@ -2,8 +2,8 @@ package ch.mobi.itc.mobiliar.rest.functions;
 
 import ch.puzzle.itc.mobiliar.business.globalfunction.boundary.GlobalFunctionsBoundary;
 import ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -42,7 +42,7 @@ public class FunctionsRest {
         try {
             globalFunctionsBoundary.saveGlobalFunction(request);
             return Response.status(Response.Status.CREATED).build();
-        } catch (AMWException e) {
+        } catch (ValidationException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("message", e.getMessage()))
                     .build();
         }
