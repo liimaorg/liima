@@ -28,6 +28,7 @@ import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -60,8 +61,12 @@ public class GlobalFunctionsBoundary {
         return functionService.getAllGlobalFunctionsAtDate(date);
     }
 
-    public GlobalFunctionEntity getFunctionById(Integer globalFunctionId) {
-        return entityManager.find(GlobalFunctionEntity.class, globalFunctionId);
+    public GlobalFunctionEntity getFunctionById(Integer globalFunctionId) throws NotFoundException {
+        GlobalFunctionEntity gf = entityManager.find(GlobalFunctionEntity.class, globalFunctionId);
+        if (gf == null) {
+            throw new NotFoundException("Function not found with Id " + globalFunctionId);
+        }
+        return gf;
     }
 
     /**
@@ -92,8 +97,11 @@ public class GlobalFunctionsBoundary {
     }
 
     @HasPermission(permission = Permission.MANAGE_GLOBAL_FUNCTIONS)
-    public void deleteGlobalFunction(Integer globalFunctionId) {
+    public void deleteGlobalFunction(Integer globalFunctionId) throws NotFoundException {
         GlobalFunctionEntity gf = entityManager.find(GlobalFunctionEntity.class, globalFunctionId);
+        if (gf == null) {
+            throw new NotFoundException("Function not found with Id " + globalFunctionId);
+        }
         deleteGlobalFunction(gf);
     }
 
