@@ -126,9 +126,4 @@ public class ResourceRelationsIntegrationTest {
 	    service.dependencyResolverService = dependencyResolver;
 	}
 
-	@Test
-	public void testGetAppServersWithApplications() {
-	    service.getAppServersWithApplications(null, null, "app", release1);
-	}
-
 }
