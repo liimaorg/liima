@@ -37,11 +37,27 @@ public class FunctionsRest {
     }
 
     @POST
-    @ApiOperation(value = "Add a function")
+    @ApiOperation(value = "Add new function")
     public Response addGlobalFunction(GlobalFunctionEntity request) {
         try {
             globalFunctionsBoundary.saveGlobalFunction(request);
             return Response.status(Response.Status.CREATED).build();
+        } catch (ValidationException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("message", e.getMessage()))
+                    .build();
+        }
+    }
+
+    @PUT
+    @ApiOperation(value = "Modify existing function")
+    public Response modifyGlobalFunction(GlobalFunctionEntity request) {
+        if (request.getId() == null || !globalFunctionsBoundary.isExistingId(request.getId())) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("message", "Only existing functions can be modified"))
+                    .build();
+        }
+        try {
+            globalFunctionsBoundary.saveGlobalFunction(request);
+            return Response.status(Response.Status.OK).build();
         } catch (ValidationException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("message", e.getMessage()))
                     .build();

@@ -61,14 +61,14 @@ export class FunctionsComponent implements OnInit {
       size: 'xl',
     });
     modalRef.componentInstance.function = {
-      id: 0,
+      id: null,
       name: '',
       content: '',
     };
     modalRef.componentInstance.canManage = this.canManage;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
-      .subscribe((functionData: Function) => this.save(functionData));
+      .subscribe((functionData: Function) => this.saveNew(functionData));
   }
 
   editFunction(functionData: Function) {
@@ -79,12 +79,23 @@ export class FunctionsComponent implements OnInit {
     modalRef.componentInstance.canManage = this.canManage;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
-      .subscribe((functionData: Function) => this.save(functionData));
+      .subscribe((functionData: Function) => this.saveModified(functionData));
   }
 
-  save(functionData: Function) {
+  saveNew(functionData: Function) {
     this.functionsService
-      .addFunction(functionData)
+      .addNewFunction(functionData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (r) => this.toastService.success('Function saved successfully.'),
+        error: (e) => this.error$.next(e),
+        complete: () => this.functionsService.refreshData(),
+      });
+  }
+
+  saveModified(functionData: Function) {
+    this.functionsService
+      .modifyFunction(functionData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (r) => this.toastService.success('Function saved successfully.'),
