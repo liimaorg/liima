@@ -5,6 +5,7 @@ import { Observable, startWith, Subject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { AppServer } from './app-server';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { AppCreate } from './app-create';
 
 @Injectable({ providedIn: 'root' })
 export class AppsService extends BaseService {
@@ -61,9 +62,26 @@ export class AppsService extends BaseService {
       );
   }
 
-  create(appServer: AppServer) {
+  createAppServer(appServer: AppServer) {
     return this.http
-      .post<AppServer>(`${this.appsUrl}`, appServer, {
+      .post<any[]>(`${this.appsUrl}/appServer?appServerName=${appServer.name}&releaseId=${appServer.release.id}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  createApp(app: AppCreate) {
+    if (app.appServerId) {
+      debugger;
+      return this.http
+        .post<AppCreate>(`${this.appsUrl}/appWithServer`, app, {
+          headers: this.getHeaders(),
+        })
+        .pipe(catchError(this.handleError));
+    }
+
+    return this.http
+      .post<AppCreate>(`${this.appsUrl}?appName=${app.appName}&releaseId=${app.appReleaseId}`, app, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));

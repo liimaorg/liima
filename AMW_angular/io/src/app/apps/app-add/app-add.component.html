@@ -8,11 +8,11 @@
   <div class="form-horizontal mx-2">
     <div class="mb-3">
       <label for="name" class="form-label">Application</label>
-      <input type="text"  class="form-control" id="name" [(ngModel)]="app.name"/>
+      <input type="text"  class="form-control" id="name" [(ngModel)]="app.appName"/>
     </div>
     <div class="mb-3">
       <label class="form-label">Release</label>
-      <ng-select id="selectRelease" [(ngModel)]="app.releaseId" placeholder="Select release" >
+      <ng-select id="selectRelease" [(ngModel)]="app.appReleaseId" placeholder="Select release" >
         @for (release of releases(); track release.id) {
         <ng-option [value]="release.id">{{ release.name }}</ng-option>
         }

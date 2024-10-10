@@ -18,12 +18,12 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add/app-server-add.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AppAddComponent } from './app-add/app-add.component';
-import { App } from './app';
 import { ResourceService } from '../resource/resource.service';
 import { Resource } from '../resource/resource';
+import { AppCreate } from './app-create';
 
 @Component({
-  selector: 'amw-apps',
+  selector: 'app-apps',
   standalone: true,
   imports: [
     AppsFilterComponent,
@@ -97,9 +97,7 @@ export class AppsComponent implements OnInit {
     const modalRef = this.modalService.open(AppAddComponent);
     modalRef.componentInstance.releases = this.releases;
     modalRef.componentInstance.appServerGroups = this.appServerGroups;
-    modalRef.componentInstance.saveApp
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((app: App) => console.log(`should save ${app}`));
+    modalRef.componentInstance.saveApp.pipe(takeUntil(this.destroy$)).subscribe((app: AppCreate) => this.saveApp(app));
   }
 
   addServer() {
@@ -107,23 +105,42 @@ export class AppsComponent implements OnInit {
     modalRef.componentInstance.releases = this.releases;
     modalRef.componentInstance.saveAppServer
       .pipe(takeUntil(this.destroy$))
-      .subscribe((appServer: AppServer) => this.save(appServer));
+      .subscribe((appServer: AppServer) => this.saveAppServer(appServer));
   }
 
-  save(appServer: AppServer) {
+  saveAppServer(appServer: AppServer) {
     this.isLoading = true;
     this.appsService
-      .create(appServer)
+      .createAppServer(appServer)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => r,
-        error: (e) => this.error$.next(e),
-        complete: () => {
+        next: (r) => {
           this.toastService.success('AppServer saved successfully.');
+        },
+        error: (e) => {
+          debugger;
+          this.error$.next(e.toString());
+        },
+        complete: () => {
           this.appsService.refreshData();
+          this.isLoading = false;
         },
       });
-    this.isLoading = false;
+  }
+
+  saveApp(app: AppCreate) {
+    this.isLoading = true;
+    this.appsService
+      .createApp(app)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (r) => this.toastService.success('App saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.appsService.refreshData();
+          this.isLoading = false;
+        },
+      });
   }
 
   setMaxResultsPerPage(max: number) {

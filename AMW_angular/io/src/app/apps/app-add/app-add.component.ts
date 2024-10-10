@@ -8,7 +8,7 @@ import { Resource } from '../../resource/resource';
 import { AppCreate } from '../app-create';
 
 @Component({
-  selector: 'amw-app-add',
+  selector: 'app-app-add',
   standalone: true,
   imports: [FormsModule, NgSelectModule],
   templateUrl: './app-add.component.html',
@@ -18,7 +18,7 @@ export class AppAddComponent {
   @Input() appServerGroups: Signal<Resource[]>;
   @Output() saveApp: EventEmitter<AppCreate> = new EventEmitter<AppCreate>();
 
-  app: AppCreate = { name: '', releaseId: null, appServerGroupId: null, appServerReleaseId: null };
+  app: AppCreate = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null };
   appServerGroup: Resource;
   appServerRelease: Rel;
 
@@ -38,8 +38,8 @@ export class AppAddComponent {
   // apps without appserver are valid too
   hasInvalidFields(): boolean {
     return (
-      this.app.name === '' ||
-      this.app.releaseId === null ||
+      this.app.appName === '' ||
+      this.app.appReleaseId === null ||
       (!this.hasInvalidGroup() && (this.appServerRelease === undefined || this.appServerRelease === null))
     );
   }
@@ -50,9 +50,9 @@ export class AppAddComponent {
 
   save() {
     const app: AppCreate = {
-      name: this.app.name,
-      releaseId: this.app.releaseId,
-      appServerGroupId: this.appServerGroup?.id,
+      appName: this.app.appName,
+      appReleaseId: this.app.appReleaseId,
+      appServerId: this.appServerGroup?.id,
       appServerReleaseId: this.appServerRelease?.id,
     };
     this.saveApp.emit(app);

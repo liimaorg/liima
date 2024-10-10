@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
-  selector: 'amw-app-server-add',
+  selector: 'app-apps-server-add',
   standalone: true,
   imports: [FormsModule, NgSelectModule],
   templateUrl: './app-server-add.component.html',
@@ -22,7 +22,7 @@ export class AppServerAddComponent {
   }
 
   hasInvalidFields(): boolean {
-    return this.appServer.name === '' || this.appServer.release.id === null || this.appServer.release.name === '';
+    return this.appServer.name === '' || this.appServer.release?.id === null || this.appServer.release?.name === '';
   }
 
   cancel() {
