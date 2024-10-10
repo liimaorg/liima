@@ -28,6 +28,8 @@ import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -60,8 +62,12 @@ public class GlobalFunctionsBoundary {
         return functionService.getAllGlobalFunctionsAtDate(date);
     }
 
-    public GlobalFunctionEntity getFunctionById(Integer globalFunctionId) {
-        return entityManager.find(GlobalFunctionEntity.class, globalFunctionId);
+    public GlobalFunctionEntity getFunctionById(Integer globalFunctionId) throws NotFoundException {
+        GlobalFunctionEntity gf = entityManager.find(GlobalFunctionEntity.class, globalFunctionId);
+        if (gf == null) {
+            throw new NotFoundException("Function not found with Id " + globalFunctionId);
+        }
+        return gf;
     }
 
     /**
@@ -92,8 +98,11 @@ public class GlobalFunctionsBoundary {
     }
 
     @HasPermission(permission = Permission.MANAGE_GLOBAL_FUNCTIONS)
-    public void deleteGlobalFunction(Integer globalFunctionId) {
+    public void deleteGlobalFunction(Integer globalFunctionId) throws NotFoundException {
         GlobalFunctionEntity gf = entityManager.find(GlobalFunctionEntity.class, globalFunctionId);
+        if (gf == null) {
+            throw new NotFoundException("Function not found with Id " + globalFunctionId);
+        }
         deleteGlobalFunction(gf);
     }
 
@@ -103,14 +112,25 @@ public class GlobalFunctionsBoundary {
     }
 
     @HasPermission(permission = Permission.MANAGE_GLOBAL_FUNCTIONS)
-    public boolean saveGlobalFunction(GlobalFunctionEntity function) throws AMWException {
+    public boolean saveGlobalFunction(GlobalFunctionEntity function) throws ValidationException {
         if (function != null) {
-            if (StringUtils.isEmpty(function.getName())) {
-                throw new AMWException("The function name must not be empty");
+            if (StringUtils.isEmpty(function.getName()) || StringUtils.isEmpty(function.getContent())) {
+                throw new ValidationException("The function must not be empty");
             }
-            freemarkerValidator.validateFreemarkerSyntax(function.getContent());
-            return functionService.saveFunction(function);
+            try {
+                freemarkerValidator.validateFreemarkerSyntax(function.getContent());
+            } catch (AMWException e) {
+                throw new ValidationException(e.getMessage(), e);
+            }
+            boolean saved = functionService.saveFunction(function);
+            if (!saved) {
+                throw new ValidationException("Function with same name already exists");
+            }
         }
         return true;
+    }
+
+    public boolean isExistingId(Integer id) {
+        return functionService.isExistingId(id);
     }
 }

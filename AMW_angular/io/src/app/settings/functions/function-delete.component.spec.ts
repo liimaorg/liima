@@ -1,12 +1,12 @@
+import { FunctionDeleteComponent } from './function-delete.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ReleaseDeleteComponent } from './release-delete.component';
 
-describe('ReleaseDeleteComponent', () => {
-  let component: ReleaseDeleteComponent;
+describe('FunctionDeleteComponent', () => {
+  let component: FunctionDeleteComponent;
   const activeModal = new NgbActiveModal();
 
   beforeEach(async () => {
-    component = new ReleaseDeleteComponent(activeModal);
+    component = new FunctionDeleteComponent(activeModal);
   });
 
   it('should create', () => {

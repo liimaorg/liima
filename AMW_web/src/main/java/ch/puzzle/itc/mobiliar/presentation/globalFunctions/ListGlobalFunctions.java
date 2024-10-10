@@ -24,6 +24,7 @@ import ch.puzzle.itc.mobiliar.business.globalfunction.boundary.GlobalFunctionsBo
 import ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
@@ -72,7 +73,7 @@ public class ListGlobalFunctions implements Serializable {
     	return permissionBoundary.hasPermission(Permission.VIEW_GLOBAL_FUNCTIONS);
     }
 
-    public void deleteFunction() {
+    public void deleteFunction() throws NotFoundException {
         if (selectedFunctionIdToBeRemoved != null) {
             functionsBoundary.deleteGlobalFunction(selectedFunctionIdToBeRemoved);
             selectedFunctionIdToBeRemoved = null;
