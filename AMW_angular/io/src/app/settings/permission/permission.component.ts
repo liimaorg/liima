@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PermissionService } from './permission.service';
 import { Restriction } from './restriction';
@@ -29,7 +29,7 @@ import {
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 
 @Component({
-  selector: 'amw-permission',
+  selector: 'app-permission',
   templateUrl: './permission.component.html',
   standalone: true,
   imports: [
@@ -49,7 +49,7 @@ import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicat
     RestrictionListComponent,
   ],
 })
-export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
+export class PermissionComponent implements OnInit {
   // loaded only once
   roleNames: string[] = [];
   userNames: string[] = [];
@@ -113,10 +113,6 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.getAllResourceTypes();
   }
 
-  ngAfterViewInit(): void {}
-
-  ngOnDestroy() {}
-
   onChangeRole() {
     this.selectedRoleName = this.selectedRoleName.trim();
     if (this.isExistingRole(this.selectedRoleName)) {
@@ -141,7 +137,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.clearMessages();
     if (id) {
       this.permissionService.removeRestriction(id).subscribe({
-        next: (r) => '',
+        next: () => '',
         error: (e) => (this.errorMessage = e),
         complete: () => _.remove(this.assignedRestrictions, { id }),
       });
@@ -172,7 +168,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isLoading = true;
     if (this.restriction.id != null) {
       this.permissionService.updateRestriction(this.restriction).subscribe({
-        next: (r) => '',
+        next: () => '',
         error: (e) => (this.errorMessage = e),
         complete: () => {
           this.updatePermissions(this.restriction);
@@ -202,7 +198,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.clearMessages();
     this.isLoading = true;
     this.permissionService.createRestrictions(restrictionsCreation, this.delegationMode).subscribe({
-      next: (r) => '',
+      next: () => '',
       error: (e) => (this.errorMessage = e),
       complete: () => {
         this.create = false;

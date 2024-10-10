@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
+import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 /**
  * The ScreenDomainService for Applist Screens
@@ -37,22 +38,24 @@ public class ApplistScreenDomainService {
     @Inject
     private ApplistScreenDomainServiceQueries queries;
 
-    List<ResourceEntity> getApplicationServerResources(String filter, Integer maxResults) {
-        return queries.doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(filter, maxResults);
+    Tuple<List<ResourceEntity>, Long> getApplicationServerResources(Integer startIndex, Integer maxResults, String filter) {
+        return queries.getAppServersWithApps(startIndex, maxResults, filter);
     }
 
 
-    public List<ResourceEntity> getAppServerResourcesWithApplications(String filter, Integer maxResults, boolean withAppServerContainer) {
-        List<ResourceEntity> appServerList = getApplicationServerResources(filter, maxResults);
+    public Tuple<List<ResourceEntity>, Long> getAppServerResourcesWithApplications(Integer startIndex, Integer maxResults, String filter, boolean withAppServerContainer) {
+        Tuple<List<ResourceEntity>, Long>  result = getApplicationServerResources(startIndex, maxResults, filter);
+        List<ResourceEntity> appServerList = result.getA();
         for (ResourceEntity as : appServerList) {
             if (as.getName().equals(ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName())) {
                 if (!withAppServerContainer || as.getConsumedMasterRelations().isEmpty()) {
                     appServerList.remove(as);
                     break;
-                };
+                }
+                ;
             }
         }
-        return appServerList;
+        return new Tuple<List<ResourceEntity>, Long>(appServerList, result.getB());
     }
 
 }

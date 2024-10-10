@@ -9,12 +9,12 @@
     <span>There are no log files for deployment {{ deploymentId$ | async }}</span>
     } @if (logFiles !== FAIL && logFiles.length > 0) {
     <div class="card mt-3 h-100">
-      <amw-deployment-logs-selector
+      <app-deployment-logs-selector
         [logFiles]="logFiles"
         [selected]="currentDeploymentLog$ | async"
         (fileSelected)="this.selectFile($event)"
-      ></amw-deployment-logs-selector>
-      <amw-deployment-log-content [content]="selectedDeploymentLogContent$ | async"></amw-deployment-log-content>
+      ></app-deployment-logs-selector>
+      <app-deployment-log-content [content]="selectedDeploymentLogContent$ | async"></app-deployment-log-content>
     </div>
     } } }
   </div>

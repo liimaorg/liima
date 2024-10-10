@@ -1,19 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ToastContainerComponent } from './toast-container.component';
-import { ToastService } from './toast.service';
 
 describe('ToastContainerComponent', () => {
   let component: ToastContainerComponent;
-  let toastService: ToastService;
   let fixture: ComponentFixture<ToastContainerComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ToastContainerComponent, { provide: ToastService, useClass: ToastService }],
+      providers: [ToastContainerComponent],
     });
     fixture = TestBed.createComponent(ToastContainerComponent);
     component = TestBed.inject(ToastContainerComponent);
-    toastService = TestBed.inject(ToastService);
   });
 
   it('should create the component', () => {

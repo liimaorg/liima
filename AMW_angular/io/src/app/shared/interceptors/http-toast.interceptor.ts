@@ -12,7 +12,6 @@ export function provideHttpToastInterceptor(): Provider[] {
 })
 export class HttpToastInterceptor implements HttpInterceptor {
   toastService = inject(ToastService);
-
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     return next.handle(req).pipe(
       catchError((error) => {

@@ -11,7 +11,7 @@ import { AuditviewTableService } from './auditview-table/auditview-table.service
 import { PageComponent } from '../layout/page/page.component';
 
 @Component({
-  selector: 'amw-auditview',
+  selector: 'app-auditview',
   templateUrl: './auditview.component.html',
   standalone: true,
   providers: [AuditviewService, AuditviewTableService, DatePipe],

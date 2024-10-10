@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -8,12 +8,12 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { PropertyTag } from './property-tag';
 
 @Component({
-  selector: 'amw-property-type-edit',
+  selector: 'app-property-type-edit',
   templateUrl: './property-type-edit.component.html',
   standalone: true,
   imports: [DatePickerComponent, IconComponent, FormsModule],
 })
-export class PropertyTypeEditComponent implements OnInit {
+export class PropertyTypeEditComponent {
   @Input() propertyType: PropertyType;
   @Output() savePropertyType: EventEmitter<PropertyType> = new EventEmitter<PropertyType>();
 
@@ -23,8 +23,6 @@ export class PropertyTypeEditComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal) {
     this.activeModal = activeModal;
   }
-
-  ngOnInit(): void {}
 
   getTitle(): string {
     return this.propertyType.id ? `Edit ${this.title}` : `Add ${this.title}`;
@@ -69,7 +67,7 @@ export class PropertyTypeEditComponent implements OnInit {
   }
 
   addTag() {
-    let tag = this.newTag.trim();
+    const tag = this.newTag.trim();
     if (tag !== '') {
       this.propertyType.propertyTags.push({ name: tag, type: 'LOCAL' });
     }

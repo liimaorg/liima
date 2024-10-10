@@ -2,7 +2,7 @@ import { Component, Input, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'amw-pagination',
+  selector: 'app-pagination',
   templateUrl: './pagination.component.html',
   standalone: true,
   imports: [FormsModule],

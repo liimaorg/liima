@@ -28,6 +28,6 @@ import javax.ws.rs.ext.Provider;
 public class IllegalStateExceptionMapper implements ExceptionMapper<IllegalStateException> {
     @Override
     public Response toResponse(IllegalStateException exception) {
-        return Response.status(Response.Status.FORBIDDEN).entity(new ExceptionDto(exception)).build();
+        return Response.status(Response.Status.CONFLICT).entity(new ExceptionDto(exception)).build();
     }
 }

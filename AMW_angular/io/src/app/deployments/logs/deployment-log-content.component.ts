@@ -5,7 +5,7 @@ import { DeploymentLog } from './deployment-log';
 
 type Failed = 'failed';
 @Component({
-  selector: 'amw-deployment-log-content',
+  selector: 'app-deployment-log-content',
   template: `
     <div class="m-2 h-100">
       @if (content !== null && content !== 'failed') {

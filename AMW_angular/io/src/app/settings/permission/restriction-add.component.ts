@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
-  selector: 'amw-restriction-add',
+  selector: 'app-restriction-add',
   templateUrl: './restriction-add.component.html',
   standalone: true,
   imports: [NgSelectModule, FormsModule, IconComponent],

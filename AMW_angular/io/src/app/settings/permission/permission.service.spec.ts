@@ -8,17 +8,15 @@ describe('PermissionService', () => {
   let service: PermissionService;
 
   let httpTestingController: HttpTestingController;
-  let httpClient: HttpClient;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [PermissionService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-});
+      imports: [],
+      providers: [PermissionService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    });
     service = TestBed.inject(PermissionService);
 
     httpTestingController = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
   });
 
   afterEach(() => {

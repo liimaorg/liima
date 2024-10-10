@@ -6,7 +6,7 @@ import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-pi
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'amw-deployments-edit-modal',
+  selector: 'app-deployments-edit-modal',
   templateUrl: './deployments-edit-modal.component.html',
   standalone: true,
   imports: [FormsModule, DateTimePickerComponent],

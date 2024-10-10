@@ -7,7 +7,7 @@ import { DATE_FORMAT } from '../../core/amw-constants';
 import { DateModel } from '../../shared/date-picker/date.model';
 
 @Component({
-  selector: 'amw-release-edit',
+  selector: 'app-release-edit',
   templateUrl: './release-edit.component.html',
   standalone: true,
   imports: [DatePickerComponent, FormsModule],

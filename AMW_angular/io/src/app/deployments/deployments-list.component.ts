@@ -14,7 +14,7 @@ import { SortableIconComponent } from '../shared/sortable-icon/sortable-icon.com
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'amw-deployments-list',
+  selector: 'app-deployments-list',
   templateUrl: './deployments-list.component.html',
   standalone: true,
   imports: [SortableIconComponent, FormsModule, IconComponent, RouterLink, DateTimePickerComponent, DatePipe],
@@ -63,12 +63,12 @@ export class DeploymentsListComponent {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.deploymentDate = DateTimeModel.fromEpoch(this.deployment.deploymentDate);
     this.modalService.open(content).result.then(
-      (result) => {
+      () => {
         this.deployment.deploymentDate = this.deploymentDate.toEpoch();
         this.editDeploymentDate.emit(this.deployment);
         delete this.deploymentDate;
       },
-      (reason) => {
+      () => {
         delete this.deploymentDate;
       },
     );
@@ -78,30 +78,30 @@ export class DeploymentsListComponent {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
 
     this.modalService.open(content).result.then(
-      (result) => {
+      () => {
         this.doConfirmDeployment.emit(this.deployment);
       },
-      (reason) => {},
+      () => {},
     );
   }
 
   showReject(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.modalService.open(content).result.then(
-      (result) => {
+      () => {
         this.doRejectDeployment.emit(this.deployment);
       },
-      (reason) => {},
+      () => {},
     );
   }
 
   showCancel(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.modalService.open(content).result.then(
-      (result) => {
+      () => {
         this.doCancelDeployment.emit(this.deployment);
       },
-      (reason) => {},
+      () => {},
     );
   }
 

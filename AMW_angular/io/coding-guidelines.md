@@ -1,6 +1,5 @@
 # Coding Guidelines
 
-
 ## Inject() over Constructor-Injections
 
 Use `inject()` instead of constuctor-injection to make the code more explicit and obvious.
@@ -16,6 +15,7 @@ constructor(
 ```
 
 ## RxJS
+
 Leverage RxJS for API calls, web sockets, and complex data flows, especially when handling multiple asynchronous events. Combine with Signals to simplify component state management.
 
 ## Signals
@@ -56,7 +56,7 @@ readOnlyUsers = toSignal(this.users$, { initialValue: [] as User[]});
 
 ## Auth Service
 
-The frontend provides a singelton auth-service which holds all restrictions for the current user. 
+The frontend provides a singelton auth-service which holds all restrictions for the current user.
 
 After injecting the service in your component you can get Permissions/Actions depending on your needs:
 
@@ -72,5 +72,4 @@ this.canCreate.set(actions.some(isAllowed('CREATE')));
 
 // or directly set signal based on a concret permission and action value
 this.canViewSettings.set(this.authService.hasPermission('SETTINGS', 'READ'));
-
 ```

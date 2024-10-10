@@ -165,6 +165,5 @@ function toResource(r: Resource): Resource {
 }
 
 function toRelease(r: any): Release {
-  delete r.templates;
-  return r;
+  return { properties: [], relations: [], resourceTags: [], id: r.id, release: r.name };
 }

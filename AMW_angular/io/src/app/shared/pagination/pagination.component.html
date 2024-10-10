@@ -16,7 +16,7 @@
       @for (page of pages(); track page) {
       <li class="page-item {{ currentPage === page ? 'active' : '' }}">
         <a class="page-link" (click)="toPage(page)"
-        >{{ page }} @if (currentPage === page) {
+          >{{ page }} @if (currentPage === page) {
           <span class="visually-hidden">(current)</span>
           }</a
         >

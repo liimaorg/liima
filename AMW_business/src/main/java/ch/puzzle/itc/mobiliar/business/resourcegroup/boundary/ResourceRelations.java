@@ -26,10 +26,10 @@ import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -45,17 +45,16 @@ public class ResourceRelations {
 
     @Inject
     ApplistScreenDomainService applistScreenDomainService;
-    @Inject
-    UserSettingsService userSettingsService;
-    @Inject
-    PermissionService permissionService;
+
     @Inject
     ResourceDependencyResolverService dependencyResolverService;
 
-    public List<ResourceWithRelations> getAppServersWithApplications(String filter, Integer maxResults, ReleaseEntity release) {
-        UserSettingsEntity userSettings = userSettingsService.getUserSettings(permissionService.getCurrentUserName());
-        List<ResourceEntity> appServersWithAllApplications = applistScreenDomainService.getAppServerResourcesWithApplications(filter, maxResults, true);
-        return filterAppServersByRelease(release, appServersWithAllApplications);
+    @HasPermission(permission = Permission.APP_AND_APPSERVER_LIST)
+    public Tuple<List<ResourceWithRelations>, Long> getAppServersWithApplications(Integer startIndex, Integer maxResults, String filter, ReleaseEntity release) {
+        Tuple<List<ResourceEntity>, Long> result = applistScreenDomainService.getAppServerResourcesWithApplications(startIndex, maxResults, filter, true);
+        List<ResourceEntity> appServersWithAllApplications = result.getA();
+        List<ResourceWithRelations> filteredResult = filterAppServersByRelease(release, appServersWithAllApplications);
+        return new Tuple<>(filteredResult, result.getB());
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)

@@ -61,7 +61,7 @@
 
       } @if (restriction) {
 
-      <amw-restriction-edit
+      <app-restriction-edit
         class="bg-light"
         [restriction]="restriction"
         [groupedEnvironments]="groupedEnvironments"
@@ -72,11 +72,11 @@
         [delegationMode]="delegationMode"
         (cancelEdit)="cancel()"
         (saveRestriction)="persistRestriction()"
-      ></amw-restriction-edit>
+      ></app-restriction-edit>
 
       } @if (create) {
 
-      <amw-restriction-add
+      <app-restriction-add
         [roleName]="selectedRoleName"
         [userNames]="selectedUserNames"
         [groupedEnvironments]="groupedEnvironments"
@@ -87,7 +87,7 @@
         [delegationMode]="delegationMode"
         (cancelEdit)="cancel()"
         (saveRestrictions)="createRestrictions($event)"
-      ></amw-restriction-add>
+      ></app-restriction-add>
 
       } }
     </div>
@@ -97,13 +97,13 @@
   <div class="form-group">
     <label class="col-sm-1"></label>
     <div class="col">
-      <amw-restriction-list
+      <app-restriction-list
         [restrictions]="assignedRestrictions"
         [resourceGroups]="resourceGroups"
         [delegationMode]="delegationMode"
         (deleteRestriction)="removeRestriction($event)"
         (editRestriction)="modifyRestriction($event)"
-      ></amw-restriction-list>
+      ></app-restriction-list>
     </div>
   </div>
   }

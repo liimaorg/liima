@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'amw-restriction-edit',
+  selector: 'app-restriction-edit',
   templateUrl: './restriction-edit.component.html',
   standalone: true,
   imports: [FormsModule, NgClass, IconComponent],

@@ -1,6 +1,6 @@
 <app-page>
   <div class="page-title">Settings</div>
-  {{ loadingPermissions()}}
+  {{ loadingPermissions() }}
   @if (canViewSettings) {
   <div class="page-content row">
     <div class="col-2">
@@ -11,13 +11,13 @@
         <a class="nav-link" routerLink="/settings/tags" routerLinkActive="active">Tags</a>
         }
         <a class="nav-link" href="/AMW_web/pages/settings.xhtml?mode=functions">Functions</a>
-        <a class="nav-link" routerLink="/settings/deployment-parameter" routerLinkActive="active">Deployment
-          Parameter</a>
+        <a class="nav-link" routerLink="/settings/deployment-parameter" routerLinkActive="active"
+          >Deployment Parameter</a
+        >
         <a class="nav-link" routerLink="/settings/releases" routerLinkActive="active">Releases</a>
         @if (canViewPermissionsTab) {
         <a class="nav-link" routerLink="/settings/permission" routerLinkActive="active">Roles and Permissions</a>
-        }
-        @if (canViewAppInfo) {
+        } @if (canViewAppInfo) {
         <a class="nav-link" routerLink="/settings/application-info" routerLinkActive="active">Application Info</a>
         }
       </nav>
@@ -26,5 +26,5 @@
       <router-outlet></router-outlet>
     </div>
   </div>
-}
+  }
 </app-page>

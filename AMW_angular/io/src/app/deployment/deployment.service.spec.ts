@@ -5,7 +5,6 @@ import { Deployment } from './deployment';
 import { DeploymentService } from './deployment.service';
 
 describe('DeploymentService', () => {
-  let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let service: DeploymentService;
 
@@ -16,7 +15,6 @@ describe('DeploymentService', () => {
     });
 
     httpTestingController = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
     service = TestBed.inject(DeploymentService);
   });
 

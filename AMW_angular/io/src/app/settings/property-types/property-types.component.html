@@ -21,50 +21,57 @@
       <div class="table-responsive">
         <table class="table table-sm table-striped">
           <thead>
-          <tr>
-            <th>Property Name</th>
-            <th>Encrypted</th>
-            <th>Validation</th>
-            <th>Tags</th>
-            <th>Edit</th>
-            <th>Delete</th>
-          </tr>
+            <tr>
+              <th>Property Name</th>
+              <th>Encrypted</th>
+              <th>Validation</th>
+              <th>Tags</th>
+              <th>Edit</th>
+              <th>Delete</th>
+            </tr>
           </thead>
           <tbody>
-          @for (property of propertyTypes(); track property.id) {
-          <tr>
-            <td class="align-middle">{{ property.name }}</td>
-            @if (canDisplay()) {
+            @for (property of propertyTypes(); track property.id) {
+            <tr>
+              <td class="align-middle">{{ property.name }}</td>
+              @if (canDisplay()) {
               <td class="align-middle">{{ property.encrypted ? 'Yes' : 'No' }}</td>
               <td class="align-middle">{{ property.validationRegex }}</td>
               <td class="align-middle">
                 <div>
                   @for (tag of property.propertyTags; track tag.name) {
-                  <span class="badge bg-light text-dark rounded-pill">{{tag.name}}</span>
+                  <span class="badge bg-light text-dark rounded-pill">{{ tag.name }}</span>
                   }
                 </div>
               </td>
               <td class="text-center">
                 @if (canEditName()) {
-                <button class="btn btn-sm btn-primary me-0" (click)="editModal(property)" [attr.data-cy]="'edit-' + property.name">
+                <button
+                  class="btn btn-sm btn-primary me-0"
+                  (click)="editModal(property)"
+                  [attr.data-cy]="'edit-' + property.name"
+                >
                   <app-icon icon="pencil"></app-icon>
                 </button>
                 }
               </td>
               <td class="text-center">
                 @if (canDelete()) {
-                <button class="btn btn-sm btn-danger me-0" (click)="deleteModal(property)" [attr.data-cy]="'delete-' + property.name">
+                <button
+                  class="btn btn-sm btn-danger me-0"
+                  (click)="deleteModal(property)"
+                  [attr.data-cy]="'delete-' + property.name"
+                >
                   <app-icon icon="trash"></app-icon>
                 </button>
                 }
               </td>
+              }
+            </tr>
             }
-          </tr>
-          }
           </tbody>
         </table>
       </div>
     </div>
   </div>
 </div>
-

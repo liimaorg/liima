@@ -1,4 +1,4 @@
-import { Component, computed, inject, Signal, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, Signal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../auth/auth.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
@@ -18,7 +18,7 @@ import { PropertyTypeDeleteComponent } from './property-type-delete.component';
   imports: [CommonModule, IconComponent, LoadingIndicatorComponent],
   templateUrl: './property-types.component.html',
 })
-export class PropertyTypesComponent {
+export class PropertyTypesComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private propertyTypeService = inject(PropertyTypesService);
   private modalService = inject(NgbModal);
@@ -104,7 +104,7 @@ export class PropertyTypesComponent {
         .save(propertyType)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: (r) => this.toastService.success(`${this.PROPERTY_TYPE} saved.`),
+          next: () => this.toastService.success(`${this.PROPERTY_TYPE} saved.`),
           error: (e) => this.error.set(e),
           complete: () => {
             this.propertyTypeService.reload();
@@ -120,7 +120,7 @@ export class PropertyTypesComponent {
       .delete(propertyType.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => this.toastService.success(`${this.PROPERTY_TYPE} deleted.`),
+        next: () => this.toastService.success(`${this.PROPERTY_TYPE} deleted.`),
         error: (e) => this.error.set(e),
         complete: () => {
           this.propertyTypeService.reload();

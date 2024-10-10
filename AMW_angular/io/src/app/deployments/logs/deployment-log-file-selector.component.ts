@@ -4,7 +4,7 @@ import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from
 
 type Failed = 'failed';
 @Component({
-  selector: 'amw-deployment-logs-selector',
+  selector: 'app-deployment-logs-selector',
   standalone: true,
   template: `
     @if(logFiles === 'failed') {

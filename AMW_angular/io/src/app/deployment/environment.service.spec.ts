@@ -5,7 +5,6 @@ import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
 
 describe('DeploymentService', () => {
-  let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let service: EnvironmentService;
 
@@ -20,12 +19,11 @@ describe('DeploymentService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [EnvironmentService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-});
+      imports: [],
+      providers: [EnvironmentService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    });
 
     httpTestingController = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
     service = TestBed.inject(EnvironmentService);
   });
 
