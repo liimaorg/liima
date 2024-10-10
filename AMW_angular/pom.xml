@@ -44,33 +44,33 @@
                 <version>1.13.3</version>
                 <configuration>
                     <nodeVersion>v20.11.1</nodeVersion>
-                    <pnpmVersion>8.7.4</pnpmVersion>
+                    <npmVersion>10.8.2</npmVersion>
                     <workingDirectory>io</workingDirectory>
                     <installDirectory>${user.home}/.node</installDirectory>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>install node and pnpm</id>
+                        <id>install node and npm</id>
                         <phase>initialize</phase>
                         <goals>
-                            <goal>install-node-and-pnpm</goal>
+                            <goal>install-node-and-npm</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>pnpm install</id>
+                        <id>npm install</id>
                         <phase>initialize</phase>
                         <goals>
-                            <goal>pnpm</goal>
+                            <goal>npm</goal>
                         </goals>
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>pnpm run mavenbuild</id>
+                        <id>npm run mavenbuild</id>
                         <phase>compile</phase>
                         <goals>
-                            <goal>pnpm</goal>
+                            <goal>npm</goal>
                         </goals>
                         <configuration>
                             <arguments>run mavenbuild</arguments>
