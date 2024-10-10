@@ -12,7 +12,7 @@ import { Release } from '../settings/releases/release';
 import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../shared/elements/toast/toast.service';
 import { AppServer } from './app-server';
-import { AppServersListComponent } from './app-servers-list/app-servers-list.component';
+import { AppsServersListComponent } from './apps-servers-list/apps-servers-list.component';
 import { PaginationComponent } from '../shared/pagination/pagination.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add/app-server-add.component';
@@ -27,7 +27,7 @@ import { AppCreate } from './app-create';
   standalone: true,
   imports: [
     AppsFilterComponent,
-    AppServersListComponent,
+    AppsServersListComponent,
     AsyncPipe,
     IconComponent,
     LoadingIndicatorComponent,
@@ -114,11 +114,10 @@ export class AppsComponent implements OnInit {
       .createAppServer(appServer)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => {
+        next: () => {
           this.toastService.success('AppServer saved successfully.');
         },
         error: (e) => {
-          debugger;
           this.error$.next(e.toString());
         },
         complete: () => {
@@ -134,7 +133,7 @@ export class AppsComponent implements OnInit {
       .createApp(app)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => this.toastService.success('App saved successfully.'),
+        next: () => this.toastService.success('App saved successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
           this.appsService.refreshData();

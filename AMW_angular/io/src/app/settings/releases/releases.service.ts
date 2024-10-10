@@ -29,8 +29,8 @@ export class ReleasesService extends BaseService {
   getReleaseResources(id: number): Observable<Map<string, ResourceEntity[]>> {
     return this.http.get(`${this.getBaseUrl()}/releases/${id}/resources`).pipe(
       map((jsonObject) => {
-        let resourceMap = new Map<string, ResourceEntity[]>();
-        for (var value in jsonObject) {
+        const resourceMap = new Map<string, ResourceEntity[]>();
+        for (const value in jsonObject) {
           resourceMap.set(value, jsonObject[value]);
         }
         return resourceMap;

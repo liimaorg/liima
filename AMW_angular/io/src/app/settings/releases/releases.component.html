@@ -40,14 +40,14 @@
               <td class="align-middle">{{ item.description }}</td>
               <td class="align-middle">{{ item.installationInProductionAt | date: dateFormat }}</td>
               <td class="text-center">
-                @if (item.default != true && canEdit()) {
+                @if (item.default !== true && canEdit()) {
                 <button class="btn btn-sm btn-primary me-0" (click)="editRelease(item)">
                   <app-icon icon="pencil"></app-icon>
                 </button>
                 }
               </td>
               <td class="text-center">
-                @if (item.default != true && canDelete()) {
+                @if (item.default !== true && canDelete()) {
                 <button class="btn btn-sm btn-danger me-0" (click)="deleteRelease(item)">
                   <app-icon icon="trash"></app-icon>
                 </button>
@@ -62,13 +62,13 @@
     </div>
     <div class="card-footer py-1">
       <div class="row bg-light align-items-center">
-        <amw-pagination
+        <app-pagination
           [currentPage]="currentPage"
           [lastPage]="lastPage"
           (doSetMax)="setMaxResultsPerPage($event)"
           (doSetOffset)="setNewOffset($event)"
         >
-        </amw-pagination>
+        </app-pagination>
       </div>
     </div>
   </div>

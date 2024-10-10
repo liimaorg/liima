@@ -7,20 +7,16 @@ import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/
 describe('ReleasesComponent', () => {
   let component: ReleasesComponent;
   let fixture: ComponentFixture<ReleasesComponent>;
-  let httpTestingController: HttpTestingController;
-  let httpClient: HttpClient;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [ReleasesComponent],
-    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-}).compileComponents();
+      imports: [ReleasesComponent],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ReleasesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    httpTestingController = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
   });
 
   it('should create', () => {

@@ -7,13 +7,13 @@
   <div class="row justify-content-between align-items-center">
     <div class="col-sm-4">
       <label for="appName" class="form-label">Application/AS name</label>
-      <input class="form-control" id="appName" type="text" [(ngModel)]="appName"/>
+      <input class="form-control" id="appName" type="text" [(ngModel)]="appName" />
     </div>
     <div class="col-sm-2">
       <label class="form-label">Release</label>
       <ng-select id="selectRelease" [(ngModel)]="releaseId" placeholder="Select release">
         @for (release of releases; track release.id) {
-          <ng-option [value]="release.id">{{ release.name }}</ng-option>
+        <ng-option [value]="release.id">{{ release.name }}</ng-option>
         }
       </ng-select>
     </div>
@@ -21,6 +21,4 @@
       <button type="submit" class="btn btn-primary mt-4 float-end" (click)="search()">Search</button>
     </div>
   </div>
-
 </div>
-

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AppServersListComponent } from './app-servers-list.component';
+import { AppsServersListComponent } from './apps-servers-list.component';
 
 describe('AppsListComponent', () => {
-  let component: AppServersListComponent;
-  let fixture: ComponentFixture<AppServersListComponent>;
+  let component: AppsServersListComponent;
+  let fixture: ComponentFixture<AppsServersListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppServersListComponent],
+      imports: [AppsServersListComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AppServersListComponent);
+    fixture = TestBed.createComponent(AppsServersListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

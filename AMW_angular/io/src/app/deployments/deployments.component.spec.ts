@@ -1,8 +1,7 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, RouterModule } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { ResourceService } from '../resource/resource.service';
 import { DeploymentsComponent } from './deployments.component';
@@ -15,8 +14,6 @@ import { DeploymentFilter } from '../deployment/deployment-filter';
 import { Deployment } from '../deployment/deployment';
 import { PaginationComponent } from '../shared/pagination/pagination.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-
-declare let $: any;
 
 describe('DeploymentsComponent (with query params)', () => {
   let component: DeploymentsComponent;
@@ -37,7 +34,8 @@ describe('DeploymentsComponent (with query params)', () => {
       teardown: { destroyAfterEach: false },
       imports: [
         FormsModule,
-        RouterTestingModule.withRoutes([]),
+        provideRouter([]),
+        RouterModule,
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
@@ -190,7 +188,8 @@ describe('DeploymentsComponent (with illegal query params)', () => {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
-        RouterTestingModule.withRoutes([]),
+        provideRouter([]),
+        RouterModule,
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
@@ -251,7 +250,8 @@ describe('DeploymentsComponent (without query params)', () => {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
-        RouterTestingModule.withRoutes([]),
+        provideRouter([]),
+        RouterModule,
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,

@@ -1,0 +1,37 @@
+<div class="table-responsive">
+  @if (appServers && appServers.length > 0) {
+  <table class="table table-sm table-borderless">
+    <thead class="table-light">
+      <tr>
+        <th class="w-90">App Name</th>
+        <th class="w-10">Release</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (appServer of appServers; track appServer; let even = $even) {
+
+      <tr [class.table-light]="!even">
+        <td class="align-middle w-90">
+          @if (!appServer.deletable) {
+          <div id="appServer.id">{{ appServer.name }}</div>
+          } @else {
+          <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ appServer.id }}">{{ appServer.name }}</a> [
+          {{ appServer.runtimeName }} ] }
+        </td>
+        <td class="align-middle w-10">
+          <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ appServer.release.id }}">{{
+            appServer.release.name
+          }}</a>
+        </td>
+      </tr>
+      @if (appServer.apps && appServer.apps.length > 0) {
+      <tr class="py-0 borderless" [class.table-light]="!even">
+        <td colspan="2" class="py-0 border-0">
+          <app-apps-list [apps]="appServer.apps" [even]="even"></app-apps-list>
+        </td>
+      </tr>
+      } }
+    </tbody>
+  </table>
+  }
+</div>

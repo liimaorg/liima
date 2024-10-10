@@ -4,7 +4,7 @@ import { PaginationComponent } from '../../shared/pagination/pagination.componen
 import { App } from '../app';
 
 @Component({
-  selector: 'amw-apps-list',
+  selector: 'app-apps-list',
   standalone: true,
   imports: [AsyncPipe, PaginationComponent],
   templateUrl: './apps-list.component.html',

@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'amw-apps-filter',
+  selector: 'app-apps-filter',
   standalone: true,
   imports: [FormsModule, NgSelectModule],
   templateUrl: './apps-filter.component.html',

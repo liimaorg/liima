@@ -18,9 +18,7 @@ import { ToastContainerComponent } from './shared/elements/toast/toast-container
 export class AppComponent implements OnInit {
   logoutUrl: string;
 
-  constructor(
-    private settingService: SettingService
-  ) { }
+  constructor(private settingService: SettingService) {}
 
   ngOnInit(): void {
     this.settingService.getAllAppSettings().subscribe((r) => this.configureSettings(r));

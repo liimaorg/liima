@@ -6,7 +6,7 @@ import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import { ResourceEntity } from './resource-entity';
 
 @Component({
-  selector: 'amw-release-delete',
+  selector: 'app-release-delete',
   standalone: true,
   imports: [AsyncPipe, KeyValuePipe, FormsModule],
   templateUrl: './release-delete.component.html',

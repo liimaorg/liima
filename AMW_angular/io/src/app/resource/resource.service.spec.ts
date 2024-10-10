@@ -6,17 +6,15 @@ import { Resource } from './resource';
 import { Release } from './release';
 
 describe('ResourceService', () => {
-  let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let resourceService: ResourceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [ResourceService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-});
+      imports: [],
+      providers: [ResourceService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    });
 
-    httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
     resourceService = TestBed.inject(ResourceService);
   });

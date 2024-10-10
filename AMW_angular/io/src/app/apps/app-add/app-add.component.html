@@ -8,11 +8,11 @@
   <div class="form-horizontal mx-2">
     <div class="mb-3">
       <label for="name" class="form-label">Application</label>
-      <input type="text"  class="form-control" id="name" [(ngModel)]="app.appName"/>
+      <input type="text" class="form-control" id="name" [(ngModel)]="app.appName" />
     </div>
     <div class="mb-3">
       <label class="form-label">Release</label>
-      <ng-select id="selectRelease" [(ngModel)]="app.appReleaseId" placeholder="Select release" >
+      <ng-select id="selectRelease" [(ngModel)]="app.appReleaseId" placeholder="Select release">
         @for (release of releases(); track release.id) {
         <ng-option [value]="release.id">{{ release.name }}</ng-option>
         }
@@ -20,7 +20,7 @@
     </div>
     <div class="mb-3">
       <label class="form-label">Applicationserver</label>
-      <ng-select id="selectAppServer" [(ngModel)]="appServerGroup" placeholder="Select applicationserver" >
+      <ng-select id="selectAppServer" [(ngModel)]="appServerGroup" placeholder="Select applicationserver">
         @for (appServer of appServerGroups(); track appServer.id) {
         <ng-option [value]="appServer">{{ appServer.name }}</ng-option>
         }
@@ -28,19 +28,20 @@
     </div>
     <div class="mb-3">
       <label class="form-label">Applicationserver Release</label>
-      <ng-select id="selectAppServerRelease" [(ngModel)]="appServerRelease" [disabled]="hasInvalidGroup()"
-                 placeholder="Select AS release">
-        @if (appServerGroup && appServerGroup.releases) {
-          @for (release of appServerGroup.releases; track release.id) {
-          <ng-option [value]="release">{{ release.release }}</ng-option>
-          }
-        }
+      <ng-select
+        id="selectAppServerRelease"
+        [(ngModel)]="appServerRelease"
+        [disabled]="hasInvalidGroup()"
+        placeholder="Select AS release"
+      >
+        @if (appServerGroup && appServerGroup.releases) { @for (release of appServerGroup.releases; track release.id) {
+        <ng-option [value]="release">{{ release.release }}</ng-option>
+        } }
       </ng-select>
-
     </div>
   </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-primary"   [disabled]="hasInvalidFields()" (click)="save()">Save</button>
+  <button type="button" class="btn btn-primary" [disabled]="hasInvalidFields()" (click)="save()">Save</button>
 </div>

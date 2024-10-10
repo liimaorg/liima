@@ -8,13 +8,13 @@
   <div class="form-horizontal mx-2">
     <div class="mb-3">
       <label for="name" class="form-label">Applicationserver</label>
-      <input type="text" class="form-control" id="name" [(ngModel)]="appServer.name"/>
+      <input type="text" class="form-control" id="name" [(ngModel)]="appServer.name" />
     </div>
     <div class="mb-3">
       <label class="form-label">Release</label>
-      <ng-select id="selectRelease" [(ngModel)]="appServer.release" placeholder="Select release" >
+      <ng-select id="selectRelease" [(ngModel)]="appServer.release" placeholder="Select release">
         @for (release of releases(); track release.id) {
-          <ng-option [value]="release">{{ release.name }}</ng-option>
+        <ng-option [value]="release">{{ release.name }}</ng-option>
         }
       </ng-select>
     </div>
@@ -22,5 +22,5 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-primary"   [disabled]="hasInvalidFields()" (click)="save()">Save</button>
+  <button type="button" class="btn btn-primary" [disabled]="hasInvalidFields()" (click)="save()">Save</button>
 </div>

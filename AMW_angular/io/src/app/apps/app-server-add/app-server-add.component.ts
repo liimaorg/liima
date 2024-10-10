@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
-  selector: 'app-apps-server-add',
+  selector: 'app-server-add',
   standalone: true,
   imports: [FormsModule, NgSelectModule],
   templateUrl: './app-server-add.component.html',

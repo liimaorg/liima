@@ -49,7 +49,7 @@ export class AppsService extends BaseService {
     }
 
     return this.http
-      .get<any[]>(`${this.appsUrl}?${urlParams}releaseId=${releaseId}`, {
+      .get<AppServer[]>(`${this.appsUrl}?${urlParams}releaseId=${releaseId}`, {
         headers: this.getHeaders(),
         observe: 'response',
       })
@@ -64,7 +64,7 @@ export class AppsService extends BaseService {
 
   createAppServer(appServer: AppServer) {
     return this.http
-      .post<any[]>(`${this.appsUrl}/appServer?appServerName=${appServer.name}&releaseId=${appServer.release.id}`, {
+      .post<string>(`${this.appsUrl}/appServer?appServerName=${appServer.name}&releaseId=${appServer.release.id}`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
@@ -72,7 +72,6 @@ export class AppsService extends BaseService {
 
   createApp(app: AppCreate) {
     if (app.appServerId) {
-      debugger;
       return this.http
         .post<AppCreate>(`${this.appsUrl}/appWithServer`, app, {
           headers: this.getHeaders(),

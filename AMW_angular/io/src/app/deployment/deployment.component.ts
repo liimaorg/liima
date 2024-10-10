@@ -25,7 +25,7 @@ import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.
 import { PageComponent } from '../layout/page/page.component';
 
 @Component({
-  selector: 'amw-deployment',
+  selector: 'app-deployment',
   templateUrl: './deployment.component.html',
   standalone: true,
   imports: [
