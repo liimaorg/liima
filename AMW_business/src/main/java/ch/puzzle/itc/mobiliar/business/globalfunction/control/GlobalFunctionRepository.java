@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.globalfunction.control;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -40,13 +41,16 @@ public class GlobalFunctionRepository {
 	}
 
 	public boolean saveFunction(GlobalFunctionEntity gFunction) {
-		if (gFunction.getId() == null || gFunction.getId() == 0) {
+		if (gFunction.getId() == null) {
 			if (isExistingName(gFunction)) {
 				return false;
 			}
 			entityManager.persist(gFunction);
 		}
 		else {
+			if (isExistingName(gFunction) && !Objects.equals(gFunction.getId(), Objects.requireNonNull(findFunctionByName(gFunction.getName())).getId())) {
+				return false;
+			}
 			entityManager.merge(gFunction);
 		}
 		return true;
@@ -66,6 +70,22 @@ public class GlobalFunctionRepository {
 		Root<GlobalFunctionEntity> from = query.from(GlobalFunctionEntity.class);
 		CriteriaQuery<Object> select = query.select(from);
 		Predicate predicate = cb.equal(from.get("name"), name);
+		query.where(predicate);
+		TypedQuery<Object> tq = entityManager.createQuery(select);
+		List<Object> result = tq.getResultList();
+		return result.isEmpty() ? null : (GlobalFunctionEntity) result.get(0);
+	}
+
+	public boolean isExistingId(Integer id) {
+		return findFunctionById(id) != null;
+	}
+
+	private GlobalFunctionEntity findFunctionById(Integer id) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Object> query = cb.createQuery();
+		Root<GlobalFunctionEntity> from = query.from(GlobalFunctionEntity.class);
+		CriteriaQuery<Object> select = query.select(from);
+		Predicate predicate = cb.equal(from.get("id"), id);
 		query.where(predicate);
 		TypedQuery<Object> tq = entityManager.createQuery(select);
 		List<Object> result = tq.getResultList();

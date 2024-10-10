@@ -129,4 +129,8 @@ public class GlobalFunctionsBoundary {
         }
         return true;
     }
+
+    public boolean isExistingId(Integer id) {
+        return functionService.isExistingId(id);
+    }
 }

@@ -64,5 +64,9 @@ public class GlobalFunctionService {
     public void deleteFunction(GlobalFunctionEntity gFunction)  {
         globalFunctionRepository.deleteFunction(gFunction);
     }
+
+    public boolean isExistingId(Integer id) {
+        return globalFunctionRepository.isExistingId(id);
+    }
     
 }
