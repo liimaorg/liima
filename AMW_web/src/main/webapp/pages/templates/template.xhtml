@@ -130,8 +130,12 @@
             <img class="liimaLogo" src="../resources/images/misc/Liima.svg" alt="Liima" />
             <nav>
             <ul>
-                <li class="#{screen eq 'newApplist' ? 'current' : ''}"><h:link
-                        outcome="applist" value="Apps" onclick="showLoader();" /></li>
+                <li class="#{screen eq 'newApplist' ? 'current' : ''}">
+                    <h:outputLink value="/AMW_angular/#/apps"
+                                  onclick="showLoader();confirmLeave(event);">
+                        <h:outputText value="Apps" />
+                    </h:outputLink>
+                </li>
                 <li class="#{screen eq 'server' ? 'current' : ''}"><h:link
 						outcome="serverListView" value="Servers" onclick="showLoader();" /></li>
                 <li

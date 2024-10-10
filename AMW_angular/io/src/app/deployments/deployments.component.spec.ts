@@ -1,8 +1,8 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, provideRouter, RouterModule } from '@angular/router';
-import { of, Subject } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, of } from 'rxjs';
 import { ResourceService } from '../resource/resource.service';
 import { DeploymentsComponent } from './deployments.component';
 import { DeploymentService } from '../deployment/deployment.service';
@@ -19,10 +19,11 @@ describe('DeploymentsComponent (with query params)', () => {
   let component: DeploymentsComponent;
   let fixture: ComponentFixture<DeploymentsComponent>;
 
-  const mockRoute: any = { snapshot: {} };
-
-  mockRoute.params = new Subject<any>();
-  mockRoute.queryParams = new Subject<any>();
+  const activatedRouteStub = { queryParams: new BehaviorSubject<any>({}) };
+  const routerStub = jasmine.createSpyObj('router', ['navigate']);
+  routerStub.navigate.and.callFake((commands: any, navigationExtras: { queryParams: any }) =>
+    activatedRouteStub.queryParams.next(navigationExtras.queryParams),
+  );
 
   const filter: string = JSON.stringify([
     { name: 'Application', val: 'test' },
@@ -34,8 +35,6 @@ describe('DeploymentsComponent (with query params)', () => {
       teardown: { destroyAfterEach: false },
       imports: [
         FormsModule,
-        provideRouter([]),
-        RouterModule,
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
@@ -44,10 +43,8 @@ describe('DeploymentsComponent (with query params)', () => {
       providers: [
         DeploymentService,
         ResourceService,
-        {
-          provide: ActivatedRoute,
-          useValue: mockRoute,
-        },
+        { provide: Router, useValue: routerStub },
+        { provide: ActivatedRoute, useValue: activatedRouteStub },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
@@ -70,7 +67,7 @@ describe('DeploymentsComponent (with query params)', () => {
 
     // when
     component.ngOnInit();
-    mockRoute.queryParams.next({ filters: filter });
+    activatedRouteStub.queryParams.next({ filters: filter });
 
     // then
     expect(component.paramFilters.length).toEqual(2);
@@ -94,7 +91,7 @@ describe('DeploymentsComponent (with query params)', () => {
 
     // when
     component.ngOnInit();
-    mockRoute.queryParams.next({ filters: filter });
+    activatedRouteStub.queryParams.next({ filters: filter });
 
     // then
     expect(component.paramFilters[0].compOptions.length).toEqual(1);
@@ -122,7 +119,7 @@ describe('DeploymentsComponent (with query params)', () => {
 
     // when
     component.ngOnInit();
-    mockRoute.queryParams.next({ filters: filter });
+    activatedRouteStub.queryParams.next({ filters: filter });
 
     // then
     expect(component.paramFilters[0].valOptions.length).toEqual(2);
@@ -142,7 +139,7 @@ describe('DeploymentsComponent (with query params)', () => {
 
     // when
     component.ngOnInit();
-    mockRoute.queryParams.next({ filters: filter });
+    activatedRouteStub.queryParams.next({ filters: filter });
 
     // then
     expect(component.autoload).toBeTruthy();
@@ -174,10 +171,11 @@ describe('DeploymentsComponent (with illegal query params)', () => {
   let component: DeploymentsComponent;
   let fixture: ComponentFixture<DeploymentsComponent>;
 
-  const mockRoute: any = { snapshot: {} };
-
-  mockRoute.params = new Subject<any>();
-  mockRoute.queryParams = new Subject<any>();
+  const activatedRouteStub = { queryParams: new BehaviorSubject<any>({}) };
+  const routerStub = jasmine.createSpyObj('router', ['navigate']);
+  routerStub.navigate.and.callFake((commands: any, navigationExtras: { queryParams: any }) =>
+    activatedRouteStub.queryParams.next(navigationExtras.queryParams),
+  );
 
   const filter: string = JSON.stringify([
     { name: 'Application', val: 'test' },
@@ -188,8 +186,6 @@ describe('DeploymentsComponent (with illegal query params)', () => {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
-        provideRouter([]),
-        RouterModule,
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
@@ -198,10 +194,8 @@ describe('DeploymentsComponent (with illegal query params)', () => {
       providers: [
         DeploymentService,
         ResourceService,
-        {
-          provide: ActivatedRoute,
-          useValue: mockRoute,
-        },
+        { provide: Router, useValue: routerStub },
+        { provide: ActivatedRoute, useValue: activatedRouteStub },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
@@ -222,8 +216,8 @@ describe('DeploymentsComponent (with illegal query params)', () => {
     spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of([]));
 
     // when
+    activatedRouteStub.queryParams.next({ filters: 'invalid filter' });
     component.ngOnInit();
-    mockRoute.queryParams.next({ filters: 'invalid filter' });
 
     // then
     expect(component.autoload).toBeFalsy();
@@ -237,8 +231,11 @@ describe('DeploymentsComponent (without query params)', () => {
   let component: DeploymentsComponent;
   let fixture: ComponentFixture<DeploymentsComponent>;
 
-  const mockRoute: any = { snapshot: {} };
-  mockRoute.queryParams = new Subject<any>();
+  const activatedRouteStub = { queryParams: new BehaviorSubject<any>({}) };
+  const routerStub = jasmine.createSpyObj('router', ['navigate']);
+  routerStub.navigate.and.callFake((commands: any, navigationExtras: { queryParams: any }) =>
+    activatedRouteStub.queryParams.next(navigationExtras.queryParams),
+  );
 
   const filter: string = JSON.stringify([
     { name: 'Application', val: 'test' },
@@ -250,8 +247,6 @@ describe('DeploymentsComponent (without query params)', () => {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
-        provideRouter([]),
-        RouterModule,
         DeploymentsComponent,
         DeploymentsListComponent,
         PaginationComponent,
@@ -260,10 +255,8 @@ describe('DeploymentsComponent (without query params)', () => {
       providers: [
         DeploymentService,
         ResourceService,
-        {
-          provide: ActivatedRoute,
-          useValue: mockRoute,
-        },
+        { provide: Router, useValue: routerStub },
+        { provide: ActivatedRoute, useValue: activatedRouteStub },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
@@ -281,7 +274,7 @@ describe('DeploymentsComponent (without query params)', () => {
 
     // when
     component.ngOnInit();
-    mockRoute.queryParams.next({});
+    activatedRouteStub.queryParams.next({});
 
     // then
     expect(deploymentService.canRequestDeployments).toHaveBeenCalled();

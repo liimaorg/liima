@@ -30,10 +30,7 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
         >
           <ul class="navbar-nav p-3 p-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="/AMW_web/pages/applist.xhtml">Apps</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#/apps/">Apps 2.0</a>
+              <a class="nav-link" href="#/apps/">Apps</a>
             </li>
             <li class="nav-item"></li>
             <li>
