@@ -5,6 +5,7 @@ import { AppFunction } from './appFunction';
 import { Observable, startWith, Subject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { shareReplay, switchMap } from 'rxjs/operators';
+import {RevisionInformation} from "./revisionInformation";
 
 @Injectable({ providedIn: 'root' })
 export class FunctionsService extends BaseService {
@@ -31,8 +32,13 @@ export class FunctionsService extends BaseService {
   modifyFunction(newFunction: AppFunction): Observable<void> {
     return this.http.put<void>(`${this.getBaseUrl()}/functions`, newFunction);
   }
+
   deleteFunction(id: number): Observable<void> {
     return this.http.delete<void>(`${this.getBaseUrl()}/functions/${id}`);
+  }
+
+  getFunctionRevisions(id: number): Observable<RevisionInformation[]> {
+    return this.http.get<RevisionInformation[]>(`${this.getBaseUrl()}/functions/${id}/revisions`);
   }
 
   refreshData() {
