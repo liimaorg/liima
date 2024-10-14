@@ -20,6 +20,19 @@
          }"
       ></ngx-codemirror>
     </div>
+    <div class="mb-3">
+      <label class="form-label">Compare with history</label>
+      <div ngbDropdown>
+        <button class="btn btn-secondary dropdown-toggle" id="revisionDropdown" ngbDropdownToggle>
+          Select Revision
+        </button>
+        <ul ngbDropdownMenu aria-labelledby="revisionDropdown">
+          <li ngbDropdownItem *ngFor="let revision of revisions">
+            <a class="dropdown-item">{{ revision.displayName ?? 'Unnamed Revision' }}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>
 <div class="modal-footer">

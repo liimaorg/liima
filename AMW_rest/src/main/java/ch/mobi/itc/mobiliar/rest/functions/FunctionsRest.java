@@ -2,6 +2,7 @@ package ch.mobi.itc.mobiliar.rest.functions;
 
 import ch.puzzle.itc.mobiliar.business.globalfunction.boundary.GlobalFunctionsBoundary;
 import ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity;
+import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.annotations.Api;
@@ -70,5 +71,15 @@ public class FunctionsRest {
     public Response deleteGlobalFunction(@PathParam("id") int id) throws NotFoundException {
         globalFunctionsBoundary.deleteGlobalFunction(id);
         return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
+    @GET
+    @Path("/{id}/revisions")
+    @ApiOperation(value = "Get all revisions of a specific function")
+    public Response getFunctionRevisions(@PathParam("id") int id) {
+        // returns empty array if nothing is found; change this behaviour
+        // NotFoundException?
+        List<RevisionInformation> revisions = globalFunctionsBoundary.getFunctionRevisions(id);
+        return Response.ok(revisions).build();
     }
 }
