@@ -25,7 +25,9 @@ export class FunctionEditComponent {
   constructor(public activeModal: NgbActiveModal) {}
 
   ngOnInit(): void {
-    this.loadRevisions(this.function.id);
+    if (this.function && this.function.id) {
+      this.loadRevisions(this.function.id);
+    }
   }
 
   getTitle(): string {
@@ -44,9 +46,7 @@ export class FunctionEditComponent {
 
   loadRevisions(functionId: number): void {
     this.functionsService.getFunctionRevisions(functionId).subscribe(revisions => {
-      console.log('Revisions received from API:', revisions);  // Debugging the data
-      this.revisions = revisions;  // Ensure the revisions are set correctly
-      console.log('Revisions in component:', this.revisions);  // Log after setting to ensure it's correct
+      this.revisions = revisions;
     });
   }
 
