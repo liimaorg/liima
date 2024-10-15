@@ -30,6 +30,7 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,8 +87,8 @@ public class ResourceRelationsTest {
         Mockito.when(userSettingsService.getUserSettings(Mockito.anyString())).thenReturn(userSettings);
         List<ResourceEntity> aslist = Arrays.asList(as);
         Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.isNull(),
-                Mockito.isNull(), Mockito.anyBoolean())).thenReturn(aslist);
-        service.getAppServersWithApplications(null, null, release);
+                Mockito.isNull(), Mockito.isNull(), Mockito.anyBoolean())).thenReturn(new Tuple<>(aslist,0L));
+        service.getAppServersWithApplications(null, null, null, release);
         Mockito.verify(service).filterAppServersByRelease(release, aslist);
     }
 

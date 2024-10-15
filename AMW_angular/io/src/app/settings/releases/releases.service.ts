@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import { Release } from './release';
 import { Observable } from 'rxjs';
-import { ResourceEntity } from './resourceEntity';
+import { ResourceEntity } from './resource-entity';
 
 @Injectable({ providedIn: 'root' })
 export class ReleasesService extends BaseService {
@@ -29,8 +29,8 @@ export class ReleasesService extends BaseService {
   getReleaseResources(id: number): Observable<Map<string, ResourceEntity[]>> {
     return this.http.get(`${this.getBaseUrl()}/releases/${id}/resources`).pipe(
       map((jsonObject) => {
-        let resourceMap = new Map<string, ResourceEntity[]>();
-        for (var value in jsonObject) {
+        const resourceMap = new Map<string, ResourceEntity[]>();
+        for (const value in jsonObject) {
           resourceMap.set(value, jsonObject[value]);
         }
         return resourceMap;

@@ -42,7 +42,7 @@
             <select
               id="selectFilterComp"
               class="form-control"
-              [attr.disabled]="filter.compOptions.length == 1 ? '' : null"
+              [attr.disabled]="filter.compOptions.length === 1 ? '' : null"
               [(ngModel)]="filter.comp"
             >
               @for (compOption of filter.compOptions; track compOption) {
@@ -164,7 +164,7 @@
         <div class="form-group row">
           <div>
             <div class="border border-muted rounded">
-              <amw-deployments-list
+              <app-deployments-list
                 [deployments]="deployments"
                 [sortCol]="sortCol"
                 [sortDirection]="sortDirection"
@@ -176,15 +176,15 @@
                 (selectAllDeployments)="switchDeployments($event)"
                 (doSort)="sortDeploymentsBy($event)"
               >
-              </amw-deployments-list>
+              </app-deployments-list>
               <div class="bg-light">
-                <amw-pagination
+                <app-pagination
                   [currentPage]="currentPage"
                   [lastPage]="lastPage"
                   (doSetMax)="setMaxResultsPerPage($event)"
                   (doSetOffset)="setNewOffset($event)"
                 >
-                </amw-pagination>
+                </app-pagination>
               </div>
             </div>
           </div>

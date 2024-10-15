@@ -5,7 +5,7 @@ import { Resource } from '../../resource/resource';
 import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
-  selector: 'amw-restriction-list',
+  selector: 'app-restriction-list',
   templateUrl: './restriction-list.component.html',
   standalone: true,
   imports: [IconComponent],

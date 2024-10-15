@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
@@ -28,7 +28,7 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
   ],
   templateUrl: './releases.component.html',
 })
-export class ReleasesComponent implements OnInit {
+export class ReleasesComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private releasesService = inject(ReleasesService);
@@ -130,7 +130,7 @@ export class ReleasesComponent implements OnInit {
       .save(release)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => this.toastService.success('Release saved successfully.'),
+        next: () => this.toastService.success('Release saved successfully.'),
         error: (e) => this.error$.next(e),
         complete: () => this.getReleases(),
       });
@@ -157,7 +157,7 @@ export class ReleasesComponent implements OnInit {
       .delete(release.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => this.toastService.success('Release deleted.'),
+        next: () => this.toastService.success('Release deleted.'),
         error: (e) => this.error$.next(e),
         complete: () => this.getReleases(),
       });
