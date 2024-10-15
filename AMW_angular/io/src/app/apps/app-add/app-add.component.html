@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h5 class="modal-title" id="editReleaseTitle">Create application</h5>
+  <h5 class="modal-title" id="createApplicationTitle">Create application</h5>
   <button type="button" class="btn btn-light close" aria-label="Close" (click)="cancel()">
     <span aria-hidden="true">&times;</span>
   </button>
@@ -43,5 +43,13 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="cancel()" [attr.data-cy]="'button-cancel'">Cancel</button>
-  <button type="button" class="btn btn-primary" [disabled]="hasInvalidFields()" (click)="save()" [attr.data-cy]="'button-save'">Save</button>
+  <button
+    type="button"
+    class="btn btn-primary"
+    [disabled]="hasInvalidFields()"
+    (click)="save()"
+    [attr.data-cy]="'button-save'"
+  >
+    Save
+  </button>
 </div>
