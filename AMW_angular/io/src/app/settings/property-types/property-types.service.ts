@@ -5,6 +5,7 @@ import { Observable, startWith, Subject } from 'rxjs';
 import { PropertyType } from './property-type';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Restriction } from '../permission/restriction';
 
 @Injectable({ providedIn: 'root' })
 export class PropertyTypesService extends BaseService {
@@ -60,5 +61,9 @@ export class PropertyTypesService extends BaseService {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
+  }
+
+  reload() {
+    this.reload$.next([]);
   }
 }
