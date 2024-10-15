@@ -6,7 +6,6 @@ import { DatePickerComponent } from '../../shared/date-picker/date-picker.compon
 import { PropertyType } from './property-type';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PropertyTag } from './property-tag';
-import { tr } from 'date-fns/locale';
 
 @Component({
   selector: 'app-property-type-edit',
