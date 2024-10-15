@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Function } from './function';
+import { AppFunction } from './appFunction';
 
 @Component({
   selector: 'amw-function-delete',
@@ -8,8 +8,8 @@ import { Function } from './function';
   templateUrl: './function-delete.component.html',
 })
 export class FunctionDeleteComponent {
-  @Input() function: Function;
-  @Output() deleteFunction: EventEmitter<Function> = new EventEmitter<Function>();
+  @Input() function: AppFunction;
+  @Output() deleteFunction: EventEmitter<AppFunction> = new EventEmitter<AppFunction>();
 
   constructor(public activeModal: NgbActiveModal) {}
 
