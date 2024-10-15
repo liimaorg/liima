@@ -8,7 +8,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../auth/auth.service';
 import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../../shared/elements/toast/toast.service';
-import { Function } from './function';
+import { AppFunction } from './appFunction';
 import { FunctionsService } from './functions.service';
 import { FunctionEditComponent } from './function-edit.component';
 import { FunctionDeleteComponent } from './function-delete.component';
@@ -32,7 +32,7 @@ export class FunctionsComponent implements OnInit {
   private functionsService = inject(FunctionsService);
   private toastService = inject(ToastService);
 
-  functions: Signal<Function[]> = this.functionsService.functions;
+  functions: Signal<AppFunction[]> = this.functionsService.functions;
 
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
@@ -68,10 +68,10 @@ export class FunctionsComponent implements OnInit {
     modalRef.componentInstance.canManage = this.canManage;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
-      .subscribe((functionData: Function) => this.saveNew(functionData));
+      .subscribe((functionData: AppFunction) => this.saveNew(functionData));
   }
 
-  editFunction(functionData: Function) {
+  editFunction(functionData: AppFunction) {
     const modalRef = this.modalService.open(FunctionEditComponent, {
       size: 'xl',
     });
@@ -79,10 +79,10 @@ export class FunctionsComponent implements OnInit {
     modalRef.componentInstance.canManage = this.canManage;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
-      .subscribe((functionData: Function) => this.saveModified(functionData));
+      .subscribe((functionData: AppFunction) => this.saveModified(functionData));
   }
 
-  saveNew(functionData: Function) {
+  saveNew(functionData: AppFunction) {
     this.functionsService
       .addNewFunction(functionData)
       .pipe(takeUntil(this.destroy$))
@@ -93,7 +93,7 @@ export class FunctionsComponent implements OnInit {
       });
   }
 
-  saveModified(functionData: Function) {
+  saveModified(functionData: AppFunction) {
     this.functionsService
       .modifyFunction(functionData)
       .pipe(takeUntil(this.destroy$))
@@ -104,15 +104,15 @@ export class FunctionsComponent implements OnInit {
       });
   }
 
-  deleteFunction(functionData: Function) {
+  deleteFunction(functionData: AppFunction) {
     const modalRef = this.modalService.open(FunctionDeleteComponent);
     modalRef.componentInstance.function = functionData;
     modalRef.componentInstance.deleteFunction
       .pipe(takeUntil(this.destroy$))
-      .subscribe((functionData: Function) => this.delete(functionData));
+      .subscribe((functionData: AppFunction) => this.delete(functionData));
   }
 
-  delete(functionData: Function) {
+  delete(functionData: AppFunction) {
     this.functionsService
       .deleteFunction(functionData.id)
       .pipe(takeUntil(this.destroy$))
