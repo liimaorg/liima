@@ -1,7 +1,7 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, startWith, Subject } from 'rxjs';
+import { Observable, of, startWith, Subject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { AppServer } from './app-server';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -17,7 +17,7 @@ export class AppsService extends BaseService {
   offset = signal(0);
   limit = signal(20);
   filter = signal<string>(null);
-  releaseId = signal(50);
+  releaseId: WritableSignal<number | undefined> = signal(undefined);
   private apps$: Observable<AppServer[]> = this.reload$.pipe(
     startWith(null),
     switchMap(() => this.getApps(this.offset(), this.limit(), this.filter(), this.releaseId())),
@@ -34,7 +34,9 @@ export class AppsService extends BaseService {
     this.reload$.next([]);
   }
 
-  private getApps(offset: number, limit: number, filter: string, releaseId: number) {
+  private getApps(offset: number, limit: number, filter: string, releaseId: number | undefined) {
+    if (!releaseId) return of([]);
+
     let urlParams = '';
     if (offset != null) {
       urlParams = `start=${offset}&`;
