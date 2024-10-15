@@ -72,7 +72,7 @@ public class PropertyTypeEntity implements PropertyTagEntityHolder {
 	//For cascading only
 	@Getter
 	@Setter
-	@OneToMany(mappedBy = "propertyTypeEntity")
+	@OneToMany(mappedBy = "propertyTypeEntity"/*, fetch = FetchType.EAGER*/)
 	private Set<PropertyDescriptorEntity> propertyDescriptors;
 
 	public List<PropertyTagEntity> getPropertyTags() {
