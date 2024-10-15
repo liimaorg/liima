@@ -41,6 +41,10 @@ export class FunctionsService extends BaseService {
     return this.http.get<RevisionInformation[]>(`${this.getBaseUrl()}/functions/${id}/revisions`);
   }
 
+  getFunctionByIdAndRevision(id: number, revisionId: number): Observable<AppFunction> {
+    return this.http.get<AppFunction>(`${this.getBaseUrl()}/functions/${id}/revisions/${revisionId}`);
+  }
+
   refreshData() {
     this.reload$.next([]);
   }

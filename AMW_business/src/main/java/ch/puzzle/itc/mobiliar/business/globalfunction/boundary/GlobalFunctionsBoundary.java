@@ -73,9 +73,12 @@ public class GlobalFunctionsBoundary {
     /**
      * Returns a AmwFunctionEntity identified by its id and revision id
      */
-    public GlobalFunctionEntity getFunctionByIdAndRevision(Integer functionId, Number revisionId) {
+    public GlobalFunctionEntity getFunctionByIdAndRevision(Integer functionId, Number revisionId) throws NotFoundException {
         GlobalFunctionEntity globalFunctionEntity = AuditReaderFactory.get(entityManager).find(
                 GlobalFunctionEntity.class, functionId, revisionId);
+        if (globalFunctionEntity == null) {
+            throw new NotFoundException("No function with id " + functionId + " and revision id " + revisionId + " found");
+        }
         return globalFunctionEntity;
     }
 
