@@ -1,0 +1,57 @@
+<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+<div class="container">
+  <h1>Functions</h1>
+  <div class="card row mt-2 mb-3">
+    <div class="card-header">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-sm">
+        </div>
+        <div class="col-sm">
+          <button type="button" class="btn btn-primary float-end" (click)="addFunction()">
+            <app-icon icon="plus-circle"></app-icon>
+            Add function
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm table-striped">
+          <thead>
+          <tr>
+            <th>Function Name</th>
+            <th class="text-center">Edit</th>
+            <th class="text-center">Delete</th>
+          </tr>
+          </thead>
+          <tbody *ngIf="functions$ | async as functions">
+          <tr *ngFor="let func of functions; trackBy: trackById">
+            <td class="align-middle">{{ func.name }}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-primary me-0" (click)="editFunction(func)">
+                <app-icon icon="pencil"></app-icon>
+              </button>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-danger me-0" (click)="deleteFunction(func)">
+                <app-icon icon="trash"></app-icon>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer py-1">
+      <div class="row bg-light align-items-center">
+        <amw-pagination
+          [currentPage]="currentPage"
+          [lastPage]="lastPage"
+          (doSetMax)="setMaxResultsPerPage($event)"
+          (doSetOffset)="setNewOffset($event)"
+        >
+        </amw-pagination>
+      </div>
+    </div>
+  </div>
+</div>

@@ -20,35 +20,35 @@ Leverage RxJS for API calls, web sockets, and complex data flows, especially whe
 
 ## Signals
 
-Use signals for changing values in Components
+Use Signals for changing values in Components
 
 ### Signal from Observable
 
 #### GET
 
-Make API-requests with observables and expose the state as a signal:
+Make API-requests with observables and expose the state as a Signal:
 
 ```typescript
-// retrive data from API using RxJS
+// retrieve data from API using RxJS
 private users$ = this.http.get<User[]>(this.userUrl);
 
-// expose as signal
+// expose as Signal
 users = toSignal(this.users$, { initialValue: [] as User[]});
 ```
 
-The observable `users$` is just used to pass the state to the _readonly_ signal `users`. (The signals created from an observable are always _readonly_!)
+The observable `users$` is just used to pass the state to the _readonly_ Signal `users`. (The Signals created from an observable are always _readonly_!)
 No need for unsubscription - this is handled by `toSignal()` automatically.
 
-Use the signal in the component not in the template. (Separation of concerns)
+Use the Signal in the component not in the template. (Separation of concerns)
 
 #### POST / DELETE etc.
 
-To update data in a signal you have to create a WritableSignal:
+To update data in a Signal you have to create a WritableSignal:
 
 ```typescript
 // WritableSignal
 users = signal<Tag[]>([]);
-// retrive data from API using RxJS and write it in the WritableSignal
+// retrieve data from API using RxJS and write it in the WritableSignal
 private users$ = this.http.get<User[]>(this.userUrl).pipe(tap((users) => this.users.set(users)));
 // only used to automatically un-/subscribe to the observable
 readOnlyUsers = toSignal(this.users$, { initialValue: [] as User[]});
@@ -67,9 +67,9 @@ authService = inject(AuthService);
 // get actions for a specific permission
 const actions = this.authService.getActionsForPermission('MY_PERMISSION');
 
-// verify role in an action and set signal
+// verify role in an action and set Signal
 this.canCreate.set(actions.some(isAllowed('CREATE')));
 
-// or directly set signal based on a concret permission and action value
+// or directly set Signal based on a concrete permission and action value
 this.canViewSettings.set(this.authService.hasPermission('SETTINGS', 'READ'));
 ```
