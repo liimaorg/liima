@@ -32,6 +32,7 @@ import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
@@ -75,7 +76,7 @@ public class EditGlobalFunctionView implements Serializable{
     /**
      * This is a viewParameter and is called by JSF!
      */
-    public void setFunctionIdViewParam(Integer param) {
+    public void setFunctionIdViewParam(Integer param) throws NotFoundException {
         if (param != null){
             this.functionIdViewParam = param;
             this.globalFunction = functionsBoundary.getFunctionById(functionIdViewParam);
@@ -111,7 +112,7 @@ public class EditGlobalFunctionView implements Serializable{
     /**
      * Sets the revision id to which we want compare the actual function
      */
-    public void setCompareRevisionId(Integer compareRevisionId) {
+    public void setCompareRevisionId(Integer compareRevisionId) throws NotFoundException {
         if (compareRevisionId != null && compareRevisionId > 0) {
             for (RevisionInformation r : revisionInformations) {
                 if (r.getRevision().intValue() == compareRevisionId) {
