@@ -25,21 +25,21 @@ public class FunctionsRest {
 
     @GET
     @ApiOperation(value = "Get all functions")
-    public List<GlobalFunctionEntity> getAllGlobalFunctions() {
+    public List<GlobalFunctionEntity> getAllFunctions() {
         return globalFunctionsBoundary.getAllGlobalFunctions();
     }
 
     @GET
     @Path("/{id}")
     @ApiOperation(value = "Get a specific function")
-    public Response getGlobalFunctionById(@PathParam("id") int id) throws NotFoundException {
+    public Response getFunctionById(@PathParam("id") int id) throws NotFoundException {
         GlobalFunctionEntity function = globalFunctionsBoundary.getFunctionById(id);
         return Response.ok(function).build();
     }
 
     @POST
     @ApiOperation(value = "Add new function")
-    public Response addGlobalFunction(GlobalFunctionEntity request) {
+    public Response addNewFunction(GlobalFunctionEntity request) {
         try {
             globalFunctionsBoundary.saveGlobalFunction(request);
             return Response.status(Response.Status.CREATED).build();
@@ -51,7 +51,7 @@ public class FunctionsRest {
 
     @PUT
     @ApiOperation(value = "Modify existing function")
-    public Response modifyGlobalFunction(GlobalFunctionEntity request) {
+    public Response modifyFunction(GlobalFunctionEntity request) {
         if (request.getId() == null || !globalFunctionsBoundary.isExistingId(request.getId())) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("message", "Only existing functions can be modified"))
                     .build();
@@ -68,7 +68,7 @@ public class FunctionsRest {
     @DELETE
     @Path("/{id}")
     @ApiOperation(value = "Remove a function")
-    public Response deleteGlobalFunction(@PathParam("id") int id) throws NotFoundException {
+    public Response deleteFunction(@PathParam("id") int id) throws NotFoundException {
         globalFunctionsBoundary.deleteGlobalFunction(id);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
@@ -76,8 +76,19 @@ public class FunctionsRest {
     @GET
     @Path("/{id}/revisions")
     @ApiOperation(value = "Get all revisions of a specific function")
-    public Response getFunctionRevisions(@PathParam("id") int id) {
+    public Response getFunctionRevisions(@PathParam("id") int id) throws NotFoundException {
         List<RevisionInformation> revisions = globalFunctionsBoundary.getFunctionRevisions(id);
+        if (revisions.isEmpty()) {
+            throw new NotFoundException("No function revisions found");
+        }
         return Response.ok(revisions).build();
+    }
+
+    @GET
+    @Path("/{id}/revisions/{revisionId}")
+    @ApiOperation(value = "Get a specific revision of a function")
+    public Response getFunctionByIdAndRevision(@PathParam("id") int id, @PathParam("revisionId") int revisionId) throws NotFoundException {
+        GlobalFunctionEntity function = globalFunctionsBoundary.getFunctionByIdAndRevision(id, revisionId);
+        return Response.ok(function).build();
     }
 }

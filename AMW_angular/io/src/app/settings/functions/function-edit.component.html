@@ -26,7 +26,7 @@
         <button class="btn btn-secondary dropdown-toggle" id="revisionDropdown" ngbDropdownToggle>
           Select Revision
         </button>
-        <ul ngbDropdownMenu aria-labelledby="revisionDropdown">
+        <ul ngbDropdownMenu>
           <li ngbDropdownItem *ngFor="let revision of revisions">
             <a class="dropdown-item">{{ revision.displayName }}</a>
           </li>
