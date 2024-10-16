@@ -1,4 +1,4 @@
-import { Server, ServersListComponent } from './servers-list.component';
+import { ServersListComponent } from './servers-list.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef } from '@angular/core';
 import { Server } from '../server';
