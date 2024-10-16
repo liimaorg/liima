@@ -43,6 +43,6 @@ public class EnvironmentDTO {
         this.id = context.getId();
         this.name = context.getName();
         this.nameAlias = context.getNameAlias();
-        this.parent = context.getParent().getName();
+        this.parent = context.getParent() != null ? context.getParent().getName() : null ;
     }
 }

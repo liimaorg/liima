@@ -33,4 +33,10 @@ export class EnvironmentService extends BaseService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  getContexts(): Observable<Environment[]> {
+    return this.http
+      .get<Environment[]>(`${this.getBaseUrl()}/environments/contexts`)
+      .pipe(catchError(this.handleError));
+  }
 }
