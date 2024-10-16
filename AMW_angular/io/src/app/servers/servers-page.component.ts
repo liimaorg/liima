@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { PageComponent } from '../layout/page/page.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { AuthService } from '../auth/auth.service';
-import { Server, ServersListComponent } from './servers-list/servers-list.component';
+import { ServersListComponent } from './servers-list/servers-list.component';
+import { ServersService } from './servers.service';
 
 @Component({
   selector: 'app-servers-page',
@@ -19,8 +20,11 @@ import { Server, ServersListComponent } from './servers-list/servers-list.compon
 })
 export class ServersPageComponent {
   private authService = inject(AuthService);
+  private serversService = inject(ServersService);
 
   isLoading = signal(false);
+
+  servers = this.serversService.servers;
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -31,26 +35,4 @@ export class ServersPageComponent {
       return { canViewSomething: false };
     }
   });
-
-  servers = signal<Server[]>([
-    {
-      host: 'host1',
-      environment: 'A',
-      appServer: 'Application Server 1',
-      appServerRelease: 'multiple',
-      runtime: 'multiple runtimes',
-      node: 'node1',
-      nodeRelease: '1.1',
-    },
-    {
-      host: 'host2',
-      environment: 'B',
-      appServer: 'Application Server 2',
-      appServerRelease: 'multiple',
-      runtime: 'multiple runtimes',
-      node: 'node2',
-      nodeRelease: '1.2',
-    },
-  ]);
-
 }

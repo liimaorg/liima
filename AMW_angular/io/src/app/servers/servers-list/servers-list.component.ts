@@ -1,15 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { AppsListComponent } from '../../apps/apps-list/apps-list-component';
-
-export type Server = {
-  host: string;
-  environment: string;
-  appServer: string;
-  appServerRelease: string;
-  runtime: string;
-  node: string;
-  nodeRelease: string;
-};
+import { Server } from '../server';
 
 @Component({
   selector: 'app-servers-list',
