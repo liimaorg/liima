@@ -1,0 +1,52 @@
+<div class="container w-50">
+  <h1>Environments</h1>
+  <button type="button" class="btn btn-primary">
+    <app-icon icon="plus-circle"></app-icon>
+    Add Domain
+  </button>
+  @for(env of environmentTree; track env.id){
+  <div class="card my-3">
+    <div class="card-header">
+      <div class="row">
+        <div class="col">
+          <strong>{{ env.name }}</strong>
+        </div>
+        <div class="col">
+          <button class="btn btn-sm btn-primary">
+            <app-icon icon="pencil"></app-icon>
+          </button>
+        </div>
+        <div class="col">
+          <button class="btn btn-sm btn-danger">
+            <app-icon icon="trash"></app-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      @if(env.children.length > 0) { @for (envChild of env.children; track envChild.id) {
+      <div class="row">
+        <div class="col">{{ envChild.name }}</div>
+        <div class="col">
+          <button class="btn btn-sm btn-primary">
+            <app-icon icon="pencil"></app-icon>
+          </button>
+        </div>
+        <div class="col">
+          <button class="btn btn-sm btn-danger">
+            <app-icon icon="trash"></app-icon>
+          </button>
+        </div>
+        <hr />
+      </div>
+      } } @else{
+      <p>no envs yet</p>
+      }
+      <button type="button" class="btn btn-primary">
+        <app-icon icon="plus-circle"></app-icon>
+        Add Environment
+      </button>
+    </div>
+  </div>
+  }
+</div>
