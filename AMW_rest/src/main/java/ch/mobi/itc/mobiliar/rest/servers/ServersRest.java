@@ -1,6 +1,6 @@
 package ch.mobi.itc.mobiliar.rest.servers;
 
-import ch.puzzle.itc.mobiliar.business.server.boundary.FilterServersUseCase;
+import ch.puzzle.itc.mobiliar.business.server.boundary.GetServersUseCase;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -23,11 +23,11 @@ import static javax.ws.rs.core.Response.Status.OK;
 public class ServersRest {
 
     @Inject
-    FilterServersUseCase filterServersUseCase;
+    GetServersUseCase getServersUseCase;
 
     @GET
-    @ApiOperation("Get servers with applied filters.")
+    @ApiOperation("Get servers")
     public Response getServers() {
-        return Response.status(OK).entity(filterServersUseCase.filter()).build();
+        return Response.status(OK).entity(getServersUseCase.all()).build();
     }
 }
