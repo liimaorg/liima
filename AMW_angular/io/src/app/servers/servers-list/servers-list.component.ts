@@ -26,10 +26,19 @@ import { Server } from '../server';
         <tr [class.table-light]="!even">
           <td>{{ server.host }}</td>
           <td>{{ server.environment }}</td>
-          <td>{{ server.appServer }}</td>
+          <td>
+            <a
+              href="/AMW_web/pages/editResourceView.xhtml?ctx={{ server.environmentId }}&id={{ server.appServerId }}"
+              >{{ server.appServer }}</a
+            >
+          </td>
           <td>{{ server.appServerRelease }}</td>
           <td>{{ server.runtime }}</td>
-          <td>{{ server.node }}</td>
+          <td>
+            <a href="/AMW_web/pages/editResourceView.xhtml?ctx={{ server.environmentId }}&id={{ server.nodeId }}">{{
+              server.node
+            }}</a>
+          </td>
           <td>{{ server.nodeRelease }}</td>
         </tr>
         }
