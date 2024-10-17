@@ -4,8 +4,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
-
-export type Config = { key: { value: string; env: string }; value: string; defaultValue: string };
+import { Config } from '../configuration';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationService extends BaseService {

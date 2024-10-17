@@ -4,8 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { AsyncPipe } from '@angular/common';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Config } from '../../shared/configuration';
 
-type Config = { key: { value: string; env: string }; value: string; defaultValue: string };
 type Version = { key: string; value: string };
 
 @Component({
