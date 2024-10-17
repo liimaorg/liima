@@ -33,6 +33,7 @@ import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
 import ch.mobi.itc.mobiliar.rest.properties.PropertyTypesRest;
 import ch.mobi.itc.mobiliar.rest.resources.*;
 import ch.mobi.itc.mobiliar.rest.releases.ReleasesRest;
+import ch.mobi.itc.mobiliar.rest.servers.ServersRest;
 import ch.mobi.itc.mobiliar.rest.settings.SettingsRest;
 import ch.mobi.itc.mobiliar.rest.tags.boundary.TagsRest;
 
@@ -75,6 +76,7 @@ public class RESTApplication extends Application {
         resources.add(TestGenerationRest.class);
         resources.add(TagsRest.class);
         resources.add(PropertyTypesRest.class);
+        resources.add(ServersRest.class);
 
         // writers
         resources.add(DeploymentDtoCsvBodyWriter.class);
