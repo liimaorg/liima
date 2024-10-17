@@ -17,12 +17,10 @@ import { Config, pluck } from '../shared/configuration';
     <app-page>
       <div class="page-title">Servers</div>
       <div class="page-content">
-        {{ permissions() }}
-
         <app-servers-list
           [servers]="servers()"
-          [canReadAppServer]="canReadAppServer"
-          [canReadResources]="canReadResources"
+          [canReadAppServer]="permissions().canReadAppServer"
+          [canReadResources]="permissions().canReadResources"
           [linkToHostUrl]="linkToHostUrl()"
         /></div
     ></app-page>`,
@@ -31,9 +29,6 @@ export class ServersPageComponent {
   private authService = inject(AuthService);
   private serversService = inject(ServersService);
   private configurationService = inject(ConfigurationService);
-
-  canReadAppServer: boolean;
-  canReadResources: boolean;
 
   isLoading = signal(false);
 

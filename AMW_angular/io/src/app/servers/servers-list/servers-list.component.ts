@@ -24,7 +24,6 @@ import { Server } from '../server';
       <tbody>
         @for (server of servers(); track server; let even = $even) {
         <tr [class.table-light]="!even">
-          <td>{{ server.host }}</td>
           <td>
             <a href="{{ linkToHostUrl() }}={{ server.host }}">{{ server.host }}</a>
           </td>
