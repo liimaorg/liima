@@ -6,6 +6,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { AppInformation } from '../../setting/app-information';
 import { AppConfiguration } from '../../setting/app-configuration';
 
+
+type Version = { key: string; value: string };
+
 @Component({
   selector: 'app-application-info',
   standalone: true,
