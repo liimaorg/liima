@@ -5,19 +5,19 @@ import lombok.Getter;
 
 @Getter
 public class Server {
-    private String host;
-    private String appServer;
-    private String appServerRelease;
-    private String runtime;
-    private String node;
-    private String nodeRelease;
-    private String environment;
-    private Integer appServerId;
-    private Integer nodeId;
-    private Integer environmentId;
-    private String domain;
-    private Integer domainId;
-    private boolean definedOnNode;
+    private final String host;
+    private final String appServer;
+    private final String appServerRelease;
+    private final String runtime;
+    private final String node;
+    private final String nodeRelease;
+    private final String environment;
+    private final Integer appServerId;
+    private final Integer nodeId;
+    private final Integer environmentId;
+    private final String domain;
+    private final Integer domainId;
+    private final boolean definedOnNode;
 
     public Server(ServerTuple serverTuple) {
         this.host = serverTuple.getHost();
