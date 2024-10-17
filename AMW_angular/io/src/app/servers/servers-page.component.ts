@@ -4,8 +4,9 @@ import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.
 import { AuthService } from '../auth/auth.service';
 import { ServersListComponent } from './servers-list/servers-list.component';
 import { ServersService } from './servers.service';
-import { Config, ConfigurationService } from '../shared/service/configuration.service';
+import { ConfigurationService } from '../shared/service/configuration.service';
 import { ENVIRONMENT } from '../core/amw-constants';
+import { Config, pluck } from '../shared/configuration';
 
 @Component({
   selector: 'app-servers-page',
@@ -42,8 +43,8 @@ export class ServersPageComponent {
   linkToHostUrl = computed(() => {
     if (!this.configuration()) return;
     const config = this.configuration();
-    const vmDetailUrl = config.filter((c) => c.key.value === ENVIRONMENT.AMW_VM_DETAILS_URL).map((c) => c.value)[0];
-    const vmUrlParam = config.filter((c) => c.key.value === ENVIRONMENT.AMW_VM_URL_PARAM).map((c) => c.value)[0];
+    const vmDetailUrl = pluck(ENVIRONMENT.AMW_VM_DETAILS_URL, config);
+    const vmUrlParam = pluck(ENVIRONMENT.AMW_VM_URL_PARAM, config);
     return `${vmDetailUrl}?${vmUrlParam}=`;
   });
 
