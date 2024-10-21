@@ -1,10 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { EnvironmentService } from '../../deployment/environment.service';
-import { ToastService } from '../../shared/elements/toast/toast.service';
-import { BehaviorSubject, Subject } from 'rxjs';
 import { Environment, EnvironmentTree } from '../../deployment/environment';
-import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-environments-page',
@@ -14,16 +11,10 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class EnvironmentsPageComponent implements OnInit {
   private environmentsService = inject(EnvironmentService);
-  private toastService = inject(ToastService);
-  private error$ = new BehaviorSubject<string>('');
-  private destroy$ = new Subject<void>();
   environmentTree: EnvironmentTree[];
 
   ngOnInit(): void {
-    this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
-      msg !== '' ? this.toastService.error(msg) : null;
-    });
-    //this.getUserPermissions(); //TODO Handle Permissons
+    //this.getUserPermissions(); //TODO Handle permissions
     this.environmentsService.getContexts().subscribe((contexts) => {
       this.environmentTree = this.buildEnvironmentTree(contexts)[0].children;
     });
@@ -31,7 +22,7 @@ export class EnvironmentsPageComponent implements OnInit {
 
   private buildEnvironmentTree(environments: Environment[], parentName: string | null = null): EnvironmentTree[] {
     return environments
-      .filter((environment) => environment.parent === parentName) // Find items with the current parentId
+      .filter((environment) => environment.parent === parentName)
       .map((environment) => {
         return {
           id: environment.id,
