@@ -1,24 +1,24 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { EnvironmentService } from '../../deployment/environment.service';
 import { Environment, EnvironmentTree } from '../../deployment/environment';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-environments-page',
   standalone: true,
   imports: [IconComponent],
   templateUrl: './environments-page.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EnvironmentsPageComponent implements OnInit {
+export class EnvironmentsPageComponent {
   private environmentsService = inject(EnvironmentService);
-  environmentTree: EnvironmentTree[];
-
-  ngOnInit(): void {
-    //this.getUserPermissions(); //TODO Handle permissions
-    this.environmentsService.getContexts().subscribe((contexts) => {
-      this.environmentTree = this.buildEnvironmentTree(contexts)[0].children;
-    });
-  }
+  //TODO Handle permissions
+  contexts: Signal<Environment[]> = toSignal(this.environmentsService.getContexts());
+  environmentTree: Signal<EnvironmentTree[]> = computed(() => {
+    if (!this.contexts()) return;
+    return this.buildEnvironmentTree(this.contexts())[0].children;
+  });
 
   private buildEnvironmentTree(environments: Environment[], parentName: string | null = null): EnvironmentTree[] {
     return environments

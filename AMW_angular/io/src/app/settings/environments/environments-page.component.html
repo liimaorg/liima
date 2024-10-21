@@ -4,7 +4,7 @@
     <app-icon icon="plus-circle"></app-icon>
     Add Domain
   </button>
-  @for(env of environmentTree; track env.id){
+  @for(env of environmentTree(); track env.id){
   <div class="card my-3">
     <div class="card-header">
       <div class="row">
