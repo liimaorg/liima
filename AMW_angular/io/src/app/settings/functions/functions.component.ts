@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, Signal } from '@angular/core';
+import { Component, inject, Signal, computed } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -26,7 +26,7 @@ import { FunctionDeleteComponent } from './function-delete.component';
   ],
   templateUrl: './functions.component.html',
 })
-export class FunctionsComponent implements OnInit {
+export class FunctionsComponent {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private functionsService = inject(FunctionsService);
@@ -40,12 +40,13 @@ export class FunctionsComponent implements OnInit {
   canManage: boolean = false;
   canView: boolean = false;
 
-  ngOnInit(): void {
-    this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
-      msg !== '' ? this.toastService.error(msg) : null;
-    });
-    this.getUserPermissions();
-  }
+  loadingPermissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      this.getUserPermissions();
+    } else {
+      return `<div>Could not load permissions</div>`;
+    }
+  });
 
   ngOnDestroy(): void {
     this.destroy$.next(undefined);
