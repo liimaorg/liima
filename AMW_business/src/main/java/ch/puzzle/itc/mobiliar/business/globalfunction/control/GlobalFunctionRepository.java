@@ -81,14 +81,9 @@ public class GlobalFunctionRepository {
 	}
 
 	private GlobalFunctionEntity findFunctionById(Integer id) {
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Object> query = cb.createQuery();
-		Root<GlobalFunctionEntity> from = query.from(GlobalFunctionEntity.class);
-		CriteriaQuery<Object> select = query.select(from);
-		Predicate predicate = cb.equal(from.get("id"), id);
-		query.where(predicate);
-		TypedQuery<Object> tq = entityManager.createQuery(select);
-		List<Object> result = tq.getResultList();
-		return result.isEmpty() ? null : (GlobalFunctionEntity) result.get(0);
+		final TypedQuery<GlobalFunctionEntity> query = entityManager.createQuery("from GlobalFunctionEntity g where g.id = :id", GlobalFunctionEntity.class);
+		query.setParameter("id", id);
+		List<GlobalFunctionEntity> result = query.getResultList();
+		return result.isEmpty() ? null : result.get(0);
 	}
 }
