@@ -14,7 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @RequestScoped
 @Path("/environments")
@@ -47,9 +47,7 @@ public class EnvironmentsRest {
     @Path("/contexts")
     @ApiOperation(value = "Get all contexts", notes = "Returns all contexts as environments")
     public List<EnvironmentDTO> getContexts() {
-        List<EnvironmentDTO> environments = new ArrayList<>();
-        contextLocator.getAllEnvironments().stream().map(EnvironmentDTO::new).forEach(environments::add);
-        return environments;
+        return contextLocator.getAllEnvironments().stream().map(EnvironmentDTO::new).collect(Collectors.toList());
     }
 
 }
