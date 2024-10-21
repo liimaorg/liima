@@ -30,7 +30,7 @@ export class EnvironmentsPageComponent implements OnInit {
   }
 
   private buildEnvironmentTree(environments: Environment[], parentName: string | null = null): EnvironmentTree[] {
-    const envTree: EnvironmentTree[] = environments
+    return environments
       .filter((environment) => environment.parent === parentName) // Find items with the current parentId
       .map((environment) => {
         return {
@@ -42,6 +42,5 @@ export class EnvironmentsPageComponent implements OnInit {
           disabled: environment.disabled,
         };
       });
-    return envTree;
   }
 }
