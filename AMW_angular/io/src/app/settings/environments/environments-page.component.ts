@@ -32,17 +32,16 @@ export class EnvironmentsPageComponent implements OnInit {
   private buildEnvironmentTree(environments: Environment[], parentName: string | null = null): EnvironmentTree[] {
     const envTree: EnvironmentTree[] = environments
       .filter((environment) => environment.parent === parentName) // Find items with the current parentId
-      .map(
-        (environment) =>
-          new EnvironmentTree(
-            environment.id,
-            environment.name,
-            environment.nameAlias,
-            this.buildEnvironmentTree(environments, environment.name),
-            environment.selected,
-            environment.disabled,
-          ),
-      );
+      .map((environment) => {
+        return {
+          id: environment.id,
+          name: environment.name,
+          nameAlias: environment.nameAlias,
+          children: this.buildEnvironmentTree(environments, environment.name),
+          selected: environment.selected,
+          disabled: environment.disabled,
+        };
+      });
     return envTree;
   }
 }
