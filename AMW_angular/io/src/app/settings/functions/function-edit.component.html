@@ -24,11 +24,11 @@
       <label class="form-label">Compare with history</label>
       <div ngbDropdown>
         <button class="btn btn-secondary dropdown-toggle" id="revisionDropdown" ngbDropdownToggle>
-          Select Revision
+          {{ selectedRevisionName || 'Select Revision' }}
         </button>
         <ul ngbDropdownMenu>
           <li ngbDropdownItem *ngFor="let revision of revisions">
-            <a class="dropdown-item">{{ revision.displayName }}</a>
+            <a class="dropdown-item" (click)="selectRevision(function.id, revision.revision, revision.displayName)">{{ revision.displayName }}</a>
           </li>
         </ul>
       </div>

@@ -9,7 +9,7 @@ import {RevisionInformation} from "./revisionInformation";
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'amw-function-edit',
+  selector: 'app-function-edit',
   templateUrl: './function-edit.component.html',
   standalone: true,
   imports: [FormsModule, CodemirrorModule, CommonModule, NgbDropdownModule],
@@ -21,6 +21,8 @@ export class FunctionEditComponent {
 
   private functionsService = inject(FunctionsService);
   public revisions: RevisionInformation[]= [];
+  private revision: AppFunction;
+  public selectedRevisionName: string;
 
   constructor(public activeModal: NgbActiveModal) {}
 
@@ -50,4 +52,12 @@ export class FunctionEditComponent {
     });
   }
 
+  selectRevision(functionId: number, revisionId: number, displayName: string): void {
+    this.functionsService.getFunctionByIdAndRevision(functionId, revisionId).subscribe(
+      (revision) => {
+        this.revision = revision;
+        this.selectedRevisionName = displayName;
+      }
+    );
+  }
 }

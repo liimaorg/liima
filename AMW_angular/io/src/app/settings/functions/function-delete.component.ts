@@ -3,7 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppFunction } from './appFunction';
 
 @Component({
-  selector: 'amw-function-delete',
+  selector: 'app-function-delete',
   standalone: true,
   templateUrl: './function-delete.component.html',
 })
