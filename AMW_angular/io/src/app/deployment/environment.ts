@@ -6,3 +6,12 @@ export interface Environment {
   selected: boolean;
   disabled: boolean;
 }
+
+export interface EnvironmentTree {
+  id: number;
+  name: string;
+  nameAlias: string;
+  children: EnvironmentTree[];
+  selected: boolean;
+  disabled: boolean;
+}
