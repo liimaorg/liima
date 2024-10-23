@@ -10,27 +10,29 @@
       <label for="name" class="form-label">Function name</label>
       <input type="text" class="form-control" id="name" [(ngModel)]="function.name" />
     </div>
-    <div class="mb-3"> <label class="form-label">Function content</label>
-      <ngx-codemirror class="h-100"
+    <div class="mb-3">
+      <label class="form-label">Function content</label>
+      <ngx-codemirror
+        class="h-100"
         [(ngModel)]="function.content"
         [options]="{
           lineNumbers: true,
           theme: 'default',
           mode: 'simplemode'
-         }"
+        }"
       ></ngx-codemirror>
     </div>
     <div class="mb-3" *ngIf="revisions.length > 0">
-      <label    class="form-label">Compare with history</label>
+      <label class="form-label">Compare with history</label>
       <div ngbDropdown>
         <button class="btn btn-secondary dropdown-toggle" id="revisionDropdown" ngbDropdownToggle>
           {{ selectedRevisionName || 'Select Revision' }}
-
-
         </button>
         <ul ngbDropdownMenu>
           <li ngbDropdownItem *ngFor="let revision of revisions">
-            <a class="dropdown-item" (click)="selectRevision(function.id, revision.revision, revision.displayName)">{{ revision.displayName }}</a>
+            <a class="dropdown-item" (click)="selectRevision(function.id, revision.revision, revision.displayName)">{{
+              revision.displayName
+            }}</a>
           </li>
         </ul>
       </div>
@@ -40,9 +42,21 @@
 <div class="modal-footer">
   <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
   @if (canManage) {
-  <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
-        [title]="!function.name || !function.content?'Please provide function name and content':''">
-    <button type="button" class="btn btn-primary" [disabled]="function.name.length === 0 || function.content.length === 0" (click)="save()" [attr.data-cy]="'button-save'">Save changes</button>
+  <span
+    class="d-inline-block"
+    tabindex="0"
+    data-toggle="tooltip"
+    [title]="!function.name || !function.content ? 'Please provide function name and content' : ''"
+  >
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="function.name.length === 0 || function.content.length === 0"
+      (click)="save()"
+      [attr.data-cy]="'button-save'"
+    >
+      Save changes
+    </button>
   </span>
   }
 </div>

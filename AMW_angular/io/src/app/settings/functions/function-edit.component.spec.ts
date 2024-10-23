@@ -11,11 +11,7 @@ describe('FunctionEditComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [FunctionEditComponent],
-      providers: [
-        NgbActiveModal,
-        FunctionsService,
-        provideHttpClient(withInterceptorsFromDi())
-      ],
+      providers: [NgbActiveModal, FunctionsService, provideHttpClient(withInterceptorsFromDi())],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FunctionEditComponent);

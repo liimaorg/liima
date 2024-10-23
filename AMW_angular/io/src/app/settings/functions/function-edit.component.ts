@@ -1,12 +1,12 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {CommonModule} from '@angular/common';
-import {AppFunction} from './appFunction';
-import {CodemirrorModule} from '@ctrl/ngx-codemirror';
-import {FunctionsService} from './functions.service';
-import {RevisionInformation} from "./revisionInformation";
-import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { CommonModule } from '@angular/common';
+import { AppFunction } from './appFunction';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { FunctionsService } from './functions.service';
+import { RevisionInformation } from './revisionInformation';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-function-edit',
@@ -24,8 +24,7 @@ export class FunctionEditComponent {
   private revision: AppFunction;
   public selectedRevisionName: string;
 
-  constructor(public activeModal: NgbActiveModal) {
-  }
+  constructor(public activeModal: NgbActiveModal) {}
 
   ngOnInit(): void {
     if (this.function && this.function.id) {
@@ -48,17 +47,15 @@ export class FunctionEditComponent {
   }
 
   loadRevisions(functionId: number): void {
-    this.functionsService.getFunctionRevisions(functionId).subscribe(revisions => {
+    this.functionsService.getFunctionRevisions(functionId).subscribe((revisions) => {
       this.revisions = revisions;
     });
   }
 
   selectRevision(functionId: number, revisionId: number, displayName: string): void {
-    this.functionsService.getFunctionByIdAndRevision(functionId, revisionId).subscribe(
-      (revision) => {
-        this.revision = revision;
-        this.selectedRevisionName = displayName;
-      }
-    );
+    this.functionsService.getFunctionByIdAndRevision(functionId, revisionId).subscribe((revision) => {
+      this.revision = revision;
+      this.selectedRevisionName = displayName;
+    });
   }
 }
