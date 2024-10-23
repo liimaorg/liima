@@ -22,27 +22,27 @@ export class FunctionsService extends BaseService {
   }
 
   getAllFunctions(): Observable<AppFunction[]> {
-    return this.http.get<AppFunction[]>(`${this.getBaseUrl()}/functions`);
+    return this.http.get<AppFunction[]>(`${this.getBaseUrl()}/settings/functions`);
   }
 
   addNewFunction(newFunction: AppFunction): Observable<void> {
-    return this.http.post<void>(`${this.getBaseUrl()}/functions`, newFunction);
+    return this.http.post<void>(`${this.getBaseUrl()}/settings/functions`, newFunction);
   }
 
   modifyFunction(newFunction: AppFunction): Observable<void> {
-    return this.http.put<void>(`${this.getBaseUrl()}/functions`, newFunction);
+    return this.http.put<void>(`${this.getBaseUrl()}/settings/functions`, newFunction);
   }
 
   deleteFunction(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.getBaseUrl()}/functions/${id}`);
+    return this.http.delete<void>(`${this.getBaseUrl()}/settings/functions/${id}`);
   }
 
   getFunctionRevisions(id: number): Observable<RevisionInformation[]> {
-    return this.http.get<RevisionInformation[]>(`${this.getBaseUrl()}/functions/${id}/revisions`);
+    return this.http.get<RevisionInformation[]>(`${this.getBaseUrl()}/settings/functions/${id}/revisions`);
   }
 
   getFunctionByIdAndRevision(id: number, revisionId: number): Observable<AppFunction> {
-    return this.http.get<AppFunction>(`${this.getBaseUrl()}/functions/${id}/revisions/${revisionId}`);
+    return this.http.get<AppFunction>(`${this.getBaseUrl()}/settings/functions/${id}/revisions/${revisionId}`);
   }
 
   refreshData() {

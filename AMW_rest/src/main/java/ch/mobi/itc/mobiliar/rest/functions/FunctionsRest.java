@@ -15,9 +15,13 @@ import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 @RequestScoped
-@Path("/functions")
-@Api(value = "/functions", description = "Functions")
+@Path("settings/functions")
+@Api(value = "settings/functions", description = "Functions")
+@Consumes(APPLICATION_JSON)
+@Produces(APPLICATION_JSON)
 public class FunctionsRest {
 
     @Inject

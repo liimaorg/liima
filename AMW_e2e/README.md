@@ -27,7 +27,7 @@ npm start
 npm stop
 ```
 
-Note: there are other ways to start the application. Using docker is the most convenient way if you want to focus on writen end-to-end tests.
+Note: there are other ways to start the application. Using docker is the most convenient way if you want to focus on written end-to-end tests.
 
 ## Using the cypress ui
 

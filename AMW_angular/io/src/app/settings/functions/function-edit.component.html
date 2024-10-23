@@ -21,10 +21,12 @@
       ></ngx-codemirror>
     </div>
     <div class="mb-3" *ngIf="revisions.length > 0">
-      <label class="form-label">Compare with history</label>
+      <label    class="form-label">Compare with history</label>
       <div ngbDropdown>
         <button class="btn btn-secondary dropdown-toggle" id="revisionDropdown" ngbDropdownToggle>
           {{ selectedRevisionName || 'Select Revision' }}
+
+
         </button>
         <ul ngbDropdownMenu>
           <li ngbDropdownItem *ngFor="let revision of revisions">
@@ -40,7 +42,7 @@
   @if (canManage) {
   <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
         [title]="!function.name || !function.content?'Please provide function name and content':''">
-    <button type="button" class="btn btn-primary" [disabled]="function.name.length === 0 || function.content.length === 0" (click)="save()">Save changes</button>
+    <button type="button" class="btn btn-primary" [disabled]="function.name.length === 0 || function.content.length === 0" (click)="save()" [attr.data-cy]="'button-save'">Save changes</button>
   </span>
   }
 </div>
