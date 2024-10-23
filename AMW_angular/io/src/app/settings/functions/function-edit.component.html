@@ -29,7 +29,7 @@
           {{ selectedRevisionName || 'Select Revision' }}
         </button>
         <ul ngbDropdownMenu>
-          <li ngbDropdownItem *ngFor="let revision of revisions">
+          <li ngbDropdownItem *ngFor="let revision of revisions.slice().reverse()">
             <a class="dropdown-item" (click)="selectRevision(function.id, revision.revision, revision.displayName)">{{
               revision.displayName
             }}</a>
