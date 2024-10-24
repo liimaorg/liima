@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.globalfunction.control;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -47,6 +48,9 @@ public class GlobalFunctionRepository {
 			entityManager.persist(gFunction);
 		}
 		else {
+			if (isExistingName(gFunction) && !Objects.equals(gFunction.getId(), Objects.requireNonNull(findFunctionByName(gFunction.getName())).getId())) {
+				return false;
+			}
 			entityManager.merge(gFunction);
 		}
 		return true;
@@ -70,5 +74,16 @@ public class GlobalFunctionRepository {
 		TypedQuery<Object> tq = entityManager.createQuery(select);
 		List<Object> result = tq.getResultList();
 		return result.isEmpty() ? null : (GlobalFunctionEntity) result.get(0);
+	}
+
+	public boolean isExistingId(Integer id) {
+		return findFunctionById(id) != null;
+	}
+
+	private GlobalFunctionEntity findFunctionById(Integer id) {
+		final TypedQuery<GlobalFunctionEntity> query = entityManager.createQuery("from GlobalFunctionEntity g where g.id = :id", GlobalFunctionEntity.class);
+		query.setParameter("id", id);
+		List<GlobalFunctionEntity> result = query.getResultList();
+		return result.isEmpty() ? null : result.get(0);
 	}
 }

@@ -5,6 +5,7 @@ import { ApplicationInfoComponent } from './application-info/application-info.co
 import { ReleasesComponent } from './releases/releases.component';
 import { DeploymentParameterComponent } from './deployment-parameter/deployment-parameter.component';
 import { PropertyTypesComponent } from './property-types/property-types.component';
+import { FunctionsComponent } from './functions/functions.component';
 import { EnvironmentsPageComponent } from './environments/environments-page.component';
 
 export const settingsRoutes = [
@@ -24,6 +25,7 @@ export const settingsRoutes = [
       { path: 'application-info', component: ApplicationInfoComponent },
       { path: 'deployment-parameter', component: DeploymentParameterComponent },
       { path: 'property-types', component: PropertyTypesComponent },
+      { path: 'functions', component: FunctionsComponent },
       { path: 'environments', component: EnvironmentsPageComponent },
     ],
   },
