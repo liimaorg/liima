@@ -1,10 +1,10 @@
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
 
-describe('DeploymentService', () => {
+describe('EnvironmentService', () => {
   let httpTestingController: HttpTestingController;
   let service: EnvironmentService;
 
@@ -12,7 +12,8 @@ describe('DeploymentService', () => {
     id: 1,
     name: 'env',
     nameAlias: 'env-alias',
-    parent: 'parens',
+    parent: 'parent',
+    parentId: null,
     selected: true,
     disabled: false,
   };

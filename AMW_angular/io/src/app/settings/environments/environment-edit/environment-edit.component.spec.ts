@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EnvironmentEditComponent } from './environment-edit.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 describe('EnvironmentEditComponent', () => {
   let component: EnvironmentEditComponent;
@@ -8,11 +9,22 @@ describe('EnvironmentEditComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EnvironmentEditComponent],
-      providers: [],
+      providers: [NgbActiveModal],
     }).compileComponents();
 
     fixture = TestBed.createComponent(EnvironmentEditComponent);
     component = fixture.componentInstance;
+
+    component.environment = {
+      id: 2,
+      name: 'Dev',
+      nameAlias: null,
+      parent: 'Global',
+      parentId: 1,
+      selected: undefined,
+      disabled: undefined,
+    };
+
     fixture.detectChanges();
   });
 

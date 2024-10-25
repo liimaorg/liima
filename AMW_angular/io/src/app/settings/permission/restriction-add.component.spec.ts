@@ -488,11 +488,11 @@ describe('RestrictionAddComponent', () => {
     (restrictionComponent: RestrictionAddComponent) => {
       // given
       const emptyEnvironment: Environment[] = [
-        { id: null, name: null, nameAlias: null, parent: 'All', selected: false, disabled: false },
+        { id: null, name: null, nameAlias: null, parent: 'All', parentId: null, selected: false, disabled: false },
       ];
       const devEnvironments: Environment[] = [
-        { id: 1, name: 'B', nameAlias: 'Test', parent: 'Dev', selected: false, disabled: false },
-        { id: 2, name: 'C', nameAlias: null, parent: 'Dev', selected: false, disabled: false },
+        { id: 1, name: 'B', nameAlias: 'Test', parent: 'Dev', parentId: 2, selected: false, disabled: false },
+        { id: 2, name: 'C', nameAlias: null, parent: 'Dev', parentId: 2, selected: false, disabled: false },
       ];
       restrictionComponent.groupedEnvironments = { All: emptyEnvironment, Dev: devEnvironments };
       restrictionComponent.delegationMode = true;
