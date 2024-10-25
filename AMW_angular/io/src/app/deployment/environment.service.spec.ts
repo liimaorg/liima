@@ -12,7 +12,7 @@ describe('EnvironmentService', () => {
     id: 1,
     name: 'env',
     nameAlias: 'env-alias',
-    parent: 'parent',
+    parentName: 'parent',
     parentId: null,
     selected: true,
     disabled: false,

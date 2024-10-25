@@ -171,12 +171,12 @@ export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
 
   checkUnique(env: Environment) {
     if (this.delegationMode) {
-      const index: number = this.groupedEnvironments[env.parent].indexOf(env);
-      const isSelected: boolean = this.groupedEnvironments[env.parent][index].selected;
+      const index: number = this.groupedEnvironments[env.parentName].indexOf(env);
+      const isSelected: boolean = this.groupedEnvironments[env.parentName][index].selected;
       this.deSelectAllEnvironments();
-      this.groupedEnvironments[env.parent][index].selected = isSelected;
+      this.groupedEnvironments[env.parentName][index].selected = isSelected;
       if (isSelected) {
-        this.restriction.contextName = this.groupedEnvironments[env.parent][index].name;
+        this.restriction.contextName = this.groupedEnvironments[env.parentName][index].name;
       }
     }
   }

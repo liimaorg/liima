@@ -23,7 +23,7 @@ describe('RestrictionEditComponent', () => {
           id: null,
           name: null,
           nameAlias: null,
-          parent: 'All',
+          parentName: 'All',
           parentId: null,
           selected: false,
           disabled: false,
@@ -34,7 +34,7 @@ describe('RestrictionEditComponent', () => {
           id: 1,
           name: 'B',
           nameAlias: 'Test',
-          parent: 'Dev',
+          parentName: 'Dev',
           parentId: 2,
           selected: false,
           disabled: false,
@@ -43,7 +43,7 @@ describe('RestrictionEditComponent', () => {
           id: 2,
           name: 'C',
           nameAlias: null,
-          parent: 'Dev',
+          parentName: 'Dev',
           parentId: 2,
           selected: false,
           disabled: false,
@@ -266,14 +266,14 @@ describe('RestrictionEditComponent', () => {
     (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.delegationMode = true;
-      const emptyEnvironment: Environment[] = [{ id: null, name: null, parent: 'All' } as Environment];
+      const emptyEnvironment: Environment[] = [{ id: null, name: null, parentName: 'All' } as Environment];
       const devEnvironments: Environment[] = [
-        { id: 1, name: 'B', parent: 'Dev' } as Environment,
-        { id: 2, name: 'C', parent: 'Dev' } as Environment,
+        { id: 1, name: 'B', parentName: 'Dev' } as Environment,
+        { id: 2, name: 'C', parentName: 'Dev' } as Environment,
       ];
       const prodEnvironments: Environment[] = [
-        { id: 12, name: 'P', parent: 'Dev' } as Environment,
-        { id: 22, name: 'S', parent: 'Dev' } as Environment,
+        { id: 12, name: 'P', parentName: 'Dev' } as Environment,
+        { id: 22, name: 'S', parentName: 'Dev' } as Environment,
       ];
       restrictionComponent.groupedEnvironments = {
         All: emptyEnvironment,

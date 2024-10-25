@@ -34,7 +34,7 @@ export class EnvironmentEditComponent {
       id: this.environment.id,
       name: this.environment.name,
       nameAlias: this.environment.nameAlias,
-      parent: this.environment.parent,
+      parentName: this.environment.parentName,
       parentId: this.environment.parentId,
       selected: this.environment.selected,
       disabled: this.environment.disabled,

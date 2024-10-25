@@ -19,7 +19,7 @@ describe('EnvironmentEditComponent', () => {
       id: 2,
       name: 'Dev',
       nameAlias: null,
-      parent: 'Global',
+      parentName: 'Global',
       parentId: 1,
       selected: undefined,
       disabled: undefined,

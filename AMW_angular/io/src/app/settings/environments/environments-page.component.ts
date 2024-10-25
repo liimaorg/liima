@@ -33,13 +33,13 @@ export class EnvironmentsPageComponent {
 
   private buildEnvironmentTree(environments: Environment[], parentName: string | null = null): EnvironmentTree[] {
     return environments
-      .filter((environment) => environment.parent === parentName)
+      .filter((environment) => environment.parentName === parentName)
       .map((environment) => {
         return {
           id: environment.id,
           name: environment.name,
           nameAlias: environment.nameAlias,
-          parent: environment.parent,
+          parentName: environment.parentName,
           parentId: environment.parentId,
           children: this.buildEnvironmentTree(environments, environment.name),
           selected: environment.selected,
