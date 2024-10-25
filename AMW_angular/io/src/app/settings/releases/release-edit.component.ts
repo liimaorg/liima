@@ -5,12 +5,13 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DatePickerComponent } from '../../shared/date-picker/date-picker.component';
 import { DATE_FORMAT } from '../../core/amw-constants';
 import { DateModel } from '../../shared/date-picker/date.model';
+import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 
 @Component({
   selector: 'app-release-edit',
   templateUrl: './release-edit.component.html',
   standalone: true,
-  imports: [DatePickerComponent, FormsModule],
+  imports: [DatePickerComponent, FormsModule, ModalHeaderComponent],
 })
 export class ReleaseEditComponent implements OnInit {
   @Input() release: Release;

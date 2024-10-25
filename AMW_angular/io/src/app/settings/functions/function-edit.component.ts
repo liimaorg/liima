@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
@@ -7,14 +7,15 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { FunctionsService } from './functions.service';
 import { RevisionInformation } from './revisionInformation';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 
 @Component({
   selector: 'app-function-edit',
   templateUrl: './function-edit.component.html',
   standalone: true,
-  imports: [FormsModule, CodemirrorModule, CommonModule, NgbDropdownModule],
+  imports: [FormsModule, CodemirrorModule, CommonModule, NgbDropdownModule, ModalHeaderComponent],
 })
-export class FunctionEditComponent {
+export class FunctionEditComponent implements OnInit {
   @Input() function: AppFunction;
   @Input() canManage: boolean;
   @Output() saveFunction: EventEmitter<AppFunction> = new EventEmitter<AppFunction>();

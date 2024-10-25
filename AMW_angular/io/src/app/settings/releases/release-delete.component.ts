@@ -4,11 +4,12 @@ import { Release } from './release';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import { ResourceEntity } from './resource-entity';
+import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 
 @Component({
   selector: 'app-release-delete',
   standalone: true,
-  imports: [AsyncPipe, KeyValuePipe, FormsModule],
+  imports: [AsyncPipe, KeyValuePipe, FormsModule, ModalHeaderComponent],
   templateUrl: './release-delete.component.html',
 })
 export class ReleaseDeleteComponent implements OnInit {

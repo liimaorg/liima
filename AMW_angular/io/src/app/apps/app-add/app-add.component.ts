@@ -6,11 +6,12 @@ import { Release as Rel } from '../../resource/release';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Resource } from '../../resource/resource';
 import { AppCreate } from '../app-create';
+import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 
 @Component({
   selector: 'app-app-add',
   standalone: true,
-  imports: [FormsModule, NgSelectModule],
+  imports: [FormsModule, NgSelectModule, ModalHeaderComponent],
   templateUrl: './app-add.component.html',
 })
 export class AppAddComponent {

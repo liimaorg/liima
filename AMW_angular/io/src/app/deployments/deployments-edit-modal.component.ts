@@ -4,12 +4,13 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-picker.component';
 import { FormsModule } from '@angular/forms';
+import { ModalHeaderComponent } from '../shared/modal-header/modal-header.component';
 
 @Component({
   selector: 'app-deployments-edit-modal',
   templateUrl: './deployments-edit-modal.component.html',
   standalone: true,
-  imports: [FormsModule, DateTimePickerComponent],
+  imports: [FormsModule, DateTimePickerComponent, ModalHeaderComponent],
 })
 export class DeploymentsEditModalComponent {
   @Input() deployments: Deployment[] = [];

@@ -1,9 +1,4 @@
-<div class="modal-header">
-  <h5 class="modal-title" id="deleteFunctionTitle">Remove function</h5>
-  <button type="button" class="btn btn-light close" aria-label="Close" (click)="cancel()">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
+<app-modal-header [title]="'Remove function'" (cancel)="cancel()"></app-modal-header>
 <div class="modal-body">
   <div class="form-horizontal mx-2">
     <div class="mb-3">
