@@ -4,8 +4,6 @@ import ch.mobi.itc.mobiliar.rest.dtos.EnvironmentDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.EnvironmentsScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -14,12 +12,10 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static javax.ws.rs.core.Response.Status.*;
 
 @RequestScoped
 @Path("/environments")
@@ -29,13 +25,13 @@ public class EnvironmentsRest {
     @Inject
     ContextLocator contextLocator;
 
+    //TODO: EnvironmentsScreenDomainService is deprecated.
     @Inject
     EnvironmentsScreenDomainService environmentsScreenDomainService;
 
     @GET
     @ApiOperation(value = "Get environments", notes = "Returns the available environments")
-    public List<EnvironmentDTO> getEnvironments(@ApiParam("Also returns Environment groups if set to true") @QueryParam("includingGroups")
-                                                            boolean includingGroups) {
+    public List<EnvironmentDTO> getEnvironments(@ApiParam("Also returns Environment groups if set to true") @QueryParam("includingGroups") boolean includingGroups) {
 
         List<EnvironmentDTO> environments = new ArrayList<>();
         List<ContextEntity> contexts = contextLocator.getAllEnvironments();
@@ -60,12 +56,26 @@ public class EnvironmentsRest {
 
     @POST
     @Path("/contexts")
-    @ApiOperation(value = "Add a context")
-    public Response addContext(@ApiParam() EnvironmentDTO request) throws ElementAlreadyExistsException, ResourceNotFoundException {
-        //TODO: EnvironmentsScreenDomainService is deprecated.
-        ContextEntity newContextEntity = environmentsScreenDomainService.createContextByName(request.getName(), request.getParentId());
-        return Response.status(CREATED)
-                .location(URI.create("/settings/environments/contexts" + newContextEntity.getId()))
-                .build();
+    @ApiOperation(value = "Add new context")
+    public Response addContext(@ApiParam() EnvironmentDTO request) {
+        try {
+            environmentsScreenDomainService.createContextByName(request.getName(), request.getParentId());
+            return Response.status(Response.Status.OK).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("message", e.getMessage())).build();
+        }
+
+    }
+
+    @PUT
+    @Path("/contexts/{id : \\d+}")
+    @ApiOperation(value = "Update existing context")
+    public Response updateContext(@ApiParam("Environment ID") @PathParam("id") Integer id, EnvironmentDTO request) {
+        try {
+            environmentsScreenDomainService.saveEnvironment(id, request.getName(), request.getNameAlias());
+            return Response.status(Response.Status.OK).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("message", e.getMessage())).build();
+        }
     }
 }
