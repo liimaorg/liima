@@ -64,6 +64,22 @@ export class EnvironmentsPageComponent {
       .subscribe((environment: Environment) => this.save(environment));
   }
 
+  editEnvironment(environmentTree: EnvironmentTree) {
+    const modalRef: NgbModalRef = this.modalService.open(EnvironmentEditComponent);
+    modalRef.componentInstance.environment = {
+      id: environmentTree.id,
+      name: environmentTree.name,
+      nameAlias: environmentTree.nameAlias,
+      parentName: environmentTree.parentName,
+      parentId: environmentTree.parentId,
+      selected: environmentTree.selected,
+      disabled: environmentTree.disabled,
+    } as Environment;
+    modalRef.componentInstance.saveEnvironment
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((environment: Environment) => this.save(environment));
+  }
+
   save(environment: Environment) {
     this.environmentsService
       .save(environment)

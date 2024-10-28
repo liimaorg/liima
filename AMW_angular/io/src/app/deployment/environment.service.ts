@@ -51,7 +51,7 @@ export class EnvironmentService extends BaseService {
 
   save(environment: Environment) {
     if (environment.id) {
-      return; // TODO update;
+      return this.update(environment);
     } else {
       return this.create(environment);
     }
@@ -60,6 +60,14 @@ export class EnvironmentService extends BaseService {
   private create(environment: Environment) {
     return this.http
       .post<Environment>(`${this.getBaseUrl()}/environments/contexts`, environment, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  private update(environment: Environment) {
+    return this.http
+      .put<Environment>(`${this.getBaseUrl()}/environments/contexts/${environment.id}`, environment, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
