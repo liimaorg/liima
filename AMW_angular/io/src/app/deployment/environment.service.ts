@@ -73,6 +73,14 @@ export class EnvironmentService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
+  delete(id: number) {
+    return this.http
+      .delete<number>(`${this.getBaseUrl()}/environments/contexts/${id}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   refreshData() {
     this.reload$.next([]);
   }

@@ -8,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
+import { EnvironmentDeleteComponent } from './environment-delete/environment-delete.component';
 
 @Component({
   selector: 'app-environments-page',
@@ -80,12 +81,39 @@ export class EnvironmentsPageComponent {
       .subscribe((environment: Environment) => this.save(environment));
   }
 
+  deleteEnvironment(environmentTree: EnvironmentTree) {
+    const modalRef: NgbModalRef = this.modalService.open(EnvironmentDeleteComponent);
+    modalRef.componentInstance.environment = {
+      id: environmentTree.id,
+      name: environmentTree.name,
+      nameAlias: environmentTree.nameAlias,
+      parentName: environmentTree.parentName,
+      parentId: environmentTree.parentId,
+      selected: environmentTree.selected,
+      disabled: environmentTree.disabled,
+    } as Environment;
+    modalRef.componentInstance.deleteEnvironment
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((environment: Environment) => this.delete(environment.id));
+  }
+
   save(environment: Environment) {
     this.environmentsService
       .save(environment)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Environment saved successfully.'),
+        error: (e) => this.error$.next(e),
+        complete: () => this.environmentsService.refreshData(),
+      });
+  }
+
+  delete(id: number) {
+    this.environmentsService
+      .delete(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Environment deleted successfully.'),
         error: (e) => this.error$.next(e),
         complete: () => this.environmentsService.refreshData(),
       });
