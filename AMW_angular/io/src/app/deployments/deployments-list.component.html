@@ -169,19 +169,17 @@
 </div>
 
 <ng-template #deploymentDetails let-modal>
-  <div class="modal-header">
-    <h6 class="modal-title">
-      Details for deployment #{{ deployment.id }} [tracking id: {{ deployment.trackingId }}] for app server:
-      {{ deployment.appServerName }}
-    </h6>
-    <button
-      type="button"
-      class="btn-close"
-      data-dismiss="modal"
-      aria-hidden="true"
-      (click)="modal.dismiss('Cross click')"
-    ></button>
-  </div>
+  <app-modal-header
+    [title]="
+      'Details for deployment #' +
+      deployment.id +
+      ' [tracking id: ' +
+      deployment.trackingId +
+      '] for app server: ' +
+      deployment.appServerName
+    "
+    (cancel)="modal.dismiss('Cross click')"
+  ></app-modal-header>
   <div class="modal-body">
     <h6>{{ deployment.state }}</h6>
     <p>
@@ -241,18 +239,10 @@
 </ng-template>
 
 <ng-template #deploymentDateChange let-modal>
-  <div class="modal-header">
-    <h6 class="modal-title">
-      Change deployment date of deployment #{{ deployment.id }} for app server {{ deployment.appServerName }}
-    </h6>
-    <button
-      type="button"
-      class="btn-close"
-      data-dismiss="modal"
-      aria-hidden="true"
-      (click)="modal.dismiss('Cross click')"
-    ></button>
-  </div>
+  <app-modal-header
+    [title]="'Change deployment date of deployment #' + deployment.id + ' for app server ' + deployment.appServerName"
+    (cancel)="modal.dismiss('Cross click')"
+  ></app-modal-header>
   <div class="modal-body">
     <div class="input-group date">
       <app-date-time-picker [(ngModel)]="deploymentDate" name="dateDeployment" id="datetimepicker" class="w-100">
@@ -265,19 +255,10 @@
 </ng-template>
 
 <ng-template #deploymentConfirmation let-modal>
-  <div class="modal-header">
-    <h6 class="modal-title">
-      Confirm deployment #{{ deployment.id }} for app server
-      {{ deployment.appServerName }}
-    </h6>
-    <button
-      type="button"
-      class="btn-close"
-      data-dismiss="modal"
-      aria-hidden="true"
-      (click)="modal.dismiss('Cross click')"
-    ></button>
-  </div>
+  <app-modal-header
+    [title]="'Confirm deployment #' + deployment.id + ' for app server ' + deployment.appServerName"
+    (cancel)="modal.dismiss('Cross click')"
+  ></app-modal-header>
   <div class="modal-body">
     <div class="modal-body">
       <div>
@@ -301,16 +282,10 @@
 </ng-template>
 
 <ng-template #deploymentRejection let-modal>
-  <div class="modal-header">
-    <h6 class="modal-title">Reject deployment #{{ deployment.id }} for app server {{ deployment.appServerName }}</h6>
-    <button
-      type="button"
-      class="btn-close"
-      data-dismiss="modal"
-      aria-hidden="true"
-      (click)="modal.dismiss('Cross click')"
-    ></button>
-  </div>
+  <app-modal-header
+    [title]="'Reject deployment #' + deployment.id + ' for app server ' + deployment.appServerName"
+    (cancel)="modal.dismiss('Cross click')"
+  ></app-modal-header>
   <div class="modal-body">
     <p class="text-warning-2">Are you sure that you want to reject this deployment?</p>
   </div>
@@ -320,16 +295,10 @@
 </ng-template>
 
 <ng-template #deploymentCancelation let-modal>
-  <div class="modal-header">
-    <h6 class="modal-title">Cancel deployment #{{ deployment.id }} for app server {{ deployment.appServerName }}</h6>
-    <button
-      type="button"
-      class="btn-close"
-      data-dismiss="modal"
-      aria-hidden="true"
-      (click)="modal.dismiss('Cross click')"
-    ></button>
-  </div>
+  <app-modal-header
+    [title]="'Cancel deployment #' + deployment.id + ' for app server ' + deployment.appServerName"
+    (cancel)="modal.dismiss('Cross click')"
+  ></app-modal-header>
   <div class="modal-body">
     <p class="text-warning-2">Are you sure that you want to cancel this deployment?</p>
   </div>

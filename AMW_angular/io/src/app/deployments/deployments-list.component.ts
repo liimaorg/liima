@@ -12,12 +12,21 @@ import { IconComponent } from '../shared/icon/icon.component';
 import { FormsModule } from '@angular/forms';
 import { SortableIconComponent } from '../shared/sortable-icon/sortable-icon.component';
 import { DatePipe } from '@angular/common';
+import { ModalHeaderComponent } from '../shared/modal-header/modal-header.component';
 
 @Component({
   selector: 'app-deployments-list',
   templateUrl: './deployments-list.component.html',
   standalone: true,
-  imports: [SortableIconComponent, FormsModule, IconComponent, RouterLink, DateTimePickerComponent, DatePipe],
+  imports: [
+    SortableIconComponent,
+    FormsModule,
+    IconComponent,
+    RouterLink,
+    DateTimePickerComponent,
+    DatePipe,
+    ModalHeaderComponent,
+  ],
 })
 export class DeploymentsListComponent {
   @Input() deployments: Deployment[] = [];
