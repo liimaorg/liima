@@ -104,6 +104,7 @@ export class EnvironmentsPageComponent {
 
   deleteContext(environmentTree: EnvironmentTree) {
     const modalRef: NgbModalRef = this.modalService.open(EnvironmentDeleteComponent);
+    modalRef.componentInstance.globalName = this.globalEnv.name;
     modalRef.componentInstance.environment = {
       id: environmentTree.id,
       name: environmentTree.name,
@@ -123,7 +124,7 @@ export class EnvironmentsPageComponent {
       .save(environment)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => this.toastService.success('Environment saved successfully.'),
+        next: () => this.toastService.success('Context saved successfully.'),
         error: (e) => this.error$.next(e),
         complete: () => this.environmentsService.refreshData(),
       });
@@ -134,7 +135,7 @@ export class EnvironmentsPageComponent {
       .delete(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => this.toastService.success('Environment deleted successfully.'),
+        next: () => this.toastService.success('Context deleted successfully.'),
         error: (e) => this.error$.next(e),
         complete: () => this.environmentsService.refreshData(),
       });

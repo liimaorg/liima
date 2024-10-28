@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output
 import { Environment } from '../../../deployment/environment';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
+import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 
 @Component({
   selector: 'app-environment-edit',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ModalHeaderComponent],
   templateUrl: './environment-edit.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

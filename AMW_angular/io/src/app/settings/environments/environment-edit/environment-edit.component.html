@@ -1,16 +1,13 @@
 <div class="container">
-  <div class="modal-header">
-    <h4 class="modal-title">{{ getTitle() }} {{ environment.name }}</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
-  </div>
+  <app-modal-header [title]="getTitle() + ' ' + environment.name" (cancel)="cancel()"></app-modal-header>
   <div class="modal-body">
     <div class="mb-3">
-      <label for="name" class="form-label">ENV name</label>
+      <label for="name" class="form-label">Name</label>
       <input type="text" class="form-control" id="name" [(ngModel)]="environment.name" />
     </div>
     @if (isEdit()) {
     <div class="mb-3">
-      <label for="nameAlias" class="form-label">ENV alias</label>
+      <label for="nameAlias" class="form-label">Alias</label>
       <input type="text" class="form-control" id="nameAlias" [(ngModel)]="environment.nameAlias" />
     </div>
     }
