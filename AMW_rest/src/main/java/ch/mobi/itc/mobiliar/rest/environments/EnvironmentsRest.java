@@ -4,6 +4,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.EnvironmentDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.EnvironmentsScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @RequestScoped
 @Path("/environments")
@@ -77,5 +80,13 @@ public class EnvironmentsRest {
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("message", e.getMessage())).build();
         }
+    }
+
+    @DELETE
+    @Path("contexts/{id : \\d+}")
+    @ApiOperation(value = "Remove a context")
+    public Response deleteContext(@PathParam("id") Integer id) throws AMWException {
+        contextLocator.deleteContext(id);
+        return Response.status(NO_CONTENT).build();
     }
 }
