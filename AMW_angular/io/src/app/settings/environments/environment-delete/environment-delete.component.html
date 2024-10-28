@@ -1,0 +1,17 @@
+<div class="container">
+  <div class="modal-header">
+    <h5 class="modal-title">Remove environment</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="form-horizontal mx-2">
+      <div class="mb-3">
+        <div class="text-body">Do you really want to delete the environment {{ environment.name }}?</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="delete()">Delete</button>
+  </div>
+</div>
