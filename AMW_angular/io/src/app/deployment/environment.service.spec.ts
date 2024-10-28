@@ -29,6 +29,7 @@ describe('EnvironmentService', () => {
   });
 
   afterEach(() => {
+    httpTestingController.expectOne('/AMW_rest/resources/environments/contexts');
     httpTestingController.verify();
   });
 
