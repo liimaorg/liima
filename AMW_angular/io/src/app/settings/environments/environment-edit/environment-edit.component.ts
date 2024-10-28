@@ -30,16 +30,7 @@ export class EnvironmentEditComponent {
   }
 
   save() {
-    const environment: Environment = {
-      id: this.environment.id,
-      name: this.environment.name,
-      nameAlias: this.environment.nameAlias,
-      parentName: this.environment.parentName,
-      parentId: this.environment.parentId,
-      selected: this.environment.selected,
-      disabled: this.environment.disabled,
-    };
-    this.saveEnvironment.emit(environment);
+    this.saveEnvironment.emit(this.environment);
     this.activeModal.close();
   }
 }
