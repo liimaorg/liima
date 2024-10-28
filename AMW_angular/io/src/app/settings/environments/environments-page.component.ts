@@ -25,9 +25,11 @@ export class EnvironmentsPageComponent {
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
   contexts: Signal<Environment[]> = this.environmentsService.contexts;
+  globalEnv: EnvironmentTree;
   environmentTree: Signal<EnvironmentTree[]> = computed(() => {
     if (!this.contexts()) return;
     const envTree = this.buildEnvironmentTree(this.contexts());
+    this.globalEnv = envTree[0];
     if (!(envTree.length > 0)) return;
     return envTree[0].children;
   });
@@ -55,7 +57,7 @@ export class EnvironmentsPageComponent {
       id: undefined,
       name: '',
       nameAlias: '',
-      parent: envParent.name,
+      parentName: envParent.name,
       parentId: envParent.id,
       selected: undefined,
       disabled: undefined,
@@ -65,7 +67,23 @@ export class EnvironmentsPageComponent {
       .subscribe((environment: Environment) => this.save(environment));
   }
 
-  editEnvironment(environmentTree: EnvironmentTree) {
+  addDomain() {
+    const modalRef: NgbModalRef = this.modalService.open(EnvironmentEditComponent);
+    modalRef.componentInstance.environment = {
+      id: undefined,
+      name: '',
+      nameAlias: '',
+      parentName: this.globalEnv.name,
+      parentId: this.globalEnv.id,
+      selected: undefined,
+      disabled: undefined,
+    };
+    modalRef.componentInstance.saveEnvironment
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((environment: Environment) => this.save(environment));
+  }
+
+  editContext(environmentTree: EnvironmentTree) {
     const modalRef: NgbModalRef = this.modalService.open(EnvironmentEditComponent);
     modalRef.componentInstance.environment = {
       id: environmentTree.id,
@@ -81,7 +99,7 @@ export class EnvironmentsPageComponent {
       .subscribe((environment: Environment) => this.save(environment));
   }
 
-  deleteEnvironment(environmentTree: EnvironmentTree) {
+  deleteContext(environmentTree: EnvironmentTree) {
     const modalRef: NgbModalRef = this.modalService.open(EnvironmentDeleteComponent);
     modalRef.componentInstance.environment = {
       id: environmentTree.id,
