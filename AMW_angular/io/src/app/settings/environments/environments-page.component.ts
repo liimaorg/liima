@@ -53,6 +53,7 @@ export class EnvironmentsPageComponent {
 
   addEnvironment(envParent: EnvironmentTree) {
     const modalRef: NgbModalRef = this.modalService.open(EnvironmentEditComponent);
+    modalRef.componentInstance.globalName = this.globalEnv.name;
     modalRef.componentInstance.environment = {
       id: undefined,
       name: '',
@@ -69,6 +70,7 @@ export class EnvironmentsPageComponent {
 
   addDomain() {
     const modalRef: NgbModalRef = this.modalService.open(EnvironmentEditComponent);
+    modalRef.componentInstance.globalName = this.globalEnv.name;
     modalRef.componentInstance.environment = {
       id: undefined,
       name: '',
@@ -85,6 +87,7 @@ export class EnvironmentsPageComponent {
 
   editContext(environmentTree: EnvironmentTree) {
     const modalRef: NgbModalRef = this.modalService.open(EnvironmentEditComponent);
+    modalRef.componentInstance.globalName = this.globalEnv.name;
     modalRef.componentInstance.environment = {
       id: environmentTree.id,
       name: environmentTree.name,

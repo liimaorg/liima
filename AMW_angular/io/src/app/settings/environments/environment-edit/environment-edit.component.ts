@@ -13,11 +13,17 @@ import { FormsModule } from '@angular/forms';
 export class EnvironmentEditComponent {
   activeModal = inject(NgbActiveModal);
   @Input() environment: Environment;
+  @Input() globalName: string;
   @Output() saveEnvironment: EventEmitter<Environment> = new EventEmitter<Environment>();
 
   getTitle(): string {
     if (!this.environment) return;
-    return this.environment.id ? 'Edit environment' : 'Add environment';
+    return this.environment.id ? `Edit ${this.getContextType()}` : `Add ${this.getContextType()}`;
+  }
+
+  getContextType(): string {
+    if (!this.environment) return;
+    return this.environment.parentName === this.globalName ? 'domain' : 'environment';
   }
 
   isEdit(): boolean {
