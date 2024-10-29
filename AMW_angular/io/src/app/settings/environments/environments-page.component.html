@@ -42,7 +42,7 @@
         </div>
         <div class="col">
           @if(canDelete){
-          <button class="btn btn-sm btn-danger" (click)="deleteContext(env)">
+          <button class="btn btn-sm btn-danger mb-2" (click)="deleteContext(env)">
             <app-icon icon="trash"></app-icon>
           </button>
           }
@@ -52,7 +52,7 @@
       } } @else{
       <p>No environments added yet.</p>
       } @if (canAdd){
-      <button type="button" class="btn btn-primary" (click)="addEnvironment(domain)">
+      <button type="button" class="btn btn-primary mb-2" (click)="addEnvironment(domain)">
         <app-icon icon="plus-circle"></app-icon>
         Add Environment
       </button>
