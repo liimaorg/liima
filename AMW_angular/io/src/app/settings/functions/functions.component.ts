@@ -1,4 +1,4 @@
-import { Component, inject, Signal, computed } from '@angular/core';
+import { Component, inject, Signal, computed, OnDestroy } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -12,6 +12,7 @@ import { AppFunction } from './appFunction';
 import { FunctionsService } from './functions.service';
 import { FunctionEditComponent } from './function-edit.component';
 import { FunctionDeleteComponent } from './function-delete.component';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-functions',
@@ -23,10 +24,11 @@ import { FunctionDeleteComponent } from './function-delete.component';
     PaginationComponent,
     FunctionEditComponent,
     FunctionDeleteComponent,
+    ButtonComponent,
   ],
   templateUrl: './functions.component.html',
 })
-export class FunctionsComponent {
+export class FunctionsComponent implements OnDestroy {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private functionsService = inject(FunctionsService);
