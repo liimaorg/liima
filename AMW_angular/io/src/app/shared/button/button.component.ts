@@ -18,7 +18,7 @@ import { NgClass } from '@angular/common';
   imports: [NgClass],
 })
 export class ButtonComponent {
-  variant = input<'primary' | 'danger' | 'light'>();
+  variant = input<'primary' | 'secondary' | 'danger' | 'light' | 'close'>();
   size = input<'sm' | 'lg'>();
   additionalClasses = input<string>('');
   class = input<string>('');
