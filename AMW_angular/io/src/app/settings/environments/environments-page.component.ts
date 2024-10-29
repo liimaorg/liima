@@ -21,7 +21,6 @@ export class EnvironmentsPageComponent {
   private environmentsService = inject(EnvironmentService);
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
-  //TODO handle permissions
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
   contexts: Signal<Environment[]> = this.environmentsService.contexts;

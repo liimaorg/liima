@@ -50,11 +50,8 @@ export class EnvironmentService extends BaseService {
   }
 
   save(environment: Environment) {
-    if (environment.id) {
-      return this.update(environment);
-    } else {
-      return this.create(environment);
-    }
+    if (environment.id) return this.update(environment);
+    return this.create(environment);
   }
 
   private create(environment: Environment) {

@@ -5,6 +5,8 @@ import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.EnvironmentsScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -14,7 +16,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,6 @@ public class EnvironmentsRest {
     @Inject
     ContextLocator contextLocator;
 
-    //TODO: EnvironmentsScreenDomainService is deprecated.
     @Inject
     EnvironmentsScreenDomainService environmentsScreenDomainService;
 
@@ -60,26 +60,17 @@ public class EnvironmentsRest {
     @POST
     @Path("/contexts")
     @ApiOperation(value = "Add new context")
-    public Response addContext(@ApiParam() EnvironmentDTO request) {
-        try {
-            environmentsScreenDomainService.createContextByName(request.getName(), request.getParentId());
-            return Response.status(Response.Status.OK).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("message", e.getMessage())).build();
-        }
-
+    public Response addContext(@ApiParam() EnvironmentDTO request) throws ElementAlreadyExistsException, ResourceNotFoundException {
+        environmentsScreenDomainService.createContextByName(request.getName(), request.getParentId());
+        return Response.status(Response.Status.OK).build();
     }
 
     @PUT
     @Path("/contexts/{id : \\d+}")
     @ApiOperation(value = "Update existing context")
-    public Response updateContext(@ApiParam("Environment ID") @PathParam("id") Integer id, EnvironmentDTO request) {
-        try {
-            environmentsScreenDomainService.saveEnvironment(id, request.getName(), request.getNameAlias());
-            return Response.status(Response.Status.OK).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("message", e.getMessage())).build();
-        }
+    public Response updateContext(@ApiParam("Environment ID") @PathParam("id") Integer id, EnvironmentDTO request) throws ResourceNotFoundException {
+        environmentsScreenDomainService.saveEnvironment(id, request.getName(), request.getNameAlias());
+        return Response.status(Response.Status.OK).build();
     }
 
     @DELETE

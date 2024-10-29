@@ -4,7 +4,7 @@ import { Environment } from '../../../deployment/environment';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 
 @Component({
-  selector: 'app-function-delete',
+  selector: 'app-environment-delete',
   standalone: true,
   templateUrl: './environment-delete.component.html',
   imports: [ModalHeaderComponent],

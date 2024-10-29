@@ -4,27 +4,27 @@
     <app-icon icon="plus-circle"></app-icon>
     Add Domain
   </button>
-  @for(dom of environmentTree(); track dom.id){
+  @for(domain of environmentTree(); track domain.id){
   <div class="card my-3">
     <div class="card-header">
       <div class="row">
         <div class="col">
-          <strong>{{ dom.name }}</strong>
+          <strong>{{ domain.name }}</strong>
         </div>
         <div class="col">
-          <button class="btn btn-sm btn-primary" (click)="editContext(dom)">
+          <button class="btn btn-sm btn-primary" (click)="editContext(domain)">
             <app-icon icon="pencil"></app-icon>
           </button>
         </div>
         <div class="col">
-          <button class="btn btn-sm btn-danger" (click)="deleteContext(dom)">
+          <button class="btn btn-sm btn-danger" (click)="deleteContext(domain)">
             <app-icon icon="trash"></app-icon>
           </button>
         </div>
       </div>
     </div>
     <div class="card-body">
-      @if(dom.children.length > 0) { @for (env of dom.children; track env.id) {
+      @if(domain.children.length > 0) { @for (env of domain.children; track env.id) {
       <div class="row">
         <div class="col">{{ env.name }}</div>
         <div class="col">
@@ -42,7 +42,7 @@
       } } @else{
       <p>No environments added yet.</p>
       }
-      <button type="button" class="btn btn-primary" (click)="addEnvironment(dom)">
+      <button type="button" class="btn btn-primary" (click)="addEnvironment(domain)">
         <app-icon icon="plus-circle"></app-icon>
         Add Environment
       </button>
