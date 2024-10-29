@@ -10,7 +10,7 @@ import javax.ws.rs.ext.Provider;
 public class ElementAlreadyExistsExceptionMapper implements ExceptionMapper<ElementAlreadyExistsException> {
     @Override
     public Response toResponse(ElementAlreadyExistsException exception) {
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ExceptionDto(exception)).build();
+        return Response.status(Response.Status.CONFLICT).entity(new ExceptionDto(exception)).build();
     }
 }
 
