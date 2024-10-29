@@ -9,6 +9,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { EnvironmentDeleteComponent } from './environment-delete/environment-delete.component';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-environments-page',
@@ -18,11 +19,15 @@ import { EnvironmentDeleteComponent } from './environment-delete/environment-del
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnvironmentsPageComponent {
+  private authService = inject(AuthService);
   private environmentsService = inject(EnvironmentService);
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
+  canAdd: boolean = false;
+  canDelete: boolean = false;
+  canEdit: boolean = false;
   contexts: Signal<Environment[]> = this.environmentsService.contexts;
   globalEnv: EnvironmentTree;
   environmentTree: Signal<EnvironmentTree[]> = computed(() => {
@@ -31,6 +36,20 @@ export class EnvironmentsPageComponent {
     this.globalEnv = envTree[0];
     if (!(envTree.length > 0)) return;
     return envTree[0].children;
+  });
+
+  private getUserPermissions() {
+    this.canAdd = this.authService.hasPermission('ADD_NEW_ENV_OR_DOM', 'ALL');
+    this.canDelete = this.authService.hasPermission('REMOVE_ENV_OR_DOM', 'ALL');
+    this.canEdit = this.authService.hasPermission('EDIT_ENV_OR_DOM_NAME', 'ALL');
+  }
+
+  loadingPermissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      this.getUserPermissions();
+    } else {
+      return `<div>Could not load permissions</div>`;
+    }
   });
 
   private buildEnvironmentTree(environments: Environment[], parentName: string | null = null): EnvironmentTree[] {

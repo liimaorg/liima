@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EnvironmentEditComponent } from './environment-edit.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('EnvironmentEditComponent', () => {
   let component: EnvironmentEditComponent;
@@ -9,7 +11,7 @@ describe('EnvironmentEditComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EnvironmentEditComponent],
-      providers: [NgbActiveModal],
+      providers: [NgbActiveModal, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(EnvironmentEditComponent);

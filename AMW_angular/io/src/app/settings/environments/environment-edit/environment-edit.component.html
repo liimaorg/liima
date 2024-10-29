@@ -1,4 +1,5 @@
 <div class="container">
+  {{ loadingPermissions() }}
   <app-modal-header [title]="getTitle() + ' ' + environment.name" (cancel)="cancel()"></app-modal-header>
   <div class="modal-body">
     <div class="mb-3">
@@ -14,6 +15,8 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+    @if(canSave){
     <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+    }
   </div>
 </div>
