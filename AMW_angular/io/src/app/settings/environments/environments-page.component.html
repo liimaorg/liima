@@ -1,51 +1,62 @@
 <div class="container w-50">
+  {{ loadingPermissions() }}
   <h1>Environments</h1>
-  <button type="button" class="btn btn-primary">
+  @if (canAdd){
+  <button type="button" class="btn btn-primary" (click)="addDomain()">
     <app-icon icon="plus-circle"></app-icon>
     Add Domain
   </button>
-  @for(env of environmentTree(); track env.id){
+  } @for(domain of environmentTree(); track domain.id){
   <div class="card my-3">
     <div class="card-header">
       <div class="row">
         <div class="col">
-          <strong>{{ env.name }}</strong>
+          <strong>{{ domain.name }}</strong>
         </div>
         <div class="col">
-          <button class="btn btn-sm btn-primary">
+          @if (canEdit){
+          <button class="btn btn-sm btn-primary" (click)="editContext(domain)">
             <app-icon icon="pencil"></app-icon>
           </button>
+          }
         </div>
         <div class="col">
-          <button class="btn btn-sm btn-danger">
+          @if(canDelete){
+          <button class="btn btn-sm btn-danger" (click)="deleteContext(domain)">
             <app-icon icon="trash"></app-icon>
           </button>
+          }
         </div>
       </div>
     </div>
     <div class="card-body">
-      @if(env.children.length > 0) { @for (envChild of env.children; track envChild.id) {
+      @if(domain.children.length > 0) { @for (env of domain.children; track env.id) {
       <div class="row">
-        <div class="col">{{ envChild.name }}</div>
+        <div class="col">{{ env.name }}</div>
         <div class="col">
-          <button class="btn btn-sm btn-primary">
+          @if (canEdit){
+          <button class="btn btn-sm btn-primary" (click)="editContext(env)">
             <app-icon icon="pencil"></app-icon>
           </button>
+          }
         </div>
         <div class="col">
-          <button class="btn btn-sm btn-danger">
+          @if(canDelete){
+          <button class="btn btn-sm btn-danger mb-2" (click)="deleteContext(env)">
             <app-icon icon="trash"></app-icon>
           </button>
+          }
         </div>
         <hr />
       </div>
       } } @else{
-      <p>no envs yet</p>
-      }
-      <button type="button" class="btn btn-primary">
+      <p>No environments added yet.</p>
+      } @if (canAdd){
+      <button type="button" class="btn btn-primary mb-2" (click)="addEnvironment(domain)">
         <app-icon icon="plus-circle"></app-icon>
         Add Environment
       </button>
+      }
     </div>
   </div>
   }

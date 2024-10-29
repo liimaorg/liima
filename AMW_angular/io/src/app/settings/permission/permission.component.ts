@@ -54,7 +54,7 @@ export class PermissionComponent implements OnInit {
   roleNames: string[] = [];
   userNames: string[] = [];
   permissions: Permission[] = [];
-  environments: Environment[] = [{ id: null, name: null, parent: 'All', selected: false } as Environment];
+  environments: Environment[] = [{ id: null, name: null, parentName: 'All', selected: false } as Environment];
   groupedEnvironments: { [key: string]: Environment[] } = {
     All: [],
     Global: [],
@@ -443,10 +443,10 @@ export class PermissionComponent implements OnInit {
   private extractEnvironmentGroups() {
     this.environments.forEach((environment) => {
       environment.selected = false;
-      if (!this.groupedEnvironments[environment['parent']]) {
-        this.groupedEnvironments[environment['parent']] = [];
+      if (!this.groupedEnvironments[environment['parentName']]) {
+        this.groupedEnvironments[environment['parentName']] = [];
       }
-      this.groupedEnvironments[environment['parent']].push(environment);
+      this.groupedEnvironments[environment['parentName']].push(environment);
     });
     this.isLoading = false;
   }

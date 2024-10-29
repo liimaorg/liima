@@ -75,7 +75,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       {
         id: null,
         name: null,
-        parent: 'All',
+        parentName: 'All',
         selected: false,
       } as Environment,
     ]);
@@ -91,9 +91,9 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       { name: 'RESOURCE_TYPE', old: false } as Permission,
     ];
     const environments: Environment[] = [
-      { id: 1, name: 'U', parent: 'Dev' } as Environment,
-      { id: 2, name: 'V', parent: 'Dev' } as Environment,
-      { id: 3, name: 'T', parent: 'Test' } as Environment,
+      { id: 1, name: 'U', parentName: 'Dev' } as Environment,
+      { id: 2, name: 'V', parentName: 'Dev' } as Environment,
+      { id: 3, name: 'T', parentName: 'Test' } as Environment,
     ];
     spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(of(permissions));
     spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
@@ -115,25 +115,25 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     expect(component.groupedEnvironments['All']).toContain({
       id: null,
       name: null,
-      parent: 'All',
+      parentName: 'All',
       selected: false,
     } as Environment);
     expect(component.groupedEnvironments['Dev']).toContain({
       id: 1,
       name: 'U',
-      parent: 'Dev',
+      parentName: 'Dev',
       selected: false,
     } as Environment);
     expect(component.groupedEnvironments['Dev']).toContain({
       id: 2,
       name: 'V',
-      parent: 'Dev',
+      parentName: 'Dev',
       selected: false,
     } as Environment);
     expect(component.groupedEnvironments['Test']).toContain({
       id: 3,
       name: 'T',
-      parent: 'Test',
+      parentName: 'Test',
       selected: false,
     } as Environment);
   });
@@ -445,9 +445,9 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
       { name: 'RESOURCE_TYPE', old: false } as Permission,
     ];
     const environments: Environment[] = [
-      { id: 1, name: 'U', parent: 'Dev' } as Environment,
-      { id: 2, name: 'V', parent: 'Dev' } as Environment,
-      { id: 3, name: 'T', parent: 'Test' } as Environment,
+      { id: 1, name: 'U', parentName: 'Dev' } as Environment,
+      { id: 2, name: 'V', parentName: 'Dev' } as Environment,
+      { id: 3, name: 'T', parentName: 'Test' } as Environment,
     ];
     spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(of(permissions));
     spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
@@ -471,25 +471,25 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
     expect(component.groupedEnvironments['All']).toContain({
       id: null,
       name: null,
-      parent: 'All',
+      parentName: 'All',
       selected: false,
     } as Environment);
     expect(component.groupedEnvironments['Dev']).toContain({
       id: 1,
       name: 'U',
-      parent: 'Dev',
+      parentName: 'Dev',
       selected: false,
     } as Environment);
     expect(component.groupedEnvironments['Dev']).toContain({
       id: 2,
       name: 'V',
-      parent: 'Dev',
+      parentName: 'Dev',
       selected: false,
     } as Environment);
     expect(component.groupedEnvironments['Test']).toContain({
       id: 3,
       name: 'T',
-      parent: 'Test',
+      parentName: 'Test',
       selected: false,
     } as Environment);
   });
@@ -557,9 +557,9 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
       { name: 'RESOURCE_TYPE', old: false, longName: 'RESOURCE_TYPE' },
     ];
     const environments: Environment[] = [
-      { id: 1, name: 'U', parent: 'Dev' } as Environment,
-      { id: 2, name: 'V', parent: 'Dev' } as Environment,
-      { id: 3, name: 'T', parent: 'Test' } as Environment,
+      { id: 1, name: 'U', parentName: 'Dev' } as Environment,
+      { id: 2, name: 'V', parentName: 'Dev' } as Environment,
+      { id: 3, name: 'T', parentName: 'Test' } as Environment,
     ];
     spyOn(permissionService, 'getAllUserRestrictionNames').and.returnValue(of(userNames));
     spyOn(permissionService, 'getOwnUserAndRoleRestrictions').and.returnValue(of(restrictions));

@@ -1,12 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, startWith, Subject } from 'rxjs';
+import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { Environment } from './environment';
 import { BaseService } from '../base/base.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class EnvironmentService extends BaseService {
+  private reload$ = new Subject<Environment[]>();
+  private reloadedContexts = this.reload$.pipe(
+    startWith(null),
+    switchMap(() => this.getContexts()),
+    shareReplay(1),
+  );
+  contexts: Signal<Environment[]> = toSignal(this.reloadedContexts, { initialValue: [] as Environment[] });
+
   constructor(private http: HttpClient) {
     super();
   }
@@ -38,5 +47,38 @@ export class EnvironmentService extends BaseService {
     return this.http
       .get<Environment[]>(`${this.getBaseUrl()}/environments/contexts`)
       .pipe(catchError(this.handleError));
+  }
+
+  save(environment: Environment) {
+    if (environment.id) return this.update(environment);
+    return this.create(environment);
+  }
+
+  private create(environment: Environment) {
+    return this.http
+      .post<Environment>(`${this.getBaseUrl()}/environments/contexts`, environment, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  private update(environment: Environment) {
+    return this.http
+      .put<Environment>(`${this.getBaseUrl()}/environments/contexts/${environment.id}`, environment, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  delete(id: number) {
+    return this.http
+      .delete<number>(`${this.getBaseUrl()}/environments/contexts/${id}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  refreshData() {
+    this.reload$.next([]);
   }
 }

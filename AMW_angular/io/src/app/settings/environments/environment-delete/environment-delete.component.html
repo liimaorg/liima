@@ -1,0 +1,14 @@
+<div class="container">
+  <app-modal-header [title]="'Remove ' + getContextType()" (cancel)="cancel()"></app-modal-header>
+  <div class="modal-body">
+    <div class="form-horizontal mx-2">
+      <div class="mb-3">
+        <div class="text-body">Do you really want to delete the {{ getContextType() }} {{ environment.name }}?</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="delete()">Delete</button>
+  </div>
+</div>

@@ -409,10 +409,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   private extractEnvironmentGroups() {
     this.environments.forEach((environment) => {
-      if (!this.groupedEnvironments[environment['parent']]) {
-        this.groupedEnvironments[environment['parent']] = [];
+      if (!this.groupedEnvironments[environment['parentName']]) {
+        this.groupedEnvironments[environment['parentName']] = [];
       }
-      this.groupedEnvironments[environment['parent']].push(environment);
+      this.groupedEnvironments[environment['parentName']].push(environment);
     });
   }
 

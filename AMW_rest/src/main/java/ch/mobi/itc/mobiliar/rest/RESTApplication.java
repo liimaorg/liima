@@ -98,6 +98,7 @@ public class RESTApplication extends Application {
         resources.add(UncaughtExceptionMapper.class);
         resources.add(ConstraintViolationExceptionMapper.class);
         resources.add(ConcurrentModificationExceptionMapper.class);
+        resources.add(ElementAlreadyExistsExceptionMapper.class);
 
         // health
         resources.add(HealthCheck.class);

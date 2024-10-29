@@ -37,12 +37,14 @@ public class EnvironmentDTO {
     private Integer id;
     private String name;
     private String nameAlias;
-    private String parent;
+    private String parentName;
+    private Integer parentId;
 
     public EnvironmentDTO(ContextEntity context) {
         this.id = context.getId();
         this.name = context.getName();
         this.nameAlias = context.getNameAlias();
-        this.parent = context.getParent() != null ? context.getParent().getName() : null ;
+        this.parentName = context.getParent() != null ? context.getParent().getName() : null ;
+        this.parentId = context.getParent() != null ? context.getParent().getId() : null ;
     }
 }

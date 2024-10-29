@@ -89,7 +89,7 @@ describe('DeploymentComponent (create deployment)', () => {
   });
 
   it('should populate groupedEnvironments on ngOnInit', () => {
-    const environments: Environment[] = [{ id: 1, name: 'A', parent: 'DEV' } as Environment];
+    const environments: Environment[] = [{ id: 1, name: 'A', parentName: 'DEV' } as Environment];
     spyOn(environmentService, 'getAll').and.returnValue(of(environments));
     expect(component.groupedEnvironments).toEqual({});
     component.ngOnInit();
@@ -151,9 +151,9 @@ describe('DeploymentComponent (create deployment)', () => {
 
   it('should return environementGroupNames on getEnvironmentGroups()', () => {
     const environments: Environment[] = [
-      { id: 1, name: 'A', parent: 'DEV' } as Environment,
-      { id: 2, name: 'B', parent: 'DEV' } as Environment,
-      { id: 3, name: 'P', parent: 'PROD' } as Environment,
+      { id: 1, name: 'A', parentName: 'DEV' } as Environment,
+      { id: 2, name: 'B', parentName: 'DEV' } as Environment,
+      { id: 3, name: 'P', parentName: 'PROD' } as Environment,
     ];
     spyOn(environmentService, 'getAll').and.returnValue(of(environments));
     component.ngOnInit();
