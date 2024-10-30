@@ -13,6 +13,7 @@ import { AuthService, isAllowed } from '../../auth/auth.service';
 import { map, takeUntil } from 'rxjs/operators';
 import { ReleaseDeleteComponent } from './release-delete.component';
 import { ToastService } from '../../shared/elements/toast/toast.service';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-releases',
@@ -25,6 +26,7 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
     PaginationComponent,
     ReleaseEditComponent,
     ReleaseDeleteComponent,
+    ButtonComponent,
   ],
   templateUrl: './releases.component.html',
 })

@@ -6,12 +6,13 @@ import { DatePickerComponent } from '../../shared/date-picker/date-picker.compon
 import { DATE_FORMAT } from '../../core/amw-constants';
 import { DateModel } from '../../shared/date-picker/date.model';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-release-edit',
   templateUrl: './release-edit.component.html',
   standalone: true,
-  imports: [DatePickerComponent, FormsModule, ModalHeaderComponent],
+  imports: [DatePickerComponent, FormsModule, ModalHeaderComponent, ButtonComponent],
 })
 export class ReleaseEditComponent implements OnInit {
   @Input() release: Release;
