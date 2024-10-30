@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, Signal } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { AsyncPipe } from '@angular/common';
@@ -37,6 +37,7 @@ import { ButtonComponent } from '../shared/button/button.component';
     ButtonComponent,
   ],
   templateUrl: './apps.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppsComponent implements OnInit {
   private appsService = inject(AppsService);

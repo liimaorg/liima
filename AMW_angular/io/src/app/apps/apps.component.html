@@ -30,7 +30,7 @@
           </div>
           @if (permissions().canViewAppList) {
           <div class="card-body">
-            <app-apps-filter [releases]="releases()" [selectedReleaseId]="upcomingRelease().id" (filterEvent)="updateFilter($event)"></app-apps-filter>
+            <app-apps-filter [releases]="releases()" [selectedReleaseId]="upcomingRelease() ? upcomingRelease().id : null" (filterEvent)="updateFilter($event)"></app-apps-filter>
             <app-apps-servers-list [appServers]="appServers()"></app-apps-servers-list>
           </div>
           <div class="card-footer py-1">
