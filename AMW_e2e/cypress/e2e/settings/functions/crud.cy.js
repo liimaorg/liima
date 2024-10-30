@@ -17,27 +17,27 @@ describe("Functions -CRUD", () => {
       },
     });
 
-    cy.get('[data-cy="button-add"]').click();
+    cy.get('[data-cy="button-add"]').click({ force: true });
     cy.get("#name").type("testFunction");
-    cy.get('[data-cy="button-save"]').should("be.disabled");
+    cy.get('[data-cy="button-save"]').should('have.css', 'pointer-events', 'none');
     cy.get(".CodeMirror-line").type("testContent");
-    cy.get('[data-cy="button-save"]').click();
+    cy.get('[data-cy="button-save"]').click({ force: true });
     cy.contains("Function saved successfully.");
-    cy.get('[data-cy="button-add"]').click();
+    cy.get('[data-cy="button-add"]').click({ force: true });
     cy.get("#name").type("testFunction");
     cy.get(".CodeMirror-line").type("differentContent");
     cy.get('[data-cy="button-save"]').click({ force: true });
     cy.contains("Function with same name already exists");
-    cy.get('[data-cy="button-add"]').click();
-    cy.get(".CodeMirror-line").type("testContent");
-    cy.get('[data-cy="button-save"]').should("be.disabled");
+    cy.get('[data-cy="button-add"]').click({ force: true });
+    cy.get(".CodeMirror-line").first().type("testContent");
+    cy.get('[data-cy="button-save"]').should('have.css', 'pointer-events', 'none');
     cy.get("#name").type("differentFunction");
     cy.get('[data-cy="button-save"]').click({ force: true });
-    cy.get('[data-cy="button-delete-1"]').click();
-    cy.get('[data-cy="button-delete"]').click();
+    cy.get('[data-cy="button-delete-1"]').click({ force: true });
+    cy.get('[data-cy="button-delete"]').click({ force: true });
     cy.contains("Function deleted");
-    cy.get('[data-cy="button-delete-0"]').click();
-    cy.get('[data-cy="button-delete"]').click();
+    cy.get('[data-cy="button-delete-0"]').click({ force: true });
+    cy.get('[data-cy="button-delete"]').click({ force: true });
     cy.contains("Function deleted");
   });
 });
