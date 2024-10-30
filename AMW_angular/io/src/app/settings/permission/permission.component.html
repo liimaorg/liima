@@ -4,6 +4,7 @@
   <h1>Roles and Permissions</h1>
   <ul ngbNav #nav="ngbNav" [(activeId)]="restrictionType" class="nav-tabs mt-2 pt-4">
     <li [ngbNavItem]="'role'">
+      <!-- TODO: convert this button-->
       <button ngbNavLink (click)="changeType('role')">Role</button>
       <ng-template ngbNavContent>
         <div class="form-group row">
@@ -27,6 +28,7 @@
       </ng-template>
     </li>
     <li [ngbNavItem]="'user'">
+      <!-- TODO: convert this button-->
       <button ngbNavLink (click)="changeType('user')">User</button>
       <ng-template ngbNavContent>
         <div class="form-group row">
@@ -54,10 +56,9 @@
     <div class="col">
       @if (selectedRoleName || selectedUserNames.length > 0) { @if (!restriction && !create) {
 
-      <button type="button" class="btn btn-primary offset-1" (click)="addRestriction()">
-        <app-icon icon="plus-circle"></app-icon>
-        Add permission
-      </button>
+      <app-button [variant]="'primary'" [additionalClasses]="'offset-1'" (click)="addRestriction()"
+        ><app-icon icon="plus-circle"></app-icon> Add permission
+      </app-button>
 
       } @if (restriction) {
 

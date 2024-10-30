@@ -48,7 +48,7 @@
       [variant]="'primary'"
       [disabled]="function.name.length === 0 || function.content.length === 0"
       (click)="save()"
-      >Save changes
+      ><span data-cy-slot [attr.data-cy]="'button-save'"></span>Save changes
     </app-button>
   </span>
   }
