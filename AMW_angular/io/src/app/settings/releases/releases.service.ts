@@ -20,6 +20,10 @@ export class ReleasesService extends BaseService {
     return this.http.get<Release>(`${this.getBaseUrl()}/releases/default`).pipe(catchError(this.handleError));
   }
 
+  getUpcomingRelease(): Observable<Release> {
+    return this.http.get<Release>(`${this.getBaseUrl()}/releases/upcomingRelease`).pipe(catchError(this.handleError));
+  }
+
   getReleases(offset: number, limit: number): Observable<Release[]> {
     return this.http
       .get<Release[]>(`${this.getBaseUrl()}/releases?start=${offset}&limit=${limit}`)

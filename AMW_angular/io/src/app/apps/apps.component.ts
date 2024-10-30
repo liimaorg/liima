@@ -46,6 +46,7 @@ export class AppsComponent implements OnInit {
   private resourceService = inject(ResourceService);
   private toastService = inject(ToastService);
 
+  upcomingRelease: Signal<Release> = toSignal(this.releaseService.getUpcomingRelease());
   releases: Signal<Release[]> = toSignal(this.releaseService.getReleases(0, 50), { initialValue: [] as Release[] });
   appServerGroups = toSignal(this.resourceService.getByType('APPLICATIONSERVER'), {
     initialValue: [] as Resource[],

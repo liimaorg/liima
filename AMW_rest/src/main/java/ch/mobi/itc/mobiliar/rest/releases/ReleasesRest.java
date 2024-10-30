@@ -21,6 +21,7 @@
 package ch.mobi.itc.mobiliar.rest.releases;
 
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -35,7 +36,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
-import java.util.List;
+import java.util.*;
 
 import static javax.ws.rs.core.Response.Status.*;
 
@@ -48,6 +49,8 @@ public class ReleasesRest {
     private ReleaseMgmtService releaseMgmtService;
     @Inject
     private ReleaseLocator releaseLocator;
+    @Inject
+    private ResourceDependencyResolverService resourceDependencyResolverService;
 
     @GET
     @ApiOperation(value = "Get releases", notes = "Returns all releases")
@@ -81,6 +84,16 @@ public class ReleasesRest {
     @ApiOperation(value = "Get default release", notes = "Returns the default release entity")
     public ReleaseEntity getDefaultRelease() {
         return releaseLocator.getDefaultRelease();
+    }
+
+    @GET()
+    @Path("/upcomingRelease")
+    @ApiOperation(value = "Get upcoming release")
+    public ReleaseEntity getUpcomingRelease() {
+        List<ReleaseEntity> result = releaseLocator.loadAllReleases(false);
+        return resourceDependencyResolverService.findMostRelevantRelease(
+                new TreeSet<ReleaseEntity>(result),
+                new Date());
     }
 
     @POST
