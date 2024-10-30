@@ -33,10 +33,10 @@ describe("Functions -CRUD", () => {
     cy.get('[data-cy="button-save"]').should('have.css', 'pointer-events', 'none');
     cy.get("#name").type("differentFunction");
     cy.get('[data-cy="button-save"]').click({ force: true });
-    cy.get('[data-cy="button-delete-1"]').click({ force: true });
+    cy.get('[data-cy="icon-delete"]').first().click({ force: true});
     cy.get('[data-cy="button-delete"]').click({ force: true });
     cy.contains("Function deleted");
-    cy.get('[data-cy="button-delete-0"]').click({ force: true });
+    cy.get('[data-cy="icon-delete"]').first().click({ force: true});
     cy.get('[data-cy="button-delete"]').click({ force: true });
     cy.contains("Function deleted");
   });
