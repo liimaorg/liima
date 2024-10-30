@@ -3,11 +3,12 @@ import { PropertyType } from './property-type';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-property-type-delete',
   standalone: true,
-  imports: [FormsModule, ModalHeaderComponent],
+  imports: [FormsModule, ModalHeaderComponent, ButtonComponent],
   templateUrl: './property-type-delete.component.html',
 })
 export class PropertyTypeDeleteComponent {

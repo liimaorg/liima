@@ -7,6 +7,8 @@
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-primary" (click)="delete()" [attr.data-cy]="'button-delete'">Delete</button>
+  <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+  <app-button [variant]="'primary'" (click)="delete()"
+    ><span data-cy-slot [attr.data-cy]="'button-delete'"></span>Delete</app-button
+  >
 </div>
