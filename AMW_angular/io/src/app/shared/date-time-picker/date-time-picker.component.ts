@@ -13,6 +13,7 @@ import { DateTimeModel } from './date-time.model';
 import { noop } from 'rxjs';
 import { DATE_TIME_FORMAT } from 'src/app/core/amw-constants';
 import { IconComponent } from '../icon/icon.component';
+import { ButtonComponent } from '../button/button.component';
 
 @Component({
   selector: 'app-date-time-picker',
@@ -27,7 +28,7 @@ import { IconComponent } from '../icon/icon.component';
     },
   ],
   standalone: true,
-  imports: [FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker, NgbTimepicker],
+  imports: [FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker, NgbTimepicker, ButtonComponent],
 })
 export class DateTimePickerComponent implements ControlValueAccessor, OnInit, AfterViewInit {
   @Input()
@@ -147,5 +148,9 @@ export class DateTimePickerComponent implements ControlValueAccessor, OnInit, Af
 
   inputBlur($event) {
     this.onTouched();
+  }
+
+  cancel() {
+    this.errorMessage = '';
   }
 }
