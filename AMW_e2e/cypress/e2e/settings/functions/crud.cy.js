@@ -19,7 +19,7 @@ describe("Functions -CRUD", () => {
 
     cy.get('[data-cy="button-add"]').click({ force: true });
     cy.get("#name").type("testFunction");
-    cy.get('[data-cy="button-save"]').should('have.css', 'pointer-events', 'none');
+    cy.get('[data-cy="button-save"]').should('not.be.enabled');
     cy.get(".CodeMirror-line").type("testContent");
     cy.get('[data-cy="button-save"]').click({ force: true });
     cy.contains("Function saved successfully.");
@@ -30,7 +30,7 @@ describe("Functions -CRUD", () => {
     cy.contains("Function with same name already exists");
     cy.get('[data-cy="button-add"]').click({ force: true });
     cy.get(".CodeMirror-line").first().type("testContent");
-    cy.get('[data-cy="button-save"]').should('have.css', 'pointer-events', 'none');
+    cy.get('[data-cy="button-save"]').should('not.be.enabled');
     cy.get("#name").type("differentFunction");
     cy.get('[data-cy="button-save"]').click({ force: true });
     cy.get('[data-cy="icon-delete"]').first().click({ force: true});
