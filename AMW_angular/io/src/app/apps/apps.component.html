@@ -13,15 +13,15 @@
               </div>
               <div class="col-sm">
                 @if (canCreateApp) {
-                <button type="button" class="btn btn-primary float-end" (click)="addApp()" [attr.data-cy]="'button-add-app'">
-                  <app-icon icon="plus-circle"></app-icon>
-                  Add Application
-                </button>
+                <app-button [variant]="'primary'" [additionalClasses]="'float-end'" (click)="addApp()"
+                  ><span data-cy-slot [attr.data-cy]="'button-add-app'"></span>
+                  <app-icon icon="plus-circle"></app-icon> Add Application</app-button
+                >
                 } @if (canCreateAppServer) {
-                <button type="button" class="btn btn-primary float-end" (click)="addServer()" [attr.data-cy]="'button-add-server'">
+                <app-button [variant]="'primary'" [additionalClasses]="'float-end'" (click)="addServer()">
                   <app-icon icon="plus-circle"></app-icon>
-                  Add Application Server
-                </button>
+                  Add Application Server</app-button
+                >
                 }
               </div>
             </div>

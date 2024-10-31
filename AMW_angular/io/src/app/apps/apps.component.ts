@@ -21,6 +21,7 @@ import { AppAddComponent } from './app-add/app-add.component';
 import { ResourceService } from '../resource/resource.service';
 import { Resource } from '../resource/resource';
 import { AppCreate } from './app-create';
+import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
   selector: 'app-apps',
@@ -33,6 +34,7 @@ import { AppCreate } from './app-create';
     LoadingIndicatorComponent,
     PageComponent,
     PaginationComponent,
+    ButtonComponent,
   ],
   templateUrl: './apps.component.html',
 })
