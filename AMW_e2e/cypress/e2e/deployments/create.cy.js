@@ -12,7 +12,7 @@ describe("create a deployment", () => {
       },
     });
     cy.get(".page-title").should("have.text", "Deployments");
-    cy.get('[data-cy="create-button "]').click({ force: true });
+    cy.get('[data-cy="create-button"]').click({ force: true });
     cy.contains("Create new deployment");
     cy.get("#selectApplicationserver").click();
     cy.contains("testapplicationserver").should("be.visible").click();
@@ -24,7 +24,7 @@ describe("create a deployment", () => {
     cy.get('[data-cy="date-picker"]').type(
       tomorrow.toLocaleDateString("de-CH") + " 00:00",
     );
-    cy.get('[data-cy="btn-deploy"]').click();
+    cy.get('[data-cy="btn-deploy"]').click({ force: true });
     cy.contains("Deployment created: Tracking Id");
     cy.contains("Tracking Id").should("be.visible").click({ force: true });
   });
