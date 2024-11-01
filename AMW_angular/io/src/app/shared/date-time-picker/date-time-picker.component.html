@@ -29,19 +29,28 @@
     @if (!showTimePickerToggle) {
     <div class="d-grid">
       <ngb-datepicker name="datepicker" [ngModel]="datetime" (ngModelChange)="onDateChange($event)"></ngb-datepicker>
-      <app-button
-        [variant]="'secondary'"
-        [additionalClasses]="'m-0 w-100'"
+      <!-- TODO: convert this button-->
+      <button
+        class="btn btn-secondary m-0"
         [disabled]="!datetime?.day"
+        [ngbPopover]="timePickerContent"
+        type="button"
         (click)="toggleDateTimeState($event)"
-        ><app-icon icon="clock"></app-icon
-      ></app-button>
+      >
+        <app-icon icon="clock"></app-icon>
+      </button>
     </div>
     } @if (showTimePickerToggle) {
     <div class="d-grid">
-      <app-button [variant]="'secondary'" [additionalClasses]="'m-0 w-100'" (click)="toggleDateTimeState($event)"
-        ><app-icon icon="calendar3"></app-icon
-      ></app-button>
+      <!-- TODO: convert this button-->
+      <button
+        class="btn btn-secondary m-0"
+        [ngbPopover]="calendarContent"
+        type="button"
+        (click)="toggleDateTimeState($event)"
+      >
+        <app-icon icon="calendar3"></app-icon>
+      </button>
       <div class="mt-auto">
         <ngb-timepicker
           name="timepicker"
