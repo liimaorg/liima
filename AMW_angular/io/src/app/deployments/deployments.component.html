@@ -114,24 +114,22 @@
               [additionalClasses]="'mb-2 me-2'"
               [disabled]="deployments.length < 1"
               (click)="exportCSV()"
-              ><app-icon icon="cloud-arrow-down"></app-icon>
-              Export
-            </app-button>
+              ><app-icon icon="cloud-arrow-down"></app-icon> Export</app-button
+            >
             <app-button
               [variant]="'secondary'"
               [additionalClasses]="'mb-2 me-2'"
               [disabled]="!editableDeployments()"
               (click)="showEdit()"
-              ><app-icon icon="pencil-square"></app-icon>
-              Edit
-            </app-button>
+              ><app-icon icon="pencil-square"></app-icon> Edit</app-button
+            >
             @if (hasPermissionToRequestDeployments) {
 
             <a href="#/deployment/">
               <app-button [variant]="'secondary'" [additionalClasses]="'mb-2 me-2'"
-                ><span data-cy-slot [attr.data-cy]="'create-button'"></span><app-icon icon="plus-circle"></app-icon>
-                Create
-              </app-button>
+                ><span data-cy-slot [attr.data-cy]="'create-button'"></span
+                ><app-icon icon="plus-circle"></app-icon> Create</app-button
+              >
             </a>
 
             }
