@@ -6,8 +6,7 @@
         @if (canCreate()) {
         <input id="keyName" type="text" class="form-control" [(ngModel)]="keyName" (keyup.enter)="addKey()" />
         <app-button [variant]="'primary'" (click)="addKey()"
-          ><span data-cy-slot [attr.data-cy]="'button-add'"></span><app-icon icon="plus-circle"></app-icon> Add
-          key</app-button
+          ><app-icon icon="plus-circle"></app-icon> Add key</app-button
         >
         }
       </div>
@@ -28,7 +27,7 @@
         <td>
           @if (canDelete()) {
           <app-button [variant]="'danger'" [size]="'sm'" [additionalClasses]="'me-0'" (click)="deleteKey(paramKey.id)"
-            ><span data-cy-slot [attr.data-cy]="'delete-' + paramKey.id"></span><app-icon icon="trash"></app-icon
+            ><app-icon icon="trash"></app-icon
           ></app-button>
           }
         </td>
