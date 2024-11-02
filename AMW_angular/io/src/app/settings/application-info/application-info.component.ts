@@ -4,9 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { AsyncPipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-type Config = { key: { value: string; env: string }; value: string; defaultValue: string };
-type Version = { key: string; value: string };
+import { SettingService } from '../../setting/setting.service';
 
 @Component({
   selector: 'app-application-info',
@@ -16,7 +14,9 @@ type Version = { key: string; value: string };
 })
 export class ApplicationInfoComponent {
   private http = inject(HttpClient);
-  appVersions$ = this.http.get<Version[]>('/AMW_rest/resources/settings/appInfo');
-  appConfigs$ = this.http.get<Config[]>('/AMW_rest/resources/settings');
+  private settingService = inject(SettingService);
+  appVersions$ = this.settingService.getAppInformation();
+  appConfigs$ = this.settingService.getAllAppSettings();
+
   isLoading$ = forkJoin([this.appVersions$, this.appConfigs$]).pipe(map(() => false));
 }
