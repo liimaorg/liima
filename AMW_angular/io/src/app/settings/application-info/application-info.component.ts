@@ -1,10 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
-import { HttpClient } from '@angular/common/http';
 import { AsyncPipe } from '@angular/common';
-import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { SettingService } from '../../setting/setting.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AppInformation } from '../../setting/app-information';
+import { AppConfiguration } from '../../setting/app-configuration';
 
 @Component({
   selector: 'app-application-info',
@@ -13,10 +13,8 @@ import { SettingService } from '../../setting/setting.service';
   templateUrl: './application-info.component.html',
 })
 export class ApplicationInfoComponent {
-  private http = inject(HttpClient);
   private settingService = inject(SettingService);
-  appVersions$ = this.settingService.getAppInformation();
-  appConfigs$ = this.settingService.getAllAppSettings();
-
-  isLoading$ = forkJoin([this.appVersions$, this.appConfigs$]).pipe(map(() => false));
+  appVersions = toSignal(this.settingService.getAppInformation(), { initialValue: [] as AppInformation[] });
+  appConfigs = toSignal(this.settingService.getAllAppSettings(), { initialValue: [] as AppConfiguration[] });
+  isLoading = computed(() => !this.appVersions().length || !this.appConfigs().length);
 }

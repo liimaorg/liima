@@ -1,4 +1,4 @@
-<app-loading-indicator [isLoading]="isLoading$ | async"></app-loading-indicator>
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 
 <div class="container">
   <h1>Application Information</h1>
@@ -6,7 +6,7 @@
     <div class="card-header"><b>Application Information</b></div>
     <div class="card-body">
       <div class="table-responsive">
-        @if ((appVersions$ | async)?.length > 0) {
+        @if (appVersions().length > 0) {
         <table class="table table-sm table-striped">
           <thead>
             <tr>
@@ -16,7 +16,7 @@
           </thead>
 
           <tbody>
-            @for (item of appVersions$ | async; track item) {
+            @for (item of appVersions(); track item.key) {
             <tr>
               <td>{{ item.key }}</td>
               <td>{{ item.value }}</td>
@@ -34,7 +34,7 @@
     <div class="card-header"><b>Application Configuration</b></div>
     <div class="card-body">
       <div class="table-responsive">
-        @if ((appConfigs$ | async)?.length > 0) {
+        @if (appConfigs().length > 0) {
         <table class="table table-sm table-striped">
           <thead>
             <tr>
@@ -46,7 +46,7 @@
           </thead>
 
           <tbody>
-            @for (item of appConfigs$ | async; track item) {
+            @for (item of appConfigs(); track item.key.value) {
             <tr>
               <td>{{ item.key.value }}</td>
               <td>{{ item.key.env }}</td>
