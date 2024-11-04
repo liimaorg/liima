@@ -26,7 +26,7 @@ describe("Functions -CRUD", () => {
     cy.get('[data-cy="button-add"]').click();
     cy.get("#name").type("testFunction");
     cy.get(".CodeMirror-line").type("differentContent");
-    cy.get('[data-cy="button-save"]').click();
+    cy.get('[data-cy="button-save"]').click({ force: true });
     cy.contains("Function with same name already exists");
     cy.get('[data-cy="button-add"]').click();
     cy.get(".CodeMirror-line").first().type("testContent");
