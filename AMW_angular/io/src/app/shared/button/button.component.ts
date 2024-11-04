@@ -9,6 +9,7 @@ import { NgClass } from '@angular/common';
       class="btn"
       [ngClass]="[variantClass(), sizeClass(), additionalClasses()]"
       [disabled]="disabled()"
+      [attr.data-cy]="dataCy()"
     >
       <ng-content select="[data-cy-slot]"></ng-content>
       <ng-content></ng-content>
@@ -23,6 +24,7 @@ export class ButtonComponent {
   additionalClasses = input<string>('');
   class = input<string>('');
   disabled = input<boolean>(false);
+  dataCy = input<string>('');
 
   variantClass(): string {
     return this.variant() ? `btn-${this.variant()}` : '';

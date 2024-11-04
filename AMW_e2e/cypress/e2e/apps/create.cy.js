@@ -6,10 +6,10 @@ describe("Apps -CRUD", () => {
         password: "admin",
       },
     });
-    cy.get('[data-cy="button-add-app"]').click({ force: true });
+    cy.get('[data-cy="button-add-app"]').click();
     cy.get("#name").type("test-app");
-    cy.get('[data-cy="button-save"]').should('not.be.enabled');
+    cy.get('[data-cy="button-save"]').should("be.disabled");
     cy.get("#selectRelease").click({ force: true });
-    cy.get('[data-cy="button-cancel"]').click({ force: true });
+    cy.get('[data-cy="button-cancel"]').click();
   });
 });

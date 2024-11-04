@@ -195,10 +195,10 @@
               [variant]="'primary'"
               [additionalClasses]="'mb-2 me-2'"
               [disabled]="!hasPermissionToDeploy"
+              [dataCy]="'btn-deploy'"
               (click)="createDeployment()"
-              ><span data-cy-slot [attr.data-cy]="'btn-deploy'"></span>
-              Deploy
-            </app-button>
+              >Deploy</app-button
+            >
           </div>
         </div>
       </span>

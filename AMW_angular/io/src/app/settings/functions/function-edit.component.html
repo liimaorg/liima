@@ -47,8 +47,9 @@
     <app-button
       [variant]="'primary'"
       [disabled]="function.name.length === 0 || function.content.length === 0"
+      [dataCy]="'button-save'"
       (click)="save()"
-      ><span data-cy-slot [attr.data-cy]="'button-save'"></span>Save changes
+      >Save changes
     </app-button>
   </span>
   }

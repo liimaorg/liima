@@ -23,11 +23,11 @@ describe("Tags -CRUD", () => {
     cy.contains("Tag with name test-tag already exists");
     cy.get("#tagName").clear();
     cy.get("#tagName").type("other-tag");
-    cy.get('[data-cy="button-add"]').click({ force: true });
+    cy.get('[data-cy="button-add"]').click();
     cy.get("#tagName").should("be.empty");
-    cy.get('[data-cy="delete-other-tag"]').click({ force: true });
+    cy.get('[data-cy="delete-other-tag"]').click();
     cy.contains("Tag deleted");
-    cy.get('[data-cy="delete-test-tag"]').click({ force: true });
+    cy.get('[data-cy="delete-test-tag"]').click();
     cy.contains("Tag deleted");
   });
 });

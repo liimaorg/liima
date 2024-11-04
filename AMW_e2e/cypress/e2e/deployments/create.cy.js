@@ -1,4 +1,4 @@
-// szenario:
+// scenario:
 // create a deployment
 // click on tracking id
 // deployment must be visible in list of deployments
@@ -24,7 +24,7 @@ describe("create a deployment", () => {
     cy.get('[data-cy="date-picker"]').type(
       tomorrow.toLocaleDateString("de-CH") + " 00:00",
     );
-    cy.get('[data-cy="btn-deploy"]').click({ force: true });
+    cy.get('[data-cy="btn-deploy"]').click();
     cy.contains("Deployment created: Tracking Id");
     cy.contains("Tracking Id").should("be.visible").click({ force: true });
   });
