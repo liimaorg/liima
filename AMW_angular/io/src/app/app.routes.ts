@@ -6,6 +6,7 @@ import { deploymentRoutes } from './deployment/deployment-routes';
 import { settingsRoutes } from './settings/settings.routes';
 import { deploymentsRoutes } from './deployments/deployments.routes';
 import { serversRoute } from './servers/servers.route';
+import { resourcesRoute } from './resources/resources.route';
 
 export const routes: Routes = [
   // default route only, the rest is done in module routing
@@ -13,6 +14,7 @@ export const routes: Routes = [
 
   ...appsRoutes,
   ...serversRoute,
+  ...resourcesRoute,
   ...settingsRoutes,
   ...auditviewRoutes,
   ...deploymentRoutes,

@@ -38,7 +38,7 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="/AMW_web/pages/resourceList.xhtml">Resources</a>
+              <a class="nav-link" href="#/resources">Resources</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#/deployments/">Deploy</a>
