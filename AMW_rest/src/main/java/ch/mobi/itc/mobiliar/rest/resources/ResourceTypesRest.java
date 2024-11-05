@@ -32,7 +32,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -49,9 +49,33 @@ public class ResourceTypesRest {
 
     @Path("/resourceTypes")
     @GET
-    @ApiOperation(value = "Get all available ResourceTypes - used by Angular")
-    public List<ResourceTypeDTO> getAllResourceTypes() throws ValidationException {
+    @ApiOperation(value = "Get all resource types")
+    public List<ResourceTypeDTO> getAllResourceTypes() throws NotFoundException {
         List<ResourceTypeEntity> resourceTypes = resourceTypeLocator.getAllResourceTypes();
+        List<ResourceTypeDTO> resourceTypeDTOs = new ArrayList<>();
+        for (ResourceTypeEntity resourceType : resourceTypes) {
+            resourceTypeDTOs.add(new ResourceTypeDTO(resourceType));
+        }
+        return resourceTypeDTOs;
+    }
+
+    @Path("/predefinedResourceTypes")
+    @GET
+    @ApiOperation(value = "Get predefined resource types")
+    public List<ResourceTypeDTO> getPredefinedResourceTypes() throws NotFoundException {
+        List<ResourceTypeEntity> resourceTypes = resourceTypeLocator.getPredefinedResourceTypes();
+        List<ResourceTypeDTO> resourceTypeDTOs = new ArrayList<>();
+        for (ResourceTypeEntity resourceType : resourceTypes) {
+            resourceTypeDTOs.add(new ResourceTypeDTO(resourceType));
+        }
+        return resourceTypeDTOs;
+    }
+
+    @Path("/rootResourceTypes")
+    @GET
+    @ApiOperation(value = "Get root resource types")
+    public List<ResourceTypeDTO> getRootResourceTypes() throws NotFoundException {
+        List<ResourceTypeEntity> resourceTypes = resourceTypeLocator.getRootResourceTypes();
         List<ResourceTypeDTO> resourceTypeDTOs = new ArrayList<>();
         for (ResourceTypeEntity resourceType : resourceTypes) {
             resourceTypeDTOs.add(new ResourceTypeDTO(resourceType));

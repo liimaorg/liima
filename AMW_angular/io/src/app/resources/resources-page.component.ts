@@ -1,23 +1,23 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
+import { ResourceType } from './resourceType';
+import { ResourceTypesService } from './resource-types.service';
 
 @Component({
   selector: 'app-resources-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PageComponent, LoadingIndicatorComponent],
-  template: ` <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
-    <app-page>
-      <div class="page-title">Resources</div>
-      <div class="page-content">
-        {{ loadingPermissions() }}
-      </div></app-page
-    >`,
+  templateUrl: './resources-page.component.html',
 })
 export class ResourcesPageComponent {
   private authService = inject(AuthService);
+  private resourceTypesService = inject(ResourceTypesService);
+
+  predefinedResources: Signal<ResourceType[]> = this.resourceTypesService.predefinedResources;
+  rootResources: Signal<ResourceType[]> = this.resourceTypesService.rootResources;
 
   isLoading = signal(false);
 

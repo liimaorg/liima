@@ -20,13 +20,16 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 
 @Stateless
 public class ResourceTypeLocator {
@@ -43,8 +46,31 @@ public class ResourceTypeLocator {
      *
      * @return
      */
-    public List<ResourceTypeEntity> getAllResourceTypes() {
-        return resourceTypeDomainService.getAllResourceTypesWithoutChildren();
+    public List<ResourceTypeEntity> getAllResourceTypes() throws NotFoundException {
+        List<ResourceTypeEntity> allResourceTypes = resourceTypeDomainService.getAllResourceTypesWithoutChildren();
+        if (allResourceTypes.isEmpty()) {
+            throw new NotFoundException("No resource types found");
+        }
+        return allResourceTypes;
     }
 
+    public List<ResourceTypeEntity> getPredefinedResourceTypes() throws NotFoundException {
+        List<ResourceTypeEntity> predefinedResourceTypes = new ArrayList<>();
+        for (ResourceTypeEntity e : resourceTypeDomainService.getResourceTypes()) {
+            if (e.getParentResourceType() == null && ResourceType.createByResourceType(e, null).isDefaultResourceType()) {
+                predefinedResourceTypes.add(e);
+            }
+        }
+        if (predefinedResourceTypes.isEmpty()) {
+            throw new NotFoundException("No predefined resource types found");
+        }
+        return predefinedResourceTypes;
+    }
+
+    public List<ResourceTypeEntity> getRootResourceTypes() throws NotFoundException {
+        List<ResourceTypeEntity> allResourceTypes = getAllResourceTypes();
+        List<ResourceTypeEntity> predefinedResourceTypes = getPredefinedResourceTypes();
+        allResourceTypes.removeAll(predefinedResourceTypes);
+        return allResourceTypes;
+    }
 }

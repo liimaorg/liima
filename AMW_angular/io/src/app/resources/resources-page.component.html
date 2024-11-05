@@ -1,0 +1,15 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-page>
+  <div class="page-title">Resources</div>
+  <div class="page-content">
+    {{ loadingPermissions() }}
+    <nav class="nav flex-column">
+      @for (resource of predefinedResources(); track resource.name){<a href="#">{{ resource.name }}</a
+      >}
+    </nav>
+    <nav class="nav flex-column">
+      @for (resource of rootResources(); track resource.name){<a href="#">{{ resource.name }}</a
+      >}
+    </nav>
+  </div></app-page
+>
