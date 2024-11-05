@@ -8,7 +8,7 @@ import { DeploymentLog } from './deployment-log';
 import { DeploymentLogsService } from './deployment-logs.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { FormsModule } from '@angular/forms';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+//import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import {
   NgbDropdown,
   NgbDropdownToggle,
@@ -23,7 +23,7 @@ import { Deployment } from '../../deployment/deployment';
 import { DeploymentLogContentComponent } from './deployment-log-content.component';
 import { DeploymentLogFileSelectorComponent } from './deployment-log-file-selector.component';
 
-declare let CodeMirror: any;
+//declare let CodeMirror: any;
 
 type Failed = 'failed';
 
@@ -45,7 +45,7 @@ function failed(): Observable<Failed> {
     NgbDropdownMenu,
     NgbDropdownButtonItem,
     NgbDropdownItem,
-    CodemirrorModule,
+    //CodemirrorModule,
     FormsModule,
     LoadingIndicatorComponent,
     AsyncPipe,
@@ -122,7 +122,7 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
       if (msg !== null) this.toastService.error(msg);
     });
 
-    CodeMirror.defineSimpleMode('simplemode', {
+    /*CodeMirror.defineSimpleMode('simplemode', {
       start: [
         {
           regex: /^.*\b(error|failure|failed|fatal|not found)\b.*$/i,
@@ -133,7 +133,7 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
           token: 'warning',
         },
       ],
-    });
+    });*/
   }
 
   ngOnDestroy(): void {

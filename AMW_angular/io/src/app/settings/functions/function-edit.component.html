@@ -7,7 +7,8 @@
     </div>
     <div class="mb-3">
       <label class="form-label">Function content</label>
-      <ngx-codemirror
+      <app-code-editor [value]="function.content" [theme]="'light'" (change)="onChange($event)"> </app-code-editor>
+      <!--<ngx-codemirror
         class="h-100"
         [(ngModel)]="function.content"
         [options]="{
@@ -15,7 +16,7 @@
           theme: 'default',
           mode: 'simplemode'
         }"
-      ></ngx-codemirror>
+      ></ngx-codemirror>-->
     </div>
     <div class="mb-3" *ngIf="revisions.length > 0">
       <label class="form-label">Compare with history</label>

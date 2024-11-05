@@ -3,18 +3,19 @@ import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { AppFunction } from './appFunction';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+//import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { FunctionsService } from './functions.service';
 import { RevisionInformation } from './revisionInformation';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
+import { CodeEditorComponent } from '../../shared/codemirror/code-editor.component';
 
 @Component({
   selector: 'app-function-edit',
   templateUrl: './function-edit.component.html',
   standalone: true,
-  imports: [FormsModule, CodemirrorModule, CommonModule, NgbDropdownModule, ModalHeaderComponent, ButtonComponent],
+  imports: [FormsModule, CommonModule, NgbDropdownModule, ModalHeaderComponent, ButtonComponent],
 })
 export class FunctionEditComponent implements OnInit {
   @Input() function: AppFunction;
@@ -59,5 +60,9 @@ export class FunctionEditComponent implements OnInit {
       this.revision = revision;
       this.selectedRevisionName = displayName;
     });
+  }
+
+  onChange(content: string) {
+    this.function = { ...this.function, content: content };
   }
 }

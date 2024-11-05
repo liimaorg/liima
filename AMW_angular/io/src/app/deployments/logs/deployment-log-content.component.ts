@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+//import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { DeploymentLog } from './deployment-log';
 
 type Failed = 'failed';
@@ -11,7 +11,7 @@ type Failed = 'failed';
       @if (content !== null && content !== 'failed') {
 
       <div class="h-100">
-        <ngx-codemirror
+        <!--<ngx-codemirror
           class="h-100"
           [(ngModel)]="content.content"
           [options]="{
@@ -20,14 +20,16 @@ type Failed = 'failed';
             mode: 'simplemode',
             readOnly: true
           }"
-        ></ngx-codemirror>
+        ></ngx-codemirror>-->
       </div>
 
       } @else { ... }
     </div>
   `,
   standalone: true,
-  imports: [FormsModule, CodemirrorModule],
+  imports: [
+    FormsModule, //CodemirrorModule
+  ],
 })
 export class DeploymentLogContentComponent {
   @Input() content: DeploymentLog | Failed;
