@@ -12,21 +12,16 @@ import { PageComponent } from '../layout/page/page.component';
 })
 export class SettingsComponent {
   authService = inject(AuthService);
-  canViewSettings = false;
-  canViewPermissionsTab = false;
-  canViewAppInfo = false;
 
-  loadingPermissions = computed(() => {
+  permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      this.getUserPermissions();
+      return {
+        canViewSettings: this.authService.hasPermission('SETTING_PANEL_LIST', 'ALL'),
+        canViewPermissionsTab: this.authService.hasPermission('ROLES_AND_PERMISSIONS_TAB', 'ALL'),
+        canViewAppInfo: this.authService.hasPermission('RELEASE', 'READ'),
+      };
     } else {
-      return `<div>Could not load permissions</div>`;
+      return { canViewSettings: false, canViewPermissionsTab: false, canViewAppInfo: false };
     }
   });
-
-  private getUserPermissions() {
-    this.canViewSettings = this.authService.hasPermission('SETTING_PANEL_LIST', 'ALL');
-    this.canViewPermissionsTab = this.authService.hasPermission('ROLES_AND_PERMISSIONS_TAB', 'ALL');
-    this.canViewAppInfo = this.authService.hasPermission('RELEASE', 'READ');
-  }
 }
