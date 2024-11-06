@@ -22,7 +22,6 @@ export class ButtonComponent {
   variant = input<'primary' | 'secondary' | 'danger' | 'light' | 'close' | 'link'>();
   size = input<'sm' | 'lg'>();
   additionalClasses = input<string>('');
-  class = input<string>('');
   disabled = input<boolean>(false);
   dataCy = input<string>('');
 
