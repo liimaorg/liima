@@ -62,4 +62,8 @@ public class ResourceTypeLocator {
                 .filter(e -> e.getParentResourceType() == null && !ResourceType.createByResourceType(e, null).isDefaultResourceType())
                 .collect(Collectors.toList());
     }
+
+    public boolean hasChildren(Integer resourceTypeId) {
+        return resourceTypeDomainService.hasChildren(resourceTypeId);
+    }
 }
