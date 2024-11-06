@@ -5,20 +5,22 @@
       <label for="name" class="form-label">Function name</label>
       <input type="text" class="form-control" id="name" [(ngModel)]="function.name" />
     </div>
+
     <div class="mb-3">
-      <label class="form-label">Function content</label>
-      <app-code-editor [value]="function.content" [theme]="'light'" (change)="onChange($event)"> </app-code-editor>
-      <!--<ngx-codemirror
-        class="h-100"
-        [(ngModel)]="function.content"
-        [options]="{
-          lineNumbers: true,
-          theme: 'default',
-          mode: 'simplemode'
-        }"
-      ></ngx-codemirror>-->
+      <div class="d-flex justify-content-between align-items-start">
+        <label class="form-label">Function content</label>
+        <button type="button" class="btn btn-light fullscreen" aria-label="Fullscreen" (click)="toggleFullscreen()">
+          <app-icon [icon]="toggleFullscreenIcon"></app-icon>
+        </button>
+      </div>
+      @if (!revision) {
+      <app-code-editor [theme]="'light'" [(ngModel)]="function.content"></app-code-editor>
+      } @else {
+      <app-diff-editor [(ngModel)]="diffValue" revertControls="b-to-a"></app-diff-editor>
+      }
     </div>
-    <div class="mb-3" *ngIf="revisions.length > 0">
+    @if (revisions.length > 0) {
+    <div class="mb-3">
       <label class="form-label">Compare with history</label>
       <div ngbDropdown>
         <!-- TODO: convert this button-->
@@ -26,14 +28,17 @@
           {{ selectedRevisionName || 'Select Revision' }}
         </button>
         <ul ngbDropdownMenu>
-          <li ngbDropdownItem *ngFor="let revision of revisions.slice().reverse()">
+          @for (revision of revisions.slice().reverse(); track revision) {
+          <li ngbDropdownItem>
             <a class="dropdown-item" (click)="selectRevision(function.id, revision.revision, revision.displayName)">{{
               revision.displayName
             }}</a>
           </li>
+          }
         </ul>
       </div>
     </div>
+    }
   </div>
 </div>
 <div class="modal-footer">
