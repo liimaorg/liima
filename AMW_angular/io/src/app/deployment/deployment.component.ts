@@ -23,6 +23,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { NotificationComponent } from '../shared/elements/notification/notification.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { PageComponent } from '../layout/page/page.component';
+import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
   selector: 'app-deployment',
@@ -36,6 +37,7 @@ import { PageComponent } from '../layout/page/page.component';
     DateTimePickerComponent,
     IconComponent,
     PageComponent,
+    ButtonComponent,
   ],
 })
 export class DeploymentComponent implements OnInit, AfterViewInit {

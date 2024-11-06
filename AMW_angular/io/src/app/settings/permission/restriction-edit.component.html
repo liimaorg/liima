@@ -140,11 +140,11 @@
       <label class="col-sm-3 fw-bold text-end"></label>
       <div class="col-sm-9">
         @if (restriction.permission) {
-        <button type="button" class="btn btn-primary" [disabled]="!isValidForm()" (click)="persistRestriction()">
-          <app-icon icon="cloud-arrow-down"></app-icon> Save
-        </button>
+        <app-button [variant]="'primary'" [disabled]="!isValidForm()" (click)="persistRestriction()">
+          <app-icon icon="cloud-arrow-down"></app-icon> Save</app-button
+        >
         }
-        <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+        <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
       </div>
     </div>
 

@@ -30,9 +30,9 @@
           placeholder="Type something and hit enter"
         />
         <div class="input-group-append ms-1">
-          <button type="button" class="btn btn-light" [disabled]="newTag === ''">
-            <app-icon icon="plus" (click)="addTag()"></app-icon>
-          </button>
+          <app-button [variant]="'light'" [disabled]="newTag === ''" (click)="addTag()">
+            <app-icon icon="plus"></app-icon
+          ></app-button>
         </div>
       </div>
     </div>
@@ -54,21 +54,15 @@
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+  <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
   <span
     class="d-inline-block"
     tabindex="0"
     data-toggle="tooltip"
     [title]="!isValidForm() ? 'Please provide a name and validation' : 'Save'"
   >
-    <button
-      type="button"
-      class="btn btn-primary"
-      [disabled]="!isValidForm()"
-      (click)="save()"
-      [attr.data-cy]="'button-save'"
+    <app-button [variant]="'primary'" [disabled]="!isValidForm()" [dataCy]="'button-save'" (click)="save()"
+      >Save changes</app-button
     >
-      Save changes
-    </button>
   </span>
 </div>

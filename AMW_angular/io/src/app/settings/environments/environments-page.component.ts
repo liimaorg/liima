@@ -10,11 +10,12 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { EnvironmentDeleteComponent } from './environment-delete/environment-delete.component';
 import { AuthService } from '../../auth/auth.service';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-environments-page',
   standalone: true,
-  imports: [IconComponent, LoadingIndicatorComponent],
+  imports: [IconComponent, LoadingIndicatorComponent, ButtonComponent],
   templateUrl: './environments-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

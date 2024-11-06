@@ -82,57 +82,53 @@
           </div>
           } }
           <div class="col-sm-1">
-            <button type="button" class="btn btn-link" (click)="removeFilter(filter)">
-              <app-icon icon="trash"></app-icon>
-            </button>
+            <app-button [variant]="'link'" (click)="removeFilter(filter)"
+              ><app-icon icon="trash"></app-icon
+            ></app-button>
           </div>
         </div>
         } }
 
         <div class="form-group row">
           <div class="col-sm-11 offset-1">
-            <button type="submit" class="btn btn-primary btn-main" (click)="applyFilters()">Apply filter</button>
-            <button
-              type="submit"
-              class="btn btn-danger btn-main"
-              [attr.disabled]="filters.length < 1 ? '' : null"
+            <app-button [variant]="'primary'" [additionalClasses]="'mb-2 me-2'" (click)="applyFilters()"
+              >Apply filter</app-button
+            >
+            <app-button
+              [variant]="'danger'"
+              [additionalClasses]="'mb-2 me-2'"
+              [disabled]="filters.length < 1"
               (click)="clearFilters()"
             >
-              Clear filters
-            </button>
-            <button
-              class="btn btn-secondary btn-main"
-              [attr.disabled]="filters.length < 1 ? '' : null"
+              Clear filters</app-button
+            >
+            <app-button
+              [variant]="'secondary'"
+              [additionalClasses]="'mb-2 me-2'"
+              [disabled]="filters.length < 1"
               (click)="copyURL()"
+              ><app-icon icon="clipboard"></app-icon> Clipboard</app-button
             >
-              <app-icon icon="clipboard"></app-icon>
-              Clipboard
-            </button>
-            <button
-              type="submit"
-              class="btn btn-secondary btn-main"
-              [attr.disabled]="deployments.length < 1 ? '' : null"
+            <app-button
+              [variant]="'secondary'"
+              [additionalClasses]="'mb-2 me-2'"
+              [disabled]="deployments.length < 1"
               (click)="exportCSV()"
+              ><app-icon icon="cloud-arrow-down"></app-icon> Export</app-button
             >
-              <app-icon icon="cloud-arrow-down"></app-icon>
-              Export
-            </button>
-            <button
-              type="submit"
-              class="btn btn-secondary btn-main"
-              [attr.disabled]="editableDeployments() ? null : ''"
+            <app-button
+              [variant]="'secondary'"
+              [additionalClasses]="'mb-2 me-2'"
+              [disabled]="!editableDeployments()"
               (click)="showEdit()"
+              ><app-icon icon="pencil-square"></app-icon> Edit</app-button
             >
-              <app-icon icon="pencil-square"></app-icon>
-              Edit
-            </button>
             @if (hasPermissionToRequestDeployments) {
 
             <a href="#/deployment/">
-              <button type="submit" class="btn btn-secondary btn-main" data-cy="create-button ">
-                <app-icon icon="plus-circle"></app-icon>
-                Create
-              </button>
+              <app-button [variant]="'secondary'" [additionalClasses]="'mb-2 me-2'" [dataCy]="'create-button'"
+                ><app-icon icon="plus-circle"></app-icon> Create</app-button
+              >
             </a>
 
             }

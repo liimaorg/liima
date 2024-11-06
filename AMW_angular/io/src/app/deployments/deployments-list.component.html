@@ -250,7 +250,7 @@
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-primary" ngbAutofocus (click)="modal.close('Confirm click')">Save</button>
+    <app-button [variant]="'primary'" (click)="modal.close('Confirm click')" ngbAutofocus>Save</app-button>
   </div>
 </ng-template>
 
@@ -277,7 +277,7 @@
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-primary" ngbAutofocus (click)="modal.close('Confirm click')">Confirm</button>
+    <app-button [variant]="'primary'" (click)="modal.close('Confirm click')" ngbAutofocus>Confirm </app-button>
   </div>
 </ng-template>
 
@@ -290,7 +290,7 @@
     <p class="text-warning-2">Are you sure that you want to reject this deployment?</p>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-primary" ngbAutofocus (click)="modal.close('Confirm click')">Confirm</button>
+    <app-button [variant]="'primary'" (click)="modal.close('Confirm click')" ngbAutofocus>Confirm </app-button>
   </div>
 </ng-template>
 
@@ -303,6 +303,6 @@
     <p class="text-warning-2">Are you sure that you want to cancel this deployment?</p>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-primary" ngbAutofocus (click)="modal.close('Confirm click')">Confirm</button>
+    <app-button [variant]="'primary'" (click)="modal.close('Confirm click')" ngbAutofocus>Confirm </app-button>
   </div>
 </ng-template>

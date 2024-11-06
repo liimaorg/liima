@@ -33,12 +33,12 @@
           <td>
             @if (!delegationMode) {
 
-            <button class="btn btn-sm btn-primary" (click)="modifyRestriction(restriction)">
-              <app-icon icon="pencil"></app-icon>
-            </button>
-            <button class="btn btn-sm btn-danger" (click)="removeRestriction(restriction.id)">
-              <app-icon icon="trash"></app-icon>
-            </button>
+            <app-button [variant]="'primary'" [size]="'sm'" (click)="modifyRestriction(restriction)"
+              ><app-icon icon="pencil"></app-icon>
+            </app-button>
+            <app-button [variant]="'danger'" [size]="'sm'" (click)="removeRestriction(restriction.id)"
+              ><app-icon icon="trash"></app-icon>
+            </app-button>
 
             }
           </td>

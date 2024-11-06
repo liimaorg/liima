@@ -6,10 +6,10 @@
       <div class="row justify-content-between align-items-center">
         <div class="col-sm">
           @if (canCreate()) {
-          <button type="button" class="btn btn-primary float-end" (click)="addRelease()">
+          <app-button [variant]="'primary'" [additionalClasses]="'float-end'" (click)="addRelease()">
             <app-icon icon="plus-circle"></app-icon>
-            Add release
-          </button>
+            Add release</app-button
+          >
           }
         </div>
       </div>
@@ -38,16 +38,26 @@
               <td class="align-middle">{{ item.installationInProductionAt | date: dateFormat }}</td>
               <td class="text-center">
                 @if (item.default !== true && canEdit()) {
-                <button class="btn btn-sm btn-primary me-0" (click)="editRelease(item)">
-                  <app-icon icon="pencil"></app-icon>
-                </button>
+                <app-button
+                  [variant]="'primary'"
+                  [size]="'sm'"
+                  [additionalClasses]="'me-0'"
+                  (click)="editRelease(item)"
+                >
+                  <app-icon icon="pencil"></app-icon
+                ></app-button>
                 }
               </td>
               <td class="text-center">
                 @if (item.default !== true && canDelete()) {
-                <button class="btn btn-sm btn-danger me-0" (click)="deleteRelease(item)">
-                  <app-icon icon="trash"></app-icon>
-                </button>
+                <app-button
+                  [variant]="'danger'"
+                  [size]="'sm'"
+                  [additionalClasses]="'me-0'"
+                  (click)="deleteRelease(item)"
+                >
+                  <app-icon icon="trash"></app-icon
+                ></app-button>
                 }
               </td>
             </tr>

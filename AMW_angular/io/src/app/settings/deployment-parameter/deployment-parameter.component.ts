@@ -6,13 +6,14 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { AuthService, isAllowed } from '../../auth/auth.service';
 import { Subject } from 'rxjs';
 import { ToastService } from '../../shared/elements/toast/toast.service';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 type Key = { id: number; name: string };
 
 @Component({
   selector: 'app-deployment-parameter',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, IconComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, IconComponent, ButtonComponent],
   templateUrl: './deployment-parameter.component.html',
   styleUrl: './deployment-parameter.component.scss',
 })

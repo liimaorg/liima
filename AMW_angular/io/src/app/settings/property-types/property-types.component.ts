@@ -11,11 +11,12 @@ import { takeUntil } from 'rxjs/operators';
 import { PropertyTypeEditComponent } from './property-type-edit.component';
 import { Subject } from 'rxjs';
 import { PropertyTypeDeleteComponent } from './property-type-delete.component';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-property-types',
   standalone: true,
-  imports: [CommonModule, IconComponent, LoadingIndicatorComponent],
+  imports: [CommonModule, IconComponent, LoadingIndicatorComponent, ButtonComponent],
   templateUrl: './property-types.component.html',
 })
 export class PropertyTypesComponent implements OnInit, OnDestroy {

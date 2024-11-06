@@ -22,6 +22,7 @@ import { NotificationComponent } from '../shared/elements/notification/notificat
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { PageComponent } from '../layout/page/page.component';
 import { ToastService } from '../shared/elements/toast/toast.service';
+import { ButtonComponent } from '../shared/button/button.component';
 
 declare let $: any;
 
@@ -38,6 +39,7 @@ declare let $: any;
     DeploymentsListComponent,
     PaginationComponent,
     PageComponent,
+    ButtonComponent,
   ],
 })
 export class DeploymentsComponent implements OnInit {

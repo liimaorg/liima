@@ -20,6 +20,7 @@
     <div class="mb-3" *ngIf="revisions.length > 0">
       <label class="form-label">Compare with history</label>
       <div ngbDropdown>
+        <!-- TODO: convert this button-->
         <button class="btn btn-secondary dropdown-toggle" id="revisionDropdown" ngbDropdownToggle>
           {{ selectedRevisionName || 'Select Revision' }}
         </button>
@@ -35,7 +36,7 @@
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+  <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
   @if (canManage) {
   <span
     class="d-inline-block"
@@ -43,15 +44,13 @@
     data-toggle="tooltip"
     [title]="!function.name || !function.content ? 'Please provide function name and content' : ''"
   >
-    <button
-      type="button"
-      class="btn btn-primary"
+    <app-button
+      [variant]="'primary'"
       [disabled]="function.name.length === 0 || function.content.length === 0"
+      [dataCy]="'button-save'"
       (click)="save()"
-      [attr.data-cy]="'button-save'"
-    >
-      Save changes
-    </button>
+      >Save changes
+    </app-button>
   </span>
   }
 </div>

@@ -7,13 +7,14 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { FunctionsService } from './functions.service';
 import { RevisionInformation } from './revisionInformation';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { ButtonComponent } from '../../shared/button/button.component';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 
 @Component({
   selector: 'app-function-edit',
   templateUrl: './function-edit.component.html',
   standalone: true,
-  imports: [FormsModule, CodemirrorModule, CommonModule, NgbDropdownModule, ModalHeaderComponent],
+  imports: [FormsModule, CodemirrorModule, CommonModule, NgbDropdownModule, ModalHeaderComponent, ButtonComponent],
 })
 export class FunctionEditComponent implements OnInit {
   @Input() function: AppFunction;

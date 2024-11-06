@@ -123,10 +123,10 @@
     <div class="form-group row">
       <label class="col-sm-3 text-end fw-bold"></label>
       <div class="offset-3 col-sm-9">
-        <button type="button" class="btn btn-primary" [disabled]="!isValidForm()" (click)="persistRestriction()">
-          <app-icon icon="cloud-arrow-down"></app-icon> Save
-        </button>
-        <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+        <app-button [variant]="'primary'" [disabled]="!isValidForm()" (click)="persistRestriction()">
+          <app-icon icon="cloud-arrow-down"></app-icon> Save</app-button
+        >
+        <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
       </div>
     </div>
   </div>

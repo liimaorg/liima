@@ -16,6 +16,6 @@
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-primary" [disabled]="hasInvalidFields()" (click)="save()">Save</button>
+  <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+  <app-button [variant]="'primary'" [disabled]="hasInvalidFields()" (click)="save()">Save</app-button>
 </div>

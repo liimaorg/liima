@@ -3,12 +3,13 @@ import { Restriction } from './restriction';
 import * as _ from 'lodash';
 import { Resource } from '../../resource/resource';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-restriction-list',
   templateUrl: './restriction-list.component.html',
   standalone: true,
-  imports: [IconComponent],
+  imports: [IconComponent, ButtonComponent],
 })
 export class RestrictionListComponent {
   @Input() delegationMode: boolean;

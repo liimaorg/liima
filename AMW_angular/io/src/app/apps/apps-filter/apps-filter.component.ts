@@ -4,11 +4,13 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { Release } from '../../settings/releases/release';
 import { FormsModule } from '@angular/forms';
 import { Output, EventEmitter } from '@angular/core';
+import { ButtonComponent } from '../../shared/button/button.component';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-apps-filter',
   standalone: true,
-  imports: [FormsModule, NgSelectModule],
+  imports: [FormsModule, NgSelectModule, ButtonComponent, IconComponent],
   templateUrl: './apps-filter.component.html',
 })
 export class AppsFilterComponent {

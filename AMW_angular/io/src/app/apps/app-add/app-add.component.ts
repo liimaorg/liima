@@ -7,11 +7,12 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Resource } from '../../resource/resource';
 import { AppCreate } from '../app-create';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-app-add',
   standalone: true,
-  imports: [FormsModule, NgSelectModule, ModalHeaderComponent],
+  imports: [FormsModule, NgSelectModule, ModalHeaderComponent, ButtonComponent],
   templateUrl: './app-add.component.html',
 })
 export class AppAddComponent {

@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { SortableIconComponent } from '../shared/sortable-icon/sortable-icon.component';
 import { DatePipe } from '@angular/common';
 import { ModalHeaderComponent } from '../shared/modal-header/modal-header.component';
+import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
   selector: 'app-deployments-list',
@@ -26,6 +27,7 @@ import { ModalHeaderComponent } from '../shared/modal-header/modal-header.compon
     DateTimePickerComponent,
     DatePipe,
     ModalHeaderComponent,
+    ButtonComponent,
   ],
 })
 export class DeploymentsListComponent {

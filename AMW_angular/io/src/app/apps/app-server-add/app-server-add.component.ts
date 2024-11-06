@@ -5,11 +5,12 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-server-add',
   standalone: true,
-  imports: [FormsModule, NgSelectModule, ModalHeaderComponent],
+  imports: [FormsModule, NgSelectModule, ModalHeaderComponent, ButtonComponent],
   templateUrl: './app-server-add.component.html',
 })
 export class AppServerAddComponent {

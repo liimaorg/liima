@@ -27,6 +27,7 @@ import {
   NgbNavOutlet,
 } from '@ng-bootstrap/ng-bootstrap';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-permission',
@@ -47,6 +48,7 @@ import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicat
     RestrictionEditComponent,
     RestrictionAddComponent,
     RestrictionListComponent,
+    ButtonComponent,
   ],
 })
 export class PermissionComponent implements OnInit {

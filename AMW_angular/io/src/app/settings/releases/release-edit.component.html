@@ -33,6 +33,6 @@
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
-  <button type="button" class="btn btn-primary" [disabled]="hasInvalidDate()" (click)="save()">Save changes</button>
+  <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+  <app-button [variant]="'primary'" [disabled]="hasInvalidDate()" (click)="save()">Save changes</app-button>
 </div>
