@@ -27,6 +27,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
@@ -70,5 +71,12 @@ public class ResourceTypesRest {
         return resourceTypeLocator.getRootResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Path("/resourceTypes/{resourceTypeId}/hasChildren")
+    @GET
+    @ApiOperation(value = "Checks if resource type has children")
+    public boolean hasChildren(@PathParam("resourceTypeId") int resourceTypeId) {
+        return resourceTypeLocator.hasChildren(resourceTypeId);
     }
 }
