@@ -59,19 +59,20 @@ export class AppsComponent implements OnInit {
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
 
-  canCreateApp = false;
-  canCreateAppServer = false;
-  canViewAppList = false;
   isLoading = false;
 
   currentPage: number;
   lastPage: number;
 
-  loadingPermissions = computed(() => {
+  permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      this.getUserPermissions();
+      return {
+        canCreateApp: this.authService.hasResourcePermission('RESOURCE', 'CREATE', 'APPLICATION'),
+        canCreateAppServer: this.authService.hasResourcePermission('RESOURCE', 'CREATE', 'APPLICATIONSERVER'),
+        canViewAppList: this.authService.hasPermission('APP_AND_APPSERVER_LIST', 'READ'),
+      };
     } else {
-      return `<div>Could not load permissions</div>`;
+      return { canCreateApp: false, canCreateAppServer: false, canViewAppList: false };
     }
   });
 
@@ -87,12 +88,6 @@ export class AppsComponent implements OnInit {
   private setPagination() {
     this.currentPage = Math.floor(this.offset() / this.maxResults()) + 1;
     this.lastPage = Math.ceil(this.count() / this.maxResults());
-  }
-
-  private getUserPermissions() {
-    this.canCreateApp = this.authService.hasResourcePermission('RESOURCE', 'CREATE', 'APPLICATION');
-    this.canCreateAppServer = this.authService.hasResourcePermission('RESOURCE', 'CREATE', 'APPLICATIONSERVER');
-    this.canViewAppList = this.authService.hasPermission('APP_AND_APPSERVER_LIST', 'READ');
   }
 
   addApp() {

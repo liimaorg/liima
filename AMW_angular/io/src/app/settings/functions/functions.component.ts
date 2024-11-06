@@ -39,24 +39,22 @@ export class FunctionsComponent implements OnDestroy {
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
 
-  canManage: boolean = false;
-  canView: boolean = false;
-
-  loadingPermissions = computed(() => {
+  permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      this.getUserPermissions();
+      return {
+        canManage: this.authService.hasPermission('MANAGE_GLOBAL_FUNCTIONS', 'ALL'),
+        canView: this.authService.hasPermission('VIEW_GLOBAL_FUNCTIONS', 'ALL'),
+      };
     } else {
-      return `<div>Could not load permissions</div>`;
+      return {
+        canManage: false,
+        canView: false,
+      };
     }
   });
 
   ngOnDestroy(): void {
     this.destroy$.next(undefined);
-  }
-
-  private getUserPermissions() {
-    this.canManage = this.authService.hasPermission('MANAGE_GLOBAL_FUNCTIONS', 'ALL');
-    this.canView = this.authService.hasPermission('VIEW_GLOBAL_FUNCTIONS', 'ALL');
   }
 
   addFunction() {
@@ -68,7 +66,7 @@ export class FunctionsComponent implements OnDestroy {
       name: '',
       content: '',
     };
-    modalRef.componentInstance.canManage = this.canManage;
+    modalRef.componentInstance.canManage = this.permissions().canManage;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
       .subscribe((functionData: AppFunction) => this.saveNew(functionData));
@@ -79,7 +77,7 @@ export class FunctionsComponent implements OnDestroy {
       size: 'xl',
     });
     modalRef.componentInstance.function = functionData;
-    modalRef.componentInstance.canManage = this.canManage;
+    modalRef.componentInstance.canManage = this.permissions().canManage;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
       .subscribe((functionData: AppFunction) => this.saveModified(functionData));

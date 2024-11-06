@@ -26,9 +26,6 @@ export class EnvironmentsPageComponent {
   private toastService = inject(ToastService);
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
-  canAdd: boolean = false;
-  canDelete: boolean = false;
-  canEdit: boolean = false;
   contexts: Signal<Environment[]> = this.environmentsService.contexts;
   globalEnv: EnvironmentTree;
   environmentTree: Signal<EnvironmentTree[]> = computed(() => {
@@ -40,16 +37,24 @@ export class EnvironmentsPageComponent {
   });
 
   private getUserPermissions() {
-    this.canAdd = this.authService.hasPermission('ADD_NEW_ENV_OR_DOM', 'ALL');
-    this.canDelete = this.authService.hasPermission('REMOVE_ENV_OR_DOM', 'ALL');
-    this.canEdit = this.authService.hasPermission('EDIT_ENV_OR_DOM_NAME', 'ALL');
+    canAdd: this.authService.hasPermission('ADD_NEW_ENV_OR_DOM', 'ALL');
+    canDelete: this.authService.hasPermission('REMOVE_ENV_OR_DOM', 'ALL');
+    canEdit: this.authService.hasPermission('EDIT_ENV_OR_DOM_NAME', 'ALL');
   }
 
-  loadingPermissions = computed(() => {
+  permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      this.getUserPermissions();
+      return {
+        canAdd: this.authService.hasPermission('ADD_NEW_ENV_OR_DOM', 'ALL'),
+        canDelete: this.authService.hasPermission('REMOVE_ENV_OR_DOM', 'ALL'),
+        canEdit: this.authService.hasPermission('EDIT_ENV_OR_DOM_NAME', 'ALL'),
+      };
     } else {
-      return `<div>Could not load permissions</div>`;
+      return {
+        canAdd: false,
+        canDelete: false,
+        canEdit: false,
+      };
     }
   });
 

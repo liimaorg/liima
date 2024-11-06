@@ -12,7 +12,7 @@ import { AuthService } from '../auth/auth.service';
     <app-page>
       <div class="page-title">Servers</div>
       <div class="page-content">
-        {{ loadingPermissions() }}
+        {{ permissions() }}
       </div></app-page
     >`,
 })
@@ -21,13 +21,13 @@ export class ServersPageComponent {
 
   isLoading = signal(false);
 
-  loadingPermissions = computed(() => {
+  permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      this.getUserPermissions();
+      return {
+        canViewSomething: true,
+      };
     } else {
-      return `<div>Could not load permissions</div>`;
+      return { canViewSomething: false };
     }
   });
-
-  private getUserPermissions() {}
 }

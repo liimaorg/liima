@@ -21,19 +21,13 @@ export class EnvironmentEditComponent {
   @Input() globalName: string;
   @Output() saveEnvironment: EventEmitter<Environment> = new EventEmitter<Environment>();
 
-  canSave: boolean = false;
-
-  loadingPermissions = computed(() => {
+  permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      this.getUserPermissions();
+      return { canSave: this.authService.hasPermission('SAVE_SETTINGS_ENV', 'ALL') };
     } else {
-      return `<div>Could not load permissions</div>`;
+      return { canSave: false };
     }
   });
-
-  private getUserPermissions() {
-    this.canSave = this.authService.hasPermission('SAVE_SETTINGS_ENV', 'ALL');
-  }
 
   getTitle(): string {
     if (!this.environment) return;
