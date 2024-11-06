@@ -16,9 +16,8 @@ export class ResourcesPageComponent {
   private authService = inject(AuthService);
   private resourceTypesService = inject(ResourceTypesService);
 
-  predefinedResources: Signal<ResourceType[]> = this.resourceTypesService.predefinedResources;
-  rootResources: Signal<ResourceType[]> = this.resourceTypesService.rootResources;
-
+  predefinedResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.predefinedResourceTypes;
+  rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
   isLoading = signal(false);
 
   loadingPermissions = computed(() => {

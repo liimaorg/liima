@@ -73,4 +73,8 @@ public class ResourceTypeLocator {
         allResourceTypes.removeAll(predefinedResourceTypes);
         return allResourceTypes;
     }
+
+    public boolean hasChildren(Integer resourceTypeId) {
+        return resourceTypeDomainService.hasChildren(resourceTypeId);
+    }
 }

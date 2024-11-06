@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-
+import { Injectable, Signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -11,16 +10,16 @@ import { BaseService } from '../base/base.service';
 export class ResourceTypesService extends BaseService {
   private reload$ = new Subject<ResourceType[]>();
 
-  private predefinedResources$ = this.getPredefinedResourceTypes();
+  private predefinedResourceTypes$ = this.getPredefinedResourceTypes();
 
-  private rootResources$ = this.reload$.pipe(
+  private rootResourceTypes$ = this.reload$.pipe(
     startWith(null),
     switchMap(() => this.getRootResourceTypes()),
     shareReplay(1),
   );
 
-  predefinedResources = toSignal(this.predefinedResources$, { initialValue: [] as ResourceType[] });
-  rootResources = toSignal(this.rootResources$, { initialValue: [] as ResourceType[] });
+  predefinedResourceTypes = toSignal(this.predefinedResourceTypes$, { initialValue: [] as ResourceType[] });
+  rootResourceTypes = toSignal(this.rootResourceTypes$, { initialValue: [] as ResourceType[] });
 
   constructor(private http: HttpClient) {
     super();

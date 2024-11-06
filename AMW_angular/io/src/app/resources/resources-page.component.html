@@ -4,11 +4,11 @@
   <div class="page-content">
     {{ loadingPermissions() }}
     <nav class="nav flex-column">
-      @for (resource of predefinedResources(); track resource.name){<a href="#">{{ resource.name }}</a
+      @for (resourceType of predefinedResourceTypes(); track resourceType.name){<a href="#">{{ resourceType.name }}</a
       >}
     </nav>
     <nav class="nav flex-column">
-      @for (resource of rootResources(); track resource.name){<a href="#">{{ resource.name }}</a
+      @for (resourceType of rootResourceTypes(); track resourceType.name){<a href="#">{{ resourceType.name }}</a
       >}
     </nav>
   </div></app-page
