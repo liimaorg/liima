@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-//import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { DeploymentLog } from './deployment-log';
+import { CodeEditorComponent } from '../../shared/codemirror/code-editor.component';
 
 type Failed = 'failed';
 @Component({
@@ -11,25 +11,19 @@ type Failed = 'failed';
       @if (content !== null && content !== 'failed') {
 
       <div class="h-100">
-        <!--<ngx-codemirror
-          class="h-100"
+        <app-code-editor
+          [theme]="'light'"
+          [setup]="'minimal'"
+          [readonly]="true"
           [(ngModel)]="content.content"
-          [options]="{
-            lineNumbers: false,
-            theme: 'default',
-            mode: 'simplemode',
-            readOnly: true
-          }"
-        ></ngx-codemirror>-->
+        ></app-code-editor>
       </div>
 
       } @else { ... }
     </div>
   `,
   standalone: true,
-  imports: [
-    FormsModule, //CodemirrorModule
-  ],
+  imports: [FormsModule, CodeEditorComponent],
 })
 export class DeploymentLogContentComponent {
   @Input() content: DeploymentLog | Failed;
